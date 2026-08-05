@@ -76,6 +76,8 @@ interface Props {
   /** Project deployment chain — drives router + pair; no manual selection. */
   projectChainId: number
   contractAddress?: string | null
+  /** Hero: compact Smart Swap (no diagnostic metric grid). */
+  variant?: 'full' | 'hero'
 }
 
 interface InnerProps extends Props {
@@ -282,6 +284,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
   marketsDocument,
   projectChainId,
   contractAddress = null,
+  variant = 'full',
 }) => {
   const chain = getMelegaChain(projectChainId)
   const chainName = chain?.shortLabel ?? `Chain ${projectChainId}`
@@ -294,6 +297,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
     ) ||
       slug === 'marco') &&
     swapReady
+  const hero = variant === 'hero'
 
   return (
     <Band
@@ -302,9 +306,12 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       data-project-section="trading"
       data-project-chain-id={projectChainId}
       data-project-router={routerAddress ?? ''}
+      data-trading-variant={variant}
+      data-testid={hero ? 'project-v1-smart-swap-hero' : 'project-v1-trading-full'}
+      style={hero ? { marginBottom: 0, border: '1px solid rgba(244,196,48,0.22)' } : undefined}
     >
       <BandHead>
-        <BandTitle id="pp-v1-trading-title">Buy Token</BandTitle>
+        <BandTitle id="pp-v1-trading-title">{hero ? 'Smart Swap' : 'Buy Token'}</BandTitle>
         <BandMeta>
           <Chip $on={live} $disabled={!live} data-testid="project-v1-trading-chain-badge">
             {chainName}
@@ -312,39 +319,41 @@ const ProjectTradingEmbed: React.FC<Props> = ({
           </Chip>
         </BandMeta>
       </BandHead>
-      <Grid $cols={4} style={{ marginBottom: 10 }}>
-        <Metric
-          label="Chain"
-          value={chainName}
-          provenance={indexed('melega-chain-registry')}
-        />
-        <Metric
-          label="Router"
-          value={routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}
-          provenance={routerAddress ? indexed('melega-chain-registry') : UNAVAILABLE}
-        />
-        <Metric
-          label="Swap target"
-          value={
-            contractAddress
-              ? `${chain?.nativeCurrency.symbol ?? '—'} → Token`
-              : 'Unavailable'
-          }
-          provenance={contractAddress ? indexed('project-registry') : UNAVAILABLE}
-        />
-        <Metric
-          label="Best route"
-          value={ready ? 'Smart Swap' : live ? 'Unavailable' : 'Coming soon'}
-          provenance={ready ? indexed('melega-smart-swap') : UNAVAILABLE}
-        />
-        <Metric label="Liquidity" value="See Live Market" provenance={indexed('project-page-cross-ref')} />
-        <Metric
-          label="Buy / Sell"
-          value={ready ? 'Available' : live ? 'Unavailable' : 'Coming soon'}
-          tone={ready ? 'ok' : 'mute'}
-          provenance={ready ? indexed('swap-destinations') : UNAVAILABLE}
-        />
-      </Grid>
+      {!hero ? (
+        <Grid $cols={4} style={{ marginBottom: 10 }}>
+          <Metric
+            label="Chain"
+            value={chainName}
+            provenance={indexed('melega-chain-registry')}
+          />
+          <Metric
+            label="Router"
+            value={routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}
+            provenance={routerAddress ? indexed('melega-chain-registry') : UNAVAILABLE}
+          />
+          <Metric
+            label="Swap target"
+            value={
+              contractAddress
+                ? `${chain?.nativeCurrency.symbol ?? '—'} → Token`
+                : 'Unavailable'
+            }
+            provenance={contractAddress ? indexed('project-registry') : UNAVAILABLE}
+          />
+          <Metric
+            label="Best route"
+            value={ready ? 'Smart Swap' : live ? 'Unavailable' : 'Coming soon'}
+            provenance={ready ? indexed('melega-smart-swap') : UNAVAILABLE}
+          />
+          <Metric label="Liquidity" value="See Live Market" provenance={indexed('project-page-cross-ref')} />
+          <Metric
+            label="Buy / Sell"
+            value={ready ? 'Available' : live ? 'Unavailable' : 'Coming soon'}
+            tone={ready ? 'ok' : 'mute'}
+            provenance={ready ? indexed('swap-destinations') : UNAVAILABLE}
+          />
+        </Grid>
+      ) : null}
       {!live || !swapReady ? (
         <ComingSoonBox data-testid="project-v1-trading-coming-soon">
           <Muted style={{ marginBottom: 6, color: pp.gold }}>Coming soon on {chainName}</Muted>

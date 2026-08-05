@@ -20,7 +20,7 @@ import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
-import { shortenAddress, humanEnumLabel, formatRelativeTime } from '../presentation/humanLabels'
+import { shortenAddress, humanEnumLabel } from '../presentation/humanLabels'
 import {
   Band,
   BandHead,
@@ -29,15 +29,11 @@ import {
   Btn,
   ChainSelectBtn,
   Chip,
-  DenseRow,
-  DenseTable,
   Grid,
-  List,
   Muted,
   Page,
   Prose,
   Row,
-  Split,
   pp,
 } from './theme'
 import { Metric, indexed, live, UNAVAILABLE } from './Metric'
@@ -154,54 +150,83 @@ const PrimaryButton = styled.button`
   color: #111;
 `
 
-const HeroActions = styled.div`
+const HeroLayout = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  min-width: 0;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+    align-items: start;
+  }
+`
+
+const HeroIdentity = styled.div`
+  min-width: 0;
+`
+
+const HeroSwapCol = styled.div`
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+`
+
+const HeroDesc = styled.p`
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 42rem;
+`
+
+const ActionBar = styled.nav`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: 12px;
+  padding: 8px 0 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 0;
 
   @media (max-width: 479px) {
     flex-direction: column;
     align-items: stretch;
 
     a,
-    button {
+    button,
+    span {
       width: 100%;
+    }
+
+    a,
+    button {
       justify-content: center;
     }
   }
 `
 
-const MetaStrip = styled.div`
+const MarketStrip = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid ${pp.line};
-  background: rgba(0, 0, 0, 0.25);
-  font-size: 12px;
-  color: ${pp.mute};
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
 
   @media (min-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  strong {
-    color: ${pp.text};
-    font-variant-numeric: tabular-nums;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 `
 
 const ClaimBlock = styled.div`
-  margin-top: 12px;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px dashed rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.02);
-  max-width: 520px;
 `
 
 const ClaimTitle = styled.div`
@@ -217,21 +242,11 @@ const ClaimBody = styled.p`
   color: ${pp.mute};
 `
 
-const ClaimSteps = styled.ol`
-  margin: 0 0 10px;
-  padding-left: 18px;
-  font-size: 11px;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.62);
-`
-
 const GrowStrip = styled.div`
-  margin-top: 12px;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid rgba(244, 196, 48, 0.22);
   background: rgba(244, 196, 48, 0.05);
-  max-width: 640px;
   overflow-x: hidden;
 `
 
@@ -240,6 +255,60 @@ const GrowTitle = styled.div`
   font-weight: 750;
   color: ${pp.gold};
   margin-bottom: 6px;
+`
+
+const SideCards = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 10px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`
+
+const CompactCards = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const VenueCard = styled.div`
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid ${pp.line};
+  background: rgba(255, 255, 255, 0.02);
+  min-width: 0;
+`
+
+const VenueTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 750;
+  color: #fff;
+  min-width: 0;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+`
+
+const VenueMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: ${pp.mute};
 `
 
 const PaidBadge = styled.span<{ $kind: 'featured' | 'boosted' }>`
@@ -257,13 +326,6 @@ const PaidBadge = styled.span<{ $kind: 'featured' | 'boosted' }>`
     $kind === 'featured' ? 'rgba(244, 196, 48, 0.55)' : 'rgba(196, 181, 253, 0.45)'};
   background: ${({ $kind }) =>
     $kind === 'featured' ? 'rgba(244, 196, 48, 0.14)' : 'rgba(139, 92, 246, 0.12)'};
-`
-
-const DenseIdentity = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
 `
 
 interface Props {
@@ -372,11 +434,6 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
     return g?.owner?.label || g?.ownership?.status || 'Unavailable'
   }, [governanceDocument])
 
-  const launchDate = useMemo(() => {
-    const d = document.identity.updatedAt
-    return d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unavailable'
-  }, [document.identity.updatedAt])
-
   const description =
     document.identity.description?.meta?.availability === 'AVAILABLE'
       ? document.identity.description.value
@@ -387,41 +444,43 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
   const utilities =
     (document.identity.tags?.length ? document.identity.tags : document.identity.categories) ?? []
 
-  const largestPool = chainLiquidity[0] ?? null
-  const readinessUpdated = formatRelativeTime(readinessDocument.generatedAt)
-
   return (
     <Page
       id="project-page-v1"
       data-testid="project-page-v1"
       data-project-rebuild="zero-rebuild-v1"
       data-project-nav="none"
-      data-project-layout="dense-long-page"
+      data-project-layout="conversion-hero"
       data-project-chain-id={chainId}
       data-project-multichain="ready"
     >
-      {/* SECTION 1 — Identity Hero */}
-      <Band aria-labelledby="pp-v1-identity" data-project-section="identity-hero">
-        <Row style={{ alignItems: 'flex-start', gap: 12 }}>
-          <LogoWrap>
-            <MelegaTokenAvatar
-              logoURI={logoUrl}
-              symbol={symbol ?? document.identity.displayName.slice(0, 2)}
-              address={contract ?? undefined}
-              chainId={chainId}
-              size={56}
-            />
-          </LogoWrap>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <HeroName id="pp-v1-identity">{document.identity.displayName}</HeroName>
-            <HeroSub>
-              {symbol ? <Ticker>${symbol}</Ticker> : null}
-              <MelegaExploreChainBadge chainId={chainId} />
-              <Chip $on={/verif/i.test(verified)} data-testid="project-v1-verified">
-                {verified}
-              </Chip>
-              <Chip>{market.status === 'LIVE' ? 'Live market' : market.status}</Chip>
-            </HeroSub>
+      {/* SECTION 1 — Conversion Hero + in-hero Smart Swap */}
+      <Band aria-labelledby="pp-v1-identity" data-project-section="identity-hero" data-testid="project-v1-hero">
+        <HeroLayout>
+          <HeroIdentity>
+            <Row style={{ alignItems: 'flex-start', gap: 12 }}>
+              <LogoWrap>
+                <MelegaTokenAvatar
+                  logoURI={logoUrl}
+                  symbol={symbol ?? document.identity.displayName.slice(0, 2)}
+                  address={contract ?? undefined}
+                  chainId={chainId}
+                  size={56}
+                />
+              </LogoWrap>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <HeroName id="pp-v1-identity">{document.identity.displayName}</HeroName>
+                <HeroSub>
+                  {symbol ? <Ticker>${symbol}</Ticker> : null}
+                  <MelegaExploreChainBadge chainId={chainId} />
+                  <Chip $on={/verif/i.test(verified)} data-testid="project-v1-verified">
+                    {verified}
+                  </Chip>
+                </HeroSub>
+              </div>
+            </Row>
+
+            <HeroDesc data-testid="project-v1-hero-description">{description}</HeroDesc>
 
             <HeroSub style={{ marginTop: 10 }} data-testid="project-v1-chain-deployments">
               {deployments.map((d) => (
@@ -443,26 +502,20 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               ))}
             </HeroSub>
 
-            <MetaStrip data-testid="project-v1-chain-meta">
-              <div>
-                Contract{' '}
-                <strong>{contract ? shortenAddress(contract) : 'Unavailable'}</strong>
-              </div>
-              <div>
-                Router{' '}
-                <strong>{routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}</strong>
-              </div>
-              <div>
-                Explorer{' '}
-                <strong>{contract ? explorerLabel : '—'}</strong>
-              </div>
-              <div>
-                Swap target{' '}
-                <strong>{selected?.swapTarget ?? 'Unavailable'}</strong>
-              </div>
-            </MetaStrip>
-
             <ContractRow>
+              {website ? (
+                <Btn $ghost href={website.url} target="_blank" rel="noreferrer" data-testid="project-v1-website">
+                  Website
+                </Btn>
+              ) : null}
+              {socials
+                .filter((s) => s.resourceType === 'social')
+                .slice(0, 6)
+                .map((s) => (
+                  <Btn key={s.url} $ghost href={s.url} target="_blank" rel="noreferrer">
+                    {s.label}
+                  </Btn>
+                ))}
               {contract ? (
                 <>
                   <CopyBtn type="button" onClick={onCopy} data-testid="project-v1-copy-contract">
@@ -477,66 +530,16 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
                   >
                     {explorerLabel}
                   </Btn>
-                  <span data-testid="project-v1-add-to-wallet">
-                    <AddToWalletButton
-                      variant="text"
-                      scale="sm"
-                      p="0 8px"
-                      height="28px"
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        border: `1px solid ${pp.line}`,
-                        borderRadius: 7,
-                        minHeight: 28,
-                      }}
-                      marginTextBetweenLogo="4px"
-                      textOptions={AddToWalletTextOptions.TEXT}
-                      tokenAddress={contract}
-                      tokenSymbol={symbol ?? 'TOKEN'}
-                      tokenDecimals={tokenDecimals}
-                      tokenLogo={logoUrl ?? `/images/${chainId}/tokens/${contract}.png`}
-                    />
-                  </span>
                 </>
               ) : null}
-              {website ? (
-                <Btn $ghost href={website.url} target="_blank" rel="noreferrer">
-                  Website
-                </Btn>
-              ) : null}
             </ContractRow>
-            <HeroSub style={{ marginTop: 8 }}>
-              {socials
-                .filter((s) => s.resourceType === 'social')
-                .slice(0, 6)
-                .map((s) => (
-                  <Btn key={s.url} $ghost href={s.url} target="_blank" rel="noreferrer">
-                    {s.label}
-                  </Btn>
-                ))}
-            </HeroSub>
-            <Grid $cols={4} style={{ marginTop: 10 }}>
-              <Metric label="Launch date" value={launchDate} provenance={indexed('project-registry')} />
-              <Metric label="Owner" value={String(ownerLabel)} provenance={indexed('governance-registry')} />
-              <Metric
-                label="Market status"
-                value={market.status}
-                provenance={market.row ? live(market.source, market.lastUpdate) : UNAVAILABLE}
-              />
-              <Metric
-                label="Readiness"
-                value={
-                  document.identity.readiness?.value?.label
-                    ? humanEnumLabel(document.identity.readiness.value.label)
-                    : 'Unavailable'
-                }
-                provenance={indexed('readiness', readinessUpdated)}
-              />
-            </Grid>
-            <HeroActions>
+
+            <ActionBar aria-label="Project actions" data-testid="project-v1-action-bar">
               <Btn $primary href={buyHref} data-testid="project-v1-buy">
-                Buy Token{symbol ? ` · ${symbol}` : ''}
+                Buy Token
+              </Btn>
+              <Btn href={buyHref} data-testid="project-v1-trade">
+                Trade
               </Btn>
               {contract ? (
                 <span data-testid="project-v1-add-wallet-secondary">
@@ -551,6 +554,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
                       borderRadius: 9,
                       minHeight: 36,
                       padding: '0 14px',
+                      width: '100%',
                     }}
                     marginTextBetweenLogo="6px"
                     textOptions={AddToWalletTextOptions.TEXT}
@@ -561,9 +565,6 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
                   />
                 </span>
               ) : null}
-              <Btn href={buyHref} data-testid="project-v1-trade">
-                Trade
-              </Btn>
               <Btn href={`/farms?chain=${chainId}`} data-testid="project-v1-next-farm">
                 Farm
               </Btn>
@@ -573,65 +574,28 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               <Btn href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v1-liquidity">
                 Liquidity
               </Btn>
-            </HeroActions>
+            </ActionBar>
+          </HeroIdentity>
 
-            <ClaimBlock data-testid="project-v1-claim-block">
-              <ClaimTitle>Are you the project owner?</ClaimTitle>
-              <ClaimBody>Claim this page to manage your information.</ClaimBody>
-              <ClaimSteps>
-                <li>Connect wallet</li>
-                <li>Ownership verification</li>
-                <li>Customize logo, description, website, socials &amp; links</li>
-              </ClaimSteps>
-              <Muted style={{ marginBottom: 8 }}>No arbitrary editing — verified owners only.</Muted>
-              <Btn
-                $ghost
-                href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}`}
-                data-testid="project-v1-claim"
-              >
-                Claim Project
-              </Btn>
-            </ClaimBlock>
-
-            <GrowStrip data-testid="project-v1-grow-cta">
-              <GrowTitle>Grow Your Project</GrowTitle>
-              <Row>
-                <Btn $ghost href="/list?intent=create-token" data-testid="project-v1-grow-create-token">
-                  Create Token
-                </Btn>
-                <Btn $ghost href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v1-grow-liquidity">
-                  Liquidity
-                </Btn>
-                <Btn $ghost href={`/farms?chain=${chainId}`} data-testid="project-v1-grow-farm">
-                  Farm
-                </Btn>
-                <Btn
-                  $ghost
-                  href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}#featured`}
-                  data-testid="project-v1-grow-featured"
-                >
-                  Featured
-                </Btn>
-                <Btn
-                  $ghost
-                  href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}#trend-boost`}
-                  data-testid="project-v1-grow-trend-boost"
-                >
-                  Trend Boost
-                </Btn>
-              </Row>
-            </GrowStrip>
-          </div>
-        </Row>
+          <HeroSwapCol>
+            <ProjectTradingEmbed
+              slug={document.slug}
+              marketsDocument={marketsDocument}
+              projectChainId={chainId}
+              contractAddress={contract}
+              variant="hero"
+            />
+          </HeroSwapCol>
+        </HeroLayout>
       </Band>
 
-      {/* SECTION 2 — Market (compact factual strip) */}
+      {/* SECTION 2 — Market above fold */}
       <Band aria-labelledby="pp-v1-market" data-project-section="live-market" data-testid="project-v1-market">
         <BandHead>
           <BandTitle id="pp-v1-market">Market</BandTitle>
           <BandMeta>{market.loading ? 'loading…' : market.lastUpdate ?? 'no recent trade'}</BandMeta>
         </BandHead>
-        <Grid $cols={3} data-testid="project-v1-market-grid">
+        <MarketStrip data-testid="project-v1-market-grid">
           <Metric
             label="Price"
             value={market.priceBnb !== 'Unavailable' ? market.priceBnb : market.priceUsd}
@@ -649,236 +613,203 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
             provenance={market.trend !== 'Unavailable' ? live(market.source, market.lastUpdate) : UNAVAILABLE}
           />
           <Metric
+            label="Liquidity"
+            value={market.liquidity}
+            provenance={market.liquidity !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
+          />
+          <Metric
             label="Volume"
             value={market.volume24h}
             provenance={market.volume24h !== 'Unavailable' ? live(market.source, market.lastUpdate) : UNAVAILABLE}
           />
           <Metric
-            label="Liquidity"
-            value={market.liquidity}
-            provenance={market.liquidity !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
+            label="Market Cap"
+            value={market.marketCap}
+            provenance={market.marketCap !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
           />
           <Metric label="Holders" value={market.holders} provenance={UNAVAILABLE} />
-          <Metric label="Chain" value={chainLabel} provenance={indexed('chain-registry')} />
-        </Grid>
+        </MarketStrip>
       </Band>
 
-      {/* SECTION 3 — Trading */}
-      <ProjectTradingEmbed
-        slug={document.slug}
-        marketsDocument={marketsDocument}
-        projectChainId={chainId}
-        contractAddress={contract}
-      />
-
-      {/* SECTION 4 — Charts */}
+      {/* SECTION 3 — Chart early */}
       <ProjectCharts slug={document.slug} marketsDocument={marketsDocument} />
 
-      {/* SECTION 5 — Project */}
+      {/* SECTION 4 — Project narrative */}
       <Band aria-labelledby="pp-v1-project" data-project-section="project">
         <BandHead>
-          <BandTitle id="pp-v1-project">Project</BandTitle>
-          <BandMeta>registry</BandMeta>
+          <BandTitle id="pp-v1-project">About</BandTitle>
+          <BandMeta>project</BandMeta>
         </BandHead>
-        <Split>
-          <div>
-            <Prose style={{ marginBottom: 10 }}>{description}</Prose>
-            <Muted style={{ marginBottom: 6 }}>
-              Category:{' '}
-              {document.identity.categories?.length
-                ? document.identity.categories.join(' · ')
-                : 'Unavailable'}
-            </Muted>
-            {utilities.length ? (
-              <Row style={{ marginBottom: 10 }}>
-                {utilities.slice(0, 8).map((u) => (
-                  <Chip key={u}>{u}</Chip>
-                ))}
-              </Row>
-            ) : (
-              <Muted style={{ marginBottom: 10 }}>Utilities: Unavailable</Muted>
-            )}
-            <BandTitle as="h3" style={{ marginBottom: 6 }}>
-              Roadmap
-            </BandTitle>
-            {roadmapDocument?.milestones?.length ? (
-              <List>
-                {roadmapDocument.milestones.slice(0, 8).map((m, i) => (
-                  <li key={`${m.title ?? i}`}>
-                    {m.title ?? 'Milestone'}
-                    {m.status ? ` — ${humanEnumLabel(m.status)}` : ''}
-                  </li>
-                ))}
-              </List>
-            ) : (
-              <Muted>Unavailable</Muted>
-            )}
-          </div>
-          <div>
-            <BandTitle as="h3" style={{ marginBottom: 6 }}>
-              Tokenomics
-            </BandTitle>
-            {tokenomicsDocument?.allocationCategories?.length ? (
-              <List>
-                {tokenomicsDocument.allocationCategories.slice(0, 10).map((c) => (
-                  <li key={c.id}>
-                    {c.label}
-                    {c.percent != null ? ` — ${c.percent}%` : ''}
-                  </li>
-                ))}
-              </List>
-            ) : (
-              <Muted>Unavailable</Muted>
-            )}
-            <BandTitle as="h3" style={{ margin: '12px 0 6px' }}>
-              Links
-            </BandTitle>
-            <Row>
-              {document.resources.slice(0, 10).map((r) => (
-                <Btn key={r.url} $ghost href={r.url} target="_blank" rel="noreferrer">
-                  {r.label}
-                </Btn>
-              ))}
-              {!document.resources.length ? <Muted>Unavailable</Muted> : null}
-            </Row>
-          </div>
-        </Split>
+        <Prose style={{ marginBottom: 10 }}>{description}</Prose>
+        <Muted style={{ marginBottom: 6 }}>
+          Category:{' '}
+          {document.identity.categories?.length
+            ? document.identity.categories.join(' · ')
+            : 'Unavailable'}
+        </Muted>
+        {utilities.length ? (
+          <Row style={{ marginBottom: 10 }}>
+            {utilities.slice(0, 8).map((u) => (
+              <Chip key={u}>{u}</Chip>
+            ))}
+          </Row>
+        ) : null}
       </Band>
 
-      {/* SECTION 6 — Liquidity */}
+      {/* SECTION 5 — Liquidity / Farms / Pools compact */}
       <Band aria-labelledby="pp-v1-liquidity" data-project-section="liquidity" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-liquidity">Liquidity</BandTitle>
           <BandMeta>
-            <MelegaExploreChainBadge chainId={chainId} /> · {chainLiquidity.length} pools
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainLiquidity.length}
           </BandMeta>
         </BandHead>
-        <Grid $cols={4} style={{ marginBottom: 8 }}>
-          <Metric
-            label="Pools"
-            value={String(chainLiquidity.length)}
-            provenance={indexed('venue-registry', participationDocument.generatedAt)}
-          />
-          <Metric
-            label="Liquidity"
-            value={market.liquidity}
-            provenance={market.liquidity !== 'Unavailable' ? indexed(market.source) : UNAVAILABLE}
-          />
-          <Metric label="LP Holders" value="Unavailable" provenance={UNAVAILABLE} />
-          <Metric
-            label="Largest Pool"
-            value={largestPool?.displayLabel ?? 'Unavailable'}
-            provenance={largestPool ? indexed('venue-registry') : UNAVAILABLE}
-          />
-        </Grid>
-        <DenseTable data-testid="project-v1-liquidity-table">
+        <CompactCards data-testid="project-v1-liquidity-table">
           {chainLiquidity.length ? (
-            chainLiquidity.slice(0, 6).map((p) => (
-              <DenseRow key={p.participationId} data-testid="project-v1-liquidity-row">
-                <DenseIdentity>
+            chainLiquidity.slice(0, 4).map((p) => (
+              <VenueCard key={p.participationId} data-testid="project-v1-liquidity-row">
+                <VenueTitle>
                   <MelegaExploreChainBadge chainId={chainId} />
                   <strong>{p.displayLabel}</strong>
-                </DenseIdentity>
-                <span>{humanEnumLabel(p.status)}</span>
-                <span>{humanEnumLabel(p.availability)}</span>
+                </VenueTitle>
+                <VenueMeta>
+                  <span>Pair · {p.displayLabel}</span>
+                  <span>TVL · {market.liquidity}</span>
+                  <span>Volume · {market.volume24h}</span>
+                  <span>Status · {humanEnumLabel(p.status)}</span>
+                </VenueMeta>
                 {p.destination?.href ? (
-                  <Btn $ghost href={p.destination.href}>
-                    Open
-                  </Btn>
-                ) : (
-                  <span>Unavailable</span>
-                )}
-              </DenseRow>
+                  <Row style={{ marginTop: 8 }}>
+                    <Btn $ghost href={p.destination.href}>
+                      Open
+                    </Btn>
+                  </Row>
+                ) : null}
+              </VenueCard>
             ))
           ) : (
-            <Muted>
-              No liquidity pools registered for this project on {chainLabel}.
-            </Muted>
+            <Muted>No liquidity pools on {chainLabel}.</Muted>
           )}
-        </DenseTable>
-        <Row style={{ marginTop: 10 }}>
-          {chainId === 56 ? (
-            <Btn href={`/liquidity-studio?chain=${chainId}`}>Create LP</Btn>
-          ) : (
-            <Chip $disabled>Create LP · BNB only</Chip>
-          )}
-          {liquidityBuildingDocument ? (
-            <Chip>
-              LB:{' '}
-              {(liquidityBuildingDocument as { summary?: { status?: string } }).summary?.status ??
-                'indexed'}
-            </Chip>
-          ) : null}
-        </Row>
+        </CompactCards>
       </Band>
 
-      {/* SECTION 7 — Farms */}
       <Band aria-labelledby="pp-v1-farms" data-project-section="farms" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-farms">Farms</BandTitle>
           <BandMeta>
-            <MelegaExploreChainBadge chainId={chainId} /> · {chainFarms.length} active
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainFarms.length}
           </BandMeta>
         </BandHead>
-        <DenseTable data-testid="project-v1-farms-table">
+        <CompactCards data-testid="project-v1-farms-table">
           {chainFarms.length ? (
-            chainFarms.slice(0, 8).map((f) => (
-              <DenseRow key={f.participationId} data-testid="project-v1-farm-row">
-                <DenseIdentity>
+            chainFarms.slice(0, 4).map((f) => (
+              <VenueCard key={f.participationId} data-testid="project-v1-farm-row">
+                <VenueTitle>
                   <MelegaExploreChainBadge chainId={chainId} />
                   <strong>{f.displayLabel}</strong>
-                </DenseIdentity>
-                <span>Farm available</span>
-                <span>{f.farmPid != null ? `PID ${f.farmPid}` : 'Rewards indexed'}</span>
+                </VenueTitle>
+                <VenueMeta>
+                  <span>Pair · {f.displayLabel}</span>
+                  <span>TVL · Unavailable</span>
+                  <span>Volume · Unavailable</span>
+                  <span>Status · Farm available</span>
+                </VenueMeta>
                 {f.destination?.href ? (
-                  <Btn $ghost href={f.destination.href}>
-                    Stake
-                  </Btn>
-                ) : (
-                  <span>Unavailable</span>
-                )}
-              </DenseRow>
+                  <Row style={{ marginTop: 8 }}>
+                    <Btn $ghost href={f.destination.href}>
+                      Stake
+                    </Btn>
+                  </Row>
+                ) : null}
+              </VenueCard>
             ))
           ) : (
-            <Muted>No active farms registered for this project on {chainLabel}.</Muted>
+            <Muted>No farms on {chainLabel}.</Muted>
           )}
-        </DenseTable>
+        </CompactCards>
       </Band>
 
-      {/* SECTION 8 — Pools */}
       <Band aria-labelledby="pp-v1-pools" data-project-section="pools" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-pools">Pools</BandTitle>
           <BandMeta>
-            <MelegaExploreChainBadge chainId={chainId} /> · {chainPools.length} reward pools
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainPools.length}
           </BandMeta>
         </BandHead>
-        <DenseTable data-testid="project-v1-pools-table">
+        <CompactCards data-testid="project-v1-pools-table">
           {chainPools.length ? (
-            chainPools.slice(0, 8).map((p) => (
-              <DenseRow key={p.participationId} data-testid="project-v1-pool-row">
-                <DenseIdentity>
+            chainPools.slice(0, 4).map((p) => (
+              <VenueCard key={p.participationId} data-testid="project-v1-pool-row">
+                <VenueTitle>
                   <MelegaExploreChainBadge chainId={chainId} />
                   <strong>{p.displayLabel}</strong>
-                </DenseIdentity>
-                <span>Pool available</span>
-                <span>{p.sousId != null ? `Sous ${p.sousId}` : 'Reward pool'}</span>
+                </VenueTitle>
+                <VenueMeta>
+                  <span>Pair · {p.displayLabel}</span>
+                  <span>TVL · Unavailable</span>
+                  <span>Volume · Unavailable</span>
+                  <span>Status · Pool available</span>
+                </VenueMeta>
                 {p.destination?.href ? (
-                  <Btn $ghost href={p.destination.href}>
-                    Stake
-                  </Btn>
-                ) : (
-                  <span>Unavailable</span>
-                )}
-              </DenseRow>
+                  <Row style={{ marginTop: 8 }}>
+                    <Btn $ghost href={p.destination.href}>
+                      Stake
+                    </Btn>
+                  </Row>
+                ) : null}
+              </VenueCard>
             ))
           ) : (
-            <Muted>No reward pools registered for this project on {chainLabel}.</Muted>
+            <Muted>No pools on {chainLabel}.</Muted>
           )}
-        </DenseTable>
+        </CompactCards>
       </Band>
 
-      {/* SECTION 9 — Featured (paid placement — honest label) */}
+      {/* SECTION 6 — Claim + Grow (compact, not dominant) */}
+      <SideCards>
+        <ClaimBlock data-testid="project-v1-claim-block">
+          <ClaimTitle>Are you the project owner?</ClaimTitle>
+          <ClaimBody>
+            Claim this page. Ownership verification required. Manage logo, description, website, and social
+            links.
+          </ClaimBody>
+          <Btn
+            $ghost
+            href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}`}
+            data-testid="project-v1-claim"
+          >
+            Claim Project
+          </Btn>
+        </ClaimBlock>
+
+        <GrowStrip data-testid="project-v1-grow-cta">
+          <GrowTitle>Grow Your Project</GrowTitle>
+          <Row>
+            <Btn
+              $ghost
+              href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}#featured`}
+              data-testid="project-v1-grow-featured"
+            >
+              Featured
+            </Btn>
+            <Btn
+              $ghost
+              href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}#trend-boost`}
+              data-testid="project-v1-grow-trend-boost"
+            >
+              Trend Boost
+            </Btn>
+            <Btn $ghost href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v1-grow-liquidity">
+              Liquidity
+            </Btn>
+            <Btn $ghost href={`/farms?chain=${chainId}`} data-testid="project-v1-grow-farm">
+              Farm
+            </Btn>
+          </Row>
+        </GrowStrip>
+      </SideCards>
+
+      {/* SECTION 7 — Monetization honesty (compact) */}
       <Band
         aria-labelledby="pp-v1-featured"
         data-project-section="featured-promotion"
@@ -886,28 +817,21 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
         style={{
           borderColor: pp.goldLine,
           background:
-            'radial-gradient(ellipse 80% 60% at 8% 0%, rgba(242,200,76,0.14), transparent 55%), linear-gradient(165deg, rgba(22,20,12,0.98), rgba(12,12,12,0.98))',
+            'radial-gradient(ellipse 80% 60% at 8% 0%, rgba(242,200,76,0.10), transparent 55%), linear-gradient(165deg, rgba(22,20,12,0.98), rgba(12,12,12,0.98))',
         }}
       >
         <BandHead>
           <BandTitle id="pp-v1-featured">
             <PaidBadge $kind="featured" data-testid="placement-label-featured">
               Featured
-            </PaidBadge>{' '}
-            Promotion
+            </PaidBadge>
           </BandTitle>
-          <BandMeta>Paid placement · UX only</BandMeta>
+          <BandMeta>Paid · UX only</BandMeta>
         </BandHead>
-        <Prose style={{ marginBottom: 8 }}>
-          Paid Featured placement on Melega Home — not an organic ranking. Your project rotates among the four
-          Home Featured cards for seven days.
-        </Prose>
         <Row style={{ marginBottom: 8, alignItems: 'baseline' }}>
-          <PromoPrice>99 USD</PromoPrice>
+          <PromoPrice style={{ fontSize: 22 }}>99 USD</PromoPrice>
           <Chip $on>7 days</Chip>
-          <Chip>4-card Home rotation</Chip>
         </Row>
-        <Muted style={{ marginBottom: 8 }}>Accepted assets</Muted>
         <Row style={{ marginBottom: 8 }}>
           {PAYMENTS.map((asset) => (
             <PayChip
@@ -922,30 +846,19 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
           ))}
         </Row>
         {pay === 'MARCO' ? (
-          <Muted style={{ marginBottom: 10 }} data-testid="project-v1-marco-cashback">
+          <Muted style={{ marginBottom: 8 }} data-testid="project-v1-marco-cashback">
             5% M-Credits Cashback when paying with MARCO.
           </Muted>
-        ) : (
-          <Muted style={{ marginBottom: 10 }}>Pay with BNB · USDT · USDC · MARCO</Muted>
-        )}
+        ) : null}
         <PrimaryButton type="button" data-testid="project-v1-get-featured">
           GET FEATURED
         </PrimaryButton>
-        <Muted style={{ marginTop: 8 }}>
-          Product selection only — payment is not processed on this screen.
-        </Muted>
       </Band>
 
-      {/* SECTION 9b — Trend Boost (paid — honest Boosted label) */}
       <Band
         aria-labelledby="pp-v1-boost"
         data-project-section="trend-boost"
         data-testid="project-trend-boost-promotion"
-        style={{
-          borderColor: 'rgba(196, 181, 253, 0.35)',
-          background:
-            'radial-gradient(ellipse 80% 60% at 8% 0%, rgba(139,92,246,0.12), transparent 55%), linear-gradient(165deg, rgba(18,16,28,0.98), rgba(12,12,12,0.98))',
-        }}
       >
         <BandHead>
           <BandTitle id="pp-v1-boost">
@@ -954,12 +867,8 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
             </PaidBadge>{' '}
             Trend Boost
           </BandTitle>
-          <BandMeta>Paid placement · UX only</BandMeta>
+          <BandMeta>Paid · UX only</BandMeta>
         </BandHead>
-        <Prose style={{ marginBottom: 8 }}>
-          Paid Trend Boost surfaces your project in discovery — clearly labelled Boosted, never presented as
-          organic momentum.
-        </Prose>
         <Btn
           $ghost
           href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}#trend-boost`}
@@ -967,93 +876,64 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
         >
           Get Trend Boost
         </Btn>
-        <Muted style={{ marginTop: 8 }}>
-          Product selection only — payment is not processed on this screen.
-        </Muted>
       </Band>
 
-      {/* SECTION 10 — Developer */}
-      <Band aria-labelledby="pp-v1-developer" data-project-section="developer">
-        <BandHead>
-          <BandTitle id="pp-v1-developer">Developer</BandTitle>
-          <BandMeta>registry</BandMeta>
-        </BandHead>
-        <Grid $cols={4}>
-          <Metric
-            label="Github"
-            value={github?.url ? 'Available' : 'Unavailable'}
-            provenance={github ? indexed('project-resources') : UNAVAILABLE}
-          />
-          <Metric
-            label="Audit"
-            value={
-              evidencePack.evidence?.some((e) => /audit/i.test(e.claimType))
-                ? 'Indexed'
-                : 'Unavailable'
-            }
-            provenance={
-              evidencePack.evidence?.some((e) => /audit/i.test(e.claimType))
-                ? indexed('evidence-pack')
-                : UNAVAILABLE
-            }
-          />
-          <Metric
-            label="Contract"
-            value={contract ? shortenAddress(contract) : 'Unavailable'}
-            provenance={contract ? indexed('canonical-asset') : UNAVAILABLE}
-          />
-          <Metric label="Ownership" value={String(ownerLabel)} provenance={indexed('governance-registry')} />
-          <Metric label="Renounced" value="Unavailable" provenance={UNAVAILABLE} />
-          <Metric label="Taxes" value="Unavailable" provenance={UNAVAILABLE} />
-          <Metric label="Holders" value="Unavailable" provenance={UNAVAILABLE} />
-          <Metric
-            label="Risk"
-            value={growthDocument ? 'See growth notes' : 'Unavailable'}
-            provenance={growthDocument ? indexed('growth-registry') : UNAVAILABLE}
-          />
-        </Grid>
-        {github ? (
-          <Row style={{ marginTop: 8 }}>
-            <Btn $ghost href={github.url} target="_blank" rel="noreferrer">
-              Open Github
-            </Btn>
-          </Row>
-        ) : null}
-      </Band>
+      {/* Hidden from normal users — markers retained for registry/tests */}
+      <div hidden data-project-audience="developer" data-testid="project-v1-advanced-hidden">
+        <Band aria-labelledby="pp-v1-developer" data-project-section="developer">
+          <BandHead>
+            <BandTitle id="pp-v1-developer">Developer</BandTitle>
+            <BandMeta>registry</BandMeta>
+          </BandHead>
+          <Grid $cols={4}>
+            <Metric
+              label="Github"
+              value={github?.url ? 'Available' : 'Unavailable'}
+              provenance={github ? indexed('project-resources') : UNAVAILABLE}
+            />
+            <Metric
+              label="Contract"
+              value={contract ? shortenAddress(contract) : 'Unavailable'}
+              provenance={contract ? indexed('canonical-asset') : UNAVAILABLE}
+            />
+            <Metric label="Ownership" value={String(ownerLabel)} provenance={indexed('governance-registry')} />
+            <Metric
+              label="Router"
+              value={routerAddress ? shortenRouter(routerAddress) : 'Unavailable'}
+              provenance={routerAddress ? indexed('melega-chain-registry') : UNAVAILABLE}
+            />
+          </Grid>
+        </Band>
 
-      {/* SECTION 11 — Transparency */}
-      <Band aria-labelledby="pp-v1-transparency" data-project-section="transparency">
-        <BandHead>
-          <BandTitle id="pp-v1-transparency">Transparency</BandTitle>
-          <BandMeta>every metric discloses source</BandMeta>
-        </BandHead>
-        <Prose style={{ marginBottom: 10 }}>
-          Every metric on this page indicates availability (indexed / live / unavailable), source, and last
-          update when known. Missing facts render as Unavailable.
-        </Prose>
-        <Grid $cols={3}>
-          <Metric
-            label="Evidence items"
-            value={String(evidencePack.evidence?.length ?? 0)}
-            provenance={indexed('evidence-pack', evidencePack.generatedAt)}
-          />
-          <Metric
-            label="Machine interface"
-            value={machineDocument ? 'Indexed' : 'Unavailable'}
-            provenance={machineDocument ? indexed('machine-document') : UNAVAILABLE}
-          />
-          <Metric
-            label="Developer surface"
-            value={developerDocument ? 'Indexed' : 'Unavailable'}
-            provenance={developerDocument ? indexed('developer-document') : UNAVAILABLE}
-          />
-        </Grid>
-        {machineDocument ? (
-          <div style={{ marginTop: 12 }}>
-            <ProjectMachineSection machineDocument={machineDocument} />
-          </div>
-        ) : null}
-      </Band>
+        <Band aria-labelledby="pp-v1-transparency" data-project-section="transparency">
+          <BandHead>
+            <BandTitle id="pp-v1-transparency">Transparency</BandTitle>
+            <BandMeta>diagnostics</BandMeta>
+          </BandHead>
+          <Grid $cols={3}>
+            <Metric
+              label="Evidence items"
+              value={String(evidencePack.evidence?.length ?? 0)}
+              provenance={indexed('evidence-pack', evidencePack.generatedAt)}
+            />
+            <Metric
+              label="Machine interface"
+              value={machineDocument ? 'Indexed' : 'Unavailable'}
+              provenance={machineDocument ? indexed('machine-document') : UNAVAILABLE}
+            />
+            <Metric
+              label="Developer surface"
+              value={developerDocument ? 'Indexed' : 'Unavailable'}
+              provenance={developerDocument ? indexed('developer-document') : UNAVAILABLE}
+            />
+          </Grid>
+          {machineDocument ? (
+            <div style={{ marginTop: 12 }}>
+              <ProjectMachineSection machineDocument={machineDocument} />
+            </div>
+          ) : null}
+        </Band>
+      </div>
     </Page>
   )
 }

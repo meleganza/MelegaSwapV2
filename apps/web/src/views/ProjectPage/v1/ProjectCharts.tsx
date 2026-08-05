@@ -1,5 +1,6 @@
 /**
- * Section 4 — Charts (indexed candles only).
+ * Charts — indexed candles only.
+ * UI windows: 1H / 24H / 7D / 30D mapped onto indexer intervals (1H / 1D).
  */
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -7,11 +8,11 @@ import dynamic from 'next/dynamic'
 import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import { formatPrice } from '../presentation/humanLabels'
 import { isChartSupported } from './helpers'
-import { Band, BandHead, BandMeta, BandTitle, Grid, Muted, pp } from './theme'
-import { Metric, indexed, live, UNAVAILABLE } from './Metric'
+import { Band, BandHead, BandMeta, BandTitle, Muted, pp } from './theme'
 
 const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartPanel'), {
   ssr: false,
@@ -52,10 +53,13 @@ const PriceLine = styled.div`
   font-variant-numeric: tabular-nums;
 `
 
-const TIMEFRAMES = [
-  { id: '1H' as const, label: '1H' },
-  { id: '4H' as const, label: '4H' },
-  { id: '1D' as const, label: '1D' },
+type UiWindow = '1H' | '24H' | '7D' | '30D'
+
+const TIMEFRAMES: { id: UiWindow; label: string; interval: OhlcvCandle['interval']; limit: number }[] = [
+  { id: '1H', label: '1H', interval: '1H', limit: 2 },
+  { id: '24H', label: '24H', interval: '1H', limit: 24 },
+  { id: '7D', label: '7D', interval: '1D', limit: 7 },
+  { id: '30D', label: '30D', interval: '1D', limit: 30 },
 ]
 
 interface Props {
@@ -64,7 +68,8 @@ interface Props {
 }
 
 const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
-  const [interval, setInterval] = useState<'1H' | '4H' | '1D'>('1H')
+  const [windowId, setWindowId] = useState<UiWindow>('24H')
+  const tf = TIMEFRAMES.find((t) => t.id === windowId) ?? TIMEFRAMES[1]
   const supported = isChartSupported(slug, marketsDocument)
   const preferred = marketsDocument.preferredMarkets[0]
   const pairLabel =
@@ -74,12 +79,12 @@ const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
         ? `${preferred.baseSymbol} / ${preferred.quoteSymbol}`
         : 'Project pair'
 
-  const { chartEntries, status } = useIndexerCandles(supported ? MARCO_WBNB_PAIR_BSC : undefined, interval)
+  const { chartEntries, status } = useIndexerCandles(supported ? MARCO_WBNB_PAIR_BSC : undefined, tf.interval)
 
-  const pairPrices = useMemo(
-    () => chartEntries.map((c) => ({ time: String(c.time), value: c.close })),
-    [chartEntries],
-  )
+  const pairPrices = useMemo(() => {
+    const sliced = chartEntries.slice(-tf.limit)
+    return sliced.map((c) => ({ time: String(c.time), value: c.close }))
+  }, [chartEntries, tf.limit])
 
   const latestClose = pairPrices.length ? pairPrices[pairPrices.length - 1]?.value : null
   const priceText = formatPrice(latestClose)
@@ -87,20 +92,9 @@ const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
   return (
     <Band aria-labelledby="pp-v1-charts" data-project-section="charts" data-testid="project-v1-charts">
       <BandHead>
-        <BandTitle id="pp-v1-charts">Charts</BandTitle>
+        <BandTitle id="pp-v1-charts">Chart</BandTitle>
         <BandMeta>{supported ? 'indexed candles' : 'unavailable'}</BandMeta>
       </BandHead>
-      <Grid $cols={5} style={{ marginBottom: 8 }}>
-        <Metric
-          label="Price"
-          value={priceText || 'Unavailable'}
-          provenance={priceText ? live('melega-dex-index', status) : UNAVAILABLE}
-        />
-        <Metric label="Volume" value="Unavailable" provenance={UNAVAILABLE} />
-        <Metric label="Liquidity" value="See Live Market" provenance={indexed('project-page-cross-ref')} />
-        <Metric label="Market Cap" value="Unavailable" provenance={UNAVAILABLE} />
-        <Metric label="Holders" value="Unavailable" provenance={UNAVAILABLE} />
-      </Grid>
       {!supported ? (
         <Muted>
           Indexed price chart is not available yet for this project. Charts render when a supported Melega
@@ -109,19 +103,20 @@ const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
       ) : (
         <>
           <Muted>
-            {pairLabel} · Indexed candles only · timeframe {interval}
+            {pairLabel} · Indexed candles only · {windowId}
           </Muted>
           {priceText ? <PriceLine>{priceText}</PriceLine> : <Muted>Not available yet</Muted>}
-          <Timeframes role="group" aria-label="Chart timeframe">
-            {TIMEFRAMES.map((tf) => (
+          <Timeframes role="group" aria-label="Chart timeframe" data-testid="project-v1-chart-timeframes">
+            {TIMEFRAMES.map((item) => (
               <TfButton
-                key={tf.id}
+                key={item.id}
                 type="button"
-                aria-pressed={interval === tf.id}
-                $active={interval === tf.id}
-                onClick={() => setInterval(tf.id)}
+                aria-pressed={windowId === item.id}
+                $active={windowId === item.id}
+                data-testid={`project-v1-chart-tf-${item.id.toLowerCase()}`}
+                onClick={() => setWindowId(item.id)}
               >
-                {tf.label}
+                {item.label}
               </TfButton>
             ))}
           </Timeframes>

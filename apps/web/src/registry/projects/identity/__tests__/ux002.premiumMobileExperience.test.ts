@@ -22,16 +22,18 @@ describe('UX002 premium Project Page V1 IA', () => {
     expect(shell).toContain('data-project-section="featured-promotion"')
   })
 
-  it('section order places trading before project narrative', () => {
+  it('section order places in-hero Smart Swap, then market, chart, project', () => {
     const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
-    const marketIdx = shell.indexOf('data-project-section="live-market"')
+    const heroIdx = shell.indexOf('data-project-section="identity-hero"')
     const tradingCompIdx = shell.indexOf('<ProjectTradingEmbed')
+    const marketIdx = shell.indexOf('data-project-section="live-market"')
     const chartsCompIdx = shell.indexOf('<ProjectCharts')
     const projectIdx = shell.indexOf('data-project-section="project"')
     const featuredIdx = shell.indexOf('data-project-section="featured-promotion"')
-    expect(marketIdx).toBeGreaterThan(-1)
-    expect(tradingCompIdx).toBeGreaterThan(marketIdx)
-    expect(chartsCompIdx).toBeGreaterThan(tradingCompIdx)
+    expect(heroIdx).toBeGreaterThan(-1)
+    expect(tradingCompIdx).toBeGreaterThan(heroIdx)
+    expect(marketIdx).toBeGreaterThan(tradingCompIdx)
+    expect(chartsCompIdx).toBeGreaterThan(marketIdx)
     expect(projectIdx).toBeGreaterThan(chartsCompIdx)
     expect(featuredIdx).toBeGreaterThan(projectIdx)
   })

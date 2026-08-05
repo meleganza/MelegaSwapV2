@@ -1,0 +1,25 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_HERO_AND_CONVERSION_REDESIGN",
+  "verifiedAt": "2026-08-05T05:19:32.078Z",
+  "viewports": [
+    {
+      "label": "390",
+      "width": 390,
+      "height": 844,
+      "pass": true
+    },
+    {
+      "label": "768",
+      "width": 768,
+      "height": 1024,
+      "pass": true
+    },
+    {
+      "label": "1280",
+      "width": 1280,
+      "height": 800,
+      "pass": true
+    }
+  ],
+  "pass": true
+}

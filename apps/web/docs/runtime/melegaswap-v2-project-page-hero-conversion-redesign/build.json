@@ -1,0 +1,7 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_HERO_AND_CONVERSION_REDESIGN",
+  "command": "yarn next build",
+  "result": "pass",
+  "pass": true,
+  "verifiedAt": "2026-08-05T05:19:32.080Z"
+}
