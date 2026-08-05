@@ -5,11 +5,7 @@
 
 import styled from 'styled-components'
 import type { SmartSwapFeeTransparency } from 'lib/smart-swap-fee-transparency'
-import {
-  MELEGA_TREASURY_WALLET_ADDRESS,
-  MELEGA_TREASURY_WALLET_LABEL,
-  DEX_ECONOMIC_AUTHORITY,
-} from 'config/dexEconomicAuthority'
+import { DEX_ECONOMIC_AUTHORITY } from 'config/dexEconomicAuthority'
 
 const UNAVAILABLE = '—'
 
@@ -66,16 +62,12 @@ const Note = styled.p`
   color: #9ca3af;
 `
 
-/** Compact fee rows: Protocol fee → Fee destination → Execution. */
+/** Compact fee rows for public swap details: Protocol fee (+ gas/execution). No treasury wallet. */
 function compactFeeRows(model: SmartSwapFeeTransparency): Array<{ label: string; value: string }> {
   const protocol =
     model.flowSteps.find((s) => /protocol fee/i.test(s.label))?.value ||
     model.protocolFee.label ||
     UNAVAILABLE
-  const destination =
-    model.flowSteps.find((s) => /fee destination|destination/i.test(s.label))?.value ||
-    model.treasuryDestination ||
-    `${MELEGA_TREASURY_WALLET_LABEL} (${MELEGA_TREASURY_WALLET_ADDRESS})`
   const execution =
     model.flowSteps.find((s) => /execution/i.test(s.label))?.value ||
     DEX_ECONOMIC_AUTHORITY.executionModel
@@ -84,10 +76,14 @@ function compactFeeRows(model: SmartSwapFeeTransparency): Array<{ label: string;
   const rows = [
     ...(estimatedGas ? [{ label: 'Estimated gas', value: estimatedGas }] : []),
     { label: 'Protocol fee', value: protocol },
-    { label: 'Fee destination', value: destination },
+    // Fee destination (treasury wallet) omitted from public swap details pre-transaction.
     { label: 'Execution', value: execution },
   ]
   return rows
+}
+
+function publicFlowSteps(model: SmartSwapFeeTransparency) {
+  return model.flowSteps.filter((s) => !/fee destination|destination/i.test(s.label))
 }
 
 export type SmartSwapFeeTransparencyPanelProps = {
@@ -107,7 +103,6 @@ export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartS
         data-fee-state={model.state}
         data-fee-source={model.source}
         data-fee-compact="true"
-        data-fee-beneficiary={MELEGA_TREASURY_WALLET_ADDRESS}
       >
         <Title>Fee</Title>
         <Flow aria-label="Fee transparency">
@@ -128,7 +123,6 @@ export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartS
       data-fee-state={model.state}
       data-fee-source={model.source}
       data-fee-compact="false"
-      data-fee-beneficiary={MELEGA_TREASURY_WALLET_ADDRESS}
     >
       <Title>Fee transparency</Title>
 
@@ -147,7 +141,7 @@ export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartS
         </>
       ) : (
         <Flow aria-label="Fee transparency flow">
-          {model.flowSteps.map((step, i) => (
+          {publicFlowSteps(model).map((step, i) => (
             <Step key={`${step.label}-${i}`}>
               <Label>{step.label}</Label>
               <Value>{step.value || UNAVAILABLE}</Value>

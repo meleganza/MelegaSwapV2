@@ -173,34 +173,20 @@ export const PassportV1Shell: React.FC = () => {
         <Band data-passport-section="hero" data-testid="passport-section-hero">
           <HeroGrid>
             <HeroLeft>
-              <BrandLabel>MARCO Passport</BrandLabel>
+              <BrandLabel>Portfolio</BrandLabel>
               <HeroTitle>
                 {id.walletConnected
-                  ? id.passportExists
-                    ? id.handleDisplay || 'MARCO Passport'
-                    : 'Wallet-linked Passport'
-                  : 'Your Melega ecosystem identity'}
+                  ? 'Your Portfolio'
+                  : 'Connect to view your portfolio'}
               </HeroTitle>
               <Mono data-testid="passport-wallet-address">
                 {id.walletConnected ? id.shortenedWallet : 'No wallet connected'}
               </Mono>
               <Row>
-                <Chip $tone="mute">Subject · {id.accountType}</Chip>
-                <Chip $on={id.passportExists} $tone={id.passportExists ? 'ok' : 'mute'}>
-                  {id.passportExists ? 'Passport active' : 'No Passport yet'}
-                </Chip>
-                <Chip $tone={verificationTone(id.verificationState)}>{id.verificationLabel}</Chip>
                 <Chip $tone="mute">{chainLabel(model.chainId)}</Chip>
-                {id.memberSince && id.memberSince !== '—' ? (
-                  <Chip $tone="mute">Member since {id.memberSince}</Chip>
-                ) : null}
-                {id.passportExists && id.passportIdentifier ? (
-                  <Chip $on>Tier · factual only when linked</Chip>
-                ) : null}
               </Row>
               <Muted>
-                Personal ecosystem identity and portfolio — not a developer console, not a generic
-                wallet dashboard.
+                Total value, liquidity, farms, pools, and positions — simple portfolio view.
               </Muted>
               <Row data-testid="passport-hero-ctas">
                 {!id.walletConnected ? (
@@ -240,11 +226,10 @@ export const PassportV1Shell: React.FC = () => {
             </HeroLeft>
             <HeroRight data-testid="passport-visual">
               <MelegaLogoSvg size={64} />
-              <VisualLabel>MARCO identity</VisualLabel>
+              <VisualLabel>Portfolio</VisualLabel>
               <Chip $on={id.walletConnected} $tone={id.walletConnected ? 'ok' : 'mute'}>
-                {id.walletConnected ? 'Wallet ownership linked' : 'Awaiting wallet'}
+                {id.walletConnected ? 'Wallet connected' : 'Awaiting wallet'}
               </Chip>
-              {/* QR only when a valid public Passport route exists — none in production today. */}
             </HeroRight>
           </HeroGrid>
         </Band>
@@ -579,42 +564,36 @@ export const PassportV1Shell: React.FC = () => {
           )}
         </Band>
 
-{/* SECTION 6 — PASSPORT BENEFITS */}
+{/* SECTION 6 — PORTFOLIO SUMMARY */}
         <Band data-passport-section="benefits" data-testid="passport-section-benefits">
           <BandHead>
-            <BandTitle>Passport Benefits</BandTitle>
-            <BandMeta>Supported / labelled upcoming</BandMeta>
+            <BandTitle>Portfolio</BandTitle>
+            <BandMeta>What you hold on Melega</BandMeta>
           </BandHead>
           <BenefitList>
             <li>
-              <strong>Ecosystem identity</strong> — MARCO Passport as your Melega subject record.
+              <strong>Total value</strong> — wallet holdings when priced.
             </li>
             <li>
-              <strong>Wallet-linked ownership</strong> — positions scoped to the connected wallet.
+              <strong>Liquidity</strong> — LP positions across pairs.
             </li>
             <li>
-              <strong>Project management</strong> — verified control surfaces via List + Project Page.
+              <strong>Farms</strong> — staked LP and pending rewards.
             </li>
             <li>
-              <strong>Position aggregation</strong> — Liquidity, Farms, and Pools kept domain-separated.
+              <strong>Pools</strong> — staking pool positions.
             </li>
             <li>
-              <strong>Tier-based benefits</strong> — shown only when a factual Passport tier is linked.
-            </li>
-            <li>
-              <strong>M-Credits access</strong> — {model.mCreditsNote}
+              <strong>Positions</strong> — domain-separated, factual only.
             </li>
           </BenefitList>
-          <Muted style={{ marginTop: 8 }} data-testid="passport-mcredits-status">
-            M-Credits status: {model.mCreditsStatus}
-          </Muted>
         </Band>
 
-{/* SECTION 7 — ACCOUNT & TRUST */}
+{/* SECTION 7 — ACCOUNT */}
         <Band data-passport-section="account" data-testid="passport-section-account">
           <BandHead>
-            <BandTitle>Account & Trust</BandTitle>
-            <BandMeta>Useful controls only</BandMeta>
+            <BandTitle>Account</BandTitle>
+            <BandMeta>Wallet session</BandMeta>
           </BandHead>
           <Grid $cols={3}>
             <Metric
@@ -624,19 +603,9 @@ export const PassportV1Shell: React.FC = () => {
             />
             <Metric label="Chain" value={chainLabel(model.chainId)} source="active chain id" />
             <Metric
-              label="Passport verification"
-              value={id.verificationLabel}
-              source={id.sourceAvailable ? 'Identity runtime' : 'Identity runtime unavailable'}
-            />
-            <Metric
-              label="Public profile"
-              value={id.passportExists ? 'Passport-linked' : UNAVAILABLE}
-              source="No public profile route until Passport enrollment ships"
-            />
-            <Metric
-              label="Linked wallets"
-              value={id.connectedWalletsLabel}
-              source="Active session only — multi-wallet linking unsupported"
+              label="Positions"
+              value={id.walletConnected ? 'Live when indexed' : 'Connect wallet'}
+              source="Portfolio domains"
             />
           </Grid>
           <Row style={{ marginTop: 10 }}>

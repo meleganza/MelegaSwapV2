@@ -147,7 +147,7 @@ describe('SMART_SWAP_MODULE_004 Fee Transparency', () => {
     )
   })
 
-  it('panel source forbids obsolete Smart Swap fee copy', () => {
+  it('panel source forbids obsolete Smart Swap fee copy and hides treasury wallet from public rows', () => {
     const panel = readFileSync(
       path.join(WEB, 'src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/SmartSwapFeeTransparencyPanel.tsx'),
       'utf8',
@@ -155,7 +155,8 @@ describe('SMART_SWAP_MODULE_004 Fee Transparency', () => {
     expect(panel).not.toContain('Treasury Runtime')
     expect(panel).not.toContain('Allocated through')
     expect(panel).not.toContain('KERL attribution')
-    expect(panel).toContain('Fee destination')
-    expect(panel).toContain('MELEGA_TREASURY_WALLET')
+    expect(panel).toContain('Protocol fee')
+    expect(panel).toContain('Fee destination (treasury wallet) omitted')
+    expect(panel).not.toMatch(/label: 'Fee destination'/)
   })
 })

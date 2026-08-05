@@ -542,6 +542,7 @@ export const DexHomeScreen: React.FC = () => {
         meta: p.resources?.tokens?.[0]?.symbol || p.slug,
         href: `/@${p.slug}`,
         metric: 'Indexed',
+        chainId: p.supportedChains?.[0] ?? p.resources?.tokens?.[0]?.chainId ?? 56,
       }))
   }, [])
 
@@ -724,7 +725,14 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
+                      <RowName>
+                        {row.name}
+                        {row.chainId != null ? (
+                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
+                            <MelegaExploreChainBadge chainId={row.chainId} />
+                          </span>
+                        ) : null}
+                      </RowName>
                       <RowMeta>{row.meta}</RowMeta>
                     </RowMain>
                     <RowMetric>{row.metric}</RowMetric>
