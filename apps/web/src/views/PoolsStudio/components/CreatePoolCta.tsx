@@ -35,24 +35,21 @@ const Card = styled.section`
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background: #141414;
-  border: 1px solid rgba(244, 196, 48, 0.45);
-  border-radius: 16px;
-  padding: 20px 22px 18px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 8px 16px 18px;
   display: flex;
   flex-direction: column;
   overflow: visible;
   height: auto;
 
   @media (max-width: 767px) {
-    padding: 14px;
-    border-radius: 14px;
+    padding: 4px 12px 16px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    margin-bottom: 24px;
-    scroll-margin-top: 16px;
-    scroll-margin-bottom: 120px;
+    margin-bottom: 8px;
   }
 `
 
@@ -312,13 +309,19 @@ const ProgressTrack = styled.div`
   }
 `
 
-const StepNode = styled.div<{ $active?: boolean; $completed?: boolean }>`
+const StepNode = styled.button<{ $active?: boolean; $completed?: boolean }>`
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   flex: 1;
   min-width: 0;
+  padding: 0;
+  color: inherit;
 
   @media (max-width: 767px) {
     flex: 0 0 auto;
@@ -1045,11 +1048,13 @@ export const CreatePoolCta: React.FC = () => {
       data-r723-create-pool-expanded
       data-ps-create-pool-expanded="true"
       data-ps-create-pool-permanently-expanded
+      data-create-pool-accordion="true"
+      data-melega-modal-system="true"
     >
       <ExpandedHeaderRow>
         <Header style={{ marginBottom: 0, flex: 1, minWidth: 0 }}>
-          <Title>Create Pool</Title>
-          <Subtitle>Configure reward token, stake token, emission, lock and safety parameters.</Subtitle>
+          <Title style={{ fontSize: 15 }}>Create Pool</Title>
+          <Subtitle>Configure stake, rewards, schedule and safety in compact sections.</Subtitle>
         </Header>
         <ReviewNowBtn type="button" data-ps-create-pool-review-now onClick={jumpToReview}>
           Review Pool Creation
@@ -1168,7 +1173,16 @@ export const CreatePoolCta: React.FC = () => {
             return (
               <React.Fragment key={label}>
                 {i > 0 ? <Connector $filled={step > idx} data-ps-wizard-connector /> : null}
-                <StepNode data-ps-wizard-step={idx} data-ps-wizard-step-active={active || undefined}>
+                <StepNode
+                  type="button"
+                  data-ps-wizard-step={idx}
+                  data-ps-wizard-step-active={active || undefined}
+                  onClick={() => {
+                    setAnimDir(idx >= step ? 'next' : 'prev')
+                    setStep(idx)
+                    if (idx === 3) setStep3Page(0)
+                  }}
+                >
                   <StepCircle $active={active} $completed={completed}>
                     {completed ? '✓' : idx}
                   </StepCircle>

@@ -48,3 +48,11 @@ export {
 } from './StudioButtons'
 export { MelegaStudioContent } from './StudioShell'
 export { MelegaStudioPanel, MelegaStudioPanelTitle } from './StudioShell'
+export {
+  MelegaModal,
+  MelegaAccordionSection,
+  melegaModalTokens,
+  type MelegaModalProps,
+  type MelegaModalSize,
+  type MelegaAccordionSectionProps,
+} from './Modal'

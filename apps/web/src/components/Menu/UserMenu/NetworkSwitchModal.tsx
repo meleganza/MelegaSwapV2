@@ -2,6 +2,7 @@ import { AtomBox } from '@pancakeswap/ui/components/AtomBox'
 import { Heading, ModalV2, ModalWrapper, Text, ModalV2Props } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
+import { melegaModalTokens } from 'design-system/melega'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
@@ -11,7 +12,8 @@ import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  padding: 2px 2px 4px;
 `
 
 const Section = styled.section`
@@ -25,7 +27,7 @@ const SectionLabel = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 2px;
+  padding: 0 4px;
 `
 
 const SectionTitle = styled(Text)`
@@ -45,11 +47,7 @@ const SectionHint = styled(Text)`
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-
-  @media screen and (min-width: 420px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  gap: 8px;
 `
 
 const ChainCard = styled.button<{ $active: boolean }>`
@@ -60,20 +58,29 @@ const ChainCard = styled.button<{ $active: boolean }>`
   gap: 8px;
   width: 100%;
   margin: 0;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 10px 10px;
+  border-radius: 12px;
   border: 1px solid
     ${({ theme, $active }) => ($active ? 'rgba(244, 196, 48, 0.55)' : theme.colors.cardBorder)};
   background: ${({ theme, $active }) =>
-    $active ? 'rgba(244, 196, 48, 0.1)' : theme.colors.background};
-  box-shadow: ${({ $active }) => ($active ? 'inset 0 0 0 1px rgba(244, 196, 48, 0.25)' : 'none')};
+    $active ? 'rgba(244, 196, 48, 0.12)' : 'rgba(255,255,255,0.03)'};
+  box-shadow: ${({ $active }) =>
+    $active
+      ? 'inset 0 0 0 1px rgba(244, 196, 48, 0.22), 0 6px 16px rgba(0,0,0,0.28)'
+      : '0 2px 8px rgba(0,0,0,0.18)'};
   cursor: pointer;
   text-align: left;
-  min-height: 44px;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  min-height: 48px;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover:not(:disabled) {
     border-color: rgba(244, 196, 48, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 `
 
@@ -129,12 +136,23 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
     <ModalV2 closeOnOverlayClick {...rest}>
       <ModalWrapper
         onDismiss={props.onDismiss}
-        style={{ overflow: 'visible', border: 'none', maxWidth: '440px', width: 'min(440px, 100%)' }}
+        style={{
+          overflow: 'visible',
+          border: melegaModalTokens.border,
+          borderRadius: melegaModalTokens.radius,
+          background: melegaModalTokens.surface,
+          boxShadow: melegaModalTokens.shadow,
+          maxWidth: melegaModalTokens.maxWidthSm,
+          width: `min(${melegaModalTokens.maxWidthSm}, 100%)`,
+          padding: '4px',
+        }}
         data-testid="network-switch-modal"
+        data-melega-modal="true"
+        data-melega-modal-size="sm"
       >
         <AtomBox position="relative">
-          <AtomBox py="16px" px="14px">
-            <Heading color="text" as="h4" mb="12px" style={{ fontSize: 16 }}>
+          <AtomBox py="18px" px="16px">
+            <Heading color="text" as="h4" mb="14px" style={{ fontSize: 17, fontWeight: 750 }}>
               {t('Switch Network')}
             </Heading>
 

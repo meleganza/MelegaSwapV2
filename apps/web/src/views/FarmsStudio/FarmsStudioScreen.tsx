@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { typography } from 'design-system/melega'
+import { MelegaModal, typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
@@ -47,41 +47,6 @@ const Content = styled.div`
     padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
     gap: 12px;
   }
-`
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 10040;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  overflow-y: auto;
-  padding: 24px 12px 40px;
-`
-
-const ModalShell = styled.div`
-  width: min(720px, 100%);
-  margin-top: 24px;
-  position: relative;
-`
-
-const CloseBtn = styled.button`
-  appearance: none;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.55);
-  color: #f5f5f5;
-  font-size: 12px;
-  font-weight: 700;
 `
 
 /**
@@ -159,23 +124,26 @@ export const FarmsStudioScreen: React.FC = () => {
             <FarmsExploreFarmsModule />
           </DataSurfaceErrorBoundary>
         </Content>
-        {createOpen ? (
-          <ModalOverlay data-testid="create-farm-modal" role="dialog" aria-modal="true" aria-label="Create Farm">
-            <ModalShell>
-              <CloseBtn type="button" data-testid="create-farm-modal-close" onClick={closeCreate}>
-                Close
-              </CloseBtn>
-              <div id="create-farm" data-fs-create-farm-section>
-                <DataSurfaceErrorBoundary
-                  surface="Create Farm"
-                  userReason="Create Farm configuration is temporarily unavailable."
-                >
-                  <CreateFarmWorkspace />
-                </DataSurfaceErrorBoundary>
-              </div>
-            </ModalShell>
-          </ModalOverlay>
-        ) : null}
+        <MelegaModal
+          open={createOpen}
+          onClose={closeCreate}
+          title="Create Farm"
+          subtitle="Configure pair, rewards, budget and duration."
+          size="lg"
+          testId="create-farm-modal"
+          closeTestId="create-farm-modal-close"
+          ariaLabel="Create Farm"
+          flush
+        >
+          <div id="create-farm" data-fs-create-farm-section>
+            <DataSurfaceErrorBoundary
+              surface="Create Farm"
+              userReason="Create Farm configuration is temporarily unavailable."
+            >
+              <CreateFarmWorkspace />
+            </DataSurfaceErrorBoundary>
+          </div>
+        </MelegaModal>
       </FarmsRuntimeProvider>
     </Root>
   )
