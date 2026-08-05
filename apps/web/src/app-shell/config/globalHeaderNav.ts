@@ -207,11 +207,11 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     id: 'passport',
     label: 'Portfolio',
     kind: 'link',
-    href: '/passport',
+    href: '/portfolio',
     match: (p) =>
+      p.startsWith('/portfolio') ||
       p.startsWith('/passport') ||
       p.startsWith('/command-center') ||
-      p.startsWith('/portfolio') ||
       p.startsWith('/workspace'),
   },
 ]

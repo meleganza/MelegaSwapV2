@@ -113,9 +113,11 @@ export const shellNavigation: ShellNavSection[] = [
       {
         id: 'command-center',
         label: 'Portfolio',
-        href: '/passport',
+        href: '/portfolio',
         icon: 'command',
         match: (p) =>
+          p === '/portfolio' ||
+          p.startsWith('/portfolio/') ||
           p === '/passport' ||
           p.startsWith('/passport/') ||
           p === '/command-center' ||
@@ -174,12 +176,12 @@ export const shellBottomNavItems = [
   {
     id: 'passport',
     label: 'Portfolio',
-    href: '/passport',
+    href: '/portfolio',
     icon: 'command' as MelegaNavIcon,
     match: (p: string) =>
+      p.startsWith('/portfolio') ||
       p.startsWith('/passport') ||
       p.startsWith('/command-center') ||
-      p.startsWith('/portfolio') ||
       p.startsWith('/workspace'),
   },
 ]
