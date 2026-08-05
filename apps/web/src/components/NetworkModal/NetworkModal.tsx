@@ -5,7 +5,6 @@ import { ChainId } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import { useNetwork } from 'wagmi'
 import { atom, useAtom } from 'jotai'
-import { useSwitchNetworkLocal } from 'hooks/useSwitchNetwork'
 import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
 import { getMelegaChain } from 'config/melegaChainRegistry'
 import { UnsupportedNetworkModal } from './UnsupportedNetworkModal'
@@ -48,15 +47,10 @@ export const NetworkModal = ({ pageSupportedChains = SUPPORT_MULTI_CHAINS }: { p
     return !supported.includes(chainId)
   }, [allowPreparingOnDeployment, chainId, isPreparingMelega, pathname, supported])
 
-  const switchNetworkLocal = useSwitchNetworkLocal()
-
-  if (isPageNotSupported && isBNBOnlyPage) {
-    switchNetworkLocal(ChainId.BSC)
-  }
-
   if (['/', '/about', '/bitcoin-funds', 'venture-funds', '/venture-funds', '/exchange'].includes(pathname)) return null
 
-  if (isBNBOnlyPage) return null
+  // Never auto-force BSC. Unsupported pages surface an actionable chain picker.
+  if (isBNBOnlyPage && !isPageNotSupported) return null
 
   if ((chain?.unsupported ?? false) || isPageNotSupported) {
     // Never hard-block Founder Avalanche Router prep behind UnsupportedNetworkModal

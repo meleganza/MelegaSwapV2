@@ -88,7 +88,10 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
             variant="secondary"
             onClick={() =>
               logout().then(() => {
-                switchNetworkLocal(ChainId.BSC)
+                // Respect page-supported chains — never force BSC fallback.
+                const preferred =
+                  supportedMainnetChains[0]?.id ?? pageSupportedChains?.[0] ?? ChainId.BSC
+                switchNetworkLocal(preferred)
               })
             }
           >

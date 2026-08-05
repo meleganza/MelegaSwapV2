@@ -1,0 +1,40 @@
+{
+  "scans": [
+    {
+      "route": "/",
+      "switchToBscNetwork": false,
+      "shimmer": false,
+      "invalidTag": false,
+      "pass": true
+    },
+    {
+      "route": "/farms",
+      "switchToBscNetwork": false,
+      "shimmer": false,
+      "invalidTag": false,
+      "pass": true
+    },
+    {
+      "route": "/pools",
+      "switchToBscNetwork": false,
+      "shimmer": false,
+      "invalidTag": false,
+      "pass": true
+    },
+    {
+      "route": "/swap",
+      "switchToBscNetwork": false,
+      "shimmer": false,
+      "invalidTag": false,
+      "pass": true
+    },
+    {
+      "route": "/project-hq/marco",
+      "switchToBscNetwork": false,
+      "shimmer": false,
+      "invalidTag": false,
+      "pass": true
+    }
+  ],
+  "pass": true
+}

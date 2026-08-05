@@ -332,15 +332,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
 
   const closeMenus = useCallback(() => setOpenMenu(null), [])
 
-  const navigatePrimary = useCallback(
-    (href: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return
-      event.preventDefault()
-      void router.push(href)
-    },
-    [router],
-  )
-
   useEffect(() => {
     closeMenus()
   }, [pathname, router.asPath, closeMenus])
@@ -377,7 +368,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                     data-compact-hide={item.compactHide ? 'true' : undefined}
                     aria-current={active ? 'page' : undefined}
                     data-testid={`melega-header-nav-${item.id}`}
-                    onClick={navigatePrimary(item.href)}
+                    prefetch={false}
                   >
                     {item.label}
                     {item.badge === 'NEW' ? <NewBadge aria-label="New">NEW</NewBadge> : null}

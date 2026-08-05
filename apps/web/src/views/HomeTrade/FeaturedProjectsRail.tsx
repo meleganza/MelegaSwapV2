@@ -256,13 +256,17 @@ export const FeaturedProjectsRail: React.FC = () => {
   const { rowsBySlug } = useFeaturedProjectMarkets()
 
   // Founder amendment P0-2: Trade navigates to the project page swap embed —
-  // it must never keep the shopper on Home. `href`/slug is the canonical
-  // project identity; the destination carries the trade intent as a query.
+  // it must never keep the shopper on Home. Client nav must use the filesystem
+  // route `/project-hq/[slug]` (rewrite-only `/@slug` leaves Home mounted).
   const onTrade = useCallback(
     (p: (typeof cards)[number]) => {
-      if (!p.address || !p.href) return
+      if (!p.address || !p.slug) return
       const q = `inputCurrency=BNB&outputCurrency=${p.address}&focus=swap&source=featured-home`
-      void router.push(`${p.href}?${q}`)
+      const href = `/project-hq/${p.slug}?${q}`
+      const as = `/@${p.slug}?${q}`
+      void router.push(href, as).catch(() => {
+        window.location.assign(href)
+      })
     },
     [router],
   )
@@ -344,13 +348,13 @@ export const FeaturedProjectsRail: React.FC = () => {
               <Actions>
                 <TradeBtn
                   type="button"
-                  disabled={!p.address || !p.href}
+                  disabled={!p.address || !p.slug}
                   onClick={() => onTrade(p)}
                   data-testid={`featured-trade-${p.slug}`}
                 >
                   Trade
                 </TradeBtn>
-                <ViewLink href={p.href} data-testid={`featured-view-${p.slug}`}>
+                <ViewLink href={`/project-hq/${p.slug}`} data-testid={`featured-view-${p.slug}`}>
                   View Project
                 </ViewLink>
               </Actions>

@@ -20,14 +20,19 @@ function load(rel: string) {
 }
 
 describe('Founder amendment P0-2 — Featured Trade routing', () => {
-  it('FeaturedProjectsRail Trade pushes to /@slug with swap-focus query, never a Home-only swap', () => {
+  it('FeaturedProjectsRail Trade pushes to project-hq swap embed, never a Home-only swap', () => {
     const src = load('FeaturedProjectsRail.tsx')
     expect(src).toContain("`inputCurrency=BNB&outputCurrency=${p.address}&focus=swap&source=featured-home`")
-    expect(src).toContain('router.push(`${p.href}?${q}`)')
-    // Trade must be disabled until a real project identity (address + href) resolves.
-    expect(src).toContain('disabled={!p.address || !p.href}')
-    // View Project keeps the bare project href (no forced swap focus/query).
-    expect(src).toMatch(/<ViewLink href={p\.href}/)
+    // Filesystem route for reliable client mount; pretty /@slug kept as `as`.
+    expect(src).toContain('`/project-hq/${p.slug}?${q}`')
+    expect(src).toContain("router.push(href, as)")
+    expect(src).not.toContain('router.push(`${p.href}?${q}`)')
+    // Trade must be disabled until a real project identity (address + slug) resolves.
+    expect(src).toContain('disabled={!p.address || !p.slug}')
+    // View Project uses filesystem route (rewrite-only /@ soft-nav leaves Home mounted).
+    // Do NOT pass styled-components `as={p.href}` — that treats `/@slug` as a DOM tag and crashes Home.
+    expect(src).toContain('href={`/project-hq/${p.slug}`}')
+    expect(src).not.toMatch(/ViewLink[^>]*\sas=\{p\.href\}/)
   })
 
   it('featuredProjectsCatalog marks entries without a canonical project identity ineligible for rotation', () => {

@@ -24,6 +24,8 @@ const Bar = styled.div`
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   box-sizing: border-box;
   overflow: hidden;
+  overflow-x: hidden;
+  max-width: 100vw;
   display: flex;
   align-items: center;
 
@@ -50,9 +52,19 @@ const Inner = styled.div`
     padding: 0 ${ds001Layout.outerMargin};
   }
 
+  /* Lock ticker inside viewport — never expand page horizontal scroll */
+  > * {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
   /* Lock MelegaTicker to shell geometry without a second ticker implementation */
   [data-melega-ticker] {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 100% !important;
     min-height: 0 !important;
     max-height: 100% !important;
@@ -63,17 +75,11 @@ const Inner = styled.div`
     overflow: hidden;
   }
 
-  @media (max-width: 1023px) {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
+  /* Horizontal scroll stays inside the ticker track, never the document */
+  [data-melega-ticker] [data-melega-ticker-track],
+  [data-melega-ticker] > div {
+    max-width: 100%;
+    min-width: 0;
   }
 `
 

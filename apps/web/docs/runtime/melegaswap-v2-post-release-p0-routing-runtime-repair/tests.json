@@ -1,0 +1,9 @@
+{
+  "mission": "MELEGASWAP_V2_POST_RELEASE_P0_ROUTING_AND_RUNTIME_REPAIR",
+  "result": "pass",
+  "suites": [
+    "postReleaseP0RoutingRuntimeRepair",
+    "founderAmendmentP02FeaturedTradeRouting"
+  ],
+  "pass": true
+}
