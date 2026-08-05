@@ -8,8 +8,16 @@ import { useTokenDataSWR } from 'state/info/hooks'
 import { useHolderCount } from 'lib/holder-count'
 import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import { useDexTrendingRankings } from 'views/HomeTrade/useDexTrendingRankings'
+import {
+  formatFeaturedChange,
+  formatFeaturedLiquidity,
+  formatFeaturedPrice,
+  formatFeaturedVolume,
+  useFeaturedProjectMarkets,
+} from 'views/HomeTrade/useFeaturedProjectMarkets'
+import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
-import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
+import type { ProjectFilterChip, ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
   buildFeaturedProject,
@@ -82,11 +90,77 @@ function formatChangePct(pct?: number | null): string | undefined {
   return `${sign}${pct.toFixed(2)}%`
 }
 
+function patchMetric(metrics: ProjectMetric[], label: string, value: string): ProjectMetric[] {
+  if (!value || value === '—' || value === 'Unavailable') return metrics
+  let found = false
+  const next = metrics.map((m) => {
+    if (m.label !== label && !(label === 'Volume' && m.label === 'Volume 24h')) return m
+    found = true
+    return { ...m, value, tone: 'green' as const }
+  })
+  return found ? next : next
+}
+
+function enrichCardMetrics(
+  base: ProjectPreviewCard,
+  opts: {
+    mover?: { priceUsd?: number; change24h?: { pct?: number | null }; volume24h?: number }
+    featured?: import('lib/bsc-indexer/featuredMarkets').FeaturedMarketRow
+  },
+): ProjectPreviewCard {
+  let metrics = base.metrics
+  let priceDisplay = base.priceDisplay
+  let change24hPct = base.change24hPct
+  let change24hDisplay = base.change24hDisplay
+  let rankingLayer = base.rankingLayer
+
+  const featured = opts.featured
+  if (featured && featured.status !== 'UNAVAILABLE') {
+    const price = formatFeaturedPrice(featured)
+    if (price && price !== 'Price updating') priceDisplay = price
+    const liq = formatFeaturedLiquidity(featured)
+    if (liq && liq !== '—') metrics = patchMetric(metrics, 'Liquidity', liq)
+    const vol = formatFeaturedVolume(featured)
+    if (vol && vol !== '—' && vol !== 'No recent swaps') metrics = patchMetric(metrics, 'Volume', vol)
+    const change = formatFeaturedChange(featured)
+    if (!change.empty) {
+      change24hDisplay = change.text
+      change24hPct = featured.changePct
+      rankingLayer = rankingLayer ?? 'featured'
+    }
+  }
+
+  const mover = opts.mover
+  if (mover) {
+    priceDisplay = formatPriceUsd(mover.priceUsd) ?? priceDisplay
+    const pct = mover.change24h?.pct
+    const hasOrganicMove = pct != null && Number.isFinite(pct) && Math.abs(pct) > 0.0001
+    if (hasOrganicMove) {
+      change24hPct = pct
+      change24hDisplay = formatChangePct(pct)
+      rankingLayer = 'organic'
+    }
+    if (mover.volume24h != null && mover.volume24h > 0) {
+      metrics = patchMetric(metrics, 'Volume', formatUsdCompact(mover.volume24h))
+    }
+  }
+
+  return {
+    ...base,
+    metrics,
+    priceDisplay,
+    change24hPct,
+    change24hDisplay,
+    rankingLayer,
+  }
+}
+
 export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const [filter, setFilter] = useState<ProjectFilterChip>('All')
   const [searchQuery, setSearchQuery] = useState('')
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { rankedAssets } = useDexTrendingRankings()
+  const { rowsBySlug: featuredBySlug } = useFeaturedProjectMarkets()
 
   const enriched = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
 
@@ -128,16 +202,27 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       )
       const addr = base.contractAddress?.toLowerCase()
       const mover = addr ? trendingByAddress.get(addr) : undefined
-      if (!mover) return base
-      const pct = mover.change24h?.pct
-      const hasOrganicMove = pct != null && Number.isFinite(pct) && Math.abs(pct) > 0.0001
-      return {
-        ...base,
-        priceDisplay: formatPriceUsd(mover.priceUsd) ?? base.priceDisplay,
-        change24hPct: hasOrganicMove ? pct : base.change24hPct,
-        change24hDisplay: hasOrganicMove ? formatChangePct(pct) : base.change24hDisplay,
-        rankingLayer: hasOrganicMove ? ('organic' as const) : base.rankingLayer,
+      const featured = featuredBySlug[project.slug] ?? featuredBySlug[base.slug]
+      return enrichCardMetrics(base, { mover, featured })
+    })
+
+    // Prioritize cards with factual market signals (featured / price / volume).
+    canonical.sort((a, b) => {
+      const score = (c: ProjectPreviewCard) => {
+        let s = 0
+        if (c.featured) s += 100
+        if (c.priceDisplay && c.priceDisplay !== '—') s += 20
+        if (c.change24hDisplay && c.change24hDisplay !== '—') s += 10
+        const liq = c.metrics.find((m) => m.label === 'Liquidity')?.value
+        if (liq && liq !== '—' && liq !== 'Unavailable') s += 15
+        const vol = c.metrics.find((m) => m.label === 'Volume' || m.label === 'Volume 24h')?.value
+        if (vol && vol !== '—' && vol !== 'Unavailable') s += 15
+        return s
       }
+      return score(b) - score(a)
+    })
+    canonical.forEach((c, i) => {
+      c.rank = i + 1
     })
 
     const registryAddresses = new Set(
@@ -150,16 +235,11 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
         const card = mapIndexedAssetToPreviewCard(asset, canonical.length + index + 1)
         if (!card) return null
         const mover = trendingByAddress.get(asset.address.toLowerCase())
-        if (!mover) return card
-        const pct = mover.change24h?.pct
-        const hasOrganicMove = pct != null && Number.isFinite(pct) && Math.abs(pct) > 0.0001
-        return {
-          ...card,
-          priceDisplay: formatPriceUsd(mover.priceUsd) ?? card.priceDisplay,
-          change24hPct: hasOrganicMove ? pct : card.change24hPct,
-          change24hDisplay: hasOrganicMove ? formatChangePct(pct) : card.change24hDisplay,
-          rankingLayer: hasOrganicMove ? ('organic' as const) : card.rankingLayer,
-        }
+        const featured =
+          (asset.registrySlug && featuredBySlug[asset.registrySlug]) ||
+          featuredBySlug[card.slug] ||
+          undefined
+        return enrichCardMetrics(card, { mover, featured })
       })
       .filter((c): c is ProjectPreviewCard => Boolean(c))
 
@@ -167,7 +247,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       mapPendingToPreviewCard(pending, canonical.length + indexedExtras.length + index + 1),
     )
     return [...canonical, ...indexedExtras, ...pending]
-  }, [sorted, pendingRecords, enriched, liveMetrics, trendingByAddress])
+  }, [sorted, pendingRecords, enriched, liveMetrics, trendingByAddress, featuredBySlug])
 
   const filtered = useMemo(() => {
     const byChip = filterProjectsByChip(cards, sorted, filter)

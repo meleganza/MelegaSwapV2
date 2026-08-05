@@ -1,6 +1,7 @@
 /**
  * Charts — indexed candles only.
  * UI windows: 1H / 24H / 7D / 30D mapped onto indexer intervals (1H / 1D).
+ * Compact hero variant: sparkline-sized panel with clear Unavailable fallback.
  */
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -12,6 +13,7 @@ import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import { formatPrice } from '../presentation/humanLabels'
 import { isChartSupported } from './helpers'
+import { useFeaturedProjectMarkets } from 'views/HomeTrade/useFeaturedProjectMarkets'
 import { Band, BandHead, BandMeta, BandTitle, Muted, pp } from './theme'
 
 const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartPanel'), {
@@ -19,8 +21,8 @@ const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartP
   loading: () => <ChartSkeleton aria-hidden />,
 }) as React.ComponentType<React.ComponentProps<typeof import('views/Trade/components/TradeChartPanel').TradeChartPanel>>
 
-const ChartSkeleton = styled.div`
-  min-height: 200px;
+const ChartSkeleton = styled.div<{ $compact?: boolean }>`
+  min-height: ${({ $compact }) => ($compact ? '96px' : '200px')};
   border-radius: 10px;
   background: #101010;
   border: 1px solid ${pp.line};
@@ -53,6 +55,19 @@ const PriceLine = styled.div`
   font-variant-numeric: tabular-nums;
 `
 
+const CompactUnavailable = styled.div`
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid ${pp.line};
+  background: rgba(255, 255, 255, 0.02);
+  color: ${pp.mute};
+  font-size: 13px;
+  font-weight: 650;
+`
+
 type UiWindow = '1H' | '24H' | '7D' | '30D'
 
 const TIMEFRAMES: { id: UiWindow; label: string; interval: OhlcvCandle['interval']; limit: number }[] = [
@@ -65,21 +80,50 @@ const TIMEFRAMES: { id: UiWindow; label: string; interval: OhlcvCandle['interval
 interface Props {
   slug: string
   marketsDocument: ProjectMarketsDocument
+  /** Hero embed — shorter panel, no empty boxes. */
+  variant?: 'full' | 'compact'
+  /** Prefer this pair when known from live featured markets. */
+  pairAddress?: string | null
 }
 
-const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
+function resolveChartPair(
+  slug: string,
+  marketsDocument: ProjectMarketsDocument,
+  featuredPair?: string,
+  explicitPair?: string | null,
+): string | undefined {
+  if (explicitPair && /^0x[a-fA-F0-9]{40}$/.test(explicitPair)) return explicitPair.toLowerCase()
+  if (featuredPair && /^0x[a-fA-F0-9]{40}$/.test(featuredPair)) return featuredPair.toLowerCase()
+  if (slug === 'marco' || isChartSupported(slug, marketsDocument)) {
+    return MARCO_WBNB_PAIR_BSC.toLowerCase()
+  }
+  return undefined
+}
+
+const ProjectCharts: React.FC<Props> = ({
+  slug,
+  marketsDocument,
+  variant = 'full',
+  pairAddress: pairProp,
+}) => {
+  const compact = variant === 'compact'
   const [windowId, setWindowId] = useState<UiWindow>('24H')
   const tf = TIMEFRAMES.find((t) => t.id === windowId) ?? TIMEFRAMES[1]
-  const supported = isChartSupported(slug, marketsDocument)
+  const { rowsBySlug } = useFeaturedProjectMarkets()
+  const featuredRow = rowsBySlug[slug] ?? (slug === 'marco' ? rowsBySlug['marco-wbnb'] : undefined)
+  const pairAddress = resolveChartPair(slug, marketsDocument, featuredRow?.pairAddress, pairProp)
+  const supported = Boolean(pairAddress)
   const preferred = marketsDocument.preferredMarkets[0]
   const pairLabel =
     slug === 'marco' || isMarcoSymbol(preferred?.baseSymbol, preferred?.baseSymbol)
       ? 'MARCO / WBNB'
       : preferred
         ? `${preferred.baseSymbol} / ${preferred.quoteSymbol}`
-        : 'Project pair'
+        : featuredRow?.symbol
+          ? `${featuredRow.symbol} / WBNB`
+          : 'Project pair'
 
-  const { chartEntries, status } = useIndexerCandles(supported ? MARCO_WBNB_PAIR_BSC : undefined, tf.interval)
+  const { chartEntries, status } = useIndexerCandles(supported ? pairAddress : undefined, tf.interval)
 
   const pairPrices = useMemo(() => {
     const sliced = chartEntries.slice(-tf.limit)
@@ -88,24 +132,43 @@ const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
 
   const latestClose = pairPrices.length ? pairPrices[pairPrices.length - 1]?.value : null
   const priceText = formatPrice(latestClose)
+  const hasSpark = pairPrices.length >= 2
+
+  if (compact) {
+    return (
+      <div data-testid="project-v2-chart-compact" data-chart-variant="compact">
+        <BandHead style={{ marginBottom: 6 }}>
+          <BandTitle>Chart</BandTitle>
+          <BandMeta>{supported && hasSpark ? 'indexed' : 'Unavailable'}</BandMeta>
+        </BandHead>
+        {!supported || (!hasSpark && status !== 'loading') ? (
+          <CompactUnavailable data-testid="project-v2-chart-unavailable">Unavailable</CompactUnavailable>
+        ) : (
+          <TradeChartPanel
+            pairPrices={pairPrices}
+            emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
+            isLoading={status === 'loading'}
+            currentPriceUsd={latestClose ?? undefined}
+          />
+        )}
+      </div>
+    )
+  }
 
   return (
     <Band aria-labelledby="pp-v1-charts" data-project-section="charts" data-testid="project-v1-charts">
       <BandHead>
         <BandTitle id="pp-v1-charts">Chart</BandTitle>
-        <BandMeta>{supported ? 'indexed candles' : 'unavailable'}</BandMeta>
+        <BandMeta>{supported ? 'indexed candles' : 'Unavailable'}</BandMeta>
       </BandHead>
       {!supported ? (
-        <Muted>
-          Indexed price chart is not available yet for this project. Charts render when a supported Melega
-          indexer pair is registered.
-        </Muted>
+        <Muted data-testid="project-chart-unavailable">Unavailable</Muted>
       ) : (
         <>
           <Muted>
             {pairLabel} · Indexed candles only · {windowId}
           </Muted>
-          {priceText ? <PriceLine>{priceText}</PriceLine> : <Muted>Not available yet</Muted>}
+          {priceText ? <PriceLine>{priceText}</PriceLine> : <Muted>Unavailable</Muted>}
           <Timeframes role="group" aria-label="Chart timeframe" data-testid="project-v1-chart-timeframes">
             {TIMEFRAMES.map((item) => (
               <TfButton
@@ -120,12 +183,16 @@ const ProjectCharts: React.FC<Props> = ({ slug, marketsDocument }) => {
               </TfButton>
             ))}
           </Timeframes>
-          <TradeChartPanel
-            pairPrices={pairPrices}
-            emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
-            isLoading={status === 'loading'}
-            currentPriceUsd={latestClose ?? undefined}
-          />
+          {!hasSpark && status !== 'loading' ? (
+            <Muted>Unavailable</Muted>
+          ) : (
+            <TradeChartPanel
+              pairPrices={pairPrices}
+              emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
+              isLoading={status === 'loading'}
+              currentPriceUsd={latestClose ?? undefined}
+            />
+          )}
         </>
       )}
     </Band>

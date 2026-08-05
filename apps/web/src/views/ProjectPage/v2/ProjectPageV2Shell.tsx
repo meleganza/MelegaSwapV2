@@ -50,18 +50,19 @@ import ProjectCharts from '../v1/ProjectCharts'
 const Hero = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
 
   @media (min-width: 960px) {
-    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
     align-items: start;
+    gap: 14px;
   }
 `
 
 const LogoWrap = styled.div`
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
   border-radius: 14px;
   overflow: hidden;
@@ -71,7 +72,7 @@ const LogoWrap = styled.div`
 
 const HeroName = styled.h1`
   margin: 0;
-  font-size: clamp(22px, 4vw, 32px);
+  font-size: clamp(20px, 3.6vw, 28px);
   font-weight: 850;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -79,25 +80,29 @@ const HeroName = styled.h1`
 `
 
 const Ticker = styled.span`
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 750;
   color: ${pp.gold};
 `
 
 const Desc = styled.p`
-  margin: 10px 0 0;
-  font-size: 14px;
-  line-height: 1.45;
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
   color: rgba(255, 255, 255, 0.72);
-  max-width: 42rem;
+  max-width: 40rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 const ActionBar = styled.nav`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
-  padding-top: 10px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 `
 
@@ -146,7 +151,7 @@ const EconomyTitle = styled.div`
 
 const EconomyMeta = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 6px;
   font-size: 12px;
   color: ${pp.mute};
@@ -203,10 +208,16 @@ const GrowHint = styled.div`
 `
 
 const ClaimCard = styled.div`
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 196, 48, 0.22);
+  background:
+    radial-gradient(ellipse 70% 60% at 0% 0%, rgba(244, 196, 48, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 36rem;
 `
 
 const ClaimTitle = styled.div`
@@ -216,18 +227,32 @@ const ClaimTitle = styled.div`
 `
 
 const ClaimBody = styled.p`
-  margin: 6px 0 10px;
+  margin: 0;
   font-size: 13px;
   line-height: 1.45;
   color: ${pp.mute};
+`
+
+const ClaimList = styled.ul`
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.68);
 `
 
 const RightCol = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 `
+
+function socialLabel(url: string, label: string): string {
+  if (/twitter|x\.com/i.test(url) || /\bx\b/i.test(label)) return 'X'
+  if (/t\.me|telegram/i.test(url) || /telegram/i.test(label)) return 'Telegram'
+  return label
+}
 
 export type ProjectPageV2Props = {
   document: CanonicalProjectDocument
@@ -271,9 +296,10 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
       : undefined
   const socials = getSocialResources(document)
   const website = document.resources.find((r) => r.resourceType === 'website')
-  const socialLinks = socials.filter((s) => s.resourceType === 'social').slice(0, 6)
+  const xLink = socials.find((s) => /twitter|x\.com/i.test(s.url) || /\bx\b/i.test(s.label))
+  const tgLink = socials.find((s) => /t\.me|telegram/i.test(s.url) || /telegram/i.test(s.label))
   const buyHref = getBuyTokenHref({ chainId, contract })
-  const market = useProjectLiveMarket(document.slug, marketsDocument.markets.length)
+  const market = useProjectLiveMarket(document.slug, marketsDocument.markets.length, contract, chainId)
   const featuredPkg = getFeaturedPackage('featured_1w')
   const claimHref = `/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}`
 
@@ -302,14 +328,14 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
         ? document.identity.shortPurpose.value
         : 'Unavailable'
 
-  const farmApr = chainFarms[0]
-    ? 'Unavailable'
-    : 'Unavailable'
-  const poolApr = chainPools[0] ? 'Unavailable' : 'Unavailable'
+  const priceValue = market.priceUsd !== 'Unavailable' ? market.priceUsd : market.priceBnb
+  const poolsCount = chainLiquidity.length > 0 ? String(chainLiquidity.length) : 'Unavailable'
+  const farmsCount = chainFarms.length > 0 ? String(chainFarms.length) : 'Unavailable'
+  const stakePoolsCount = chainPools.length > 0 ? String(chainPools.length) : 'Unavailable'
 
   return (
     <Page id="project-page-v2" data-testid="project-page-v2" data-project-page="v2" data-project-slug={document.slug}>
-      {/* HERO — PROJECT INFO | SWAP + CHART */}
+      {/* HERO — PROJECT INFO | SWAP + COMPACT CHART */}
       <Band data-testid="project-v2-hero" data-project-section="hero">
         <Hero>
           <div>
@@ -321,30 +347,59 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
                   address={contract ?? undefined}
                   chainId={chainId}
                   logoURI={logoUrl}
-                  size={56}
+                  size={52}
                 />
               </LogoWrap>
               <div style={{ minWidth: 0 }}>
                 <HeroName>{document.identity.displayName}</HeroName>
-                <Row style={{ gap: 8, marginTop: 4, alignItems: 'center' }}>
+                <Row style={{ gap: 8, marginTop: 4, alignItems: 'center', flexWrap: 'wrap' }}>
                   {symbol ? <Ticker>${symbol}</Ticker> : null}
                   <MelegaExploreChainBadge chainId={chainId} />
                   <Chip $on={/verif/i.test(verified)}>{verified}</Chip>
+                  {deployments.length > 1
+                    ? deployments.slice(0, 4).map((d) => (
+                        <Chip
+                          key={d.chainId}
+                          $on={d.chainId === chainId}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setSelectedChainId(d.chainId)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') setSelectedChainId(d.chainId)
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {d.shortLabel}
+                        </Chip>
+                      ))
+                    : null}
                 </Row>
               </div>
             </Row>
             <Desc>{description}</Desc>
-            <Row style={{ marginTop: 10, gap: 8, flexWrap: 'wrap' }}>
+            <Row style={{ marginTop: 8, gap: 8, flexWrap: 'wrap' }}>
               {website?.url ? (
                 <Btn $ghost href={website.url} target="_blank" rel="noreferrer" data-testid="project-v2-website">
                   Website
                 </Btn>
               ) : null}
-              {socialLinks.map((s) => (
-                <Btn key={s.url} $ghost href={s.url} target="_blank" rel="noreferrer" data-testid="project-v2-social">
-                  {/twitter|x\.com/i.test(s.url) || /x\b/i.test(s.label) ? 'X' : /t\.me|telegram/i.test(s.url) ? 'Telegram' : s.label}
+              {xLink?.url ? (
+                <Btn $ghost href={xLink.url} target="_blank" rel="noreferrer" data-testid="project-v2-social-x">
+                  X
                 </Btn>
-              ))}
+              ) : null}
+              {tgLink?.url ? (
+                <Btn $ghost href={tgLink.url} target="_blank" rel="noreferrer" data-testid="project-v2-social-telegram">
+                  Telegram
+                </Btn>
+              ) : null}
+              {!xLink && !tgLink
+                ? socials.slice(0, 2).map((s) => (
+                    <Btn key={s.url} $ghost href={s.url} target="_blank" rel="noreferrer" data-testid="project-v2-social">
+                      {socialLabel(s.url, s.label)}
+                    </Btn>
+                  ))
+                : null}
             </Row>
             <ActionBar>
               <Btn $primary href={buyHref} data-testid="project-v2-buy">
@@ -362,25 +417,6 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
               <Btn $ghost href={claimHref} data-testid="project-v2-claim-hero">
                 Claim Project
               </Btn>
-              {deployments.length > 1 ? (
-                <Row style={{ gap: 6 }}>
-                  {deployments.slice(0, 4).map((d) => (
-                    <Chip
-                      key={d.chainId}
-                      $on={d.chainId === chainId}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setSelectedChainId(d.chainId)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') setSelectedChainId(d.chainId)
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {d.shortLabel}
-                    </Chip>
-                  ))}
-                </Row>
-              ) : null}
             </ActionBar>
           </div>
 
@@ -393,7 +429,12 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
               variant="hero"
             />
             <div data-testid="project-v2-chart">
-              <ProjectCharts slug={document.slug} marketsDocument={marketsDocument} />
+              <ProjectCharts
+                slug={document.slug}
+                marketsDocument={marketsDocument}
+                variant="compact"
+                pairAddress={market.pairAddress}
+              />
             </div>
           </RightCol>
         </Hero>
@@ -408,26 +449,42 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
         <MarketStrip>
           <Metric
             label="Price"
-            value={market.priceUsd !== 'Unavailable' ? market.priceUsd : market.priceBnb}
-            provenance={market.priceBnb !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
+            value={priceValue}
+            provenance={
+              priceValue !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE
+            }
           />
           <Metric
-            label="24h"
+            label="24H"
             value={market.trend}
             provenance={market.trend !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
           />
           <Metric
             label="Volume"
             value={market.volume24h}
-            provenance={market.volume24h !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
+            provenance={
+              market.volume24h !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE
+            }
           />
           <Metric
             label="Liquidity"
             value={market.liquidity}
-            provenance={market.liquidity !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE}
+            provenance={
+              market.liquidity !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE
+            }
           />
-          <Metric label="Market Cap" value={market.marketCap} provenance={UNAVAILABLE} />
-          <Metric label="Holders" value={market.holders} provenance={UNAVAILABLE} />
+          <Metric
+            label="Market Cap"
+            value={market.marketCap}
+            provenance={
+              market.marketCap !== 'Unavailable' ? indexed(market.source, market.lastUpdate) : UNAVAILABLE
+            }
+          />
+          <Metric
+            label="Holders"
+            value={market.holders}
+            provenance={market.holders !== 'Unavailable' ? indexed('holder-count', market.lastUpdate) : UNAVAILABLE}
+          />
         </MarketStrip>
       </Band>
 
@@ -444,33 +501,32 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
             <EconomyTitle>Liquidity</EconomyTitle>
             <EconomyMeta>
               <span>TVL · {market.liquidity}</span>
-              <span>APR · Unavailable</span>
               <span>Volume · {market.volume24h}</span>
-              <span>Pools · {chainLiquidity.length || 'Unavailable'}</span>
+              <span>Pools · {poolsCount}</span>
             </EconomyMeta>
-            <Btn href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v2-add-liquidity">
+            <Btn href={`/liquidity-studio?view=add&chain=${chainId}`} data-testid="project-v2-add-liquidity">
               Add Liquidity
             </Btn>
           </EconomyCard>
           <EconomyCard data-testid="project-v2-economy-farm">
             <EconomyTitle>Farm</EconomyTitle>
             <EconomyMeta>
+              <span>APR · Unavailable</span>
               <span>TVL · Unavailable</span>
-              <span>APR · {farmApr}</span>
-              <span>Volume · Unavailable</span>
-              <span>Farms · {chainFarms.length || 'Unavailable'}</span>
+              <span>Rewards · Unavailable</span>
+              {farmsCount !== 'Unavailable' ? <span>Farms · {farmsCount}</span> : null}
             </EconomyMeta>
-            <Btn href={`/farms?chain=${chainId}`} data-testid="project-v2-farm">
-              Farm
+            <Btn href={`/farms?create=1&chain=${chainId}`} data-testid="project-v2-farm">
+              Create Farm
             </Btn>
           </EconomyCard>
           <EconomyCard data-testid="project-v2-economy-pool">
             <EconomyTitle>Pool</EconomyTitle>
             <EconomyMeta>
               <span>TVL · Unavailable</span>
-              <span>APR · {poolApr}</span>
-              <span>Volume · Unavailable</span>
-              <span>Pools · {chainPools.length || 'Unavailable'}</span>
+              <span>Rewards · Unavailable</span>
+              <span>APR · Unavailable</span>
+              {stakePoolsCount !== 'Unavailable' ? <span>Pools · {stakePoolsCount}</span> : null}
             </EconomyMeta>
             <Btn href={`/pools?chain=${chainId}`} data-testid="project-v2-stake">
               Stake
@@ -494,30 +550,30 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
           <BandMeta>Revenue surface</BandMeta>
         </BandHead>
         <GrowGrid>
-          <GrowCard
-            href={`${claimHref}#featured`}
-            data-testid="project-v2-grow-featured"
-          >
+          <GrowCard href={`${claimHref}#featured`} data-testid="project-v2-grow-featured">
             <GrowTitle>Featured</GrowTitle>
             <GrowPrice>
               {featuredPkg.usdPrice} USD / {featuredPkg.durationLabel}
             </GrowPrice>
-            <GrowHint>Home Featured placement</GrowHint>
+            <GrowHint>Checkout · Home Featured placement</GrowHint>
           </GrowCard>
           <GrowCard href={`${claimHref}#trend-boost`} data-testid="project-v2-grow-trend">
             <GrowTitle>Trend Boost</GrowTitle>
             <GrowPrice>Boost visibility</GrowPrice>
-            <GrowHint>Trending surface placement</GrowHint>
+            <GrowHint>Checkout · Trending surface</GrowHint>
           </GrowCard>
-          <GrowCard href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v2-grow-liquidity">
+          <GrowCard
+            href={`/liquidity-studio?view=add&chain=${chainId}`}
+            data-testid="project-v2-grow-liquidity"
+          >
             <GrowTitle>Liquidity</GrowTitle>
             <GrowPrice>Create LP</GrowPrice>
-            <GrowHint>Liquidity Studio</GrowHint>
+            <GrowHint>Liquidity Studio · add liquidity</GrowHint>
           </GrowCard>
-          <GrowCard href={`/farms?chain=${chainId}`} data-testid="project-v2-grow-farm">
+          <GrowCard href={`/farms?create=1&chain=${chainId}`} data-testid="project-v2-grow-farm">
             <GrowTitle>Farm</GrowTitle>
             <GrowPrice>Create Farm</GrowPrice>
-            <GrowHint>Farms Studio</GrowHint>
+            <GrowHint>Farms Studio · create flow</GrowHint>
           </GrowCard>
         </GrowGrid>
       </Band>
@@ -525,10 +581,16 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
       {/* CLAIM */}
       <Band data-testid="project-v2-claim" data-project-section="claim">
         <ClaimCard>
-          <ClaimTitle>Are you the owner?</ClaimTitle>
+          <ClaimTitle>Claim Project</ClaimTitle>
           <ClaimBody>
-            Claim your project page. Benefits: logo, description, socials, and official links.
+            Claim ownership of this page, verify the controlling wallet, then manage your public identity.
           </ClaimBody>
+          <ClaimList>
+            <li>Logo</li>
+            <li>Socials</li>
+            <li>Description</li>
+            <li>Official links</li>
+          </ClaimList>
           <Btn href={claimHref} data-testid="project-v2-claim-cta">
             Claim Project
           </Btn>

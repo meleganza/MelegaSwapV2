@@ -3,6 +3,7 @@
  * Outer shell 1376×920 / 64·760·72 locked. MODULE_007 adds product-copilot assist.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
 import styled, { css, keyframes } from 'styled-components'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
@@ -655,6 +656,7 @@ function ContextEmpty({ label }: { label: string }) {
 }
 
 export const ListWorkspace: React.FC = () => {
+  const router = useRouter()
   const { listIntent, clearListIntent } = useListIntent()
   const [step, setStep] = useState(0)
   const [values, setValues] = useState<Record<string, string>>({})
@@ -663,6 +665,10 @@ export const ListWorkspace: React.FC = () => {
   const [now, setNow] = useState(() => Date.now())
   const [pendingDescription, setPendingDescription] = useState<string | null>(null)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const querySlug =
+    typeof router.query.slug === 'string' && router.query.slug.trim()
+      ? router.query.slug.trim().toLowerCase()
+      : null
 
   useEffect(() => {
     setStep(0)
@@ -679,16 +685,35 @@ export const ListWorkspace: React.FC = () => {
       chainId: 56,
     })
     if (restored?.values) {
-      setValues(restored.values)
+      setValues({
+        ...restored.values,
+        ...(listIntent === 'claim-project' && querySlug && !restored.values.slug
+          ? { slug: querySlug }
+          : {}),
+      })
       setSavedAt(Date.parse(restored.updatedAt) || Date.now())
       return
     }
     if (listIntent === 'import-token') setValues({ chain: 'bsc' })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
     else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
-    else if (listIntent === 'claim-project') setValues({ verification: 'pending' })
+    else if (listIntent === 'claim-project')
+      setValues({ verification: 'pending', ...(querySlug ? { slug: querySlug } : {}) })
     else setValues({})
-  }, [listIntent])
+  }, [listIntent, querySlug])
+
+  /** Featured / Trend Boost deep links from Project Page Grow CTAs. */
+  useEffect(() => {
+    if (typeof window === 'undefined' || !listIntent) return
+    const hash = window.location.hash.replace(/^#/, '')
+    if (hash !== 'featured' && hash !== 'trend-boost') return
+    const scroll = () => {
+      const el = document.getElementById(hash)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    const t = window.setTimeout(scroll, 120)
+    return () => window.clearTimeout(t)
+  }, [listIntent, values.contract, values.wallet, values.slug])
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000)
@@ -927,6 +952,12 @@ export const ListWorkspace: React.FC = () => {
     }
 
     if (listIntent === 'claim-project') {
+      const claimSlug = values.slug || querySlug
+      const claimProjectId = filled(values.contract)
+        ? `claim:${values.contract.toLowerCase()}`
+        : claimSlug
+          ? `claim:${claimSlug}`
+          : ''
       return (
         <FormStack data-testid="list-workspace-form">
           <Field label="Contract" ok={filled(values.contract)} invalid={invalid('contract')}>
@@ -950,24 +981,35 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Project Preview notes" ok={filled(values.preview)} invalid={false} optional>
             <TextArea value={values.preview || ''} onChange={set('preview')} placeholder="Local claim notes" />
           </Field>
-          <ListFeaturedCheckout
-            testId="list-claim-featured-home-promotion"
-            sourceFlow="claim-project"
-            projectId={filled(values.contract) ? `claim:${values.contract.toLowerCase()}` : ''}
-            projectContract={values.contract || null}
-            projectSlug={null}
-            buyerWallet={values.wallet || null}
-            identityReady={filled(values.contract) && filled(values.wallet)}
-            onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
-            onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
-          />
-          <ListTrendBoostCheckout
-            testId="list-claim-trend-boost"
-            projectId={filled(values.contract) ? `claim:${values.contract.toLowerCase()}` : ''}
-            projectContract={values.contract || null}
-            buyerWallet={values.wallet || null}
-            identityReady={filled(values.contract) && filled(values.wallet)}
-          />
+          <div id="featured" data-testid="list-claim-featured-anchor">
+            <ListFeaturedCheckout
+              testId="list-claim-featured-home-promotion"
+              sourceFlow="claim-project"
+              projectId={claimProjectId}
+              projectContract={values.contract || null}
+              projectSlug={claimSlug}
+              buyerWallet={values.wallet || null}
+              identityReady={
+                (filled(values.contract) || Boolean(claimSlug)) && filled(values.wallet)
+              }
+              onOrderId={(id) =>
+                setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))
+              }
+              onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
+            />
+          </div>
+          <div id="trend-boost" data-testid="list-claim-trend-boost-anchor">
+            <ListTrendBoostCheckout
+              testId="list-claim-trend-boost"
+              projectId={claimProjectId}
+              projectContract={values.contract || null}
+              projectSlug={claimSlug}
+              buyerWallet={values.wallet || null}
+              identityReady={
+                (filled(values.contract) || Boolean(claimSlug)) && filled(values.wallet)
+              }
+            />
+          </div>
         </FormStack>
       )
     }

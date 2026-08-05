@@ -19,6 +19,16 @@ import {
 } from './useFeaturedProjectMarkets'
 import { PlacementLabel } from 'views/shared/monetization/PlacementLabel'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
+import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
+import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
+
+const FOUNDER_PAIR_BY_SLUG: Record<string, string> = {
+  mm72: FOUNDER_WBNB_PAIR_ADDRESSES[0],
+  eyed: FOUNDER_WBNB_PAIR_ADDRESSES[1],
+  'young-degens': FOUNDER_WBNB_PAIR_ADDRESSES[2],
+  blion: FOUNDER_WBNB_PAIR_ADDRESSES[3],
+}
 
 const halo = keyframes`
   0%, 100% {
@@ -250,6 +260,41 @@ const ViewLink = styled(Link)`
   }
 `
 
+const SparkRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 18px;
+`
+
+const SparkUnavailable = styled.span`
+  font-size: 11px;
+  font-weight: 650;
+  color: rgba(255, 255, 255, 0.38);
+`
+
+/** Real indexed sparkline only — never invents points. */
+const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) => {
+  const { chartEntries, status } = useIndexerCandles(
+    pairAddress && /^0x[a-fA-F0-9]{40}$/.test(pairAddress) ? pairAddress : undefined,
+    '1H',
+  )
+  const points = useMemo(
+    () => chartEntries.slice(-24).map((c) => c.close).filter((n) => Number.isFinite(n) && n > 0),
+    [chartEntries],
+  )
+  if (!pairAddress) return <SparkUnavailable>Unavailable</SparkUnavailable>
+  if (points.length < 2) {
+    return (
+      <SparkUnavailable data-testid="featured-spark-unavailable">
+        {status === 'loading' ? '…' : 'Unavailable'}
+      </SparkUnavailable>
+    )
+  }
+  return <AnimatedSparkline points={points} width={64} height={16} />
+}
+
 export const FeaturedProjectsRail: React.FC = () => {
   const router = useRouter()
   const cards = useMemo(() => resolveFounderFeaturedProjects(), [])
@@ -329,6 +374,11 @@ export const FeaturedProjectsRail: React.FC = () => {
                   {change.text}
                 </Change>
               </Metrics>
+              <SparkRow data-testid={`featured-spark-${p.slug}`}>
+                <FeaturedMiniSpark
+                  pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]}
+                />
+              </SparkRow>
               <StatGrid>
                 <Stat>
                   <StatLabel>Liquidity</StatLabel>
