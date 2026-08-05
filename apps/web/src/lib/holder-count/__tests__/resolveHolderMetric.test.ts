@@ -16,14 +16,14 @@ describe('resolveHolderMetric', () => {
   it('returns explicit diagnostics when explorer source is unavailable', () => {
     const metric = resolveHolderMetric({
       status: 'unavailable',
-      reason: 'Source not configured',
+      reason: 'Unavailable',
       source: 'unavailable',
       diagnostic: 'Set NEXT_PUBLIC_BSCSCAN_API_KEY to recover holder count from BscScan',
       checkedAt: '2026-06-26T00:00:00.000Z',
     })
     expect(metric.display).toBe('Unavailable')
     expect(metric.display).not.toBe('—')
-    expect(metric.reason).toBe('Source not configured')
+    expect(metric.reason).toBe('Unavailable')
     expect(metric.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
   })
 

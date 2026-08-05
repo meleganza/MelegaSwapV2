@@ -165,9 +165,9 @@ describe('UX001 API / Project OS regression', () => {
 })
 
 describe('UX001 page wiring', () => {
-  it('project-hq page renders ProjectPageV1Shell', () => {
+  it('project-hq page renders ProjectPageV2Shell', () => {
     const page = readFileSync(path.join(ROOT, 'pages/project-hq/[slug].tsx'), 'utf8')
-    expect(page).toContain('ProjectPageV1Shell')
+    expect(page).toContain('ProjectPageV2Shell')
     expect(page).toContain('buildProjectTokenomicsDocument')
     expect(page).toContain('buildProjectRoadmapDocument')
   })

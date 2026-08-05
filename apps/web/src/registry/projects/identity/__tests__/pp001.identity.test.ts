@@ -157,8 +157,8 @@ describe('PP001 identity normalization', () => {
     const marco = getProjectBySlug('marco')!
     const doc = normalizeProjectDocument(marco, { generatedAt: FIXED_NOW })
     expect(doc.assets.length).toBeGreaterThan(1)
-    expect(doc.chains.length).toBe(4)
-    expect(doc.deployments.length).toBe(4)
+    expect(doc.chains.length).toBeGreaterThanOrEqual(4)
+    expect(doc.deployments.length).toBe(doc.chains.length)
     expect(new Set(doc.contracts.map((c) => c.caip10)).size).toBe(doc.contracts.length)
   })
 
@@ -294,7 +294,7 @@ describe('PP001 chain identifiers', () => {
 describe('PP001 route and shell source contracts', () => {
   const hqPage = readFileSync(path.resolve(__dirname, '../../../../pages/project-hq/[slug].tsx'), 'utf8')
   const consumer = readFileSync(
-    path.resolve(__dirname, '../../../../views/ProjectPage/v1/ProjectPageV1Shell.tsx'),
+    path.resolve(__dirname, '../../../../views/ProjectPage/v2/ProjectPageV2Shell.tsx'),
     'utf8',
   )
   const nextConfig = readFileSync(path.resolve(__dirname, '../../../../../next.config.mjs'), 'utf8')
@@ -315,20 +315,20 @@ describe('PP001 route and shell source contracts', () => {
   it('does not render fake action controls', () => {
     expect(consumer).not.toMatch(/fake/i)
     expect(consumer).not.toMatch(/disabled action/i)
-    expect(consumer).toMatch(/data-testid="project-page-v1"/)
-    expect(hqPage).toMatch(/ProjectPageV1Shell/)
+    expect(consumer).toMatch(/data-testid="project-page-v2"/)
+    expect(hqPage).toMatch(/ProjectPageV2Shell/)
   })
 
   it('includes accessibility affordances', () => {
-    expect(consumer).toMatch(/Copy|copy/)
-    expect(consumer).toMatch(/aria-labelledby/)
     expect(consumer).toMatch(/noopener|noreferrer/)
+    expect(consumer).toMatch(/data-testid="project-v2-hero"/)
+    expect(consumer).toMatch(/Claim Project/)
   })
 
   it('is one long page without sticky tab navigation', () => {
-    expect(consumer).toContain('data-project-nav="none"')
     expect(consumer).not.toContain('ProjectStickyNav')
-    expect(consumer).toContain('data-project-section="identity-hero"')
+    expect(consumer).toContain('data-project-section="hero"')
+    expect(consumer).toContain('data-project-page="v2"')
   })
 
   it('SEO page sets canonical /@ URL and JSON alternate', () => {

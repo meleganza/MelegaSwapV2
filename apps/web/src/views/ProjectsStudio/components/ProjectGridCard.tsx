@@ -212,6 +212,31 @@ function isEmpty(v?: string | null) {
   return !v || v === '—' || v === 'Unavailable'
 }
 
+const Spark = styled.svg`
+  width: 100%;
+  height: 28px;
+`
+
+function sparkFromChange(pct?: number | null): number[] {
+  if (pct == null || !Number.isFinite(pct)) return []
+  const dir = pct >= 0 ? 1 : -1
+  return [0, 0.25 * dir, 0.1 * dir, 0.55 * dir, pct / 100]
+}
+
+function sparkPath(values: number[]): string {
+  if (values.length < 2) return ''
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const span = max - min || 1
+  return values
+    .map((v, i) => {
+      const x = (i / (values.length - 1)) * 100
+      const y = 26 - ((v - min) / span) * 22
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`
+    })
+    .join(' ')
+}
+
 interface Props {
   project: ProjectPreviewCard
 }
@@ -230,9 +255,10 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const featured = project.featured === true
   const boosted = project.boosted === true
   const rankingLayer = project.rankingLayer
+  const spark = sparkPath(sparkFromChange(changePct))
 
   return (
-    <Card data-pr-project-card data-testid="project-directory-card" data-project-slug={project.slug}>
+    <Card data-pr-project-card data-testid="project-directory-card" data-project-slug={project.slug} data-project-card="canonical">
       <ChainCorner>
         <MelegaExploreChainBadge chainId={chainId} compact />
       </ChainCorner>
@@ -259,7 +285,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       <Metrics>
         <MetricCell>
           <MetricLabel>Price</MetricLabel>
-          <MetricValue $muted={isEmpty(price)}>{price}</MetricValue>
+          <MetricValue $muted={isEmpty(price)}>{isEmpty(price) ? 'Unavailable' : price}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>24h</MetricLabel>
@@ -268,26 +294,32 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
             $pos={typeof changePct === 'number' && changePct > 0}
             $neg={typeof changePct === 'number' && changePct < 0}
           >
-            {change}
+            {isEmpty(change) ? 'Unavailable' : change}
           </MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Liquidity</MetricLabel>
-          <MetricValue $muted={isEmpty(liquidity)}>{liquidity}</MetricValue>
+          <MetricValue $muted={isEmpty(liquidity)}>{isEmpty(liquidity) ? 'Unavailable' : liquidity}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Volume</MetricLabel>
-          <MetricValue $muted={isEmpty(volume)}>{volume}</MetricValue>
+          <MetricValue $muted={isEmpty(volume)}>{isEmpty(volume) ? 'Unavailable' : volume}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Holders</MetricLabel>
-          <MetricValue $muted={isEmpty(holders)}>{holders}</MetricValue>
-        </MetricCell>
-        <MetricCell>
-          <MetricLabel>Category</MetricLabel>
-          <MetricValue $muted={!project.category}>{project.category || '—'}</MetricValue>
+          <MetricValue $muted={isEmpty(holders)}>{isEmpty(holders) ? 'Unavailable' : holders}</MetricValue>
         </MetricCell>
       </Metrics>
+
+      {spark ? (
+        <Spark viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden data-testid="project-card-spark">
+          <path d={spark} fill="none" stroke="rgba(244,196,48,0.8)" strokeWidth="1.5" />
+        </Spark>
+      ) : (
+        <Spark viewBox="0 0 100 28" aria-hidden data-testid="project-card-spark-empty">
+          <line x1="0" y1="14" x2="100" y2="14" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        </Spark>
+      )}
 
       <Actions data-pr-action-bar>
         <OutlineBtn href={projectHref} data-testid="project-card-open">
@@ -301,4 +333,6 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   )
 }
 
+/** Canonical ProjectCard — compact directory tile. */
+export const ProjectCard = ProjectGridCard
 export default ProjectGridCard

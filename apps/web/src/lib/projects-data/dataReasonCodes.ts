@@ -27,30 +27,30 @@ export function metricReasonLabel(code?: ProjectDataReasonCode): string | undefi
   return code ? PROJECT_DATA_REASON_LABELS[code] : undefined
 }
 
-/** P8 user-facing label (never raw reason code). */
+/** P8 user-facing label — map diagnostics to Unavailable. */
 export function metricUiReasonLabel(code?: ProjectDataReasonCode): string | undefined {
   if (!code) return undefined
   const map: Record<ProjectDataReasonCode, string> = {
-    DATA_SOURCE_NOT_CONFIGURED: 'Source not configured',
-    NO_POOL_FOUND: 'Waiting for indexing',
-    NO_EVENTS_INDEXED: 'No recent activity yet',
-    TOKEN_NOT_CANONICAL: 'Source not configured',
-    EXPLORER_SOURCE_MISSING: 'Waiting for explorer',
+    DATA_SOURCE_NOT_CONFIGURED: 'Unavailable',
+    NO_POOL_FOUND: 'Unavailable',
+    NO_EVENTS_INDEXED: 'Unavailable',
+    TOKEN_NOT_CANONICAL: 'Unavailable',
+    EXPLORER_SOURCE_MISSING: 'Unavailable',
   }
   return map[code]
 }
 
-/** UI + machine profile: never emit generic "Unavailable" for missing live data. */
+/** UI + machine profile: missing live data shows Unavailable (never invent zeros). */
 export function missingMetric(reasonCode: ProjectDataReasonCode): ResolvedMetricValue {
-  return { display: '—', reasonCode }
+  return { display: 'Unavailable', reasonCode }
 }
 
-/** Holder count must never fall back to em dash — use an explicit diagnostic label. */
+/** Holder count unavailable — explicit Unavailable (never invent). */
 export function holderUnavailableMetric(
   reasonCode: ProjectDataReasonCode = 'EXPLORER_SOURCE_MISSING',
 ): ResolvedMetricValue {
   return {
-    display: metricUiReasonLabel(reasonCode) ?? 'Source not configured',
+    display: 'Unavailable',
     reasonCode,
   }
 }

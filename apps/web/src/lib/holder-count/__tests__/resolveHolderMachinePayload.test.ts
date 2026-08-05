@@ -18,7 +18,7 @@ describe('resolveHolderMachinePayload', () => {
     try {
       const payload = resolveHolderMachinePayload({
         status: 'unavailable',
-        reason: 'Source not configured',
+        reason: 'Unavailable',
         source: 'unavailable',
         diagnostic: 'Set NEXT_PUBLIC_BSCSCAN_API_KEY',
         checkedAt: '2026-06-26T00:00:00.000Z',
