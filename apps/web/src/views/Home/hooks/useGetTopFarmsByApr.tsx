@@ -83,7 +83,9 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
           farm.lpAddress,
           regularCakePerBlock,
         )
-        return { ...farm, apr: cakeRewardsApr, lpRewardsApr }
+        // Attach liquidity so Home TVL (farm.liquidity) can display factual USD —
+        // mirrors FarmsStudio enrichFarmsWithApr. Never invent: only when both inputs exist.
+        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
 
       const sortedByApr = orderBy(farmsWithApr, (farm) => (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0), 'desc')

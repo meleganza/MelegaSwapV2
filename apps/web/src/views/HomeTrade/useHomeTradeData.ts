@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import BigNumber from 'bignumber.js'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
@@ -157,8 +158,22 @@ const farmApr = (farm: FarmWithStakedValue): number | undefined => {
 }
 
 const farmTvl = (farm: FarmWithStakedValue): string | undefined => {
-  if (!farm.liquidity?.gt(0)) return undefined
-  return formatUsd(farm.liquidity.toNumber())
+  if (farm.liquidity?.gt(0)) return formatUsd(farm.liquidity.toNumber())
+  // Fallback when liquidity not attached yet but reserve × quote price is factual.
+  if (farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) {
+    const usd = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+    if (usd.gt(0)) return formatUsd(usd.toNumber())
+  }
+  return undefined
+}
+
+const farmTvlUsd = (farm: FarmWithStakedValue): number => {
+  if (farm.liquidity?.gt(0)) return farm.liquidity.toNumber()
+  if (farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) {
+    const usd = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+    return usd.gt(0) ? usd.toNumber() : 0
+  }
+  return 0
 }
 
 /** Factual farm reward label — dual earnLabel when present, else MARCO (MasterChef). */
@@ -485,7 +500,7 @@ export const useHomeTradeData = () => {
       .map((farm) => {
         const apr = farmApr(farm)
         const tvl = farmTvl(farm)
-        const tvlUsd = farm.liquidity?.gt(0) ? farm.liquidity.toNumber() : 0
+        const tvlUsd = farmTvlUsd(farm)
         const volumeProxy = farm.lpRewardsApr && farm.lpRewardsApr > 0 ? farm.lpRewardsApr : 0
         const mult = Number.parseFloat(String(farm.multiplier ?? '0').replace(/x/i, ''))
         const activity = Number.isFinite(mult) ? mult : 0

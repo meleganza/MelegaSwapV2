@@ -70,6 +70,15 @@ describe('Global data indexer completion', () => {
     expect(fmt).toContain('chainId')
   })
 
+  it('Home Top Farms attach liquidity for factual TVL', () => {
+    const hook = load('Home/hooks/useGetTopFarmsByApr.tsx')
+    expect(hook).toContain('liquidity: totalLiquidity')
+    const data = load('HomeTrade/useHomeTradeData.ts')
+    expect(data).toContain('lpTotalInQuoteToken')
+    expect(data).toContain('quoteTokenPriceBusd')
+    expect(data).toContain('farmTvlUsd')
+  })
+
   it('status language is Available / Indexed / Unavailable only', () => {
     expect(METRIC_STATUS.AVAILABLE).toBe('Available')
     expect(METRIC_STATUS.INDEXED).toBe('Indexed')
