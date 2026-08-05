@@ -609,21 +609,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       <ChainSwitchConfirmDialog
         open={switchOpen}
         targetChainId={farm.chainId}
-        productLabel={`This farm is on ${
-          farm.chainId === 56
-            ? 'BNB'
-            : farm.chainId === 8453
-              ? 'Base'
-              : farm.chainId === 137
-                ? 'Polygon'
-                : farm.chainId === 1
-                  ? 'Ethereum'
-                  : farm.chainId === 42161
-                    ? 'Arbitrum'
-                    : farm.chainId === 43114
-                      ? 'Avalanche'
-                      : `chain ${farm.chainId}`
-        }. Switch network?`}
+        productLabel="This farm"
         busy={switching}
         onCancel={() => {
           pendingActionRef.current = null

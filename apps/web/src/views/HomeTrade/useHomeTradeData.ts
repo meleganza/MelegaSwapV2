@@ -156,6 +156,20 @@ const farmTvl = (farm: FarmWithStakedValue): string | undefined => {
   return formatUsd(farm.liquidity.toNumber())
 }
 
+/** Factual farm reward label — dual earnLabel when present, else MARCO (MasterChef). */
+const farmRewards = (farm: FarmWithStakedValue): string | undefined => {
+  const dual = farm.dual?.earnLabel?.trim()
+  if (dual) return dual
+  return 'MARCO'
+}
+
+const poolRewardFromName = (name: string): string | undefined => {
+  const parts = name.split('→')
+  if (parts.length < 2) return undefined
+  const reward = parts[parts.length - 1]?.trim()
+  return reward || undefined
+}
+
 const poolTvl = (pool: Pool.DeserializedPool<Token>): string | undefined => {
   if (!pool.totalStaked?.gt(0) || !pool.stakingToken) return undefined
   const bal = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
@@ -459,29 +473,7 @@ export const useHomeTradeData = () => {
   ])
 
   const farmRows = useMemo((): EarnRow[] => {
-    // Always surface a multichain mix. Never rank by invented APR/TVL.
-    const preview = listLiveFarmInventoryPreview(8)
-    if (preview.length > 0) {
-      return preview.slice(0, 5).map((row) => {
-        const runtimeMatch =
-          row.chainId === chainId
-            ? farms.find((f) => f.pid === Number(String(row.id).split('-').pop()))
-            : undefined
-        const apr = runtimeMatch ? farmApr(runtimeMatch) : undefined
-        const tvl = runtimeMatch ? farmTvl(runtimeMatch) : undefined
-        // Only attach metrics when factual for the active chain farm; else leave undefined → Unavailable.
-        return {
-          id: row.id,
-          name: row.name,
-          apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
-          tvl: tvl || undefined,
-          rewards: undefined,
-          href: '/farms',
-          chainId: row.chainId,
-        }
-      })
-    }
-
+    // Prefer active-chain farms (same runtime as Farms page), then pad with multichain inventory.
     const ranked = farms
       .filter((f) => f.pid !== 0)
       .map((farm) => {
@@ -492,7 +484,7 @@ export const useHomeTradeData = () => {
           name: farm.lpSymbol ?? 'Farm',
           apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
           tvl: tvl || undefined,
-          rewards: undefined,
+          rewards: farmRewards(farm),
           href: '/farms',
           chainId,
           sortApr: apr ?? -1,
@@ -503,7 +495,33 @@ export const useHomeTradeData = () => {
       .slice(0, 5)
       .map(({ sortApr: _a, sortTvl: _t, ...row }) => row)
 
-    if (ranked.length > 0) return ranked
+    if (ranked.length >= 5) return ranked
+
+    const seen = new Set(ranked.map((r) => r.name.toLowerCase()))
+    const preview = listLiveFarmInventoryPreview(8)
+    const padded = [...ranked]
+    for (const row of preview) {
+      if (padded.length >= 5) break
+      if (seen.has(row.name.toLowerCase())) continue
+      seen.add(row.name.toLowerCase())
+      const runtimeMatch =
+        row.chainId === chainId
+          ? farms.find((f) => f.pid === Number(String(row.id).split('-').pop()))
+          : undefined
+      const apr = runtimeMatch ? farmApr(runtimeMatch) : undefined
+      const tvl = runtimeMatch ? farmTvl(runtimeMatch) : undefined
+      padded.push({
+        id: row.id,
+        name: row.name,
+        apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
+        tvl: tvl || undefined,
+        rewards: runtimeMatch ? farmRewards(runtimeMatch) : undefined,
+        href: '/farms',
+        chainId: row.chainId,
+      })
+    }
+
+    if (padded.length > 0) return padded
 
     return allFarms
       .filter((f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X')
@@ -513,64 +531,14 @@ export const useHomeTradeData = () => {
         name: farm.lpSymbol ?? `Farm #${farm.pid}`,
         apr: undefined,
         tvl: undefined,
-        rewards: undefined,
+        rewards: farmRewards(farm),
         href: '/farms',
         chainId,
       }))
   }, [farms, allFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
-    // Multichain inventory first so Home Top Pools is not BNB-only.
-    // Attach factual APR/TVL only for active-chain pools with eligibility; else Unavailable.
-    const preview = listLivePoolInventoryPreview(8)
-    if (preview.length > 0) {
-      const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
-      return preview.slice(0, 5).map((row) => {
-        const sousId = Number(String(row.id).split('-').pop())
-        const pool =
-          row.chainId === chainId ? source.find((p) => Number(p.sousId) === sousId) : undefined
-        if (!pool) {
-          return {
-            id: row.id,
-            name: row.name,
-            apr: undefined,
-            tvl: undefined,
-            rewards: undefined,
-            href: '/pools',
-            chainId: row.chainId,
-          }
-        }
-        const aprValue = poolApr(pool)
-        const staked =
-          pool.totalStaked && pool.stakingToken
-            ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-            : 0
-        const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
-        const life = derivePoolLifecycle(pool, currentBlock)
-        const eligibility = evaluateTopPoolsAprEligibility({
-          rewarding: life.rewarding,
-          emissionActive: life.rewarding,
-          apr: aprValue,
-          tvlUsd,
-          rewardPriceUsd: pool.earningTokenPrice ?? null,
-          stakePriceUsd: pool.stakingTokenPrice ?? null,
-        })
-        const stake = pool.stakingToken?.symbol
-        const earn = pool.earningToken?.symbol
-        const name =
-          stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : row.name
-        return {
-          id: row.id,
-          name,
-          apr: eligibility.eligible && aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
-          tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool) || undefined,
-          rewards: earn || undefined,
-          href: '/pools',
-          chainId: row.chainId,
-        }
-      })
-    }
-
+    // Prefer active-chain pools (same eligibility rules as Pools page), then pad multichain inventory.
     const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
     const ranked = source
       .map((pool) => {
@@ -603,23 +571,87 @@ export const useHomeTradeData = () => {
       })
       .slice(0, 5)
 
-    if (ranked.length > 0) {
-      return ranked.map(({ pool, aprValue, tvlUsd }) => {
-        const stake = pool.stakingToken?.symbol
-        const earn = pool.earningToken?.symbol
-        const name =
-          stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
-        return {
-          id: `pool-${chainId}-${pool.sousId}`,
-          name,
-          apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
-          tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
-          rewards: earn || undefined,
+    const fromRuntime: EarnRow[] =
+      ranked.length > 0
+        ? ranked.map(({ pool, aprValue, tvlUsd }) => {
+            const stake = pool.stakingToken?.symbol
+            const earn = pool.earningToken?.symbol
+            const name =
+              stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
+            return {
+              id: `pool-${chainId}-${pool.sousId}`,
+              name,
+              apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
+              tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
+              rewards: earn || undefined,
+              href: '/pools',
+              chainId,
+            }
+          })
+        : []
+
+    if (fromRuntime.length >= 5) return fromRuntime
+
+    const seen = new Set(fromRuntime.map((r) => r.name.toLowerCase()))
+    const preview = listLivePoolInventoryPreview(8)
+    const padded = [...fromRuntime]
+    for (const row of preview) {
+      if (padded.length >= 5) break
+      if (seen.has(row.name.toLowerCase())) continue
+      seen.add(row.name.toLowerCase())
+      const addr = String(row.id).includes(':') ? String(row.id).split(':')[1] : undefined
+      const sousId = Number(String(row.id).split('-').pop())
+      const pool =
+        row.chainId === chainId
+          ? source.find((p) =>
+              addr
+                ? String(p.contractAddress ?? '').toLowerCase() === addr.toLowerCase()
+                : Number(p.sousId) === sousId,
+            )
+          : undefined
+      if (!pool) {
+        padded.push({
+          id: row.id,
+          name: row.name,
+          apr: undefined,
+          tvl: undefined,
+          rewards: poolRewardFromName(row.name),
           href: '/pools',
-          chainId,
-        }
+          chainId: row.chainId,
+        })
+        continue
+      }
+      const aprValue = poolApr(pool)
+      const staked =
+        pool.totalStaked && pool.stakingToken
+          ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+          : 0
+      const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
+      const life = derivePoolLifecycle(pool, currentBlock)
+      const eligibility = evaluateTopPoolsAprEligibility({
+        rewarding: life.rewarding,
+        emissionActive: life.rewarding,
+        apr: aprValue,
+        tvlUsd,
+        rewardPriceUsd: pool.earningTokenPrice ?? null,
+        stakePriceUsd: pool.stakingTokenPrice ?? null,
+      })
+      const stake = pool.stakingToken?.symbol
+      const earn = pool.earningToken?.symbol
+      const name =
+        stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : row.name
+      padded.push({
+        id: row.id,
+        name,
+        apr: eligibility.eligible && aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
+        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool) || undefined,
+        rewards: earn || poolRewardFromName(row.name),
+        href: '/pools',
+        chainId: row.chainId,
       })
     }
+
+    if (padded.length > 0) return padded
 
     return source
       .filter((pool) => {

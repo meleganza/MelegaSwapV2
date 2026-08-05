@@ -35,7 +35,8 @@ describe('MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH', () => {
 
   it('network switch modal is compact with LIVE + PREPARING', () => {
     const modal = load('components/Menu/UserMenu/NetworkSwitchModal.tsx')
-    expect(modal).toContain("maxWidth: '440px'")
+    expect(modal).toContain('MelegaModal')
+    expect(modal).toContain('size="sm"')
     expect(modal).toContain('network-switch-live')
     expect(modal).toContain('network-switch-preparing')
     expect(modal).toContain('headerChainLabel')

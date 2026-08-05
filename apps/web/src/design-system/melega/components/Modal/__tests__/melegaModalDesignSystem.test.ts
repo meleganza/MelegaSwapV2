@@ -30,10 +30,20 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
   it('styles Chain Switch surfaces with Melega modal family', () => {
     const network = load('src/components/Menu/UserMenu/NetworkSwitchModal.tsx')
     const confirm = load('src/components/ChainSwitchConfirmDialog.tsx')
-    expect(network).toContain('melegaModalTokens')
-    expect(network).toContain('data-melega-modal')
+    expect(network).toContain('MelegaModal')
+    expect(network).toContain('testId="network-switch-modal"')
     expect(confirm).toContain('MelegaModal')
     expect(confirm).toContain('chain-switch-confirm-dialog')
+    expect(confirm).toContain('This product is available on')
+  })
+
+  it('Create Farm / Create Pool use md (720px) MelegaModal', () => {
+    const farms = load('src/views/FarmsStudio/FarmsStudioScreen.tsx')
+    const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
+    expect(farms).toContain('size="md"')
+    expect(pools).toContain('size="md"')
+    expect(farms).not.toContain('size="lg"')
+    expect(pools).not.toContain('size="lg"')
   })
 
   it('Create Farm uses accordion + sticky preview', () => {

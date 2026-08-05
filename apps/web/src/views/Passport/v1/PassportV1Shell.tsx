@@ -1,6 +1,6 @@
 /**
- * MELEGA_DEX_V1_PASSPORT_ZERO_REBUILD — entirely new Passport surface.
- * One coherent personal identity + portfolio page. No Command Center.
+ * Portfolio asset overview — total value, liquidity / farm / pool positions, rewards.
+ * No Passport / identity enrollment language.
  */
 import React, { useState, useTransition } from 'react'
 import styled from 'styled-components'
@@ -137,17 +137,12 @@ const BenefitList = styled.ul`
   }
 `
 
-function verificationTone(
-  state: string,
-): 'ok' | 'warn' | 'bad' | 'mute' {
-  if (state === 'verified') return 'ok'
-  if (state === 'pending' || state === 'review_required') return 'warn'
-  if (state === 'not_verified') return 'bad'
-  return 'mute'
+function walletTone(connected: boolean): 'ok' | 'mute' {
+  return connected ? 'ok' : 'mute'
 }
 
 export const PassportV1Shell: React.FC = () => {
-  const { model, cacheKeys } = usePassportV1Runtime()
+  const { model } = usePassportV1Runtime()
   const { disconnect } = useDisconnect()
   const [tab, setTab] = useState<PositionDomain>('liquidity')
   const [, startTransition] = useTransition()
@@ -227,7 +222,7 @@ export const PassportV1Shell: React.FC = () => {
             <HeroRight data-testid="passport-visual">
               <MelegaLogoSvg size={64} />
               <VisualLabel>Portfolio</VisualLabel>
-              <Chip $on={id.walletConnected} $tone={id.walletConnected ? 'ok' : 'mute'}>
+              <Chip $on={id.walletConnected} $tone={walletTone(id.walletConnected)}>
                 {id.walletConnected ? 'Wallet connected' : 'Awaiting wallet'}
               </Chip>
             </HeroRight>
@@ -623,13 +618,9 @@ export const PassportV1Shell: React.FC = () => {
               </Btn>
             )}
             <Btn href="/docs" $ghost>
-              Privacy / verification info
+              Privacy
             </Btn>
           </Row>
-          <Muted style={{ marginTop: 8 }}>
-            Cache scope keys include chain, wallet, and domain (
-            {cacheKeys.identity.split(':').slice(0, 3).join(':')}…).
-          </Muted>
         </Band>
       </Stack>
     </Page>

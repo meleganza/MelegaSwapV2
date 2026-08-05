@@ -72,7 +72,7 @@ export const ChainSwitchConfirmDialog: React.FC<{
   onCancel: () => void
   onConfirm: () => void
   busy?: boolean
-}> = ({ open, targetChainId, productLabel = 'This position', onCancel, onConfirm, busy }) => {
+}> = ({ open, targetChainId, productLabel: _productLabel, onCancel, onConfirm, busy }) => {
   const name = chainDisplayName(targetChainId)
   const short = MELEGA_EXPLORE_CHAIN_LABELS[targetChainId] ?? name
   return (
@@ -86,7 +86,7 @@ export const ChainSwitchConfirmDialog: React.FC<{
       zIndex={10050}
     >
       <Body>
-        {productLabel} is on {short}. Switch network?
+        This product is available on {short}. Switch network?
       </Body>
       <Row>
         <ChainLogo chainId={targetChainId} />

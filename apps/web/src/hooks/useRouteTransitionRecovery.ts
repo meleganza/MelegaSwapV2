@@ -6,23 +6,56 @@ import { useRouter } from 'next/router'
  * never leaves a stale page mounted behind a new URL.
  *
  * Handles ChunkLoadError and Abort/fetch failures for route components.
- * Falls back to a hard navigation to the intended URL when available.
+ * Also hard-navigates when a soft transition stalls (URL changed / pending
+ * but destination never completed).
  */
 export function useRouteTransitionRecovery() {
   const router = useRouter()
 
   useEffect(() => {
     let pendingUrl: string | null = null
+    let stallTimer: number | null = null
+
+    const clearStall = () => {
+      if (stallTimer != null) {
+        window.clearTimeout(stallTimer)
+        stallTimer = null
+      }
+    }
+
+    const hardNav = (target: string) => {
+      const recovering = Boolean(
+        (window.history.state as { isRecoveringFromChunkError?: boolean } | null)?.isRecoveringFromChunkError,
+      )
+      if (recovering) return
+      window.history.replaceState(
+        { ...(window.history.state || {}), isRecoveringFromChunkError: true },
+        '',
+      )
+      if (target) {
+        window.location.assign(target)
+        return
+      }
+      window.location.reload()
+    }
 
     const onStart = (url: string) => {
       pendingUrl = url
+      clearStall()
+      stallTimer = window.setTimeout(() => {
+        const target = pendingUrl || router.asPath || window.location.pathname
+        // Soft transition stalled — force a real page mount.
+        hardNav(target)
+      }, 2000)
     }
 
     const onComplete = () => {
       pendingUrl = null
+      clearStall()
     }
 
     const onError = (err: Error) => {
+      clearStall()
       const name = err?.name ?? ''
       const message = String(err?.message ?? '')
       const isRecoverable =
@@ -35,23 +68,8 @@ export function useRouteTransitionRecovery() {
 
       if (!isRecoverable) return
 
-      const recovering = Boolean(
-        (window.history.state as { isRecoveringFromChunkError?: boolean } | null)?.isRecoveringFromChunkError,
-      )
-      if (recovering) return
-
       const target = pendingUrl || router.asPath || window.location.pathname
-      window.history.replaceState(
-        { ...(window.history.state || {}), isRecoveringFromChunkError: true },
-        '',
-      )
-
-      // Hard navigate so the destination page always mounts (no stale Home).
-      if (target && target !== window.location.pathname + window.location.search) {
-        window.location.assign(target)
-        return
-      }
-      window.location.reload()
+      hardNav(target)
     }
 
     router.events.on('routeChangeStart', onStart)
@@ -59,6 +77,7 @@ export function useRouteTransitionRecovery() {
     router.events.on('hashChangeComplete', onComplete)
     router.events.on('routeChangeError', onError)
     return () => {
+      clearStall()
       router.events.off('routeChangeStart', onStart)
       router.events.off('routeChangeComplete', onComplete)
       router.events.off('hashChangeComplete', onComplete)

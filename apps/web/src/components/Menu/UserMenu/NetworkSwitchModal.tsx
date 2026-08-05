@@ -1,8 +1,7 @@
-import { AtomBox } from '@pancakeswap/ui/components/AtomBox'
-import { Heading, ModalV2, ModalWrapper, Text, ModalV2Props } from '@pancakeswap/uikit'
+import { Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
-import { melegaModalTokens } from 'design-system/melega'
+import { MelegaModal } from 'design-system/melega'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
@@ -48,6 +47,10 @@ const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 `
 
 const ChainCard = styled.button<{ $active: boolean }>`
@@ -121,124 +124,109 @@ const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
         : 'rgba(200, 150, 40, 0.16)'};
 `
 
-interface NetworkSwitchModalProps<T = unknown> extends ModalV2Props {
-  switchNetwork: (x: number) => void
+type NetworkSwitchModalProps = {
+  isOpen: boolean
+  onDismiss?: () => void
+  switchNetwork: (chainId: number) => void
   chainId: number
 }
 
-export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T>) {
-  const { switchNetwork, chainId, ...rest } = props
+export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }: NetworkSwitchModalProps) {
   const { t } = useTranslation()
   const liveChains = filterMelegaVisibleSwitcherChains(chains)
   const preparing = getMelegaPreparingChains()
 
+  const safePick = (next: number) => {
+    try {
+      if (next !== chainId) {
+        switchNetwork(next)
+        onDismiss?.()
+      }
+    } catch {
+      // Never crash the chain selector — wallet rejection stays silent here.
+    }
+  }
+
   return (
-    <ModalV2 closeOnOverlayClick {...rest}>
-      <ModalWrapper
-        onDismiss={props.onDismiss}
-        style={{
-          overflow: 'visible',
-          border: melegaModalTokens.border,
-          borderRadius: melegaModalTokens.radius,
-          background: melegaModalTokens.surface,
-          boxShadow: melegaModalTokens.shadow,
-          maxWidth: melegaModalTokens.maxWidthSm,
-          width: `min(${melegaModalTokens.maxWidthSm}, 100%)`,
-          padding: '4px',
-        }}
-        data-testid="network-switch-modal"
-        data-melega-modal="true"
-        data-melega-modal-size="sm"
-      >
-        <AtomBox position="relative">
-          <AtomBox py="18px" px="16px">
-            <Heading color="text" as="h4" mb="14px" style={{ fontSize: 17, fontWeight: 750 }}>
-              {t('Switch Network')}
-            </Heading>
+    <MelegaModal
+      open={isOpen}
+      onClose={() => onDismiss?.()}
+      title={t('Switch Network')}
+      subtitle={t('Choose a supported network. No redirect.')}
+      size="sm"
+      testId="network-switch-modal"
+      ariaLabel={t('Switch Network')}
+    >
+      <Body>
+        <Section data-testid="network-switch-live">
+          <SectionLabel>
+            <SectionTitle>{t('LIVE')}</SectionTitle>
+            <SectionHint>{t('Trading ready')}</SectionHint>
+          </SectionLabel>
+          <CardGrid>
+            {liveChains.map((chain) => {
+              const active = chainId === chain.id
+              return (
+                <ChainCard
+                  key={`live-${chain.id}`}
+                  type="button"
+                  $active={active}
+                  data-testid={`network-card-${chain.id}`}
+                  data-active={active ? 'true' : 'false'}
+                  title={headerChainTitle(chain.id)}
+                  onClick={() => safePick(chain.id)}
+                >
+                  <ChainLogo chainId={chain.id} width={22} height={22} />
+                  <ChainMeta>
+                    <ChainName $active={active}>{headerChainLabel(chain.id)}</ChainName>
+                    <StatusPill $tone={active ? 'active' : 'live'}>
+                      {active ? t('Active') : t('LIVE')}
+                    </StatusPill>
+                  </ChainMeta>
+                </ChainCard>
+              )
+            })}
+          </CardGrid>
+        </Section>
 
-            <Body>
-              <Section data-testid="network-switch-live">
-                <SectionLabel>
-                  <SectionTitle>{t('LIVE')}</SectionTitle>
-                  <SectionHint>{t('Trading ready')}</SectionHint>
-                </SectionLabel>
-                <CardGrid>
-                  {liveChains.map((chain) => {
-                    const active = chainId === chain.id
-                    return (
-                      <ChainCard
-                        key={`live-${chain.id}`}
-                        type="button"
-                        $active={active}
-                        data-testid={`network-card-${chain.id}`}
-                        data-active={active ? 'true' : 'false'}
-                        title={headerChainTitle(chain.id)}
-                        onClick={() => {
-                          if (chain.id !== chainId) {
-                            switchNetwork(chain.id)
-                            props.onDismiss?.()
-                          }
-                        }}
-                      >
-                        <ChainLogo chainId={chain.id} width={22} height={22} />
-                        <ChainMeta>
-                          <ChainName $active={active}>{headerChainLabel(chain.id)}</ChainName>
-                          <StatusPill $tone={active ? 'active' : 'live'}>
-                            {active ? t('Active') : t('LIVE')}
-                          </StatusPill>
-                        </ChainMeta>
-                      </ChainCard>
-                    )
-                  })}
-                </CardGrid>
-              </Section>
-
-              <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
-                <SectionLabel>
-                  <SectionTitle>{t('PREPARING')}</SectionTitle>
-                  <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
-                </SectionLabel>
-                {preparing.length > 0 ? (
-                  <CardGrid>
-                    {preparing.map((row) => {
-                      const active = chainId === row.chainId
-                      return (
-                        <ChainCard
-                          key={`preparing-${row.chainId}`}
-                          type="button"
-                          $active={active}
-                          data-testid={`network-card-${row.chainId}`}
-                          data-active={active ? 'true' : 'false'}
-                          data-status="PREPARING"
-                          title={row.name}
-                          onClick={() => {
-                            if (row.chainId !== chainId) {
-                              switchNetwork(row.chainId)
-                              props.onDismiss?.()
-                            }
-                          }}
-                        >
-                          <ChainLogo chainId={row.chainId} width={22} height={22} />
-                          <ChainMeta>
-                            <ChainName $active={active}>{headerChainLabel(row.chainId)}</ChainName>
-                            <StatusPill $tone={active ? 'active' : 'preparing'}>
-                              {active ? t('Active') : t('PREPARING')}
-                            </StatusPill>
-                          </ChainMeta>
-                        </ChainCard>
-                      )
-                    })}
-                  </CardGrid>
-                ) : (
-                  <Text fontSize="12px" color="textSubtle" px="2px">
-                    {t('All product chains are LIVE.')}
-                  </Text>
-                )}
-              </Section>
-            </Body>
-          </AtomBox>
-        </AtomBox>
-      </ModalWrapper>
-    </ModalV2>
+        <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
+          <SectionLabel>
+            <SectionTitle>{t('PREPARING')}</SectionTitle>
+            <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
+          </SectionLabel>
+          {preparing.length > 0 ? (
+            <CardGrid>
+              {preparing.map((row) => {
+                const active = chainId === row.chainId
+                return (
+                  <ChainCard
+                    key={`preparing-${row.chainId}`}
+                    type="button"
+                    $active={active}
+                    data-testid={`network-card-${row.chainId}`}
+                    data-active={active ? 'true' : 'false'}
+                    data-status="PREPARING"
+                    title={row.name}
+                    onClick={() => safePick(row.chainId)}
+                  >
+                    <ChainLogo chainId={row.chainId} width={22} height={22} />
+                    <ChainMeta>
+                      <ChainName $active={active}>{headerChainLabel(row.chainId)}</ChainName>
+                      <StatusPill $tone={active ? 'active' : 'preparing'}>
+                        {active ? t('Active') : t('PREPARING')}
+                      </StatusPill>
+                    </ChainMeta>
+                  </ChainCard>
+                )
+              })}
+            </CardGrid>
+          ) : (
+            <Text fontSize="12px" color="textSubtle" px="2px">
+              {t('All product chains are LIVE.')}
+            </Text>
+          )}
+        </Section>
+      </Body>
+    </MelegaModal>
   )
 }

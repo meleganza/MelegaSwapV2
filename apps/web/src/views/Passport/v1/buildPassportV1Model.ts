@@ -145,6 +145,7 @@ export function assertPositionDomainSeparation(args: {
 }
 
 export function buildHeroCtas(identity: PassportHeroIdentityViewModel): PassportHeroCta[] {
+  // Portfolio is an asset overview — no Passport / identity enrollment CTAs.
   if (!identity.walletConnected) {
     return [
       {
@@ -157,69 +158,22 @@ export function buildHeroCtas(identity: PassportHeroIdentityViewModel): Passport
     ]
   }
 
-  // Never show Connect Wallet when already connected.
-  if (!identity.sourceAvailable) {
-    return [
-      {
-        kind: 'view',
-        label: 'View Passport',
-        href: '/passport',
-        enabled: true,
-        primary: true,
-        reason: 'Identity runtime unavailable — portfolio domains may still load.',
-      },
-    ]
-  }
-
-  if (!identity.passportExists) {
-    return [
-      {
-        kind: 'create',
-        label: 'Create Passport',
-        href: null,
-        enabled: false,
-        primary: true,
-        reason: 'Passport enrollment route is not available in production yet.',
-      },
-    ]
-  }
-
-  const ctas: PassportHeroCta[] = [
+  return [
     {
       kind: 'view',
-      label: 'View Passport',
-      href: '/passport',
+      label: 'View Farms',
+      href: '/farms',
       enabled: true,
       primary: true,
     },
-  ]
-
-  if (
-    identity.verificationState === 'not_verified' ||
-    identity.verificationState === 'pending' ||
-    identity.verificationState === 'review_required'
-  ) {
-    ctas.push({
-      kind: 'verify',
-      label: 'Verify Identity',
-      href: null,
-      enabled: false,
-      primary: false,
-      reason: 'Verification flow is not available until Passport enrollment ships.',
-    })
-  }
-
-  if (identity.managementRoute) {
-    ctas.push({
+    {
       kind: 'manage',
-      label: 'Manage Passport',
-      href: identity.managementRoute,
+      label: 'View Pools',
+      href: '/pools',
       enabled: true,
       primary: false,
-    })
-  }
-
-  return ctas
+    },
+  ]
 }
 
 export function buildPortfolioSummary(args: {

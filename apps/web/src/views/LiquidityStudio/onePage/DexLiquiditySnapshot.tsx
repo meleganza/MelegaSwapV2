@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { Info, RefreshCw, Database } from 'lucide-react'
 import useSWR from 'swr'
 import { useAllTokenHighLight, useProtocolDataSWR } from 'state/info/hooks'
+import { LP_HOLDERS_FEE } from 'config/constants/info'
+import { useCanonicalMarketSnapshot } from 'lib/market-data'
 import { liqOne } from './onePageTokens'
 
 type IndexerHealth = {
@@ -375,6 +377,7 @@ async function fetchIndexerHealth(): Promise<IndexerHealth> {
 export const DexLiquiditySnapshot: React.FC = () => {
   const protocol = useProtocolDataSWR()
   const highlight = useAllTokenHighLight()
+  const marketSnapshot = useCanonicalMarketSnapshot()
   const {
     data: health,
     mutate,
@@ -386,9 +389,16 @@ export const DexLiquiditySnapshot: React.FC = () => {
   })
 
   const tvl = protocol?.liquidityUSD
-  const vol24 = protocol?.volumeUSD
+  // Same volume source as Home / Liquidity Market Snapshot — never invent.
+  const vol24 =
+    marketSnapshot.volume24hUsd != null && marketSnapshot.volume24hUsd > 0
+      ? marketSnapshot.volume24hUsd
+      : protocol?.volumeUSD
+  const fees24 =
+    vol24 != null && Number.isFinite(vol24) && vol24 > 0 ? vol24 * LP_HOLDERS_FEE : undefined
   const tvlLabel = formatUsd(tvl)
   const volLabel = formatUsd(vol24)
+  const feesLabel = formatUsd(fees24)
 
   const assets = useMemo(() => {
     const rows = (highlight ?? [])
@@ -508,13 +518,13 @@ export const DexLiquiditySnapshot: React.FC = () => {
       </Chart>
 
       <Footer data-testid="liq-snap-footer" data-pixel-snap-footer="72">
-        <FootBlock>
-          <FootLabel>Indexed Pools</FootLabel>
-          <FootValue>{indexedPools}</FootValue>
+        <FootBlock data-testid="liq-snap-fees">
+          <FootLabel>Fees (24H LP)</FootLabel>
+          <FootValue>{feesLabel ?? '—'}</FootValue>
         </FootBlock>
-        <FootBlock>
-          <FootLabel>Indexed Tokens</FootLabel>
-          <FootValue>{indexedTokens}</FootValue>
+        <FootBlock data-testid="liq-snap-positions">
+          <FootLabel>Positions</FootLabel>
+          <FootValue>{indexedPools !== '—' ? indexedPools : indexedTokens}</FootValue>
         </FootBlock>
         <FootBlock>
           <FootLabel>Last Sync</FootLabel>

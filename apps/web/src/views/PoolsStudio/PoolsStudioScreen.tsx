@@ -130,7 +130,7 @@ export const PoolsStudioScreen: React.FC = () => {
           onClose={closeCreate}
           title="Create Pool"
           subtitle="Configure stake, rewards, schedule and safety."
-          size="lg"
+          size="md"
           testId="create-pool-modal"
           closeTestId="create-pool-modal-close"
           ariaLabel="Create Pool"

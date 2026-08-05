@@ -57,18 +57,18 @@ describe('UX rebuild home mobile section order', () => {
     }
   })
 
-  it('HomeTradeScreen re-exports DexHomeScreen with single Swap entry + mode selector', () => {
+  it('HomeTradeScreen re-exports DexHomeScreen with Smart-only swap panel', () => {
     const entry = readFileSync(path.join(ROOT, 'HomeTradeScreen.tsx'), 'utf8')
     const dex = readFileSync(path.join(ROOT, 'DexHomeScreen.tsx'), 'utf8')
     const panel = readFileSync(path.join(ROOT, 'HomeSwapPanel.tsx'), 'utf8')
     expect(entry).toMatch(/DexHomeScreen/)
-    expect(dex).toMatch(/dex-home-start-trading[\s\S]{0,120}Swap/)
-    expect(dex).toContain('data-testid="dex-home-start-trading"')
+    expect(dex).toContain('data-testid="dex-home-instant-swap"')
+    expect(dex).not.toContain('dex-home-start-trading')
     expect(dex).not.toContain('Trade Terminal')
     expect(dex).not.toContain('Instant Swap')
-    expect(dex).not.toContain('Smart Swap')
     expect(dex).toContain('data-home-section="hero"')
-    expect(panel).toContain('TradeModeSelector')
+    expect(panel).toContain("experience: SwapExperienceMode = 'smart'")
     expect(panel).toContain('SmartSwapForm')
+    expect(panel).not.toContain('TradeModeSelector')
   })
 })

@@ -10,7 +10,6 @@ import { getActiveMenuItem, getActiveSubMenuItem } from 'components/Menu/utils'
 import { useAccount } from 'wagmi'
 import { chains } from 'utils/wagmi'
 import { useMemo } from 'react'
-import { ChainId } from '@pancakeswap/sdk'
 import Dots from '../Loader/Dots'
 
 // Where chain is not supported or page not supported
@@ -89,9 +88,8 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
             onClick={() =>
               logout().then(() => {
                 // Respect page-supported chains — never force BSC fallback.
-                const preferred =
-                  supportedMainnetChains[0]?.id ?? pageSupportedChains?.[0] ?? ChainId.BSC
-                switchNetworkLocal(preferred)
+                const preferred = supportedMainnetChains[0]?.id ?? pageSupportedChains?.[0]
+                if (preferred != null) switchNetworkLocal(preferred)
               })
             }
           >

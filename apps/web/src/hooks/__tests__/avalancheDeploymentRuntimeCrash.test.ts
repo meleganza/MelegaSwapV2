@@ -74,9 +74,10 @@ describe('Avalanche deployment runtime crash guards', () => {
 })
 
 describe('Switch Network modal compact redesign', () => {
-  it('is compact with LIVE + PREPARING and maxWidth 440px', () => {
+  it('is compact with LIVE + PREPARING via MelegaModal sm (440px)', () => {
     const src = readFileSync(SWITCH_MODAL, 'utf8')
-    expect(src).toContain("maxWidth: '440px'")
+    expect(src).toContain('MelegaModal')
+    expect(src).toContain('size="sm"')
     expect(src).toContain('network-switch-live')
     expect(src).toContain('network-switch-preparing')
     expect(src).toContain('PREPARING')

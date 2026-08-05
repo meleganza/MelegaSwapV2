@@ -34,16 +34,17 @@ describe('DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY', () => {
     expect(cutover).not.toMatch(/formatted:\s*card\.userStaked\?\.toString\(\)/)
   })
 
-  it('removes Liquidity ticker accent and consolidates Home to single Swap entry', () => {
+  it('removes Liquidity ticker accent and consolidates Home swap to Smart-only panel', () => {
     const tier = loadSrc('lib/trending/tierTrendingModel.ts')
     const home = load('DexHomeScreen.tsx')
     const style = load('HomeTradeGlobalStyle.tsx')
     const panel = load('HomeSwapPanel.tsx')
     expect(tier).not.toMatch(/return \{\s*accent:\s*'Liquidity'\s*\}/)
-    expect(home).toContain('dex-home-start-trading')
+    expect(home).toContain('dex-home-instant-swap')
     expect(home).not.toContain('dex-home-smart-swap')
     expect(home).not.toContain('Trade Terminal')
-    expect(panel).toContain('TradeModeSelector')
+    expect(home).not.toContain('dex-home-start-trading')
+    expect(panel).toContain("experience: SwapExperienceMode = 'smart'")
     expect(style).toMatch(/is-disconnected \.token-amount-input[\s\S]*pointer-events:\s*auto/)
   })
 

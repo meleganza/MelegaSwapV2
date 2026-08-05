@@ -1,5 +1,5 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { ChainId, NATIVE } from '@pancakeswap/sdk'
+import { ChainId } from '@pancakeswap/sdk'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -12,7 +12,6 @@ import {
   UserMenuDivider,
   UserMenuItem,
   useMatchBreakpoints,
-  useModal,
   useTooltip,
 } from '@pancakeswap/uikit'
 import { useAccount, useNetwork } from 'wagmi'
@@ -100,8 +99,10 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
     },
   )
   const { chain } = useNetwork()
-  const localChainId = useLocalNetworkChain() || ChainId.BSC
+  const localChainId = useLocalNetworkChain() ?? filterMelegaVisibleSwitcherChains(chains)[0]?.id
   const [, setSessionChainId] = useSessionChainId()
+
+  if (localChainId == null) return null
 
   const localChainName = headerChainLabel(localChainId)
   const localChainTitle = headerChainTitle(localChainId)
@@ -161,22 +162,12 @@ export const NetworkSwitcher = () => {
     }
   }
 
-  const [onPresentNetworkModal] = useModal(
-    <NetworkSwitchModal
-      isOpen={open}
-      onDismiss={() => setOpen(false)}
-      switchNetwork={switchNetworkAsync}
-      chainId={chainId}
-    />,
-  )
-
   useNetworkConnectorUpdater()
 
   const foundChain = useMemo(
     () => chains.find((c) => c.id === (isLoading ? pendingChainId || chainId : chainId)),
     [isLoading, pendingChainId, chainId],
   )
-  const symbol = NATIVE[foundChain?.id]?.symbol ?? foundChain?.nativeCurrency?.symbol
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
     t('Unable to switch network. Please try it on your wallet'),
     { placement: 'bottom' },
@@ -188,13 +179,21 @@ export const NetworkSwitcher = () => {
     return null
   }
 
+  const safeSwitch = async (next: number) => {
+    try {
+      await switchNetworkAsync(next)
+    } catch {
+      // Never crash the header — wallet rejection / unsupported chain stay toast-only.
+    }
+  }
+
   const visibleChains = filterMelegaVisibleSwitcherChains(chains)
   const isBnbOnlyProduction = visibleChains.length === 1 && visibleChains[0]?.id === ChainId.BSC
 
   if (isBnbOnlyProduction && account && (isWrongNetwork || isNotMatched)) {
     return (
       <Box height="100%" px="16px" data-network-status-pill>
-        <Button scale="sm" onClick={() => switchNetworkAsync(ChainId.BSC)}>
+        <Button scale="sm" onClick={() => void safeSwitch(ChainId.BSC)}>
           Switch wallet to BSC
         </Button>
       </Box>
@@ -233,10 +232,9 @@ export const NetworkSwitcher = () => {
   }
 
   return (
-    <Box ref={cannotChangeNetwork ? targetRef : null} height="100%">
+    <Box ref={cannotChangeNetwork ? targetRef : null} height="100%" data-testid="network-switcher-root">
       {cannotChangeNetwork && tooltipVisible && tooltip}
       <UserMenu
-        // mr="8px"
         placement="bottom"
         variant={isLoading ? 'pending' : isWrongNetwork ? 'danger' : 'default'}
         avatarSrc={`/images/chains/${[8453, 42161, 10, 324].includes(chainId) ? `${chainId}-1` : chainId}.png`}
@@ -257,18 +255,22 @@ export const NetworkSwitcher = () => {
       >
         {() =>
           isNotMatched ? (
-            <WrongNetworkSelect switchNetwork={switchNetworkAsync} chainId={chainId} />
+            <WrongNetworkSelect switchNetwork={safeSwitch} chainId={chainId} />
           ) : (
-            <NetworkSelect switchNetwork={switchNetworkAsync} chainId={chainId} />
+            <NetworkSelect switchNetwork={safeSwitch} chainId={chainId} />
           )
         }
       </UserMenu>
-      <NetworkSwitchModal
-        isOpen={open}
-        onDismiss={() => setOpen(false)}
-        switchNetwork={switchNetworkAsync}
-        chainId={chainId}
-      />
+      {open ? (
+        <NetworkSwitchModal
+          isOpen={open}
+          onDismiss={() => setOpen(false)}
+          switchNetwork={(id) => {
+            void safeSwitch(id)
+          }}
+          chainId={chainId}
+        />
+      ) : null}
     </Box>
   )
 }

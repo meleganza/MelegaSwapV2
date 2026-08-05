@@ -1,23 +1,24 @@
 /**
- * Passport Zero Rebuild V1 — dense premium black Melega tokens.
+ * Portfolio surface tokens — aligned with Home / Farms / Pools (uxRebuild).
  */
 import styled, { css, keyframes } from 'styled-components'
+import { uxRebuildColors, uxRebuildFont, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 
 export const px = {
-  gold: '#F2C84C',
-  goldDim: 'rgba(242, 200, 76, 0.14)',
-  goldLine: 'rgba(242, 200, 76, 0.32)',
-  bg: '#070707',
+  gold: uxRebuildColors.gold,
+  goldDim: 'rgba(221, 185, 47, 0.14)',
+  goldLine: 'rgba(221, 185, 47, 0.32)',
+  bg: uxRebuildColors.pageBg,
   panel: 'rgba(14, 14, 14, 0.96)',
   panel2: 'rgba(18, 18, 18, 0.98)',
   line: 'rgba(255, 255, 255, 0.08)',
-  text: '#F4F4F4',
-  mute: '#9A9A9A',
-  mute2: '#6E6E6E',
-  ok: '#3DDC97',
-  warn: '#FFB020',
-  bad: '#FF6B6B',
-  radius: '10px',
+  text: uxRebuildColors.text,
+  mute: uxRebuildColors.secondary,
+  mute2: uxRebuildColors.muted,
+  ok: uxRebuildColors.positive,
+  warn: uxRebuildColors.warning,
+  bad: uxRebuildColors.error,
+  radius: uxRebuildRadius.card,
 } as const
 
 const rise = keyframes`
@@ -28,15 +29,15 @@ const rise = keyframes`
 export const Page = styled.main`
   box-sizing: border-box;
   width: 100%;
-  max-width: 1180px;
+  max-width: ${uxRebuildLayout.contentMax};
   margin: 0 auto;
   padding: 12px 14px 48px;
   color: ${px.text};
   background:
-    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(242, 200, 76, 0.08), transparent 55%),
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(221, 185, 47, 0.08), transparent 55%),
     linear-gradient(180deg, #0a0a0a 0%, ${px.bg} 28%, #050505 100%);
   min-height: 100vh;
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: ${uxRebuildFont};
   overflow-x: hidden;
 
   *,

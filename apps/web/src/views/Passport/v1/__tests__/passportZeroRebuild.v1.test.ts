@@ -210,7 +210,7 @@ describe('Passport Zero Rebuild V1', () => {
     expect(model.liquidity).toHaveLength(0)
   })
 
-  it('2. connected wallet with no Passport', () => {
+  it('2. connected wallet portfolio (no Passport identity CTAs)', () => {
     const identity = baseIdentity({
       address: '0x8f1234567890abcdef1234567890abcdef7a3B',
     })
@@ -226,11 +226,13 @@ describe('Passport Zero Rebuild V1', () => {
     })
     expect(identity.passportExists).toBe(false)
     expect(model.surfaceState).toBe('CONNECTED_NO_PASSPORT')
-    expect(model.heroCtas.some((c) => c.kind === 'create')).toBe(true)
+    expect(model.heroCtas.some((c) => c.kind === 'create')).toBe(false)
+    expect(model.heroCtas.some((c) => c.label.includes('Passport'))).toBe(false)
     expect(model.heroCtas.some((c) => c.kind === 'connect')).toBe(false)
+    expect(model.heroCtas.some((c) => c.href === '/farms')).toBe(true)
   })
 
-  it('3. verified Passport', () => {
+  it('3. verified wallet portfolio CTAs point to Farms/Pools', () => {
     const identity = baseIdentity({
       address: '0x8f1234567890abcdef1234567890abcdef7a3B',
       fixture: {
@@ -253,6 +255,7 @@ describe('Passport Zero Rebuild V1', () => {
     })
     expect(model.surfaceState).toBe('CONNECTED_PASSPORT_VERIFIED')
     expect(model.heroCtas.some((c) => c.kind === 'view')).toBe(true)
+    expect(model.heroCtas.every((c) => !/Passport|Verify Identity/i.test(c.label))).toBe(true)
   })
 
   it('4. wallet with Liquidity positions', () => {

@@ -12,19 +12,21 @@ function load(rel: string) {
 }
 
 describe('Post-release P0 routing & runtime repair', () => {
-  it('header primary nav uses stable Next Link without preventDefault intercept', () => {
+  it('header primary nav uses navigatePrimary with hard-fallback (no stale Home)', () => {
     const header = load('design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx')
-    expect(header).not.toContain('navigatePrimary')
-    expect(header).not.toContain('event.preventDefault()')
+    expect(header).toContain('navigatePrimary')
+    expect(header).toContain('event.preventDefault()')
+    expect(header).toContain('window.location.assign')
     expect(header).toContain('prefetch={false}')
     expect(header).toContain('melega-header-nav-')
   })
 
-  it('route recovery hard-navigates on Abort/chunk failures', () => {
+  it('route recovery hard-navigates on Abort/chunk failures and soft-nav stalls', () => {
     const recovery = load('hooks/useRouteTransitionRecovery.ts')
     expect(recovery).toContain('Abort fetching component for route')
     expect(recovery).toContain('window.location.assign')
     expect(recovery).toContain('routeChangeStart')
+    expect(recovery).toContain('stall')
   })
 
   it('Featured Trade uses filesystem project-hq route for client mount', () => {

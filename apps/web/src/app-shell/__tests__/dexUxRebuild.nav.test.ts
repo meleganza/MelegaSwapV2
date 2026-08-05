@@ -91,7 +91,7 @@ describe('DEX UX Rebuild navigation', () => {
       /ListPageHero/,
     )
     expect(readFileSync(path.join(ROOT, 'views/Passport/v1/PassportV1Shell.tsx'), 'utf8')).toMatch(
-      /MARCO Passport/,
+      /Your Portfolio|Portfolio Summary/,
     )
   })
 
