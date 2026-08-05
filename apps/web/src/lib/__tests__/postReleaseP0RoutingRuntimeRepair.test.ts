@@ -29,6 +29,12 @@ describe('Post-release P0 routing & runtime repair', () => {
     expect(recovery).toContain('stall')
   })
 
+  it('app does not nest BrowserRouter over Next history', () => {
+    const app = load('pages/_app-full.tsx')
+    expect(app).toContain('MemoryRouter as Router')
+    expect(app).not.toContain('BrowserRouter')
+  })
+
   it('Featured Trade uses filesystem project-hq route for client mount', () => {
     const rail = load('views/HomeTrade/FeaturedProjectsRail.tsx')
     expect(rail).toContain('/project-hq/${p.slug}')

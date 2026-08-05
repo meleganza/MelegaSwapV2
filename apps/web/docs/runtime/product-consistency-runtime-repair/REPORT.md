@@ -12,6 +12,7 @@ Forbidden untouched: contracts, Smart Swap logic, Treasury, fee economics, AMM l
 
 ## Part 1 — Header navigation (P0)
 
+- **Root fix:** `_app-full.tsx` uses `MemoryRouter` instead of `BrowserRouter` so react-router-dom no longer owns `window.history` (which hung Next soft-nav after `beforeHistoryChange` with Home still mounted).
 - `MelegaGlobalHeader.navigatePrimary`: preventDefault + `router.push` with 1.6s stall hard-fallback via `window.location.assign`, plus post-push pathname verify.
 - `useRouteTransitionRecovery`: 2s stall timer + hard nav on Abort/chunk errors.
 

@@ -30,7 +30,9 @@ import GlobalStyle from '../style/Global'
 import R107GlobalVisualStyle from 'design-system/melega/R107GlobalVisualStyle'
 import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
-import { BrowserRouter as Router } from 'react-router-dom'
+// MemoryRouter only: do not use react-router Browser history APIs here.
+// A history-owning RR wrapper hung Next soft-nav (URL changed, Home stayed mounted).
+import { MemoryRouter as Router } from 'react-router-dom'
 import { CHAIN_IDS } from 'utils/wagmi'
 import { useRouteTransitionRecovery } from 'hooks/useRouteTransitionRecovery'
 import type { NextPageWithLayout } from './_app-types'

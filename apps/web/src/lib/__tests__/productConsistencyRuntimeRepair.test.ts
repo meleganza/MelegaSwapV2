@@ -16,6 +16,12 @@ describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
     expect(header).toContain('event.preventDefault()')
   })
 
+  it('P0 root: MemoryRouter (not BrowserRouter) so Next soft-nav can complete', () => {
+    const app = load('pages/_app-full.tsx')
+    expect(app).toContain('MemoryRouter as Router')
+    expect(app).not.toContain('BrowserRouter')
+  })
+
   it('P0 chain switch uses MelegaModal and product availability copy', () => {
     const network = load('components/Menu/UserMenu/NetworkSwitchModal.tsx')
     const confirm = load('components/ChainSwitchConfirmDialog.tsx')
