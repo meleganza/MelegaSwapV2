@@ -1,5 +1,6 @@
 /**
- * Featured Projects — reuses Home FeaturedProjectsRail (no duplicated card system).
+ * Featured Projects — single pipeline via FeaturedProjectsRail (Home / Projects / Project Page).
+ * Never duplicate the card system.
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -33,12 +34,29 @@ const Meta = styled.span`
   color: ${projectsStudioColors.mute};
 `
 
-export const FeaturedProjectsSection: React.FC = () => (
-  <Shell data-testid="projects-directory-featured" data-projects-section="featured">
-    <Head>
-      <Title>Featured Projects</Title>
-      <Meta>Same cards as Home</Meta>
-    </Head>
+export type FeaturedProjectsSectionProps = {
+  /** Visual host context — same rail component everywhere. */
+  surface?: 'home' | 'projects' | 'project-page'
+  showHead?: boolean
+}
+
+/** Canonical Featured Projects surface — one rail, three hosts. */
+export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = ({
+  surface = 'projects',
+  showHead = true,
+}) => (
+  <Shell
+    data-testid={surface === 'projects' ? 'projects-directory-featured' : `featured-projects-${surface}`}
+    data-projects-section="featured"
+    data-featured-pipeline="FeaturedProjectsRail"
+    data-featured-surface={surface}
+  >
+    {showHead ? (
+      <Head>
+        <Title>Featured Projects</Title>
+        <Meta>Same pipeline everywhere</Meta>
+      </Head>
+    ) : null}
     <FeaturedProjectsRail />
   </Shell>
 )

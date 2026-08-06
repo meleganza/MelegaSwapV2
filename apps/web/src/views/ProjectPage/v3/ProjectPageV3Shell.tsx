@@ -22,6 +22,11 @@ import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import { getFeaturedPackage, getTrendBoostPackage } from 'lib/monetization/packages'
+import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
+import { ClaimProjectWizardModal } from 'views/shared/monetization/ClaimProjectWizardModal'
+import { ProjectMarketingHistory } from 'views/shared/monetization/ProjectMarketingHistory'
+import { COMMERCIAL_SERVICES, type CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
+import { FeaturedProjectsSection } from 'views/ProjectsStudio/components/FeaturedProjectsSection'
 import { humanEnumLabel } from '../presentation/humanLabels'
 import { Band, BandHead, BandMeta, BandTitle, Btn, Chip, Muted, Page, Row, pp } from '../v1/theme'
 import {
@@ -228,19 +233,17 @@ const SparkStub = styled.svg`
 
 const GrowGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (min-width: 1100px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `
 
-const GrowCard = styled.a`
+const GrowCard = styled.button`
+  appearance: none;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -249,14 +252,23 @@ const GrowCard = styled.a`
   border-radius: 12px;
   border: 1px solid ${pp.goldLine};
   background: rgba(244, 196, 48, 0.04);
+  text-align: left;
   text-decoration: none;
   color: inherit;
+  font: inherit;
   transition: border-color 150ms ease, background 150ms ease;
 
   &:hover {
     border-color: rgba(244, 196, 48, 0.55);
     background: rgba(244, 196, 48, 0.08);
   }
+`
+
+const GrowIcon = styled.div`
+  font-size: 15px;
+  line-height: 1;
+  color: ${pp.gold};
+  margin-bottom: 2px;
 `
 
 const GrowTitle = styled.div`
@@ -269,6 +281,10 @@ const GrowBenefit = styled.div`
   font-size: 11px;
   color: ${pp.mute};
   line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 const GrowPrice = styled.div`
@@ -288,6 +304,27 @@ const GrowCta = styled.span`
   font-size: 12px;
   font-weight: 750;
   color: ${pp.gold};
+`
+
+const TrustRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+`
+
+const TrustBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.78);
 `
 
 const ClaimCard = styled.div`
@@ -447,6 +484,10 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
   const deployments = useMemo(() => buildProjectChainDeployments(document), [document])
   const [selectedChainId, setSelectedChainId] = useState(() => defaultSelectedChainId(deployments))
   const [copied, setCopied] = useState(false)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [checkoutService, setCheckoutService] = useState<CommercialServiceId | null>(null)
+  const [claimOpen, setClaimOpen] = useState(false)
+  const [historyKey, setHistoryKey] = useState(0)
   const selected =
     deployments.find((d) => d.chainId === selectedChainId) ??
     deployments.find((d) => d.status === 'LIVE') ??
@@ -472,7 +513,48 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
   const market = useProjectLiveMarket(document.slug, marketsDocument.markets.length, contract, chainId)
   const featuredPkg = getFeaturedPackage('featured_1w')
   const trendPkg = getTrendBoostPackage('trend_6h')
-  const claimHref = `/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}`
+  const openBoost = useCallback((service: CommercialServiceId) => {
+    if (service === 'claim-project') {
+      setClaimOpen(true)
+      return
+    }
+    const meta = COMMERCIAL_SERVICES.find((s) => s.id === service)
+    if (meta?.externalHref) {
+      window.location.href = meta.externalHref(chainId)
+      return
+    }
+    setCheckoutService(service)
+    setCheckoutOpen(true)
+  }, [chainId])
+
+  const boostTestId = (id: CommercialServiceId): string => {
+    const map: Record<CommercialServiceId, string> = {
+      featured: 'project-v3-grow-featured',
+      'trend-boost': 'project-v3-grow-trend',
+      liquidity: 'project-v3-grow-liquidity',
+      'create-farm': 'project-v3-grow-farm',
+      'create-pool': 'project-v3-grow-pool',
+      'claim-project': 'project-v3-grow-claim',
+    }
+    return map[id]
+  }
+
+  const boostCards = useMemo(
+    () =>
+      COMMERCIAL_SERVICES.map((s) => {
+        if (s.id === 'featured') {
+          return { ...s, priceHint: `${featuredPkg.usdPrice} USD`, cta: 'Checkout →' }
+        }
+        if (s.id === 'trend-boost') {
+          return { ...s, priceHint: `${trendPkg.usdPrice} USD`, cta: 'Checkout →' }
+        }
+        if (s.id === 'claim-project') {
+          return { ...s, cta: 'Claim →' }
+        }
+        return { ...s, cta: 'Open →' }
+      }),
+    [featuredPkg.usdPrice, trendPkg.usdPrice],
+  )
 
   const chainFarms = useMemo(
     () => filterParticipationByChain(participationDocument.farms, chainId),
@@ -570,6 +652,19 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
               </div>
             </Row>
 
+            <TrustRow data-testid="project-v3-trust-badges">
+              <TrustBadge data-testid="trust-verified">Verified · {verified}</TrustBadge>
+              <TrustBadge data-testid="trust-liquidity">Liquidity · {dash(market.liquidity)}</TrustBadge>
+              <TrustBadge data-testid="trust-community">
+                Community · {socials.length ? `${socials.length} links` : '—'}
+              </TrustBadge>
+              <TrustBadge data-testid="trust-audit">
+                Audit · {readinessLabel !== '—' ? readinessLabel : 'Pending'}
+              </TrustBadge>
+              <TrustBadge data-testid="trust-age">Age · —</TrustBadge>
+              <TrustBadge data-testid="trust-volume">Volume · {dash(market.volume24h)}</TrustBadge>
+            </TrustRow>
+
             {categories.length ? (
               <Row style={{ marginTop: 8, gap: 6, flexWrap: 'wrap' }} data-testid="project-v3-categories">
                 {categories.slice(0, 4).map((c) => (
@@ -645,7 +740,15 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
                 >
                   {explorerLabelFor(chainId)}
                 </Btn>
-                <Btn $ghost href={claimHref} data-testid="project-v3-claim-hero">
+                <Btn
+                  $ghost
+                  href="#claim-wizard"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setClaimOpen(true)
+                  }}
+                  data-testid="project-v3-claim-hero"
+                >
                   Claim
                 </Btn>
               </ContractRow>
@@ -728,7 +831,15 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
           <Btn href={`/pools?create=1&chain=${chainId}`} data-testid="project-v3-pool">
             Pool
           </Btn>
-          <Btn $ghost href={claimHref} data-testid="project-v3-claim-action">
+          <Btn
+            $ghost
+            href="#claim-wizard"
+            onClick={(e) => {
+              e.preventDefault()
+              setClaimOpen(true)
+            }}
+            data-testid="project-v3-claim-action"
+          >
             Claim
           </Btn>
         </ActionBar>
@@ -791,10 +902,11 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
         </EconomyGrid>
       </DenseBand>
 
-      {/* GROW YOUR PROJECT */}
+      {/* BOOST YOUR PROJECT — commercial Growth Hub */}
       <DenseBand
         data-testid="project-v3-grow"
-        data-project-section="grow"
+        data-project-section="growth-hub"
+        data-growth-hub="boost-your-project"
         style={{
           borderColor: pp.goldLine,
           background:
@@ -802,52 +914,30 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
         }}
       >
         <BandHead>
-          <BandTitle>Grow Your Project</BandTitle>
-          <BandMeta>Increase visibility across the Melega ecosystem.</BandMeta>
+          <BandTitle>Boost Your Project</BandTitle>
+          <BandMeta>Increase visibility. Grow liquidity. Acquire holders.</BandMeta>
         </BandHead>
-        <GrowGrid>
-          <GrowCard href={`${claimHref}#featured`} data-testid="project-v3-grow-featured">
-            <GrowTitle>Featured</GrowTitle>
-            <GrowBenefit>Home Featured placement for maximum discovery.</GrowBenefit>
-            <GrowPrice>{featuredPkg.usdPrice} USD</GrowPrice>
-            <GrowDuration>{featuredPkg.durationLabel}</GrowDuration>
-            <GrowCta>Checkout →</GrowCta>
-          </GrowCard>
-          <GrowCard href={`${claimHref}#trend-boost`} data-testid="project-v3-grow-trend">
-            <GrowTitle>Trend Boost</GrowTitle>
-            <GrowBenefit>Amplify presence on Trending surfaces.</GrowBenefit>
-            <GrowPrice>{trendPkg.usdPrice} USD</GrowPrice>
-            <GrowDuration>{trendPkg.durationLabel}</GrowDuration>
-            <GrowCta>Checkout →</GrowCta>
-          </GrowCard>
-          <GrowCard
-            href={`/liquidity-studio?view=add&chain=${chainId}`}
-            data-testid="project-v3-grow-liquidity"
-          >
-            <GrowTitle>Liquidity</GrowTitle>
-            <GrowBenefit>Deepen markets with LP on Melega DEX.</GrowBenefit>
-            <GrowPrice>Create LP</GrowPrice>
-            <GrowDuration>Liquidity Studio</GrowDuration>
-            <GrowCta>Open →</GrowCta>
-          </GrowCard>
-          <GrowCard href={`/farms?create=1&chain=${chainId}`} data-testid="project-v3-grow-farm">
-            <GrowTitle>Farm</GrowTitle>
-            <GrowBenefit>Launch incentives for LP holders.</GrowBenefit>
-            <GrowPrice>Create Farm</GrowPrice>
-            <GrowDuration>Farms Studio</GrowDuration>
-            <GrowCta>Open →</GrowCta>
-          </GrowCard>
-          <GrowCard href={`/pools?create=1&chain=${chainId}`} data-testid="project-v3-grow-pool">
-            <GrowTitle>Pool</GrowTitle>
-            <GrowBenefit>Stake rewards for single-asset holders.</GrowBenefit>
-            <GrowPrice>Create Pool</GrowPrice>
-            <GrowDuration>Pools Studio</GrowDuration>
-            <GrowCta>Open →</GrowCta>
-          </GrowCard>
+        <GrowGrid data-testid="project-growth-hub">
+          {boostCards.map((card) => (
+            <GrowCard
+              key={card.id}
+              type="button"
+              onClick={() => openBoost(card.id)}
+              data-testid={boostTestId(card.id)}
+              data-growth-service={card.id}
+            >
+              <GrowIcon aria-hidden>{card.icon}</GrowIcon>
+              <GrowTitle>{card.title}</GrowTitle>
+              <GrowBenefit>{card.description}</GrowBenefit>
+              <GrowPrice>{card.priceHint}</GrowPrice>
+              <GrowDuration>{card.id === 'featured' ? featuredPkg.durationLabel : card.id === 'trend-boost' ? trendPkg.durationLabel : 'Melega Studio'}</GrowDuration>
+              <GrowCta>{card.cta}</GrowCta>
+            </GrowCard>
+          ))}
         </GrowGrid>
       </DenseBand>
 
-      {/* CLAIM — compact */}
+      {/* CLAIM — opens wizard */}
       <DenseBand data-testid="project-v3-claim" data-project-section="claim">
         <ClaimCard>
           <div>
@@ -861,10 +951,31 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
               <li>socials</li>
             </ClaimList>
           </div>
-          <Btn href={claimHref} data-testid="project-v3-claim-cta">
+          <Btn
+            href="#claim-wizard"
+            onClick={(e) => {
+              e.preventDefault()
+              setClaimOpen(true)
+            }}
+            data-testid="project-v3-claim-cta"
+          >
             Verify ownership
           </Btn>
         </ClaimCard>
+      </DenseBand>
+
+      {/* MARKETING HISTORY */}
+      <DenseBand data-testid="project-v3-marketing-history" data-project-section="marketing-history">
+        <BandHead>
+          <BandTitle>Marketing History</BandTitle>
+          <BandMeta>Featured · Trend · Claim · Farm · Pool · Liquidity</BandMeta>
+        </BandHead>
+        <ProjectMarketingHistory slug={document.slug} refreshKey={historyKey} />
+      </DenseBand>
+
+      {/* FEATURED PROJECTS — same pipeline as Home / Projects */}
+      <DenseBand data-testid="project-v3-featured-pipeline" data-project-section="featured">
+        <FeaturedProjectsSection surface="project-page" />
       </DenseBand>
 
       {/* ABOUT — only when content exists */}
@@ -943,6 +1054,35 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
           </TransparencyBody>
         </TransparencyDetails>
       </div>
+
+      <CommercialCheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        projectId={contract ? `claim:${contract.toLowerCase()}` : `claim:${document.slug}`}
+        projectSlug={document.slug}
+        projectContract={contract}
+        chainId={chainId}
+        initialService={checkoutService}
+        identityReady
+        onOpenClaim={() => setClaimOpen(true)}
+        onHistoryChange={() => setHistoryKey((k) => k + 1)}
+      />
+      <ClaimProjectWizardModal
+        open={claimOpen}
+        onClose={() => setClaimOpen(false)}
+        projectSlug={document.slug}
+        projectName={document.identity.displayName}
+        projectContract={contract}
+        initialDraft={{
+          description: description || '',
+          website: website?.url || '',
+          x: xLink?.url || '',
+          telegram: tgLink?.url || '',
+          discord: discordLink?.url || '',
+          logo: logoUrl || '',
+        }}
+        onPublished={() => setHistoryKey((k) => k + 1)}
+      />
     </Page>
   )
 }

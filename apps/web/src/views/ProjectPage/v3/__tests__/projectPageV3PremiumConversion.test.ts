@@ -83,15 +83,17 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
     expect(shell).not.toMatch(/trendPositive[\s\S]*return \[[0-9]/)
   })
 
-  it('Grow Your Project has five cards with checkout destinations', () => {
-    expect(shell).toContain('Grow Your Project')
+  it('Boost Your Project Growth Hub has six commercial cards', () => {
+    expect(shell).toContain('Boost Your Project')
+    expect(shell).toContain('Increase visibility. Grow liquidity. Acquire holders.')
     expect(shell).toContain('project-v3-grow-featured')
     expect(shell).toContain('project-v3-grow-trend')
     expect(shell).toContain('project-v3-grow-liquidity')
     expect(shell).toContain('project-v3-grow-farm')
     expect(shell).toContain('project-v3-grow-pool')
-    expect(shell).toContain('#featured')
-    expect(shell).toContain('#trend-boost')
+    expect(shell).toContain('project-v3-grow-claim')
+    expect(shell).toContain('CommercialCheckoutModal')
+    expect(shell).toContain('ClaimProjectWizardModal')
     expect(shell).toContain("getTrendBoostPackage('trend_6h')")
   })
 

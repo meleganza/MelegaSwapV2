@@ -1,0 +1,288 @@
+{
+  "mission": "MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT",
+  "base": "http://127.0.0.1:3032",
+  "at": "2026-08-06T08:40:18.735Z",
+  "results": [
+    {
+      "viewport": "1440",
+      "status": "ok",
+      "hub": {
+        "grow": true,
+        "boostTitle": true,
+        "tagline": true,
+        "cards": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "trust": true,
+        "history": true,
+        "featured": true,
+        "overflowX": false
+      },
+      "featuredModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 298,
+        "withinViewport": true
+      },
+      "trendModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 547,
+        "withinViewport": true
+      },
+      "claimModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "claim-project-wizard-modal",
+        "title": "Claim Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 275,
+        "withinViewport": true
+      },
+      "homeFeatured": true,
+      "projectsFeatured": true
+    },
+    {
+      "viewport": "1280",
+      "status": "ok",
+      "hub": {
+        "grow": true,
+        "boostTitle": true,
+        "tagline": true,
+        "cards": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "trust": true,
+        "history": true,
+        "featured": true,
+        "overflowX": false
+      },
+      "featuredModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 298,
+        "withinViewport": true
+      },
+      "trendModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 547,
+        "withinViewport": true
+      },
+      "claimModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "claim-project-wizard-modal",
+        "title": "Claim Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 275,
+        "withinViewport": true
+      },
+      "homeFeatured": true,
+      "projectsFeatured": true
+    },
+    {
+      "viewport": "1024",
+      "status": "ok",
+      "hub": {
+        "grow": true,
+        "boostTitle": true,
+        "tagline": true,
+        "cards": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "trust": true,
+        "history": true,
+        "featured": true,
+        "overflowX": false
+      },
+      "featuredModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 298,
+        "withinViewport": true
+      },
+      "trendModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 547,
+        "withinViewport": true
+      },
+      "claimModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "claim-project-wizard-modal",
+        "title": "Claim Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 275,
+        "withinViewport": true
+      },
+      "homeFeatured": true,
+      "projectsFeatured": true
+    },
+    {
+      "viewport": "768",
+      "status": "ok",
+      "hub": {
+        "grow": true,
+        "boostTitle": true,
+        "tagline": true,
+        "cards": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "trust": true,
+        "history": true,
+        "featured": true,
+        "overflowX": false
+      },
+      "featuredModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 298,
+        "withinViewport": true
+      },
+      "trendModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 547,
+        "withinViewport": true
+      },
+      "claimModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "claim-project-wizard-modal",
+        "title": "Claim Project",
+        "footer": true,
+        "preview": true,
+        "width": 740,
+        "height": 275,
+        "withinViewport": true
+      },
+      "homeFeatured": true,
+      "projectsFeatured": true
+    },
+    {
+      "viewport": "390",
+      "status": "ok",
+      "hub": {
+        "grow": true,
+        "boostTitle": true,
+        "tagline": true,
+        "cards": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "trust": true,
+        "history": true,
+        "featured": true,
+        "overflowX": false
+      },
+      "featuredModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 390,
+        "height": 405,
+        "withinViewport": true
+      },
+      "trendModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "commercial-checkout-modal",
+        "title": "Boost Your Project",
+        "footer": true,
+        "preview": true,
+        "width": 390,
+        "height": 760,
+        "withinViewport": true
+      },
+      "claimModal": {
+        "open": true,
+        "system": "v3",
+        "testId": "claim-project-wizard-modal",
+        "title": "Claim Project",
+        "footer": true,
+        "preview": true,
+        "width": 390,
+        "height": 365,
+        "withinViewport": true
+      },
+      "homeFeatured": true,
+      "projectsFeatured": true
+    }
+  ],
+  "pass": true
+}
