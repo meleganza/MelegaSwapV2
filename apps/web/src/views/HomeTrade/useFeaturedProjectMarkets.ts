@@ -162,7 +162,7 @@ export function formatFeaturedMarketCap(row?: FeaturedMarketRow): string {
   if (row?.marketCapUsd != null && row.marketCapUsd > 0) {
     return formatUsdCompact(row.marketCapUsd)
   }
-  return 'Unavailable'
+  return '—'
 }
 
 export function formatFeaturedVolume(row?: FeaturedMarketRow): string {

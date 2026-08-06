@@ -39,23 +39,24 @@ describe('DEX UX Rebuild navigation', () => {
     ])
   })
 
-  it('Home nav active state covers Trade aliases and Project Pages (Discover parent)', () => {
+  it('Home nav active state is only Discover (/) — not Swap or Project Pages', () => {
     const home = GLOBAL_HEADER_NAV.find((i) => i.id === 'home')
     expect(home?.kind).toBe('link')
     if (home?.kind !== 'link') return
     expect(home.match('/')).toBe(true)
-    expect(home.match('/swap')).toBe(true)
-    expect(home.match('/project-hq/marco')).toBe(true)
-    expect(home.match('/@marco')).toBe(true)
-    expect(home.match('/@marco/')).toBe(true)
+    expect(home.match('/swap')).toBe(false)
+    expect(home.match('/project-hq/marco')).toBe(false)
+    expect(home.match('/@marco')).toBe(false)
+    expect(home.match('/@marco/')).toBe(false)
     expect(home.match('/passport')).toBe(false)
     expect(home.match('/list')).toBe(false)
     expect(home.match('/liquidity-studio')).toBe(false)
 
     const bottomHome = shellBottomNavItems.find((i) => i.id === 'home')
-    expect(bottomHome?.match('/swap')).toBe(true)
-    expect(bottomHome?.match('/project-hq/marco')).toBe(true)
-    expect(bottomHome?.match('/@marco/')).toBe(true)
+    expect(bottomHome?.match('/')).toBe(true)
+    expect(bottomHome?.match('/swap')).toBe(false)
+    expect(bottomHome?.match('/project-hq/marco')).toBe(false)
+    expect(bottomHome?.match('/@marco/')).toBe(false)
     expect(bottomHome?.match('/passport')).toBe(false)
   })
 
@@ -75,10 +76,11 @@ describe('DEX UX Rebuild navigation', () => {
     expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 
-  it('redirects consolidate trade into Home; trending into Projects discovery', () => {
+  it('redirects /trade to /swap; trending into Projects discovery', () => {
     const cfg = readFileSync(path.join(ROOT, '../next.config.mjs'), 'utf8')
     expect(cfg).toMatch(/source:\s*'\/trade'/)
-    expect(cfg).toMatch(/destination:\s*'\/\?focus=swap'/)
+    expect(cfg).toMatch(/destination:\s*'\/swap'/)
+    expect(cfg).not.toMatch(/destination:\s*'\/\?focus=swap'/)
     expect(cfg).toMatch(/source:\s*'\/trending'/)
     expect(cfg).toMatch(/destination:\s*'\/projects\?sort=trending'/)
     expect(cfg).not.toMatch(/destination:\s*'\/\?focus=projects'/)
@@ -86,12 +88,14 @@ describe('DEX UX Rebuild navigation', () => {
 
   it('List and Passport routes exist', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
-    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/PassportV1Shell/)
+    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(
+      /\/portfolio|PassportRedirect/,
+    )
     expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(
       /ListPageHero/,
     )
-    expect(readFileSync(path.join(ROOT, 'views/Passport/v1/PassportV1Shell.tsx'), 'utf8')).toMatch(
-      /Your Portfolio|Portfolio Summary/,
+    expect(readFileSync(path.join(ROOT, 'pages/portfolio/index.tsx'), 'utf8')).toMatch(
+      /PortfolioStudio|PassportV1Shell|Portfolio/,
     )
   })
 

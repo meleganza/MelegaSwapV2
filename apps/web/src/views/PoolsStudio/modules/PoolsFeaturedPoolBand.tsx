@@ -141,13 +141,9 @@ export const PoolsFeaturedPoolBand: React.FC = () => {
   const { featured, requestModal } = usePoolsRuntime()
   const card = featured?.card
 
-  if (!card || !featured) {
-    return (
-      <Band data-testid="pools-featured-band" data-featured="empty">
-        <Eyebrow>Featured Pool</Eyebrow>
-        <Empty>No active pool with measurable TVL is available yet.</Empty>
-      </Band>
-    )
+  // No factual featured pool → do not reserve layout (Founder P0).
+  if (!card?.rawPool || !featured) {
+    return null
   }
 
   const contractAddress = resolvePoolContractAddress({

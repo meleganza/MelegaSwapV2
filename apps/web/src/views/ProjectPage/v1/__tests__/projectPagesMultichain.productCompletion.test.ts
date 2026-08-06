@@ -33,13 +33,14 @@ describe('Project Pages Multichain Product Completion', () => {
     expect(explorerUrlFor('0x963556de0eb8138E97A85F0A86eE0acD159D210b', 56)).toContain('bscscan.com')
   })
 
-  it('Buy Token CTA stays on Project Page (focus=swap), not generic Trade', () => {
+  it('Buy / Trade CTA opens Swap shell with chain currencies', () => {
     const href = getBuyTokenHref({
       chainId: 56,
       contract: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
     })
-    expect(href).toContain('focus=swap')
+    expect(href).toMatch(/^\/swap\?/)
     expect(href).toContain('chain=bsc')
+    expect(href).toContain('outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b')
     expect(href).not.toMatch(/^\/trade/)
 
     const baseHref = getBuyTokenHref({

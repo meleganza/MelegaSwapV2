@@ -116,18 +116,23 @@ const config = {
   },
   async redirects() {
     return [
-      // UX Rebuild: Trade landing consolidates into Home Instant Swap
+      // Founder P0: /trade is the Swap shell (preserve query string).
       {
         source: '/trade',
-        destination: '/?focus=swap',
+        destination: '/swap',
         permanent: false,
       },
       {
         source: '/trade/',
-        destination: '/?focus=swap',
+        destination: '/swap',
         permanent: false,
       },
-      // Project discovery: Trending is a ranking layer inside Projects (not a primary destination)
+      {
+        source: '/trade/:path*',
+        destination: '/swap/:path*',
+        permanent: false,
+      },
+      // Trending is a ranking layer inside Projects (honest public destination).
       {
         source: '/trending',
         destination: '/projects?sort=trending',

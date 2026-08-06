@@ -120,12 +120,12 @@ const Label = styled.div`
   font-size: ${farmsOverviewKpis.labelSize};
   line-height: ${farmsOverviewKpis.labelLine};
   font-weight: 650;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: ${farmsOverviewKpis.labelColor};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
   min-width: 0;
 `
 

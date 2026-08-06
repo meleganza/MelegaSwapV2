@@ -1,6 +1,7 @@
 export const FILTER_CHAINS = ['BNB', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche'] as const
 export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
-export const FILTER_STATUS = ['Featured', 'Trending', 'Verified', 'New Listings'] as const
+/** Status chips — Trending lives only in FILTER_SORT (one control). */
+export const FILTER_STATUS = ['Featured', 'Verified', 'New Listings'] as const
 export const FILTER_SORT = [
   'Trending',
   'Highest Rated',

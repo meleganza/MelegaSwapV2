@@ -1,5 +1,6 @@
 /**
  * Compact Featured Pool for Hero right column (not the legacy giant bottom card).
+ * Renders only when a factual SmartChef featured pool exists — never a fake Active/Stake shell.
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -93,43 +94,48 @@ const Btn = styled.button<{ $primary?: boolean }>`
   gap: 4px;
 `
 
-const Empty = styled.p`
-  margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-`
-
 export const PoolsHeroFeaturedCompact: React.FC = () => {
   const { featured, requestModal } = usePoolsRuntime()
-  if (!featured) {
-    return (
-      <Card data-testid="pools-hero-featured-compact" data-featured="empty">
-        <Eyebrow>Featured Pool</Eyebrow>
-        <Empty>No rewarding pool available</Empty>
-      </Card>
-    )
-  }
+  const card = featured?.card
+  // No factual featured pool → collapse entirely (no Active / Stake / — → — shell).
+  if (!card?.rawPool) return null
+
+  const stakeToken = featured.stakeToken && featured.stakeToken !== '—' ? featured.stakeToken : card.stakeToken
+  const rewardToken =
+    featured.rewardToken && featured.rewardToken !== '—' ? featured.rewardToken : card.rewardToken
   const title =
-    [featured.stakeToken, featured.rewardToken].filter(Boolean).join(' → ') ||
-    featured.tokens?.join(' / ') ||
+    [stakeToken, rewardToken].filter((t) => t && t !== '—').join(' → ') ||
+    card.tokens?.join(' / ') ||
+    card.name ||
     'Pool'
-  const active = featured.displayStatus !== 'ENDED' && featured.status !== 'ended'
+  if (!title || title === '→' || /^—\s*→\s*—$/.test(title)) return null
+
+  const active =
+    card.displayStatus !== 'ENDED' &&
+    card.status !== 'ended' &&
+    (Boolean(card.lifecycle?.active) ||
+      Boolean(card.lifecycle?.rewarding) ||
+      card.status === 'live' ||
+      card.displayStatus === 'LIVE')
+
   const contractAddress = resolvePoolContractAddress({
-    contractAddress: featured.contractAddress,
-    explorerUrl: featured.explorerUrl,
-    contractExplorerUrl: featured.analyzePreview?.contractExplorerUrl,
+    contractAddress: card.contractAddress ?? featured.contractAddress,
+    explorerUrl: card.explorerUrl ?? featured.explorerUrl,
+    contractExplorerUrl: card.analyzePreview?.contractExplorerUrl,
   })
   const contractUrl = poolBscScanContractUrl(contractAddress)
+  const apr = featured.apr && featured.apr !== '—' ? featured.apr : card.apr
+  const tvl = featured.tvl && featured.tvl !== '—' ? featured.tvl : card.tvl
 
   return (
-    <Card data-testid="pools-hero-featured-compact" data-featured="ready">
+    <Card data-testid="pools-hero-featured-compact" data-featured="ready" data-pool-id={card.id}>
       <Eyebrow>Featured Pool</Eyebrow>
       <Pair title={title}>{title}</Pair>
       <Meta>
         <Badge $active={active}>{active ? 'Active' : 'Finished'}</Badge>
-        {featured.apr ? <Apr>{featured.apr}</Apr> : <span>APR unavailable</span>}
-        {featured.tvl ? <span>TVL {featured.tvl}</span> : null}
-        {featured.rewardToken ? <span>Earn {featured.rewardToken}</span> : null}
+        {apr ? <Apr>{apr}</Apr> : null}
+        {tvl ? <span>TVL {tvl}</span> : null}
+        {rewardToken && rewardToken !== '—' ? <span>Earn {rewardToken}</span> : null}
       </Meta>
       <Actions>
         <Btn
@@ -137,7 +143,7 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
           $primary
           data-testid="pools-hero-featured-stake"
           disabled={!active}
-          onClick={() => requestModal(featured, 'stake')}
+          onClick={() => requestModal(card, 'stake')}
         >
           Stake
         </Btn>

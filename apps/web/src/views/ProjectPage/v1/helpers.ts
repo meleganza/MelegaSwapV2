@@ -95,30 +95,35 @@ export function getPreferredBuyHref(marketsDocument: ProjectMarketsDocument): st
   return preferredBuy?.href ?? null
 }
 
-/** In-page Buy Token target — keeps the shopper on the Project Page embed. */
+/** Buy / Trade target — opens the real Swap shell with chain + currencies. */
 export function getBuyTokenHref(opts?: { chainId?: number | null; contract?: string | null }): string {
   const params = new URLSearchParams()
-  params.set('focus', 'swap')
   if (opts?.chainId === 8453) {
     params.set('chain', 'base')
-    if (opts.contract) {
-      params.set('inputCurrency', 'ETH')
-      params.set('outputCurrency', opts.contract)
-    }
+    params.set('inputCurrency', 'ETH')
+    if (opts.contract) params.set('outputCurrency', opts.contract)
   } else if (opts?.chainId === 42161) {
     params.set('chain', 'arbitrum')
-    if (opts.contract) {
-      params.set('inputCurrency', 'ETH')
-      params.set('outputCurrency', opts.contract)
-    }
-  } else if (opts?.chainId === 56) {
+    params.set('inputCurrency', 'ETH')
+    if (opts.contract) params.set('outputCurrency', opts.contract)
+  } else if (opts?.chainId === 137) {
+    params.set('chain', 'polygon')
+    params.set('inputCurrency', 'MATIC')
+    if (opts.contract) params.set('outputCurrency', opts.contract)
+  } else if (opts?.chainId === 43114) {
+    params.set('chain', 'avalanche')
+    params.set('inputCurrency', 'AVAX')
+    if (opts.contract) params.set('outputCurrency', opts.contract)
+  } else if (opts?.chainId === 1) {
+    params.set('chain', 'eth')
+    params.set('inputCurrency', 'ETH')
+    if (opts.contract) params.set('outputCurrency', opts.contract)
+  } else {
     params.set('chain', 'bsc')
-    if (opts.contract) {
-      params.set('inputCurrency', 'BNB')
-      params.set('outputCurrency', opts.contract)
-    }
+    params.set('inputCurrency', 'BNB')
+    if (opts?.contract) params.set('outputCurrency', opts.contract)
   }
-  return `?${params.toString()}`
+  return `/swap?${params.toString()}`
 }
 
 /** @deprecated Prefer getBuyTokenHref — Trade CTA removed as primary. */
@@ -220,8 +225,13 @@ export function buildProjectChainDeployments(
 }
 
 export function defaultSelectedChainId(deployments: ProjectChainDeployment[]): number {
-  const live = deployments.find((d) => d.status === 'LIVE' && d.contractAddress)
-  if (live) return live.chainId
+  const withContract = deployments.filter((d) => d.status === 'LIVE' && d.contractAddress)
+  // Prefer Melega liquid chains over ETH when multiple LIVE deployments exist.
+  for (const preferred of [56, 8453, 137, 42161, 43114, 1]) {
+    const hit = withContract.find((d) => d.chainId === preferred)
+    if (hit) return hit.chainId
+  }
+  if (withContract[0]) return withContract[0].chainId
   const anyLive = deployments.find((d) => d.status === 'LIVE')
   return anyLive?.chainId ?? 56
 }

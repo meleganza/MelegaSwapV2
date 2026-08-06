@@ -42,7 +42,7 @@ const entry = (
 
 function tokenActions(address: string, projectHref?: string | null): GlobalSearchAction[] {
   const actions: GlobalSearchAction[] = [
-    { label: 'Trade', href: `/trade?inputCurrency=${address}` },
+    { label: 'Trade', href: `/swap?outputCurrency=${address}` },
   ]
   if (projectHref) actions.push({ label: 'Open Project', href: projectHref })
   actions.push({ label: 'Add Wallet', href: `/portfolio?addToken=${address}` })
@@ -52,7 +52,7 @@ function tokenActions(address: string, projectHref?: string | null): GlobalSearc
 function projectActions(slug: string): GlobalSearchAction[] {
   return [
     { label: 'Open Project', href: `/@${slug}/` },
-    { label: 'Buy Token', href: `/trade?project=${slug}` },
+    { label: 'Buy Token', href: `/swap?project=${slug}` },
     { label: 'Farm', href: `/farms?project=${slug}` },
     { label: 'Pool', href: `/pools?project=${slug}` },
   ]
@@ -230,11 +230,25 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
 
   buildDexTokenIndex().forEach((token) => {
     const projectHref = token.registryProject?.slug ? `/@${token.registryProject.slug}/` : null
-    const href = `/trade?inputCurrency=${token.address}`
+    const href = `/swap?outputCurrency=${token.address}`
+    const chainLabel =
+      token.chainId === 56
+        ? 'BSC'
+        : token.chainId === 1
+          ? 'Ethereum'
+          : token.chainId === 8453
+            ? 'Base'
+            : token.chainId === 137
+              ? 'Polygon'
+              : token.chainId === 42161
+                ? 'Arbitrum'
+                : token.chainId === 43114
+                  ? 'Avalanche'
+                  : `Chain ${token.chainId}`
     items.push(
       entry({
         id: `token-${token.chainId}-${token.address.toLowerCase()}`,
-        label: token.symbol,
+        label: `${token.symbol} — ${chainLabel}`,
         subtitle: token.registryProject?.displayName ?? 'DEX token',
         href,
         category: 'token',
@@ -243,7 +257,8 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
         logoUrl: token.logo ?? null,
         verified: Boolean(token.registryProject),
         actions: tokenActions(token.address, projectHref),
-        keywords: [token.address, token.sources.join(' '), String(token.chainId)],
+        keywords: [token.symbol, token.address, token.sources.join(' '), String(token.chainId), chainLabel],
+        scoreBoost: token.chainId === 56 ? 4 : 0,
       }),
     )
   })

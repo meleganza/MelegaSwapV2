@@ -568,7 +568,7 @@ export const DexHomeScreen: React.FC = () => {
                   onClick={() => void router.push('/projects?sort=trending')}
                   style={{ background: 'transparent', border: '1px solid rgba(244,196,48,0.45)', color: uxRebuildColors.gold }}
                 >
-                  Trending Projects
+                  Explore Trending Projects
                 </PrimaryCta>
               </CtaRow>
               <Trust>

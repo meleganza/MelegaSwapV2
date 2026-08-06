@@ -76,15 +76,18 @@ export function formatCompactUsd(value: number | null | undefined): string | nul
   if (abs >= 1_000) return `$${(value / 1_000).toFixed(2)}K`
   if (abs >= 1) return `$${value.toFixed(2)}`
   if (abs >= 0.0001) return `$${value.toFixed(6)}`
-  return `$${value.toExponential(2)}`
+  if (abs < 0.000001) return '<$0.000001'
+  return `$${value.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')}`
 }
 
 export function formatPrice(value: number | null | undefined): string | null {
   if (value == null || Number.isNaN(value)) return null
   if (value === 0) return '$0'
   if (value >= 1) return `$${value.toFixed(2)}`
-  if (value >= 0.0001) return `$${value.toPrecision(4)}`
-  return `$${value.toExponential(2)}`
+  if (value >= 0.0001) return `$${Number(value.toPrecision(4))}`
+  if (value < 0.000001) return '<$0.000001'
+  // Readable decimals only — never scientific notation in consumer UI.
+  return `$${value.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')}`
 }
 
 /** True when a string looks like a UPI / internal machine id that must not appear in primary UX. */

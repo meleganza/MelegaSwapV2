@@ -54,7 +54,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
     {showHead ? (
       <Head>
         <Title>Featured Projects</Title>
-        <Meta>Same pipeline everywhere</Meta>
+        <Meta>Live featured placements</Meta>
       </Head>
     ) : null}
     <FeaturedProjectsRail />

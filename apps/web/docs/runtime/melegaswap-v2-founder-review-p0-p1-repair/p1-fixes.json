@@ -1,0 +1,63 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR",
+  "generatedAt": "2026-08-06T14:33:14.675Z",
+  "fixes": [
+    {
+      "id": "P1-1",
+      "title": "Projects Unavailable wall",
+      "files": [
+        "views/ProjectsStudio/components/ProjectGridCard.tsx",
+        "views/HomeTrade/FeaturedProjectsRail.tsx",
+        "views/HomeTrade/useFeaturedProjectMarkets.ts"
+      ],
+      "change": "Use — / omit empty rows; featured spark+mcap use —"
+    },
+    {
+      "id": "P1-2",
+      "title": "Search MARCO dedupe",
+      "files": [
+        "lib/global-search/buildGlobalSearchIndex.ts",
+        "lib/global-search/searchGlobal.ts"
+      ],
+      "change": "Canonical chain+address identity; chain labels; prefer selected chain; no false positives from chain rank alone"
+    },
+    {
+      "id": "P1-3",
+      "title": "Default chain + price format",
+      "files": [
+        "views/ProjectPage/v1/helpers.ts",
+        "views/ProjectPage/presentation/humanLabels.ts"
+      ],
+      "change": "Prefer BSC→Base→Polygon; no toExponential consumer prices"
+    },
+    {
+      "id": "P1-4",
+      "title": "Farms/Pools KPI labels",
+      "files": [
+        "views/FarmsStudio/modules/FarmsOverviewKpisModule.tsx",
+        "views/FarmsStudio/modules/farmsOverviewKpisTokens.ts",
+        "views/FarmsStudio/components/farmsStudioPrimitives.tsx",
+        "views/PoolsStudio/components/PoolsKpiRow.tsx"
+      ],
+      "change": "Shorter labels + wrap-safe CSS"
+    },
+    {
+      "id": "P1-5",
+      "title": "Audit score trust",
+      "files": [
+        "views/AuditStudio/AuditCenterV2.tsx",
+        "views/AuditStudio/buildOfficialContracts.ts"
+      ],
+      "change": "Runtime Readiness labeled separate from Melega Score"
+    },
+    {
+      "id": "P1-6",
+      "title": "Active nav state",
+      "files": [
+        "app-shell/config/globalHeaderNav.ts",
+        "app-shell/config/navigation.ts"
+      ],
+      "change": "Home active only on /"
+    }
+  ]
+}

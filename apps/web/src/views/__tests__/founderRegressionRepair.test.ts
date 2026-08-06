@@ -39,7 +39,7 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(formatFeaturedChange(undefined).text).not.toContain('Insufficient')
     expect(formatFeaturedChange({ changePct: null } as never).text).not.toContain('Insufficient')
     expect(formatFeaturedPrice(undefined)).toBe('Price updating')
-    expect(formatFeaturedMarketCap(undefined)).toBe('Unavailable')
+    expect(formatFeaturedMarketCap(undefined)).toBe('—')
   })
 
   it('durable trending snapshot prefers live and falls back to last-good', () => {

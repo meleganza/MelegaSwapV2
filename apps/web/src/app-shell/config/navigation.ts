@@ -142,15 +142,8 @@ export const shellBottomNavItems = [
     label: 'Home',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
-    // Align with header: Home owns Discover + Trade; Project Pages under Discover.
-    match: (p: string) =>
-      p === '/' ||
-      p === '/trade' ||
-      p.startsWith('/trade/') ||
-      p === '/swap' ||
-      p.startsWith('/swap/') ||
-      p.startsWith('/project-hq') ||
-      p.startsWith('/@'),
+    // Home owns Discover only — Swap / Project Pages must not highlight Home.
+    match: (p: string) => p === '/',
   },
   {
     id: 'liquidity',

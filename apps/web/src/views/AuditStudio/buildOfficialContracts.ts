@@ -423,12 +423,16 @@ export function buildDimensions(input: {
           : null
 
   const rows: Array<[DimensionId, number | null, string]> = [
-    ['Health', melegaScore, 'Weighted Melega Score'],
+    ['Health', melegaScore, 'Weighted Melega Score (official contracts SSOT)'],
     ['Security', verifiedShare, 'Verified contract share'],
     ['Availability', liveShare, 'LIVE contract share'],
     ['Verification', certifiedShare, 'SSOT / certified share'],
     ['Infrastructure', factoryScore, 'Factory contract average'],
-    ['Runtime', runtime, 'Readiness / health verdict'],
+    [
+      'Runtime',
+      runtime,
+      'Runtime Readiness — separate live API health (not part of Melega Score weights)',
+    ],
     ['Transparency', 100, 'Formula published on this page'],
     ['Indexer', indexer, lag == null ? 'Lag unavailable' : `Lag ${lag} blocks`],
     ['Liquidity', input.pairsTotal != null ? Math.min(100, 40 + Math.log10(Math.max(1, input.pairsTotal)) * 20) : null, 'Indexed markets'],

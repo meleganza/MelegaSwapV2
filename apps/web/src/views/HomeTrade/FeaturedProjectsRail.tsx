@@ -284,11 +284,11 @@ const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) 
     () => chartEntries.slice(-24).map((c) => c.close).filter((n) => Number.isFinite(n) && n > 0),
     [chartEntries],
   )
-  if (!pairAddress) return <SparkUnavailable>Unavailable</SparkUnavailable>
+  if (!pairAddress) return <SparkUnavailable>—</SparkUnavailable>
   if (points.length < 2) {
     return (
       <SparkUnavailable data-testid="featured-spark-unavailable">
-        {status === 'loading' ? '…' : 'Unavailable'}
+        {status === 'loading' ? '…' : '—'}
       </SparkUnavailable>
     )
   }
@@ -300,16 +300,17 @@ export const FeaturedProjectsRail: React.FC = () => {
   const cards = useMemo(() => resolveFounderFeaturedProjects(), [])
   const { rowsBySlug } = useFeaturedProjectMarkets()
 
-  // Founder amendment P0-2: Trade navigates to the project page swap embed —
-  // it must never keep the shopper on Home. Client nav must use the filesystem
-  // route `/project-hq/[slug]` (rewrite-only `/@slug` leaves Home mounted).
+  // Founder P0: Featured Trade opens the real Swap shell (not Home, not project embed).
   const onTrade = useCallback(
     (p: (typeof cards)[number]) => {
-      if (!p.address || !p.slug) return
-      const q = `inputCurrency=BNB&outputCurrency=${p.address}&focus=swap&source=featured-home`
-      const href = `/project-hq/${p.slug}?${q}`
-      const as = `/@${p.slug}?${q}`
-      void router.push(href, as).catch(() => {
+      if (!p.address) return
+      const q = new URLSearchParams({
+        inputCurrency: 'BNB',
+        outputCurrency: p.address,
+        source: 'featured-home',
+      })
+      const href = `/swap?${q.toString()}`
+      void router.push(href).catch(() => {
         window.location.assign(href)
       })
     },
@@ -390,7 +391,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                 </Stat>
                 <Stat>
                   <StatLabel>{market?.marketCapLabel === 'Fully Diluted Value' ? 'FDV' : 'Mkt Cap'}</StatLabel>
-                  <StatValue title={market?.marketCapLabel ?? 'Unavailable'}>
+                  <StatValue title={market?.marketCapLabel ?? undefined}>
                     {formatFeaturedMarketCap(market)}
                   </StatValue>
                 </Stat>

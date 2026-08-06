@@ -69,6 +69,6 @@ export const FARMS_OVERVIEW_KPI_LABELS: Record<FarmsOverviewKpiId, string> = {
   activeFarms: 'Active Farms',
   activeFarmers: 'Active Farmers',
   rewards24h: '24H Rewards',
-  sustainableApr: 'Highest Sustainable APR',
+  sustainableApr: 'Top Sust. APR',
   harvestable: 'My Claimable',
 }

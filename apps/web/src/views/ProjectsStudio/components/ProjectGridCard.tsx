@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
-import { METRIC_STATUS } from 'lib/data-policy/metricStatus'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 import { ProjectLogo } from './projectsStudioPrimitives'
@@ -237,12 +236,12 @@ const CardSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) => {
     [chartEntries],
   )
   if (!pairAddress) {
-    return <SparkUnavailable data-testid="project-card-spark-empty">{METRIC_STATUS.UNAVAILABLE}</SparkUnavailable>
+    return <SparkUnavailable data-testid="project-card-spark-empty">—</SparkUnavailable>
   }
   if (points.length < 2) {
     return (
       <SparkUnavailable data-testid="project-card-spark-empty">
-        {status === 'loading' ? '…' : METRIC_STATUS.UNAVAILABLE}
+        {status === 'loading' ? '…' : '—'}
       </SparkUnavailable>
     )
   }
@@ -300,7 +299,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       <Metrics>
         <MetricCell>
           <MetricLabel>Price</MetricLabel>
-          <MetricValue $muted={isEmpty(price)}>{isEmpty(price) ? METRIC_STATUS.UNAVAILABLE : price}</MetricValue>
+          <MetricValue $muted={isEmpty(price)}>{isEmpty(price) ? '—' : price}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>24h</MetricLabel>
@@ -309,23 +308,23 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
             $pos={typeof changePct === 'number' && changePct > 0}
             $neg={typeof changePct === 'number' && changePct < 0}
           >
-            {isEmpty(change) ? METRIC_STATUS.UNAVAILABLE : change}
+            {isEmpty(change) ? '—' : change}
           </MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Liquidity</MetricLabel>
-          <MetricValue $muted={isEmpty(liquidity)}>
-            {isEmpty(liquidity) ? METRIC_STATUS.UNAVAILABLE : liquidity}
-          </MetricValue>
+          <MetricValue $muted={isEmpty(liquidity)}>{isEmpty(liquidity) ? '—' : liquidity}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Volume</MetricLabel>
-          <MetricValue $muted={isEmpty(volume)}>{isEmpty(volume) ? METRIC_STATUS.UNAVAILABLE : volume}</MetricValue>
+          <MetricValue $muted={isEmpty(volume)}>{isEmpty(volume) ? '—' : volume}</MetricValue>
         </MetricCell>
-        <MetricCell>
-          <MetricLabel>Holders</MetricLabel>
-          <MetricValue $muted={isEmpty(holders)}>{isEmpty(holders) ? METRIC_STATUS.UNAVAILABLE : holders}</MetricValue>
-        </MetricCell>
+        {!isEmpty(holders) ? (
+          <MetricCell>
+            <MetricLabel>Holders</MetricLabel>
+            <MetricValue>{holders}</MetricValue>
+          </MetricCell>
+        ) : null}
       </Metrics>
 
       <CardSpark pairAddress={project.pairAddress} />

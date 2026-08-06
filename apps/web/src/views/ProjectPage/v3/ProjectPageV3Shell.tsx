@@ -810,7 +810,7 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
           <Btn $primary href={buyHref} data-testid="project-v3-buy">
             Buy
           </Btn>
-          <Btn $ghost href="#project-v3-swap" data-testid="project-v3-trade">
+          <Btn $ghost href={buyHref} data-testid="project-v3-trade">
             Trade
           </Btn>
           {contract ? (

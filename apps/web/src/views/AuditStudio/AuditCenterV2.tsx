@@ -631,6 +631,10 @@ const AuditCenterV2: React.FC = () => {
               <ScoreGauge value={scoreResult.score} />
               <ScoreValue>{scoreResult.score.toFixed(1)}</ScoreValue>
               <ScoreLabel>Melega Score</ScoreLabel>
+              <Muted style={{ marginTop: 8, textAlign: 'center', maxWidth: 240 }}>
+                Contract SSOT weighted mean. Runtime Readiness is a separate live API metric and does not
+                change this score.
+              </Muted>
               <Muted style={{ marginTop: 8, textAlign: 'center' }}>
                 Last measured: {ago(scoreResult.measuredAt, now)}
               </Muted>
@@ -657,11 +661,12 @@ const AuditCenterV2: React.FC = () => {
           <DimGrid>
             {dimensions.map((d) => (
               <DimCard key={d.id} data-testid={`audit-dim-${d.id.toLowerCase()}`}>
-                <DimName>{d.id}</DimName>
+                <DimName>{d.id === 'Runtime' ? 'Runtime Readiness' : d.id}</DimName>
                 <DimValue $tone={d.tone}>{d.value == null ? '—' : d.value.toFixed(0)}</DimValue>
                 <ThermometerBar value={d.value} tone={d.tone} />
                 <Muted style={{ marginTop: 6, fontSize: 11 }}>
-                  {d.detail} · Δ {d.delta} · {d.trend}
+                  {d.detail}
+                  {d.id === 'Runtime' ? ` · measured ${ago(measuredAt, now)}` : ` · Δ ${d.delta} · ${d.trend}`}
                 </Muted>
               </DimCard>
             ))}

@@ -122,7 +122,7 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 
 /** Secondary surfaces — available via search / deep links, not primary nav. */
 export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
-  { id: 'trending', label: 'Trending', href: '/projects?sort=trending', match: (p) => p === '/projects' || p.startsWith('/projects') },
+  { id: 'trending', label: 'Trending Projects', href: '/projects?sort=trending', match: (p) => p === '/projects' || p.startsWith('/projects') },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',
@@ -158,16 +158,8 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     label: 'Home',
     kind: 'link',
     href: '/',
-    // Home owns Discover + Trade entry; Project Pages map to Discover parent domain.
-    // Public Project Page URLs stay `/@{slug}` (rewrite); header match uses asPath.
-    match: (p) =>
-      p === '/' ||
-      p === '/trade' ||
-      p.startsWith('/trade/') ||
-      p === '/swap' ||
-      p.startsWith('/swap/') ||
-      p.startsWith('/project-hq') ||
-      p.startsWith('/@'),
+    // Home owns Discover only — Swap / Project Pages must not highlight Home.
+    match: (p) => p === '/',
   },
   {
     id: 'liquidity',
