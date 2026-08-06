@@ -18,33 +18,35 @@ export interface MelegaSearchBarProps {
 const Wrap = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 500px;
+  gap: 12px;
+  width: 100%;
   height: 42px;
-  padding: 0 12px 0 16px;
-  background: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 14px 0 18px;
+  background: linear-gradient(180deg, #0c0c0c 0%, #080808 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   box-shadow: none;
   box-sizing: border-box;
   transition: border-color ${animation.hover}, box-shadow ${animation.hover};
 
   &:focus-within {
-    border-color: rgba(244, 196, 48, 0.35);
-    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.2);
+    border-color: rgba(244, 196, 48, 0.4);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.22);
   }
 
   ${media.mobile} {
     width: 100%;
     height: 40px;
+    padding: 0 12px 0 16px;
   }
 `
 
 const Icon = styled.span`
-  color: #707070;
+  color: #9a9a9a;
   font-size: 16px;
   line-height: 1;
-  margin-left: 2px;
+  margin-left: 4px;
+  flex-shrink: 0;
 `
 
 const Input = styled.input`
@@ -56,10 +58,12 @@ const Input = styled.input`
   font-size: 14px;
   color: ${colors.textPrimary};
   padding-top: 2px;
+  min-width: 0;
 
   &::placeholder {
-    color: #888888;
+    color: #a8a8a8;
     font-size: 14px;
+    opacity: 1;
   }
 
   ${focusRing}

@@ -1,0 +1,105 @@
+{
+  "mission": "MELEGASWAP_V2_AUDIT_CENTER_V2",
+  "base": "http://127.0.0.1:3033",
+  "generatedAt": "2026-08-06T06:10:02.374Z",
+  "results": [
+    {
+      "viewport": "1440",
+      "status": "ok",
+      "error": null,
+      "audit": {
+        "hasV2": true,
+        "hasHero": true,
+        "hasScore": true,
+        "hasGauge": true,
+        "hasFormula": true,
+        "hasDims": true,
+        "dimCount": 14,
+        "hasContracts": true,
+        "contractCount": 44,
+        "hasLive": true,
+        "hasMulti": true,
+        "hasTimeline": true,
+        "hasDonut": true,
+        "hasHeat": true,
+        "noTable": true,
+        "title": true,
+        "scoreText": "97.1Melega ScoreLast measured: just now44 contracts · Σw 46.6"
+      },
+      "header": {
+        "desktopHeader": true,
+        "overlap": false,
+        "searchW": 358,
+        "searchRight": 1027,
+        "chainLeft": 1043,
+        "gap": 16,
+        "placeholderColor": "rgb(255, 255, 255)",
+        "paddingLeftOk": true
+      }
+    },
+    {
+      "viewport": "1024",
+      "status": "ok",
+      "error": null,
+      "audit": {
+        "hasV2": true,
+        "hasHero": true,
+        "hasScore": true,
+        "hasGauge": true,
+        "hasFormula": true,
+        "hasDims": true,
+        "dimCount": 14,
+        "hasContracts": true,
+        "contractCount": 44,
+        "hasLive": true,
+        "hasMulti": true,
+        "hasTimeline": true,
+        "hasDonut": true,
+        "hasHeat": true,
+        "noTable": true,
+        "title": true,
+        "scoreText": "97.1Melega ScoreLast measured: just now44 contracts · Σw 46.6"
+      },
+      "header": {
+        "desktopHeader": true,
+        "overlap": false,
+        "searchW": 180,
+        "searchRight": 845,
+        "chainLeft": 859,
+        "gap": 14,
+        "placeholderColor": "rgb(255, 255, 255)",
+        "paddingLeftOk": true
+      }
+    },
+    {
+      "viewport": "390",
+      "status": "ok",
+      "error": null,
+      "audit": {
+        "hasV2": true,
+        "hasHero": true,
+        "hasScore": true,
+        "hasGauge": true,
+        "hasFormula": true,
+        "hasDims": true,
+        "dimCount": 14,
+        "hasContracts": true,
+        "contractCount": 44,
+        "hasLive": true,
+        "hasMulti": true,
+        "hasTimeline": true,
+        "hasDonut": true,
+        "hasHeat": true,
+        "noTable": true,
+        "title": true,
+        "scoreText": "97.1Melega ScoreLast measured: just now44 contracts · Σw 46.6"
+      },
+      "header": {
+        "desktopHeader": false,
+        "skipped": true
+      }
+    }
+  ],
+  "pass": true,
+  "failCount": 0
+}

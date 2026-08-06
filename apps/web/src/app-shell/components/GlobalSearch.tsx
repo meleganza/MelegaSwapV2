@@ -13,13 +13,10 @@ import {
 
 const Root = styled.div`
   position: relative;
-  width: clamp(190px, 18vw, 300px);
+  width: 100%;
   max-width: 100%;
-  flex-shrink: 1;
-
-  @media (max-width: 1279px) {
-    width: clamp(160px, 15vw, 200px);
-  }
+  flex: 1 1 auto;
+  min-width: 0;
 
   @media (max-width: 1023px) {
     width: 100%;

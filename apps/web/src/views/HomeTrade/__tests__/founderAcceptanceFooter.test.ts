@@ -117,17 +117,24 @@ describe('Founder acceptance — docs and audit pages', () => {
   })
 
   it('audit page states telemetry-only and does not fabricate scores', () => {
+    const page = readFileSync(path.resolve(__dirname, '../../../pages/audit/index.tsx'), 'utf8')
     const audit = readFileSync(
-      path.resolve(__dirname, '../../../pages/audit/index.tsx'),
+      path.resolve(__dirname, '../../../views/AuditStudio/AuditCenterV2.tsx'),
       'utf8',
     )
-    expect(audit).toContain('not</strong> a substitute for an external')
-    expect(audit).toContain('Not published')
-    expect(audit).toContain('MELEGA_MASTERCHEF_BSC')
-    expect(audit).toContain('MELEGA_VAULT_BSC')
+    const builder = readFileSync(
+      path.resolve(__dirname, '../../../views/AuditStudio/buildOfficialContracts.ts'),
+      'utf8',
+    )
+    expect(page).toContain('AuditCenterV2')
+    expect(audit).toContain('not a formal third-party smart-contract audit')
+    expect(audit).toContain('Not available (not fabricated)')
     expect(audit).toContain('/api/runtime/readiness')
     expect(audit).toContain('/api/indexer/health')
+    expect(builder).toContain('MELEGA_MASTERCHEF_BSC')
+    expect(builder).toContain('MELEGA_VAULT_BSC')
     expect(audit).not.toMatch(/audit score:\s*\d+/i)
+    expect(audit).toContain('calculated from official contract SSOTs')
   })
 
   it('support page exists without fabricating ticket infrastructure', () => {

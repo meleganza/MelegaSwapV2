@@ -226,36 +226,36 @@ const Chevron = styled.span<{ $open?: boolean }>`
 
 const SearchRegion = styled.div`
   flex: 1 1 auto;
-  min-width: 160px;
-  max-width: min(280px, 28vw);
+  min-width: 220px;
+  max-width: min(520px, 42vw);
   display: flex;
-  justify-content: flex-end;
+  justify-content: stretch;
   align-items: center;
-  margin-left: 8px;
-  margin-right: 6px;
-  overflow: hidden;
+  margin-left: 16px;
+  margin-right: 12px;
+  overflow: visible;
 
   [data-melega-global-search] {
     width: 100%;
-    max-width: 260px;
+    max-width: none;
   }
 
   @media (max-width: 1279px) {
-    min-width: 120px;
-    max-width: 180px;
-    [data-melega-global-search] {
-      max-width: 180px;
-    }
+    min-width: 180px;
+    max-width: min(320px, 30vw);
+    margin-left: 12px;
+    margin-right: 10px;
   }
 `
 
 const RightCluster = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
   min-width: 0;
+  margin-left: 4px;
 
   [data-testid='melega-header-chain'],
   [data-network-status-pill] {
