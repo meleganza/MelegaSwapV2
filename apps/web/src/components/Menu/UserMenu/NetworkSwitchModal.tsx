@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import { Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
@@ -12,7 +13,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 2px 2px 4px;
+  padding: 8px 6px 10px;
 `
 
 const Section = styled.section`
@@ -64,21 +65,21 @@ const ChainCard = styled.button<{ $active: boolean }>`
   padding: 10px 10px;
   border-radius: 12px;
   border: 1px solid
-    ${({ theme, $active }) => ($active ? 'rgba(244, 196, 48, 0.55)' : theme.colors.cardBorder)};
+    ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.55)' : theme.colors.cardBorder)};
   background: ${({ theme, $active }) =>
-    $active ? 'rgba(244, 196, 48, 0.12)' : 'rgba(255,255,255,0.03)'};
+    $active ? 'rgba(221, 185, 47, 0.12)' : 'rgba(255,255,255,0.03)'};
   box-shadow: ${({ $active }) =>
     $active
-      ? 'inset 0 0 0 1px rgba(244, 196, 48, 0.22), 0 6px 16px rgba(0,0,0,0.28)'
-      : '0 2px 8px rgba(0,0,0,0.18)'};
+      ? 'inset 0 0 0 1px rgba(221, 185, 47, 0.22), 0 8px 18px rgba(0,0,0,0.32)'
+      : '0 4px 12px rgba(0,0,0,0.22)'};
   cursor: pointer;
   text-align: left;
   min-height: 48px;
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover:not(:disabled) {
-    border-color: rgba(244, 196, 48, 0.45);
-    transform: translateY(-2px);
+    border-color: rgba(221, 185, 47, 0.45);
+    transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
   }
 
@@ -97,7 +98,7 @@ const ChainMeta = styled.div`
 const ChainName = styled(Text)<{ $active: boolean }>`
   font-size: 12px;
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
-  color: ${({ theme, $active }) => ($active ? '#F4C430' : theme.colors.text)};
+  color: ${({ theme, $active }) => ($active ? '#DDB92F' : theme.colors.text)};
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -120,8 +121,19 @@ const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
     $tone === 'live'
       ? 'rgba(34, 160, 80, 0.14)'
       : $tone === 'active'
-        ? 'rgba(244, 196, 48, 0.16)'
+        ? 'rgba(221, 185, 47, 0.16)'
         : 'rgba(200, 150, 40, 0.16)'};
+`
+
+const SwitchError = styled.div`
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(240, 80, 80, 0.35);
+  background: rgba(240, 80, 80, 0.08);
+  color: #ffb4b4;
+  font-size: 12px;
+  line-height: 1.4;
 `
 
 type NetworkSwitchModalProps = {
@@ -135,15 +147,17 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
   const { t } = useTranslation()
   const liveChains = filterMelegaVisibleSwitcherChains(chains)
   const preparing = getMelegaPreparingChains()
+  const [error, setError] = useState<string | null>(null)
 
   const safePick = (next: number) => {
+    setError(null)
     try {
       if (next !== chainId) {
         switchNetwork(next)
         onDismiss?.()
       }
-    } catch {
-      // Never crash the chain selector — wallet rejection stays silent here.
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('Network switch was cancelled.'))
     }
   }
 
@@ -189,12 +203,12 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
           </CardGrid>
         </Section>
 
-        <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
-          <SectionLabel>
-            <SectionTitle>{t('PREPARING')}</SectionTitle>
-            <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
-          </SectionLabel>
-          {preparing.length > 0 ? (
+        {preparing.length > 0 ? (
+          <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
+            <SectionLabel>
+              <SectionTitle>{t('PREPARING')}</SectionTitle>
+              <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
+            </SectionLabel>
             <CardGrid>
               {preparing.map((row) => {
                 const active = chainId === row.chainId
@@ -220,12 +234,16 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
                 )
               })}
             </CardGrid>
-          ) : (
-            <Text fontSize="12px" color="textSubtle" px="2px">
-              {t('All product chains are LIVE.')}
-            </Text>
-          )}
-        </Section>
+          </Section>
+        ) : (
+          <div data-testid="network-switch-preparing" data-network-switch-coming-soon hidden aria-hidden />
+        )}
+
+        {error ? (
+          <SwitchError data-testid="network-switch-error" role="alert">
+            {error}
+          </SwitchError>
+        ) : null}
       </Body>
     </MelegaModal>
   )

@@ -1,0 +1,193 @@
+{
+  "mission": "MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3",
+  "base": "http://127.0.0.1:3034",
+  "generatedAt": "2026-08-06T08:18:29.533Z",
+  "results": [
+    {
+      "viewport": "1440",
+      "status": "ok",
+      "farm": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Farm"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 734,
+        "height": 501,
+        "top": 206,
+        "bottom": 706,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nStep 1Pair\n▾\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.\n\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0."
+      },
+      "pool": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Pool"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 740,
+        "height": 447,
+        "top": 227,
+        "bottom": 674,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Rewards\n▾\nStep 3Safety\n▾\nStep 4Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREAD"
+      },
+      "network": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Switch Network"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 480,
+        "height": 228,
+        "top": 9,
+        "bottom": 237,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE"
+      }
+    },
+    {
+      "viewport": "1024",
+      "status": "ok",
+      "farm": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Farm"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 740,
+        "height": 505,
+        "top": 132,
+        "bottom": 637,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nStep 1Pair\n▾\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.\n\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0."
+      },
+      "pool": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Pool"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 740,
+        "height": 447,
+        "top": 161,
+        "bottom": 608,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Rewards\n▾\nStep 3Safety\n▾\nStep 4Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREAD"
+      },
+      "network": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Switch Network"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 480,
+        "height": 228,
+        "top": 7,
+        "bottom": 235,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE"
+      }
+    },
+    {
+      "viewport": "390",
+      "status": "ok",
+      "farm": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Farm"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 390,
+        "height": 693,
+        "top": 151,
+        "bottom": 844,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nStep 1Pair\n▾\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.\n\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0."
+      },
+      "pool": {
+        "open": true,
+        "system": "v3",
+        "titles": [
+          "Create Pool"
+        ],
+        "titleCount": 1,
+        "brand": true,
+        "close": true,
+        "footer": false,
+        "width": 390,
+        "height": 760,
+        "top": 84,
+        "bottom": 844,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthBandOk": true,
+        "overlayPresent": true,
+        "bodyOverflowX": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Rewards\n▾\nStep 3Safety\n▾\nStep 4Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREAD"
+      },
+      "network": {
+        "open": false,
+        "skipped": true
+      }
+    }
+  ],
+  "pass": true,
+  "failCount": 0
+}

@@ -74,14 +74,20 @@ describe('Avalanche deployment runtime crash guards', () => {
 })
 
 describe('Switch Network modal compact redesign', () => {
-  it('is compact with LIVE + PREPARING via MelegaModal sm (440px)', () => {
+  it('is compact with LIVE + PREPARING via MelegaModal sm (~480px)', () => {
     const src = readFileSync(SWITCH_MODAL, 'utf8')
+    const tokens = readFileSync(
+      path.resolve(__dirname, '../../design-system/melega/components/Modal/MelegaModal.tsx'),
+      'utf8',
+    )
     expect(src).toContain('MelegaModal')
     expect(src).toContain('size="sm"')
+    expect(tokens).toContain("maxWidthSm: '480px'")
     expect(src).toContain('network-switch-live')
     expect(src).toContain('network-switch-preparing')
     expect(src).toContain('PREPARING')
     expect(src).toContain('LIVE')
+    expect(src).toContain('network-switch-error')
     expect(src).not.toMatch(/grid-template-columns:\s*auto auto auto auto auto/)
     expect(src).not.toContain('Coming soon')
     expect(src).not.toContain('BNB Smart Chain')

@@ -25,7 +25,7 @@ export type CreatePoolWizardState = {
 const template = STAKING_TEMPLATES[0]
 
 /** Compact stepper labels (maps to required product sections). */
-export const WIZARD_STEP_LABELS = ['Tokens', 'Budget', 'Schedule', 'Safety', 'Review'] as const
+export const WIZARD_STEP_LABELS = ['Tokens', 'Rewards', 'Safety', 'Review'] as const
 
 /** Required Create Pool product sections (stake→create). */
 export const CREATE_POOL_FLOW_SECTIONS = [

@@ -61,8 +61,9 @@ describe('MELEGASWAP_V2_PRODUCT_POLISH_P1', () => {
   it('Melega Modal Design System enforces premium popup geometry', () => {
     const modal = load('design-system/melega/components/Modal/MelegaModal.tsx')
     expect(modal).toContain("maxWidthMd: '740px'")
-    expect(modal).toContain("maxHeight: '80vh'")
+    expect(modal).toContain("maxHeight: 'min(82vh, 760px)'")
     expect(modal).toContain('MelegaLogoSvg')
     expect(modal).toContain('data-melega-modal-system')
+    expect(modal).toContain('data-melega-modal-system="v3"')
   })
 })

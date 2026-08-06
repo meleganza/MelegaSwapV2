@@ -46,8 +46,10 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
     expect(farms).not.toContain('size="lg"')
     expect(pools).not.toContain('size="lg"')
     expect(modal).toContain("maxWidthMd: '740px'")
-    expect(modal).toContain("maxHeight: '80vh'")
+    expect(modal).toContain("maxHeight: 'min(82vh, 760px)'")
     expect(modal).toContain('data-melega-modal-brand')
+    expect(modal).toContain('data-melega-modal-system="v3"')
+    expect(modal).toContain('data-melega-modal-footer')
   })
 
   it('Create Farm uses accordion + sticky preview', () => {

@@ -31,7 +31,7 @@ describe('MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN', () => {
       'Review',
       'Create',
     ])
-    expect([...WIZARD_STEP_LABELS]).toEqual(['Tokens', 'Budget', 'Schedule', 'Safety', 'Review'])
+    expect([...WIZARD_STEP_LABELS]).toEqual(['Tokens', 'Rewards', 'Safety', 'Review'])
     const preview = readFileSync(path.join(STUDIO, 'components/CreatePoolWizardPreview.tsx'), 'utf8')
     expect(preview).toContain('data-ps-preview-stake')
     expect(preview).toContain('data-ps-preview-reward')

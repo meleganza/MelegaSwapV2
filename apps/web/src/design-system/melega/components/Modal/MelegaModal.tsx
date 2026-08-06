@@ -1,28 +1,30 @@
 /**
- * Canonical Melega Modal Design System — premium popup shell (not a page).
- * Shared by Create Farm, Create Pool, Network Switch, and future modals.
- * Width 720–760px · max height 80vh · brand header · internal scroll.
+ * Canonical Melega Modal Design System V3 — premium compact popup shell.
+ * Shared by Create Farm, Create Pool, Network Switch, and product modals.
+ * Width 680–760px (md) · max-height min(82vh, 760px) · brand header · sticky footer · focus trap.
  */
-import React, { useEffect } from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useCallback, useEffect, useId, useRef } from 'react'
+import styled, { css, keyframes } from 'styled-components'
 import { MelegaLogoSvg } from '../BrandLockup/MelegaLogoSvg'
 import { uxRebuildColors, uxRebuildFont, uxRebuildRadius, uxRebuildShadow } from '../../tokens/uxRebuild'
 
 export const melegaModalTokens = {
-  radius: uxRebuildRadius.panel, // 20px
-  shadow: uxRebuildShadow.elevated,
-  overlay: 'rgba(0, 0, 0, 0.72)',
+  radius: uxRebuildRadius.panel,
+  shadow: `${uxRebuildShadow.elevated}, 0 0 0 1px rgba(221, 185, 47, 0.06), 0 24px 48px rgba(0, 0, 0, 0.55)`,
+  overlay: 'rgba(0, 0, 0, 0.74)',
   surface:
-    'linear-gradient(165deg, rgba(22, 22, 22, 0.97) 0%, rgba(12, 12, 12, 0.98) 55%, rgba(10, 10, 10, 0.99) 100%)',
+    'radial-gradient(ellipse 90% 55% at 12% -10%, rgba(221, 185, 47, 0.09), transparent 52%), linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(12, 12, 12, 0.99) 55%, rgba(8, 8, 8, 1) 100%)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
-  headerPad: '14px 16px 12px',
-  bodyPad: '0 16px 16px',
-  closeSize: '32px',
-  maxWidthSm: '440px',
-  /** Premium create / workflow modals — 720–760px band. */
+  headerPad: '12px 14px 10px',
+  bodyPad: '0 14px 12px',
+  footerPad: '10px 14px 12px',
+  closeSize: '36px',
+  /** Compact dialogs (network). */
+  maxWidthSm: '480px',
+  /** Premium create / workflow modals — 680–760px band. */
   maxWidthMd: '740px',
-  maxWidthLg: '960px',
-  maxHeight: '80vh',
+  maxWidthLg: '760px',
+  maxHeight: 'min(82vh, 760px)',
   zIndex: 10040,
 } as const
 
@@ -36,6 +38,18 @@ const riseIn = keyframes`
   to { opacity: 1; transform: translateY(0) scale(1); }
 `
 
+const sheetIn = keyframes`
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+`
+
+const reducedMotion = css`
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+    transition: none !important;
+  }
+`
+
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -47,12 +61,18 @@ const Overlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: 16px 12px;
-  overflow-y: auto;
+  overflow: hidden;
   animation: ${fadeIn} 160ms ease-out;
   font-family: ${uxRebuildFont};
+  ${reducedMotion}
+
+  @media (max-width: 639px) {
+    align-items: flex-end;
+    padding: 0;
+  }
 `
 
-const Panel = styled.div<{ $maxWidth: string; $flush?: boolean }>`
+const Panel = styled.div<{ $maxWidth: string }>`
   width: min(${({ $maxWidth }) => $maxWidth}, 100%);
   margin: auto;
   position: relative;
@@ -67,6 +87,17 @@ const Panel = styled.div<{ $maxWidth: string; $flush?: boolean }>`
   display: flex;
   flex-direction: column;
   max-height: ${melegaModalTokens.maxHeight};
+  outline: none;
+  ${reducedMotion}
+
+  @media (max-width: 639px) {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    max-height: min(92vh, 760px);
+    border-radius: 18px 18px 0 0;
+    animation: ${sheetIn} 200ms ease-out;
+  }
 `
 
 const Header = styled.header`
@@ -77,6 +108,10 @@ const Header = styled.header`
   padding: ${melegaModalTokens.headerPad};
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(14, 14, 14, 0.96));
 `
 
 const BrandRow = styled.div`
@@ -126,10 +161,12 @@ const CloseBtn = styled.button`
   flex-shrink: 0;
   width: ${melegaModalTokens.closeSize};
   height: ${melegaModalTokens.closeSize};
+  min-width: 44px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.04);
   color: ${uxRebuildColors.text};
@@ -137,10 +174,11 @@ const CloseBtn = styled.button`
   line-height: 1;
   font-weight: 500;
   transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  ${reducedMotion}
 
   &:hover {
-    border-color: rgba(244, 196, 48, 0.45);
-    background: rgba(244, 196, 48, 0.1);
+    border-color: rgba(221, 185, 47, 0.45);
+    background: rgba(221, 185, 47, 0.1);
   }
 
   &:active {
@@ -151,9 +189,45 @@ const CloseBtn = styled.button`
 const Body = styled.div<{ $flush?: boolean }>`
   padding: ${({ $flush }) => ($flush ? '0' : melegaModalTokens.bodyPad)};
   overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
   flex: 1;
   -webkit-overflow-scrolling: touch;
+`
+
+const Footer = styled.footer`
+  flex-shrink: 0;
+  padding: ${melegaModalTokens.footerPad};
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(0deg, rgba(10, 10, 10, 0.98), rgba(14, 14, 14, 0.94));
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+`
+
+const StepRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+`
+
+const StepDot = styled.span<{ $active?: boolean; $done?: boolean }>`
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid
+    ${({ $active, $done }) =>
+      $active ? 'rgba(221, 185, 47, 0.5)' : $done ? 'rgba(109, 220, 140, 0.35)' : 'rgba(255,255,255,0.1)'};
+  color: ${({ $active, $done }) =>
+    $active ? uxRebuildColors.gold : $done ? uxRebuildColors.positive : uxRebuildColors.secondary};
+  background: ${({ $active }) => ($active ? 'rgba(221, 185, 47, 0.1)' : 'transparent')};
 `
 
 export type MelegaModalSize = 'sm' | 'md' | 'lg'
@@ -164,25 +238,44 @@ const SIZE_MAP: Record<MelegaModalSize, string> = {
   lg: melegaModalTokens.maxWidthLg,
 }
 
+export type MelegaModalStep = {
+  id: string
+  label: string
+  done?: boolean
+  active?: boolean
+}
+
 export type MelegaModalProps = {
   open: boolean
   onClose: () => void
   title?: React.ReactNode
   subtitle?: React.ReactNode
   children: React.ReactNode
+  /** Sticky footer actions — always visible inside the panel. */
+  footer?: React.ReactNode
+  /** Optional step chips under the subtitle. */
+  steps?: MelegaModalStep[]
   size?: MelegaModalSize
-  /** Show Melega DEX mark in header (default true when title present). */
   showBrand?: boolean
-  /** Hide built-in header; caller owns chrome (still shows close if showClose). */
   hideHeader?: boolean
   showClose?: boolean
   closeLabel?: string
-  /** When true, body has no padding. */
   flush?: boolean
+  /** When false, backdrop click does not close (e.g. pending irreversible op). */
+  closeOnBackdrop?: boolean
+  /** When false, Escape does not close. */
+  closeOnEscape?: boolean
   testId?: string
   ariaLabel?: string
   closeTestId?: string
   zIndex?: number
+}
+
+function getFocusable(root: HTMLElement): HTMLElement[] {
+  const nodes = root.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  )
+  return Array.from(nodes).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null)
 }
 
 export const MelegaModal: React.FC<MelegaModalProps> = ({
@@ -191,30 +284,76 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
   title,
   subtitle,
   children,
+  footer,
+  steps,
   size = 'md',
   showBrand = true,
   hideHeader = false,
   showClose = true,
   closeLabel = 'Close',
   flush = false,
+  closeOnBackdrop = true,
+  closeOnEscape = true,
   testId,
   ariaLabel,
   closeTestId,
   zIndex,
 }) => {
+  const panelRef = useRef<HTMLDivElement>(null)
+  const previouslyFocused = useRef<HTMLElement | null>(null)
+  const titleId = useId()
+
+  const requestClose = useCallback(() => {
+    onClose()
+  }, [onClose])
+
   useEffect(() => {
     if (!open) return undefined
-    const prev = document.body.style.overflow
+    previouslyFocused.current = document.activeElement as HTMLElement | null
+    const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+
+    const focusTimer = window.setTimeout(() => {
+      const panel = panelRef.current
+      if (!panel) return
+      const focusables = getFocusable(panel)
+      const closeBtn = panel.querySelector<HTMLElement>('[data-melega-modal-close="true"]')
+      ;(focusables[0] || closeBtn || panel).focus()
+    }, 20)
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && closeOnEscape) {
+        e.stopPropagation()
+        requestClose()
+        return
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return
+      const focusables = getFocusable(panelRef.current)
+      if (focusables.length === 0) {
+        e.preventDefault()
+        panelRef.current.focus()
+        return
+      }
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const active = document.activeElement as HTMLElement | null
+      if (e.shiftKey && active === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
+
     window.addEventListener('keydown', onKey)
     return () => {
-      document.body.style.overflow = prev
+      window.clearTimeout(focusTimer)
+      document.body.style.overflow = prevOverflow
       window.removeEventListener('keydown', onKey)
+      previouslyFocused.current?.focus?.()
     }
-  }, [open, onClose])
+  }, [open, closeOnEscape, requestClose])
 
   if (!open) return null
 
@@ -222,19 +361,23 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
     <Overlay
       role="presentation"
       style={zIndex != null ? { zIndex } : undefined}
-      onClick={onClose}
+      onClick={() => {
+        if (closeOnBackdrop) requestClose()
+      }}
       data-melega-modal-overlay="true"
     >
       <Panel
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
         aria-label={ariaLabel ?? (typeof title === 'string' ? title : undefined)}
+        tabIndex={-1}
         $maxWidth={SIZE_MAP[size]}
-        $flush={flush}
         data-testid={testId}
         data-melega-modal="true"
         data-melega-modal-size={size}
-        data-melega-modal-system="v2"
+        data-melega-modal-system="v3"
         onClick={(e) => e.stopPropagation()}
       >
         {!hideHeader && (title || showClose) ? (
@@ -246,8 +389,21 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
                 </BrandMark>
               ) : null}
               <TitleBlock>
-                {title ? <Title data-melega-modal-title="true">{title}</Title> : null}
+                {title ? (
+                  <Title id={titleId} data-melega-modal-title="true">
+                    {title}
+                  </Title>
+                ) : null}
                 {subtitle ? <Subtitle data-melega-modal-subtitle="true">{subtitle}</Subtitle> : null}
+                {steps && steps.length > 0 ? (
+                  <StepRow data-melega-modal-steps="true" aria-label="Progress">
+                    {steps.map((s) => (
+                      <StepDot key={s.id} $active={s.active} $done={s.done}>
+                        {s.label}
+                      </StepDot>
+                    ))}
+                  </StepRow>
+                ) : null}
               </TitleBlock>
             </BrandRow>
             {showClose ? (
@@ -256,7 +412,7 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
                 aria-label={closeLabel}
                 data-testid={closeTestId}
                 data-melega-modal-close="true"
-                onClick={onClose}
+                onClick={requestClose}
               >
                 ×
               </CloseBtn>
@@ -268,8 +424,8 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
             aria-label={closeLabel}
             data-testid={closeTestId}
             data-melega-modal-close="true"
-            onClick={onClose}
-            style={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}
+            onClick={requestClose}
+            style={{ position: 'absolute', top: 10, right: 10, zIndex: 3 }}
           >
             ×
           </CloseBtn>
@@ -277,9 +433,84 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
         <Body $flush={flush} data-melega-modal-body="true">
           {children}
         </Body>
+        {footer ? <Footer data-melega-modal-footer="true">{footer}</Footer> : null}
       </Panel>
     </Overlay>
   )
 }
+
+/** Sticky footer action row for MelegaModal. */
+export const MelegaModalFooter = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+`
+
+export const MelegaModalFooterMeta = styled.div`
+  font-size: 11px;
+  color: ${uxRebuildColors.secondary};
+  line-height: 1.35;
+  min-width: 0;
+  flex: 1;
+`
+
+export const MelegaModalFooterActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+`
+
+/** Compact sticky preview shell for create funnels. */
+export const MelegaModalPreview = styled.aside`
+  position: sticky;
+  top: 8px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(221, 185, 47, 0.22);
+  background:
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(221, 185, 47, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+
+  @media (max-width: 1023px) {
+    position: relative;
+    top: 0;
+  }
+`
+
+export const MelegaModalStatus = styled.div<{ $tone?: 'ok' | 'warn' | 'bad' | 'mute' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 750;
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === 'ok'
+        ? 'rgba(109,220,140,0.35)'
+        : $tone === 'warn'
+          ? 'rgba(240,180,60,0.4)'
+          : $tone === 'bad'
+            ? 'rgba(240,80,80,0.4)'
+            : 'rgba(255,255,255,0.1)'};
+  color: ${({ $tone }) =>
+    $tone === 'ok'
+      ? uxRebuildColors.positive
+      : $tone === 'warn'
+        ? uxRebuildColors.warning
+        : $tone === 'bad'
+          ? uxRebuildColors.error
+          : uxRebuildColors.secondary};
+  background: rgba(0, 0, 0, 0.25);
+`
 
 export default MelegaModal

@@ -55,7 +55,7 @@ describe('farms product UX redesign', () => {
   it('Create Farm workspace still discloses fee before confirmation', () => {
     const ui = load('views/FarmsStudio/modules/PublicFarmFactoryWorkspace.tsx')
     expect(ui).toContain('create-farm-fee')
-    expect(ui).toContain('create-farm-advanced-toggle')
+    expect(ui).toContain('create-farm-acc-advanced')
     expect(ui).toContain('create-farm-submit')
   })
 })

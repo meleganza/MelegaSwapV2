@@ -611,8 +611,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
             testId="create-farm-acc-pair"
           >
             <div data-testid="create-farm-step-pair">
-              <PanelTitle>{CREATE_FARM_UX.step1}</PanelTitle>
-              <ModeRow data-testid="public-farm-pair-mode" style={{ marginTop: 12 }}>
+              <ModeRow data-testid="public-farm-pair-mode" style={{ marginTop: 4 }}>
                 <ModeBtn
                   type="button"
                   $active={draft.selectionMode === 'search_existing'}
@@ -680,7 +679,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
             {draft.selectedPair && (
               <Panel data-testid="public-farm-eligibility" data-eligible={eligibility.eligible ? 'true' : 'false'}>
-                <StepLabel>Step 2</StepLabel>
                 <PanelTitle>{CREATE_FARM_UX.pairStatus}</PanelTitle>
                 <StatusLine>
                   <Check>✓</Check> {CREATE_FARM_UX.pairExists}
@@ -867,11 +865,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
           </MelegaAccordionSection>
 
           <div data-testid="create-farm-primary-action">
-            {nextAction === 'increase_liquidity' && (
-              <PrimaryLink href={increaseHref} data-testid="create-farm-next-increase">
-                {CREATE_FARM_UX.increaseLiquidity}
-              </PrimaryLink>
-            )}
             {nextAction === 'select_pair' && (
               <PrimaryButton type="button" disabled data-testid="create-farm-next-continue">
                 {CREATE_FARM_UX.continue}

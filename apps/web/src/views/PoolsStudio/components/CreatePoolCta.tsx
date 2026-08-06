@@ -1127,27 +1127,27 @@ export const CreatePoolCta: React.FC = () => {
           <AccordionStack data-create-pool-accordion-ui="true">
             {(
               [
-                [1, 'Step 1', 'Tokens'],
-                [2, 'Step 2', 'Budget'],
-                [3, 'Step 3', 'Schedule'],
-                [4, 'Advanced', 'Safety · Review'],
+                [1, 'Step 1', 'Tokens', (s: number) => s === 1],
+                [2, 'Step 2', 'Rewards', (s: number) => s === 2 || s === 3],
+                [3, 'Step 3', 'Safety', (s: number) => s === 4],
+                [4, 'Step 4', 'Review', (s: number) => s === 5],
               ] as const
-            ).map(([idx, title, summary]) => (
+            ).map(([idx, title, summary, isOpen]) => (
               <MelegaAccordionSection
                 key={idx}
                 id={`create-pool-step-${idx}`}
                 title={title}
                 summary={summary}
-                open={idx === 4 ? step === 4 || step === 5 : step === idx}
+                open={isOpen(step)}
                 onToggle={() => {
-                  const target = idx as WizardStep
-                  setAnimDir(target >= step ? 'next' : 'prev')
-                  setStep(target === 4 && step === 5 ? 5 : target)
-                  if (idx === 3) setStep3Page(0)
+                  const targetStep = (idx === 1 ? 1 : idx === 2 ? 2 : idx === 3 ? 4 : 5) as WizardStep
+                  setAnimDir(targetStep >= step ? 'next' : 'prev')
+                  setStep(targetStep)
+                  if (idx === 2) setStep3Page(0)
                 }}
                 testId={`create-pool-acc-${idx}`}
               >
-                {(idx === 4 ? step === 4 || step === 5 : step === idx) ? (
+                {isOpen(step) ? (
           <StepPanel
             key={`active-${step}-${step === 3 ? step3Page : 0}`}
             $dir={animDir}

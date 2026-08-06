@@ -22,7 +22,7 @@ describe('Create Farm UX simplification', () => {
     expect(ui).toContain('CREATE_FARM_UX.addLiquidityManually')
     expect(ui).toContain('CREATE_FARM_UX.marcoRewardFriendly')
     expect(ui).toContain('CREATE_FARM_UX.feeTreasuryNote')
-    expect(ui).toContain('CREATE_FARM_UX.advanced')
+    expect(ui).toContain('create-farm-acc-advanced')
     expect(copy).toContain(CREATE_FARM_UX.useExisting)
     expect(copy).toContain(CREATE_FARM_UX.createNew)
     expect(copy).toContain(CREATE_FARM_UX.marcoRewardFriendly.split('\n')[0])
@@ -37,7 +37,7 @@ describe('Create Farm UX simplification', () => {
     expect(ui).toContain('CREATE_FARM_UX.creationFee')
     expect(ui).toContain('CREATE_FARM_UX.estimatedApr')
     expect(ui).toContain('CREATE_FARM_UX.review')
-    expect(ui).toContain('create-farm-advanced-toggle')
+    expect(ui).toContain('create-farm-acc-advanced')
   })
 
   it('never exposes forbidden protocol terminology in the public UI module', () => {
@@ -60,13 +60,16 @@ describe('Create Farm UX simplification', () => {
     expect(ui).toContain("from './publicFarmFactoryCapability'")
   })
 
-  it('primary CTA follows guided states', () => {
+  it('primary CTA follows guided states — liquidity increase only in remediation (no duplicate)', () => {
     const ui = load('modules/PublicFarmFactoryWorkspace.tsx')
-    expect(ui).toContain('create-farm-next-increase')
+    expect(ui).toContain('public-farm-low-liquidity-remediation')
+    expect(ui).toContain('CREATE_FARM_UX.increaseLiquidity')
     expect(ui).toContain('create-farm-next-continue')
     expect(ui).toContain('create-farm-submit')
     expect(ui).toContain('CREATE_FARM_UX.createFarm')
     expect(ui).toContain('CREATE_FARM_UX.continue')
+    // Single Increase Liquidity path — remediation panel only
+    expect(ui).not.toContain('data-testid="create-farm-next-increase"')
   })
 })
 
