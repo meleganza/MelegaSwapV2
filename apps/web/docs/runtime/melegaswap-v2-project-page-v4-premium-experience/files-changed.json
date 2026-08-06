@@ -1,0 +1,14 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_V4_PREMIUM_EXPERIENCE",
+  "generatedAt": "2026-08-06T15:21:30.000Z",
+  "files": [
+    "apps/web/src/views/ProjectPage/v4/ProjectPageV4Shell.tsx",
+    "apps/web/src/views/ProjectPage/v4/index.ts",
+    "apps/web/src/views/ProjectPage/v4/__tests__/projectPageV4PremiumExperience.test.ts",
+    "apps/web/src/pages/project-hq/[slug].tsx",
+    "apps/web/src/views/ProjectPage/v1/ProjectCharts.tsx",
+    "apps/web/src/views/ProjectPage/v1/theme.ts",
+    "apps/web/src/views/ProjectPage/v3/__tests__/projectPageV3PremiumConversion.test.ts",
+    "apps/web/docs/runtime/melegaswap-v2-project-page-v4-premium-experience/"
+  ]
+}

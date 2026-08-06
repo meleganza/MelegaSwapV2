@@ -37,7 +37,7 @@ import { buildProjectTokenomicsDocument } from 'registry/projects/identity/token
 import { buildProjectRoadmapDocument } from 'registry/projects/identity/roadmap/buildProjectRoadmapDocument'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
-import ProjectPageV3Shell from 'views/ProjectPage/v3/ProjectPageV3Shell'
+import ProjectPageV4Shell from 'views/ProjectPage/v4/ProjectPageV4Shell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
@@ -166,7 +166,7 @@ const ProjectHqPage = ({
   }
 
   return (
-    <ProjectPageV3Shell
+    <ProjectPageV4Shell
       document={document}
       evidencePack={evidencePack}
       readinessDocument={readinessDocument}

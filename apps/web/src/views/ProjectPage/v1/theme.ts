@@ -31,7 +31,7 @@ export const Page = styled.main`
   width: 100%;
   max-width: ${uxRebuildLayout.contentMax};
   margin: 0 auto;
-  padding: 8px 10px 48px;
+  padding: 6px 8px 36px;
   color: ${pp.text};
   background:
     radial-gradient(ellipse 90% 40% at 50% -10%, rgba(221, 185, 47, 0.08), transparent 55%),
@@ -46,26 +46,26 @@ export const Page = styled.main`
   }
 
   @media (min-width: 768px) {
-    padding: 12px 16px 56px;
+    padding: 8px 12px 40px;
   }
 
   @media (min-width: 1200px) {
-    padding: 14px 20px 64px;
+    padding: 10px 16px 48px;
   }
 `
 
 export const Band = styled.section`
   animation: ${rise} 0.35s ease both;
-  margin: 0 0 8px;
-  padding: 10px 12px 8px;
+  margin: 0 0 6px;
+  padding: 7px 10px 6px;
   border-radius: ${pp.radius};
   border: 1px solid ${pp.line};
   background: linear-gradient(165deg, ${pp.panel2} 0%, ${pp.panel} 100%);
   min-width: 0;
 
   @media (min-width: 768px) {
-    padding: 12px 14px 10px;
-    margin-bottom: 10px;
+    padding: 8px 12px 7px;
+    margin-bottom: 7px;
   }
 `
 

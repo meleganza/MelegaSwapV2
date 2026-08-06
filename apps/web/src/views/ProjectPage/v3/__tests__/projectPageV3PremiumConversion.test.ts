@@ -14,10 +14,11 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
   const page = load('pages/project-hq/[slug].tsx')
   const theme = load('views/ProjectPage/v1/theme.ts')
 
-  it('project-hq mounts V3 shell', () => {
-    expect(page).toContain('ProjectPageV3Shell')
-    expect(page).toContain("from 'views/ProjectPage/v3/ProjectPageV3Shell'")
+  it('project-hq mounts V4 shell (V3 retained in tree)', () => {
+    expect(page).toContain('ProjectPageV4Shell')
+    expect(page).toContain("from 'views/ProjectPage/v4/ProjectPageV4Shell'")
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v3/index.ts'))).toBe(true)
+    expect(existsSync(path.join(WEB, 'views/ProjectPage/v3/ProjectPageV3Shell.tsx'))).toBe(true)
   })
 
   it('hero is 40/60 identity | chart+swap with hero chart variant', () => {
@@ -29,17 +30,17 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
     expect(shell).toContain('ProjectCharts')
     expect(shell).toContain('ProjectTradingEmbed')
     expect(shell).toContain('project-v3-swap')
-    expect(shell).toContain('#project-v3-swap')
+    expect(shell).toContain('id="project-v3-swap"')
   })
 
   it('charts expose hero + ALL timeframe + elegant placeholder', () => {
     expect(charts).toContain("'full' | 'compact' | 'hero'")
     expect(charts).toContain("id: 'ALL'")
-    expect(charts).toContain('project-v3-chart')
-    expect(charts).toContain('project-v3-chart-placeholder')
     expect(charts).toContain('ElegantPlaceholder')
     expect(charts).toContain('useIndexerCandles')
     expect(charts).toContain('TradeChartPanel')
+    expect(charts).toContain('project-v4-chart-placeholder')
+    expect(charts).toContain('project-v4-chart-panel')
   })
 
   it('market strip labels are dense and complete', () => {
@@ -115,7 +116,7 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
   })
 
   it('theme tokens are densified', () => {
-    expect(theme).toContain('padding: 8px 10px 48px')
-    expect(theme).toContain('padding: 10px 12px 8px')
+    expect(theme).toContain('padding: 6px 8px 36px')
+    expect(theme).toContain('padding: 7px 10px 6px')
   })
 })

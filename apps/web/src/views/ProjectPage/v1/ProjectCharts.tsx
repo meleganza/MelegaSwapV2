@@ -22,8 +22,8 @@ const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartP
 }) as React.ComponentType<React.ComponentProps<typeof import('views/Trade/components/TradeChartPanel').TradeChartPanel>>
 
 const ChartSkeleton = styled.div<{ $size?: 'compact' | 'hero' | 'full' }>`
-  min-height: ${({ $size }) => ($size === 'compact' ? '96px' : $size === 'hero' ? '220px' : '200px')};
-  max-height: ${({ $size }) => ($size === 'hero' ? '260px' : 'none')};
+  min-height: ${({ $size }) => ($size === 'compact' ? '96px' : $size === 'hero' ? '280px' : '200px')};
+  max-height: ${({ $size }) => ($size === 'hero' ? '380px' : 'none')};
   border-radius: 10px;
   background: #101010;
   border: 1px solid ${pp.line};
@@ -57,8 +57,8 @@ const PriceLine = styled.div`
 `
 
 const ElegantPlaceholder = styled.div<{ $hero?: boolean }>`
-  min-height: ${({ $hero }) => ($hero ? '220px' : '96px')};
-  max-height: ${({ $hero }) => ($hero ? '260px' : 'none')};
+  min-height: ${({ $hero }) => ($hero ? '280px' : '96px')};
+  max-height: ${({ $hero }) => ($hero ? '380px' : 'none')};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,18 +89,30 @@ const HeroChartWrap = styled.div`
   gap: 2px;
 
   [data-trade-chart-area],
-  [data-testid='project-v3-chart-placeholder'] {
-    height: 180px;
-    min-height: 180px;
-    max-height: 180px;
+  [data-testid='project-v3-chart-placeholder'],
+  [data-testid='project-v4-chart-placeholder'] {
+    height: 220px;
+    min-height: 220px;
+    max-height: 280px;
   }
 
   @media (min-width: 960px) {
     [data-trade-chart-area],
-    [data-testid='project-v3-chart-placeholder'] {
-      height: 220px;
-      min-height: 220px;
-      max-height: 220px;
+    [data-testid='project-v3-chart-placeholder'],
+    [data-testid='project-v4-chart-placeholder'] {
+      height: 280px;
+      min-height: 280px;
+      max-height: 340px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [data-trade-chart-area],
+    [data-testid='project-v3-chart-placeholder'],
+    [data-testid='project-v4-chart-placeholder'] {
+      height: 320px;
+      min-height: 320px;
+      max-height: 380px;
     }
   }
 `
@@ -219,15 +231,14 @@ const ProjectCharts: React.FC<Props> = ({
 
   if (hero) {
     return (
-      <HeroChartWrap data-testid="project-v3-chart" data-chart-variant="hero">
+      <HeroChartWrap data-testid="project-v4-chart-panel" data-chart-variant="hero">
         <BandHead style={{ marginBottom: 4 }}>
-          <BandTitle>Chart</BandTitle>
           <BandMeta>{supported && hasSpark ? `${pairLabel} · indexed` : 'Awaiting indexed candles'}</BandMeta>
         </BandHead>
         {priceText ? <PriceLine>{priceText}</PriceLine> : null}
         {timeframeRow}
         {showPlaceholder ? (
-          <ElegantPlaceholder $hero data-testid="project-v3-chart-placeholder">
+          <ElegantPlaceholder $hero data-testid="project-v4-chart-placeholder">
             <PlaceholderTitle>No chart data yet</PlaceholderTitle>
             <span>A live chart appears when indexed candles are available for this pair.</span>
           </ElegantPlaceholder>
