@@ -50,11 +50,21 @@ const QuietSwapShell = styled.div`
   }
 `
 
-const SwapSkeleton = styled.div`
-  min-height: 260px;
+const SwapSkeleton = styled.div<{ $hero?: boolean }>`
+  min-height: ${({ $hero }) => ($hero ? '200px' : '260px')};
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
   border: 1px solid ${pp.line};
+`
+
+const HeroTradeBand = styled(Band)`
+  margin-bottom: 0;
+  padding: 8px 10px 8px;
+  border: 1px solid rgba(244, 196, 48, 0.22);
+
+  @media (min-width: 768px) {
+    padding: 8px 10px;
+  }
 `
 
 const ComingSoonBox = styled.div`
@@ -298,9 +308,10 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       slug === 'marco') &&
     swapReady
   const hero = variant === 'hero'
+  const Shell = hero ? HeroTradeBand : Band
 
   return (
-    <Band
+    <Shell
       id="pp-v1-trading"
       aria-labelledby="pp-v1-trading-title"
       data-project-section="trading"
@@ -308,9 +319,8 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       data-project-router={routerAddress ?? ''}
       data-trading-variant={variant}
       data-testid={hero ? 'project-v1-smart-swap-hero' : 'project-v1-trading-full'}
-      style={hero ? { marginBottom: 0, border: '1px solid rgba(244,196,48,0.22)' } : undefined}
     >
-      <BandHead>
+      <BandHead style={hero ? { marginBottom: 6 } : undefined}>
         <BandTitle id="pp-v1-trading-title">{hero ? 'Smart Swap' : 'Buy Token'}</BandTitle>
         <BandMeta>
           <Chip $on={live} $disabled={!live} data-testid="project-v1-trading-chain-badge">
@@ -372,7 +382,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
           />
         </SwapFeaturesProvider>
       )}
-    </Band>
+    </Shell>
   )
 }
 
