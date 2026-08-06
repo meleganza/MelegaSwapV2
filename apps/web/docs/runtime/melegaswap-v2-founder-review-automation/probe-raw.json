@@ -1,0 +1,1360 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_AUTOMATION",
+  "base": "https://www.melega.finance",
+  "at": "2026-08-06T10:44:45.274Z",
+  "findings": [
+    {
+      "id": "unavail-home-1440",
+      "priority": "P1",
+      "page": "home",
+      "viewport": "1440",
+      "issue": "5× Unavailable labels"
+    },
+    {
+      "id": "unavail-projects-1440",
+      "priority": "P1",
+      "page": "projects",
+      "viewport": "1440",
+      "issue": "1618× Unavailable labels"
+    },
+    {
+      "id": "unavail-project-page-1440",
+      "priority": "P1",
+      "page": "project-page",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-smart-swap-1440",
+      "priority": "P1",
+      "page": "smart-swap",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-trade-1440",
+      "priority": "P1",
+      "page": "trade",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-farms-1440",
+      "priority": "P1",
+      "page": "farms",
+      "viewport": "1440",
+      "issue": "351× Unavailable labels"
+    },
+    {
+      "id": "unavail-pools-1440",
+      "priority": "P1",
+      "page": "pools",
+      "viewport": "1440",
+      "issue": "761× Unavailable labels"
+    },
+    {
+      "id": "unavail-audit-1440",
+      "priority": "P1",
+      "page": "audit",
+      "viewport": "1440",
+      "issue": "80× Unavailable labels"
+    },
+    {
+      "id": "unavail-trending-1440",
+      "priority": "P1",
+      "page": "trending",
+      "viewport": "1440",
+      "issue": "1633× Unavailable labels"
+    },
+    {
+      "id": "unavail-home-390",
+      "priority": "P1",
+      "page": "home",
+      "viewport": "390",
+      "issue": "9× Unavailable labels"
+    },
+    {
+      "id": "unavail-projects-390",
+      "priority": "P1",
+      "page": "projects",
+      "viewport": "390",
+      "issue": "1643× Unavailable labels"
+    },
+    {
+      "id": "unavail-project-page-390",
+      "priority": "P1",
+      "page": "project-page",
+      "viewport": "390",
+      "issue": "8× Unavailable labels"
+    },
+    {
+      "id": "unavail-smart-swap-390",
+      "priority": "P1",
+      "page": "smart-swap",
+      "viewport": "390",
+      "issue": "8× Unavailable labels"
+    },
+    {
+      "id": "unavail-trade-390",
+      "priority": "P1",
+      "page": "trade",
+      "viewport": "390",
+      "issue": "9× Unavailable labels"
+    },
+    {
+      "id": "unavail-farms-390",
+      "priority": "P1",
+      "page": "farms",
+      "viewport": "390",
+      "issue": "351× Unavailable labels"
+    },
+    {
+      "id": "unavail-pools-390",
+      "priority": "P1",
+      "page": "pools",
+      "viewport": "390",
+      "issue": "763× Unavailable labels"
+    },
+    {
+      "id": "unavail-audit-390",
+      "priority": "P1",
+      "page": "audit",
+      "viewport": "390",
+      "issue": "80× Unavailable labels"
+    },
+    {
+      "id": "unavail-trending-390",
+      "priority": "P1",
+      "page": "trending",
+      "viewport": "390",
+      "issue": "1643× Unavailable labels"
+    }
+  ],
+  "pageNotes": {
+    "home-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Home | Melega DEX | $0.0003",
+        "h1": [
+          "Discover. Trade. Earn.All in One DEX."
+        ],
+        "h2": [
+          "⚡Smart Swap",
+          "Top Movers",
+          "Top Farms",
+          "Top Pools",
+          "New Listings",
+          "Explore Melega Ecosystem",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS Discover. Trade. Earn. All in One DEX. Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance. List Your Project Trending Projects Powered by AI. Secured by MARCO. ⚡ Smart Swap BNB / MARCO Live From BNB To MARCO Connect Wallet Slippage Tolerance 0.5% ROUTE Enter amount to preview route Expected output — Minimum rec",
+        "textLen": 2888,
+        "buttons": 121,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/"
+      },
+      "signals": {
+        "unavailable": 5,
+        "emDash": 20,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 4,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "projects-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "Projects"
+        ],
+        "h2": [
+          "Featured Projects",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% Projects Discover trending and listed projects. Open a project page. Trade with confidence. List Your Project Claim Project FEATURED PROJECTS Same pipeline everywhere MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $768.00 24H VOLUME No recent swaps FDV $25.4K Trade View Project EYED Featured EYED VERIFIED <$0.000001 No 24H baseline Unavailable LIQUIDITY $369.73 24H ",
+        "textLen": 41595,
+        "buttons": 1458,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "AIVOICE",
+            "count": 2
+          },
+          {
+            "label": "Ethereum Token",
+            "count": 2
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/projects/"
+      },
+      "signals": {
+        "unavailable": 1618,
+        "emDash": 1,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "project-page-1440": {
+      "status": 200,
+      "probe": {
+        "title": "MARCO | Melega DEX Project",
+        "h1": [
+          "MARCO"
+        ],
+        "h2": [
+          "Chart",
+          "Smart Swap",
+          "Project Economy",
+          "Boost Your Project",
+          "Marketing History",
+          "Featured Projects",
+          "About",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% MARCO $MARCO Registry Identity Observed (Canonical Listing) Verified · Registry Identity Observed (Canonical Listing) Liquidity · — Community · 5 links Audit · Operational Age · — Volume · — DeFi Utility Token Ethereum BNB Polygon Base Arbitrum Avalanche MARCO is the native coordination token of the Melega ecosystem. It powers trading, liquidity, farming, and staking utilities on Melega DEX acro",
+        "textLen": 3846,
+        "buttons": 160,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "BOOST YOUR PROJECT\nIncrease visibility. Grow liquidity. Acquire holders.\n★\nFeatured\nHomepage + Projects rotation for maximum discovery.\n99 USD\n7 days\nCheckout →\n↗\nTrend Boost\nAmplify reach on Trending",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/project-hq/marco/?chain=ethereum"
+      },
+      "signals": {
+        "unavailable": 4,
+        "emDash": 36,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 3,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "smart-swap-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Swap | Melega DEX | $0.0003",
+        "h1": [
+          "Trade"
+        ],
+        "h2": [
+          "Swap",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% Trade Professional trading with best multichain routes. Open Project Page SmartSwap MelegaSwap Router History Swap Swap through the best available multichain route. Best Route Found — Execution speed — BNB MARCO Connect Wallet Route Enter amount to preview route MARCO / BNB 0.000350 USD $0.000350 +0.11% (24H) 1m 5m 15m 1H 4H 1D Indexed candles · Melega durable indexer Price $0.000350 +0.11% Liqu",
+        "textLen": 1898,
+        "buttons": 75,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/swap/"
+      },
+      "signals": {
+        "unavailable": 4,
+        "emDash": 7,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 4,
+        "loading": 1
+      },
+      "ok": true
+    },
+    "trade-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Home | Melega DEX | $0.0003",
+        "h1": [
+          "Discover. Trade. Earn.All in One DEX."
+        ],
+        "h2": [
+          "⚡Smart Swap",
+          "Top Movers",
+          "Top Farms",
+          "Top Pools",
+          "New Listings",
+          "Explore Melega Ecosystem",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS Discover. Trade. Earn. All in One DEX. Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance. List Your Project Trending Projects Powered by AI. Secured by MARCO. ⚡ Smart Swap BNB / MARCO Live From BNB To MARCO Connect Wallet Slippage Tolerance 0.5% ROUTE Enter amount to preview route Expected output — Minimum rec",
+        "textLen": 2884,
+        "buttons": 121,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/?focus=swap"
+      },
+      "signals": {
+        "unavailable": 4,
+        "emDash": 20,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 4,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "farms-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Farms | Melega DEX | $0.0003",
+        "h1": [
+          "Farms"
+        ],
+        "h2": [
+          "Farms overview",
+          "My Farms",
+          "Explore Farms",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% Farms Stake LP tokens. Earn farming rewards. Grow liquidity. Create Farm Explore Farms LP Pair Farm MARCO Rewards FEATURED FARM BABYMARCO / MARCO 6.52% TVL $58.9K Earn MARCO Stake Farm Contract ↗ LP Contract ↗ Farms overview Farms overview metrics partial. TOTAL FARM TVL $193.2K LP farming only ACTIVE FARMS 63 Currently farmable LP farms ACTIVE FARMERS 318 Unique wallets that participated in Mel",
+        "textLen": 36144,
+        "buttons": 1293,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "PEPE / MARCO LP",
+            "count": 2
+          },
+          {
+            "label": "MXMX / MARCO LP",
+            "count": 2
+          },
+          {
+            "label": "MARCO / WETH LP",
+            "count": 3
+          },
+          {
+            "label": "USDC / WETH LP",
+            "count": 3
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/farms/"
+      },
+      "signals": {
+        "unavailable": 351,
+        "emDash": 1,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 304,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "pools-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Pools | Melega DEX | $0.0003",
+        "h1": [
+          "Pools"
+        ],
+        "h2": [
+          "Pools overview",
+          "My Positions",
+          "Explore Pools",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% Pools Stake tokens. Earn rewards. On your terms. Create Pool How it Works Create a staking pool for your community Reward your holders and increase token engagement. FEATURED POOL — → — Active APR unavailable TVL — Earn — Stake Pools overview Pools overview metrics partial. TOTAL VALUE LOCKED — Valuation unavailable TOTAL POOLS 239 9 Active · 22 Finished · 0 Inactive · 208 Unavailable POOLS REWA",
+        "textLen": 45619,
+        "buttons": 1031,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "MARCO → DC4",
+            "count": 2
+          },
+          {
+            "label": "MARCO → MARCO",
+            "count": 4
+          },
+          {
+            "label": "MARCO → TRUMP",
+            "count": 2
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "pools-hero-artwork",
+            "h": 230
+          }
+        ],
+        "href": "https://www.melega.finance/pools/"
+      },
+      "signals": {
+        "unavailable": 761,
+        "emDash": 201,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 192,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "portfolio-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Portfolio | Melega DEX | $0.0003",
+        "h1": [
+          "Connect to view your portfolio"
+        ],
+        "h2": [
+          "Assets",
+          "Positions",
+          "Rewards",
+          "Recent Activity",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.2% PORTFOLIO Connect to view your portfolio No wallet connected BNB Chain Assets, liquidity, farms, pools, and rewards — simple portfolio view. Connect Wallet Portfolio Awaiting wallet ASSETS Factual sources ESTIMATED VALUE — Wallet disconnected LIQUIDITY — Wallet disconnected FARMS — Wallet disconnected POOLS — Wallet disconnected REWARDS — Wallet disconnected POSITIONS Liquidity · Farms · Pools L",
+        "textLen": 1222,
+        "buttons": 78,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/portfolio/"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 12,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 4,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "list-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "List, Launch,and Growon Melega."
+        ],
+        "h2": [
+          "Import Token",
+          "Import Token",
+          "Create Token",
+          "Create Token",
+          "Claim Project Page",
+          "Claim Project PagePOPULAR",
+          "Create Project Page",
+          "Create Project Page",
+          "AI Assistant",
+          "AI Assistant",
+          "Why build on Melega?",
+          "List Workspace",
+          "How it works",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% List, Launch, and Grow on Melega. Bring your token or project to life. Join the ecosystem, get discovered, and unlock powerful DeFi tools. Import Token Add an existing token to the Melega ecosystem in just a few clicks. Import Token Create Token Launch your own token with a simple and secure creation flow. Create Token POPULAR Claim Project Page Already have a listed token? Claim its official Me",
+        "textLen": 2057,
+        "buttons": 105,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "Import Token",
+            "count": 2
+          },
+          {
+            "label": "Create Token",
+            "count": 2
+          },
+          {
+            "label": "Create Project Page",
+            "count": 2
+          },
+          {
+            "label": "AI Assistant",
+            "count": 2
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "list-hero-orbit",
+            "h": 240
+          }
+        ],
+        "href": "https://www.melega.finance/list/"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 1,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "audit-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "LIVE SECURITY CENTER"
+        ],
+        "h2": [
+          "Score formula",
+          "Indicators",
+          "Visualizations",
+          "Live Status",
+          "Multichain",
+          "Official Contracts",
+          "Timeline",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% LIVE SECURITY CENTER LIVE SECURITY CENTER Real-time operational health of the Melega DEX infrastructure. Melega Score is calculated from official contract SSOTs — not entered manually. 97.1 MELEGA SCORE Last measured: just now 44 contracts · Σw 46.6 SCORE FORMULA transparent MelegaScore = Σ(contractScoreᵢ × weightᵢ) / Σ(weightᵢ) · contractScore = 40·validAddr + 25·LIVE(+10 PREPARING/CERT) + 20·c",
+        "textLen": 11422,
+        "buttons": 248,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "Factory",
+            "count": 6
+          },
+          {
+            "label": "MasterBuilder / MasterChef",
+            "count": 6
+          },
+          {
+            "label": "Multicall",
+            "count": 6
+          },
+          {
+            "label": "Pool Factory",
+            "count": 3
+          },
+          {
+            "label": "Router",
+            "count": 6
+          },
+          {
+            "label": "Vault",
+            "count": 6
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "audit-score-gauge",
+            "h": 220
+          }
+        ],
+        "href": "https://www.melega.finance/audit/"
+      },
+      "signals": {
+        "unavailable": 80,
+        "emDash": 76,
+        "comingSoon": 1,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "trending-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "Projects"
+        ],
+        "h2": [
+          "Featured Projects",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% Projects Discover trending and listed projects. Open a project page. Trade with confidence. List Your Project Claim Project FEATURED PROJECTS Same pipeline everywhere MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $768.00 24H VOLUME No recent swaps FDV $25.4K Trade View Project EYED Featured EYED VERIFIED <$0.000001 No 24H baseline Unavailable LIQUIDITY $369.73 24H ",
+        "textLen": 41612,
+        "buttons": 1458,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "AIVOICE",
+            "count": 2
+          },
+          {
+            "label": "Ethereum Token",
+            "count": 2
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/projects/?sort=trending"
+      },
+      "signals": {
+        "unavailable": 1633,
+        "emDash": 1,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "liquidity-studio-1440": {
+      "status": 200,
+      "probe": {
+        "title": "Liquidity Studio | Melega DEX | $0.0003",
+        "h1": [
+          "Liquidity"
+        ],
+        "h2": [
+          "Why provide liquidity?",
+          "Add Liquidity",
+          "AI Liquidity Builder",
+          "My Positions",
+          "Liquidity Insights",
+          "Explore Pools",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% DOT ↓ 2.9% EYED ↑ 1.7% ETH ↑ 1.6% BTCB ↑ 0.7% FLOKI ↑ 0.3% CAKE ↓ 0.3% MARCO ↑ 0.1% Liquidity Provide liquidity. Earn fees. Grow markets. Add Liquidity Token Pool LP Why provide liquidity? Non-custodial Ownership Your LP positions remain yours. Transparent Pools Participate in on-chain liquidity pools. Earn Fees Liquidity providers receive applicable fees. Open Ecosystem Support markets across Melega DEX. Add Liquidity Add Liquidity BNB / MARCO Token A BNB Balance — MAX Token B",
+        "textLen": 4089,
+        "buttons": 208,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [
+          {
+            "testid": "lb-deploy-readiness-panel",
+            "h": 181
+          }
+        ],
+        "href": "https://www.melega.finance/liquidity-studio/?view=building"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 45,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 5,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "search-1440": {
+      "tried": true,
+      "hasResults": true,
+      "dropdown": true,
+      "textSnippet": "Melega\nDEX\nHome\nLiquidity\nFarms\nPools\nList\nNEW\nPortfolio\n⌕\n⌘K\nMARCO\nVerified\nCoordination token of the Melega ecosystem\nPROJECT\nOpen Project\nBuy Token\nFarm\nPool\nMARCO\nVerified\nMelega DEX\nTOKEN\nTrade\nOpen Project\nAdd Wallet\nMARCO\nVerified\nMARCO\nTOKEN\nTrade\nOpen Project\nAdd Wallet\nMARCO\nVerified\nMARCO\nTOKEN\nTrade\nOpen Project\nAdd Wallet\nMARCO\nVerified\nMARCO\nTOKEN\nTrade\nOpen Project\nAdd Wallet\nMARCO\n"
+    },
+    "chain-switch-1440": {
+      "open": true,
+      "system": "v3",
+      "title": "Switch Network",
+      "text": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE"
+    },
+    "modal-farm-1440": {
+      "open": true,
+      "system": "v3",
+      "title": "Create Farm",
+      "height": 505,
+      "within": true
+    },
+    "modal-pool-1440": {
+      "open": true,
+      "system": "v3",
+      "title": "Create Pool"
+    },
+    "featured-checkout-1440": {
+      "open": true,
+      "testId": "commercial-checkout-modal",
+      "title": "Boost Your Project",
+      "system": "v3",
+      "steps": [
+        "Service",
+        "Package",
+        "Chain",
+        "Payment",
+        "Review",
+        "Checkout"
+      ]
+    },
+    "trend-checkout-1440": {
+      "open": true,
+      "testId": "commercial-checkout-modal",
+      "title": "Boost Your Project"
+    },
+    "list-commercial-1440": {
+      "featuredVisible": true,
+      "trendVisible": true,
+      "text": "Melega\nDEX\nHome\nLiquidity\nFarms\nPools\nList\nNEW\nPortfolio\n⌕\n⌘K\nBSC\nEN\nالعربية\nবাংলা\nEnglish\nDeutsch\nΕλληνικά\nEspañol\nSuomalainen\nFilipino\nFrançais\nहिंदी\nMagyar\nBahasa Indonesia\nItaliano\n日本語\n한국어\nNederlands\nPolski\nPortuguês (Brazil)\nPortuguês\nRomână\nРусский\nSvenska\nதமிழ்\nTürkçe\nУкраїнська\nTiếng Việt\n简体中文\n繁體中文\nConnect Wallet\nTOP MOVERS\nDOT\n↓ 2.9%\nEYED\n↑ 1.7%\nETH\n↑ 1.6%\nBTCB\n↑ 0.7%\nFLOKI\n↑ 0.3%\nCAKE\n↓ 0.3%\nMARCO\n↑ 0.1%\nDOT\n↓ 2.9%\nEYED\n↑ 1.7%\nETH\n↑ 1.6%\nBTCB\n↑ 0.7%\nFLOKI\n↑ 0.3%\nCAKE\n↓ 0.3%\nMARCO\n↑ 0.1%\nList, Launch,\nand Grow\non Melega.\n\nBring your token or project to life. Join the ecosystem, get discovered, and unlock powerful DeFi tools.\n\nImport Token\n\nAdd an existing token to the Melega ecosyst"
+    },
+    "home-390": {
+      "status": 200,
+      "probe": {
+        "title": "Home | Melega DEX | $0.0003",
+        "h1": [
+          "Discover. Trade. Earn.All in One DEX."
+        ],
+        "h2": [
+          "⚡Smart Swap",
+          "Top Movers",
+          "Top Farms",
+          "Top Pools",
+          "New Listings",
+          "Explore Melega Ecosystem",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS Discover. Trade. Earn. All in One DEX. Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance. List Your Project Trending Projects Powered by AI. Secured by MARCO. ⚡ Smart Swap BNB / MARCO Live From BNB To MARCO Connect Wallet Slippage Tolerance 0.5% ROUTE Enter amount to preview route Expected output — Minimum received — Price impact — Estimated gas — Protocol fee — FEE Protocol fee — Execution Non-custodial wallet transaction AI INSIGHT — Details ▾ Enter amount to preview route EXECUTION READINESSACTION NEEDED Wallet connection required. Show developer diagnostics MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $767.90 24H VOLUME No recent swaps MKT CAP Unavailabl",
+        "textLen": 2546,
+        "buttons": 119,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/"
+      },
+      "signals": {
+        "unavailable": 9,
+        "emDash": 26,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "projects-390": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "Projects"
+        ],
+        "h2": [
+          "Featured Projects",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Projects Discover trending and listed projects. Open a project page. Trade with confidence. List Your Project Claim Project FEATURED PROJECTS Same pipeline everywhere MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $767.90 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project EYED Featured EYED VERIFIED <$0.000001 No 24H baseline Unavailable LIQUIDITY $369.69 24H VOLUME — MKT CAP Unavailable Trade View Project Young Degens Featured YD VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $250.50 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project BLION Featured BLION VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $389.86 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project Status Featured Tren",
+        "textLen": 41300,
+        "buttons": 1458,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "AIVOICE",
+            "count": 2
+          },
+          {
+            "label": "Ethereum Token",
+            "count": 2
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/projects/"
+      },
+      "signals": {
+        "unavailable": 1643,
+        "emDash": 2,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 0,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "project-page-390": {
+      "status": 200,
+      "probe": {
+        "title": "MARCO | Melega DEX Project",
+        "h1": [
+          "MARCO"
+        ],
+        "h2": [
+          "Chart",
+          "Smart Swap",
+          "Project Economy",
+          "Boost Your Project",
+          "Marketing History",
+          "Featured Projects",
+          "About",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect MARCO $MARCO Registry Identity Observed (Canonical Listing) Verified · Registry Identity Observed (Canonical Listing) Liquidity · — Community · 5 links Audit · Operational Age · — Volume · — DeFi Utility Token Ethereum BNB Polygon Base Arbitrum Avalanche MARCO is the native coordination token of the Melega ecosystem. It powers trading, liquidity, farming, and staking utilities on Melega DEX across BNB Smart Chain and related networks. MARCO is a crypto-asset project identity — not the Melega DEX exchange itself. Website Telegram Twitter 0x5911…db76 Copy Etherscan Claim CHART MARCO / WBNB · indexed $5.90e-7 1H 24H 7D 30D ALL Indexed candles · Melega durable indexer SMART SWAP Ethereum — / — ⚙ ↻ From Select a currency To Select a currency Slippage Tolerance 0.5% Connect Wallet",
+        "textLen": 3534,
+        "buttons": 160,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "BOOST YOUR PROJECT\nIncrease visibility. Grow liquidity. Acquire holders.\n★\nFeatured\nHomepage + Projects rotation for maximum discovery.\n99 USD\n7 days\nCheckout →\n↗\nTrend Boost\nAmplify reach on Trending",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/project-hq/marco/?chain=ethereum"
+      },
+      "signals": {
+        "unavailable": 8,
+        "emDash": 39,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "smart-swap-390": {
+      "status": 200,
+      "probe": {
+        "title": "Swap | Melega DEX | $0.0003",
+        "h1": [
+          "Trade"
+        ],
+        "h2": [
+          "Swap",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Trade Professional trading with best multichain routes. Open Project Page SmartSwap MelegaSwap Router History Swap Swap through the best available multichain route. Best Route Found — Execution speed — BNB MARCO Connect Wallet Route Enter amount to preview route MARCO / BNB 0.000350 USD $0.000350 +0.11% (24H) 1m 5m 15m 1H 4H 1D Indexed candles · Melega durable indexer Price $0.000350 +0.11% Liquidity Loading Subgraph request in progress Volume $390.58 Trades 36 FDV Unavailable Unavailable Holders Unavailable Unavailable SmartSwap Best Route LIVE Enter amount to compare routes View All Routes Your Assets LIVE B BNB — MARCO — Manage Assets SETTLEMENT STATUS HANDOFF Settlement Not Required Complete a swap to see treasury handoff status. MELEGA ROUTER STATUS LIVE Router online Q",
+        "textLen": 1549,
+        "buttons": 75,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/swap/"
+      },
+      "signals": {
+        "unavailable": 8,
+        "emDash": 9,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 2
+      },
+      "ok": true
+    },
+    "trade-390": {
+      "status": 200,
+      "probe": {
+        "title": "Home | Melega DEX | $0.0003",
+        "h1": [
+          "Discover. Trade. Earn.All in One DEX."
+        ],
+        "h2": [
+          "⚡Smart Swap",
+          "Top Movers",
+          "Top Farms",
+          "Top Pools",
+          "New Listings",
+          "Explore Melega Ecosystem",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS Discover. Trade. Earn. All in One DEX. Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance. List Your Project Trending Projects Powered by AI. Secured by MARCO. ⚡ Smart Swap BNB / MARCO Live From BNB To MARCO Connect Wallet Slippage Tolerance 0.5% ROUTE Enter amount to preview route Expected output — Minimum received — Price impact — Estimated gas — Protocol fee — FEE Protocol fee — Execution Non-custodial wallet transaction AI INSIGHT — Details ▾ Enter amount to preview route EXECUTION READINESSACTION NEEDED Wallet connection required. Show developer diagnostics MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $767.90 24H VOLUME No recent swaps MKT CAP Unavailabl",
+        "textLen": 2546,
+        "buttons": 119,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/?focus=swap"
+      },
+      "signals": {
+        "unavailable": 9,
+        "emDash": 26,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "farms-390": {
+      "status": 200,
+      "probe": {
+        "title": "Farms | Melega DEX | $0.0003",
+        "h1": [
+          "Farms"
+        ],
+        "h2": [
+          "Farms overview",
+          "My Farms",
+          "Explore Farms",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Farms Stake LP tokens. Earn farming rewards. Grow liquidity. Create Farm Explore Farms LP Pair Farm MARCO Rewards FEATURED FARM BABYMARCO / MARCO 6.52% TVL $58.9K Earn MARCO Stake Farm Contract ↗ LP Contract ↗ Farms overview Farms overview metrics partial. TOTAL FARM TVL $193.2K LP farming only ACTIVE FARMS 63 Currently farmable LP farms ACTIVE FARMERS 318 Unique wallets that participated in Melega DEX farms 24H REWARDS $50.34 144,000 MARCO emitted / 24h · MasterChef dexTokenPerBlock HIGHEST SUSTAINABLE APR 37.54% ASTER / MARCO MY CLAIMABLE — Connect wallet My Farms Connect your wallet to view farms Connect your wallet to view farm positions Connect Wallet Explore Farms 150 farms · all LIVE chains Partial Highest TVL Highest Sustainable APR Newest All BNB Base Polygon Ethere",
+        "textLen": 35794,
+        "buttons": 1293,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "PEPE / MARCO LP",
+            "count": 2
+          },
+          {
+            "label": "MXMX / MARCO LP",
+            "count": 2
+          },
+          {
+            "label": "MARCO / WETH LP",
+            "count": 3
+          },
+          {
+            "label": "USDC / WETH LP",
+            "count": 3
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/farms/"
+      },
+      "signals": {
+        "unavailable": 351,
+        "emDash": 2,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 304,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "pools-390": {
+      "status": 200,
+      "probe": {
+        "title": "Pools | Melega DEX | $0.0003",
+        "h1": [
+          "Pools"
+        ],
+        "h2": [
+          "Pools overview",
+          "My Positions",
+          "Explore Pools",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Pools Stake tokens. Earn rewards. On your terms. Create Pool How it Works Create a staking pool for your community Reward your holders and increase token engagement. FEATURED POOL — → — Active APR unavailable TVL — Earn — Stake Pools overview Pools overview metrics partial. TOTAL VALUE LOCKED — Valuation unavailable TOTAL POOLS 239 6 Active · 18 Finished · 0 Inactive · 215 Unavailable POOLS REWARDING 6 6 classified rewarding TOTAL REWARDS — 24H Unavailable No staking pool inventory for 24H rewards HIGHEST SUSTAINABLE APR — Sustainable APR unavailable MY CLAIMABLE — Connect wallet to view My Positions Connect your wallet to view pool positions Connect Wallet Connect your wallet to view pool positions Explore Pools 188 Highest APR Highest TVL Newest Alphabetical All BNB Base P",
+        "textLen": 45269,
+        "buttons": 1031,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "MARCO → DC4",
+            "count": 2
+          },
+          {
+            "label": "MARCO → MARCO",
+            "count": 4
+          },
+          {
+            "label": "MARCO → TRUMP",
+            "count": 2
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "pools-hero-artwork",
+            "h": 190
+          }
+        ],
+        "href": "https://www.melega.finance/pools/"
+      },
+      "signals": {
+        "unavailable": 763,
+        "emDash": 204,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 192,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "portfolio-390": {
+      "status": 200,
+      "probe": {
+        "title": "Portfolio | Melega DEX | $0.0003",
+        "h1": [
+          "Connect to view your portfolio"
+        ],
+        "h2": [
+          "Assets",
+          "Positions",
+          "Rewards",
+          "Recent Activity",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect PORTFOLIO Connect to view your portfolio No wallet connected BNB Chain Assets, liquidity, farms, pools, and rewards — simple portfolio view. Connect Wallet Portfolio Awaiting wallet ASSETS Factual sources ESTIMATED VALUE — Wallet disconnected LIQUIDITY — Wallet disconnected FARMS — Wallet disconnected POOLS — Wallet disconnected REWARDS — Wallet disconnected POSITIONS Liquidity · Farms · Pools Liquidity (0) Farms (0) Pools (0) Connect a wallet to load liquidity positions. REWARDS None No non-zero claimable rewards for this wallet. RECENT ACTIVITY Indexed when available Connect a wallet to load recent activity. ANALYTICS COLLAPSED · EXPAND FOR BREAKDOWN © 2026 Melega Labs. All rights reserved. Docs Audit Support Home Liquidity Farms Pools Portfolio",
+        "textLen": 872,
+        "buttons": 78,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [],
+        "href": "https://www.melega.finance/portfolio/"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 12,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 2,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "list-390": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "List, Launch,and Growon Melega."
+        ],
+        "h2": [
+          "Import Token",
+          "Import Token",
+          "Create Token",
+          "Create Token",
+          "Claim Project Page",
+          "Claim Project PagePOPULAR",
+          "Create Project Page",
+          "Create Project Page",
+          "AI Assistant",
+          "AI Assistant",
+          "Why build on Melega?",
+          "List Workspace",
+          "How it works",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect List, Launch, and Grow on Melega. Bring your token or project to life. Join the ecosystem, get discovered, and unlock powerful DeFi tools. Import Token Add an existing token to the Melega ecosystem in just a few clicks. Create Token Launch your own token with a simple and secure creation flow. Claim Project Page POPULAR Already have a listed token? Claim its official Melega Project Page. Create Project Page Build your project presence with or without a token. AI Assistant Get guided help to prepare your token or project information. Why build on Melega? One ecosystem. More ways to launch, grow and be discovered. Full Ecosystem Access Liquidity, Farms, Pools, SmartDrop, Radar and more. AI-Powered Guidance Smart assistance helps prepare and improve your project information. Ve",
+        "textLen": 1649,
+        "buttons": 105,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "Import Token",
+            "count": 2
+          },
+          {
+            "label": "Create Token",
+            "count": 2
+          },
+          {
+            "label": "Create Project Page",
+            "count": 2
+          },
+          {
+            "label": "AI Assistant",
+            "count": 2
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "list-hero-orbit",
+            "h": 200
+          }
+        ],
+        "href": "https://www.melega.finance/list/"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 1,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 0,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "audit-390": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "LIVE SECURITY CENTER"
+        ],
+        "h2": [
+          "Score formula",
+          "Indicators",
+          "Visualizations",
+          "Live Status",
+          "Multichain",
+          "Official Contracts",
+          "Timeline",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect LIVE SECURITY CENTER LIVE SECURITY CENTER Real-time operational health of the Melega DEX infrastructure. Melega Score is calculated from official contract SSOTs — not entered manually. 97.1 MELEGA SCORE Last measured: just now 44 contracts · Σw 46.6 SCORE FORMULA transparent MelegaScore = Σ(contractScoreᵢ × weightᵢ) / Σ(weightᵢ) · contractScore = 40·validAddr + 25·LIVE(+10 PREPARING/CERT) + 20·certified + 15·verified INDICATORS thermometer · trend HEALTH 97 Weighted Melega Score · Δ — · — SECURITY 100 Verified contract share · Δ — · — AVAILABILITY 100 LIVE contract share · Δ — · — VERIFICATION 100 SSOT / certified share · Δ — · — INFRASTRUCTURE 97 Factory contract average · Δ — · — RUNTIME 35 Readiness / health verdict · Δ — · — TRANSPARENCY 100 Formula published on this pag",
+        "textLen": 11072,
+        "buttons": 248,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "Factory",
+            "count": 6
+          },
+          {
+            "label": "MasterBuilder / MasterChef",
+            "count": 6
+          },
+          {
+            "label": "Multicall",
+            "count": 6
+          },
+          {
+            "label": "Pool Factory",
+            "count": 3
+          },
+          {
+            "label": "Router",
+            "count": 6
+          },
+          {
+            "label": "Vault",
+            "count": 6
+          }
+        ],
+        "blankish": [
+          {
+            "testid": "audit-score-gauge",
+            "h": 220
+          }
+        ],
+        "href": "https://www.melega.finance/audit/"
+      },
+      "signals": {
+        "unavailable": 80,
+        "emDash": 88,
+        "comingSoon": 1,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 0,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "trending-390": {
+      "status": 200,
+      "probe": {
+        "title": "Melega DEX",
+        "h1": [
+          "Projects"
+        ],
+        "h2": [
+          "Featured Projects",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Projects Discover trending and listed projects. Open a project page. Trade with confidence. List Your Project Claim Project FEATURED PROJECTS Same pipeline everywhere MM72 Featured MM72 VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $767.90 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project EYED Featured EYED VERIFIED <$0.000001 No 24H baseline Unavailable LIQUIDITY $369.69 24H VOLUME — MKT CAP Unavailable Trade View Project Young Degens Featured YD VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $250.50 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project BLION Featured BLION VERIFIED <$0.000001 No recent swaps Unavailable LIQUIDITY $389.86 24H VOLUME No recent swaps MKT CAP Unavailable Trade View Project Status Featured Tren",
+        "textLen": 41300,
+        "buttons": 1458,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": true,
+        "grow": "",
+        "duplicates": [
+          {
+            "label": "AIVOICE",
+            "count": 2
+          },
+          {
+            "label": "Ethereum Token",
+            "count": 2
+          }
+        ],
+        "blankish": [],
+        "href": "https://www.melega.finance/projects/?sort=trending"
+      },
+      "signals": {
+        "unavailable": 1643,
+        "emDash": 2,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 0,
+        "loading": 0
+      },
+      "ok": true
+    },
+    "liquidity-studio-390": {
+      "status": 200,
+      "probe": {
+        "title": "Liquidity Studio | Melega DEX | $0.0003",
+        "h1": [
+          "Liquidity"
+        ],
+        "h2": [
+          "Why provide liquidity?",
+          "Add Liquidity",
+          "AI Liquidity Builder",
+          "My Positions",
+          "Liquidity Insights",
+          "Explore Pools",
+          "Scan to connect with one of our mobile apps"
+        ],
+        "textSample": "TOP MOVERS YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% YD ↓ 0.7% MM72 ↑ 0.7% BLION ↓ 0.3% MARCO ↑ 0.1% Connect Liquidity Provide liquidity. Earn fees. Grow markets. Add Liquidity Token Pool LP Why provide liquidity? Non-custodial Ownership Your LP positions remain yours. Transparent Pools Participate in on-chain liquidity pools. Earn Fees Liquidity providers receive applicable fees. Open Ecosystem Support markets across Melega DEX. Add Liquidity Add Liquidity BNB / MARCO Token A BNB Balance — MAX Token B MARCO Balance — MAX Pool ratio 50% BNB · 50% MARCO Estimated LP received — Pool share — Slippage: 0.50% Edit Wallet disconnected Connect Wallet Non-custodial. You confirm every transaction in your wallet. Position Preview Pair BNB / MARCO Deposited assets — LP tokens received — Share after deposit — Fee tier 0.25% AI Liquidity Builder BETA BNB Chain only Create an automated liquidity",
+        "textLen": 3739,
+        "buttons": 208,
+        "modalOpen": false,
+        "overflowX": false,
+        "hasHeader": true,
+        "hasSearch": true,
+        "hasChainControl": true,
+        "featured": false,
+        "grow": "",
+        "duplicates": [],
+        "blankish": [
+          {
+            "testid": "lb-deploy-readiness-panel",
+            "h": 181
+          }
+        ],
+        "href": "https://www.melega.finance/liquidity-studio/?view=building"
+      },
+      "signals": {
+        "unavailable": 0,
+        "emDash": 51,
+        "comingSoon": 0,
+        "error": 0,
+        "emptyZero": 0,
+        "connectWallet": 4,
+        "loading": 0
+      },
+      "ok": true
+    }
+  },
+  "screenshotCount": 57
+}

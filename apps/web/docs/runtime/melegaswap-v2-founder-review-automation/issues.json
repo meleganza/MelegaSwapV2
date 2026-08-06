@@ -1,0 +1,132 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_AUTOMATION",
+  "base": "https://www.melega.finance",
+  "verdict": "MELEGASWAP_V2_FOUNDER_REVIEW_REPORT",
+  "counts": { "P0": 3, "P1": 8, "P2": 6 },
+  "issues": [
+    {
+      "id": "P0-1",
+      "title": "/trade redirects to Home marketing",
+      "screenshot": "issues/P0-trade-redirects-to-home.png",
+      "rootCause": "/trade → /?focus=swap; real Trade is /swap",
+      "minimalFix": "Redirect /trade → /swap",
+      "priority": "P0",
+      "effort": "S"
+    },
+    {
+      "id": "P0-2",
+      "title": "/trending is Projects sort, not Trending product",
+      "screenshot": "issues/P0-trending-is-projects.png",
+      "rootCause": "/trending → /projects/?sort=trending + duplicate filters + pipeline note",
+      "minimalFix": "Honest CTA + remove duplicate Trending filter + remove 'Same pipeline everywhere'",
+      "priority": "P0",
+      "effort": "S-M"
+    },
+    {
+      "id": "P0-3",
+      "title": "Pools Featured Pool empty but Active",
+      "screenshot": "issues/P0-featured-pool-empty.png",
+      "rootCause": "Featured Pool renders — → — with Active badge",
+      "minimalFix": "Hide Featured when no pool SSOT",
+      "priority": "P0",
+      "effort": "S"
+    },
+    {
+      "id": "P1-1",
+      "title": "Projects Unavailable wall",
+      "screenshot": "issues/P1-projects-unavailable-wall.png",
+      "priority": "P1",
+      "effort": "S"
+    },
+    {
+      "id": "P1-2",
+      "title": "Dev copy 'Same pipeline everywhere'",
+      "priority": "P1",
+      "effort": "XS"
+    },
+    {
+      "id": "P1-3",
+      "title": "Duplicate Trending filter",
+      "priority": "P1",
+      "effort": "XS"
+    },
+    {
+      "id": "P1-4",
+      "title": "Search MARCO ×4 duplicates",
+      "screenshot": "issues/P1-search-marco-duplicates.png",
+      "priority": "P1",
+      "effort": "S-M"
+    },
+    {
+      "id": "P1-5",
+      "title": "Project Page empty market on default ETH",
+      "screenshot": "issues/P1-project-page-empty-market.png",
+      "priority": "P1",
+      "effort": "S-M"
+    },
+    {
+      "id": "P1-6",
+      "title": "Farms/Pools KPI truncation",
+      "screenshot": "issues/P1-farms-kpi-truncation.png",
+      "priority": "P1",
+      "effort": "S"
+    },
+    {
+      "id": "P1-7",
+      "title": "Audit Score 97 vs Runtime 35",
+      "screenshot": "issues/P1-audit-runtime-vs-score.png",
+      "priority": "P1",
+      "effort": "S"
+    },
+    {
+      "id": "P1-8",
+      "title": "Home nav active on Project/Swap",
+      "priority": "P1",
+      "effort": "XS-S"
+    },
+    {
+      "id": "P2-1",
+      "title": "Home swap empty chrome",
+      "priority": "P2",
+      "effort": "S"
+    },
+    {
+      "id": "P2-2",
+      "title": "Claim duplicated on Project Page",
+      "priority": "P2",
+      "effort": "XS"
+    },
+    {
+      "id": "P2-3",
+      "title": "Portfolio disconnected density",
+      "priority": "P2",
+      "effort": "S"
+    },
+    {
+      "id": "P2-4",
+      "title": "Farms/Pools oversized empty My panels",
+      "priority": "P2",
+      "effort": "S"
+    },
+    {
+      "id": "P2-5",
+      "title": "Swap empty panels / HANDOFF jargon",
+      "priority": "P2",
+      "effort": "S"
+    },
+    {
+      "id": "P2-6",
+      "title": "List AI footer duplication",
+      "priority": "P2",
+      "effort": "XS"
+    }
+  ],
+  "working": [
+    "Header search",
+    "Chain switch MelegaModal V3",
+    "Create Farm/Pool modals V3",
+    "Boost hub Featured/Trend checkout to Pay step",
+    "List Claim POPULAR",
+    "/swap Trade shell"
+  ]
+}

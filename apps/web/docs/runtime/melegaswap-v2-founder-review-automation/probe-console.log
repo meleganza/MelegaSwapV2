@@ -1,0 +1,167 @@
+{
+  "base": "https://www.melega.finance",
+  "findings": 18,
+  "screenshots": 57,
+  "keys": [
+    "home-1440",
+    "projects-1440",
+    "project-page-1440",
+    "smart-swap-1440",
+    "trade-1440",
+    "farms-1440",
+    "pools-1440",
+    "portfolio-1440",
+    "list-1440",
+    "audit-1440",
+    "trending-1440",
+    "liquidity-studio-1440",
+    "search-1440",
+    "chain-switch-1440",
+    "modal-farm-1440",
+    "modal-pool-1440",
+    "featured-checkout-1440",
+    "trend-checkout-1440",
+    "list-commercial-1440",
+    "home-390",
+    "projects-390",
+    "project-page-390",
+    "smart-swap-390",
+    "trade-390",
+    "farms-390",
+    "pools-390",
+    "portfolio-390",
+    "list-390",
+    "audit-390",
+    "trending-390",
+    "liquidity-studio-390"
+  ],
+  "p0": 0,
+  "sampleFindings": [
+    {
+      "id": "unavail-home-1440",
+      "priority": "P1",
+      "page": "home",
+      "viewport": "1440",
+      "issue": "5× Unavailable labels"
+    },
+    {
+      "id": "unavail-projects-1440",
+      "priority": "P1",
+      "page": "projects",
+      "viewport": "1440",
+      "issue": "1618× Unavailable labels"
+    },
+    {
+      "id": "unavail-project-page-1440",
+      "priority": "P1",
+      "page": "project-page",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-smart-swap-1440",
+      "priority": "P1",
+      "page": "smart-swap",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-trade-1440",
+      "priority": "P1",
+      "page": "trade",
+      "viewport": "1440",
+      "issue": "4× Unavailable labels"
+    },
+    {
+      "id": "unavail-farms-1440",
+      "priority": "P1",
+      "page": "farms",
+      "viewport": "1440",
+      "issue": "351× Unavailable labels"
+    },
+    {
+      "id": "unavail-pools-1440",
+      "priority": "P1",
+      "page": "pools",
+      "viewport": "1440",
+      "issue": "761× Unavailable labels"
+    },
+    {
+      "id": "unavail-audit-1440",
+      "priority": "P1",
+      "page": "audit",
+      "viewport": "1440",
+      "issue": "80× Unavailable labels"
+    },
+    {
+      "id": "unavail-trending-1440",
+      "priority": "P1",
+      "page": "trending",
+      "viewport": "1440",
+      "issue": "1633× Unavailable labels"
+    },
+    {
+      "id": "unavail-home-390",
+      "priority": "P1",
+      "page": "home",
+      "viewport": "390",
+      "issue": "9× Unavailable labels"
+    },
+    {
+      "id": "unavail-projects-390",
+      "priority": "P1",
+      "page": "projects",
+      "viewport": "390",
+      "issue": "1643× Unavailable labels"
+    },
+    {
+      "id": "unavail-project-page-390",
+      "priority": "P1",
+      "page": "project-page",
+      "viewport": "390",
+      "issue": "8× Unavailable labels"
+    },
+    {
+      "id": "unavail-smart-swap-390",
+      "priority": "P1",
+      "page": "smart-swap",
+      "viewport": "390",
+      "issue": "8× Unavailable labels"
+    },
+    {
+      "id": "unavail-trade-390",
+      "priority": "P1",
+      "page": "trade",
+      "viewport": "390",
+      "issue": "9× Unavailable labels"
+    },
+    {
+      "id": "unavail-farms-390",
+      "priority": "P1",
+      "page": "farms",
+      "viewport": "390",
+      "issue": "351× Unavailable labels"
+    },
+    {
+      "id": "unavail-pools-390",
+      "priority": "P1",
+      "page": "pools",
+      "viewport": "390",
+      "issue": "763× Unavailable labels"
+    },
+    {
+      "id": "unavail-audit-390",
+      "priority": "P1",
+      "page": "audit",
+      "viewport": "390",
+      "issue": "80× Unavailable labels"
+    },
+    {
+      "id": "unavail-trending-390",
+      "priority": "P1",
+      "page": "trending",
+      "viewport": "390",
+      "issue": "1643× Unavailable labels"
+    }
+  ]
+}
