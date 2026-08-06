@@ -1,0 +1,816 @@
+{
+  "mission": "MELEGASWAP_V2_PRODUCT_POLISH_P2_FOUNDER_ACCEPTANCE",
+  "phase": "before",
+  "base": "http://127.0.0.1:3031",
+  "verifiedAt": "2026-08-06T04:39:30.002Z",
+  "bugCount": 15,
+  "highOrCrit": 13,
+  "bugs": [
+    {
+      "id": "portfolio-header",
+      "severity": "high",
+      "part": "F",
+      "detail": "desktop-1440: global header missing/short",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1376,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "portfolio-nav",
+      "severity": "high",
+      "part": "F",
+      "detail": "desktop-1440: navbar links missing",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1376,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "create-pool-double-title",
+      "severity": "high",
+      "part": "C",
+      "detail": "desktop-1440: double title in Create Pool",
+      "evidence": {
+        "via": "cta",
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Create Pool",
+          "Create Pool"
+        ],
+        "titleCount": 2,
+        "width": 740,
+        "height": 445,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 1,
+        "stickyPreview": true,
+        "treasuryRaw": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false
+      }
+    },
+    {
+      "id": "portfolio-header",
+      "severity": "high",
+      "part": "F",
+      "detail": "laptop-1280: global header missing/short",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1280,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "portfolio-nav",
+      "severity": "high",
+      "part": "F",
+      "detail": "laptop-1280: navbar links missing",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1280,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "create-pool-double-title",
+      "severity": "high",
+      "part": "C",
+      "detail": "laptop-1280: double title in Create Pool",
+      "evidence": {
+        "via": "cta",
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Create Pool",
+          "Create Pool"
+        ],
+        "titleCount": 2,
+        "width": 740,
+        "height": 445,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 1,
+        "stickyPreview": true,
+        "treasuryRaw": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false
+      }
+    },
+    {
+      "id": "portfolio-header",
+      "severity": "high",
+      "part": "F",
+      "detail": "tablet-1024: global header missing/short",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1024,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "portfolio-nav",
+      "severity": "high",
+      "part": "F",
+      "detail": "tablet-1024: navbar links missing",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1024,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "create-pool-double-title",
+      "severity": "high",
+      "part": "C",
+      "detail": "tablet-1024: double title in Create Pool",
+      "evidence": {
+        "via": "cta",
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Create Pool",
+          "Create Pool"
+        ],
+        "titleCount": 2,
+        "width": 740,
+        "height": 445,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 1,
+        "stickyPreview": true,
+        "treasuryRaw": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false
+      }
+    },
+    {
+      "id": "portfolio-header",
+      "severity": "high",
+      "part": "F",
+      "detail": "mobile-390: global header missing/short",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 390,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "portfolio-nav",
+      "severity": "high",
+      "part": "F",
+      "detail": "mobile-390: navbar links missing",
+      "evidence": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 390,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      }
+    },
+    {
+      "id": "create-pool-double-title",
+      "severity": "high",
+      "part": "C",
+      "detail": "mobile-390: double title in Create Pool",
+      "evidence": {
+        "via": "cta",
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Create Pool",
+          "Create Pool"
+        ],
+        "titleCount": 2,
+        "width": 366,
+        "height": 720,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 1,
+        "stickyPreview": true,
+        "treasuryRaw": false,
+        "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false
+      }
+    },
+    {
+      "id": "network-modal-closed",
+      "severity": "med",
+      "part": "G",
+      "detail": "mobile-390: Network switch modal did not open",
+      "evidence": {}
+    },
+    {
+      "id": "route-missing-/^List$/i",
+      "severity": "high",
+      "part": "H",
+      "detail": "desktop-1440: CTA not found /^List$/i",
+      "evidence": {}
+    },
+    {
+      "id": "route-featured-trade-missing",
+      "severity": "med",
+      "part": "H",
+      "detail": "desktop-1440: featured-trade CTA missing",
+      "evidence": {}
+    }
+  ],
+  "results": [
+    {
+      "label": "desktop-1440",
+      "width": 1440,
+      "home": {
+        "overflowX": false,
+        "hasMovers": true,
+        "hasFarms": true,
+        "hasPools": true,
+        "hasListings": true,
+        "featured": true,
+        "farmsUnavailable": false,
+        "poolsUnavailable": false,
+        "moversUnavailable": false,
+        "farmsDash": 0,
+        "poolsDash": 10,
+        "farmsBlock": "Top Farms\nView all →\n·\nMARCO-MXMX LP\nTVL $521.34\nReward MARCO\n36.87%\n·\nMARCO-ASTER LP\nTVL $511.83\nReward MARCO\n37.56%\n·\nMARCO-FTM LP\nTVL $265.31\nReward MARCO\n36.23%\n·\nMARCO-OKZOO LP\nTVL $113.54\nReward MARCO\n33.86%\n·\nMARCO-naiive LP\nTVL $110.98\nReward MARCO\n34.64%\n",
+        "poolsBlock": "Top Pools\nView all →\n·\nMARCO → MARCO\nTVL —\nReward MARCO\n—\n·\nM\nMARCO → MXMX\nTVL —\nReward MXMX\n—\n·\nY\nMARCO → YUP\nTVL —\nReward YUP\n—\n·\nX\nMARCO → XOXO\nTVL —\nReward XOXO\n—\n·\nL\nMARCO → LOCO\nTVL —\nReward LOCO\n—\n",
+        "passport": true,
+        "black": true,
+        "blackpump": false,
+        "chainBadges": 0,
+        "oops": false
+      },
+      "portfolio": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1376,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      },
+      "pools": {
+        "data": {
+          "emptyCard": false,
+          "myPosPresent": true,
+          "explore": true,
+          "cardCount": 194,
+          "badges": 0,
+          "oops": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Pool",
+            "Create Pool"
+          ],
+          "titleCount": 2,
+          "width": 740,
+          "height": 445,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "farms": {
+        "data": {
+          "explore": true,
+          "unavailableSpam": 175,
+          "oops": false,
+          "myFarmsPrimaryUsd": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Farm"
+          ],
+          "titleCount": 1,
+          "width": 740,
+          "height": 526,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nStep 1Pair\n▾\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "network": {
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Switch Network"
+        ],
+        "titleCount": 1,
+        "width": 440,
+        "height": 276,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 0,
+        "stickyPreview": false,
+        "treasuryRaw": false,
+        "textSample": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE\nPREPARING\nWallet switchable · product locked\nAll product chains are LIVE.",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false,
+        "clickResults": [
+          {
+            "i": 0,
+            "before": "http://127.0.0.1:3031/",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          },
+          {
+            "i": 1,
+            "before": "http://127.0.0.1:3031/?chain=base",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "laptop-1280",
+      "width": 1280,
+      "home": {
+        "overflowX": false,
+        "hasMovers": true,
+        "hasFarms": true,
+        "hasPools": true,
+        "hasListings": true,
+        "featured": true,
+        "farmsUnavailable": false,
+        "poolsUnavailable": false,
+        "moversUnavailable": false,
+        "farmsDash": 0,
+        "poolsDash": 10,
+        "farmsBlock": "Top Farms\nView all →\n·\nMARCO-MXMX LP\nTVL $521.34\nReward MARCO\n36.87%\n·\nMARCO-ASTER LP\nTVL $511.83\nReward MARCO\n37.56%\n·\nMARCO-FTM LP\nTVL $265.31\nReward MARCO\n36.23%\n·\nMARCO-OKZOO LP\nTVL $113.54\nReward MARCO\n33.86%\n·\nMARCO-naiive LP\nTVL $110.98\nReward MARCO\n34.64%\n",
+        "poolsBlock": "Top Pools\nView all →\n·\nMARCO → MARCO\nTVL —\nReward MARCO\n—\n·\nM\nMARCO → MXMX\nTVL —\nReward MXMX\n—\n·\nY\nMARCO → YUP\nTVL —\nReward YUP\n—\n·\nX\nMARCO → XOXO\nTVL —\nReward XOXO\n—\n·\nL\nMARCO → LOCO\nTVL —\nReward LOCO\n—\n",
+        "passport": true,
+        "black": true,
+        "blackpump": false,
+        "chainBadges": 0,
+        "oops": false
+      },
+      "portfolio": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1280,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      },
+      "pools": {
+        "data": {
+          "emptyCard": false,
+          "myPosPresent": true,
+          "explore": true,
+          "cardCount": 194,
+          "badges": 0,
+          "oops": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Pool",
+            "Create Pool"
+          ],
+          "titleCount": 2,
+          "width": 740,
+          "height": 445,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "farms": {
+        "data": {
+          "explore": true,
+          "unavailableSpam": 175,
+          "oops": false,
+          "myFarmsPrimaryUsd": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Farm"
+          ],
+          "titleCount": 1,
+          "width": 740,
+          "height": 526,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nStep 1Pair\n▾\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "network": {
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Switch Network"
+        ],
+        "titleCount": 1,
+        "width": 440,
+        "height": 276,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 0,
+        "stickyPreview": false,
+        "treasuryRaw": false,
+        "textSample": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE\nPREPARING\nWallet switchable · product locked\nAll product chains are LIVE.",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false,
+        "clickResults": [
+          {
+            "i": 0,
+            "before": "http://127.0.0.1:3031/",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          },
+          {
+            "i": 1,
+            "before": "http://127.0.0.1:3031/?chain=base",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "tablet-1024",
+      "width": 1024,
+      "home": {
+        "overflowX": false,
+        "hasMovers": true,
+        "hasFarms": true,
+        "hasPools": true,
+        "hasListings": true,
+        "featured": true,
+        "farmsUnavailable": false,
+        "poolsUnavailable": false,
+        "moversUnavailable": false,
+        "farmsDash": 0,
+        "poolsDash": 10,
+        "farmsBlock": "Top Farms\nView all →\n·\nMARCO-MXMX LP\nTVL $521.34\nReward MARCO\n36.87%\n·\nMARCO-ASTER LP\nTVL $511.83\nReward MARCO\n37.56%\n·\nMARCO-FTM LP\nTVL $265.31\nReward MARCO\n36.23%\n·\nMARCO-OKZOO LP\nTVL $113.54\nReward MARCO\n33.86%\n·\nMARCO-naiive LP\nTVL $110.98\nReward MARCO\n34.64%\n",
+        "poolsBlock": "Top Pools\nView all →\n·\nMARCO → MARCO\nTVL —\nReward MARCO\n—\n·\nM\nMARCO → MXMX\nTVL —\nReward MXMX\n—\n·\nY\nMARCO → YUP\nTVL —\nReward YUP\n—\n·\nX\nMARCO → XOXO\nTVL —\nReward XOXO\n—\n·\nL\nMARCO → LOCO\nTVL —\nReward LOCO\n—\n",
+        "passport": true,
+        "black": true,
+        "blackpump": false,
+        "chainBadges": 0,
+        "oops": false
+      },
+      "portfolio": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 1024,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      },
+      "pools": {
+        "data": {
+          "emptyCard": false,
+          "myPosPresent": true,
+          "explore": true,
+          "cardCount": 194,
+          "badges": 0,
+          "oops": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Pool",
+            "Create Pool"
+          ],
+          "titleCount": 2,
+          "width": 740,
+          "height": 445,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "farms": {
+        "data": {
+          "explore": true,
+          "unavailableSpam": 175,
+          "oops": false,
+          "myFarmsPrimaryUsd": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Farm"
+          ],
+          "titleCount": 1,
+          "width": 740,
+          "height": 526,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nStep 1Pair\n▾\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "network": {
+        "open": true,
+        "brand": true,
+        "close": true,
+        "titles": [
+          "Switch Network"
+        ],
+        "titleCount": 1,
+        "width": 440,
+        "height": 276,
+        "withinViewport": true,
+        "maxHeightOk": true,
+        "widthOk": true,
+        "accordionOpen": 0,
+        "stickyPreview": false,
+        "treasuryRaw": false,
+        "textSample": "Switch Network\n\nChoose a supported network. No redirect.\n\n×\nLIVE\nTrading ready\nBSC\nACTIVE\nBase\nLIVE\nPOL\nLIVE\nETH\nLIVE\nARB\nLIVE\nAVAX\nLIVE\nPREPARING\nWallet switchable · product locked\nAll product chains are LIVE.",
+        "scrollParent": "body-ish",
+        "deadSpaceSuspect": false,
+        "clickResults": [
+          {
+            "i": 0,
+            "before": "http://127.0.0.1:3031/",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          },
+          {
+            "i": 1,
+            "before": "http://127.0.0.1:3031/?chain=base",
+            "after": "http://127.0.0.1:3031/?chain=base",
+            "oops": false,
+            "forcedBsc": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "mobile-390",
+      "width": 390,
+      "home": {
+        "overflowX": false,
+        "hasMovers": true,
+        "hasFarms": true,
+        "hasPools": true,
+        "hasListings": true,
+        "featured": true,
+        "farmsUnavailable": false,
+        "poolsUnavailable": false,
+        "moversUnavailable": false,
+        "farmsDash": 0,
+        "poolsDash": 10,
+        "farmsBlock": "Top Farms\nView all →\n·\nMARCO-MXMX LP\nTVL $521.34\nReward MARCO\n36.87%\n·\nMARCO-ASTER LP\nTVL $511.83\nReward MARCO\n37.56%\n·\nMARCO-FTM LP\nTVL $265.31\nReward MARCO\n36.23%\n·\nMARCO-OKZOO LP\nTVL $113.54\nReward MARCO\n33.86%\n·\nMARCO-naiive LP\nTVL $110.98\nReward MARCO\n34.64%\n",
+        "poolsBlock": "Top Pools\nView all →\n·\nMARCO → MARCO\nTVL —\nReward MARCO\n—\n·\nM\nMARCO → MXMX\nTVL —\nReward MXMX\n—\n·\nY\nMARCO → YUP\nTVL —\nReward YUP\n—\n·\nX\nMARCO → XOXO\nTVL —\nReward XOXO\n—\n·\nL\nMARCO → LOCO\nTVL —\nReward LOCO\n—\n",
+        "passport": true,
+        "black": true,
+        "blackpump": false,
+        "chainBadges": 0,
+        "oops": false
+      },
+      "portfolio": {
+        "headerH": 0,
+        "fonts": "Inter, -apple-system, \"system-ui\", sans-serif",
+        "contentW": 390,
+        "mounted": true,
+        "forbidden": false,
+        "hasAssets": true,
+        "hasPositions": true,
+        "hasNavLinks": false
+      },
+      "pools": {
+        "data": {
+          "emptyCard": false,
+          "myPosPresent": true,
+          "explore": true,
+          "cardCount": 194,
+          "badges": 0,
+          "oops": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Pool",
+            "Create Pool"
+          ],
+          "titleCount": 2,
+          "width": 366,
+          "height": 720,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Pool\n\nConfigure stake, rewards, schedule and safety.\n\n×\nStep 1Tokens\n▾\nREWARD TOKEN\nMARCO\nSTAKE TOKEN\nMARCO\nNext →\nReset\nStep 2Budget\n▾\nStep 3Schedule\n▾\nAdvancedSafety · Review\n▾\nPOOL PREVIEW\nStake\nMARCO\nReward\nMARCO\nChain\nBNB\nEst. rewards\nNot set\nDuration\nNot set\nFee\nFREE\nStatus\nREADY\nESTIMATED APR\nCalculated after reward configuration.\nEMISSION\nCalculated after reward configuration.\nPOOL HEALTH\nScore\nPending config",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "farms": {
+        "data": {
+          "explore": true,
+          "unavailableSpam": 175,
+          "oops": false,
+          "myFarmsPrimaryUsd": false
+        },
+        "create": {
+          "via": "cta",
+          "open": true,
+          "brand": true,
+          "close": true,
+          "titles": [
+            "Create Farm"
+          ],
+          "titleCount": 1,
+          "width": 366,
+          "height": 720,
+          "withinViewport": true,
+          "maxHeightOk": true,
+          "widthOk": true,
+          "accordionOpen": 1,
+          "stickyPreview": true,
+          "treasuryRaw": false,
+          "textSample": "Create Farm\n\nConfigure pair, rewards, budget and duration.\n\n×\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nStep 1Pair\n▾\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\nStep 2Reward\n▾\nStep 3Budget & duration\n▾\nAdvanced\n▾\nContinue\n\nSelect a pair to continue.",
+          "scrollParent": "body-ish",
+          "deadSpaceSuspect": false
+        }
+      },
+      "network": {
+        "open": false
+      }
+    }
+  ],
+  "routing": [
+    {
+      "hop": "/Liquidity/i",
+      "beforePath": "/",
+      "afterPath": "/liquidity-studio/",
+      "pathOk": true,
+      "domOk": true,
+      "ok": true
+    },
+    {
+      "hop": "/^Farms$/i",
+      "beforePath": "/",
+      "afterPath": "/farms/",
+      "pathOk": true,
+      "domOk": true,
+      "ok": true
+    },
+    {
+      "hop": "/^Pools$/i",
+      "beforePath": "/",
+      "afterPath": "/pools/",
+      "pathOk": true,
+      "domOk": true,
+      "ok": true
+    },
+    {
+      "hop": "/^List$/i",
+      "ok": false,
+      "reason": "missing"
+    },
+    {
+      "hop": "/Portfolio/i",
+      "beforePath": "/",
+      "afterPath": "/portfolio/",
+      "pathOk": true,
+      "domOk": true,
+      "ok": true
+    },
+    {
+      "hop": "/Trending/i",
+      "beforePath": "/",
+      "afterPath": "/projects/",
+      "pathOk": true,
+      "domOk": true,
+      "ok": true
+    },
+    {
+      "hop": "featured-view",
+      "url": "http://127.0.0.1:3031/project-hq/mm72/",
+      "ok": true
+    }
+  ]
+}

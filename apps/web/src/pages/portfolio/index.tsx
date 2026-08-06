@@ -9,7 +9,6 @@ const PortfolioStudioScreen = dynamic(() => import('views/PortfolioStudio/Portfo
 const PortfolioPage: NextPage = () => <PortfolioStudioScreen />
 
 PortfolioPage.chains = CHAIN_IDS
-PortfolioPage.pure = true
 PortfolioPage.isShowScrollToTopButton = false
 
 export default PortfolioPage

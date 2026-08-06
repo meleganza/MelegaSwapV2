@@ -989,7 +989,7 @@ export const CreatePoolCta: React.FC = () => {
       ['Health Score', healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`],
       ['Machine Status', machineStatus],
       ['Creation Fee', feeInfo.display],
-      ['Treasury', feeInfo.recipientLabel],
+      ['Fee destination', feeInfo.recipientLabel || 'Melega Treasury'],
     ],
     [state, estimatedApr, healthScore, machineStatus, feeInfo],
   )
@@ -1010,11 +1010,8 @@ export const CreatePoolCta: React.FC = () => {
       data-create-pool-accordion="true"
       data-melega-modal-system="true"
     >
-      <ExpandedHeaderRow>
-        <Header style={{ marginBottom: 0, flex: 1, minWidth: 0 }}>
-          <Title style={{ fontSize: 15 }}>Create Pool</Title>
-          <Subtitle>Configure stake, rewards, schedule and safety in compact sections.</Subtitle>
-        </Header>
+      {/* MelegaModal owns the only title — keep legacy review jump without a second H2. */}
+      <ExpandedHeaderRow aria-hidden>
         <ReviewNowBtn type="button" data-ps-create-pool-review-now onClick={jumpToReview}>
           Review Pool Creation
         </ReviewNowBtn>
@@ -1033,9 +1030,7 @@ export const CreatePoolCta: React.FC = () => {
         </FeeItem>
         <FeeItem style={{ flex: 1 }}>
           <FeeLabel>Recipient</FeeLabel>
-          <FeeMeta data-ps-create-pool-fee-recipient>
-            {feeInfo.recipientLabel} / {feeInfo.recipient}
-          </FeeMeta>
+          <FeeMeta data-ps-create-pool-fee-recipient>{feeInfo.recipientLabel || 'Melega Treasury'}</FeeMeta>
         </FeeItem>
       </FeeBlock>
 

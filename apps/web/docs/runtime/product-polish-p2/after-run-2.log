@@ -1,0 +1,13 @@
+{
+  "phase": "after",
+  "bugCount": 1,
+  "highOrCrit": 0,
+  "bugs": [
+    {
+      "id": "network-modal-closed",
+      "severity": "med",
+      "part": "G",
+      "detail": "mobile-390: Network switch modal did not open"
+    }
+  ]
+}

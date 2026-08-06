@@ -601,18 +601,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
       aria-label={CREATE_FARM_UX.title}
     >
       <Body>
-        <PreviewCol data-testid="create-farm-review-panel">
-          <div>
-            <PreviewTitle>{CREATE_FARM_UX.review}</PreviewTitle>
-            {reviewRows.map(([k, v]) => (
-              <ReviewRow key={k}>
-                <span>{k}</span>
-                <strong>{v}</strong>
-              </ReviewRow>
-            ))}
-          </div>
-        </PreviewCol>
-
         <FieldsCol>
           <MelegaAccordionSection
             id="pair"
@@ -913,6 +901,18 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
             )}
           </div>
         </FieldsCol>
+
+        <PreviewCol data-testid="create-farm-review-panel">
+          <div>
+            <PreviewTitle>{CREATE_FARM_UX.review}</PreviewTitle>
+            {reviewRows.map(([k, v]) => (
+              <ReviewRow key={k}>
+                <span>{k}</span>
+                <strong>{v}</strong>
+              </ReviewRow>
+            ))}
+          </div>
+        </PreviewCol>
       </Body>
     </Section>
   )

@@ -254,29 +254,27 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
       <Metrics>
         <div>
           <Label>{position.depositedUsdAvailable ? 'Deposited Value' : 'LP amount'}</Label>
-          <Value data-testid="farms-my-deposited-primary">{position.stakedFormatted || 'Unavailable'}</Value>
+          <Value data-testid="farms-my-deposited-primary">
+            {position.depositedUsdAvailable
+              ? position.stakedFormatted || '—'
+              : position.stakedLpFormatted || position.stakedFormatted || '—'}
+          </Value>
           <Support data-testid="farms-my-deposited-secondary">
             {position.depositedUsdAvailable
               ? position.stakedLpFormatted
                 ? `LP tokens: ${position.stakedLpFormatted}`
-                : position.stakedValue
-              : 'USD unavailable'}
+                : position.stakedValue || '—'
+              : '—'}
           </Support>
         </div>
         <div>
           <Label>Pending rewards</Label>
-          <Value>{position.pendingFormatted || 'Unavailable'}</Value>
-          {position.pendingValue ? (
-            <Support>{position.pendingValue}</Support>
-          ) : position.pendingFormatted &&
-            position.pendingFormatted !== '—' &&
-            !position.pendingFormatted.startsWith('0 ') ? (
-            <Support>USD value unavailable</Support>
-          ) : null}
+          <Value>{position.pendingFormatted || '—'}</Value>
+          {position.pendingValue ? <Support>{position.pendingValue}</Support> : null}
         </div>
         <div>
           <Label>APR</Label>
-          <Value>{position.apr && position.apr !== '0%' ? position.apr : 'Unavailable'}</Value>
+          <Value>{position.apr && position.apr !== '0%' ? position.apr : '—'}</Value>
         </div>
         <State data-testid="farms-my-farm-chain-note">
           This farm is on {chainShort(position.chainId)}.

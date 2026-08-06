@@ -1,0 +1,19 @@
+{
+  "phase": "after",
+  "bugCount": 2,
+  "highOrCrit": 1,
+  "bugs": [
+    {
+      "id": "portfolio-header",
+      "severity": "high",
+      "part": "F",
+      "detail": "mobile-390: global header missing/short"
+    },
+    {
+      "id": "network-modal-closed",
+      "severity": "med",
+      "part": "G",
+      "detail": "mobile-390: Network switch modal did not open"
+    }
+  ]
+}

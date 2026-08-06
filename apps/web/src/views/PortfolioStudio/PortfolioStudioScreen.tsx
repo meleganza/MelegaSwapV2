@@ -33,7 +33,7 @@ import {
   TabRow,
   px,
 } from './theme'
-import { Metric, UNAVAILABLE } from './Metric'
+import { Metric } from './Metric'
 import { explorerAddressUrl, positionActionLinks, type PositionDomain } from './runtime/buildPortfolioViewModel'
 import { chainLabel } from './helpers'
 import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
@@ -198,7 +198,7 @@ export const PortfolioStudioScreen: React.FC = () => {
               <Metric
                 key={m.id}
                 label={m.label}
-                value={m.status === 'unavailable' && m.value === '—' ? UNAVAILABLE : m.value}
+                value={m.value || '—'}
                 source={m.source}
                 tone={m.partial || m.status === 'partial' ? 'gold' : m.status === 'zero' ? 'mute' : undefined}
                 testId={`portfolio-metric-${m.id}`}
@@ -261,7 +261,7 @@ export const PortfolioStudioScreen: React.FC = () => {
                       </div>
                       <div>
                         <div>Value</div>
-                        <div>{pos.estimatedValue || UNAVAILABLE}</div>
+                        <div>{pos.estimatedValue || '—'}</div>
                       </div>
                       <div>
                         <div>Share</div>
@@ -312,7 +312,7 @@ export const PortfolioStudioScreen: React.FC = () => {
                       <div>
                         <div>Staked</div>
                         <div>{pos.stakedFormatted}</div>
-                        <div style={{ color: px.mute2 }}>{pos.stakedValue || UNAVAILABLE}</div>
+                        <div style={{ color: px.mute2 }}>{pos.stakedValue || '—'}</div>
                       </div>
                       <div>
                         <div>Claimable</div>
@@ -430,7 +430,7 @@ export const PortfolioStudioScreen: React.FC = () => {
                           <div style={{ color: px.mute2 }}>{row.token}</div>
                         </div>
                         <div>{row.amount}</div>
-                        <div>{row.estimatedUsd || UNAVAILABLE}</div>
+                        <div>{row.estimatedUsd || '—'}</div>
                         <div>
                           <Btn href={row.actionHref} $ghost>
                             {row.actionLabel}
@@ -442,7 +442,7 @@ export const PortfolioStudioScreen: React.FC = () => {
                               Contract
                             </ExtLink>
                           ) : (
-                            UNAVAILABLE
+                            '—'
                           )}
                         </div>
                       </DenseRow>
@@ -475,7 +475,7 @@ export const PortfolioStudioScreen: React.FC = () => {
                 <Metric
                   key={`analytics-${m.id}`}
                   label={m.label}
-                  value={m.status === 'unavailable' && m.value === '—' ? UNAVAILABLE : m.value}
+                  value={m.value || '—'}
                   source={m.source}
                   tone={m.partial || m.status === 'partial' ? 'gold' : m.status === 'zero' ? 'mute' : undefined}
                   testId={`portfolio-analytics-${m.id}`}

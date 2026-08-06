@@ -108,7 +108,18 @@ const MobileNetwork = styled.div`
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   min-width: 0;
+
+  /* Keep chain control tappable on 390px — icon-only UserMenu must remain a hit target. */
+  [data-testid='network-switcher-root'] {
+    min-width: 40px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 `
 
 export interface MelegaAppShellProps {
