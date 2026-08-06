@@ -1,0 +1,186 @@
+{
+  "mission": "MELEGASWAP_V2_GLOBAL_DATA_INDEXER_FINALIZATION",
+  "base": "http://127.0.0.1:3044",
+  "generatedAt": "2026-08-06T17:41:35.271Z",
+  "checks": [
+    {
+      "id": "surface-home",
+      "pass": true,
+      "detail": {
+        "unavailable": 0,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-projects",
+      "pass": true,
+      "detail": {
+        "unavailable": 0,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-project-marco",
+      "pass": true,
+      "detail": {
+        "unavailable": 0,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-liquidity",
+      "pass": true,
+      "detail": {
+        "unavailable": 1,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-farms",
+      "pass": true,
+      "detail": {
+        "unavailable": 351,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-pools",
+      "pass": true,
+      "detail": {
+        "unavailable": 756,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-portfolio",
+      "pass": true,
+      "detail": {
+        "unavailable": 0,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "surface-audit",
+      "pass": true,
+      "detail": {
+        "unavailable": 80,
+        "sourceConfigured": false,
+        "waitingExplorer": false,
+        "overflowX": false,
+        "hasDash": true,
+        "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+      }
+    },
+    {
+      "id": "project-page-v4-mounted",
+      "pass": true,
+      "detail": {
+        "v4": true,
+        "market": true
+      }
+    },
+    {
+      "id": "audit-data-truth-pipeline",
+      "pass": true,
+      "detail": {
+        "mounted": true,
+        "pipeline": "melega-global-data-truth-v1"
+      }
+    }
+  ],
+  "samples": {
+    "home": {
+      "unavailable": 0,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "projects": {
+      "unavailable": 0,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "project-marco": {
+      "unavailable": 0,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "liquidity": {
+      "unavailable": 1,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "farms": {
+      "unavailable": 351,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "pools": {
+      "unavailable": 756,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "portfolio": {
+      "unavailable": 0,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    },
+    "audit": {
+      "unavailable": 80,
+      "sourceConfigured": false,
+      "waitingExplorer": false,
+      "overflowX": false,
+      "hasDash": true,
+      "snippet": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar B"
+    }
+  },
+  "pass": true
+}

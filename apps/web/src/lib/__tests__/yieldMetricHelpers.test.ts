@@ -50,9 +50,9 @@ describe('yieldMetricHelpers — shared TVL formulas', () => {
     expect(resolvePoolTvlUsd(pool, { marcoUsd: 0.1 })).toBe(100)
   })
 
-  it('pool volume is Unavailable; fees are 0% when category known', () => {
+  it('pool volume is —; fees are 0% when category known', () => {
     const pool = { poolCategory: 'CORE' } as any
-    expect(resolvePoolVolumeDisplay(pool)).toBe(METRIC_STATUS.UNAVAILABLE)
+    expect(resolvePoolVolumeDisplay(pool)).toBe('—')
     expect(resolvePoolFeesDisplay(pool)).toBe('0%')
   })
 })

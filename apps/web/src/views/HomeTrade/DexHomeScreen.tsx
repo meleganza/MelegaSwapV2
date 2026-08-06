@@ -448,22 +448,22 @@ export const DexHomeScreen: React.FC = () => {
       NA
     const volumeValue = volCard?.value ?? NA
     const compact = (v: string) => {
-      if (/not available/i.test(v)) return 'Unavailable'
-      if (v === '0' || v === NA) return v === '0' ? '0' : 'Unavailable'
-      return v
+      if (/not available/i.test(v)) return '—'
+      if (v === '0' || v === NA) return v === '0' ? '0' : '—'
+      return v === 'Unavailable' ? '—' : v
     }
     const honestCount = (v: string | number | undefined) => {
       const n = Number(v)
       if (Number.isFinite(n) && n > 0) return String(n)
       if (v === '0' || n === 0) return '0'
-      return 'Unavailable'
+      return '—'
     }
     const tvlValue = tvlCard?.value
       ? compact(tvlCard.value)
       : data.marketCards.length === 0
         ? 'Data syncing'
-        : 'Unavailable'
-    const volValue = volCard?.value ? compact(volumeValue) : 'Unavailable'
+        : '—'
+    const volValue = volCard?.value ? compact(volumeValue) : '—'
     return [
       {
         label: 'TVL',
@@ -477,7 +477,7 @@ export const DexHomeScreen: React.FC = () => {
       },
       {
         label: 'Listed Projects',
-        value: projectCount > 0 ? String(projectCount) : 'Unavailable',
+        value: projectCount > 0 ? String(projectCount) : '—',
         title: listedProjects.provenance,
       },
       {

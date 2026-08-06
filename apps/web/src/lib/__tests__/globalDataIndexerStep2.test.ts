@@ -43,11 +43,12 @@ describe('Global data indexer Step 2', () => {
 
   it('Home Top Pools expose volume fees logos and chain badge', () => {
     const home = load('HomeTrade/DexHomeScreen.tsx')
-    expect(home).toContain('Volume ${row.volume}')
-    expect(home).toContain('Fees ${row.fees}')
+    const data = load('HomeTrade/useHomeTradeData.ts')
     expect(home).toContain('MelegaExploreChainBadge')
     expect(home).toContain('tokenSymbols')
     expect(home).toContain('data-listing-timestamp')
+    expect(data).toContain('resolvePoolVolumeDisplay')
+    expect(data).toContain('resolvePoolFeesDisplay')
   })
 
   it('Top Farms hook still attaches liquidity for shared TVL', () => {
@@ -102,9 +103,10 @@ describe('Global data indexer Step 2', () => {
     expect([...chains].some((id) => SUPPORTED_CHAIN_IDS.includes(id))).toBe(true)
   })
 
-  it('Project directory cards keep Unavailable when metrics missing', () => {
+  it('Project directory cards keep honest dashes when metrics missing', () => {
     const card = load('ProjectsStudio/components/ProjectGridCard.tsx')
-    expect(card).toContain('METRIC_STATUS.UNAVAILABLE')
+    expect(card).toContain("'—'")
+    expect(card).toContain('isEmpty')
     expect(card).toContain('Price')
     expect(card).toContain('Liquidity')
     expect(card).toContain('Volume')

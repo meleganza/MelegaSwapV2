@@ -24,6 +24,7 @@ import {
   computeMelegaScore,
   type OfficialContractRow,
 } from './buildOfficialContracts'
+import { GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 
 type ReadinessPayload = {
   timestamp?: string
@@ -611,7 +612,7 @@ const AuditCenterV2: React.FC = () => {
   }, [])
 
   return (
-    <Page data-testid="audit-center-v2" data-audit-page="v2">
+    <Page data-testid="audit-center-v2" data-audit-page="v2" data-data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
       <Inner>
         <Band data-testid="audit-hero" style={{ borderColor: ac.goldLine }}>
           <Hero>

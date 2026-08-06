@@ -39,6 +39,7 @@ import {
   listLivePoolInventoryPreview,
   liveInventoryProvenance,
 } from 'lib/data-truth/liveInventoryCounts'
+import { compareYieldTruthDesc } from 'lib/data-truth/yieldTruthRanking'
 import {
   farmPairLabel,
   formatFarmTvlDisplay,
@@ -515,12 +516,11 @@ export const useHomeTradeData = () => {
           sortActivity: activity,
         }
       })
-      .sort(
-        (a, b) =>
-          b.sortTvl - a.sortTvl ||
-          b.sortApr - a.sortApr ||
-          b.sortVolume - a.sortVolume ||
-          b.sortActivity - a.sortActivity,
+      .sort((a, b) =>
+        compareYieldTruthDesc(
+          { sortTvl: a.sortTvl, sortApr: a.sortApr, sortVolume: a.sortVolume, sortActivity: a.sortActivity },
+          { sortTvl: b.sortTvl, sortApr: b.sortApr, sortVolume: b.sortVolume, sortActivity: b.sortActivity },
+        ),
       )
       .slice(0, 5)
       .map(({ sortTvl: _t, sortApr: _a, sortVolume: _v, sortActivity: _act, ...row }) => row)
@@ -604,16 +604,16 @@ export const useHomeTradeData = () => {
           row.life.active ||
           Boolean(row.pool.earningToken?.symbol),
       )
-      .sort((a, b) => {
-        if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd
-        if (b.volumeUsd !== a.volumeUsd) return b.volumeUsd - a.volumeUsd
-        if (b.feesUsd !== a.feesUsd) return b.feesUsd - a.feesUsd
-        const aprDiff = (b.aprValue ?? -1) - (a.aprValue ?? -1)
-        if (aprDiff !== 0) return aprDiff
-        const addrA = (a.pool.contractAddress || a.pool.sousId || '').toString().toLowerCase()
-        const addrB = (b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()
-        return addrA.localeCompare(addrB)
-      })
+      .sort((a, b) =>
+        compareYieldTruthDesc(
+          { sortTvl: a.tvlUsd, sortApr: a.aprValue ?? -1, sortVolume: a.volumeUsd, sortActivity: a.feesUsd },
+          { sortTvl: b.tvlUsd, sortApr: b.aprValue ?? -1, sortVolume: b.volumeUsd, sortActivity: b.feesUsd },
+        ) ||
+        (a.pool.contractAddress || a.pool.sousId || '')
+          .toString()
+          .toLowerCase()
+          .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
+      )
       .slice(0, 5)
 
     const toEarnRow = (pool: Pool.DeserializedPool<Token>, tvlUsd: number, aprValue?: number): EarnRow => {

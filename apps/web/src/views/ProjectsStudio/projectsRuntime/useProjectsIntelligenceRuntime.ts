@@ -7,7 +7,7 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useTokenDataSWR } from 'state/info/hooks'
 import { useHolderCount } from 'lib/holder-count'
 import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
-import { useDexTrendingRankings } from 'views/HomeTrade/useDexTrendingRankings'
+import { useTopMoversSnapshot } from 'views/HomeTrade/TopMoversSnapshotContext'
 import {
   formatFeaturedChange,
   formatFeaturedLiquidity,
@@ -15,6 +15,7 @@ import {
   formatFeaturedVolume,
   useFeaturedProjectMarkets,
 } from 'views/HomeTrade/useFeaturedProjectMarkets'
+import { truthDash } from 'lib/data-truth'
 import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
@@ -169,7 +170,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const [filter, setFilter] = useState<ProjectFilterChip>('All')
   const [searchQuery, setSearchQuery] = useState('')
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
-  const { rankedAssets } = useDexTrendingRankings()
+  const { rankedAssets } = useTopMoversSnapshot()
   const { rowsBySlug: featuredBySlug } = useFeaturedProjectMarkets()
 
   const enriched = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
@@ -275,7 +276,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const featured = useMemo(() => {
     if (!featuredProject) {
       return {
-        name: 'Unavailable',
+        name: '—',
         symbol: '—',
         slug: '',
         verified: false,
@@ -292,7 +293,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const kpis = useMemo(
     () =>
       aggregateKpis(enriched, pendingRecords.length, {
-        display: liveMetrics?.holders.display ?? 'Waiting for explorer',
+        display: truthDash(liveMetrics?.holders.display),
         reasonCode: liveMetrics?.holders.reasonCode,
       }),
     [enriched, pendingRecords.length, liveMetrics],

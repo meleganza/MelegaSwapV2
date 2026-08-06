@@ -23,7 +23,7 @@ export const isUnavailableFarmMetric = (value?: string | null): boolean => {
 }
 
 export const displayFarmMetric = (value?: string | null): string => {
-  if (isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
+  if (isUnavailableFarmMetric(value)) return '—'
   return value!.trim()
 }
 

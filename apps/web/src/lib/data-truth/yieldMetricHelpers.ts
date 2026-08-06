@@ -7,7 +7,6 @@ import type { FarmWithStakedValue } from '@pancakeswap/farms'
 import type { Token } from '@pancakeswap/sdk'
 import type { Pool } from '@pancakeswap/uikit'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 
 export type YieldPriceHints = {
   marcoUsd?: number
@@ -22,7 +21,7 @@ export function formatYieldUsd(value?: number | null): string | undefined {
 }
 
 export function formatYieldUsdOrUnavailable(value?: number | null): string {
-  return formatYieldUsd(value) ?? METRIC_STATUS.UNAVAILABLE
+  return formatYieldUsd(value) ?? '—'
 }
 
 /** Farm liquidity USD — prefer attached liquidity, else reserve × quote price. */
@@ -46,7 +45,7 @@ export function resolveFarmAprPercent(farm: FarmWithStakedValue): number | undef
 
 export function formatFarmAprDisplay(farm: FarmWithStakedValue): string {
   const apr = resolveFarmAprPercent(farm)
-  return apr != null ? `${apr.toFixed(2)}%` : APR_UNAVAILABLE_LABEL
+  return apr != null ? `${apr.toFixed(2)}%` : '—'
 }
 
 /** MasterChef / dual farm reward token — factual label only. */
@@ -101,7 +100,7 @@ export function resolvePoolAprPercent(pool: Pool.DeserializedPool<Token>): numbe
 
 export function formatPoolAprDisplay(pool: Pool.DeserializedPool<Token>): string {
   const apr = resolvePoolAprPercent(pool)
-  return apr != null ? `${apr.toFixed(2)}%` : APR_UNAVAILABLE_LABEL
+  return apr != null ? `${apr.toFixed(2)}%` : '—'
 }
 
 export function resolvePoolRewardToken(pool: Pool.DeserializedPool<Token>): string | undefined {
@@ -113,18 +112,18 @@ export function resolvePoolChainId(pool: Pool.DeserializedPool<Token>, fallback 
 }
 
 /**
- * SmartChef deposit fee when known on the pool object — otherwise Unavailable.
+ * SmartChef deposit fee when known on the pool object — otherwise "—".
  * Never invents trading volume for staking pools.
  */
 export function resolvePoolFeesDisplay(pool: Pool.DeserializedPool<Token>): string {
   // Deserialized pools expose 0 deposit fee on standard Melega SmartChef paths.
   if (pool.poolCategory != null) return '0%'
-  return METRIC_STATUS.UNAVAILABLE
+  return '—'
 }
 
 /** Volume is not certified for SmartChef staking pools. */
 export function resolvePoolVolumeDisplay(_pool: Pool.DeserializedPool<Token>): string {
-  return METRIC_STATUS.UNAVAILABLE
+  return '—'
 }
 
 export function poolPairLabel(pool: Pool.DeserializedPool<Token>): string {

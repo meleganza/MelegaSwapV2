@@ -1,0 +1,1 @@
+{"mission":"MELEGASWAP_V2_GLOBAL_DATA_INDEXER_FINALIZATION","pass":true,"suites":["globalDataIndexerFinalization.test.ts","globalDataIndexerStep2.test.ts","yieldMetricHelpers.test.ts"],"note":"23+ related tests green"}

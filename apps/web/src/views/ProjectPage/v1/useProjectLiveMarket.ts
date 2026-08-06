@@ -1,12 +1,9 @@
 import { useMemo } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
 import { useHolderCount } from 'lib/holder-count'
+import { truthDash, buildProjectTruthMarketFromFeatured, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import {
-  formatFeaturedChange,
-  formatFeaturedLiquidity,
-  formatFeaturedMarketCap,
   formatFeaturedPrice,
-  formatFeaturedVolume,
   formatHumanDecimal,
   useFeaturedProjectMarkets,
 } from 'views/HomeTrade/useFeaturedProjectMarkets'
@@ -31,6 +28,8 @@ export type ProjectLiveMarketView = {
   source: string
   status: string
   pairAddress?: string
+  /** Global Data Truth pipeline id — identical across Home / Projects / Project Page. */
+  pipeline: typeof GLOBAL_DATA_TRUTH_PIPELINE
 }
 
 function relativeFromUnix(ts?: number): string | null {
@@ -47,27 +46,28 @@ function emptyMarket(loading: boolean, registeredMarketCount: number): ProjectLi
   return {
     loading,
     row: null,
-    priceBnb: 'Unavailable',
-    priceUsd: 'Unavailable',
-    marketCap: 'Unavailable',
-    fdv: 'Unavailable',
-    liquidity: 'Unavailable',
-    volume24h: 'Unavailable',
-    swaps24h: 'Unavailable',
-    holders: 'Unavailable',
-    markets: registeredMarketCount > 0 ? String(registeredMarketCount) : 'Unavailable',
-    trend: 'Unavailable',
-    ath: 'Unavailable',
-    atl: 'Unavailable',
+    priceBnb: '—',
+    priceUsd: '—',
+    marketCap: '—',
+    fdv: '—',
+    liquidity: '—',
+    volume24h: '—',
+    swaps24h: '—',
+    holders: '—',
+    markets: registeredMarketCount > 0 ? String(registeredMarketCount) : '—',
+    trend: '—',
+    ath: '—',
+    atl: '—',
     lastUpdate: null,
     source: 'none',
     status: 'UNAVAILABLE',
+    pipeline: GLOBAL_DATA_TRUTH_PIPELINE,
   }
 }
 
 /**
- * Factual market observations only — Featured indexer rows when present.
- * Never invents USD, holders, ATH/ATL, or FDV.
+ * Factual market observations — Featured / canonical snapshot SSOT (Global Data Truth).
+ * Never invents USD, holders, ATH/ATL, or FDV. Missing → "—".
  */
 export function useProjectLiveMarket(
   slug: string,
@@ -84,54 +84,49 @@ export function useProjectLiveMarket(
   const { data: holderResult } = useHolderCount(chainId, holderToken ?? undefined)
 
   return useMemo(() => {
+    const holdersReady =
+      holderResult?.status === 'ready' && holderResult.count != null && holderResult.count > 0
+        ? holderResult.count.toLocaleString()
+        : undefined
+
     if (!row || row.status === 'UNAVAILABLE') {
       const base = emptyMarket(loading, registeredMarketCount)
-      if (holderResult?.status === 'ready' && holderResult.count != null && holderResult.count > 0) {
-        return { ...base, holders: holderResult.count.toLocaleString() }
-      }
+      if (holdersReady) return { ...base, holders: holdersReady }
       return base
     }
 
-    const change = formatFeaturedChange(row)
+    const truth = buildProjectTruthMarketFromFeatured(row, {
+      holders: holdersReady,
+      lastUpdate: relativeFromUnix(row.lastTradeTimestamp),
+    })
     const priceBnb =
       row.latestPriceQuote && row.latestPriceQuote > 0
         ? `${formatHumanDecimal(row.latestPriceQuote)} BNB`
-        : 'Unavailable'
+        : '—'
     const priceUsdRaw = formatFeaturedPrice(row)
-    const priceUsd = priceUsdRaw === 'Price updating' ? 'Unavailable' : priceUsdRaw
-    const liquidityRaw = formatFeaturedLiquidity(row)
-    const volumeRaw = formatFeaturedVolume(row)
-    const marketCapRaw = formatFeaturedMarketCap(row)
-
-    const holders =
-      holderResult?.status === 'ready' && holderResult.count != null && holderResult.count > 0
-        ? holderResult.count.toLocaleString()
-        : 'Unavailable'
+    const priceUsd = priceUsdRaw === 'Price updating' ? '—' : truthDash(priceUsdRaw)
 
     return {
       loading,
       row,
       priceBnb,
       priceUsd,
-      marketCap: marketCapRaw === '—' ? 'Unavailable' : marketCapRaw,
-      fdv: marketCapRaw === '—' ? 'Unavailable' : marketCapRaw,
-      liquidity: liquidityRaw === '—' ? 'Unavailable' : liquidityRaw,
-      volume24h:
-        volumeRaw === '—' || volumeRaw === 'No recent swaps' ? 'Unavailable' : volumeRaw,
-      swaps24h:
-        row.tradeCount24h != null && Number.isFinite(row.tradeCount24h)
-          ? String(row.tradeCount24h)
-          : 'Unavailable',
-      holders,
-      markets: registeredMarketCount > 0 ? String(registeredMarketCount) : 'Unavailable',
-      trend: change.empty ? 'Unavailable' : change.text,
-      trendPositive: change.empty ? undefined : change.positive,
-      ath: 'Unavailable',
-      atl: 'Unavailable',
-      lastUpdate: relativeFromUnix(row.lastTradeTimestamp),
+      marketCap: truth.marketCap,
+      fdv: truth.fdv,
+      liquidity: truth.liquidity,
+      volume24h: truth.volume,
+      swaps24h: truth.transactions,
+      holders: truth.holders,
+      markets: registeredMarketCount > 0 ? String(registeredMarketCount) : '—',
+      trend: truth.change24h,
+      trendPositive: truth.changePositive,
+      ath: '—',
+      atl: '—',
+      lastUpdate: truth.lastUpdate === '—' ? null : truth.lastUpdate,
       source: row.source === 'none' ? 'none' : row.source,
       status: row.status,
       pairAddress: row.pairAddress,
+      pipeline: GLOBAL_DATA_TRUTH_PIPELINE,
     }
   }, [row, loading, registeredMarketCount, holderResult])
 }

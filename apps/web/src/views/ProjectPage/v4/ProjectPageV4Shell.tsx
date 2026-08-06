@@ -27,6 +27,8 @@ import { ClaimProjectWizardModal } from 'views/shared/monetization/ClaimProjectW
 import { ProjectMarketingHistory } from 'views/shared/monetization/ProjectMarketingHistory'
 import { COMMERCIAL_SERVICES, type CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import { FeaturedProjectsSection } from 'views/ProjectsStudio/components/FeaturedProjectsSection'
+import { truthDash } from 'lib/data-truth'
+import { countNormalizedFarmsByChain, poolInventoryCount } from 'lib/data-truth/globalYieldInventory'
 import { humanEnumLabel } from '../presentation/humanLabels'
 import { Band, BandHead, BandMeta, BandTitle, Btn, Chip, Muted, Page, Row, pp } from '../v1/theme'
 import {
@@ -43,7 +45,7 @@ import { useProjectLiveMarket } from '../v1/useProjectLiveMarket'
 import ProjectTradingEmbed from '../v1/ProjectTradingEmbed'
 import ProjectCharts from '../v1/ProjectCharts'
 
-const dash = (v?: string | null) => (!v || v === 'Unavailable' || v === '—' ? '—' : v)
+const dash = (v?: string | null) => truthDash(v)
 
 const Hero = styled.div`
   display: grid;
@@ -609,6 +611,10 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
     () => filterParticipationByChain(participationDocument.pools, chainId),
     [participationDocument.pools, chainId],
   )
+  // Same inventory counts as Farms / Pools pages (Global Data Truth).
+  const truthFarmCount = countNormalizedFarmsByChain()[chainId] || chainFarms.length
+  const truthPoolCount = poolInventoryCount(chainId) || chainPools.length
+  const truthLiquidityCount = chainLiquidity.length || '—'
 
   const tokenDecimals =
     primary?.decimals?.meta?.availability === 'AVAILABLE' && typeof primary.decimals.value === 'number'
@@ -931,7 +937,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
               <span>Volume · {dash(market.volume24h)}</span>
               <span>APR · —</span>
               <span>Rewards · —</span>
-              <span>Pools · {chainLiquidity.length || '—'}</span>
+              <span>Pools · {truthLiquidityCount}</span>
               <span>Largest · {pairLabel}</span>
             </EconomyMeta>
             <MiniSpark values={[]} />
@@ -946,7 +952,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
               <span>Volume · —</span>
               <span>APR · —</span>
               <span>Rewards · —</span>
-              <span>Farms · {chainFarms.length || '—'}</span>
+              <span>Farms · {truthFarmCount || '—'}</span>
               <span>Largest · {chainFarms[0]?.displayLabel || '—'}</span>
             </EconomyMeta>
             <MiniSpark values={[]} />
@@ -961,7 +967,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
               <span>Volume · —</span>
               <span>APR · —</span>
               <span>Rewards · —</span>
-              <span>Pools · {chainPools.length || '—'}</span>
+              <span>Pools · {truthPoolCount || '—'}</span>
               <span>Largest · {chainPools[0]?.displayLabel || '—'}</span>
             </EconomyMeta>
             <MiniSpark values={[]} />
