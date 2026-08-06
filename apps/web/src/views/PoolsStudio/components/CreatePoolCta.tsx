@@ -6,6 +6,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import { poolsStudioColors } from '../poolsStudioTokens'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { WBNB } from '@pancakeswap/sdk'
 import {
@@ -38,31 +39,23 @@ const Card = styled.section`
   background: transparent;
   border: none;
   border-radius: 0;
-  padding: 8px 16px 18px;
+  padding: 8px 12px 12px;
   display: flex;
   flex-direction: column;
   overflow: visible;
   height: auto;
+  gap: 10px;
 
   @media (max-width: 767px) {
-    padding: 4px 12px 16px;
+    padding: 6px 10px 10px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    margin-bottom: 8px;
   }
 `
 
 const ExpandedHeaderRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-
-  @media (max-width: 767px) {
-    margin-bottom: 14px;
-  }
+  display: none;
 `
 
 const ReviewNowBtn = styled.button`
@@ -134,23 +127,7 @@ const Subtitle = styled.p`
 `
 
 const FeeBlock = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 20px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  border: 1px solid rgba(244, 196, 48, 0.28);
-  background: rgba(244, 196, 48, 0.06);
-
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-  }
+  display: none;
 `
 
 const FeeItem = styled.div`
@@ -188,11 +165,7 @@ const FeeMeta = styled.span`
 `
 
 const EssentialsSection = styled.div`
-  margin-bottom: 24px;
-
-  @media (max-width: 767px) {
-    margin-bottom: 18px;
-  }
+  display: none;
 `
 
 const EssentialsTitle = styled.h3`
@@ -271,29 +244,15 @@ const ReadinessNote = styled.p`
 `
 
 const ProgressWizard = styled.div`
-  height: 44px;
+  display: none;
+`
+
+const AccordionStack = styled.div`
   display: flex;
-  align-items: center;
-  margin-bottom: 22px;
+  flex-direction: column;
+  gap: 8px;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    margin-bottom: 16px;
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0 16px;
-    scroll-padding-inline: 16px;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
+  flex: 1;
 `
 
 const ProgressTrack = styled.div`
@@ -404,21 +363,21 @@ const Connector = styled.div<{ $filled?: boolean }>`
 const Body = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 22px;
+  gap: 14px;
   min-width: 0;
 
   @media (max-width: 767px) {
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
   }
 `
 
 const PreviewColumn = styled.div`
-  width: 280px;
-  min-width: 280px;
+  width: 260px;
+  min-width: 260px;
   align-self: flex-start;
   position: sticky;
-  top: 24px;
+  top: 8px;
 
   @media (max-width: 767px) {
     width: 100%;
@@ -1164,44 +1123,41 @@ export const CreatePoolCta: React.FC = () => {
         </EssentialsGrid>
       </EssentialsSection>
 
-      <ProgressWizard data-r722-wizard-progress>
-        <ProgressTrack>
-          {WIZARD_STEP_LABELS.map((label, i) => {
-            const idx = (i + 1) as WizardStep
-            const active = step === idx
-            const completed = step > idx
-            return (
-              <React.Fragment key={label}>
-                {i > 0 ? <Connector $filled={step > idx} data-ps-wizard-connector /> : null}
-                <StepNode
-                  type="button"
-                  data-ps-wizard-step={idx}
-                  data-ps-wizard-step-active={active || undefined}
-                  onClick={() => {
-                    setAnimDir(idx >= step ? 'next' : 'prev')
-                    setStep(idx)
-                    if (idx === 3) setStep3Page(0)
-                  }}
-                >
-                  <StepCircle $active={active} $completed={completed}>
-                    {completed ? '✓' : idx}
-                  </StepCircle>
-                  <StepLabel $active={active} $completed={completed}>
-                    {label}
-                  </StepLabel>
-                </StepNode>
-              </React.Fragment>
-            )
-          })}
-        </ProgressTrack>
+      <ProgressWizard data-r722-wizard-progress aria-hidden>
+        <ProgressTrack />
       </ProgressWizard>
 
       <Body data-ps-create-pool-wizard-body>
         <StepColumn>
+          <AccordionStack data-create-pool-accordion-ui="true">
+            {(
+              [
+                [1, 'Step 1', 'Tokens'],
+                [2, 'Step 2', 'Budget'],
+                [3, 'Step 3', 'Schedule'],
+                [4, 'Advanced', 'Safety · Review'],
+              ] as const
+            ).map(([idx, title, summary]) => (
+              <MelegaAccordionSection
+                key={idx}
+                id={`create-pool-step-${idx}`}
+                title={title}
+                summary={summary}
+                open={idx === 4 ? step === 4 || step === 5 : step === idx}
+                onToggle={() => {
+                  const target = idx as WizardStep
+                  setAnimDir(target >= step ? 'next' : 'prev')
+                  setStep(target === 4 && step === 5 ? 5 : target)
+                  if (idx === 3) setStep3Page(0)
+                }}
+                testId={`create-pool-acc-${idx}`}
+              >
+                {(idx === 4 ? step === 4 || step === 5 : step === idx) ? (
           <StepPanel
-            key={`${step}-${step === 3 ? step3Page : 0}`}
+            key={`active-${step}-${step === 3 ? step3Page : 0}`}
             $dir={animDir}
             data-ps-wizard-step-panel={step}
+            data-create-pool-active-step={step}
           >
             {step === 1 ? (
               <>
@@ -1463,19 +1419,16 @@ export const CreatePoolCta: React.FC = () => {
               </>
             ) : null}
           </StepPanel>
+                ) : null}
+              </MelegaAccordionSection>
+            ))}
+          </AccordionStack>
         </StepColumn>
 
         <PreviewColumn>
           <CreatePoolWizardPreview state={state} />
         </PreviewColumn>
       </Body>
-
-      <Footer>
-        <FooterNote data-ps-wizard-footer-progress>
-          Progress · Step {step} / 5
-        </FooterNote>
-        <FooterNote data-ps-wizard-footer-eta>Estimated completion time · ≈30 seconds</FooterNote>
-      </Footer>
     </Card>
   )
 }

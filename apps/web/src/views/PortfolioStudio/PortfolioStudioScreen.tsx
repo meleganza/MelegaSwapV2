@@ -35,7 +35,7 @@ import {
 } from './theme'
 import { Metric, UNAVAILABLE } from './Metric'
 import { explorerAddressUrl, positionActionLinks, type PositionDomain } from './runtime/buildPortfolioViewModel'
-import { chainLabel, shortenAddress } from './helpers'
+import { chainLabel } from './helpers'
 import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
 
 const HeroGrid = styled.div`
@@ -61,15 +61,15 @@ const HeroRight = styled.div`
   border-radius: 12px;
   border: 1px solid ${px.goldLine};
   background:
-    radial-gradient(ellipse 80% 70% at 30% 20%, rgba(242, 200, 76, 0.16), transparent 60%),
+    radial-gradient(ellipse 80% 70% at 30% 20%, rgba(242, 200, 76, 0.14), transparent 60%),
     linear-gradient(165deg, #16140f 0%, #0c0c0c 100%);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 140px;
+  gap: 6px;
+  min-height: 96px;
 `
 
 const BrandLabel = styled.div`
@@ -82,7 +82,7 @@ const BrandLabel = styled.div`
 
 const HeroTitle = styled.h1`
   margin: 0;
-  font-size: clamp(20px, 3.4vw, 28px);
+  font-size: clamp(18px, 2.8vw, 24px);
   font-weight: 850;
   letter-spacing: -0.03em;
   line-height: 1.15;
@@ -164,10 +164,21 @@ export const PortfolioStudioScreen: React.FC = () => {
                       </Btn>
                     ) : null,
                   )}
+                {wallet.connected ? (
+                  <Btn
+                    as="button"
+                    type="button"
+                    $ghost
+                    data-testid="portfolio-disconnect"
+                    onClick={() => disconnect?.()}
+                  >
+                    Disconnect
+                  </Btn>
+                ) : null}
               </Row>
             </HeroLeft>
             <HeroRight data-testid="portfolio-visual">
-              <MelegaLogoSvg size={64} />
+              <MelegaLogoSvg size={48} />
               <VisualLabel>Portfolio</VisualLabel>
               <Chip $on={wallet.connected} $tone={wallet.connected ? 'ok' : 'mute'}>
                 {wallet.connected ? 'Wallet connected' : 'Awaiting wallet'}
@@ -472,50 +483,10 @@ export const PortfolioStudioScreen: React.FC = () => {
               ))}
             </Grid>
             <Muted style={{ marginTop: 8 }}>
-              Portfolio value is priced positions only. Unpriced holdings stay Unavailable.
+              Portfolio value is priced positions only. Unpriced holdings show —.
             </Muted>
           </AnalyticsBody>
         </AnalyticsDetails>
-
-        {/* ACCOUNT */}
-        <Band data-portfolio-section="account" data-testid="portfolio-section-account">
-          <BandHead>
-            <BandTitle>Account</BandTitle>
-            <BandMeta>Wallet session</BandMeta>
-          </BandHead>
-          <Grid $cols={3}>
-            <Metric
-              label="Wallet"
-              value={wallet.connected ? wallet.shortened || shortenAddress(null) : 'Disconnected'}
-              source="wagmi session"
-            />
-            <Metric label="Chain" value={chainLabel(model.chainId)} source="active chain" />
-            <Metric
-              label="Positions"
-              value={
-                wallet.connected
-                  ? String(model.liquidity.length + model.farms.length + model.pools.length)
-                  : 'Connect wallet'
-              }
-              source="Portfolio domains"
-            />
-          </Grid>
-          <Row style={{ marginTop: 10 }}>
-            {!wallet.connected ? (
-              <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
-            ) : (
-              <Btn
-                as="button"
-                type="button"
-                $ghost
-                data-testid="portfolio-disconnect"
-                onClick={() => disconnect?.()}
-              >
-                Disconnect wallet
-              </Btn>
-            )}
-          </Row>
-        </Band>
       </Stack>
     </Page>
   )

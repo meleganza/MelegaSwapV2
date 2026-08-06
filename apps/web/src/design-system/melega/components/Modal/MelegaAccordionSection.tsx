@@ -86,7 +86,7 @@ export const MelegaAccordionSection: React.FC<MelegaAccordionSectionProps> = ({
         ▾
       </Chevron>
     </Trigger>
-    {open ? <Panel>{children}</Panel> : null}
+    {open && children != null ? <Panel>{children}</Panel> : null}
   </Root>
 )
 

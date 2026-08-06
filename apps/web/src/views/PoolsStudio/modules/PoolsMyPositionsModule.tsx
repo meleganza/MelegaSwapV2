@@ -319,13 +319,9 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
     }
   }
 
-  const onExplore = () => {
-    setPortfolioViewMode('ALL')
-    setPoolTab('all')
-    const el = document.querySelector('[data-ps-pool-explorer]')
-    if (el instanceof HTMLElement) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+  // Product polish: never render an empty My Positions card — go straight to Explore.
+  if (vm.state === 'empty') {
+    return null
   }
 
   return (
@@ -372,16 +368,6 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
                 </CardItem>
               ))}
             </CardGrid>
-          ) : null}
-
-          {vm.state === 'empty' ? (
-            <CenterState data-testid="pools-my-positions-empty">
-              <StateTitle>No pool positions yet</StateTitle>
-              <StateDesc>Stake in an available pool to start earning rewards.</StateDesc>
-              <StateButton type="button" onClick={onExplore}>
-                Explore Pools
-              </StateButton>
-            </CenterState>
           ) : null}
 
           {vm.state === 'unavailable' ? (

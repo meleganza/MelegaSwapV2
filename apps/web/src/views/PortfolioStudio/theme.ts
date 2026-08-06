@@ -80,9 +80,6 @@ export const Stack = styled.div`
     [data-portfolio-section='analytics'] {
       order: 6;
     }
-    [data-portfolio-section='account'] {
-      order: 7;
-    }
   }
 `
 

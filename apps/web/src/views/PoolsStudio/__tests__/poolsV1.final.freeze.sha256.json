@@ -12,7 +12,7 @@
     "modules/usePoolsOverviewKpis.ts": "2a5e47402bac991c2323706c83841a65676eaff2e57f65f22cc7d8ed4e5146e0",
     "modules/poolsOverviewKpisTokens.ts": "66dc7fe4a6d8c9fe6e512a9704ccf9b55c488e0e6cae5982dfe51e3cd9f1d3e9",
     "modules/poolsOverviewKpisTypes.ts": "ea61d37fa5a98ef344e63005af12f9109b2e9e188dc1cec3cbd911855a5d8d67",
-    "modules/PoolsMyPositionsModule.tsx": "2608c6b201e987193c67018c9dea87ea4d03c3360226c0b716f904f35591544e",
+    "modules/PoolsMyPositionsModule.tsx": "ab6cc7ba97f791923477249672d30ef2cae11998c97e3500d638ac0551a832f0",
     "modules/PoolsMyPositionCard.tsx": "e31f52e00fc34be5018a9bc978a6b37f33d08010801b7bd543a54fe62d62ecb0",
     "modules/buildPoolsWalletPositions.ts": "eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655",
     "modules/usePoolsWalletPositions.ts": "7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189",

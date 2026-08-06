@@ -18,7 +18,6 @@ import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -667,20 +666,10 @@ export const DexHomeScreen: React.FC = () => {
                         </span>
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
-                      {row.tvl ? (
-                        <RowMeta>{`TVL ${row.tvl}`}</RowMeta>
-                      ) : (
-                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
-                      )}
-                      {row.rewards ? (
-                        <RowMeta>{`Rewards ${row.rewards}`}</RowMeta>
-                      ) : (
-                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
-                      )}
+                      <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
-                    <GoldMetric>
-                      {row.apr ?? (row.aprUnavailable !== false ? APR_UNAVAILABLE_LABEL : METRIC_STATUS.UNAVAILABLE)}
-                    </GoldMetric>
+                    <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
                 ))
               )}
@@ -717,22 +706,10 @@ export const DexHomeScreen: React.FC = () => {
                         </span>
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
-                      {row.tvl ? (
-                        <RowMeta>{`TVL ${row.tvl}`}</RowMeta>
-                      ) : (
-                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
-                      )}
-                      {row.volume ? <RowMeta>{`Volume ${row.volume}`}</RowMeta> : null}
-                      {row.fees ? <RowMeta>{`Fees ${row.fees}`}</RowMeta> : null}
-                      {row.rewards ? (
-                        <RowMeta>{`Rewards ${row.rewards}`}</RowMeta>
-                      ) : (
-                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
-                      )}
+                      <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
-                    <RowMetric>
-                      {row.apr ?? (row.aprUnavailable !== false ? APR_UNAVAILABLE_LABEL : METRIC_STATUS.UNAVAILABLE)}
-                    </RowMetric>
+                    <RowMetric>{row.apr || '—'}</RowMetric>
                   </DiscRow>
                 ))
               )}

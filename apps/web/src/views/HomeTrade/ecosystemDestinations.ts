@@ -17,8 +17,8 @@ export type EcosystemDestination = {
 export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
   {
     id: 'passport',
-    title: 'PORTFOLIO',
-    subtitle: 'Identity and portfolio hub.',
+    title: 'PASSPORT',
+    subtitle: 'Identity & rewards.',
     href: 'https://marco.melega.ai',
     external: true,
   },
@@ -31,8 +31,8 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
   },
   {
     id: 'blackpump',
-    title: 'BLACKPUMP',
-    subtitle: 'Fair-launch meme launchpad.',
+    title: 'BLACK',
+    subtitle: 'Fair-launch infrastructure.',
     href: 'https://blackpump.fun/',
     external: true,
   },
@@ -48,6 +48,6 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     title: 'MAIORA',
     subtitle: 'Melega strategic layer.',
     disabled: true,
-    disabledLabel: 'Unavailable',
+    disabledLabel: '—',
   },
 ]

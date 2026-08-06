@@ -44,22 +44,20 @@ const Section = styled.section`
   border-radius: 0;
   border: none;
   background: transparent;
-  padding: 8px 16px 20px;
+  padding: 8px 12px 12px;
   font-family: ${typography.fontFamily.body};
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
 
   @media (max-width: 767px) {
-    padding: 4px 12px 16px;
+    padding: 6px 10px 10px;
   }
 `
 
 const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: none;
 `
 
 const Title = styled.h2`
@@ -432,19 +430,6 @@ const ReviewRow = styled.div`
   }
 `
 
-const AdvancedToggle = styled.button`
-  align-self: flex-start;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-`
-
 function parseNum(raw: string): number {
   const n = Number(String(raw).replace(/[^0-9.]/g, ''))
   return Number.isFinite(n) ? n : 0
@@ -479,13 +464,11 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   const [draft, setDraft] = useState<PublicFarmFactoryDraft>(() => createDefaultPublicFarmFactoryDraft())
   const [pairQuery, setPairQuery] = useState('')
   const [hydrated, setHydrated] = useState(false)
-  const [advancedOpen, setAdvancedOpen] = useState(false)
   const [createSoftNote, setCreateSoftNote] = useState<string | null>(null)
-  const [openAcc, setOpenAcc] = useState<'pair' | 'reward' | 'budget' | 'duration' | 'advanced'>('pair')
+  const [openAcc, setOpenAcc] = useState<'pair' | 'reward' | 'budget' | 'advanced'>('pair')
 
   const toggleAcc = (id: typeof openAcc) => {
     setOpenAcc((prev) => (prev === id ? prev : id))
-    if (id === 'advanced') setAdvancedOpen(true)
   }
 
   const { pairs } = useAmmPairRegistry({
@@ -615,15 +598,8 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
       data-create-farm-capability={PUBLIC_FARM_FACTORY_CAPABILITY.outcome}
       data-factory-deployed="false"
       data-masterbuilder-exposed="false"
-      aria-labelledby="create-farm-workspace-title"
+      aria-label={CREATE_FARM_UX.title}
     >
-      <Header>
-        <Title id="create-farm-workspace-title" style={{ fontSize: 15, lineHeight: '20px' }}>
-          {CREATE_FARM_UX.title}
-        </Title>
-        <Subtitle>{CREATE_FARM_UX.subtitle}</Subtitle>
-      </Header>
-
       <Body>
         <PreviewCol data-testid="create-farm-review-panel">
           <div>
@@ -640,15 +616,14 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
         <FieldsCol>
           <MelegaAccordionSection
             id="pair"
-            title="Pair"
-            summary={draft.selectedPair ? `${draft.selectedPair.symbol0}/${draft.selectedPair.symbol1}` : undefined}
+            title="Step 1"
+            summary={draft.selectedPair ? `${draft.selectedPair.symbol0}/${draft.selectedPair.symbol1}` : 'Pair'}
             open={openAcc === 'pair'}
             onToggle={() => toggleAcc('pair')}
             testId="create-farm-acc-pair"
           >
             <div data-testid="create-farm-step-pair">
-              <StepLabel>Step 1</StepLabel>
-              <PanelTitle style={{ marginTop: 6 }}>{CREATE_FARM_UX.step1}</PanelTitle>
+              <PanelTitle>{CREATE_FARM_UX.step1}</PanelTitle>
               <ModeRow data-testid="public-farm-pair-mode" style={{ marginTop: 12 }}>
                 <ModeBtn
                   type="button"
@@ -783,8 +758,8 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
           <MelegaAccordionSection
             id="reward"
-            title="Reward"
-            summary={draft.rewardToken || undefined}
+            title="Step 2"
+            summary={draft.rewardToken || 'Reward'}
             open={openAcc === 'reward'}
             onToggle={() => toggleAcc('reward')}
             testId="create-farm-acc-reward"
@@ -811,8 +786,14 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
           <MelegaAccordionSection
             id="budget"
-            title="Budget"
-            summary={draft.rewardBudget || undefined}
+            title="Step 3"
+            summary={
+              draft.rewardBudget || draft.durationDays
+                ? [draft.rewardBudget, draft.durationDays ? `${draft.durationDays}d` : null]
+                    .filter(Boolean)
+                    .join(' · ')
+                : 'Budget & duration'
+            }
             open={openAcc === 'budget'}
             onToggle={() => toggleAcc('budget')}
             testId="create-farm-acc-budget"
@@ -838,17 +819,10 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
               </ReadOnlyValue>
               <FeeNote data-testid="create-farm-fee-note">{CREATE_FARM_UX.feeTreasuryNote}</FeeNote>
             </Field>
-          </MelegaAccordionSection>
-
-          <MelegaAccordionSection
-            id="duration"
-            title="Duration"
-            summary={draft.durationDays ? `${draft.durationDays}d` : undefined}
-            open={openAcc === 'duration'}
-            onToggle={() => toggleAcc('duration')}
-            testId="create-farm-acc-duration"
-          >
-            <FieldsGrid data-testid="create-farm-fields-grid" data-public-farm-config={eligibility.eligible ? 'unlocked' : 'locked'}>
+            <FieldsGrid
+              data-testid="create-farm-fields-grid"
+              data-public-farm-config={eligibility.eligible ? 'unlocked' : 'locked'}
+            >
               <Field>
                 <Label>{CREATE_FARM_UX.duration}</Label>
                 <InputBox
@@ -885,32 +859,23 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
             onToggle={() => toggleAcc('advanced')}
             testId="create-farm-acc-advanced"
           >
-            <AdvancedToggle
-              type="button"
-              data-testid="create-farm-advanced-toggle"
-              onClick={() => setAdvancedOpen((v) => !v)}
-            >
-              {advancedOpen ? 'Hide advanced' : CREATE_FARM_UX.advanced}
-            </AdvancedToggle>
-            {(advancedOpen || openAcc === 'advanced') && (
-              <FieldsGrid data-testid="create-farm-advanced-fields">
-                <Field>
-                  <Label>Start</Label>
-                  <ReadOnlyValue>
-                    {draft.startMode === 'immediate' ? 'Starts when created' : 'Scheduled'}
-                  </ReadOnlyValue>
-                </Field>
-                <Field>
-                  <Label>Creator wallet</Label>
-                  <InputBox
-                    value={draft.creatorWallet}
-                    onChange={(e) => patch({ creatorWallet: e.target.value })}
-                    placeholder="Optional"
-                    aria-label="Creator wallet"
-                  />
-                </Field>
-              </FieldsGrid>
-            )}
+            <FieldsGrid data-testid="create-farm-advanced-fields">
+              <Field>
+                <Label>Start</Label>
+                <ReadOnlyValue>
+                  {draft.startMode === 'immediate' ? 'Starts when created' : 'Scheduled'}
+                </ReadOnlyValue>
+              </Field>
+              <Field>
+                <Label>Creator wallet</Label>
+                <InputBox
+                  value={draft.creatorWallet}
+                  onChange={(e) => patch({ creatorWallet: e.target.value })}
+                  placeholder="Optional"
+                  aria-label="Creator wallet"
+                />
+              </Field>
+            </FieldsGrid>
           </MelegaAccordionSection>
 
           <div data-testid="create-farm-primary-action">

@@ -1,0 +1,38 @@
+{
+  "pass": true,
+  "summary": [
+    {
+      "label": "desktop-1440",
+      "pass": {
+        "home": true,
+        "portfolio": true,
+        "poolsEmpty": true,
+        "createPool": true,
+        "createFarm": true,
+        "network": true
+      }
+    },
+    {
+      "label": "tablet-1024",
+      "pass": {
+        "home": true,
+        "portfolio": true,
+        "poolsEmpty": true,
+        "createPool": true,
+        "createFarm": true,
+        "network": true
+      }
+    },
+    {
+      "label": "mobile-390",
+      "pass": {
+        "home": true,
+        "portfolio": true,
+        "poolsEmpty": true,
+        "createPool": true,
+        "createFarm": true,
+        "network": true
+      }
+    }
+  ]
+}

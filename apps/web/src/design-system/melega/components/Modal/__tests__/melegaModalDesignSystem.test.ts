@@ -37,13 +37,17 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
     expect(confirm).toContain('This product is available on')
   })
 
-  it('Create Farm / Create Pool use md (720px) MelegaModal', () => {
+  it('Create Farm / Create Pool use md MelegaModal (720–760px band)', () => {
     const farms = load('src/views/FarmsStudio/FarmsStudioScreen.tsx')
     const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
+    const modal = load('src/design-system/melega/components/Modal/MelegaModal.tsx')
     expect(farms).toContain('size="md"')
     expect(pools).toContain('size="md"')
     expect(farms).not.toContain('size="lg"')
     expect(pools).not.toContain('size="lg"')
+    expect(modal).toContain("maxWidthMd: '740px'")
+    expect(modal).toContain("maxHeight: '80vh'")
+    expect(modal).toContain('data-melega-modal-brand')
   })
 
   it('Create Farm uses accordion + sticky preview', () => {
@@ -53,8 +57,20 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
     expect(farm).toContain('create-farm-acc-pair')
     expect(farm).toContain('create-farm-acc-reward')
     expect(farm).toContain('create-farm-acc-budget')
-    expect(farm).toContain('create-farm-acc-duration')
     expect(farm).toContain('create-farm-acc-advanced')
+    expect(farm).toContain('title="Step 1"')
+    expect(farm).toContain('title="Step 2"')
+    expect(farm).toContain('title="Step 3"')
+    expect(farm).toContain('title="Advanced"')
+    expect(farm).not.toContain('create-farm-acc-duration')
     expect(farm).toContain('position: sticky')
+  })
+
+  it('Create Pool uses MelegaAccordionSection steps', () => {
+    const pool = load('src/views/PoolsStudio/components/CreatePoolCta.tsx')
+    expect(pool).toContain('MelegaAccordionSection')
+    expect(pool).toContain('create-pool-acc-')
+    expect(pool).toContain('data-create-pool-accordion')
+    expect(pool).toContain('position: sticky')
   })
 })
