@@ -319,8 +319,9 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
     }
   }
 
-  // Product polish: never render an empty My Positions card — go straight to Explore.
-  if (vm.state === 'empty') {
+  // Product polish: never render empty / no-wallet My Positions — go straight to Explore.
+  // Disconnected == zero meaningful positions for the guest; avoid a large empty module.
+  if (vm.state === 'empty' || vm.state === 'disconnected') {
     return null
   }
 

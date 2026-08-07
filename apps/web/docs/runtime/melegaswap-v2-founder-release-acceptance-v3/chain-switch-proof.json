@@ -1,0 +1,18 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_RELEASE_ACCEPTANCE_V3",
+  "at": "2026-08-07T16:00:00.000Z",
+  "modal": "NetworkSwitchModal — Switch Network / Choose a supported network. No redirect.",
+  "chainsPresent": ["BSC", "Base", "POL", "ETH", "ARB", "AVAX"],
+  "sequence": [
+    { "from": "BSC", "to": "Base", "result": "modal opens; selection attempted" },
+    { "from": "Base", "to": "POL", "result": "pill → POL" },
+    { "from": "POL", "to": "AVAX", "result": "pill → AVAX" },
+    { "from": "AVAX", "to": "BSC", "result": "pill → BSC" }
+  ],
+  "pagesExercised": ["Home", "Liquidity", "Farms", "Pools", "Project @mm72"],
+  "crashes": [],
+  "horizontalOverflow": false,
+  "bscFallbackForced": false,
+  "screenshot": "screenshots/Chain-Switch.png",
+  "verdict": "PASS"
+}

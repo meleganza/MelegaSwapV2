@@ -172,7 +172,7 @@ export function buildFarmsOverviewKpisFromParts(input: {
   } else {
     activeFarmersCard = card(
       'activeFarmers',
-      'Unavailable',
+      '—',
       'Unique wallets that participated in Melega DEX farms',
       'unavailable',
       'unavailable',

@@ -48,7 +48,7 @@ describe('MELEGASWAP_V2_FARMS_POOLS_ANALYTICS_PREMIUM_POLISH', () => {
   it('empty My Farms / My Pools suppression', () => {
     expect(myFarms).toContain("if (vm.state === 'empty')")
     expect(myFarms).toContain('return null')
-    expect(myPools).toContain("if (vm.state === 'empty')")
+    expect(myPools).toContain("vm.state === 'empty' || vm.state === 'disconnected'")
     expect(myPools).toContain('return null')
   })
 

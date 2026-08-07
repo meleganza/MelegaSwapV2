@@ -74,7 +74,7 @@ export const FARMS_MODULE_001_FREEZE_SHA256 = {
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
   FarmsOverviewKpisModule: '086755b1373c10432dc496b59c96f757a86ac47f6d30b86bcaff05bc2a50a1d2',
   farmsOverviewKpisTokens: '1abe4ad7cf3aea392b791f5c7206e2d87b1ae0abb8582917d700da503ea70eb9',
-  buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
+  buildFarmsOverviewKpis: '63ba986be3690c3d0b9241368db362e00eac87eda0acc4f68417b64ce0eb66c9',
   useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
 } as const
@@ -82,7 +82,7 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'd0a6b16c58b26e92606fd37cfe9d7494870989d00c3592632f85f95f0fe1d347',
   FarmsMyFarmCard: '83323d6346dda0ae9ec3bdee80353377608fa1c71e6520a5bfb2caca379ce421',
-  farmsMyFarmsTokens: 'c7f1ce5025983ae0de7ed09bdc53665d23cb5ef1d58ee2f632cd44751299e36a',
+  farmsMyFarmsTokens: 'fc669509d43b6d2910f2b9a46f75bf981b5a6ee8630673602c1cbeea854ccc0f',
   farmsMyFarmsTypes: '59e1dc2b025d2fcdd1c37b7b7326baea1508458b7af42c523e4acffa265cf8fc',
   buildFarmsWalletPositions: '01c57977914530f4ad941645c3f2f516ad02af875019c0bb05f68ddd26e32ee5',
   useFarmsWalletPositions: '30d7f27335beea626a36edb40594cabae734105fd373e8489fd6cc85cad9253b',
@@ -91,7 +91,7 @@ export const FARMS_MODULE_003_FREEZE_SHA256 = {
 export const FARMS_MODULE_004_FREEZE_SHA256 = {
   FarmsExploreFarmsModule: 'bca1bb7a334d36fe8824523c0016f18427473f9c6617125336d60e8f764b41c6',
   FarmsExploreFarmCard: '7a68435ea5e2ca5a60ba888a21dd284b2ca5487edaac3e0e772461eb9053a403',
-  farmsExploreFarmsTokens: '843183d392161f60143ab57446cc4408219954d6d64b33d1f46689af42763aed',
+  farmsExploreFarmsTokens: 'aac29d3bd0a461ad6c02ab4d694aec5b0355ca9aa0c6f2a7fdabab6b4d0ad797',
   farmsExploreFarmsTypes: '99f2304916993449cc31c68ba0ed73169d901f8b2917d15290b747848a34d4d3',
   buildFarmsExploreFarms: '820af53bfd99a86bc88c8464b397c4ddce92852f3b0df130e386b01cc47f928e',
   useFarmsExploreFarms: '489389398f3b714515e6ff1d1aa3cd0bb828950f76643584ec6b9d4772523deb',

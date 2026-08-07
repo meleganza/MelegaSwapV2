@@ -1,0 +1,44 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_RELEASE_ACCEPTANCE_V3",
+  "at": "2026-08-07T16:10:00.000Z",
+  "home": {
+    "topFarmsPools": "Uses Global Data Truth display; uncertified metrics as — (not Source not configured / Waiting... / fake zero).",
+    "ecosystem": ["PASSPORT", "SMARTDROP", "BLACK", "SPACE", "MAIORA · UNAVAILABLE"],
+    "forbiddenLabelsAbsent": ["BlackPump", "Labs", "Radar"],
+    "protocolFeeVisible": true,
+    "treasuryWalletExposed": false
+  },
+  "farms": {
+    "before": "Active Farmers showed Unavailable when index not ready",
+    "after": "Active Farmers shows factual count when indexed, or — when uncertified",
+    "postFixVerify": "ACTIVE FARMERS → 318 (index ready); Unavailable label absent",
+    "hugeBigintHuman": false,
+    "fakeZero": false
+  },
+  "pools": {
+    "fakeFeaturedDashArrow": false,
+    "kpisFactualOrDash": true,
+    "myPositionsHiddenWhenDisconnected": true
+  },
+  "projectsDirectory": {
+    "identityKey": "chainId + address",
+    "searchMm72": "Showing 1 of 1 project",
+    "initialLoad": "28 of 274",
+    "loadMore": true
+  },
+  "projectPages": {
+    "mm72": { "smartSwap": true, "scientificNotation": false, "treasury": false },
+    "marco": { "smartSwap": true, "scientificNotation": false, "treasury": false },
+    "eyed": { "smartSwap": true, "scientificNotation": false, "treasury": false },
+    "blion": { "smartSwap": true, "scientificNotation": false, "treasury": false },
+    "young-degens": { "smartSwap": true, "scientificNotation": false, "treasury": false }
+  },
+  "auditCenter": {
+    "melegaScore": "97",
+    "runtimeReadiness": "44",
+    "distinctionExplained": true,
+    "contractsSurfaced": { "router": true, "factory": true, "masterChefOrBuilder": true },
+    "trustConflict": false
+  },
+  "verdict": "PASS"
+}

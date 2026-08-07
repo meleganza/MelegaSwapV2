@@ -78,7 +78,9 @@ describe('Farms Founder Acceptance', () => {
     const kpi = readFileSync(path.join(STUDIO, 'modules/buildFarmsOverviewKpis.ts'), 'utf8')
     expect(kpi).toContain('Indexing…')
     expect(kpi).toContain('Unique wallets that participated in Melega DEX farms')
-    expect(kpi).toContain('Unavailable')
+    expect(kpi).toContain("'activeFarmers'")
+    // Uncertified Active Farmers renders as em-dash (Global Data Truth), never invented zero.
+    expect(kpi).toMatch(/activeFarmers[\s\S]{0,80}'—'/)
   })
 
   it('Position cards expose chain-aware View Farm / View LP explorer links', () => {
@@ -102,7 +104,8 @@ describe('Farms Founder Acceptance', () => {
     const fmt = readFileSync(path.join(STUDIO, 'farmsRuntime/formatFarmsRuntime.ts'), 'utf8')
     expect(fmt).toContain('tie-break by lowest pid')
     expect(fmt).toContain('emissionState !== \'active\'')
-    expect(fmt).toContain('liquidity?.toNumber')
+    expect(fmt).toContain('farmLiquidityUsd')
+    expect(fmt).toContain('resolveFarmLiquidityUsd')
 
     const selected = selectFeaturedFarm([
       card({ pid: 3, liq: 50_000, apr: '40%' }),

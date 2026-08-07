@@ -1,0 +1,11 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_RELEASE_ACCEPTANCE_V3",
+  "at": "2026-08-07T16:13:46.352Z",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0,
+  "elapsedMs": 71630,
+  "log": "/tmp/accept-v3-build2.log",
+  "note": "Second build after Active Farmers overview KPI dash fix"
+}

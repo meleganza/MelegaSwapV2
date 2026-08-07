@@ -1,0 +1,41 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_RELEASE_ACCEPTANCE_V3",
+  "at": "2026-08-07T16:10:00.000Z",
+  "bugs": [
+    {
+      "id": "farms-kpi-unavailable-label",
+      "severity": "P1",
+      "surface": "Farms KPIs / Active Farmers",
+      "detail": "Active Farmers KPI rendered consumer-facing label \"Unavailable\" when MasterChef participant index was not ready. Global Data Truth policy requires \"—\" for uncertified metrics.",
+      "evidence": "Browser text: ACTIVE FARMERS\\nUnavailable",
+      "status": "fixed"
+    },
+    {
+      "id": "pools-my-positions-disconnected-empty",
+      "severity": "P1",
+      "surface": "Pools / My Positions",
+      "detail": "Disconnected wallet still mounted a large My Positions module (Connect Wallet empty state). Mission requires zero-position / no-wallet case to hide the module.",
+      "evidence": "data-module-state=disconnected with Connect your wallet to view pool positions",
+      "status": "fixed"
+    }
+  ],
+  "false_positives": [
+    {
+      "id": "growth-cta-missing",
+      "reason": "Harness looked for <a> growth links; Featured/Trend Boost are buttons that open Growth Hub Modal V3."
+    },
+    {
+      "id": "walk-crash",
+      "reason": "Harness-only; not a product crash."
+    },
+    {
+      "id": "history-regression",
+      "reason": "Initial goBack race; retest confirmed Home ↔ Farms Back/Forward works."
+    },
+    {
+      "id": "projects-search-dup",
+      "reason": "Harness filled header search; directory search (projects-directory-search) filters correctly (MM72 → 1 of 1)."
+    }
+  ],
+  "p0": []
+}

@@ -1,0 +1,85 @@
+{
+  "checklist": {
+    "A_home": {
+      "header": true,
+      "search": true,
+      "chain": true,
+      "wallet": true,
+      "ticker": true,
+      "smartSwap": true,
+      "featured": true,
+      "ecosystem": ["PASSPORT", "SMARTDROP", "BLACK", "SPACE", "MAIORA"],
+      "noBlackPump": true,
+      "noLabs": true,
+      "noRadar": true,
+      "protocolFee": true,
+      "noTreasuryWallet": true
+    },
+    "B_headerRouting": {
+      "sequentialNavNoRefresh": true,
+      "noHomeStuck": true,
+      "backForward": true,
+      "noBrowserRouterNesting": true
+    },
+    "C_chainSwitch": {
+      "modalV3": true,
+      "chains": ["BSC", "Base", "POL", "ETH", "ARB", "AVAX"],
+      "noCrash": true
+    },
+    "D_projectsV3": {
+      "compactHero": true,
+      "featuredRail": true,
+      "initial28": true,
+      "loadMore": true,
+      "searchWorks": true
+    },
+    "E_projectPageV5": {
+      "hierarchyOk": true,
+      "smartSwap": true,
+      "growthOpens": true,
+      "noScientific": true,
+      "noTreasury": true,
+      "projectsReviewed": ["MARCO", "MM72", "EYED", "BLION", "Young Degens"]
+    },
+    "F_smartSwap": {
+      "uiPresent": true,
+      "engineUntouched": true,
+      "noTreasuryInPublicUi": true
+    },
+    "G_liquidityV3": {
+      "noRouteOscillation": true,
+      "tabs": ["My Liquidity", "Add Liquidity", "AI Liquidity Builder"]
+    },
+    "H_farms": {
+      "kpisDashNotUnavailable": true,
+      "createFarmModalV3": true,
+      "noHugeBigint": true
+    },
+    "I_pools": {
+      "noFakeFeatured": true,
+      "myPositionsHiddenWhenDisconnected": true,
+      "createPoolModalV3": true
+    },
+    "J_portfolio": {
+      "dexConsistent": true,
+      "noPassportUi": true
+    },
+    "K_list": {
+      "claimWizard": true,
+      "noDeadOops": true
+    },
+    "L_audit": {
+      "score97": true,
+      "readiness44": true,
+      "distinction": true
+    },
+    "M_commercial": {
+      "featuredCheckoutPrePay": true,
+      "paymentAssets": ["BNB", "USDT", "USDC", "MARCO"]
+    },
+    "N_responsive": { "pass": true },
+    "O_performance": { "pass": true, "maxClickShellMs": 1435 },
+    "P_errors": { "noOopsGenericObserved": true }
+  },
+  "at": "2026-08-07T16:10:00.000Z"
+}

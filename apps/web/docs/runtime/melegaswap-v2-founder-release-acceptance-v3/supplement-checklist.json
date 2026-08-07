@@ -1,0 +1,155 @@
+{
+  "projects": {
+    "MARCO": {
+      "query": "MARCO",
+      "cards": 28,
+      "keys": [
+        "MARCO$MARCOVerifiedTrendingPrice$0.00034",
+        "BLION$BLIONVerifiedFeaturedPrice<$0.0000",
+        "EYED$EYEDVerifiedFeaturedPrice<$0.000001",
+        "MM72$MM72VerifiedFeaturedPrice<$0.000001",
+        "YD$YDVerifiedFeaturedPrice<$0.00000124h—",
+        "Melega DEXVerifiedPrice—24h—Liquidity—Vo",
+        "https://www.melegaswap.finance/babymarco",
+        "https://www.paxos.com/busd/$BUSDPrice—24"
+      ],
+      "sameChainDup": true
+    },
+    "MM72": {
+      "query": "MM72",
+      "cards": 28,
+      "keys": [
+        "MARCO$MARCOVerifiedTrendingPrice$0.00034",
+        "BLION$BLIONVerifiedFeaturedPrice<$0.0000",
+        "EYED$EYEDVerifiedFeaturedPrice<$0.000001",
+        "MM72$MM72VerifiedFeaturedPrice<$0.000001",
+        "YD$YDVerifiedFeaturedPrice<$0.00000124h—",
+        "Melega DEXVerifiedPrice—24h—Liquidity—Vo",
+        "https://www.melegaswap.finance/babymarco",
+        "https://www.paxos.com/busd/$BUSDPrice—24"
+      ],
+      "sameChainDup": true
+    },
+    "EYED": {
+      "query": "EYED",
+      "cards": 28,
+      "keys": [
+        "MARCO$MARCOVerifiedTrendingPrice$0.00034",
+        "BLION$BLIONVerifiedFeaturedPrice<$0.0000",
+        "EYED$EYEDVerifiedFeaturedPrice<$0.000001",
+        "MM72$MM72VerifiedFeaturedPrice<$0.000001",
+        "YD$YDVerifiedFeaturedPrice<$0.00000124h—",
+        "Melega DEXVerifiedPrice—24h—Liquidity—Vo",
+        "https://www.melegaswap.finance/babymarco",
+        "https://www.paxos.com/busd/$BUSDPrice—24"
+      ],
+      "sameChainDup": true
+    },
+    "Young Degens": {
+      "query": "Young Degens",
+      "cards": 28,
+      "keys": [
+        "MARCO$MARCOVerifiedTrendingPrice$0.00034",
+        "BLION$BLIONVerifiedFeaturedPrice<$0.0000",
+        "EYED$EYEDVerifiedFeaturedPrice<$0.000001",
+        "MM72$MM72VerifiedFeaturedPrice<$0.000001",
+        "YD$YDVerifiedFeaturedPrice<$0.00000124h—",
+        "Melega DEXVerifiedPrice—24h—Liquidity—Vo",
+        "https://www.melegaswap.finance/babymarco",
+        "https://www.paxos.com/busd/$BUSDPrice—24"
+      ],
+      "sameChainDup": true
+    },
+    "page-marco": {
+      "title": "MARCO | Melega DEX Project",
+      "url": "/@marco/",
+      "smartSwap": true,
+      "economy": true,
+      "scientific": false,
+      "treasury": false,
+      "boost": true
+    },
+    "page-eyed": {
+      "title": "EYED | Melega DEX Project",
+      "url": "/@eyed/",
+      "smartSwap": true,
+      "economy": true,
+      "scientific": false,
+      "treasury": false,
+      "boost": true
+    },
+    "page-blion": {
+      "title": "BLION | Melega DEX Project",
+      "url": "/@blion/",
+      "smartSwap": true,
+      "economy": true,
+      "scientific": false,
+      "treasury": false,
+      "boost": true
+    },
+    "page-young-degens": {
+      "title": "Young Degens | Melega DEX Project",
+      "url": "/@young-degens/",
+      "smartSwap": true,
+      "economy": true,
+      "scientific": false,
+      "treasury": false,
+      "boost": true
+    }
+  },
+  "list": {
+    "h1": "List, Launch,and Growon Melega.",
+    "claim": true,
+    "create": true,
+    "deadOops": false
+  },
+  "liquidity": {
+    "urls": [
+      "http://127.0.0.1:3320/liquidity-studio/",
+      "http://127.0.0.1:3320/liquidity-studio/?view=positions",
+      "http://127.0.0.1:3320/liquidity-studio/?view=positions",
+      "http://127.0.0.1:3320/liquidity-studio/?view=building&step=setup"
+    ],
+    "oscillation": false,
+    "hasMy": true,
+    "hasAdd": true,
+    "hasAi": true
+  },
+  "claim": {
+    "url": "http://127.0.0.1:3320/list/?intent=claim-project",
+    "wallet": true,
+    "ownership": true,
+    "customize": false,
+    "review": true,
+    "editBeforeOwn": false
+  },
+  "farms": {
+    "featured": true,
+    "explore": true,
+    "unavailable": true,
+    "hugeBigint": false,
+    "createFarm": true
+  },
+  "pools": {
+    "fakeFeatured": false,
+    "myPositionsHeading": true,
+    "explore": true,
+    "unavailable": false,
+    "kpis": true
+  },
+  "backForward": {
+    "afterBack": "http://127.0.0.1:3320/farms/",
+    "afterFwd": "http://127.0.0.1:3320/farms/",
+    "ok": true
+  },
+  "audit": {
+    "score": "97",
+    "readiness": "44",
+    "distinction": true,
+    "contracts": {
+      "router": true,
+      "factory": true,
+      "masterchef": true
+    }
+  }
+}
