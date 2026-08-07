@@ -1,0 +1,7 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "liquidityRoutePresent": true,
+  "finishedAt": "2026-08-07T13:16:18.070474+00:00"
+}

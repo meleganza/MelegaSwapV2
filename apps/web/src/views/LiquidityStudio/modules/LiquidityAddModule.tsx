@@ -21,6 +21,8 @@ import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
 import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
+import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 
 const Shell = styled.section<{ $embedded?: boolean }>`
@@ -39,9 +41,8 @@ const Shell = styled.section<{ $embedded?: boolean }>`
 const Layout = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   display: grid;
-  grid-template-columns: ${({ $embedded }) =>
-    $embedded ? '1fr' : `minmax(0, ${liquidityAdd.mainW}) minmax(0, ${liquidityAdd.sideW})`};
-  column-gap: ${liquidityAdd.columnGap};
+  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1.35fr) minmax(0, 1fr)')};
+  column-gap: ${({ $embedded }) => ($embedded ? '0' : '20px')};
   row-gap: ${({ $embedded }) => ($embedded ? '12px' : '16px')};
   align-items: start;
   min-width: 0;
@@ -238,8 +239,45 @@ const MetricValue = styled.div`
   text-overflow: ellipsis;
 `
 
+const NewPairBanner = styled.div`
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(221, 185, 47, 0.28);
+  background: rgba(221, 185, 47, 0.08);
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.78);
+
+  strong {
+    display: block;
+    color: #fff;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+`
+
+const Advanced = styled.details`
+  margin-top: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 10px;
+
+  summary {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.66);
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+`
+
 const SlippageRow = styled.div`
-  margin-top: 14px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -389,6 +427,7 @@ function queryTokenId(raw: unknown): string | undefined {
 const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
+  const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
   const {
     pairLabel,
     currencyA,
@@ -408,10 +447,12 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     phase,
     slippageLabel,
     loadingLabel,
+    noLiquidity,
   } = useLiquidityRuntime()
 
   const [seeded, setSeeded] = useState(false)
   const [completedFlash, setCompletedFlash] = useState(false)
+  const [switchOpen, setSwitchOpen] = useState(false)
 
   // Do NOT call setMode('Add Liquidity') on mount — that router.replace(view=add)
   // fights LiquidityBuildingCard's view=building writer and causes route oscillation.
@@ -471,10 +512,10 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
         approvalA: mapApprovalState(approvalA),
         approvalB: mapApprovalState(approvalB),
         errorCode: error?.code,
-        wrongChain,
+        wrongChain: false, // V3: open MelegaModal switch instead of dead CTA
         completed: completedFlash,
       }),
-    [account, approvalA, approvalB, error?.code, wrongChain, completedFlash],
+    [account, approvalA, approvalB, error?.code, completedFlash],
   )
 
   const errorLabel = humanizeAddError(error?.code, error?.message)
@@ -495,13 +536,16 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
   }, [typedValueA, typedValueB, currencyA?.symbol, currencyB?.symbol])
 
   const handlePrimary = useCallback(() => {
+    if (wrongChain) {
+      setSwitchOpen(true)
+      return
+    }
     if (cta.state === 'connect' || cta.disabled) return
     onPrimaryAction()
     if (cta.state === 'add') {
-      // Modal confirm owns completion; flash only if approvals already done.
       setCompletedFlash(false)
     }
-  }, [cta.state, cta.disabled, onPrimaryAction])
+  }, [wrongChain, cta.state, cta.disabled, onPrimaryAction])
 
   useEffect(() => {
     if (approvalA === ApprovalState.PENDING || approvalB === ApprovalState.PENDING) {
@@ -519,7 +563,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     <Layout
       $embedded={embedded}
       data-testid="liquidity-add-layout"
-      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '900-24-424'}
+      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '58-42-workspace'}
       data-liquidity-add-embedded={embedded ? '1' : '0'}
     >
       <Panel $embedded={embedded} data-testid="liquidity-add-form-panel">
@@ -528,6 +572,13 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             <Title>{LIQUIDITY_ADD_COPY.title}</Title>
             <Desc>{LIQUIDITY_ADD_COPY.description}</Desc>
           </>
+        ) : null}
+
+        {noLiquidity ? (
+          <NewPairBanner data-testid="liquidity-add-new-pair">
+            <strong>New liquidity pool</strong>
+            You’ll create the first liquidity for this pair.
+          </NewPairBanner>
         ) : null}
 
         <PairRow data-testid="liquidity-add-pair">
@@ -645,14 +696,17 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           </Metric>
         </Metrics>
 
-        <SlippageRow>
-          <MetricLabel>
-            {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
-          </MetricLabel>
-          <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
-            Edit
-          </SlippageBtn>
-        </SlippageRow>
+        <Advanced data-testid="liquidity-add-advanced">
+          <summary>Advanced</summary>
+          <SlippageRow>
+            <MetricLabel>
+              {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
+            </MetricLabel>
+            <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
+              Edit
+            </SlippageBtn>
+          </SlippageRow>
+        </Advanced>
 
         {errorLabel ? <ErrorBanner data-testid="liquidity-add-error">{errorLabel}</ErrorBanner> : null}
         {loadingLabel && !errorLabel ? (
@@ -667,11 +721,15 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           <Primary
             type="button"
             onClick={handlePrimary}
-            disabled={cta.disabled}
+            disabled={wrongChain ? false : cta.disabled}
             data-testid="liquidity-add-cta"
-            data-cta-state={cta.state}
+            data-cta-state={wrongChain ? 'wrong-chain' : cta.state}
           >
-            {cta.label}
+            {wrongChain
+              ? 'Switch Network'
+              : noLiquidity
+                ? 'Create Pool & Add Liquidity'
+                : cta.label}
           </Primary>
         )}
         <Security>{LIQUIDITY_ADD_COPY.securityNote}</Security>
@@ -687,12 +745,12 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             <PreviewDd>{pairLabel || LIQUIDITY_ADD_COPY.emptyMetric}</PreviewDd>
           </PreviewRow>
           <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewDeposited}</PreviewDt>
-            <PreviewDd title={depositedLabel}>{depositedLabel}</PreviewDd>
+            <PreviewDt>Pool state</PreviewDt>
+            <PreviewDd data-testid="liquidity-add-pool-state">{noLiquidity ? 'New Pair' : 'Existing'}</PreviewDd>
           </PreviewRow>
           <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewLp}</PreviewDt>
-            <PreviewDd>{dash(preview.expectedLp)}</PreviewDd>
+            <PreviewDt>{LIQUIDITY_ADD_COPY.previewDeposited}</PreviewDt>
+            <PreviewDd title={depositedLabel}>{depositedLabel}</PreviewDd>
           </PreviewRow>
           <PreviewRow>
             <PreviewDt>{LIQUIDITY_ADD_COPY.previewShare}</PreviewDt>
@@ -704,6 +762,16 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           </PreviewRow>
         </PreviewList>
       </Panel>
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={MELEGA_CHAIN_ID}
+        productLabel={`This liquidity action is on BNB. Switch network to continue?`}
+        onCancel={() => setSwitchOpen(false)}
+        onConfirm={() => {
+          void switchNetworkAsync(MELEGA_CHAIN_ID).finally(() => setSwitchOpen(false))
+        }}
+        busy={switching}
+      />
     </Layout>
   )
 }

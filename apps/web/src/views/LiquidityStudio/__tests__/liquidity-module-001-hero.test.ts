@@ -115,9 +115,11 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
 
   it('mounts Module 001 on /liquidity with legacy Pool body archived', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityHeroModule')
-    expect(page).toContain('data-liquidity-module-001="mounted"')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    // V1 hero module retained for regression; V3 page mounts shell
+    expect(shell).toContain('data-liquidity-module-001="mounted"')
+    expect(page).toContain('LiquidityStudioV3Shell')
     expect(page).not.toContain("import Liquidity from 'views/Pool'")
     expect(page).not.toContain('<Liquidity />')
     expect(page).not.toContain('LiquidityArchitectureShell')

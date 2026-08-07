@@ -12,24 +12,12 @@ function load(rel: string) {
 }
 
 describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
-  it('orders Hero → Actions workspace → Positions → Insights → Explore', () => {
+  it('orders V3 shell (tabs supersede V1 stacked modules)', () => {
     const page = load('src/pages/liquidity.tsx')
-    const order = [
-      'LiquidityHeroModule',
-      'LiquidityActionsModule',
-      'LiquidityMyPositionsModule',
-      'LiquidityInsightsModule',
-      'LiquidityPoolDiscoveryModule',
-    ]
-    let prev = -1
-    for (const name of order) {
-      const idx = page.indexOf(`<${name}`)
-      expect(idx, name).toBeGreaterThan(prev)
-      prev = idx
-    }
-    expect(page).not.toContain('<LiquidityAddModule')
-    expect(page).toContain('data-liquidity-ia="provider-first-v1"')
-    expect(page).toContain('LiquidityRuntimeProvider')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    expect(page).not.toContain('LiquidityHeroModule')
+    expect(page).not.toContain('LiquidityActionsModule')
+    expect(page).toContain("from 'views/LiquidityStudio/v3/LiquidityStudioV3Shell'")
   })
 
   it('Actions workspace embeds expanded forms (not nav-only cards)', () => {
@@ -43,12 +31,11 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     expect(actions).not.toContain('JourneySteps')
   })
 
-  it('Hero keeps a single Add Liquidity CTA into the form anchor', () => {
-    const hero = load('src/views/LiquidityStudio/modules/LiquidityHeroModule.tsx')
-    const tokens = load('src/views/LiquidityStudio/modules/liquidityHeroTokens.ts')
-    expect(hero).toContain('liquidity-hero-cta-add')
-    expect(hero).not.toContain('liquidity-hero-journeys')
-    expect(tokens).toContain("addLiquidityHref: '#add-liquidity'")
+  it('V3 hero exposes Add Liquidity + My Positions + AI entry', () => {
+    const shell = load('src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx')
+    expect(shell).toContain('liquidity-v3-hero-add')
+    expect(shell).toContain('liquidity-v3-hero-positions')
+    expect(shell).toContain('liquidity-v3-hero-ai')
   })
 
   it('Explore Pools uses dense card geometry for market browsing', () => {

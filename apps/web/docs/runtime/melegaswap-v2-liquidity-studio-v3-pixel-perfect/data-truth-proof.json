@@ -1,0 +1,9 @@
+{
+  "pipeline": "GLOBAL_DATA_TRUTH_PIPELINE",
+  "id": "melega-global-data-truth-v1",
+  "snapshotHook": "useLiquidityMarketSnapshot",
+  "dashHelper": "truthDash",
+  "noLocalTvlFormulaInShell": true,
+  "unavailableDisplay": "\u2014",
+  "forbiddenCopyAbsent": true
+}

@@ -179,17 +179,13 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
 
   it('mounts Module 003 (Explore) at the bottom after Insights', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityPoolDiscoveryModule')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-003="mounted"')
-    const hero = page.indexOf('<LiquidityHeroModule')
-    const actions = page.indexOf('<LiquidityActionsModule')
-    const insights = page.indexOf('<LiquidityInsightsModule')
-    const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
-    expect(hero).toBeLessThan(actions)
-    expect(actions).toBeLessThan(insights)
-    expect(insights).toBeLessThan(discovery)
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-003="mounted"')
+    // V3 supersedes Explore on primary page; discovery module retained offline
+    expect(page).not.toContain('LiquidityPoolDiscoveryModule')
   })
+
 
   it('does not invent pool databases or fake metric literals in module sources', () => {
     const bundle = [

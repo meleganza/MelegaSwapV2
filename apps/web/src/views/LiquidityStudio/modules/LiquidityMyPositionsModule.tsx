@@ -2,10 +2,14 @@
  * LIQUIDITY_MODULE_006_MY_POSITIONS — wallet LP positions (read + route).
  * Reuses shared liquidityRuntime. No second wallet indexer.
  */
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import {
   useLiquidityPositionDetails,
@@ -183,24 +187,30 @@ const SecondaryBtn = styled.button`
 `
 
 const Empty = styled.div`
-  margin-top: 16px;
+  margin-top: 12px;
+  max-height: 120px;
+  box-sizing: border-box;
   border-radius: ${liquidityMyPositions.cardRadius};
   border: ${liquidityMyPositions.cardBorder};
-  background: ${liquidityMyPositions.cardBg};
-  padding: 24px;
-  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
 `
 
 const EmptyText = styled.p`
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: ${liquidityMyPositions.muted};
 `
 
 const EmptyActions = styled.div`
-  margin-top: 14px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
 `
@@ -264,6 +274,7 @@ function PositionCard({
   })
   const token0 = row.pair.token0
   const token1 = row.pair.token1
+  const positionChainId = row.chainId ?? token0.chainId ?? liquidityMyPositions.chainId
 
   return (
     <Card data-testid="liquidity-my-positions-card" data-position-id={row.id} data-position-status={status}>
@@ -273,7 +284,7 @@ function PositionCard({
             symbol={token0.symbol}
             name={token0.name}
             address={token0.address}
-            chainId={liquidityMyPositions.chainId}
+            chainId={positionChainId}
             size={32}
             radius="circle"
           />
@@ -281,26 +292,25 @@ function PositionCard({
             symbol={token1.symbol}
             name={token1.name}
             address={token1.address}
-            chainId={liquidityMyPositions.chainId}
+            chainId={positionChainId}
             size={32}
             radius="circle"
           />
         </Logos>
-        <div style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
           <PairName>{row.pairLabel}</PairName>
-          <Status $tone={status} data-testid="liquidity-my-positions-status">
-            {status}
-          </Status>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
+            <MelegaExploreChainBadge chainId={positionChainId} />
+            <Status $tone={status} data-testid="liquidity-my-positions-status">
+              {status}
+            </Status>
+          </div>
         </div>
       </PairRow>
 
-      <Metrics>
-        <Metric>
-          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.lpBalance}</MetricLabel>
-          <MetricValue>{lpLabel}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.positionValue}</MetricLabel>
+      <Metrics data-testid="liquidity-my-positions-metrics">
+        <Metric data-primary-metric="deposited-value">
+          <MetricLabel>Deposited value</MetricLabel>
           <MetricValue>{valueLabel}</MetricValue>
         </Metric>
         <Metric>
@@ -310,6 +320,10 @@ function PositionCard({
         <Metric>
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.feesEarned}</MetricLabel>
           <MetricValue>{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</MetricValue>
+        </Metric>
+        <Metric data-secondary-metric="lp-amount">
+          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.lpBalance}</MetricLabel>
+          <MetricValue>{lpLabel}</MetricValue>
         </Metric>
       </Metrics>
 
@@ -334,10 +348,12 @@ const LiquidityMyPositionsBody: React.FC = () => {
     setMode,
     setCurrencyA,
     setCurrencyB,
-    openRemoveModal,
   } = useLiquidityRuntime()
+  const { chainId } = useActiveChainId()
+  const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
+  const [pendingSwitch, setPendingSwitch] = useState<LiquidityPositionRow | null>(null)
 
-  const onManage = useCallback(
+  const proceedManage = useCallback(
     (row: LiquidityPositionRow) => {
       setSelectedPositionId(row.id)
       setCurrencyA(row.pair.token0)
@@ -350,14 +366,44 @@ const LiquidityMyPositionsBody: React.FC = () => {
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
 
+  const onManage = useCallback(
+    (row: LiquidityPositionRow) => {
+      const target = row.chainId ?? row.pair.token0.chainId
+      if (account && target != null && chainId != null && target !== chainId) {
+        setPendingSwitch(row)
+        return
+      }
+      proceedManage(row)
+    },
+    [account, chainId, proceedManage],
+  )
+
   const onRemove = useCallback(
     (row: LiquidityPositionRow) => {
+      const target = row.chainId ?? row.pair.token0.chainId
+      if (account && target != null && chainId != null && target !== chainId) {
+        setPendingSwitch(row)
+        return
+      }
       setSelectedPositionId(row.id)
+      setCurrencyA(row.pair.token0)
+      setCurrencyB(row.pair.token1)
       setMode('Remove Liquidity')
-      openRemoveModal()
+      // V3: open remove workspace; confirm modal stays on CTA (existing execution path).
     },
-    [setSelectedPositionId, setMode, openRemoveModal],
+    [account, chainId, setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
+
+  const confirmSwitch = useCallback(async () => {
+    if (!pendingSwitch) return
+    const target = pendingSwitch.chainId ?? pendingSwitch.pair.token0.chainId
+    try {
+      if (target != null) await switchNetworkAsync(target)
+      proceedManage(pendingSwitch)
+    } finally {
+      setPendingSwitch(null)
+    }
+  }, [pendingSwitch, switchNetworkAsync, proceedManage])
 
   return (
     <Main data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="full-width">
@@ -383,9 +429,16 @@ const LiquidityMyPositionsBody: React.FC = () => {
         <Empty data-testid="liquidity-my-positions-empty">
           <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
           <EmptyActions>
-            <LinkBtn href={liquidityMyPositions.explorePoolsHref} data-testid="liquidity-my-positions-explore">
-              {LIQUIDITY_MY_POSITIONS_COPY.explorePools}
-            </LinkBtn>
+            <PrimaryBtn
+              type="button"
+              data-testid="liquidity-my-positions-empty-add"
+              onClick={() => {
+                setMode('Add Liquidity')
+                document.getElementById('add-liquidity')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+            >
+              Add Liquidity
+            </PrimaryBtn>
           </EmptyActions>
         </Empty>
       ) : null}
@@ -397,6 +450,19 @@ const LiquidityMyPositionsBody: React.FC = () => {
           ))}
         </Grid>
       ) : null}
+
+      <ChainSwitchConfirmDialog
+        open={Boolean(pendingSwitch)}
+        targetChainId={pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56}
+        productLabel={`This liquidity position is on ${chainDisplayName(
+          pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56,
+        )}. Switch network to continue?`}
+        onCancel={() => setPendingSwitch(null)}
+        onConfirm={() => {
+          void confirmSwitch()
+        }}
+        busy={switching}
+      />
     </Main>
   )
 }

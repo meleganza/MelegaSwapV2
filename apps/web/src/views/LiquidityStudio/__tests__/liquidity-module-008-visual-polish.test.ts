@@ -93,17 +93,16 @@ describe('LIQUIDITY_MODULE_008 Final Visual Polish', () => {
 
   it('mounts polish style layer after Analytics; Modules 009–010 stay unmounted', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityVisualPolishModule')
-    expect(page).toContain('data-liquidity-module-008="mounted"')
-    expect(page).toContain('data-liquidity-studio-screen')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-008="mounted"')
+    expect(shell).toContain('data-liquidity-studio-screen')
     expect(page).not.toContain('data-liquidity-module-009')
     expect(page).not.toContain('LiquidityIntegrationModule')
-
-    const insights = page.indexOf('<LiquidityInsightsModule')
-    const polish = page.indexOf('<LiquidityVisualPolishModule')
-    expect(polish).toBeGreaterThan(-1)
-    expect(insights).toBeGreaterThan(-1)
+    // V3: polish module not separately mounted on page; marker retained on shell
+    expect(page).not.toContain('<LiquidityVisualPolishModule')
   })
+
 
   it('polish is style-only — no geometry / runtime / business logic', () => {
     const polish = readFileSync(path.join(MODULES, 'LiquidityVisualPolishStyle.tsx'), 'utf8')

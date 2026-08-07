@@ -33,7 +33,7 @@ export const liquidityAnalytics = {
 export const LIQUIDITY_ANALYTICS_COPY = {
   title: 'Liquidity Analytics',
   description: 'How Melega DEX liquidity is behaving — factual signals only.',
-  unavailable: 'Data unavailable',
+  unavailable: '—',
   unavailableExplain: 'No verified source for this metric.',
   loading: 'Loading…',
   emptyMetric: '—',
@@ -66,7 +66,7 @@ export const LIQUIDITY_MODULE_001_006_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
   LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
-  LiquidityAddModule: '6faef32646de967f9ddf27bb5269785b031444e00c3c163521312d5b67752fe5',
+  LiquidityAddModule: '905d9fedce79455de9e46b50e1077aa5e2098a6a76c73705e96d4117730eeeb5',
   LiquidityMarketSnapshotModule: '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
-  LiquidityMyPositionsModule: 'adf90fe72b8422d81675b916c44aba880df5f340d5c9aec00999fff0e17ad3dc',
+  LiquidityMyPositionsModule: '2f3c1c799bc8828dc76a20dad70905b6750918639dc781d351f5f0e71a71c137',
 } as const

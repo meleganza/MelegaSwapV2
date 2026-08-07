@@ -48,7 +48,7 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
 
     const mod = load('modules/LiquidityAddModule.tsx')
     // Standalone geometry retained; Actions IA embeds via embedded-stack.
-    expect(mod).toContain("'900-24-424'")
+    expect(mod).toContain("'58-42-workspace'")
     expect(mod).toContain("'embedded-stack'")
     expect(mod).toContain('grid-template-columns: 1fr')
   })
@@ -68,7 +68,9 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     expect(mod).not.toContain('useRouterContract')
 
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityRuntimeProvider')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    expect(shell).toContain('LiquidityRuntimeProvider')
   })
 
   it('maps wallet / approve / add / error CTA states without dead labels', () => {
@@ -158,13 +160,14 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
 
   it('mounts Module 004 inside Actions workspace (IA primary surface)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-004="mounted"')
-    expect(page).toContain('LiquidityActionsModule')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-004="mounted"')
+    expect(shell).toContain('LiquidityAddModule')
     const actions = readFileSync(path.join(STUDIO, 'modules/LiquidityActionsModule.tsx'), 'utf8')
     expect(actions).toContain('<LiquidityAddModule embedded')
-    expect(actions.indexOf('LiquidityAddModule')).toBeGreaterThan(-1)
   })
+
 
   it('does not modify forbidden execution surfaces in this mission', () => {
     // Module 004 files must not import or rewrite router/contracts/exchange write paths.

@@ -1,0 +1,21 @@
+{
+  "missionId": "MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT_REBUILD",
+  "pageMount": "LiquidityStudioV3Shell",
+  "tabs": [
+    "My Liquidity",
+    "Add Liquidity",
+    "AI Liquidity Builder \u00b7 BETA"
+  ],
+  "heroMaxH": "200px",
+  "snapshot": [
+    "Total Liquidity",
+    "24H Volume",
+    "24H LP Fees",
+    "My Positions",
+    "Chains"
+  ],
+  "truthPipelineAttr": "melega-global-data-truth-v1",
+  "removePanel": "LiquidityRemovePanel",
+  "aiSeparateFromAdd": true,
+  "legacyModulesNotPageMounted": true
+}

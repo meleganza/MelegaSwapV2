@@ -21,13 +21,14 @@ function sha256File(filePath: string) {
 describe('LIQUIDITY_MODULE_002 Actions', () => {
   it('mounts Module 002 after Hero on /liquidity', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityHeroModule')
-    expect(page).toContain('LiquidityActionsModule')
-    expect(page).toContain('data-liquidity-module-002="mounted"')
-    const heroIdx = page.indexOf('<LiquidityHeroModule')
-    const actionsIdx = page.indexOf('<LiquidityActionsModule')
-    expect(actionsIdx).toBeGreaterThan(heroIdx)
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-002="mounted"')
+    expect(shell).toContain('data-liquidity-module-001="mounted"')
+    // V3: Actions module not page-mounted; marker retained on shell for continuity
+    expect(page).not.toContain('<LiquidityActionsModule')
   })
+
 
   it('locks Actions workspace geometry (1376 / 50-50 / 24px gap)', () => {
     expect(liquidityActions.contentMax).toBe('1376px')

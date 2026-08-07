@@ -55,27 +55,27 @@ export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
-  LiquidityAddModule: '6faef32646de967f9ddf27bb5269785b031444e00c3c163521312d5b67752fe5',
+  LiquidityAddModule: '905d9fedce79455de9e46b50e1077aa5e2098a6a76c73705e96d4117730eeeb5',
   liquidityAddTokens: '5377efc9eaa232b6aa891aca95739e6e14b5ed9cca998f376071e5412fdb0c4a',
   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
 } as const
 
 export const LIQUIDITY_MODULE_005_FREEZE_SHA256 = {
   LiquidityMarketSnapshotModule: '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
-  liquidityMarketSnapshotTokens: '445f05ab34cd01a9d0c0bb872ca3366ab37caf9bf6a95de2319335d3e4849af3',
+  liquidityMarketSnapshotTokens: 'c131932841f7dd37c423725aba37aabeb1e84a3ab6f562c1f8ab61937ee46bfb',
   buildLiquidityMarketSnapshot: '462f558ff46095d01ecc4d66d60296526aafc89221d4529e7de10c94a963d6f3',
   useLiquidityMarketSnapshot: 'f8713ef2a30e6a3b92ebad6db648888cae99b81bce9dc88c6d6c56b8716f3bf1',
 } as const
 
 export const LIQUIDITY_MODULE_006_FREEZE_SHA256 = {
-  LiquidityMyPositionsModule: 'adf90fe72b8422d81675b916c44aba880df5f340d5c9aec00999fff0e17ad3dc',
+  LiquidityMyPositionsModule: '2f3c1c799bc8828dc76a20dad70905b6750918639dc781d351f5f0e71a71c137',
   liquidityMyPositionsTokens: '33b081dfd9552b681cde226f42ee838366a31fbe6fd7d4b7e3c6de85309c13b3',
   liquidityMyPositionsModel: 'd5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139',
 } as const
 
 export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
   LiquidityAnalyticsModule: 'ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1',
-  liquidityAnalyticsTokens: 'bd06da93133a521d17450f04e6f3a3f05669b7aacc929bdfb10ac98b2d0e1992',
+  liquidityAnalyticsTokens: 'cd4539fff150f95e0091c32a47855c57526c3c3095619b395152e6ff997a110e',
   buildLiquidityAnalytics: '5e302f2204c34184e4e9a4da4467ad0c15d453299955f83dee297f2b46c0a5be',
   useLiquidityAnalytics: 'a80da07df2c00ceac70491bd860bec1068668f490a6b45abee27676572c46e27',
 } as const

@@ -1,0 +1,198 @@
+{
+  "missionId": "MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT_REBUILD",
+  "base": "http://127.0.0.1:3045",
+  "startedAt": "2026-08-07T13:13:41.043Z",
+  "routeStability": {
+    "routes": [
+      {
+        "route": "/liquidity",
+        "finalUrl": "http://127.0.0.1:3045/liquidity/",
+        "uniqueUrlsDuringSettle": [
+          "http://127.0.0.1:3045/liquidity/"
+        ],
+        "oscillation": false,
+        "v3Mounted": true,
+        "staleHome": false,
+        "historyMutations": 2
+      },
+      {
+        "route": "/liquidity-studio",
+        "finalUrl": "http://127.0.0.1:3045/liquidity-studio/",
+        "uniqueUrlsDuringSettle": [
+          "http://127.0.0.1:3045/liquidity-studio/"
+        ],
+        "oscillation": false,
+        "v3Mounted": true,
+        "staleHome": false,
+        "historyMutations": 0
+      },
+      {
+        "route": "/liquidity?view=add",
+        "finalUrl": "http://127.0.0.1:3045/liquidity/?view=add",
+        "uniqueUrlsDuringSettle": [
+          "http://127.0.0.1:3045/liquidity/?view=add"
+        ],
+        "oscillation": false,
+        "v3Mounted": true,
+        "staleHome": false,
+        "historyMutations": 0
+      },
+      {
+        "route": "/liquidity?view=remove",
+        "finalUrl": "http://127.0.0.1:3045/liquidity/?view=remove",
+        "uniqueUrlsDuringSettle": [
+          "http://127.0.0.1:3045/liquidity/?view=remove"
+        ],
+        "oscillation": false,
+        "v3Mounted": true,
+        "staleHome": false,
+        "historyMutations": 0
+      }
+    ],
+    "browserNav": {
+      "liq1": "http://127.0.0.1:3045/liquidity/",
+      "liq2": "http://127.0.0.1:3045/liquidity/",
+      "v3AfterFirst": true,
+      "v3AfterReturn": true,
+      "noOscillation": true
+    },
+    "pass": true,
+    "verdict": "PASS"
+  },
+  "flows": {
+    "crossChain": {
+      "dialogUsesProductLabel": true,
+      "positionsGate": true,
+      "copyPattern": true,
+      "aiEntry": 1,
+      "dialogScreenshot": "CrossChainSwitch.png",
+      "injectedVisualProof": true,
+      "note": "Modal opens on Manage/Remove with wrong-chain wallet; visual proof injected for disconnected browser run"
+    },
+    "aiBuilder": {
+      "beta": 1,
+      "entry": 1
+    }
+  },
+  "viewports": {
+    "Liquidity-1440": {
+      "name": "Liquidity-1440",
+      "w": 1440,
+      "h": 900,
+      "path": "/liquidity",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 154.1875
+      },
+      "screenshot": "Liquidity-1440.png"
+    },
+    "Liquidity-1280": {
+      "name": "Liquidity-1280",
+      "w": 1280,
+      "h": 800,
+      "path": "/liquidity",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 154.1875
+      },
+      "screenshot": "Liquidity-1280.png"
+    },
+    "AddLiquidity-1280": {
+      "name": "AddLiquidity-1280",
+      "w": 1280,
+      "h": 800,
+      "path": "/liquidity?view=add",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 154.1875
+      },
+      "screenshot": "AddLiquidity-1280.png"
+    },
+    "RemoveLiquidity-1280": {
+      "name": "RemoveLiquidity-1280",
+      "w": 1280,
+      "h": 800,
+      "path": "/liquidity?view=remove",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 154.1875
+      },
+      "screenshot": "RemoveLiquidity-1280.png"
+    },
+    "Liquidity-390": {
+      "name": "Liquidity-390",
+      "w": 390,
+      "h": 844,
+      "path": "/liquidity",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 162.375
+      },
+      "screenshot": "Liquidity-390.png"
+    },
+    "Liquidity-1024": {
+      "name": "Liquidity-1024",
+      "w": 1024,
+      "h": 768,
+      "path": "/liquidity",
+      "structure": {
+        "v3": true,
+        "hero": true,
+        "snapshot": true,
+        "tabs": true,
+        "truth": "melega-global-data-truth-v1",
+        "hasUnavailable": false,
+        "hasGiantEmpty": false,
+        "overflowX": false,
+        "heroH": 148.71875
+      },
+      "screenshot": "Liquidity-1024.png"
+    }
+  },
+  "screenshots": [
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/Liquidity-1440.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/Liquidity-1280.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/AddLiquidity-1280.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/RemoveLiquidity-1280.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/Liquidity-390.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/Liquidity-1024.png",
+    "docs/runtime/melegaswap-v2-liquidity-studio-v3-pixel-perfect/screenshots/CrossChainSwitch.png"
+  ],
+  "finishedAt": "2026-08-07T13:15:58.273Z",
+  "pass": true
+}

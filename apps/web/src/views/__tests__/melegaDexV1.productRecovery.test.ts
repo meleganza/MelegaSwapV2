@@ -24,9 +24,8 @@ describe('MELEGA_DEX_V1 Certified Product Recovery', () => {
     expect(load('src/views/PoolsStudio/PoolsStudioScreen.tsx')).not.toContain('PoolsGrid')
 
     const liq = load('src/pages/liquidity.tsx')
-    expect(liq).toContain('LiquidityHeroModule')
-    expect(liq).toContain('LiquidityAnalyticsModule')
-    expect(liq).toContain('data-liquidity-legacy-body="archived"')
+    expect(liq).toContain('LiquidityStudioV3Shell')
+    expect(liq).not.toContain('LiquidityAnalyticsModule')
     expect(liq).not.toContain("import Liquidity from 'views/Pool'")
 
     expect(load('src/pages/list/index.tsx')).toContain('ListStudioScreen')

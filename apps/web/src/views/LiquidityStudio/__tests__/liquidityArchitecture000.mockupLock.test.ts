@@ -87,9 +87,9 @@ describe('LIQUIDITY_ARCHITECTURE_000 Mockup Lock', () => {
     expect(LIQUIDITY_LEGACY_IMPLEMENTATION.label).toBe('LEGACY_IMPLEMENTATION')
     const classic = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     // Provider-first modular body (legacy views/Pool archived); no architecture shell cutover.
-    expect(classic).toContain('LiquidityHeroModule')
-    expect(classic).toContain('LiquidityActionsModule')
-    expect(classic).toContain('data-liquidity-legacy-body="archived"')
+    expect(classic).toContain('LiquidityStudioV3Shell')
+    expect(classic).not.toContain('LiquidityActionsModule')
+    expect(classic).not.toContain('LiquidityHeroModule')
     expect(classic).not.toContain('LiquidityArchitectureShell')
     expect(classic).not.toContain('views/Pool')
 
