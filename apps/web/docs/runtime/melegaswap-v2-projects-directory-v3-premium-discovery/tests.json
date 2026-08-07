@@ -1,0 +1,15 @@
+{
+  "suites": [
+    "src/lib/__tests__/projectsDirectoryV3PremiumDiscovery.test.ts",
+    "src/lib/__tests__/projectDiscoveryRestructure.test.ts",
+    "src/lib/__tests__/founderReviewP0P1Repair.test.ts",
+    "src/lib/__tests__/projectDiscoveryProjectPageV2.test.ts",
+    "src/lib/token-logo/__tests__/resolveTokenLogoSources.test.ts",
+    "src/views/ProjectPage/v5/__tests__/projectPageV5PixelPerfect.test.ts",
+    "src/views/HomeTrade/__tests__/founderAmendmentP02FeaturedTradeRouting.test.ts",
+    "src/lib/__tests__/postReleaseP0RoutingRuntimeRepair.test.ts",
+    "src/lib/__tests__/globalDataIndexerFinalization.test.ts"
+  ],
+  "result": "PASS",
+  "note": "globalDataIndexerCompletion APR_UNAVAILABLE_LABEL Home assertion is pre-existing on farms-pools polish lineage; untouched by this mission"
+}

@@ -1,22 +1,33 @@
-export const FILTER_CHAINS = ['BNB', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche'] as const
+/** Chain filter labels — BSC is the display name (legacy BNB alias still matches). */
+export const FILTER_CHAINS = ['BSC', 'BNB', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche'] as const
 export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
-/** Status chips — Trending lives only in FILTER_SORT (one control). */
-export const FILTER_STATUS = ['Featured', 'Verified', 'New Listings'] as const
+/**
+ * Status chips — Trending lives only in FILTER_SORT (one control / Part G honesty).
+ * V3 Status: Featured · Boosted · Verified · New
+ */
+export const FILTER_STATUS = ['Featured', 'Boosted', 'Verified', 'New', 'New Listings'] as const
 export const FILTER_SORT = [
   'Trending',
+  'Newest',
+  'Price Change',
+  'Liquidity',
+  'Volume',
+  'Holders',
   'Highest Rated',
   'Highest Liquidity',
-  'Newest',
   'Recently Listed',
 ] as const
 
 export const PROJECT_FILTER_CHIPS = [
   'All',
   'Featured',
+  'Boosted',
   'Trending',
   'Verified',
+  'New',
   'New Listings',
   'AI Verified',
+  'BSC',
   'BNB',
   'Base',
   'Polygon',
@@ -34,6 +45,10 @@ export const PROJECT_FILTER_CHIPS = [
   'Highest Rated',
   'Highest Liquidity',
   'Newest',
+  'Price Change',
+  'Liquidity',
+  'Volume',
+  'Holders',
 ] as const
 
 export type ProjectRatingTier = 'exceptional' | 'strong' | 'active' | 'emerging' | 'high-risk' | 'unknown'
@@ -66,6 +81,8 @@ export interface ProjectPreviewCard {
   slug: string
   symbol?: string
   category: string
+  /** Optional sector tags for category filter (V3). */
+  sectorTags?: string[]
   chains: string[]
   chainId?: number
   status: ProjectStatus
@@ -78,6 +95,10 @@ export interface ProjectPreviewCard {
   change24hPct?: number | null
   /** Indexed pair for factual sparkline when available. */
   pairAddress?: string
+  /** Factual listing timestamp (ms) for New / Newest sort. */
+  listedAtMs?: number | null
+  /** Canonical project logo when known (logo resolution priority 1). */
+  logoURI?: string | null
   rating: number
   ratingTier: ProjectRatingTier
   aiSummary: string

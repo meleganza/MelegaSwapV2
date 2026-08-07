@@ -1,0 +1,9 @@
+{
+  "card": "ProjectCard V3 / ProjectGridCard",
+  "metrics": ["Price", "24h", "Liquidity", "Volume", "Holders"],
+  "uncertifiedDisplay": "—",
+  "forbiddenLabels": ["Unavailable", "Source not configured", "Waiting explorer", "N/A"],
+  "sparkline": "useIndexerCandles factual series only; neutral baseline when no history",
+  "ctas": { "view": "View Project → /@slug via Next Link + markProjectNavClick", "trade": "/swap?outputCurrency&chain&source=projects-directory" },
+  "dataPipeline": "melega-global-data-truth-v1"
+}

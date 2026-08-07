@@ -1,0 +1,28 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY",
+  "base": "http://127.0.0.1:3317",
+  "at": "2026-08-07T15:22:00Z",
+  "verdict": "PASS",
+  "checks": [
+    { "name": "directory-v3", "ok": true },
+    { "name": "hero-compact", "ok": true },
+    { "name": "hero-title", "ok": true, "detail": "Discover Projects" },
+    { "name": "featured-rail", "ok": true },
+    { "name": "filters-dropdowns", "ok": true },
+    { "name": "bounded-28-of-274", "ok": true },
+    { "name": "load-more", "ok": true },
+    { "name": "trade-href-swap", "ok": true, "detail": "/swap?...&chain=56&source=projects-directory" },
+    { "name": "search-marco", "ok": true, "detail": "Showing 2 of 2" },
+    { "name": "chain-filter-bsc", "ok": true },
+    { "name": "no-horizontal-overflow", "ok": true }
+  ],
+  "screenshots": [
+    "Projects-1440.png",
+    "Projects-1280.png",
+    "Projects-Trending.png",
+    "Projects-ChainFilter.png",
+    "Projects-Search-MARCO.png",
+    "Projects-390.png"
+  ],
+  "viewports": [1440, 1280, 1024, 390]
+}

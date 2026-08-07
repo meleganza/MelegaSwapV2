@@ -274,13 +274,15 @@ export const ProjectLogo: React.FC<{
   size?: number
   address?: string
   chainId?: number
-}> = ({ name, symbol, size = 48, address, chainId }) => (
+  logoURI?: string
+}> = ({ name, symbol, size = 48, address, chainId, logoURI }) => (
   <MelegaTokenAvatar
     name={name}
     symbol={symbol}
     size={size}
     address={address ?? (symbol?.toUpperCase() === 'MARCO' ? MARCO_BSC_ADDRESS : undefined)}
     chainId={chainId ?? (symbol?.toUpperCase() === 'MARCO' ? MARCO_BSC_CHAIN_ID : undefined)}
+    logoURI={logoURI}
     radius="circle"
   />
 )

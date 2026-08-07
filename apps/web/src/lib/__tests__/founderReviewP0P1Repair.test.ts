@@ -44,7 +44,7 @@ describe('MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR', () => {
     const card = load('views/ProjectsStudio/components/ProjectGridCard.tsx')
     expect(card).not.toContain('METRIC_STATUS.UNAVAILABLE')
     expect(card).toContain("isEmpty(price) ? '—' : price")
-    expect(card).toContain('!isEmpty(holders)')
+    expect(card).toContain("isEmpty(holders) ? '—' : holders")
     const featured = load('views/HomeTrade/FeaturedProjectsRail.tsx')
     expect(featured).not.toMatch(/>Unavailable</)
     expect(featured).toContain("status === 'loading' ? '…' : '—'")

@@ -31,7 +31,7 @@ const Title = styled.h2`
 
 const Meta = styled.span`
   font-size: 12px;
-  color: ${projectsStudioColors.mute};
+  color: ${projectsStudioColors.muted};
 `
 
 export type FeaturedProjectsSectionProps = {
@@ -50,6 +50,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
     data-projects-section="featured"
     data-featured-pipeline="FeaturedProjectsRail"
     data-featured-surface={surface}
+    data-featured-max="4"
   >
     {showHead ? (
       <Head>

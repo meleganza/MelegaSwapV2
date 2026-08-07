@@ -28,22 +28,45 @@ for (const token of pancakeDefaultList.tokens) {
   }
 }
 
+/** Cache resolved source lists by chainId + address (never cross-chain reuse). */
+const resolvedByIdentity = new Map<string, string[]>()
+
 function pushUnique(sources: string[], seen: Set<string>, url?: string | null) {
   if (!url || seen.has(url)) return
   seen.add(url)
   sources.push(url)
 }
 
-/** Ordered fallback URLs for a token avatar — MARCO first, then list/registry/CDN/local. */
+function identityKey(chainId: number, address: string): string {
+  try {
+    return `${chainId}:${getAddress(address).toLowerCase()}`
+  } catch {
+    return `${chainId}:${address.toLowerCase()}`
+  }
+}
+
+/**
+ * Ordered fallback URLs for a token avatar.
+ * Priority:
+ * 1. canonical project logo (logoURI)
+ * 2. chain token logo directory (local / chain-scoped CDN)
+ * 3. canonical token list (chainId + address)
+ * 4. indexed metadata / CDN paths
+ * 5. caller falls back to deterministic neutral avatar
+ *
+ * Never uses a logo from the same address on another chain.
+ */
 export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
   const sources: string[] = []
   const seen = new Set<string>()
 
+  // Brand MARCO / Melega — always prefer official brand asset when symbol matches.
   if (isMarcoSymbol(input.symbol, input.name)) {
     pushUnique(sources, seen, MARCO_LOGO_URI)
     pushUnique(sources, seen, MELEGA_CDN_LOGO)
   }
 
+  // 1. Canonical project / explicit logo
   if (input.logoURI) {
     uriToHttp(input.logoURI).forEach((url) => pushUnique(sources, seen, url))
   }
@@ -56,17 +79,19 @@ export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
       normalized = input.address.toLowerCase()
     }
 
-    const listKey = `${input.chainId}:${normalized}`
-    const listLogo = tokenListLogoByKey.get(listKey)
+    // 2. Chain token logo directory (local historical first on BSC)
+    if (input.chainId === 56) {
+      localBscTokenLogoCandidates(input.address).forEach((url) => pushUnique(sources, seen, url))
+    }
+    pushUnique(sources, seen, `/images/${input.chainId}/tokens/${normalized}.png`)
+
+    // 3. Canonical token list — keyed by chainId + address only
+    const listLogo = tokenListLogoByKey.get(`${input.chainId}:${normalized}`)
     if (listLogo) {
       uriToHttp(listLogo).forEach((url) => pushUnique(sources, seen, url))
     }
 
-    // Local historical logos first (checksummed filenames under public/images/56/tokens).
-    if (input.chainId === 56) {
-      localBscTokenLogoCandidates(input.address).forEach((url) => pushUnique(sources, seen, url))
-    }
-
+    // 4. Indexed metadata / CDN (chain-scoped helpers)
     pushUnique(sources, seen, getTokenLogoURLByAddress(normalized, input.chainId))
     pushUnique(sources, seen, `https://melega.finance/images/tokens/${normalized}.png`)
     pushUnique(
@@ -74,6 +99,9 @@ export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
       seen,
       getTokenLogoPosition(new Token(input.chainId, normalized, 18, input.symbol ?? 'TKN', input.name ?? 'Token')),
     )
+
+    const cacheKey = identityKey(input.chainId, input.address)
+    resolvedByIdentity.set(cacheKey, [...sources])
   }
 
   return sources
@@ -81,4 +109,9 @@ export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
 
 export function resolvePrimaryTokenLogoSource(input: TokenLogoInput): string | undefined {
   return resolveTokenLogoSources(input)[0]
+}
+
+/** Test helper — clear identity cache between cases. */
+export function clearTokenLogoIdentityCache(): void {
+  resolvedByIdentity.clear()
 }

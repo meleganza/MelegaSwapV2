@@ -35,7 +35,7 @@ describe('project discovery and project page restructure', () => {
     const card = load('views/ProjectsStudio/components/ProjectGridCard.tsx')
     const grid = load('views/ProjectsStudio/components/ProjectsGrid.tsx')
     expect(card).toContain('MelegaExploreChainBadge')
-    expect(card).toContain('Open Project')
+    expect(card).toContain('View Project')
     expect(card).toContain('Trade')
     expect(card).toContain('Featured')
     expect(grid).toMatch(/repeat\(4/)
@@ -43,12 +43,13 @@ describe('project discovery and project page restructure', () => {
 
   it('exposes search + chain/status filters including Arbitrum and Avalanche', () => {
     expect([...FILTER_CHAINS]).toEqual(
-      expect.arrayContaining(['BNB', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche']),
+      expect.arrayContaining(['BSC', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche']),
     )
     expect([...FILTER_STATUS]).toEqual(
-      expect.arrayContaining(['Featured', 'Trending', 'Verified', 'New Listings']),
+      expect.arrayContaining(['Featured', 'Boosted', 'Verified', 'New']),
     )
     expect([...PROJECT_FILTER_CHIPS]).toContain('Trending')
+    expect([...FILTER_STATUS]).not.toContain('Trending')
     const filters = load('views/ProjectsStudio/components/ProjectsFilterRow.tsx')
     expect(filters).toContain('projects-directory-search')
   })

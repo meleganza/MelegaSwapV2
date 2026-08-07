@@ -29,6 +29,16 @@ import {
   mapPendingToPreviewCard,
   mapProjectToPreviewCard,
 } from './formatProjectsRuntime'
+import {
+  applyProjectsDirectoryQuery,
+  DEFAULT_DIRECTORY_QUERY,
+  PROJECTS_INITIAL_PAGE_SIZE,
+  PROJECTS_PAGE_INCREMENT,
+  type DirectoryCategory,
+  type DirectoryChain,
+  type DirectorySort,
+  type DirectoryStatus,
+} from '../projectsDirectoryV3'
 import { buildFeaturedProjectIntelligence } from './buildFeaturedProjectIntelligence'
 import { buildAiRecommendations } from './buildAiRecommendations'
 import { buildProjectHealth } from './buildProjectHealth'
@@ -60,11 +70,26 @@ export interface ProjectsMachinePayload {
 export interface ProjectsIntelligenceRuntime {
   phase: ProjectsRuntimePhase
   loadingLabel?: string
+  /** Legacy single-chip filter (compat). Prefer status/chain/category/sort. */
   filter: ProjectFilterChip
   setFilter: (chip: ProjectFilterChip) => void
+  status: DirectoryStatus
+  setStatus: (s: DirectoryStatus) => void
+  chain: DirectoryChain
+  setChain: (c: DirectoryChain) => void
+  category: DirectoryCategory
+  setCategory: (c: DirectoryCategory) => void
+  sort: DirectorySort
+  setSort: (s: DirectorySort) => void
   searchQuery: string
   setSearchQuery: (q: string) => void
+  resetFilters: () => void
+  /** Full filtered list (all matches). */
   projects: ProjectPreviewCard[]
+  /** Bounded visible slice for DOM performance. */
+  visibleProjects: ProjectPreviewCard[]
+  hasMore: boolean
+  loadMore: () => void
   pendingProjects: ProjectPreviewCard[]
   allProjects: EnrichedProjectRecord[]
   featured: ReturnType<typeof buildFeaturedProject>
@@ -167,8 +192,12 @@ function enrichCardMetrics(
 }
 
 export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
-  const [filter, setFilter] = useState<ProjectFilterChip>('All')
+  const [status, setStatus] = useState<DirectoryStatus>(DEFAULT_DIRECTORY_QUERY.status)
+  const [chain, setChain] = useState<DirectoryChain>(DEFAULT_DIRECTORY_QUERY.chain)
+  const [category, setCategory] = useState<DirectoryCategory>(DEFAULT_DIRECTORY_QUERY.category)
+  const [sort, setSort] = useState<DirectorySort>(DEFAULT_DIRECTORY_QUERY.sort)
   const [searchQuery, setSearchQuery] = useState('')
+  const [visibleCount, setVisibleCount] = useState(PROJECTS_INITIAL_PAGE_SIZE)
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { rankedAssets } = useTopMoversSnapshot()
   const { rowsBySlug: featuredBySlug } = useFeaturedProjectMarkets()
@@ -261,14 +290,27 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   }, [sorted, pendingRecords, enriched, liveMetrics, trendingByAddress, featuredBySlug])
 
   const filtered = useMemo(() => {
-    const byChip = filterProjectsByChip(cards, sorted, filter)
-    const q = searchQuery.trim().toLowerCase()
-    if (!q) return byChip
-    return byChip.filter((c) => {
-      const hay = `${c.name} ${c.symbol ?? ''} ${c.slug} ${c.contractAddress ?? ''} ${c.category}`.toLowerCase()
-      return hay.includes(q)
+    return applyProjectsDirectoryQuery(cards, {
+      status,
+      chain,
+      category,
+      sort,
+      search: searchQuery,
     })
-  }, [cards, sorted, filter, searchQuery])
+  }, [cards, status, chain, category, sort, searchQuery])
+
+  useEffect(() => {
+    setVisibleCount(PROJECTS_INITIAL_PAGE_SIZE)
+  }, [status, chain, category, sort, searchQuery])
+
+  const visibleProjects = useMemo(
+    () => filtered.slice(0, visibleCount),
+    [filtered, visibleCount],
+  )
+  const hasMore = visibleCount < filtered.length
+  const loadMore = useCallback(() => {
+    setVisibleCount((n) => n + PROJECTS_PAGE_INCREMENT)
+  }, [])
 
   const featuredProject = sorted[0] ?? enriched[0]
   const priceUsd = featuredProject?.slug === 'melega-dex' ? marcoPrice?.toNumber() : undefined
@@ -327,6 +369,89 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     return { score, label }
   }, [sources])
 
+  /** Compat: expose a single chip reflecting the dominant V3 control. */
+  const filter: ProjectFilterChip =
+    status !== 'All'
+      ? status === 'New'
+        ? 'New Listings'
+        : (status as ProjectFilterChip)
+      : chain !== 'All Chains'
+        ? ((chain === 'BSC' ? 'BNB' : chain) as ProjectFilterChip)
+        : category !== 'All'
+          ? (category as ProjectFilterChip)
+          : (sort as ProjectFilterChip)
+
+  const setFilterCb = useCallback((chip: ProjectFilterChip) => {
+    if (chip === 'All') {
+      setStatus('All')
+      setChain('All Chains')
+      setCategory('All')
+      setSort('Trending')
+      return
+    }
+    if (chip === 'Featured' || chip === 'Boosted' || chip === 'Verified') {
+      setStatus(chip)
+      return
+    }
+    if (chip === 'New' || chip === 'New Listings' || chip === 'Recently Listed') {
+      setStatus('New')
+      setSort('Newest')
+      return
+    }
+    if (chip === 'Trending') {
+      setSort('Trending')
+      return
+    }
+    if (chip === 'BNB' || chip === 'BSC') {
+      setChain('BSC')
+      return
+    }
+    if (
+      chip === 'Base' ||
+      chip === 'Polygon' ||
+      chip === 'Ethereum' ||
+      chip === 'Arbitrum' ||
+      chip === 'Avalanche'
+    ) {
+      setChain(chip)
+      return
+    }
+    if (
+      chip === 'AI' ||
+      chip === 'DeFi' ||
+      chip === 'Gaming' ||
+      chip === 'Infrastructure' ||
+      chip === 'Meme' ||
+      chip === 'RWA'
+    ) {
+      setCategory(chip)
+      return
+    }
+    if (
+      chip === 'Newest' ||
+      chip === 'Price Change' ||
+      chip === 'Liquidity' ||
+      chip === 'Volume' ||
+      chip === 'Holders' ||
+      chip === 'Highest Liquidity'
+    ) {
+      setSort(chip === 'Highest Liquidity' ? 'Liquidity' : (chip as DirectorySort))
+      return
+    }
+    // Fallback: still apply legacy chip filter on top via status/search noop
+    void filterProjectsByChip
+  }, [])
+
+  const resetFilters = useCallback(() => {
+    setStatus(DEFAULT_DIRECTORY_QUERY.status)
+    setChain(DEFAULT_DIRECTORY_QUERY.chain)
+    setCategory(DEFAULT_DIRECTORY_QUERY.category)
+    setSort(DEFAULT_DIRECTORY_QUERY.sort)
+    setSearchQuery('')
+  }, [])
+
+  const setSearchCb = useCallback((q: string) => setSearchQuery(q), [])
+
   const machine: ProjectsMachinePayload = useMemo(
     () => ({
       status: 'ready',
@@ -343,9 +468,6 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
 
   const pendingCards = useMemo(() => cards.filter((c) => c.registryTier === 'pending'), [cards])
 
-  const setFilterCb = useCallback((chip: ProjectFilterChip) => setFilter(chip), [])
-  const setSearchCb = useCallback((q: string) => setSearchQuery(q), [])
-
   useEffect(() => {
     emitCivilizationEvent('projects_intelligence_refreshed', 'projects', {
       indexed: enriched.length,
@@ -357,9 +479,21 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     phase: 'ready',
     filter,
     setFilter: setFilterCb,
+    status,
+    setStatus,
+    chain,
+    setChain,
+    category,
+    setCategory,
+    sort,
+    setSort,
     searchQuery,
     setSearchQuery: setSearchCb,
+    resetFilters,
     projects: filtered,
+    visibleProjects,
+    hasMore,
+    loadMore,
     pendingProjects: pendingCards,
     allProjects: enriched,
     featured,

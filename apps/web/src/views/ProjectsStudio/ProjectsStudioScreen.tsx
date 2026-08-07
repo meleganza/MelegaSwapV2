@@ -27,23 +27,28 @@ const Root = styled.div`
 const Content = styled.div`
   max-width: ${projectsStudioLayout.contentMax};
   margin: 0 auto;
-  padding: ${projectsStudioLayout.contentPaddingTop} ${projectsStudioLayout.contentPaddingX}
-    ${projectsStudioLayout.contentPaddingBottom};
+  padding: 12px ${projectsStudioLayout.contentPaddingX} ${projectsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: ${projectsStudioLayout.sectionGap};
+  gap: 14px;
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${projectsStudioLayout.mobileBottomPad};
+    padding: 12px 16px ${projectsStudioLayout.mobileBottomPad};
+    gap: 12px;
   }
 `
 
-/** Canonical project discovery directory — featured rail, compact filters, ProjectCard grid. */
+/** Canonical multichain project discovery marketplace — V3 premium directory. */
 export const ProjectsStudioScreen: React.FC = () => (
   <ProjectsRuntimeProvider>
-    <Root data-projects-studio-screen data-projects-directory="v2" data-pr-r111b-canonical>
+    <Root
+      data-projects-studio-screen
+      data-projects-directory="v3"
+      data-projects-directory-version="premium-discovery"
+      data-pr-r111b-canonical
+    >
       <PageMeta />
       <ProjectsStudioGlobalStyle />
       <Content>

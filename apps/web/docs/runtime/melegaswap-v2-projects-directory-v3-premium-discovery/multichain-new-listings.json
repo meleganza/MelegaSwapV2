@@ -1,0 +1,7 @@
+{
+  "sort": "Newest uses listedAtMs descending",
+  "statusFilter": "New",
+  "label": "New + Listed Xh ago when listedAtMs present",
+  "chains": ["BSC", "Base", "Polygon", "Ethereum", "Arbitrum", "Avalanche"],
+  "bnbOnlyAssumption": false
+}

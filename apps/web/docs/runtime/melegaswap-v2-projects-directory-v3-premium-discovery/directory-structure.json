@@ -1,0 +1,22 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY",
+  "version": "v3",
+  "route": "/projects",
+  "aboveFold": ["compact-hero", "featured-rail", "search-filter-toolbar", "first-directory-row"],
+  "hero": {
+    "title": "Discover Projects",
+    "subcopy": "Explore tokens and projects across Melega DEX.",
+    "maxHeightPx": [140, 170],
+    "ctas": ["List Your Project", "Claim Project"]
+  },
+  "filters": {
+    "status": ["All", "Featured", "Boosted", "Verified", "New"],
+    "chain": ["All Chains", "BSC", "Base", "Polygon", "Ethereum", "Arbitrum", "Avalanche"],
+    "category": ["All", "AI", "DeFi", "Gaming", "Infrastructure", "Meme", "RWA"],
+    "sort": ["Trending", "Newest", "Price Change", "Liquidity", "Volume", "Holders"],
+    "trendingControl": "sort-only"
+  },
+  "grid": { "desktopWide": 4, "desktop1280": 3, "tablet": 2, "mobile": 1 },
+  "pagination": { "initial": 28, "increment": 28 },
+  "identity": "chainId + tokenAddress"
+}

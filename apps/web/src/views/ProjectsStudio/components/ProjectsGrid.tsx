@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
-import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { PROJECTS_SCROLL_KEY } from '../projectsDirectoryV3'
+import { projectsStudioColors, projectsStudioLayout, PR_FONT_BODY } from '../projectsStudioTokens'
 import ProjectGridCard from './ProjectGridCard'
+
+const Wrap = styled.div`
+  min-width: 0;
+`
 
 const Grid = styled.div`
   display: grid;
@@ -15,71 +20,132 @@ const Grid = styled.div`
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1440px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 
 const EmptyPanel = styled.div`
   grid-column: 1 / -1;
-  min-height: 200px;
-  padding: 32px 24px;
+  padding: 20px 16px;
   border-radius: ${projectsStudioLayout.cardRadius};
   border: 1px solid ${projectsStudioColors.cardBorder};
-  background: ${projectsStudioColors.card};
+  background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 6px;
+  gap: 10px;
 `
 
 const EmptyTitle = styled.p`
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 650;
   color: ${projectsStudioColors.text};
 `
 
-const EmptyDesc = styled.p`
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: ${projectsStudioColors.muted};
-  max-width: 360px;
+const ResetBtn = styled.button`
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  background: transparent;
+  color: ${projectsStudioColors.text};
+  font-family: ${PR_FONT_BODY};
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${projectsStudioColors.gold};
+  }
 `
 
 const Count = styled.p`
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   font-size: 12px;
   font-weight: 600;
   color: ${projectsStudioColors.muted};
-  grid-column: 1 / -1;
+`
+
+const LoadMore = styled.button`
+  display: block;
+  margin: 16px auto 0;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  background: ${projectsStudioColors.card};
+  color: ${projectsStudioColors.text};
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${projectsStudioColors.gold};
+  }
 `
 
 export const ProjectsGrid: React.FC = () => {
-  const { projects } = useProjectsRuntime()
+  const { projects, visibleProjects, hasMore, loadMore, resetFilters } = useProjectsRuntime()
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(PROJECTS_SCROLL_KEY)
+      if (!raw) return
+      const y = Number(raw)
+      if (Number.isFinite(y) && y > 0) {
+        window.requestAnimationFrame(() => window.scrollTo(0, y))
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => {
+      try {
+        sessionStorage.setItem(PROJECTS_SCROLL_KEY, String(window.scrollY))
+      } catch {
+        /* ignore */
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <div data-pr-grid data-testid="projects-directory-grid">
+    <Wrap data-pr-grid data-testid="projects-directory-grid" data-projects-grid="v3">
       <Count data-testid="projects-directory-count">
-        {projects.length} project{projects.length === 1 ? '' : 's'}
+        {`Showing ${visibleProjects.length} of ${projects.length} project${projects.length === 1 ? '' : 's'}`}
       </Count>
       <Grid>
         {projects.length === 0 ? (
-          <EmptyPanel data-pr-grid-empty>
-            <EmptyTitle>No projects match this filter</EmptyTitle>
-            <EmptyDesc>Adjust search or filters, or list a new project.</EmptyDesc>
+          <EmptyPanel data-pr-grid-empty data-testid="projects-directory-empty">
+            <EmptyTitle>No projects match these filters.</EmptyTitle>
+            <ResetBtn type="button" data-testid="projects-empty-reset" onClick={() => resetFilters()}>
+              Reset Filters
+            </ResetBtn>
           </EmptyPanel>
         ) : (
-          projects.map((project) => <ProjectGridCard key={project.id} project={project} />)
+          visibleProjects.map((project) => (
+            <ProjectGridCard key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`} project={project} />
+          ))
         )}
       </Grid>
-    </div>
+      {hasMore ? (
+        <LoadMore type="button" data-testid="projects-load-more" onClick={() => loadMore()}>
+          Load More
+        </LoadMore>
+      ) : null}
+    </Wrap>
   )
 }
 

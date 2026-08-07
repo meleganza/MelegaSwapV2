@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { colors } from '../../tokens'
 import {
   resolveTokenLogoSources,
@@ -29,6 +29,11 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
   )
   const [sourceIndex, setSourceIndex] = useState(0)
 
+  // Reset fallback cursor whenever chainId + address identity changes — never show broken image.
+  useEffect(() => {
+    setSourceIndex(0)
+  }, [address, chainId, logoURI, symbol, name])
+
   const handleError = useCallback(() => {
     setSourceIndex((i) => i + 1)
   }, [])
@@ -41,6 +46,7 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
     return (
       <span
         className={className}
+        data-token-logo-identity={chainId && address ? `${chainId}:${address.toLowerCase()}` : undefined}
         style={{ flexShrink: 0, display: 'inline-flex', width: size, height: size, borderRadius, overflow: 'hidden' }}
       >
         <img
@@ -58,6 +64,8 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
   return (
     <span
       className={className}
+      data-token-logo-fallback="neutral-avatar"
+      data-token-logo-identity={chainId && address ? `${chainId}:${address.toLowerCase()}` : undefined}
       style={{
         width: size,
         height: size,

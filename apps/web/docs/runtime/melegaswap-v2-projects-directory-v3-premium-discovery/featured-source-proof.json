@@ -1,0 +1,9 @@
+{
+  "pipeline": "FeaturedProjectsRail",
+  "catalog": "views/HomeTrade/featuredProjectsCatalog.ts",
+  "resolver": "resolveFounderFeaturedProjects",
+  "maxDesktop": 4,
+  "hosts": ["home", "projects", "project-page"],
+  "projectsSectionAttr": "data-featured-pipeline=\"FeaturedProjectsRail\"",
+  "duplicatePipeline": false
+}
