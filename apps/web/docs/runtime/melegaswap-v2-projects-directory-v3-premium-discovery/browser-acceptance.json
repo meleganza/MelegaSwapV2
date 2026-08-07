@@ -1,25 +1,27 @@
 {
   "mission": "MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY",
+  "recovery": "MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY_RECOVERY",
   "base": "http://127.0.0.1:3317",
-  "at": "2026-08-07T15:22:00Z",
+  "at": "2026-08-07T15:32:00Z",
   "verdict": "PASS",
   "checks": [
     { "name": "directory-v3", "ok": true },
-    { "name": "hero-compact", "ok": true },
-    { "name": "hero-title", "ok": true, "detail": "Discover Projects" },
-    { "name": "featured-rail", "ok": true },
+    { "name": "hero-compact", "ok": true, "detail": "Discover Projects" },
+    { "name": "featured-rail", "ok": true, "detail": "FeaturedProjectsRail" },
     { "name": "filters-dropdowns", "ok": true },
     { "name": "bounded-28-of-274", "ok": true },
     { "name": "load-more", "ok": true },
     { "name": "trade-href-swap", "ok": true, "detail": "/swap?...&chain=56&source=projects-directory" },
-    { "name": "search-marco", "ok": true, "detail": "Showing 2 of 2" },
-    { "name": "chain-filter-bsc", "ok": true },
-    { "name": "no-horizontal-overflow", "ok": true }
+    { "name": "view-project-v5", "ok": true, "detail": "/@marco/ → MARCO | Melega DEX Project, data-project-page present, no Projects DOM leftover" },
+    { "name": "nav-perf", "ok": true, "detail": "route transition well under 1s" },
+    { "name": "no-horizontal-overflow", "ok": true },
+    { "name": "trending-single-control", "ok": true, "detail": "Sort=Trending only; Status excludes Trending" }
   ],
   "screenshots": [
     "Projects-1440.png",
     "Projects-1280.png",
     "Projects-Trending.png",
+    "Projects-Featured.png",
     "Projects-ChainFilter.png",
     "Projects-Search-MARCO.png",
     "Projects-390.png"
