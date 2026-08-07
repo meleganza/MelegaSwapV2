@@ -15,8 +15,8 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
   const theme = load('views/ProjectPage/v1/theme.ts')
 
   it('project-hq mounts V4 shell (V3 retained in tree)', () => {
-    expect(page).toContain('ProjectPageV4Shell')
-    expect(page).toContain("from 'views/ProjectPage/v4/ProjectPageV4Shell'")
+    expect(page).toContain('ProjectPageV5Shell')
+    expect(page).toContain("from 'views/ProjectPage/v5/ProjectPageV5Shell'")
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v3/index.ts'))).toBe(true)
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v3/ProjectPageV3Shell.tsx'))).toBe(true)
   })
@@ -39,8 +39,8 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V3_PREMIUM_CONVERSION', () => {
     expect(charts).toContain('ElegantPlaceholder')
     expect(charts).toContain('useIndexerCandles')
     expect(charts).toContain('TradeChartPanel')
-    expect(charts).toContain('project-v4-chart-placeholder')
-    expect(charts).toContain('project-v4-chart-panel')
+    expect(charts).toContain('project-v5-chart-placeholder')
+    expect(charts).toContain('project-v5-chart-panel')
   })
 
   it('market strip labels are dense and complete', () => {

@@ -31,12 +31,12 @@ describe('MELEGASWAP_V2_PROJECT_DISCOVERY_AND_PROJECT_PAGE_V2', () => {
     expect(metrics).not.toMatch(/holders:\s*'Source not configured'/)
   })
 
-  it('project-hq mounts Project Page V3 (V2 retained for regression)', () => {
+  it('project-hq mounts Project Page V5 (prior shells retained for regression)', () => {
     const page = load('pages/project-hq/[slug].tsx')
-    expect(page).toContain('ProjectPageV3Shell')
+    expect(page).toContain('ProjectPageV5Shell')
     expect(page).not.toContain('ProjectPageV1Shell')
     expect(page).not.toContain("from 'views/ProjectPage/v2/ProjectPageV2Shell'")
-    expect(existsSync(path.join(WEB, 'views/ProjectPage/v3/ProjectPageV3Shell.tsx'))).toBe(true)
+    expect(existsSync(path.join(WEB, 'views/ProjectPage/v5/ProjectPageV5Shell.tsx'))).toBe(true)
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v2/ProjectPageV2Shell.tsx'))).toBe(true)
   })
 

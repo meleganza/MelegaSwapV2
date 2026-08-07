@@ -111,13 +111,15 @@ describe('Project Pages Multichain Product Completion', () => {
 
   it('trading embed auto-selects BNB/Base router and has no NetworkSwitcher', () => {
     const trade = readFileSync(path.join(V1, 'ProjectTradingEmbed.tsx'), 'utf8')
-    expect(trade).toContain('SmartSwapForm')
+    const island = readFileSync(path.join(V1, 'ProjectSwapFormIsland.tsx'), 'utf8')
+    expect(trade).toContain('ProjectSwapFormIsland')
+    expect(island).toContain('SmartSwapForm')
     expect(trade).toContain('switchNetworkAsync')
     expect(trade).toContain('getMelegaRouterAddress')
     expect(trade).toContain('projectChainId')
     expect(trade).toContain('Coming soon')
     expect(trade).not.toContain('NetworkSwitcher')
-    expect(trade).toContain("views/Swap/SmartSwap")
+    expect(island).toContain("views/Swap/SmartSwap")
   })
 
   it('markets builder resolves Base factory/router from registry', () => {

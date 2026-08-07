@@ -48,8 +48,10 @@ describe('UX002 premium Project Page V1 IA', () => {
 
   it('trading embed reuses SmartSwapForm', () => {
     const buy = readFileSync(path.join(V1, 'ProjectTradingEmbed.tsx'), 'utf8')
-    expect(buy).toContain('SmartSwapForm')
-    expect(buy).toContain('views/Swap/SmartSwap')
+    const island = readFileSync(path.join(V1, 'ProjectSwapFormIsland.tsx'), 'utf8')
+    expect(buy).toContain('ProjectSwapFormIsland')
+    expect(island).toContain('SmartSwapForm')
+    expect(island).toContain('views/Swap/SmartSwap')
   })
 
   it('theme is dense with reduced empty space', () => {

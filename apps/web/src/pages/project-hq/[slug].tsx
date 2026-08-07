@@ -3,17 +3,10 @@ import Head from 'next/head'
 import { NotFound } from '@pancakeswap/uikit'
 import { CHAIN_IDS } from 'utils/wagmi'
 import {
-  buildProjectDeveloperDocument,
-  buildProjectEcosystemDocument,
-  buildProjectGovernanceDocument,
-  buildProjectGrowthDocument,
-  buildProjectMachineDocument,
   buildProjectJsonLd,
-  buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
   buildProjectReadinessDocument,
-  buildProjectUpdatesDocument,
   canonicalProjectAbsoluteUrl,
   canonicalProjectPath,
   getAllResolvableProjectSlugs,
@@ -26,18 +19,11 @@ import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/ty
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
-import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
-import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
-import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
-import type { ProjectDeveloperDocument } from 'registry/projects/identity/developer'
-import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
-import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
-import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import { buildProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/buildProjectTokenomicsDocument'
 import { buildProjectRoadmapDocument } from 'registry/projects/identity/roadmap/buildProjectRoadmapDocument'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
-import ProjectPageV4Shell from 'views/ProjectPage/v4/ProjectPageV4Shell'
+import ProjectPageV5Shell from 'views/ProjectPage/v5/ProjectPageV5Shell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
@@ -45,13 +31,6 @@ interface ProjectHqPageProps {
   readinessDocument: ProjectReadinessDocument | null
   marketsDocument: ProjectMarketsDocument | null
   participationDocument: ProjectParticipationDocument | null
-  liquidityBuildingDocument: ProjectLiquidityBuildingDocument | null
-  updatesDocument: ProjectUpdatesDocument | null
-  ecosystemDocument: ProjectEcosystemDocument | null
-  developerDocument: ProjectDeveloperDocument | null
-  governanceDocument: ProjectGovernanceDocument | null
-  growthDocument: ProjectGrowthDocument | null
-  machineDocument: ProjectMachineDocument | null
   tokenomicsDocument: ProjectTokenomicsDocument | null
   roadmapDocument: ProjectRoadmapDocument | null
   jsonLd: Record<string, unknown> | null
@@ -136,49 +115,22 @@ const ProjectHqPage = ({
   readinessDocument,
   marketsDocument,
   participationDocument,
-  liquidityBuildingDocument,
-  updatesDocument,
-  ecosystemDocument,
-  developerDocument,
-  governanceDocument,
-  growthDocument,
-  machineDocument,
   tokenomicsDocument,
   roadmapDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
-  if (
-    !document ||
-    !jsonLd ||
-    !evidencePack ||
-    !readinessDocument ||
-    !marketsDocument ||
-    !participationDocument ||
-    !liquidityBuildingDocument ||
-    !updatesDocument ||
-    !ecosystemDocument ||
-    !developerDocument ||
-    !governanceDocument ||
-    !growthDocument ||
-    !machineDocument
-  ) {
+  // Shell-critical docs only — technical packs deferred / optional for V5 public flow.
+  if (!document || !jsonLd || !marketsDocument || !participationDocument) {
     return <NotFound />
   }
 
   return (
-    <ProjectPageV4Shell
+    <ProjectPageV5Shell
       document={document}
-      evidencePack={evidencePack}
-      readinessDocument={readinessDocument}
       marketsDocument={marketsDocument}
       participationDocument={participationDocument}
-      liquidityBuildingDocument={liquidityBuildingDocument}
-      updatesDocument={updatesDocument}
-      ecosystemDocument={ecosystemDocument}
-      developerDocument={developerDocument}
-      governanceDocument={governanceDocument}
-      growthDocument={growthDocument}
-      machineDocument={machineDocument}
+      evidencePack={evidencePack}
+      readinessDocument={readinessDocument}
       tokenomicsDocument={tokenomicsDocument}
       roadmapDocument={roadmapDocument}
     />
@@ -218,6 +170,9 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     return { notFound: true }
   }
 
+  // Slim first-paint payload: identity + markets + participation + readiness.
+  // Developer / machine / governance / ecosystem docs are no longer serialized
+  // into pageProps (they bloated soft-nav and caused multi-second stalls).
   const readinessDocument = buildProjectReadinessDocument({
     project: resolved.project,
     document: loaded.document,
@@ -237,53 +192,6 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
-  const liquidityBuildingDocument = buildProjectLiquidityBuildingDocument({
-    project: resolved.project,
-    document: loaded.document,
-    generatedAt,
-  })
-
-  const updatesDocument = buildProjectUpdatesDocument({
-    project: resolved.project,
-    document: loaded.document,
-    evidencePack: loaded.evidencePack,
-    generatedAt,
-  })
-
-  const ecosystemDocument = buildProjectEcosystemDocument({
-    project: resolved.project,
-    document: loaded.document,
-    evidencePack: loaded.evidencePack,
-    generatedAt,
-  })
-
-  const developerDocument = buildProjectDeveloperDocument({
-    project: resolved.project,
-    document: loaded.document,
-    evidencePack: loaded.evidencePack,
-    generatedAt,
-  })
-
-  const governanceDocument = buildProjectGovernanceDocument({
-    project: resolved.project,
-    document: loaded.document,
-    evidencePack: loaded.evidencePack,
-    generatedAt,
-  })
-
-  const growthDocument = buildProjectGrowthDocument({
-    project: resolved.project,
-    document: loaded.document,
-    evidencePack: loaded.evidencePack,
-    generatedAt,
-  })
-
-  const machineDocument = buildProjectMachineDocument({
-    project: resolved.project,
-    document: loaded.document,
-    generatedAt,
-  })
-
   const tokenomicsDocument = buildProjectTokenomicsDocument(requestedSlug, generatedAt)
   const roadmapDocument = buildProjectRoadmapDocument(requestedSlug, generatedAt)
 
@@ -294,18 +202,13 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       readinessDocument,
       marketsDocument,
       participationDocument,
-      liquidityBuildingDocument,
-      updatesDocument,
-      ecosystemDocument,
-      developerDocument,
-      governanceDocument,
-      growthDocument,
-      machineDocument,
       tokenomicsDocument,
       roadmapDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },
+    // ISR keeps cold blocking fallbacks from rebuilding the full graph on every miss forever.
+    revalidate: 120,
   }
 }
 

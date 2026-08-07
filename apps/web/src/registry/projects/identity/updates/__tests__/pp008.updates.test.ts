@@ -199,8 +199,8 @@ describe('PP008 regressions PP001–PP007', () => {
 
     expect(existsSync(path.join(__dirname, '../../../../../pages/api/public/projects/[slug]/updates.ts'))).toBe(true)
     const hq = readFileSync(path.join(__dirname, '../../../../../pages/project-hq/[slug].tsx'), 'utf8')
-    expect(hq).toContain('updatesDocument')
     expect(hq).toContain('updatesAlternate')
+    expect(hq).toContain('ProjectPageV5Shell')
     const publicApi = readFileSync(path.join(__dirname, '../../../../../pages/api/public/projects/[slug].ts'), 'utf8')
     expect(publicApi).toContain('updatesSummary')
   })

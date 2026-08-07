@@ -14,10 +14,10 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V4_PREMIUM_EXPERIENCE', () => {
   const page = load('pages/project-hq/[slug].tsx')
   const theme = load('views/ProjectPage/v1/theme.ts')
 
-  it('project-hq mounts V4 shell', () => {
-    expect(page).toContain('ProjectPageV4Shell')
-    expect(page).toContain("from 'views/ProjectPage/v4/ProjectPageV4Shell'")
+  it('V4 shell retained; project-hq mounts V5', () => {
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v4/index.ts'))).toBe(true)
+    expect(page).toContain('ProjectPageV5Shell')
+    expect(page).toContain("from 'views/ProjectPage/v5/ProjectPageV5Shell'")
   })
 
   it('hero is 40/60 identity | chart+swap with Buy Token + Claim Project', () => {
@@ -35,8 +35,8 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V4_PREMIUM_EXPERIENCE', () => {
 
   it('chart lives in hero only — no separate Chart band title in hero variant', () => {
     expect(charts).toContain("data-chart-variant=\"hero\"")
-    expect(charts).toContain('project-v4-chart-placeholder')
-    expect(charts).toContain('height: 320px')
+    expect(charts).toContain('project-v5-chart-placeholder')
+    expect(charts).toContain('max-height: 260px')
     // hero branch must not render a standalone Chart band title
     const heroIdx = charts.indexOf('if (hero)')
     const fullIdx = charts.indexOf("data-testid=\"project-v1-charts\"")

@@ -23,7 +23,6 @@ import { useAppDispatch } from 'state'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
-import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { HomeSwapIconButton, HomeSwapPanelShell } from 'views/HomeTrade/HomeSwapPanelShell'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
@@ -75,10 +74,11 @@ const ComingSoonBox = styled.div`
   background: rgba(255, 255, 255, 0.02);
 `
 
-const SwapInner = dynamic(() => Promise.resolve({ default: ProjectSwapInner }), {
+/** Real code-split — Smart Swap stays out of the initial Project Page chunk. */
+const ProjectSwapFormIsland = dynamic(() => import('./ProjectSwapFormIsland'), {
   ssr: false,
-  loading: () => <SwapSkeleton aria-label="Loading trade form" />,
-}) as React.ComponentType<InnerProps>
+  loading: () => <SwapSkeleton $hero aria-label="Loading trade form" />,
+})
 
 interface Props {
   slug: string
@@ -92,6 +92,8 @@ interface Props {
 
 interface InnerProps extends Props {
   projectChainId: number
+  /** When true, never blank the form while the wallet chain aligns. */
+  nonBlockingChainAlign?: boolean
 }
 
 function resolveDefaultPair(
@@ -146,7 +148,13 @@ function resolveDefaultPair(
   return null
 }
 
-function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddress }: InnerProps) {
+function ProjectSwapInner({
+  slug,
+  marketsDocument,
+  projectChainId,
+  contractAddress,
+  nonBlockingChainAlign = false,
+}: InnerProps) {
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { chainId } = useActiveChainId()
@@ -164,13 +172,17 @@ function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddre
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
-  // Auto-align wallet/session chain to the project deployment (no manual picker).
+  // Defer wallet chain align — never block hero paint on MetaMask prompts.
   useEffect(() => {
+    if (!account) return
     if (!isMelegaChainLive(projectChainId)) return
     if (chainId === projectChainId) return
     if (!canSwitch) return
-    void switchNetworkAsync(projectChainId)
-  }, [projectChainId, chainId, canSwitch, switchNetworkAsync])
+    const timer = window.setTimeout(() => {
+      void switchNetworkAsync(projectChainId)
+    }, nonBlockingChainAlign ? 800 : 0)
+    return () => window.clearTimeout(timer)
+  }, [account, projectChainId, chainId, canSwitch, switchNetworkAsync, nonBlockingChainAlign])
 
   const queryInputCurrency =
     typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
@@ -252,7 +264,8 @@ function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddre
     return <Muted>Buying is not available for this project on Melega DEX yet.</Muted>
   }
 
-  if (chainId !== projectChainId && isMelegaChainLive(projectChainId)) {
+  const chainMisaligned = chainId !== projectChainId && isMelegaChainLive(projectChainId)
+  if (chainMisaligned && !nonBlockingChainAlign) {
     return (
       <Muted data-testid="project-v1-swap-chain-aligning">
         Aligning wallet to {getMelegaChain(projectChainId)?.shortLabel ?? 'project chain'}…
@@ -268,6 +281,11 @@ function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddre
 
   return (
     <QuietSwapShell data-testid="project-v1-trading-embed" data-trade-source={tradeSource}>
+      {chainMisaligned && nonBlockingChainAlign ? (
+        <Muted data-testid="project-v1-swap-chain-aligning" style={{ marginBottom: 6, fontSize: 11 }}>
+          Aligning wallet to {getMelegaChain(projectChainId)?.shortLabel ?? 'project chain'}…
+        </Muted>
+      ) : null}
       <HomeSwapPanelShell
         pairIndicator={pairIndicator}
         toolbar={
@@ -282,7 +300,7 @@ function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddre
         }
       >
         <div ref={swapBodyRef} className={`home-trade-swap${account ? '' : ' is-disconnected'}`}>
-          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+          <ProjectSwapFormIsland handleOutputSelect={handleOutputSelect} />
         </div>
       </HomeSwapPanelShell>
     </QuietSwapShell>
@@ -374,11 +392,12 @@ const ProjectTradingEmbed: React.FC<Props> = ({
         </ComingSoonBox>
       ) : (
         <SwapFeaturesProvider>
-          <SwapInner
+          <ProjectSwapInner
             slug={slug}
             marketsDocument={marketsDocument}
             projectChainId={projectChainId}
             contractAddress={contractAddress}
+            nonBlockingChainAlign={hero}
           />
         </SwapFeaturesProvider>
       )}

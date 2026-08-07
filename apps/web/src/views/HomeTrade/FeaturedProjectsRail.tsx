@@ -9,6 +9,7 @@ import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { resolveFounderFeaturedProjects } from './featuredProjectsCatalog'
+import { markProjectNavClick } from 'views/ProjectPage/v5/projectPagePerf'
 import {
   formatFeaturedChange,
   formatFeaturedLiquidity,
@@ -405,7 +406,12 @@ export const FeaturedProjectsRail: React.FC = () => {
                 >
                   Trade
                 </TradeBtn>
-                <ViewLink href={`/project-hq/${p.slug}`} data-testid={`featured-view-${p.slug}`}>
+                <ViewLink
+                  href={`/@${p.slug}`}
+                  prefetch={false}
+                  data-testid={`featured-view-${p.slug}`}
+                  onClick={() => markProjectNavClick()}
+                >
                   View Project
                 </ViewLink>
               </Actions>

@@ -35,10 +35,12 @@ describe('Post-release P0 routing & runtime repair', () => {
     expect(app).not.toContain('BrowserRouter')
   })
 
-  it('Featured Trade uses filesystem project-hq route for client mount', () => {
+  it('Featured View Project uses /@slug with prefetch off; Trade uses /swap', () => {
     const rail = load('views/HomeTrade/FeaturedProjectsRail.tsx')
-    expect(rail).toContain('/project-hq/${p.slug}')
-    expect(rail).toContain('router.push(href, as)')
+    expect(rail).toContain('/@${p.slug}')
+    expect(rail).toContain('prefetch={false}')
+    expect(rail).toContain('router.push(href)')
+    expect(rail).toContain('/swap?')
     expect(rail).not.toContain('router.push(`${p.href}?${q}`)')
   })
 

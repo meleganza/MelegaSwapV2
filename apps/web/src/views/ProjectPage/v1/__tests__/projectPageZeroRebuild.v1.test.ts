@@ -14,7 +14,7 @@ describe('Project Page Zero Rebuild V1', () => {
     expect(existsSync(path.join(ARCHIVED, 'consumer/ProjectConsumerShell.tsx'))).toBe(true)
     expect(existsSync(path.join(V1, 'ProjectPageV1Shell.tsx'))).toBe(true)
     const page = readFileSync(HQ, 'utf8')
-    expect(page).toContain('ProjectPageV1Shell')
+    expect(page).toContain('ProjectPageV5Shell')
     expect(page).not.toContain('ProjectConsumerShell')
     expect(page).not.toMatch(/views\/ProjectPage\/consumer/)
   })
@@ -63,8 +63,10 @@ describe('Project Page Zero Rebuild V1', () => {
 
   it('embeds SmartSwap without modifying Swap sources', () => {
     const trade = readFileSync(path.join(V1, 'ProjectTradingEmbed.tsx'), 'utf8')
-    expect(trade).toContain('SmartSwapForm')
-    expect(trade).toContain("views/Swap/SmartSwap")
+    const island = readFileSync(path.join(V1, 'ProjectSwapFormIsland.tsx'), 'utf8')
+    expect(trade).toContain('ProjectSwapFormIsland')
+    expect(island).toContain('SmartSwapForm')
+    expect(island).toContain("views/Swap/SmartSwap")
   })
 
   it('charts use indexed candles only', () => {

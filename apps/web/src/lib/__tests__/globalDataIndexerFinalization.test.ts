@@ -90,11 +90,12 @@ describe('MELEGASWAP_V2_GLOBAL_DATA_INDEXER_FINALIZATION', () => {
     expect(home).toContain("from 'lib/data-truth/yieldMetricHelpers'")
   })
 
-  it('Project Page V4 economy uses shared inventory counts', () => {
-    const shell = load('views/ProjectPage/v4/ProjectPageV4Shell.tsx')
-    expect(shell).toContain('countNormalizedFarmsByChain')
-    expect(shell).toContain('poolInventoryCount')
+  it('Project Page V5 economy uses Data Truth (dash + pool inventory constants)', () => {
+    const shell = load('views/ProjectPage/v5/ProjectPageV5Shell.tsx')
+    expect(shell).toContain('LIVE_POOL_INVENTORY_BY_CHAIN')
     expect(shell).toContain('truthDash')
+    expect(shell).toContain('GLOBAL_DATA_TRUTH_PIPELINE')
+    expect(shell).not.toContain('countNormalizedFarmsByChain')
   })
 
   it('Audit Center tags the same data-truth pipeline', () => {

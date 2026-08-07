@@ -1,0 +1,29 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT_REBUILD",
+  "auditAt": "browser-acceptance + static source",
+  "unjustifiedPublicDuplicates": 0,
+  "items": [
+    { "item": "Project logo", "count": 1, "locations": ["hero"], "ok": true },
+    { "item": "Project name", "count": 1, "locations": ["hero"], "ok": true },
+    { "item": "Symbol", "count": 1, "locations": ["hero"], "ok": true },
+    { "item": "Chain badge", "count": "hero + economy context", "note": "economy cards show chain context once per card intentionally", "ok": true },
+    { "item": "Verified", "count": 1, "locations": ["hero"], "ok": true },
+    { "item": "Contract", "count": 1, "locations": ["hero row; transparency expands on demand"], "ok": true },
+    { "item": "Price", "count": 1, "locations": ["market strip (+ chart header when candles)"], "ok": true },
+    { "item": "Liquidity", "count": 1, "locations": ["market strip (+ economy liquidity card TVL)"], "ok": true },
+    { "item": "Volume", "count": 1, "locations": ["market strip (+ economy liquidity card)"], "ok": true },
+    { "item": "Buy Token", "count": "1 desktop + optional mobile sticky", "locations": ["hero", "sticky mobile"], "ok": true },
+    { "item": "Add Wallet", "count": 1, "locations": ["hero"], "ok": true },
+    { "item": "Claim", "count": "≤2 when unclaimed (hero + strip); 0 when claimed", "ok": true },
+    { "item": "Featured / Trend Boost", "count": 1 each, "locations": ["boost console"], "ok": true },
+    { "item": "Chart", "count": 1, "locations": ["hero workspace"], "ok": true },
+    { "item": "Smart Swap", "count": 1, "locations": ["hero workspace"], "ok": true }
+  ],
+  "removedFromPublicFlow": [
+    "project-v4-actions duplicate CTA bar",
+    "standalone Chart band",
+    "Marketing History module",
+    "FeaturedProjectsSection full remount",
+    "Developer / Machine / Evidence separate public modules"
+  ]
+}

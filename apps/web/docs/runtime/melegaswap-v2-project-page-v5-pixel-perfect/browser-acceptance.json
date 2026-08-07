@@ -1,0 +1,532 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT_REBUILD",
+  "base": "http://127.0.0.1:3055",
+  "generatedAt": "2026-08-07T10:39:54.302Z",
+  "pass": true,
+  "failed": [],
+  "checks": [
+    {
+      "id": "nav-featured-view-mm72",
+      "pass": true,
+      "detail": {
+        "navMs": 602,
+        "shellMs": 2706,
+        "shell": {
+          "hasV5": true,
+          "hasHero": true,
+          "hasChart": true,
+          "hasSwap": true,
+          "perf": {
+            "clickTs": 1786099148653,
+            "routeTs": 1786099150950,
+            "shellTs": 1786099150950,
+            "marketTs": 1786099151100,
+            "chartTs": 1786099151266,
+            "swapTs": 1786099151266,
+            "routeMs": 2297,
+            "shellMs": 2297,
+            "marketMs": 2447,
+            "chartMs": 2613,
+            "swapMs": 2613
+          },
+          "slug": "mm72"
+        },
+        "budgetRouteMs": 1000,
+        "budgetHeroMs": 2000
+      }
+    },
+    {
+      "id": "page-marco-structure",
+      "pass": true,
+      "detail": {
+        "hasV5": true,
+        "slugAttr": "marco",
+        "expectedSlug": "marco",
+        "hasHero": true,
+        "hasChart": true,
+        "hasSwap": true,
+        "hasMarket": true,
+        "hasEconomy": true,
+        "hasBoost": true,
+        "hasAbout": true,
+        "hasTransparency": true,
+        "hasRelated": true,
+        "hasBuy": true,
+        "overflowX": false,
+        "separateChartBand": false,
+        "growCards": [
+          "featured",
+          "trend-boost",
+          "liquidity",
+          "create-farm",
+          "create-pool",
+          "claim-project"
+        ],
+        "accordionOpen": false,
+        "relatedCount": 4,
+        "economyCards": 3,
+        "dupBuy": 1,
+        "jargon": false,
+        "hasBuyToken": true,
+        "hasBoostCopy": true,
+        "pipeline": "melega-global-data-truth-v1",
+        "perf": {
+          "clickTs": null,
+          "routeTs": 1786099153297,
+          "shellTs": 1786099153297,
+          "marketTs": 1786099154218,
+          "chartTs": 1786099153545,
+          "swapTs": 1786099153545,
+          "routeMs": null,
+          "shellMs": null,
+          "marketMs": null,
+          "chartMs": null,
+          "swapMs": null
+        },
+        "shellMs": 846
+      }
+    },
+    {
+      "id": "page-marco-featured-checkout",
+      "pass": true,
+      "detail": {
+        "hasDialog": true,
+        "mentionsFeatured": true
+      }
+    },
+    {
+      "id": "page-marco-project-hq-alias",
+      "pass": true,
+      "detail": {
+        "hqOk": true
+      }
+    },
+    {
+      "id": "page-mm72-structure",
+      "pass": true,
+      "detail": {
+        "hasV5": true,
+        "slugAttr": "mm72",
+        "expectedSlug": "mm72",
+        "hasHero": true,
+        "hasChart": true,
+        "hasSwap": true,
+        "hasMarket": true,
+        "hasEconomy": true,
+        "hasBoost": true,
+        "hasAbout": true,
+        "hasTransparency": true,
+        "hasRelated": true,
+        "hasBuy": true,
+        "overflowX": false,
+        "separateChartBand": false,
+        "growCards": [
+          "featured",
+          "trend-boost",
+          "liquidity",
+          "create-farm",
+          "create-pool",
+          "claim-project"
+        ],
+        "accordionOpen": false,
+        "relatedCount": 3,
+        "economyCards": 3,
+        "dupBuy": 1,
+        "jargon": false,
+        "hasBuyToken": true,
+        "hasBoostCopy": true,
+        "pipeline": "melega-global-data-truth-v1",
+        "perf": {
+          "clickTs": null,
+          "routeTs": 1786099158124,
+          "shellTs": 1786099158124,
+          "marketTs": 1786099158534,
+          "chartTs": 1786099158414,
+          "swapTs": 1786099158414,
+          "routeMs": null,
+          "shellMs": null,
+          "marketMs": null,
+          "chartMs": null,
+          "swapMs": null
+        },
+        "shellMs": 376
+      }
+    },
+    {
+      "id": "page-mm72-featured-checkout",
+      "pass": true,
+      "detail": {
+        "hasDialog": true,
+        "mentionsFeatured": true
+      }
+    },
+    {
+      "id": "page-mm72-project-hq-alias",
+      "pass": true,
+      "detail": {
+        "hqOk": true
+      }
+    },
+    {
+      "id": "page-eyed-structure",
+      "pass": true,
+      "detail": {
+        "hasV5": true,
+        "slugAttr": "eyed",
+        "expectedSlug": "eyed",
+        "hasHero": true,
+        "hasChart": true,
+        "hasSwap": true,
+        "hasMarket": true,
+        "hasEconomy": true,
+        "hasBoost": true,
+        "hasAbout": true,
+        "hasTransparency": true,
+        "hasRelated": true,
+        "hasBuy": true,
+        "overflowX": false,
+        "separateChartBand": false,
+        "growCards": [
+          "featured",
+          "trend-boost",
+          "liquidity",
+          "create-farm",
+          "create-pool",
+          "claim-project"
+        ],
+        "accordionOpen": false,
+        "relatedCount": 3,
+        "economyCards": 3,
+        "dupBuy": 1,
+        "jargon": false,
+        "hasBuyToken": true,
+        "hasBoostCopy": true,
+        "pipeline": "melega-global-data-truth-v1",
+        "perf": {
+          "clickTs": null,
+          "routeTs": 1786099162800,
+          "shellTs": 1786099162800,
+          "marketTs": 1786099163186,
+          "chartTs": 1786099163084,
+          "swapTs": 1786099163084,
+          "routeMs": null,
+          "shellMs": null,
+          "marketMs": null,
+          "chartMs": null,
+          "swapMs": null
+        },
+        "shellMs": 476
+      }
+    },
+    {
+      "id": "page-eyed-featured-checkout",
+      "pass": true,
+      "detail": {
+        "hasDialog": true,
+        "mentionsFeatured": true
+      }
+    },
+    {
+      "id": "page-eyed-project-hq-alias",
+      "pass": true,
+      "detail": {
+        "hqOk": true
+      }
+    },
+    {
+      "id": "page-blion-structure",
+      "pass": true,
+      "detail": {
+        "hasV5": true,
+        "slugAttr": "blion",
+        "expectedSlug": "blion",
+        "hasHero": true,
+        "hasChart": true,
+        "hasSwap": true,
+        "hasMarket": true,
+        "hasEconomy": true,
+        "hasBoost": true,
+        "hasAbout": true,
+        "hasTransparency": true,
+        "hasRelated": true,
+        "hasBuy": true,
+        "overflowX": false,
+        "separateChartBand": false,
+        "growCards": [
+          "featured",
+          "trend-boost",
+          "liquidity",
+          "create-farm",
+          "create-pool",
+          "claim-project"
+        ],
+        "accordionOpen": false,
+        "relatedCount": 3,
+        "economyCards": 3,
+        "dupBuy": 1,
+        "jargon": false,
+        "hasBuyToken": true,
+        "hasBoostCopy": true,
+        "pipeline": "melega-global-data-truth-v1",
+        "perf": {
+          "clickTs": null,
+          "routeTs": 1786099167712,
+          "shellTs": 1786099167712,
+          "marketTs": 1786099168250,
+          "chartTs": 1786099168102,
+          "swapTs": 1786099168102,
+          "routeMs": null,
+          "shellMs": null,
+          "marketMs": null,
+          "chartMs": null,
+          "swapMs": null
+        },
+        "shellMs": 519
+      }
+    },
+    {
+      "id": "page-blion-featured-checkout",
+      "pass": true,
+      "detail": {
+        "hasDialog": true,
+        "mentionsFeatured": true
+      }
+    },
+    {
+      "id": "page-blion-project-hq-alias",
+      "pass": true,
+      "detail": {
+        "hqOk": true
+      }
+    },
+    {
+      "id": "page-young-degens-structure",
+      "pass": true,
+      "detail": {
+        "hasV5": true,
+        "slugAttr": "young-degens",
+        "expectedSlug": "young-degens",
+        "hasHero": true,
+        "hasChart": true,
+        "hasSwap": true,
+        "hasMarket": true,
+        "hasEconomy": true,
+        "hasBoost": true,
+        "hasAbout": true,
+        "hasTransparency": true,
+        "hasRelated": true,
+        "hasBuy": true,
+        "overflowX": false,
+        "separateChartBand": false,
+        "growCards": [
+          "featured",
+          "trend-boost",
+          "liquidity",
+          "create-farm",
+          "create-pool",
+          "claim-project"
+        ],
+        "accordionOpen": false,
+        "relatedCount": 3,
+        "economyCards": 3,
+        "dupBuy": 1,
+        "jargon": false,
+        "hasBuyToken": true,
+        "hasBoostCopy": true,
+        "pipeline": "melega-global-data-truth-v1",
+        "perf": {
+          "clickTs": null,
+          "routeTs": 1786099172392,
+          "shellTs": 1786099172392,
+          "marketTs": 1786099172724,
+          "chartTs": 1786099172749,
+          "swapTs": 1786099172749,
+          "routeMs": null,
+          "shellMs": null,
+          "marketMs": null,
+          "chartMs": null,
+          "swapMs": null
+        },
+        "shellMs": 434
+      }
+    },
+    {
+      "id": "page-young-degens-featured-checkout",
+      "pass": true,
+      "detail": {
+        "hasDialog": true,
+        "mentionsFeatured": true
+      }
+    },
+    {
+      "id": "page-young-degens-project-hq-alias",
+      "pass": true,
+      "detail": {
+        "hqOk": true
+      }
+    },
+    {
+      "id": "viewport-marco-1440",
+      "pass": true,
+      "detail": {
+        "v5": true,
+        "hero": true,
+        "overflowX": false,
+        "sticky": true
+      }
+    },
+    {
+      "id": "viewport-marco-1280",
+      "pass": true,
+      "detail": {
+        "v5": true,
+        "hero": true,
+        "overflowX": false,
+        "sticky": true
+      }
+    },
+    {
+      "id": "viewport-marco-1024",
+      "pass": true,
+      "detail": {
+        "v5": true,
+        "hero": true,
+        "overflowX": false,
+        "sticky": true
+      }
+    },
+    {
+      "id": "viewport-marco-768",
+      "pass": true,
+      "detail": {
+        "v5": true,
+        "hero": true,
+        "overflowX": false,
+        "sticky": true
+      }
+    },
+    {
+      "id": "viewport-marco-390",
+      "pass": true,
+      "detail": {
+        "v5": true,
+        "hero": true,
+        "overflowX": false,
+        "sticky": true
+      }
+    },
+    {
+      "id": "nav-featured-trade-mm72",
+      "pass": true,
+      "detail": {
+        "ms": 275,
+        "url": "http://127.0.0.1:3055/swap/?inputCurrency=BNB&outputCurrency=0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E&source=featured-home"
+      }
+    }
+  ],
+  "perfSamples": [
+    {
+      "path": "featured-view-mm72",
+      "navMs": 602,
+      "shellMs": 2706,
+      "perf": {
+        "clickTs": 1786099148653,
+        "routeTs": 1786099150950,
+        "shellTs": 1786099150950,
+        "marketTs": 1786099151100,
+        "chartTs": 1786099151266,
+        "swapTs": 1786099151266,
+        "routeMs": 2297,
+        "shellMs": 2297,
+        "marketMs": 2447,
+        "chartMs": 2613,
+        "swapMs": 2613
+      }
+    },
+    {
+      "path": "direct-@marco",
+      "shellMs": 846,
+      "perf": {
+        "clickTs": null,
+        "routeTs": 1786099153297,
+        "shellTs": 1786099153297,
+        "marketTs": 1786099154218,
+        "chartTs": 1786099153545,
+        "swapTs": 1786099153545,
+        "routeMs": null,
+        "shellMs": null,
+        "marketMs": null,
+        "chartMs": null,
+        "swapMs": null
+      }
+    },
+    {
+      "path": "direct-@mm72",
+      "shellMs": 376,
+      "perf": {
+        "clickTs": null,
+        "routeTs": 1786099158124,
+        "shellTs": 1786099158124,
+        "marketTs": 1786099158534,
+        "chartTs": 1786099158414,
+        "swapTs": 1786099158414,
+        "routeMs": null,
+        "shellMs": null,
+        "marketMs": null,
+        "chartMs": null,
+        "swapMs": null
+      }
+    },
+    {
+      "path": "direct-@eyed",
+      "shellMs": 476,
+      "perf": {
+        "clickTs": null,
+        "routeTs": 1786099162800,
+        "shellTs": 1786099162800,
+        "marketTs": 1786099163186,
+        "chartTs": 1786099163084,
+        "swapTs": 1786099163084,
+        "routeMs": null,
+        "shellMs": null,
+        "marketMs": null,
+        "chartMs": null,
+        "swapMs": null
+      }
+    },
+    {
+      "path": "direct-@blion",
+      "shellMs": 519,
+      "perf": {
+        "clickTs": null,
+        "routeTs": 1786099167712,
+        "shellTs": 1786099167712,
+        "marketTs": 1786099168250,
+        "chartTs": 1786099168102,
+        "swapTs": 1786099168102,
+        "routeMs": null,
+        "shellMs": null,
+        "marketMs": null,
+        "chartMs": null,
+        "swapMs": null
+      }
+    },
+    {
+      "path": "direct-@young-degens",
+      "shellMs": 434,
+      "perf": {
+        "clickTs": null,
+        "routeTs": 1786099172392,
+        "shellTs": 1786099172392,
+        "marketTs": 1786099172724,
+        "chartTs": 1786099172749,
+        "swapTs": 1786099172749,
+        "routeMs": null,
+        "shellMs": null,
+        "marketMs": null,
+        "chartMs": null,
+        "swapMs": null
+      }
+    }
+  ]
+}

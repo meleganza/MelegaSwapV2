@@ -25,7 +25,8 @@ describe('Founder Review P0 — Featured Trade → /swap', () => {
     expect(src).toContain('`/swap?${q.toString()}`')
     expect(src).not.toContain('/project-hq/${p.slug}?${q}')
     expect(src).not.toContain('/?focus=swap')
-    expect(src).toContain('href={`/project-hq/${p.slug}`}')
+    expect(src).toContain('href={`/@${p.slug}`}')
+    expect(src).toContain('prefetch={false}')
   })
 
   it('featuredProjectsCatalog marks entries without a canonical project identity ineligible for rotation', () => {

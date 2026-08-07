@@ -83,8 +83,10 @@ describe('UX001 Project Page v1 surfaces', () => {
 
   it('14–15. personalized swap reuses SmartSwapForm (no second router)', () => {
     const swap = readFileSync(path.join(CONSUMER, 'ProjectTradingEmbed.tsx'), 'utf8')
-    expect(swap).toContain('SmartSwapForm')
-    expect(swap).toContain('views/Swap/SmartSwap')
+    const island = readFileSync(path.join(CONSUMER, 'ProjectSwapFormIsland.tsx'), 'utf8')
+    expect(swap).toContain('ProjectSwapFormIsland')
+    expect(island).toContain('SmartSwapForm')
+    expect(island).toContain('views/Swap/SmartSwap')
     expect(swap).not.toMatch(/createRouter|second.?router/i)
     expect(swap).toMatch(/0x963556de0eb8138E97A85F0A86eE0acD159D210b|MARCO/)
   })
@@ -167,7 +169,7 @@ describe('UX001 API / Project OS regression', () => {
 describe('UX001 page wiring', () => {
   it('project-hq page renders ProjectPageV2Shell', () => {
     const page = readFileSync(path.join(ROOT, 'pages/project-hq/[slug].tsx'), 'utf8')
-    expect(page).toContain('ProjectPageV2Shell')
+    expect(page).toContain('ProjectPageV5Shell')
     expect(page).toContain('buildProjectTokenomicsDocument')
     expect(page).toContain('buildProjectRoadmapDocument')
   })

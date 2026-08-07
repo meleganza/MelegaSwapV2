@@ -316,7 +316,7 @@ describe('PP001 route and shell source contracts', () => {
     expect(consumer).not.toMatch(/fake/i)
     expect(consumer).not.toMatch(/disabled action/i)
     expect(consumer).toMatch(/data-testid="project-page-v2"/)
-    expect(hqPage).toMatch(/ProjectPageV2Shell/)
+    expect(hqPage).toMatch(/ProjectPageV5Shell/)
   })
 
   it('includes accessibility affordances', () => {

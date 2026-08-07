@@ -57,8 +57,8 @@ const PriceLine = styled.div`
 `
 
 const ElegantPlaceholder = styled.div<{ $hero?: boolean }>`
-  min-height: ${({ $hero }) => ($hero ? '280px' : '96px')};
-  max-height: ${({ $hero }) => ($hero ? '380px' : 'none')};
+  min-height: ${({ $hero }) => ($hero ? '180px' : '96px')};
+  max-height: ${({ $hero }) => ($hero ? '260px' : 'none')};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,29 +90,32 @@ const HeroChartWrap = styled.div`
 
   [data-trade-chart-area],
   [data-testid='project-v3-chart-placeholder'],
-  [data-testid='project-v4-chart-placeholder'] {
-    height: 220px;
-    min-height: 220px;
-    max-height: 280px;
+  [data-testid='project-v4-chart-placeholder'],
+  [data-testid='project-v5-chart-placeholder'] {
+    height: 180px;
+    min-height: 180px;
+    max-height: 210px;
+  }
+
+  @media (min-width: 768px) {
+    [data-trade-chart-area],
+    [data-testid='project-v3-chart-placeholder'],
+    [data-testid='project-v4-chart-placeholder'],
+    [data-testid='project-v5-chart-placeholder'] {
+      height: 200px;
+      min-height: 200px;
+      max-height: 220px;
+    }
   }
 
   @media (min-width: 960px) {
     [data-trade-chart-area],
     [data-testid='project-v3-chart-placeholder'],
-    [data-testid='project-v4-chart-placeholder'] {
-      height: 280px;
-      min-height: 280px;
-      max-height: 340px;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    [data-trade-chart-area],
-    [data-testid='project-v3-chart-placeholder'],
-    [data-testid='project-v4-chart-placeholder'] {
-      height: 320px;
-      min-height: 320px;
-      max-height: 380px;
+    [data-testid='project-v4-chart-placeholder'],
+    [data-testid='project-v5-chart-placeholder'] {
+      height: 240px;
+      min-height: 220px;
+      max-height: 260px;
     }
   }
 `
@@ -231,16 +234,18 @@ const ProjectCharts: React.FC<Props> = ({
 
   if (hero) {
     return (
-      <HeroChartWrap data-testid="project-v4-chart-panel" data-chart-variant="hero">
+      <HeroChartWrap data-testid="project-v5-chart-panel" data-chart-variant="hero">
         <BandHead style={{ marginBottom: 4 }}>
-          <BandMeta>{supported && hasSpark ? `${pairLabel} · indexed` : 'Awaiting indexed candles'}</BandMeta>
+          <BandMeta>{pairLabel}</BandMeta>
+          {priceText ? <PriceLine style={{ fontSize: 16 }}>{priceText}</PriceLine> : null}
         </BandHead>
-        {priceText ? <PriceLine>{priceText}</PriceLine> : null}
         {timeframeRow}
         {showPlaceholder ? (
-          <ElegantPlaceholder $hero data-testid="project-v4-chart-placeholder">
-            <PlaceholderTitle>No chart data yet</PlaceholderTitle>
-            <span>A live chart appears when indexed candles are available for this pair.</span>
+          <ElegantPlaceholder $hero data-testid="project-v5-chart-placeholder">
+            <PlaceholderTitle>Market history not available yet</PlaceholderTitle>
+            <span aria-hidden style={{ opacity: 0.45, letterSpacing: 2 }}>
+              ━╱╲╱╲━
+            </span>
           </ElegantPlaceholder>
         ) : status === 'loading' && !hasSpark ? (
           <ChartSkeleton $size="hero" aria-hidden />

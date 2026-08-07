@@ -1,0 +1,16 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT_REBUILD",
+  "wiring": {
+    "featured": "CommercialCheckoutModal initialService=featured",
+    "trend-boost": "CommercialCheckoutModal initialService=trend-boost",
+    "liquidity": "CommercialCheckoutModal initialService=liquidity",
+    "create-farm": "CommercialCheckoutModal initialService=create-farm",
+    "create-pool": "CommercialCheckoutModal initialService=create-pool",
+    "claim-project": "ClaimProjectWizardModal"
+  },
+  "browserProof": {
+    "slugsChecked": ["marco", "mm72", "eyed", "blion", "young-degens"],
+    "featuredCheckout": "PASS for all five",
+    "deadButtons": false
+  }
+}

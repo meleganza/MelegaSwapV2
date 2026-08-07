@@ -232,8 +232,8 @@ describe('PP007 regressions PP001–PP006 and Liquidity Building', () => {
     expect(existsSync(path.join(__dirname, '../../../../../pages/liquidity-studio.tsx'))).toBe(true)
 
     const hq = readFileSync(path.join(__dirname, '../../../../../pages/project-hq/[slug].tsx'), 'utf8')
-    expect(hq).toContain('liquidityBuildingDocument')
     expect(hq).toContain('liquidityBuildingAlternate')
+    expect(hq).toContain('ProjectPageV5Shell')
 
     const publicApi = readFileSync(path.join(__dirname, '../../../../../pages/api/public/projects/[slug].ts'), 'utf8')
     expect(publicApi).toContain('liquidityBuildingSummary')

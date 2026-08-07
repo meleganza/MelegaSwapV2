@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
 import { useHolderCount } from 'lib/holder-count'
 import { truthDash, buildProjectTruthMarketFromFeatured, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
@@ -65,6 +65,11 @@ function emptyMarket(loading: boolean, registeredMarketCount: number): ProjectLi
   }
 }
 
+export type UseProjectLiveMarketOptions = {
+  /** Holders enrichment is secondary — defer so shell/market hydrate first. */
+  deferHoldersMs?: number
+}
+
 /**
  * Factual market observations — Featured / canonical snapshot SSOT (Global Data Truth).
  * Never invents USD, holders, ATH/ATL, or FDV. Missing → "—".
@@ -74,14 +79,30 @@ export function useProjectLiveMarket(
   registeredMarketCount: number,
   tokenAddress?: string | null,
   chainId = 56,
+  options?: UseProjectLiveMarketOptions,
 ): ProjectLiveMarketView {
+  const deferMs = options?.deferHoldersMs ?? 0
+  const [holdersEnabled, setHoldersEnabled] = useState(deferMs <= 0)
+  useEffect(() => {
+    if (deferMs <= 0) {
+      setHoldersEnabled(true)
+      return
+    }
+    setHoldersEnabled(false)
+    const t = window.setTimeout(() => setHoldersEnabled(true), deferMs)
+    return () => window.clearTimeout(t)
+  }, [deferMs, slug])
+
   const { rowsBySlug, loading } = useFeaturedProjectMarkets()
   const row = useMemo(() => {
     return rowsBySlug[slug] ?? (slug === 'marco' ? rowsBySlug['marco-wbnb'] : undefined) ?? null
   }, [rowsBySlug, slug])
 
   const holderToken = tokenAddress ?? row?.tokenAddress
-  const { data: holderResult } = useHolderCount(chainId, holderToken ?? undefined)
+  const { data: holderResult } = useHolderCount(
+    holdersEnabled ? chainId : undefined,
+    holdersEnabled ? holderToken ?? undefined : undefined,
+  )
 
   return useMemo(() => {
     const holdersReady =
