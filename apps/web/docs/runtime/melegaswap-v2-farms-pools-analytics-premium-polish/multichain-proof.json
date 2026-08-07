@@ -1,0 +1,23 @@
+{
+  "liveChains": [
+    56,
+    8453,
+    137,
+    1,
+    42161,
+    43114
+  ],
+  "farmIdentity": "chainId:masterChef:pid",
+  "poolIdentity": "chainId:contract",
+  "browseWithoutSwitch": true,
+  "executionGate": "ChainSwitchConfirmDialog with product sentence",
+  "arbitrumNote": "MARCO shares address with BSC by design (CAKE_ARB comment); LP addresses are chain-unique; provenance audit gates config mismatches",
+  "farmProvenance": {
+    "included": 471,
+    "excluded": 0
+  },
+  "poolProvenance": {
+    "included": 188,
+    "excluded": 0
+  }
+}

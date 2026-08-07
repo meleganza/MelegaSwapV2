@@ -284,7 +284,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
 
   it('desktop geometry tokens match 430×248 / 18 gap / 3 columns', () => {
     expect(poolsExplore.cardW).toBe('328px')
-    expect(poolsExplore.cardH).toBe('248px')
+    expect(poolsExplore.cardH).toBe('268px')
     expect(poolsExplore.cardGap).toBe('12px')
     expect(poolsExplore.contentMax).toBe('1376px')
   })

@@ -8,3 +8,4 @@
 export * from './globalDataTruthLayer'
 export { truthDash, truthNumberOrDash, isMissingTruthValue } from './truthDisplay'
 export { compareYieldTruthDesc, GLOBAL_DATA_TRUTH_PIPELINE } from './yieldTruthRanking'
+export { auditFarmProvenance, auditPoolProvenance, certifiedFarmIdentities } from './yieldProvenanceAudit'

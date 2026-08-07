@@ -19,7 +19,7 @@ export const poolsExplore = {
   topGapAfterPositions: '16px',
 
   cardW: '328px',
-  cardH: '248px',
+  cardH: '268px',
   cardGap: '12px',
   cardPad: '12px',
   cardRadius: '12px',

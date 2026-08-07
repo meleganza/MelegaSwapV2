@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
 import { fetchFarmsPublicDataAsync } from 'state/farms'
-import { getFarmApr } from 'utils/apr'
 import BigNumber from 'bignumber.js'
-import { orderBy } from 'lodash'
 import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getMasterChefAddress } from 'utils/addressHelpers'
+import { compareYieldTruthDesc } from 'lib/data-truth/yieldTruthRanking'
+import { getFarmApr } from 'utils/apr'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -88,8 +88,19 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
 
-      const sortedByApr = orderBy(farmsWithApr, (farm) => (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0), 'desc')
-      setTopFarms(sortedByApr.slice(0, 5))
+      const sortedByTruth = [...farmsWithApr].sort((a, b) => {
+        const tvlA = a.liquidity?.toNumber?.() ?? 0
+        const tvlB = b.liquidity?.toNumber?.() ?? 0
+        const aprA = (a.apr ?? 0) + (a.lpRewardsApr ?? 0)
+        const aprB = (b.apr ?? 0) + (b.lpRewardsApr ?? 0)
+        const volA = a.lpRewardsApr && a.lpRewardsApr > 0 ? a.lpRewardsApr : 0
+        const volB = b.lpRewardsApr && b.lpRewardsApr > 0 ? b.lpRewardsApr : 0
+        return compareYieldTruthDesc(
+          { sortTvl: tvlA, sortApr: aprA > 0 ? aprA : -1, sortVolume: volA },
+          { sortTvl: tvlB, sortApr: aprB > 0 ? aprB : -1, sortVolume: volB },
+        )
+      })
+      setTopFarms(sortedByTruth.slice(0, 5))
     }
 
     if (fetchStatus === FetchStatus.SUCCESS && topFarms.length === 0 && farms?.length) {

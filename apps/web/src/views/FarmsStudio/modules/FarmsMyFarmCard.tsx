@@ -252,14 +252,14 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
         </div>
       </Header>
       <Metrics>
-        <div>
+        <div data-primary-metric="deposited-value">
           <Label>{position.depositedUsdAvailable ? 'Deposited Value' : 'LP amount'}</Label>
           <Value data-testid="farms-my-deposited-primary">
             {position.depositedUsdAvailable
               ? position.stakedFormatted || '—'
               : position.stakedLpFormatted || position.stakedFormatted || '—'}
           </Value>
-          <Support data-testid="farms-my-deposited-secondary">
+          <Support data-testid="farms-my-deposited-secondary" data-secondary-metric="lp-amount">
             {position.depositedUsdAvailable
               ? position.stakedLpFormatted
                 ? `LP tokens: ${position.stakedLpFormatted}`

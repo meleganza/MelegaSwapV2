@@ -8,7 +8,10 @@ import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
-import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { YieldActivitySparkline } from 'components/YieldActivitySparkline'
+import { truthDash } from 'lib/data-truth'
+import { GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { getBlockExploreLink } from 'utils'
@@ -161,17 +164,18 @@ const MultiBadge = styled.span`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 10px;
   flex: 1;
   min-width: 0;
 `
 
 const Metric = styled.div`
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px;
 `
 
 const MetricLabel = styled.span`
@@ -181,19 +185,21 @@ const MetricLabel = styled.span`
 `
 
 const MetricValue = styled.span`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 700;
   color: #f5f5f5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 `
 
 const MetricSupport = styled.span`
+  grid-column: 1 / -1;
   font-size: 10px;
-  line-height: 13px;
-  color: rgba(255, 255, 255, 0.45);
+  line-height: 12px;
+  color: rgba(255, 255, 255, 0.42);
 `
 
 const WalletLine = styled.p`
@@ -295,55 +301,7 @@ const ConnectWrap = styled.div`
 `
 
 const ActivityPulse = styled.span<{ $tone: 'live' | 'partial' | 'neutral' }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-  font-size: 10px;
-  font-weight: 650;
-  color: ${({ $tone }) =>
-    $tone === 'live' ? '#6ee7b7' : $tone === 'partial' ? 'rgba(244,196,48,0.85)' : 'rgba(255,255,255,0.42)'};
-
-  &::before {
-    content: '';
-    width: 28px;
-    height: 2px;
-    border-radius: 999px;
-    background: ${({ $tone }) =>
-      $tone === 'live'
-        ? 'linear-gradient(90deg, transparent, #6ee7b7, transparent)'
-        : $tone === 'partial'
-          ? 'linear-gradient(90deg, transparent, rgba(244,196,48,0.7), transparent)'
-          : 'rgba(255,255,255,0.18)'};
-    ${({ $tone }) =>
-      $tone === 'neutral'
-        ? ''
-        : `
-      background-size: 200% 100%;
-      animation: farms-activity-beat 1.8s ease-in-out infinite;
-    `}
-  }
-
-  @keyframes farms-activity-beat {
-    0% {
-      background-position: 100% 0;
-      opacity: 0.55;
-    }
-    50% {
-      background-position: 0% 0;
-      opacity: 1;
-    }
-    100% {
-      background-position: -100% 0;
-      opacity: 0.55;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &::before {
-      animation: none;
-    }
-  }
+  display: none;
 `
 
 const VisuallyHidden = styled.span`
@@ -480,21 +438,38 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
 
       <VisuallyHidden>{logoDesc}</VisuallyHidden>
 
-      <Metrics>
+      <Metrics data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
         <Metric>
           <MetricLabel>{farm.aprLabel}</MetricLabel>
-          <MetricValue>{farm.apr}</MetricValue>
-          <MetricSupport>{farm.aprState === 'Live' ? 'Live' : farm.aprState}</MetricSupport>
+          <MetricValue>{truthDash(farm.apr)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>TVL</MetricLabel>
-          <MetricValue>{farm.tvl}</MetricValue>
-          {farm.tvlState !== 'Live' ? <MetricSupport>{farm.tvlState}</MetricSupport> : null}
+          <MetricValue>{truthDash(farm.tvl)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Rewards</MetricLabel>
-          <MetricValue>{farm.rewardToken.symbol}</MetricValue>
-          {farm.rewardRate ? <MetricSupport>{farm.rewardRate}</MetricSupport> : null}
+          <MetricLabel>24H Vol</MetricLabel>
+          <MetricValue>{truthDash(farm.volume24h)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>24H Fees</MetricLabel>
+          <MetricValue>{truthDash(farm.fees24h)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Reward</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardToken.symbol)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Remaining</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardsRemaining)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Duration</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardDuration)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Participants</MetricLabel>
+          <MetricValue>{truthDash(farm.participants)}</MetricValue>
         </Metric>
       </Metrics>
 
@@ -505,36 +480,10 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           : ''}
       </WalletLine>
 
-      <ActivityPulse
-        data-testid="farms-explore-activity"
-        data-activity-tone={
-          farm.freshness === 'live' && farm.aprState === 'Live'
-            ? 'live'
-            : farm.freshness === 'partial' || farm.aprState === 'Partial'
-              ? 'partial'
-              : 'neutral'
-        }
-        $tone={
-          farm.freshness === 'live' && farm.aprState === 'Live'
-            ? 'live'
-            : farm.freshness === 'partial' || farm.aprState === 'Partial'
-              ? 'partial'
-              : 'neutral'
-        }
-        aria-label={
-          farm.freshness === 'live' && farm.aprState === 'Live'
-            ? 'Live farm activity'
-            : farm.freshness === 'partial' || farm.aprState === 'Partial'
-              ? 'Partial farm activity signal'
-              : 'No live activity signal'
-        }
-      >
-        {farm.freshness === 'live' && farm.aprState === 'Live'
-          ? 'Live activity'
-          : farm.freshness === 'partial' || farm.aprState === 'Partial'
-            ? 'Partial signal'
-            : 'Neutral'}
-      </ActivityPulse>
+      <YieldActivitySparkline
+        pairAddress={farm.lpToken.address}
+        testId="farms-explore-activity-spark"
+      />
 
       <Actions data-testid="farms-explore-actions">
         {farm.primaryAction === 'Connect Wallet' ? (
@@ -609,7 +558,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       <ChainSwitchConfirmDialog
         open={switchOpen}
         targetChainId={farm.chainId}
-        productLabel="This farm"
+        productLabel={`This farm is on ${chainDisplayName(farm.chainId)}. Switch network to continue?`}
         busy={switching}
         onCancel={() => {
           pendingActionRef.current = null

@@ -92,6 +92,12 @@ export interface ExploreFarmViewModel {
   isNativePair: boolean
   hasWalletLp: boolean
   isApproved: boolean
+  /** Compact analytics — uncertified → "—" via truthDash */
+  volume24h: string
+  fees24h: string
+  rewardsRemaining: string
+  rewardDuration: string
+  participants: string
 }
 
 export type FarmsExploreModuleState = 'loading' | 'ready' | 'empty' | 'partial' | 'unavailable' | 'stale'

@@ -183,6 +183,12 @@ export const FarmsMyFarmsModule: React.FC = () => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
   }
+
+  // Premium polish: never render a giant empty My Farms card.
+  if (vm.state === 'empty') {
+    return null
+  }
+
   return (
     <Row
       data-testid="farms-my-farms-module"
@@ -220,13 +226,6 @@ export const FarmsMyFarmsModule: React.FC = () => {
                 </li>
               ))}
             </Grid>
-          ) : null}
-          {vm.state === 'empty' ? (
-            <Center>
-              <StateTitle>No farm positions yet</StateTitle>
-              <StateDesc>Stake supported LP tokens in an active farm to start earning rewards.</StateDesc>
-              <Explore href="#explore-farms">Explore Farms</Explore>
-            </Center>
           ) : null}
           {vm.state === 'unavailable' ? (
             <Center>

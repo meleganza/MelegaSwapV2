@@ -6,6 +6,8 @@
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { truthDash } from 'lib/data-truth'
+import { auditFarmProvenance } from 'lib/data-truth/yieldProvenanceAudit'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import { formatUsd } from '../farmsRuntime/formatFarmsRuntime'
@@ -24,6 +26,18 @@ import type {
 const HIGH_APR_THRESHOLD = 20
 const NATIVE_WRAPPER_SYMBOLS = new Set(['WBNB', 'BNB'])
 const WBNB_BSC = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+
+let _excludedFarmIds: Set<string> | null = null
+function excludedFarmIdentities(): Set<string> {
+  if (!_excludedFarmIds) {
+    _excludedFarmIds = new Set(
+      auditFarmProvenance()
+        .rows.filter((r) => r.verdict === 'exclude')
+        .map((r) => r.identity),
+    )
+  }
+  return _excludedFarmIds
+}
 
 type RawFarm = NonNullable<FarmPreviewCard['rawFarm']> & {
   earningToken?: { symbol?: string; name?: string; address?: string; decimals?: number }
@@ -366,6 +380,13 @@ export function cardToExploreFarmModel(
     isNativePair: isNativePair(raw),
     hasWalletLp: wallet.hasLp,
     isApproved: allowance.approved,
+    volume24h: '—',
+    fees24h: '—',
+    rewardsRemaining: '—',
+    rewardDuration: '—',
+    participants: truthDash(
+      card.participants && !isUnavailableFarmMetric(card.participants) ? card.participants : null,
+    ),
   }
 }
 
@@ -578,6 +599,7 @@ export function buildFarmsExploreFarmsViewModel(input: {
     }
   }
 
+  const excluded = excludedFarmIdentities()
   const built = dedupeExploreFarms(
     input.portfolioFarms
       .map((c) =>
@@ -591,10 +613,17 @@ export function buildFarmsExploreFarmsViewModel(input: {
         }),
       )
       .filter((f): f is ExploreFarmViewModel => Boolean(f)),
-  ).filter((f) => {
-    if (input.chainFilter == null || input.chainFilter === 'all') return true
-    return f.chainId === input.chainFilter
-  })
+  )
+    .filter((f) => {
+      if (excluded.has(f.farmId)) return false
+      const mc = (f.masterbuilder || '').toLowerCase()
+      if (f.pid != null && mc && excluded.has(`${f.chainId}:${mc}:${f.pid}`)) return false
+      return true
+    })
+    .filter((f) => {
+      if (input.chainFilter == null || input.chainFilter === 'all') return true
+      return f.chainId === input.chainFilter
+    })
 
   if (!built.length) {
     return {

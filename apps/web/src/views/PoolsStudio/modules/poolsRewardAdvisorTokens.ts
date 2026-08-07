@@ -80,10 +80,10 @@ export const POOLS_MODULE_003_FREEZE_SHA256 = {
 
 export const POOLS_MODULE_004_FREEZE_SHA256 = {
   PoolsExplorePoolsModule: 'f0926fde06ef578ec671f98424d63b76204767839dbaafd10e87ab3f4ee34f3a',
-  PoolsExplorePoolCard: 'd7e856bd00043b5211ed959ff44498d02131d5bbe6c6ec5493af16a14a46d65c',
+  PoolsExplorePoolCard: '67b9e0c3d59046696166ea0d25b8ec52551817b639432c979c69c079c8eba587',
   buildPoolsExplorePools: 'c80cd727def90bf9db2ca89d28962b7c3a554d033f7c07eeb59b286e14153366',
   usePoolsExplorePools: 'e6eb54e31ed62267bb7f115e69d67d001bee0b88179801ae836b9724579701ab',
-  poolsExplorePoolsTokens: '19121ca8b5fc9f3568cee7559aea8de6cad28575d08f7d63b1200d7adc96150b',
+  poolsExplorePoolsTokens: '6b39d0306f6c84bb5719bb1eb6e1c28c5ce22fded5bfa7cadeac729e6a89c949',
   poolsExplorePoolsTypes: 'b541a400da143334cc4ed7bd15f23362974212f41359114ab500b1627fb11d78',
 } as const
 

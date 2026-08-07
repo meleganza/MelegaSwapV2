@@ -8,7 +8,9 @@ import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
-import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { YieldActivitySparkline } from 'components/YieldActivitySparkline'
+import { truthDash, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { getBlockExploreName } from 'utils'
 import { poolsExplore } from './poolsExplorePoolsTokens'
@@ -114,25 +116,18 @@ const Badges = styled.div`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 10px;
   flex: 1;
   min-width: 0;
-
-  @media (max-width: 1439px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 `
 
 const Metric = styled.div`
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px;
 `
 
 const MetricLabel = styled.span`
@@ -142,19 +137,18 @@ const MetricLabel = styled.span`
 `
 
 const MetricValue = styled.span`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 700;
   color: #f5f5f5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 `
 
 const MetricSupport = styled.span`
-  font-size: 10px;
-  line-height: 13px;
-  color: rgba(255, 255, 255, 0.45);
+  display: none;
 `
 
 const LockLine = styled.p`
@@ -308,34 +302,49 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         {pool.stakeToken.symbol} stake token and {pool.rewardToken.symbol} reward token
       </span>
 
-      <Metrics>
-        <Metric>
-          <MetricLabel>Stake</MetricLabel>
-          <MetricValue>{pool.stakeToken.symbol}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Reward</MetricLabel>
-          <MetricValue>{pool.rewardToken.symbol}</MetricValue>
-        </Metric>
+      <Metrics data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
         <Metric>
           <MetricLabel>APR</MetricLabel>
-          <MetricValue>{pool.aprDisplay}</MetricValue>
-          {pool.aprSupport ? <MetricSupport>{pool.aprSupport}</MetricSupport> : null}
+          <MetricValue>{truthDash(pool.aprDisplay)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>TVL</MetricLabel>
-          <MetricValue>{pool.tvlDisplay}</MetricValue>
-          {pool.tvlSupport ? <MetricSupport>{pool.tvlSupport}</MetricSupport> : null}
+          <MetricValue>{truthDash(pool.tvlDisplay)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Stake</MetricLabel>
+          <MetricValue>{truthDash(pool.stakeToken.symbol)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Reward</MetricLabel>
+          <MetricValue>{truthDash(pool.rewardToken.symbol)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Remaining</MetricLabel>
+          <MetricValue>—</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Duration</MetricLabel>
+          <MetricValue>{truthDash(pool.lockType)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>Participants</MetricLabel>
-          <MetricValue>{pool.participantsDisplay}</MetricValue>
+          <MetricValue>{truthDash(pool.participantsDisplay)}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Emission</MetricLabel>
+          <MetricValue>—</MetricValue>
         </Metric>
       </Metrics>
 
       <LockLine>
         Status · {pool.statusLabel} · Lock · {pool.lockType}
       </LockLine>
+
+      <YieldActivitySparkline
+        pairAddress={pool.stakeToken.address}
+        testId="pools-explore-activity-spark"
+      />
 
       <Actions>
         <Btn
@@ -412,7 +421,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
       <ChainSwitchConfirmDialog
         open={switchOpen}
         targetChainId={pool.chainId}
-        productLabel="This pool"
+        productLabel={`This pool is on ${chainDisplayName(pool.chainId)}. Switch network to continue?`}
         busy={switching}
         onCancel={() => setSwitchOpen(false)}
         onConfirm={onConfirmSwitch}
