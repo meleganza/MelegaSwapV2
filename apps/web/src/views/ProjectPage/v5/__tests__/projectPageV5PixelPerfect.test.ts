@@ -18,10 +18,11 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT', () => {
   const perf = load('views/ProjectPage/v5/projectPagePerf.ts')
   const market = load('views/ProjectPage/v1/useProjectLiveMarket.ts')
 
-  it('project V5 mount', () => {
-    expect(page).toContain('ProjectPageV5Shell')
-    expect(page).toContain("from 'views/ProjectPage/v5/ProjectPageV5Shell'")
+  it('project V5 shell retained; public mount is V6', () => {
+    expect(page).toContain('ProjectPageV6Shell')
+    expect(page).toContain("from 'views/ProjectPage/v6/ProjectPageV6Shell'")
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v5/index.ts'))).toBe(true)
+    expect(existsSync(path.join(WEB, 'views/ProjectPage/v6/index.ts'))).toBe(true)
     expect(shell).toContain('data-testid="project-page-v5"')
     expect(shell).toContain('data-project-page="v5"')
   })
@@ -54,11 +55,11 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT', () => {
     expect(shell).not.toContain('data-project-section="charts"')
   })
 
-  it('Chart is inside hero with V5 placeholder copy and compact height', () => {
+  it('Chart is inside hero with compact empty state (V6 reclaim)', () => {
     expect(charts).toContain('data-chart-variant="hero"')
-    expect(charts).toContain('Market history not available yet')
+    expect(charts).toContain('No chart history')
     expect(charts).toContain('project-v5-chart-placeholder')
-    expect(charts).toContain('max-height: 260px')
+    expect(charts).toContain('data-chart-empty="compact"')
     expect(charts).not.toContain('height: 320px')
   })
 

@@ -1,0 +1,182 @@
+{
+  "at": "2026-08-08T06:06:26.298Z",
+  "base": "http://127.0.0.1:3066",
+  "projects": {
+    "mm72": {
+      "slug": "mm72",
+      "v6": true,
+      "contractFull": true,
+      "overflow": false,
+      "farmsEmpty": false,
+      "poolsEmpty": true,
+      "farmsMeta": "FarmsActive · 3Best APR · —Farm TVL · $9.2KReward · MM72View Farms",
+      "poolsMeta": "PoolsNo active poolsView Pools",
+      "chartEmpty": true,
+      "chartPanel": true,
+      "swap": true,
+      "hasScore": true,
+      "transparency": false,
+      "buyToken": false,
+      "hierarchy": {
+        "hero": true,
+        "market": true,
+        "economy": true,
+        "intel": true,
+        "boost": true,
+        "related": true
+      }
+    },
+    "marco": {
+      "slug": "marco",
+      "v6": true,
+      "contractFull": true,
+      "overflow": false,
+      "farmsEmpty": false,
+      "poolsEmpty": false,
+      "farmsMeta": "FarmsActive · 75Best APR · —Farm TVL · $118.8KReward · MARCOView Farms",
+      "poolsMeta": "PoolsActive · 163Best APR · —Pool TVL · —Reward · MARCOView Pools",
+      "chartEmpty": false,
+      "chartPanel": true,
+      "swap": true,
+      "hasScore": true,
+      "transparency": false,
+      "buyToken": false,
+      "hierarchy": {
+        "hero": true,
+        "market": true,
+        "economy": true,
+        "intel": true,
+        "boost": true,
+        "related": true
+      }
+    },
+    "eyed": {
+      "slug": "eyed",
+      "v6": true,
+      "contractFull": true,
+      "overflow": false,
+      "farmsEmpty": false,
+      "poolsEmpty": false,
+      "farmsMeta": "FarmsActive · 4Best APR · —Farm TVL · $4.6KReward · EYEDView Farms",
+      "poolsMeta": "PoolsActive · 1Best APR · —Pool TVL · —Reward · EYEDView Pools",
+      "chartEmpty": true,
+      "chartPanel": true,
+      "swap": true,
+      "hasScore": true,
+      "transparency": false,
+      "buyToken": false,
+      "hierarchy": {
+        "hero": true,
+        "market": true,
+        "economy": true,
+        "intel": true,
+        "boost": true,
+        "related": true
+      }
+    },
+    "blion": {
+      "slug": "blion",
+      "v6": true,
+      "contractFull": true,
+      "overflow": false,
+      "farmsEmpty": false,
+      "poolsEmpty": false,
+      "farmsMeta": "FarmsActive · 1Best APR · —Farm TVL · $562Reward · BLIONView Farms",
+      "poolsMeta": "PoolsActive · 1Best APR · —Pool TVL · —Reward · BLIONView Pools",
+      "chartEmpty": true,
+      "chartPanel": true,
+      "swap": true,
+      "hasScore": true,
+      "transparency": false,
+      "buyToken": false,
+      "hierarchy": {
+        "hero": true,
+        "market": true,
+        "economy": true,
+        "intel": true,
+        "boost": true,
+        "related": true
+      }
+    },
+    "young-degens": {
+      "slug": "young-degens",
+      "v6": true,
+      "contractFull": true,
+      "overflow": false,
+      "farmsEmpty": false,
+      "poolsEmpty": false,
+      "farmsMeta": "FarmsActive · 8Best APR · —Farm TVL · $2.5KReward · YDView Farms",
+      "poolsMeta": "PoolsActive · 1Best APR · —Pool TVL · —Reward · YDView Pools",
+      "chartEmpty": true,
+      "chartPanel": true,
+      "swap": true,
+      "hasScore": true,
+      "transparency": false,
+      "buyToken": false,
+      "hierarchy": {
+        "hero": true,
+        "market": true,
+        "economy": true,
+        "intel": true,
+        "boost": true,
+        "related": true
+      }
+    }
+  },
+  "performance": {
+    "mm72": {
+      "routeMs": 1719,
+      "shellMs": 2372
+    },
+    "marco": {
+      "routeMs": 237,
+      "shellMs": 599
+    },
+    "eyed": {
+      "routeMs": 104,
+      "shellMs": 651
+    },
+    "blion": {
+      "routeMs": 727,
+      "shellMs": 2005
+    },
+    "young-degens": {
+      "routeMs": 317,
+      "shellMs": 1764
+    },
+    "nav:/": {
+      "routeMs": 318
+    },
+    "nav:/liquidity-studio": {
+      "routeMs": 516
+    },
+    "nav:/farms": {
+      "routeMs": 1467
+    },
+    "nav:/pools": {
+      "routeMs": 1172
+    },
+    "nav:/projects": {
+      "routeMs": 1204
+    },
+    "nav:/audit": {
+      "routeMs": 1836
+    }
+  },
+  "checks": {
+    "allV6": true,
+    "noTransparency": true,
+    "noBuyTokenCta": true,
+    "shellUnder8s": true,
+    "mm72Hierarchy": {
+      "hero": true,
+      "market": true,
+      "economy": true,
+      "intel": true,
+      "boost": true,
+      "related": true
+    }
+  },
+  "bugs": [],
+  "pass": true
+}

@@ -135,6 +135,8 @@ interface Props {
   marketsDocument: ProjectMarketsDocument
   variant?: 'full' | 'compact' | 'hero'
   pairAddress?: string | null
+  /** V6: parent reclaim chart space when no factual history. */
+  onHistoryAvailability?: (available: boolean) => void
 }
 
 function resolveChartPair(
@@ -156,6 +158,7 @@ const ProjectCharts: React.FC<Props> = ({
   marketsDocument,
   variant = 'full',
   pairAddress: pairProp,
+  onHistoryAvailability,
 }) => {
   const compact = variant === 'compact'
   const hero = variant === 'hero'
@@ -186,6 +189,12 @@ const ProjectCharts: React.FC<Props> = ({
   const priceText = formatPrice(latestClose)
   const hasSpark = pairPrices.length >= 2
   const showPlaceholder = !supported || (!hasSpark && status !== 'loading')
+
+  React.useEffect(() => {
+    if (!onHistoryAvailability) return
+    if (status === 'loading' && !hasSpark) return
+    onHistoryAvailability(Boolean(supported && hasSpark))
+  }, [onHistoryAvailability, supported, hasSpark, status])
 
   const timeframeRow = (
     <Timeframes
@@ -241,11 +250,13 @@ const ProjectCharts: React.FC<Props> = ({
         </BandHead>
         {timeframeRow}
         {showPlaceholder ? (
-          <ElegantPlaceholder $hero data-testid="project-v5-chart-placeholder">
-            <PlaceholderTitle>Market history not available yet</PlaceholderTitle>
-            <span aria-hidden style={{ opacity: 0.45, letterSpacing: 2 }}>
-              ━╱╲╱╲━
-            </span>
+          <ElegantPlaceholder
+            $hero={false}
+            data-testid="project-v5-chart-placeholder"
+            data-chart-empty="compact"
+            style={{ minHeight: 48, maxHeight: 64, padding: '8px 12px' }}
+          >
+            <PlaceholderTitle style={{ fontSize: 12 }}>No chart history</PlaceholderTitle>
           </ElegantPlaceholder>
         ) : status === 'loading' && !hasSpark ? (
           <ChartSkeleton $size="hero" aria-hidden />

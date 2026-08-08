@@ -58,12 +58,26 @@ const SwapSkeleton = styled.div<{ $hero?: boolean }>`
 
 const HeroTradeBand = styled(Band)`
   margin-bottom: 0;
-  padding: 8px 10px 8px;
-  border: 1px solid rgba(244, 196, 48, 0.22);
+  padding: 6px 8px 8px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 
   @media (min-width: 768px) {
-    padding: 8px 10px;
+    padding: 4px 8px 8px;
   }
+`
+
+const VisuallyHiddenTitle = styled.h2`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 `
 
 const ComingSoonBox = styled.div`
@@ -338,15 +352,19 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       data-trading-variant={variant}
       data-testid={hero ? 'project-v1-smart-swap-hero' : 'project-v1-trading-full'}
     >
-      <BandHead style={hero ? { marginBottom: 6 } : undefined}>
-        <BandTitle id="pp-v1-trading-title">{hero ? 'Smart Swap' : 'Buy Token'}</BandTitle>
-        <BandMeta>
-          <Chip $on={live} $disabled={!live} data-testid="project-v1-trading-chain-badge">
-            {chainName}
-            {!live ? ' · Coming soon' : ''}
-          </Chip>
-        </BandMeta>
-      </BandHead>
+      {hero ? (
+        <VisuallyHiddenTitle id="pp-v1-trading-title">Smart Swap</VisuallyHiddenTitle>
+      ) : (
+        <BandHead>
+          <BandTitle id="pp-v1-trading-title">Buy Token</BandTitle>
+          <BandMeta>
+            <Chip $on={live} $disabled={!live} data-testid="project-v1-trading-chain-badge">
+              {chainName}
+              {!live ? ' · Coming soon' : ''}
+            </Chip>
+          </BandMeta>
+        </BandHead>
+      )}
       {!hero ? (
         <Grid $cols={4} style={{ marginBottom: 10 }}>
           <Metric

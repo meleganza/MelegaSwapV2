@@ -23,7 +23,7 @@ import { buildProjectTokenomicsDocument } from 'registry/projects/identity/token
 import { buildProjectRoadmapDocument } from 'registry/projects/identity/roadmap/buildProjectRoadmapDocument'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
-import ProjectPageV5Shell from 'views/ProjectPage/v5/ProjectPageV5Shell'
+import ProjectPageV6Shell from 'views/ProjectPage/v6/ProjectPageV6Shell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
@@ -119,13 +119,13 @@ const ProjectHqPage = ({
   roadmapDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
-  // Shell-critical docs only — technical packs deferred / optional for V5 public flow.
+  // Shell-critical docs only — technical packs deferred / optional for V6 public flow.
   if (!document || !jsonLd || !marketsDocument || !participationDocument) {
     return <NotFound />
   }
 
   return (
-    <ProjectPageV5Shell
+    <ProjectPageV6Shell
       document={document}
       marketsDocument={marketsDocument}
       participationDocument={participationDocument}

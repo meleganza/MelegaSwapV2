@@ -1,0 +1,6 @@
+{
+  "command": "yarn next build",
+  "passed": true,
+  "at": "2026-08-08T06:06:20.327Z",
+  "mount": "pages/project-hq/[slug].tsx → ProjectPageV6Shell"
+}
