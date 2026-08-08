@@ -15,10 +15,11 @@ function load(rel: string) {
 }
 
 describe('home product experience refinement', () => {
-  it('renames public nav Passport → Portfolio', () => {
-    expect(load('app-shell/config/globalHeaderNav.ts')).toMatch(/label: 'Portfolio'/)
-    expect(load('app-shell/config/navigation.ts')).toMatch(/label: 'Portfolio'/)
+  it('keeps Portfolio secondary (bottom nav / My Melega); no Passport in primary header', () => {
+    expect(load('app-shell/config/globalHeaderNav.ts')).not.toMatch(/label: 'Portfolio'/)
     expect(load('app-shell/config/globalHeaderNav.ts')).not.toMatch(/label: 'Passport'/)
+    expect(load('app-shell/config/navigation.ts')).toMatch(/label: 'Portfolio'/)
+    expect(load('components/MyMelega/MyMelegaDrawer.tsx')).toMatch(/View Full Portfolio/)
   })
 
   it('Home Top Movers shows at least 5 factual movers from shared snapshot', () => {

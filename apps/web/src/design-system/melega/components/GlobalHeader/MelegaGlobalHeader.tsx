@@ -18,7 +18,8 @@ import {
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
 import HeaderNavDropdown from './HeaderNavDropdown'
-import { IconChevronDown, IconMenu } from './HeaderIcons'
+import { useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
+import { IconChevronDown, IconUser } from './HeaderIcons'
 
 const Bar = styled.header`
   display: none;
@@ -226,7 +227,7 @@ const Chevron = styled.span<{ $open?: boolean }>`
 
 const SearchRegion = styled.div`
   flex: 1 1 auto;
-  min-width: 220px;
+  min-width: 0;
   max-width: min(520px, 42vw);
   display: flex;
   justify-content: stretch;
@@ -241,10 +242,17 @@ const SearchRegion = styled.div`
   }
 
   @media (max-width: 1279px) {
-    min-width: 180px;
-    max-width: min(320px, 30vw);
-    margin-left: 12px;
-    margin-right: 10px;
+    min-width: 0;
+    max-width: min(240px, 22vw);
+    margin-left: 10px;
+    margin-right: 8px;
+  }
+
+  /* Keep Wallet + My Melega in-viewport on 1024 tablet landscape. */
+  @media (max-width: 1100px) {
+    max-width: min(160px, 16vw);
+    margin-left: 8px;
+    margin-right: 6px;
   }
 `
 
@@ -256,6 +264,11 @@ const RightCluster = styled.div`
   flex-shrink: 0;
   min-width: 0;
   margin-left: 4px;
+  margin-right: 0;
+
+  @media (max-width: 1100px) {
+    gap: 6px;
+  }
 
   [data-testid='melega-header-chain'],
   [data-network-status-pill] {
@@ -270,27 +283,33 @@ const RightCluster = styled.div`
   }
 `
 
-const OverflowBtn = styled.button`
+const MyMelegaTrigger = styled.button`
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: ${uxRebuildColors.secondary};
+  border-radius: 999px;
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: linear-gradient(160deg, rgba(244, 196, 48, 0.16) 0%, rgba(20, 20, 20, 0.9) 100%);
+  color: ${uxRebuildColors.gold};
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
 
   &:hover {
-    background: ${uxRebuildColors.hover};
-    border-color: ${uxRebuildColors.borderStrong};
-    color: ${uxRebuildColors.text};
+    border-color: rgba(244, 196, 48, 0.55);
+    background: linear-gradient(160deg, rgba(244, 196, 48, 0.24) 0%, rgba(24, 24, 24, 0.95) 100%);
+    color: #ffe28a;
   }
 
   &:focus-visible {
     outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 2px;
+  }
+
+  &[aria-expanded='true'] {
+    border-color: rgba(244, 196, 48, 0.7);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.25);
   }
 `
 
@@ -317,6 +336,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   const asPath = router.asPath?.split('?')[0] ?? pathname
   const query = router.query as Record<string, string | string[] | undefined>
   const { address } = useAccount()
+  const { open: myMelegaOpen, toggleDrawer: toggleMyMelega } = useMyMelegaDrawer()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement>(null)
 
@@ -478,16 +498,20 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
               Connect Wallet
             </ConnectWalletButton>
           )}
-          <OverflowBtn
+          <MyMelegaTrigger
             type="button"
-            aria-label="Open application menu"
-            aria-haspopup="menu"
-            aria-expanded={openMenu === 'more'}
-            data-testid="melega-header-overflow"
-            onClick={() => setOpenMenu(openMenu === 'more' ? null : 'more')}
+            aria-label="Open My Melega"
+            title="My Melega"
+            aria-haspopup="dialog"
+            aria-expanded={myMelegaOpen}
+            data-testid="melega-header-my-melega"
+            onClick={() => {
+              closeMenus()
+              toggleMyMelega()
+            }}
           >
-            <IconMenu />
-          </OverflowBtn>
+            <IconUser />
+          </MyMelegaTrigger>
         </RightCluster>
       </Inner>
     </Bar>
