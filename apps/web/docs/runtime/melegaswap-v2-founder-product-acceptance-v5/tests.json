@@ -1,0 +1,13 @@
+{
+  "at": "2026-08-08T07:41:40.000Z",
+  "pass": true,
+  "suites": [
+    "src/state/pools/__tests__/fetchPoolsAddressGuard.test.ts",
+    "src/lib/__tests__/homeTopPoolsCanonical.test.ts",
+    "src/lib/data-truth/__tests__/myMelegaPositions.test.ts",
+    "src/app-shell/__tests__/dexUxRebuild.nav.test.ts",
+    "src/app-shell/__tests__/ds0012.globalHeader.test.ts",
+    "src/views/__tests__/poolsRuntimeEconomicsRepair.test.ts"
+  ],
+  "totals": { "files": 6, "tests": 43, "failed": 0 }
+}

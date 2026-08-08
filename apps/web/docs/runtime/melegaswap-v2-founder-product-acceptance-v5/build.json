@@ -1,0 +1,7 @@
+{
+  "at": "2026-08-08T07:40:30.000Z",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "exitCode": 0,
+  "pass": true
+}
