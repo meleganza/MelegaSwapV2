@@ -36,7 +36,6 @@ import {
   countLiveActiveFarmConfigs,
   countLivePoolConfigs,
   listLiveFarmInventoryPreview,
-  listLivePoolInventoryPreview,
   liveInventoryProvenance,
 } from 'lib/data-truth/liveInventoryCounts'
 import { compareYieldTruthDesc } from 'lib/data-truth/yieldTruthRanking'
@@ -178,13 +177,6 @@ const farmTvlUsd = (farm: FarmWithStakedValue): number => resolveFarmLiquidityUs
 
 /** Factual farm reward label — dual earnLabel when present, else MARCO (MasterChef). */
 const farmRewards = (farm: FarmWithStakedValue): string => resolveFarmRewardToken(farm)
-
-const poolRewardFromName = (name: string): string | undefined => {
-  const parts = name.split('→')
-  if (parts.length < 2) return undefined
-  const reward = parts[parts.length - 1]?.trim()
-  return reward || undefined
-}
 
 const poolTvl = (
   pool: Pool.DeserializedPool<Token>,
@@ -596,14 +588,8 @@ export const useHomeTradeData = () => {
         const feesUsd = 0
         return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
       })
-      .filter(
-        (row) =>
-          row.tvlUsd > 0 ||
-          row.aprValue != null ||
-          row.life.rewarding ||
-          row.life.active ||
-          Boolean(row.pool.earningToken?.symbol),
-      )
+      // Certified economics only — same membership spirit as Pools Studio Explore.
+      .filter((row) => row.tvlUsd > 0 || (row.aprValue != null && row.aprValue > 0))
       .sort((a, b) =>
         compareYieldTruthDesc(
           { sortTvl: a.tvlUsd, sortApr: a.aprValue ?? -1, sortVolume: a.volumeUsd, sortActivity: a.feesUsd },
@@ -644,96 +630,8 @@ export const useHomeTradeData = () => {
         ? ranked.map(({ pool, aprValue, tvlUsd }) => toEarnRow(pool, tvlUsd, aprValue))
         : []
 
-    if (fromRuntime.length >= 5) return fromRuntime
-
-    // Prefer same-chain runtime pools before multichain config inventory (inventory has no TVL).
-    const seen = new Set(fromRuntime.map((r) => r.name.toLowerCase()))
-    const padded = [...fromRuntime]
-    const sameChainExtras = source
-      .filter((pool) => resolvePoolChainId(pool, chainId) === chainId && pool.sousId !== 0)
-      .map((pool) => {
-        const aprValue = poolApr(pool)
-        const tvlUsd = resolvePoolTvlUsd(pool, hints)
-        const life = derivePoolLifecycle(pool, currentBlock)
-        return { pool, aprValue, tvlUsd, life }
-      })
-      .filter(
-        (row) =>
-          !seen.has(poolPairLabel(row.pool).toLowerCase()) &&
-          (row.tvlUsd > 0 ||
-            row.aprValue != null ||
-            row.life.rewarding ||
-            row.life.active ||
-            Boolean(row.pool.earningToken?.symbol)),
-      )
-      .sort((a, b) => b.tvlUsd - a.tvlUsd || (b.aprValue ?? -1) - (a.aprValue ?? -1))
-
-    for (const row of sameChainExtras) {
-      if (padded.length >= 5) break
-      const name = poolPairLabel(row.pool).toLowerCase()
-      if (seen.has(name)) continue
-      seen.add(name)
-      padded.push(toEarnRow(row.pool, row.tvlUsd, row.aprValue))
-    }
-
-    if (padded.length >= 5) return padded
-
-    const preview = listLivePoolInventoryPreview(12)
-    for (const row of preview) {
-      if (padded.length >= 5) break
-      if (seen.has(row.name.toLowerCase())) continue
-      seen.add(row.name.toLowerCase())
-      const addr = String(row.id).includes(':') ? String(row.id).split(':')[1] : undefined
-      const sousId = Number(String(row.id).split('-').pop())
-      const pool =
-        row.chainId === chainId
-          ? source.find((p) =>
-              addr
-                ? String(p.contractAddress ?? '').toLowerCase() === addr.toLowerCase()
-                : Number(p.sousId) === sousId,
-            )
-          : undefined
-      if (!pool) {
-        // Inventory-only pad: names + logos/chain — never invent TVL/APR.
-        padded.push({
-          id: row.id,
-          name: row.name,
-          apr: undefined,
-          aprUnavailable: true,
-          tvl: undefined,
-          volume: undefined,
-          fees: undefined,
-          rewards: poolRewardFromName(row.name),
-          href: '/pools',
-          chainId: row.chainId,
-          tokenSymbols: row.name.includes('→')
-            ? row.name.split('→').map((s) => s.trim()).filter(Boolean)
-            : undefined,
-        })
-        continue
-      }
-      const aprValue = poolApr(pool)
-      const tvlUsd = resolvePoolTvlUsd(pool, hints)
-      padded.push({
-        ...toEarnRow(pool, tvlUsd, aprValue),
-        id: row.id,
-        chainId: row.chainId,
-        rewards: resolvePoolRewardToken(pool) || poolRewardFromName(row.name),
-      })
-    }
-
-    if (padded.length > 0) return padded
-
-    return source
-      .filter((pool) => {
-        const life = derivePoolLifecycle(pool, currentBlock)
-        return life.rewarding || life.active
-      })
-      .slice(0, 5)
-      .map((pool) => {
-        const tvlUsd = resolvePoolTvlUsd(pool, hints)
-        return toEarnRow(pool, tvlUsd, poolApr(pool))
-      })
+    // Never pad with inventory-only names (labels without certified TVL/APR).
+    return fromRuntime
   }, [pools, allPools, currentBlock, chainId, marcoPrice])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])

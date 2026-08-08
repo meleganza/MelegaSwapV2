@@ -1,7 +1,10 @@
 /**
  * DS001.1 — Global Design System · Canvas / grid / chrome geometry.
  * Header dimensions are tokens only — do not apply header redesign in DS001.1.
+ * Stacking layers: see melegaZIndex (chrome < overlay).
  */
+import { melegaZIndex } from '../melegaZIndex'
+
 export const ds001Layout = {
   desktopReferenceWidth: 1440,
   viewportWidth: 1440,
@@ -21,7 +24,7 @@ export const ds001Layout = {
 
   /** DS001.2 — shared global header geometry. */
   headerHeight: '72px',
-  headerZIndex: 1000,
+  headerZIndex: melegaZIndex.chromeHeader,
   headerBackground: 'rgba(8, 8, 8, 0.94)',
   headerBorder: '#1A1A1A',
   headerBackdropBlur: '20px',
@@ -38,7 +41,7 @@ export const ds001Layout = {
   headerSearchHeight: '40px',
   headerDropdownRadius: '14px',
   headerDropdownShadow: '0 16px 48px rgba(0, 0, 0, 0.42)',
-  headerDropdownZIndex: 1100,
+  headerDropdownZIndex: melegaZIndex.chromeDropdown,
   headerDesktopBreakpoint: '1024px',
 
   cardPadding: '24px',

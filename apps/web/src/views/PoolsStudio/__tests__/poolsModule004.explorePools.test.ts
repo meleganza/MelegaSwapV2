@@ -140,6 +140,21 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(vm.pools[0].stakeEnabled).toBe(true)
   })
 
+  it('wires Remaining/Emission from preview facts and keeps Participants as —', () => {
+    const model = cardToExploreModel(
+      makeCard({
+        id: 'econ-1',
+        remainingRewards: '12.5K ASTER',
+        dailyRewards: '240 ASTER',
+        participants: '1.2K',
+      }),
+      56,
+    )!
+    expect(model.remainingDisplay).toBe('12.5K ASTER')
+    expect(model.emissionDisplay).toBe('240 ASTER')
+    expect(model.participantsDisplay).toBe('—')
+  })
+
   it('shows unavailable APR / TVL honestly without $0 fallback', () => {
     const noApr = cardToExploreModel(
       makeCard({
@@ -156,7 +171,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
       }),
       56,
     )!
-    expect(noApr.aprDisplay).toBe('Unavailable')
+    expect(noApr.aprDisplay).toBe('—')
     expect(noApr.aprSupport).toBe('APR unavailable')
 
     const noTvl = cardToExploreModel(
@@ -172,7 +187,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
       }),
       56,
     )!
-    expect(noTvl.tvlDisplay).toBe('Unavailable')
+    expect(noTvl.tvlDisplay).toBe('—')
     expect(noTvl.tvlDisplay).not.toBe('$0.00')
     expect(noTvl.status).toBe('PARTIAL')
   })

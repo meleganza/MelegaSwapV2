@@ -87,11 +87,11 @@ export const POOLS_MODULE_003_FREEZE_SHA256 = {
 
 export const POOLS_MODULE_004_FREEZE_SHA256 = {
   PoolsExplorePoolsModule: 'f0926fde06ef578ec671f98424d63b76204767839dbaafd10e87ab3f4ee34f3a',
-  PoolsExplorePoolCard: '67b9e0c3d59046696166ea0d25b8ec52551817b639432c979c69c079c8eba587',
-  buildPoolsExplorePools: '407010820f1cf4a9de3bbe4b2f64824aba8d44426f2baf2df96d69bb0bd2e144',
+  PoolsExplorePoolCard: '7fcfcea9be7bf491e753dfac1d8b655e704518524b0001e18ed1759eb56f291b',
+  buildPoolsExplorePools: '3bacf0b1de087a30a1ec2f34c2f1d43bf9b2513908860b88f591dca275274992',
   usePoolsExplorePools: 'e6eb54e31ed62267bb7f115e69d67d001bee0b88179801ae836b9724579701ab',
   poolsExplorePoolsTokens: '2696a0cb96102ab6d0a4dc07de1fba15058d6ed342ff917c3fb9ce205c8541a7',
-  poolsExplorePoolsTypes: 'b541a400da143334cc4ed7bd15f23362974212f41359114ab500b1627fb11d78',
+  poolsExplorePoolsTypes: 'a581a34d12cd8fd13197097ef16b3ab4cb53c990b5e379c5852fdf7487a93ac9',
 } as const
 
 export const POOLS_MODULE_005_FREEZE_SHA256 = {
@@ -99,7 +99,7 @@ export const POOLS_MODULE_005_FREEZE_SHA256 = {
   PoolsFinishedPoolCard: '776ddedc9d06d17c4bf7ac27a0bdad8ab46dc60fc7be8705d4f8875cbf225a84',
   buildPoolsFinishedPools: '6faf81b57a731d9fe2be33260a08d8a4581ed7adc1c7c335ac267b9ca273f395',
   usePoolsFinishedPools: 'e030c4662e941042954fa460921c82bd134339685928bb79c107c15950d6a64c',
-  poolsFinishedPoolsTokens: '7cdd964c5fd3b440625e8e0dc0796f618621450d73d04de5856d4709824bb960',
+  poolsFinishedPoolsTokens: '53102e27245c6e6caae5da7b2827000d299082c41c92cd997e8c56b165e76e6a',
   poolsFinishedPoolsTypes: '6ad0d327797b7d115c8c8e315310c16c10ef9fba3b0ed4a2468d2bf7afcbe056',
 } as const
 
@@ -108,6 +108,6 @@ export const POOLS_MODULE_006_FREEZE_SHA256 = {
   PoolsRewardAdvisorCard: 'cde3f4a486bcf60552aeb1cd9a2770ce2bc02910ce444ccbe8d0b78465c574e8',
   buildPoolsRewardAdvisor: 'c4013a019cd180a351ac633831bd70974217bd913374460e5d54c3319e7ab40d',
   usePoolsRewardAdvisor: '0e59b77545d64877e7a491d1cf984ac38afa8c82e597b7d9be0a8b231cbeb52b',
-  poolsRewardAdvisorTokens: '30e22bdd93c15d3eca2088688c44bb3fca03a44a7945f9ed55e947132dd57cad',
+  poolsRewardAdvisorTokens: 'd0657f0964e2311b19295f69485d3f48bb88ba942920bd69f03c44570a8ad05e',
   poolsRewardAdvisorTypes: 'd62dd3c1a49b5602a26e8ce526629424b8d28a5b7096638a643a42059eaf1b7c',
 } as const

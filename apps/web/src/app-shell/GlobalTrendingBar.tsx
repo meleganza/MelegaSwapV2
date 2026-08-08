@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ds001Layout } from 'design-system/melega/tokens/ds001'
+import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import SafeTrendingRibbon from 'views/CommandCenter/components/SafeTrendingRibbon'
 
 const TRENDING_BAR_DESKTOP_H = '44px'
@@ -17,7 +18,7 @@ const Bar = styled.div`
   right: 0;
   top: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
   height: ${TRENDING_BAR_MOBILE_H};
-  z-index: 94;
+  z-index: ${melegaZIndex.chromeTicker};
   width: 100%;
   background: #0a0a0a;
   border-top: none;
@@ -32,7 +33,7 @@ const Bar = styled.div`
   @media (min-width: 1024px) {
     top: ${ds001Layout.headerHeight};
     height: ${TRENDING_BAR_DESKTOP_H};
-    z-index: ${Number(ds001Layout.headerZIndex) - 1};
+    z-index: ${melegaZIndex.chromeTicker};
   }
 `
 

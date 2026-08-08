@@ -52,6 +52,14 @@ describe('MELEGASWAP_V2_FARMS_POOLS_ANALYTICS_PREMIUM_POLISH', () => {
     expect(myPools).toContain('return null')
   })
 
+  it('My Farms expands inline with Cards/List (no navigate-away)', () => {
+    expect(myFarms).toContain('View all my farms')
+    expect(myFarms).toContain('data-my-farms-expanded')
+    expect(myFarms).toContain("viewMode === 'list'")
+    expect(myFarms).not.toContain("scrollToExplore")
+    expect(myFarms).not.toContain('#explore-farms')
+  })
+
   it('USD position primary / LP secondary', () => {
     expect(myFarmCard).toContain('data-primary-metric="deposited-value"')
     expect(myFarmCard).toContain('data-secondary-metric="lp-amount"')

@@ -46,6 +46,7 @@ export {
   ds001Buttons,
   ds001Icons,
 } from './ds001'
+export { melegaZIndex, type MelegaZIndex } from './melegaZIndex'
 
 import { colors } from './colors'
 import { typography } from './typography'

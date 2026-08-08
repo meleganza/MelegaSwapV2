@@ -71,9 +71,9 @@ export const POOLS_MODULE_003_FREEZE_SHA256 = {
 
 export const POOLS_MODULE_004_FREEZE_SHA256 = {
   PoolsExplorePoolsModule: 'f0926fde06ef578ec671f98424d63b76204767839dbaafd10e87ab3f4ee34f3a',
-  PoolsExplorePoolCard: '67b9e0c3d59046696166ea0d25b8ec52551817b639432c979c69c079c8eba587',
-  buildPoolsExplorePools: '407010820f1cf4a9de3bbe4b2f64824aba8d44426f2baf2df96d69bb0bd2e144',
+  PoolsExplorePoolCard: '7fcfcea9be7bf491e753dfac1d8b655e704518524b0001e18ed1759eb56f291b',
+  buildPoolsExplorePools: '3bacf0b1de087a30a1ec2f34c2f1d43bf9b2513908860b88f591dca275274992',
   usePoolsExplorePools: 'e6eb54e31ed62267bb7f115e69d67d001bee0b88179801ae836b9724579701ab',
   poolsExplorePoolsTokens: '2696a0cb96102ab6d0a4dc07de1fba15058d6ed342ff917c3fb9ce205c8541a7',
-  poolsExplorePoolsTypes: 'b541a400da143334cc4ed7bd15f23362974212f41359114ab500b1627fb11d78',
+  poolsExplorePoolsTypes: 'a581a34d12cd8fd13197097ef16b3ab4cb53c990b5e379c5852fdf7487a93ac9',
 } as const

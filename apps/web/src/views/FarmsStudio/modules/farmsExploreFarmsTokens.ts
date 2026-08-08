@@ -116,7 +116,7 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 
 /** Frozen Module 003 source SHAs at tip 509e7119. */
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
-  FarmsMyFarmsModule: 'd0a6b16c58b26e92606fd37cfe9d7494870989d00c3592632f85f95f0fe1d347',
+  FarmsMyFarmsModule: 'b7d4c5f0c97125529b9de8c69a4f84d48b8ed04c90bbb94b74c90cd2fc0a79f5',
   FarmsMyFarmCard: '83323d6346dda0ae9ec3bdee80353377608fa1c71e6520a5bfb2caca379ce421',
   farmsMyFarmsTokens: 'fc669509d43b6d2910f2b9a46f75bf981b5a6ee8630673602c1cbeea854ccc0f',
   farmsMyFarmsTypes: '59e1dc2b025d2fcdd1c37b7b7326baea1508458b7af42c523e4acffa265cf8fc',

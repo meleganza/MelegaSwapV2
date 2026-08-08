@@ -321,7 +321,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         </Metric>
         <Metric>
           <MetricLabel>Remaining</MetricLabel>
-          <MetricValue>—</MetricValue>
+          <MetricValue>{truthDash(pool.remainingDisplay)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>Duration</MetricLabel>
@@ -333,7 +333,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         </Metric>
         <Metric>
           <MetricLabel>Emission</MetricLabel>
-          <MetricValue>—</MetricValue>
+          <MetricValue>{truthDash(pool.emissionDisplay)}</MetricValue>
         </Metric>
       </Metrics>
 

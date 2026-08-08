@@ -27,6 +27,17 @@ describe('MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3', () => {
     expect(modal).toContain('aria-modal')
   })
 
+  it('portals overlay above header/ticker stacking contexts', () => {
+    expect(modal).toContain('createPortal')
+    expect(modal).toContain('portal-root')
+    expect(modal).toContain('melegaZIndex')
+    expect(modal).toContain('data-melega-layer="overlay"')
+    const z = load('src/design-system/melega/tokens/melegaZIndex.ts')
+    expect(z).toContain('chromeTicker: 900')
+    expect(z).toContain('chromeHeader: 1000')
+    expect(z).toContain('overlay: 10040')
+  })
+
   it('exports footer/preview/status primitives', () => {
     const idx = load('src/design-system/melega/components/Modal/index.ts')
     expect(idx).toContain('MelegaModalFooter')

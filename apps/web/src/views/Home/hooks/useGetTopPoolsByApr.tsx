@@ -10,30 +10,53 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import { useCurrentBlock } from 'state/block/hooks'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
+import { livePools1, livePools56, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
 import { derivePoolLifecycle } from 'lib/data-truth/poolLifecycle'
 import {
   resolvePoolAprPercent,
   resolvePoolTvlUsd,
 } from 'lib/data-truth/yieldMetricHelpers'
 
+function livePoolEarnAddresses(chainId: number): string[] {
+  const cfg =
+    chainId === 1
+      ? livePools1
+      : chainId === 56
+        ? livePools56
+        : chainId === 137
+          ? livePools137
+          : chainId === 42161
+            ? livePools42161
+            : livePools8453
+  return (cfg ?? [])
+    .filter(({ sousId }) => sousId !== 0)
+    .map(({ earningToken }) => earningToken?.address)
+    .filter(Boolean) as string[]
+}
+
 /**
  * Resolve farm PIDs that bootstrap token USD prices for SmartChef TVL/APR.
  * Mirrors Pools Studio `getActiveFarms` intent — farm public data must land
  * before `fetchPoolsPublicDataAsync` or stakingTokenPrice stays 0.
  */
-async function resolvePriceHelperFarmPids(chainId: number): Promise<number[]> {
+async function resolvePriceHelperFarmPids(
+  chainId: number,
+  earningTokenAddresses: string[] = [],
+): Promise<number[]> {
   const farmsConfig = await getFarmConfig(chainId)
   if (!farmsConfig?.length) return []
-  // Prefer price-helper pairs + any farm whose token may price a pool stake/earn asset.
-  // Fall back to all non-zero PIDs so Home never skips the farm→price pipeline.
+  // Mirror Pools Studio getActiveFarms: helpers + farms whose token prices a live pool earn asset.
+  const earnSet = new Set(earningTokenAddresses.map((a) => a.toLowerCase()).filter(Boolean))
   const helpers = farmsConfig.filter(
     ({ token, pid, quoteToken }) =>
       pid !== 0 &&
-      ((token.symbol === 'MARCO' && (quoteToken.symbol === 'BNB' || quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH')) ||
+      ((token.symbol === 'MARCO' &&
+        (quoteToken.symbol === 'BNB' || quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH')) ||
         (token.symbol === 'BNB' && quoteToken.symbol === 'BUSD') ||
         (token.symbol === 'WBNB' && quoteToken.symbol === 'BUSD') ||
         (token.symbol === 'WETH' && (quoteToken.symbol === 'USDC' || quoteToken.symbol === 'USDT')) ||
-        (token.symbol === 'CAKE' && (quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH'))),
+        (token.symbol === 'CAKE' && (quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH')) ||
+        (token.address && earnSet.has(token.address.toLowerCase()))),
   )
   const pids = (helpers.length > 0 ? helpers : farmsConfig.filter((f) => f.pid !== 0)).map((f) => f.pid)
   return [...new Set(pids)]
@@ -64,8 +87,8 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
     const fetchPoolsPublicData = async () => {
       setFetchStatus(FetchStatus.Fetching)
       try {
-        // 1) Farm prices first — required for getTokenPricesFromFarm inside pool public fetch.
-        const pids = await resolvePriceHelperFarmPids(chainId)
+        // 1) Farm prices first — same earn-token expansion as Pools Studio getActiveFarms.
+        const pids = await resolvePriceHelperFarmPids(chainId, livePoolEarnAddresses(chainId))
         if (pids.length > 0) {
           await dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: 'pkg' }))
         }
@@ -99,14 +122,8 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
         const life = derivePoolLifecycle(pool, currentBlock)
         return { pool, apr, tvlUsd, life }
       })
-      .filter(
-        (row) =>
-          row.tvlUsd > 0 ||
-          row.apr > 0 ||
-          row.life.rewarding ||
-          row.life.active ||
-          Boolean(row.pool.earningToken?.symbol),
-      )
+      // Certified economics only — never surface inventory/skeleton names with empty TVL/APR.
+      .filter((row) => row.tvlUsd > 0 || row.apr > 0)
       .sort((a, b) => {
         if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd
         if (b.apr !== a.apr) return b.apr - a.apr

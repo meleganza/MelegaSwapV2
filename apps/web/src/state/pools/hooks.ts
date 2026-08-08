@@ -43,18 +43,22 @@ import { usePollFarmsWithUserData } from 'state/farms/hooks'
 
 // const lPoolAddresses = livePools56.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
-// Only fetch farms for live pools
+// Only fetch farms for live pools — must include WBNB helpers so stakingTokenPrice lands
+// (BSC MARCO pair quotes WBNB, not bare BNB). Keep parity with Home resolvePriceHelperFarmPids.
 const getActiveFarms = async (chainId: number, lPoolAddresses: string[]) => {
   const farmsConfig = await getFarmConfig(chainId)
+  const earnSet = new Set(lPoolAddresses.map((a) => a.toLowerCase()).filter(Boolean))
   return farmsConfig
     .filter(
       ({ token, pid, quoteToken }) =>
         pid !== 0 &&
-        ((token.symbol === 'MARCO' && quoteToken.symbol === 'BNB') ||
+        ((token.symbol === 'MARCO' &&
+          (quoteToken.symbol === 'BNB' || quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH')) ||
           (token.symbol === 'BNB' && quoteToken.symbol === 'BUSD') ||
-          (token.symbol === 'MARCO' && quoteToken.symbol === 'WETH') ||
-          (token.symbol === 'WETH' && quoteToken.symbol === 'USDC') ||
-          lPoolAddresses.find((poolAddress) => poolAddress === token.address)),
+          (token.symbol === 'WBNB' && quoteToken.symbol === 'BUSD') ||
+          (token.symbol === 'WETH' && (quoteToken.symbol === 'USDC' || quoteToken.symbol === 'USDT')) ||
+          (token.symbol === 'CAKE' && (quoteToken.symbol === 'WBNB' || quoteToken.symbol === 'WETH')) ||
+          (token.address && earnSet.has(token.address.toLowerCase()))),
     )
     .map((farm) => farm.pid)
 }

@@ -1,0 +1,105 @@
+{
+  "at": "2026-08-08T05:43:02.680Z",
+  "base": "http://127.0.0.1:3055",
+  "checks": {
+    "homeTopPoolsVisible": true,
+    "homeNoUnavailableLabel": true,
+    "networkModal": {
+      "present": true,
+      "z": 10040,
+      "tickerZ": 900,
+      "headerZ": 1000,
+      "top": 0,
+      "height": 900,
+      "visible": true,
+      "inPortal": true,
+      "hitInOverlay": true,
+      "switchTitle": true
+    },
+    "switchNetworkAboveTicker": true,
+    "liquidityV3": {
+      "v3": true,
+      "hero": true,
+      "tabs": true,
+      "ai": true
+    },
+    "liquidityBackMountsV3": true,
+    "farmsAfterForwardRefresh": true,
+    "farms": {
+      "myFarms": true,
+      "viewAll": false,
+      "renamed": false,
+      "cardSample": 8
+    },
+    "myFarmsExpand": {
+      "skipped": "no wallet positions / button"
+    },
+    "pools": {
+      "pools": true,
+      "unavailable": 1,
+      "dash": 944
+    },
+    "audit": {
+      "present": true,
+      "liveLabel": true,
+      "border": "0px",
+      "score": true
+    },
+    "noHorizontalOverflow": true,
+    "headerNavFarms": true
+  },
+  "overflowByVp": {
+    "390": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "overflow": false
+    },
+    "768": {
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "overflow": false
+    },
+    "1024": {
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "overflow": false
+    },
+    "1280": {
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "overflow": false
+    },
+    "1440": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "overflow": false
+    }
+  },
+  "shots": [
+    "home-top-pools",
+    "network-modal",
+    "liquidity-v3",
+    "farm-card-multiplier",
+    "my-farms-cards",
+    "my-farms-list",
+    "pools-data",
+    "audit-hero",
+    "mobile"
+  ],
+  "bugs": [],
+  "mandatory": {
+    "1_switch_network_above_ticker": true,
+    "2_no_horizontal_overflow": true,
+    "3_home_top_pools_visible": true,
+    "4_liquidity_v3": true,
+    "5_pools_page": true,
+    "6_my_farms_controls": true,
+    "7_my_farms_expand_or_skip": true,
+    "8_cards_list_or_skip": true,
+    "9_farm_multiplier_shot": true,
+    "10_audit_hero": true,
+    "11_header_nav": true,
+    "12_back_forward": true
+  },
+  "pass": true
+}

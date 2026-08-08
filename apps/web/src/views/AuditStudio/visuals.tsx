@@ -7,12 +7,30 @@ const Svg = styled.svg`
   margin: 0 auto;
 `
 
+const GaugeGlow = styled.circle`
+  @media (prefers-reduced-motion: no-preference) {
+    animation: gaugeBreath 5.5s ease-in-out infinite;
+  }
+  @keyframes gaugeBreath {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+`
+
 export function ScoreGauge({
   value,
   size = 220,
+  animate = false,
 }: {
   value: number
   size?: number
+  /** Subtle CSS-only motion — score value remains factual/static. */
+  animate?: boolean
 }) {
   const clamped = Math.max(0, Math.min(100, value))
   const r = 84
@@ -23,6 +41,9 @@ export function ScoreGauge({
   return (
     <Svg width={size} height={size} viewBox="0 0 220 220" aria-hidden data-testid="audit-score-gauge">
       <circle cx="110" cy="110" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="14" />
+      {animate ? (
+        <GaugeGlow cx="110" cy="110" r={r + 6} fill="none" stroke={ac.goldLine} strokeWidth="1.5" />
+      ) : null}
       <circle
         cx="110"
         cy="110"

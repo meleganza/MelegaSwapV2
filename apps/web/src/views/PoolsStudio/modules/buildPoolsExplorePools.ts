@@ -73,7 +73,7 @@ function resolveApr(card: PoolPreviewCard): { display: string; support: string |
       ok: true,
     }
   }
-  return { display: 'Unavailable', support: 'APR unavailable', sort: 0, ok: false }
+  return { display: '—', support: 'APR unavailable', sort: 0, ok: false }
 }
 
 function resolveTvl(card: PoolPreviewCard): {
@@ -91,7 +91,7 @@ function resolveTvl(card: PoolPreviewCard): {
   const price = pool?.stakingTokenPrice || 0
   if (staked > 0 && price <= 0) {
     return {
-      display: 'Unavailable',
+      display: '—',
       support: 'Valuation unavailable',
       sort: 0,
       partial: true,
@@ -102,7 +102,7 @@ function resolveTvl(card: PoolPreviewCard): {
   if (usd <= 0) {
     const label = card.tvl
     if (!label || label === '—' || label === RUNTIME_UNAVAILABLE_LABEL || label === '$0' || label === '$0.00') {
-      return { display: 'Unavailable', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+      return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
     }
   }
   if (usd > 0) {
@@ -114,13 +114,30 @@ function resolveTvl(card: PoolPreviewCard): {
           : `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
     return { display, support: null, sort: usd, partial: false, ok: true }
   }
-  return { display: 'Unavailable', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+  return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
 }
 
-function resolveParticipants(card: PoolPreviewCard): string {
-  const p = card.participants
-  if (!p || p === '—' || p === RUNTIME_UNAVAILABLE_LABEL) return '—'
-  return p
+/** Participants = wallet census. No indexer today — never show totalStaked as participants. */
+function resolveParticipants(_card: PoolPreviewCard): string {
+  return '—'
+}
+
+function truthLabel(value?: string | null): string {
+  if (!value || value === RUNTIME_UNAVAILABLE_LABEL || value === 'Unavailable' || /nan/i.test(value)) return '—'
+  return value
+}
+
+function resolveRemaining(card: PoolPreviewCard): string {
+  return truthLabel(card.remainingRewards || card.analyzePreview?.remainingRewards || card.estimatedDuration)
+}
+
+function resolveEmission(card: PoolPreviewCard): string {
+  return truthLabel(
+    card.dailyRewards ||
+      card.estimatedDailyReward ||
+      card.analyzePreview?.dailyEmission ||
+      card.analyzePreview?.emission,
+  )
 }
 
 function buildDescription(card: PoolPreviewCard, lock: PoolsExploreLockType): string {
@@ -223,6 +240,8 @@ export function cardToExploreModel(
     tvlDisplay: tvl.display,
     tvlSupport: tvl.support,
     participantsDisplay: resolveParticipants(card),
+    remainingDisplay: resolveRemaining(card),
+    emissionDisplay: resolveEmission(card),
     lockType,
     stakeToken: {
       symbol: stakeSymbol,

@@ -4,9 +4,11 @@
  * Width 680–760px (md) · max-height min(82vh, 760px) · brand header · sticky footer · focus trap.
  */
 import React, { useCallback, useEffect, useId, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import styled, { css, keyframes } from 'styled-components'
 import { MelegaLogoSvg } from '../BrandLockup/MelegaLogoSvg'
 import { uxRebuildColors, uxRebuildFont, uxRebuildRadius, uxRebuildShadow } from '../../tokens/uxRebuild'
+import { melegaZIndex } from '../../tokens/melegaZIndex'
 
 export const melegaModalTokens = {
   radius: uxRebuildRadius.panel,
@@ -25,7 +27,8 @@ export const melegaModalTokens = {
   maxWidthMd: '740px',
   maxWidthLg: '760px',
   maxHeight: 'min(82vh, 760px)',
-  zIndex: 10040,
+  /** Canonical overlay layer — must portal outside header/ticker stacking contexts. */
+  zIndex: melegaZIndex.overlay,
 } as const
 
 const fadeIn = keyframes`
@@ -357,14 +360,20 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
 
   if (!open) return null
 
-  return (
+  const portalTarget =
+    typeof document !== 'undefined'
+      ? document.getElementById('portal-root') ?? document.body
+      : null
+
+  const modalTree = (
     <Overlay
       role="presentation"
-      style={zIndex != null ? { zIndex } : undefined}
+      style={{ zIndex: zIndex ?? melegaModalTokens.zIndex }}
       onClick={() => {
         if (closeOnBackdrop) requestClose()
       }}
       data-melega-modal-overlay="true"
+      data-melega-layer="overlay"
     >
       <Panel
         ref={panelRef}
@@ -437,6 +446,9 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
       </Panel>
     </Overlay>
   )
+
+  // Portal escapes header/ticker stacking contexts (backdrop-filter containing blocks).
+  return portalTarget ? createPortal(modalTree, portalTarget) : modalTree
 }
 
 /** Sticky footer action row for MelegaModal. */

@@ -53,6 +53,14 @@ type HealthPayload = {
 
 type LiveTone = 'ok' | 'warn' | 'bad' | 'mute'
 
+const HeroBand = styled.section`
+  margin: 0 0 18px;
+  padding: 8px 0 4px;
+  border: none;
+  background: transparent;
+  min-width: 0;
+`
+
 const Hero = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -64,12 +72,21 @@ const Hero = styled.div`
   }
 `
 
+const HeroEyebrow = styled.div`
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${ac.gold};
+  margin-bottom: 8px;
+`
+
 const HeroTitle = styled.h1`
   margin: 0;
-  font-size: clamp(28px, 4vw, 42px);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
   color: #fff;
 `
 
@@ -614,13 +631,15 @@ const AuditCenterV2: React.FC = () => {
   return (
     <Page data-testid="audit-center-v2" data-audit-page="v2" data-data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
       <Inner>
-        <Band data-testid="audit-hero" style={{ borderColor: ac.goldLine }}>
+        <HeroBand data-testid="audit-hero">
           <Hero>
             <div>
-              <LivePill>
-                <Pulse /> LIVE SECURITY CENTER
-              </LivePill>
-              <HeroTitle>LIVE SECURITY CENTER</HeroTitle>
+              <HeroEyebrow>
+                <LivePill style={{ marginTop: 0 }}>
+                  <Pulse /> LIVE SECURITY CENTER
+                </LivePill>
+              </HeroEyebrow>
+              <HeroTitle>Live Security Center</HeroTitle>
               <HeroLead>
                 Real-time operational health of the Melega DEX infrastructure.
               </HeroLead>
@@ -629,7 +648,7 @@ const AuditCenterV2: React.FC = () => {
               </Muted>
             </div>
             <ScoreWrap data-testid="audit-melega-score">
-              <ScoreGauge value={scoreResult.score} />
+              <ScoreGauge value={scoreResult.score} animate />
               <ScoreValue>{scoreResult.score.toFixed(1)}</ScoreValue>
               <ScoreLabel>Melega Score</ScoreLabel>
               <Muted style={{ marginTop: 8, textAlign: 'center', maxWidth: 240 }}>
@@ -644,7 +663,7 @@ const AuditCenterV2: React.FC = () => {
               </Muted>
             </ScoreWrap>
           </Hero>
-        </Band>
+        </HeroBand>
 
         <Band data-testid="audit-formula">
           <BandHead>

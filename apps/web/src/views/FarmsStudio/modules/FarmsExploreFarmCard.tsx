@@ -76,6 +76,7 @@ const Identity = styled.div`
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex: 1;
 `
 
 const Logos = styled.div`
@@ -130,6 +131,9 @@ const Badges = styled.div`
   align-items: flex-end;
   gap: 6px;
   flex-shrink: 0;
+  /* Reserved chrome column — multiplier never overlaps metrics/identity. */
+  min-width: 72px;
+  max-width: 96px;
 `
 
 const Status = styled.span<{ $tone: string }>`
@@ -153,13 +157,20 @@ const Status = styled.span<{ $tone: string }>`
 const MultiBadge = styled.span`
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: 22px;
+  min-width: 40px;
+  max-width: 100%;
   padding: 0 8px;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
   color: ${farmsExplore.gold};
   background: rgba(244, 196, 48, 0.12);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 `
 
 const Metrics = styled.div`

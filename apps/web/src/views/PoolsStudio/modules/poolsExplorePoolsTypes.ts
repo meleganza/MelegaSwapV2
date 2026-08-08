@@ -40,7 +40,10 @@ export interface PoolsExplorePoolCardModel {
   aprSupport: string | null
   tvlDisplay: string
   tvlSupport: string | null
+  /** Always — unless a truthful wallet census exists (none today). */
   participantsDisplay: string
+  remainingDisplay: string
+  emissionDisplay: string
   lockType: PoolsExploreLockType
   stakeToken: { symbol: string; address: string | null; chainId: number | null }
   rewardToken: { symbol: string; address: string | null; chainId: number | null }
