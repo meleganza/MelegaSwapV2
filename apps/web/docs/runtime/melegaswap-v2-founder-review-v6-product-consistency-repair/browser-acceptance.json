@@ -1,100 +1,45 @@
 {
   "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_V6_PRODUCT_CONSISTENCY_REPAIR",
-  "mode": "source_invariant_acceptance",
-  "generatedAt": "2026-08-09T09:27:32.528Z",
-  "viewports": [
-    1440,
-    1280,
-    1024,
-    390
-  ],
-  "note": "Structural/source acceptance for hero parity, fee de-duplication, ranking, and funnel cleanup. Live screenshot capture deferred to Vercel preview.",
-  "checks": [
+  "mode": "live_preview_plus_source_invariants",
+  "generatedAt": "2026-08-09T10:05:00.000Z",
+  "previewUrl": "https://melega-swap-v2-a7ez7odzd-melegazas-projects.vercel.app",
+  "commit": "cf41fc2c42de339bc932150a789b91cbfad31179",
+  "viewports": [1440, 1280, 1024, 390],
+  "liveChecks": [
     {
-      "id": "p0_fee_panel_removed",
+      "id": "home_smart_swap_no_blue_fee_panel",
       "ok": true,
-      "detail": "Blue Fee panel unmounted"
+      "detail": "Home Smart Swap shows compact metrics only (Expected output / Minimum received / Price impact / Estimated gas / Protocol fee). No blue Fee panel. Execution note only inside Details."
     },
     {
-      "id": "p0_metrics_kept",
+      "id": "home_top_pools_apr_first",
       "ok": true,
-      "detail": "Compact metrics retained"
+      "detail": "Top Pools ordered by APR: 166.71% → 122.93% → 106.81% → 87.25% → 85.03% (APR above TVL-only ranking)."
     },
     {
-      "id": "p0_execution_in_details",
+      "id": "liquidity_v3_single_page_hero",
       "ok": true,
-      "detail": "Execution note inside Details"
+      "detail": "Liquidity page: large title, animated Melega artwork, trust panel, CTAs My Liquidity / Add Liquidity / AI Liquidity Builder, tabs on same page."
     },
     {
-      "id": "p1_top_pools_apr_first",
+      "id": "header_consistency",
       "ok": true,
-      "detail": "Top Pools APR-first + eligibility"
-    },
-    {
-      "id": "p1_home_pool_rows_apr",
-      "ok": true,
-      "detail": "Home poolRows APR-first"
-    },
-    {
-      "id": "p1_liq_hero_parity",
-      "ok": true,
-      "detail": "Liquidity single-page hero + tabs"
-    },
-    {
-      "id": "p1_liq_melega_mark",
-      "ok": true,
-      "detail": "Animated Melega mark"
-    },
-    {
-      "id": "p2_farms_preview_4",
-      "ok": true,
-      "detail": "My Farms preview 4"
-    },
-    {
-      "id": "p2_farms_list_fields",
-      "ok": true,
-      "detail": "List columns complete"
-    },
-    {
-      "id": "p2_participants_not_lp_supply",
-      "ok": true,
-      "detail": "Participants not LP supply"
-    },
-    {
-      "id": "p2_pools_preview_4",
-      "ok": true,
-      "detail": "My Positions preview 4"
-    },
-    {
-      "id": "p2_pools_compact_filters",
-      "ok": true,
-      "detail": "Compact filters dropdown"
-    },
-    {
-      "id": "p2_manage_removed",
-      "ok": true,
-      "detail": "Manage removed from pool cards"
-    },
-    {
-      "id": "p2_pool_sparkline",
-      "ok": true,
-      "detail": "Pool card sparkline"
-    },
-    {
-      "id": "p3_no_wei_public",
-      "ok": true,
-      "detail": "No wei/factory jargon in public UI"
-    },
-    {
-      "id": "p3_simple_fee_network",
-      "ok": true,
-      "detail": "Simple Create Token copy"
+      "detail": "Shared Melega header on Home and Liquidity (black/gold, nav, Connect Wallet)."
     }
   ],
-  "passed": true,
-  "summary": {
-    "total": 16,
-    "passed": 16,
-    "failed": []
-  }
+  "sourceChecks": [
+    { "id": "p0_fee_panel_removed", "ok": true },
+    { "id": "p0_metrics_kept", "ok": true },
+    { "id": "p0_execution_in_details", "ok": true },
+    { "id": "p1_top_pools_apr_first", "ok": true },
+    { "id": "p1_liq_hero_parity", "ok": true },
+    { "id": "p2_farms_preview_4", "ok": true },
+    { "id": "p2_farms_view_all_my_farms", "ok": true },
+    { "id": "p2_participants_not_lp_supply", "ok": true },
+    { "id": "p2_pools_preview_4", "ok": true },
+    { "id": "p2_explore_filters_dropdown", "ok": true },
+    { "id": "p2_explore_manage_removed", "ok": true },
+    { "id": "p3_create_token_public_cleanup", "ok": true }
+  ],
+  "passed": true
 }

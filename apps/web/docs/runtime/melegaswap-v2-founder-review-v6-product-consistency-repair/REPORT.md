@@ -39,5 +39,14 @@
 | next build | PASS |
 | Forbidden files | Untouched |
 
+## Live browser (preview)
+
+Preview: https://melega-swap-v2-a7ez7odzd-melegazas-projects.vercel.app  
+Commit: `cf41fc2c`
+
+- Home Smart Swap: blue Fee panel absent; metrics row only; execution in Details
+- Top Pools: APR-first (166.71% → 122.93% → 106.81%…)
+- Liquidity: Farms/Pools-parity hero + single-page tabs
+
 ## Evidence
 - tests.json / build.json / browser-acceptance.json
