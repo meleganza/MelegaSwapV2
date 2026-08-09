@@ -40,7 +40,7 @@ export const liquidityMyPositions = {
 } as const
 
 export const LIQUIDITY_MY_POSITIONS_COPY = {
-  title: 'My Positions',
+  title: 'My Liquidity',
   description: 'Liquidity positions belonging to your connected wallet.',
   emptyConnected: 'No liquidity positions yet.',
   emptyDisconnected: 'Connect wallet to view positions.',
@@ -57,6 +57,17 @@ export const LIQUIDITY_MY_POSITIONS_COPY = {
   statusActive: 'ACTIVE',
   statusUnavailable: 'UNAVAILABLE',
   statusPartial: 'PARTIAL',
+  viewCards: 'Cards',
+  viewList: 'List',
+  showAll: 'Show all positions',
+  showLess: 'Show less',
+  colPair: 'Pair',
+  colChain: 'Chain',
+  colValue: 'Value',
+  colShare: 'Share',
+  colFees: 'Fees',
+  colActions: 'Actions',
+  previewMin: 4,
 } as const
 
 export type LiquidityPositionStatus = 'ACTIVE' | 'UNAVAILABLE' | 'PARTIAL'

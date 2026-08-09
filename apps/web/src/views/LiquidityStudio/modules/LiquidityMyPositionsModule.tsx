@@ -254,6 +254,100 @@ const Skeleton = styled.div`
   );
 `
 
+
+const Toolbar = styled.div`
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+`
+
+const ViewToggle = styled.div`
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.28);
+`
+
+const ViewBtn = styled.button<{ $on?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ $on }) => ($on ? 'rgba(221, 185, 47, 0.35)' : 'transparent')};
+  background: ${({ $on }) => ($on ? 'rgba(221, 185, 47, 0.12)' : 'transparent')};
+  color: ${({ $on }) => ($on ? '#fff' : liquidityMyPositions.muted)};
+  font-size: 12px;
+  font-weight: 750;
+`
+
+const ListTable = styled.div`
+  margin-top: 14px;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: ${liquidityMyPositions.cardRadius};
+  border: ${liquidityMyPositions.cardBorder};
+  background: ${liquidityMyPositions.cardBg};
+`
+
+const ListHead = styled.div`
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${liquidityMyPositions.dim};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 720px;
+`
+
+const ListRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  gap: 8px;
+  padding: 12px 14px;
+  align-items: center;
+  min-width: 720px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+`
+
+const ListCell = styled.div`
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 650;
+  color: ${liquidityMyPositions.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const MoreBtn = styled.button`
+  appearance: none;
+  margin-top: 12px;
+  cursor: pointer;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: ${liquidityMyPositions.text};
+  font-size: 13px;
+  font-weight: 700;
+`
+
 function PositionCard({
   row,
   onManage,
@@ -339,6 +433,45 @@ function PositionCard({
   )
 }
 
+
+function PositionListRow({
+  row,
+  onManage,
+  onRemove,
+}: {
+  row: LiquidityPositionRow
+  onManage: (row: LiquidityPositionRow) => void
+  onRemove: (row: LiquidityPositionRow) => void
+}) {
+  const details = useLiquidityPositionDetails(row)
+  const valueLabel = formatPositionUsd(details.usdValue)
+  const shareLabel = formatPoolShare(details.poolShare)
+  const token0 = row.pair.token0
+  const positionChainId = row.chainId ?? token0.chainId ?? liquidityMyPositions.chainId
+
+  return (
+    <ListRow data-testid="liquidity-my-positions-list-row" data-position-id={row.id}>
+      <ListCell data-testid="liquidity-my-positions-list-pair">{row.pairLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-chain">
+        <MelegaExploreChainBadge chainId={positionChainId} />
+      </ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-value">{valueLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-share">{shareLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-fees">{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</ListCell>
+      <ListCell>
+        <Actions style={{ marginTop: 0 }}>
+          <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.manage}
+          </PrimaryBtn>
+          <SecondaryBtn type="button" data-testid="liquidity-my-positions-remove" onClick={() => onRemove(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.remove}
+          </SecondaryBtn>
+        </Actions>
+      </ListCell>
+    </ListRow>
+  )
+}
+
 const LiquidityMyPositionsBody: React.FC = () => {
   const {
     account,
@@ -352,6 +485,12 @@ const LiquidityMyPositionsBody: React.FC = () => {
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
   const [pendingSwitch, setPendingSwitch] = useState<LiquidityPositionRow | null>(null)
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
+  const [expanded, setExpanded] = useState(false)
+  const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
+  const visiblePositions =
+    expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
+  const canExpand = positions.length > previewMin
 
   const proceedManage = useCallback(
     (row: LiquidityPositionRow) => {
@@ -444,11 +583,60 @@ const LiquidityMyPositionsBody: React.FC = () => {
       ) : null}
 
       {account && !positionsLoading && positions.length > 0 ? (
-        <Grid data-testid="liquidity-my-positions-grid">
-          {positions.map((row) => (
-            <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
-          ))}
-        </Grid>
+        <>
+          <Toolbar data-testid="liquidity-my-positions-toolbar">
+            <ViewToggle role="group" aria-label="Positions layout">
+              <ViewBtn
+                type="button"
+                $on={viewMode === 'cards'}
+                onClick={() => setViewMode('cards')}
+                data-testid="liquidity-my-positions-view-cards"
+              >
+                {LIQUIDITY_MY_POSITIONS_COPY.viewCards}
+              </ViewBtn>
+              <ViewBtn
+                type="button"
+                $on={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+                data-testid="liquidity-my-positions-view-list"
+              >
+                {LIQUIDITY_MY_POSITIONS_COPY.viewList}
+              </ViewBtn>
+            </ViewToggle>
+          </Toolbar>
+
+          {viewMode === 'cards' ? (
+            <Grid data-testid="liquidity-my-positions-grid">
+              {visiblePositions.map((row) => (
+                <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
+              ))}
+            </Grid>
+          ) : (
+            <ListTable data-testid="liquidity-my-positions-list">
+              <ListHead>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colPair}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colChain}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colValue}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colShare}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colFees}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colActions}</span>
+              </ListHead>
+              {visiblePositions.map((row) => (
+                <PositionListRow key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
+              ))}
+            </ListTable>
+          )}
+
+          {canExpand ? (
+            <MoreBtn
+              type="button"
+              data-testid="liquidity-my-positions-expand"
+              onClick={() => setExpanded((v) => !v)}
+            >
+              {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
+            </MoreBtn>
+          ) : null}
+        </>
       ) : null}
 
       <ChainSwitchConfirmDialog

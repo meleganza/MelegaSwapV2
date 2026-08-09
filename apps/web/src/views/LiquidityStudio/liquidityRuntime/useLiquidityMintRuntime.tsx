@@ -119,9 +119,14 @@ export interface LiquidityMachinePayload {
   lpSubmitDeferral: typeof LP_SUBMIT_DEFERRAL.deferralReason
 }
 
+export type SetLiquidityModeOptions = {
+  /** Default true. V3 tab chrome passes false and owns URL separately to avoid replace races. */
+  syncUrl?: boolean
+}
+
 export interface LiquidityMintRuntime {
   mode: LiquidityStudioMode
-  setMode: (mode: LiquidityStudioMode) => void
+  setMode: (mode: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => void
   phase: LiquidityRuntimePhase
   loadingLabel?: string
   error: LiquidityRuntimeError | null
@@ -172,20 +177,16 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const deadline = useTransactionDeadline()
 
   const initialView = typeof router.query.view === 'string' ? router.query.view : undefined
-  /** DS001.3 — default landing is Studio home (no view). Mode only applies to deep-linked products. */
+  /** V3 product restore — default landing is My Liquidity (positions). Deep links still win via ?view=. */
   const [mode, setModeState] = useState<LiquidityStudioMode>(
-    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'Add Liquidity',
+    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',
   )
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
 
-  useEffect(() => {
-    const view = typeof router.query.view === 'string' ? router.query.view : undefined
-    if (!view) return
-    const next = LIQUIDITY_VIEW_TO_MODE[view]
-    if (next) setModeState(next)
-  }, [router.query.view])
+  // Intentionally no continuous URL→mode sync. Initial mode comes from useState(initialView).
+  // Continuous sync raced V3 local tabs (shallow replace / AI step query) and snapped wrong panels.
 
   const defaultB = useMemo(() => {
     if (!chainId) return undefined
@@ -208,13 +209,25 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const { typedValue: burnTypedValue } = useBurnState()
 
   const setMode = useCallback(
-    (next: LiquidityStudioMode) => {
+    (next: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => {
       setModeState(next)
       if (next === 'Remove Liquidity') onBurnInput('50')
+      if (opts?.syncUrl === false) return
       const view = LIQUIDITY_MODE_TO_VIEW[next]
-      const nextQuery = { ...router.query }
+      const current = typeof router.query.view === 'string' ? router.query.view : undefined
+      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query }
       if (view) nextQuery.view = view
       else delete nextQuery.view
+      // AI builder deep-link params must not leak onto Add / My Liquidity URLs.
+      if (view !== 'building') {
+        delete nextQuery.step
+        delete nextQuery.program
+      }
+      const strayBuilderParams =
+        view !== 'building' && (Boolean(router.query.step) || Boolean(router.query.program))
+      // Avoid redundant shallow replaces — they race tab chrome and cause flash / wrong selection.
+      if (view === current && !strayBuilderParams) return
+      if (!view && current === undefined && !strayBuilderParams) return
       void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
     },
     [onBurnInput, router],

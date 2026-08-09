@@ -24,8 +24,8 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
 
   it('route stability guards remain valid', () => {
     expect(add).toContain("Do NOT call setMode('Add Liquidity') on mount")
-    expect(lbHook).toContain('Never force view=building from the dual-pane Liquidity Studio home')
-    expect(lbHook).toContain("if (currentView !== 'building' && phase === 'intro') return")
+    expect(lbHook).toContain('Never force view=building from Liquidity Studio home')
+    expect(lbHook).toContain("if (currentView !== 'building') return")
   })
 
   it('tabs: My Liquidity | Add | AI Liquidity Builder', () => {
@@ -89,6 +89,37 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(tokens).toContain("aiBeta: 'BETA · BNB only'")
     expect(shell).toContain('liquidity-v3-ai-entry')
     expect(shell).toContain('LiquidityBuildingCard')
+  })
+
+  it('single-page tabs: panels stay mounted; no conditional unmount flash', () => {
+    expect(shell).toContain('data-liquidity-panels="mounted"')
+    expect(shell).toContain('hydratedRef')
+    expect(shell).toContain("display: ${({ $active }) => ($active ? 'block' : 'none')}")
+    expect(shell).toContain('liquidity-v3-panel-positions')
+    expect(shell).toContain('liquidity-v3-panel-add')
+    expect(shell).toContain('liquidity-v3-panel-ai')
+    expect(shell).not.toMatch(/\{tab === 'positions' \? \(/)
+    expect(shell).not.toMatch(/\{tab === 'add' \? \(/)
+    expect(shell).not.toMatch(/\{tab === 'building' \? \(/)
+  })
+
+  it('AI builder wide dashboard in V3', () => {
+    const lb = load('views/LiquidityStudio/onePage/LiquidityBuildingCard.tsx')
+    expect(shell).toContain('liquidity-v3-ai-builder')
+    expect(shell).toContain("forceExpanded={tab === 'building'}")
+    expect(lb).toContain('$wide={forceExpanded}')
+    expect(lb).toContain('liq-lb-studio-dash')
+    expect(lb).toContain("label: 'Setup'")
+  })
+
+  it('My Liquidity Cards/List + preview floor', () => {
+    expect(positions).toContain('liquidity-my-positions-view-cards')
+    expect(positions).toContain('liquidity-my-positions-view-list')
+    expect(positions).toContain('liquidity-my-positions-list')
+    expect(posTokens).toContain("title: 'My Liquidity'")
+    expect(posTokens).toContain('previewMin: 4')
+    expect(posTokens).toContain("colPair: 'Pair'")
+    expect(posTokens).toContain("colActions: 'Actions'")
   })
 
   it('no duplicate TVL calculation in V3 shell', () => {

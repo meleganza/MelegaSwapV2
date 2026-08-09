@@ -71,12 +71,12 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(hook).toContain('return true')
   })
 
-  it('exposes Set up → Review → Activate only (no Setup/Strategy/Review wizard)', () => {
+  it('exposes Setup → Review → Activate only (no Setup/Strategy/Review wizard)', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('data-lb-single-surface')
     expect(card).toContain('liq-lb-single-surface')
     expect(card).toContain('BUILDER_STEPS')
-    expect(card).toContain("label: 'Set up'")
+    expect(card).toContain("label: 'Setup'")
     expect(card).toContain("label: 'Review'")
     expect(card).toContain("label: 'Activate'")
     expect(card).toContain('liq-lb-step-configure')
@@ -98,7 +98,7 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(card).toContain("'Approve Tokens'")
     expect(card).toContain("'Activate Liquidity Program'")
     expect(card).toContain('LB_UX.activationInProgress')
-    expect(card).toContain("'Program Active'")
+    expect(card).toContain('LB_UX.programActiveLabel')
     expect(card).toContain('Liquidity Building contracts not deployed on BNB Smart Chain')
     expect(card).toContain('eth_requestAccounts')
     expect(card).toContain('requestDepositAndActivate')

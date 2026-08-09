@@ -1,0 +1,539 @@
+{
+  "mission": "MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_RESTORE",
+  "base": "http://127.0.0.1:3117",
+  "clicks": 100,
+  "wrongTab": 0,
+  "blankScreen": 0,
+  "routeReset": 0,
+  "aiWidthPx": 1376,
+  "viewportResults": [
+    {
+      "viewport": "1440",
+      "tab": "positions",
+      "ok": true,
+      "state": {
+        "tab": "positions",
+        "url": "/liquidity-studio/",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "block",
+            "h": 178,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1440-positions.png"
+    },
+    {
+      "viewport": "1440",
+      "tab": "add",
+      "ok": true,
+      "state": {
+        "tab": "add",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "block",
+            "h": 705,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1440-add.png"
+    },
+    {
+      "viewport": "1440",
+      "tab": "building",
+      "ok": true,
+      "state": {
+        "tab": "building",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "block",
+            "h": 982,
+            "ariaHidden": "false"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": true,
+        "studioDash": true
+      },
+      "shot": "viewport-1440-building.png"
+    },
+    {
+      "viewport": "1280",
+      "tab": "positions",
+      "ok": true,
+      "state": {
+        "tab": "positions",
+        "url": "/liquidity-studio/",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "block",
+            "h": 178,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1280-positions.png"
+    },
+    {
+      "viewport": "1280",
+      "tab": "add",
+      "ok": true,
+      "state": {
+        "tab": "add",
+        "url": "/liquidity-studio/",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "block",
+            "h": 725,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1280-add.png"
+    },
+    {
+      "viewport": "1280",
+      "tab": "building",
+      "ok": true,
+      "state": {
+        "tab": "building",
+        "url": "/liquidity-studio/?view=add",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "block",
+            "h": 901,
+            "ariaHidden": "false"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": true,
+        "studioDash": true
+      },
+      "shot": "viewport-1280-building.png"
+    },
+    {
+      "viewport": "1024",
+      "tab": "positions",
+      "ok": true,
+      "state": {
+        "tab": "positions",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "block",
+            "h": 178,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1024-positions.png"
+    },
+    {
+      "viewport": "1024",
+      "tab": "add",
+      "ok": true,
+      "state": {
+        "tab": "add",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "block",
+            "h": 926,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-1024-add.png"
+    },
+    {
+      "viewport": "1024",
+      "tab": "building",
+      "ok": true,
+      "state": {
+        "tab": "building",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "block",
+            "h": 919,
+            "ariaHidden": "false"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": true,
+        "studioDash": true
+      },
+      "shot": "viewport-1024-building.png"
+    },
+    {
+      "viewport": "768",
+      "tab": "positions",
+      "ok": true,
+      "state": {
+        "tab": "positions",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "block",
+            "h": 178,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-768-positions.png"
+    },
+    {
+      "viewport": "768",
+      "tab": "add",
+      "ok": true,
+      "state": {
+        "tab": "add",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "block",
+            "h": 946,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-768-add.png"
+    },
+    {
+      "viewport": "768",
+      "tab": "building",
+      "ok": true,
+      "state": {
+        "tab": "building",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "block",
+            "h": 965,
+            "ariaHidden": "false"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": true,
+        "studioDash": true
+      },
+      "shot": "viewport-768-building.png"
+    },
+    {
+      "viewport": "390",
+      "tab": "positions",
+      "ok": true,
+      "state": {
+        "tab": "positions",
+        "url": "/liquidity-studio/",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "block",
+            "h": 249,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-390-positions.png"
+    },
+    {
+      "viewport": "390",
+      "tab": "add",
+      "ok": true,
+      "state": {
+        "tab": "add",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "block",
+            "h": 962,
+            "ariaHidden": "false"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": false,
+        "studioDash": false
+      },
+      "shot": "viewport-390-add.png"
+    },
+    {
+      "viewport": "390",
+      "tab": "building",
+      "ok": true,
+      "state": {
+        "tab": "building",
+        "url": "/liquidity-studio/?view=positions",
+        "panels": [
+          {
+            "id": "liquidity-v3-panel-positions",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-add",
+            "display": "none",
+            "h": 0,
+            "ariaHidden": "true"
+          },
+          {
+            "id": "liquidity-v3-panel-ai",
+            "display": "block",
+            "h": 1336,
+            "ariaHidden": "false"
+          }
+        ],
+        "blank": false,
+        "hero": true,
+        "artwork": true,
+        "aiWide": true,
+        "studioDash": true
+      },
+      "shot": "viewport-390-building.png"
+    }
+  ],
+  "failures": [],
+  "pass": true,
+  "timestamp": "2026-08-09T18:24:36.723Z"
+}
