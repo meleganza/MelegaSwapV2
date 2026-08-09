@@ -3,14 +3,16 @@
  * Does not modify Modules 001–002. Does not mount Modules 004–010 content.
  */
 
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolsMyPositions } from './poolsMyPositionsTokens'
 import { usePoolsWalletPositions } from './usePoolsWalletPositions'
 import { PoolsMyPositionCard } from './PoolsMyPositionCard'
+import type { PoolsWalletPosition } from './poolsMyPositionsTypes'
 
 const pulse = keyframes`
   0% { opacity: 0.45; }
@@ -18,28 +20,19 @@ const pulse = keyframes`
   100% { opacity: 0.45; }
 `
 
-const Row = styled.section<{ $solo?: boolean }>`
+const Row = styled.section`
   width: 100%;
   max-width: ${poolsMyPositions.contentMax};
-  /* Parent Content gap 32px → 16px after Overview KPIs */
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
-  display: grid;
-  /* 936:424 ratio — exact at 1376; scales on narrower desktop */
-  grid-template-columns: ${({ $solo }) => ($solo ? '1fr' : 'minmax(0, 2.207547fr) minmax(0, 1fr)')};
-  column-gap: ${poolsMyPositions.columnGap};
-  align-items: start;
+  display: block;
   min-width: 0;
   font-family: ${typography.fontFamily.body};
-
-  @media (max-width: ${poolsMyPositions.tabletBreak}) {
-    grid-template-columns: 1fr;
-    row-gap: 16px;
-  }
+  position: relative;
+  z-index: 0;
 
   @media (max-width: ${poolsMyPositions.mobileBreak}) {
     max-width: none;
-    margin-top: -16px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -50,32 +43,23 @@ const Row = styled.section<{ $solo?: boolean }>`
   }
 `
 
-const Surface = styled.div<{ $solo?: boolean }>`
+const Surface = styled.div`
   width: 100%;
-  max-width: ${({ $solo }) => ($solo ? '100%' : poolsMyPositions.leftW)};
+  max-width: none;
   height: auto;
-  min-height: ${poolsMyPositions.moduleH};
+  min-height: 0;
   box-sizing: border-box;
   border-radius: ${poolsMyPositions.moduleRadius};
   border: ${poolsMyPositions.moduleBorder};
   background: ${poolsMyPositions.moduleBg};
   box-shadow: ${poolsMyPositions.moduleShadow};
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  justify-self: stretch;
-
-  @media (max-width: ${poolsMyPositions.tabletBreak}) {
-    max-width: none;
-    height: auto;
-    min-height: ${poolsMyPositions.moduleH};
-  }
 
   @media (max-width: ${poolsMyPositions.mobileBreak}) {
     width: 100%;
-    height: auto;
-    min-height: 0;
   }
 `
 
@@ -123,11 +107,37 @@ const CountBadge = styled.span`
   font-weight: 700;
 `
 
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+`
+
+const ViewToggle = styled.div`
+  display: inline-flex;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+`
+
+const ToggleBtn = styled.button<{ $active?: boolean }>`
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
+  color: ${({ $active }) => ($active ? poolsMyPositions.gold : '#f5f5f5')};
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+`
+
 const ViewAll = styled.button`
   appearance: none;
   cursor: pointer;
-  width: ${poolsMyPositions.viewAllW};
+  min-width: ${poolsMyPositions.viewAllW};
   height: ${poolsMyPositions.viewAllH};
+  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
@@ -136,10 +146,72 @@ const ViewAll = styled.button`
   font-size: 12px;
   font-weight: 650;
   flex-shrink: 0;
+  white-space: nowrap;
 
   &:focus-visible {
     outline: ${poolsMyPositions.focusRing};
     outline-offset: ${poolsMyPositions.focusOffset};
+  }
+`
+
+const List = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+`
+
+const ListRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) minmax(80px, 0.9fr) minmax(70px, 0.8fr) minmax(80px, 0.9fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr) minmax(160px, 1.1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(19, 19, 19, 0.96);
+  min-width: 0;
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const ListCell = styled.div`
+  min-width: 0;
+  font-size: 13px;
+  color: #f5f5f5;
+`
+
+const ListLabel = styled.span`
+  display: none;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  @media (max-width: 1023px) {
+    display: inline;
+    margin-right: 8px;
+  }
+`
+
+const ListActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`
+
+const ListBtn = styled.button`
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 `
 
@@ -263,19 +335,11 @@ const Disclosure = styled.p`
 `
 
 const AdvisorSlot = styled.div`
-  width: 100%;
-  max-width: ${poolsMyPositions.rightSlotW};
-  height: ${poolsMyPositions.moduleH};
-  box-sizing: border-box;
-  border-radius: ${poolsMyPositions.moduleRadius};
-  border: 1px dashed rgba(255, 255, 255, 0.06);
-  background: transparent;
-  min-width: 0;
-  justify-self: stretch;
-
-  @media (max-width: ${poolsMyPositions.tabletBreak}) {
-    display: none;
-  }
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 `
 
 const VisuallyHidden = styled.span`
@@ -303,38 +367,111 @@ const ConnectWrap = styled.div`
   }
 `
 
+function PoolListRow({ position }: { position: PoolsWalletPosition }) {
+  const { requestModal } = usePoolsRuntime()
+  const claim = (position.actions ?? []).find((a) => a.kind === 'claim' && a.enabled && a.modalAction)
+  const manage = (position.actions ?? []).find(
+    (a) => (a.kind === 'manage' || a.kind === 'withdraw' || a.kind === 'stake') && a.enabled && a.modalAction,
+  )
+  return (
+    <ListRow data-testid="pools-my-position-list-row">
+      <ListCell>
+        <ListLabel>Pair</ListLabel>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+            <PoolTokenIcon
+              symbol={position.stakeToken.symbol}
+              address={position.stakeToken.address ?? undefined}
+              chainId={position.stakeToken.chainId ?? undefined}
+              size={24}
+            />
+            {position.rewardToken.symbol && position.rewardToken.symbol !== position.stakeToken.symbol ? (
+              <span style={{ marginLeft: -8, display: 'inline-flex' }}>
+                <PoolTokenIcon
+                  symbol={position.rewardToken.symbol}
+                  address={position.rewardToken.address ?? undefined}
+                  chainId={position.rewardToken.chainId ?? undefined}
+                  size={20}
+                />
+              </span>
+            ) : null}
+          </span>
+          <strong style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{position.title}</strong>
+        </div>
+      </ListCell>
+      <ListCell>
+        <ListLabel>TVL / Staked</ListLabel>
+        {position.stakedValue || position.stakedFormatted || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>APR</ListLabel>
+        {position.sourceCard?.sustainableAprDisplay || position.sourceCard?.apr || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Rewards</ListLabel>
+        {position.claimableFormatted || position.rewardToken?.symbol || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Duration</ListLabel>
+        {position.sourceCard?.estimatedDuration || position.sourceCard?.lockPeriod || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Status</ListLabel>
+        {position.statusLabel}
+      </ListCell>
+      <ListCell>
+        <ListActions>
+          <ListBtn
+            type="button"
+            disabled={!claim}
+            onClick={() => claim?.modalAction && requestModal(position.sourceCard, claim.modalAction)}
+          >
+            Claim
+          </ListBtn>
+          <ListBtn
+            type="button"
+            disabled={!manage}
+            onClick={() => manage?.modalAction && requestModal(position.sourceCard, manage.modalAction)}
+          >
+            Manage
+          </ListBtn>
+        </ListActions>
+      </ListCell>
+    </ListRow>
+  )
+}
+
 export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-create-side' }> = ({
   variant = 'default',
 }) => {
   const vm = usePoolsWalletPositions()
-  const { setPortfolioViewMode, setPoolTab } = usePoolsRuntime()
+  const [expanded, setExpanded] = useState(false)
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const hideAdvisor = variant === 'with-create-side'
 
-  const onViewAll = () => {
-    setPortfolioViewMode('MY_POOLS')
-    setPoolTab('positions')
-    const el = document.querySelector('[data-ps-pool-explorer]')
-    if (el instanceof HTMLElement) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
+  const limit = 3
+  const shown = useMemo(() => {
+    if (expanded) return vm.positions
+    return vm.visiblePositions.slice(0, limit)
+  }, [expanded, vm.positions, vm.visiblePositions])
+  const canExpand = (vm.totalCount ?? vm.positions.length) > limit
 
-  // Product polish: never render empty / no-wallet My Positions — go straight to Explore.
-  // Disconnected == zero meaningful positions for the guest; avoid a large empty module.
+  // Never render empty / disconnected — avoid giant empty module.
   if (vm.state === 'empty' || vm.state === 'disconnected') {
     return null
   }
 
   return (
     <Row
-      $solo={hideAdvisor}
       data-testid="pools-my-positions-module"
       data-pools-module="003"
       data-pools-module-003="mounted"
       data-module-state={vm.state}
+      data-my-positions-expanded={expanded ? 'true' : 'false'}
+      data-my-positions-view={viewMode}
       aria-labelledby="pools-my-positions-title"
     >
-      <Surface $solo={hideAdvisor} data-pools-my-positions-surface="true">
+      <Surface data-pools-my-positions-surface="true">
         <Header>
           <TitleRow>
             <Title id="pools-my-positions-title">My Positions</Title>
@@ -342,24 +479,35 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
               <CountBadge aria-label={`${vm.totalCount} positions`}>{vm.totalCount}</CountBadge>
             ) : null}
           </TitleRow>
-          {vm.showViewAll ? (
-            <ViewAll type="button" onClick={onViewAll} aria-label="View all pool positions">
-              View all positions
-            </ViewAll>
-          ) : null}
+          <HeaderActions>
+            {expanded ? (
+              <ViewToggle role="group" aria-label="My Positions view mode">
+                <ToggleBtn type="button" $active={viewMode === 'cards'} onClick={() => setViewMode('cards')}>
+                  Cards
+                </ToggleBtn>
+                <ToggleBtn type="button" $active={viewMode === 'list'} onClick={() => setViewMode('list')}>
+                  List
+                </ToggleBtn>
+              </ViewToggle>
+            ) : null}
+            {canExpand || expanded ? (
+              <ViewAll
+                type="button"
+                data-testid="pools-view-all-my-positions"
+                onClick={() => {
+                  setExpanded((v) => !v)
+                  if (expanded) setViewMode('cards')
+                }}
+                aria-label={expanded ? 'Show fewer pool positions' : 'View all my positions'}
+              >
+                {expanded ? 'Show less' : 'View all my positions'}
+              </ViewAll>
+            ) : null}
+          </HeaderActions>
         </Header>
 
         <Body>
           {vm.moduleDisclosure ? <Disclosure>{vm.moduleDisclosure}</Disclosure> : null}
-
-          {vm.state === 'disconnected' ? (
-            <CenterState data-testid="pools-my-positions-disconnected">
-              <StateTitle>Connect your wallet to view pool positions</StateTitle>
-              <ConnectWrap>
-                <ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton>
-              </ConnectWrap>
-            </CenterState>
-          ) : null}
 
           {vm.state === 'loading' ? (
             <CardGrid aria-busy="true" aria-label="Loading pool positions" data-testid="pools-my-positions-loading">
@@ -379,13 +527,21 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
           ) : null}
 
           {vm.state === 'ready' || vm.state === 'partial' || vm.state === 'stale' ? (
-            <CardGrid data-testid="pools-my-positions-grid">
-              {vm.visiblePositions.map((position) => (
-                <CardItem key={position.positionId}>
-                  <PoolsMyPositionCard position={position} />
-                </CardItem>
-              ))}
-            </CardGrid>
+            viewMode === 'list' && expanded ? (
+              <List data-testid="pools-my-positions-list">
+                {shown.map((position) => (
+                  <PoolListRow key={position.positionId} position={position} />
+                ))}
+              </List>
+            ) : (
+              <CardGrid data-testid="pools-my-positions-grid">
+                {shown.map((position) => (
+                  <CardItem key={position.positionId}>
+                    <PoolsMyPositionCard position={position} />
+                  </CardItem>
+                ))}
+              </CardGrid>
+            )
           ) : null}
         </Body>
 
@@ -393,11 +549,7 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
       </Surface>
 
       {!hideAdvisor ? (
-        <AdvisorSlot
-          data-pools-module-006-slot="reserved"
-          aria-hidden="true"
-          title="Reserved for Module 006"
-        />
+        <AdvisorSlot data-pools-module-006-slot="reserved" aria-hidden="true" title="Reserved for Module 006" />
       ) : null}
     </Row>
   )

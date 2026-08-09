@@ -3,14 +3,16 @@
  * Does not modify Modules 001–003. Does not mount Modules 005–010.
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
 import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
+import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolsExplore, POOLS_EXPLORE_FILTERS, POOLS_EXPLORE_SORTS } from './poolsExplorePoolsTokens'
 import { usePoolsExplorePools } from './usePoolsExplorePools'
 import { PoolsExplorePoolCard } from './PoolsExplorePoolCard'
-import type { PoolsExploreFilter, PoolsExploreSort } from './poolsExplorePoolsTypes'
+import type { PoolsExploreFilter, PoolsExplorePoolCardModel, PoolsExploreSort } from './poolsExplorePoolsTypes'
 
 const pulse = keyframes`
   0% { opacity: 0.45; }
@@ -22,7 +24,7 @@ const Module = styled.section`
   width: 100%;
   max-width: ${poolsExplore.contentMax};
   /* Parent Content gap 32px → 16px after My Positions */
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -79,15 +81,22 @@ const TitleRow = styled.div`
 
 const Toolbar = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
   min-width: 0;
+  width: 100%;
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+  }
 `
 
 const Search = styled.input`
   appearance: none;
-  width: min(280px, 100%);
+  flex: 1 1 auto;
+  width: min(420px, 100%);
+  min-width: 0;
   height: 40px;
   min-height: ${poolsExplore.touchMin};
   padding: 0 12px;
@@ -243,8 +252,169 @@ const VisuallyHidden = styled.span`
   border: 0;
 `
 
+const ViewToggle = styled.div`
+  display: inline-flex;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+`
+
+const ToggleBtn = styled.button<{ $active?: boolean }>`
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
+  color: ${({ $active }) => ($active ? poolsExplore.gold : '#f5f5f5')};
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+`
+
+const List = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+`
+
+const ListRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(160px, 1.5fr) minmax(80px, 0.9fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr) minmax(200px, 1.2fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(19, 19, 19, 0.96);
+  min-width: 0;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+`
+
+const ListCell = styled.div`
+  min-width: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.88);
+`
+
+const ListLabel = styled.div`
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2px;
+  @media (min-width: 1024px) {
+    display: none;
+  }
+`
+
+const ListActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`
+
+const ListBtn = styled.button`
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+`
+
+function ExplorePoolListRow({ pool }: { pool: PoolsExplorePoolCardModel }) {
+  const { requestModal } = usePoolsRuntime()
+  const stakeDisabled = pool.primaryAction === 'Unavailable'
+  return (
+    <ListRow data-testid="pools-explore-list-row">
+      <ListCell>
+        <ListLabel>Pair</ListLabel>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+            <PoolTokenIcon
+              symbol={pool.stakeToken.symbol}
+              address={pool.stakeToken.address ?? undefined}
+              chainId={pool.stakeToken.chainId ?? undefined}
+              size={24}
+            />
+            <span style={{ marginLeft: -8, display: 'inline-flex' }}>
+              <PoolTokenIcon
+                symbol={pool.rewardToken.symbol}
+                address={pool.rewardToken.address ?? undefined}
+                chainId={pool.rewardToken.chainId ?? undefined}
+                size={20}
+              />
+            </span>
+          </span>
+          <strong style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pool.title}</strong>
+        </div>
+      </ListCell>
+      <ListCell>
+        <ListLabel>TVL</ListLabel>
+        {pool.tvlDisplay}
+      </ListCell>
+      <ListCell>
+        <ListLabel>APR</ListLabel>
+        {pool.aprDisplay}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Rewards</ListLabel>
+        {pool.emissionDisplay || pool.rewardToken.symbol || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Participants</ListLabel>
+        {pool.participantsDisplay}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Duration / Remaining</ListLabel>
+        {pool.lockType} · {pool.remainingDisplay}
+      </ListCell>
+      <ListCell>
+        <ListActions>
+          <ListBtn
+            type="button"
+            disabled={stakeDisabled}
+            onClick={() => {
+              if (stakeDisabled) return
+              requestModal(pool.sourceCard, 'stake')
+            }}
+          >
+            {pool.primaryAction === 'Stake' || pool.primaryAction === 'Connect Wallet' ? 'Stake' : pool.primaryAction}
+          </ListBtn>
+          <ListBtn type="button" onClick={() => requestModal(pool.sourceCard, 'stake')}>
+            Manage
+          </ListBtn>
+          {pool.detailsHref ? (
+            <ListBtn type="button" onClick={() => window.open(pool.detailsHref!, '_blank', 'noopener,noreferrer')}>
+              View Pool
+            </ListBtn>
+          ) : pool.contractExplorerUrl ? (
+            <ListBtn
+              type="button"
+              onClick={() => window.open(pool.contractExplorerUrl!, '_blank', 'noopener,noreferrer')}
+            >
+              View Pool
+            </ListBtn>
+          ) : null}
+        </ListActions>
+      </ListCell>
+    </ListRow>
+  )
+}
+
 export const PoolsExplorePoolsModule: React.FC = () => {
   const vm = usePoolsExplorePools()
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
 
   return (
     <Module
@@ -253,6 +423,7 @@ export const PoolsExplorePoolsModule: React.FC = () => {
       data-pools-module-004="mounted"
       data-ps-pool-explorer
       data-module-state={vm.state}
+      data-explore-view={viewMode}
       aria-labelledby="pools-explore-pools-title"
     >
       <Header>
@@ -262,6 +433,14 @@ export const PoolsExplorePoolsModule: React.FC = () => {
             <Count aria-label={`${vm.totalActive} active pools`}>{vm.totalActive}</Count>
           ) : null}
         </TitleRow>
+        <ViewToggle role="group" aria-label="Explore pools view">
+          <ToggleBtn type="button" $active={viewMode === 'cards'} onClick={() => setViewMode('cards')}>
+            Cards
+          </ToggleBtn>
+          <ToggleBtn type="button" $active={viewMode === 'list'} onClick={() => setViewMode('list')}>
+            List
+          </ToggleBtn>
+        </ViewToggle>
       </Header>
 
       <Toolbar>
@@ -345,6 +524,12 @@ export const PoolsExplorePoolsModule: React.FC = () => {
             <EmptyTitle>No active staking pools</EmptyTitle>
             <EmptyDesc>No pools match the current filters or search.</EmptyDesc>
           </Empty>
+        ) : viewMode === 'list' ? (
+          <List data-testid="pools-explore-list">
+            {vm.pools.map((pool) => (
+              <ExplorePoolListRow key={pool.poolId} pool={pool} />
+            ))}
+          </List>
         ) : (
           <Grid data-testid="pools-explore-grid">
             {vm.pools.map((pool) => (

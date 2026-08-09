@@ -24,65 +24,68 @@ const Page = styled.div`
   overflow-x: hidden;
   background: ${liqV3.pageBg};
   box-sizing: border-box;
-  padding: 8px 12px 40px;
+  padding: 24px 12px 48px;
   max-width: ${liqV3.contentMax};
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   @media (min-width: 768px) {
-    padding: 10px 16px 48px;
+    padding: 24px 0 56px;
   }
 `
 
 const Hero = styled.section`
-  max-height: ${liqV3.heroMaxH};
-  padding: 14px 16px;
-  border-radius: ${liqV3.radius};
-  border: 1px solid ${liqV3.line};
-  background: linear-gradient(165deg, ${liqV3.panel2} 0%, ${liqV3.panel} 100%);
+  min-height: ${liqV3.heroMaxH};
+  padding: 8px 0 4px;
+  border: none;
+  border-radius: 0;
+  background:
+    radial-gradient(ellipse 42% 80% at 52% 55%, rgba(244, 196, 48, 0.07) 0%, rgba(8, 8, 8, 0) 70%),
+    radial-gradient(ellipse 36% 70% at 18% 40%, rgba(34, 197, 94, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
+    transparent;
   display: grid;
-  gap: 10px;
+  gap: 14px;
   min-width: 0;
-
-  @media (min-width: 768px) {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    padding: 16px 18px;
-  }
+  align-content: center;
 `
 
 const HeroTitle = styled.h1`
   margin: 0;
-  font-size: clamp(22px, 2.2vw, 28px);
-  font-weight: 850;
+  font-size: ${liqV3.titleSize};
+  line-height: ${liqV3.titleLine};
+  font-weight: 800;
   letter-spacing: -0.03em;
-  color: #fff;
+  color: #f7f7f7;
 `
 
 const HeroSub = styled.p`
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: ${liqV3.mute};
-  max-width: 36rem;
+  margin: 14px 0 0;
+  font-size: ${liqV3.descSize};
+  line-height: 24px;
+  color: rgba(255, 255, 255, 0.66);
+  max-width: 38rem;
 `
 
 const HeroActions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
+  margin-top: 24px;
 `
 
 const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
   appearance: none;
   cursor: pointer;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 9px;
-  font-size: 13px;
+  min-height: ${liqV3.ctaH};
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 750;
   border: 1px solid
-    ${({ $primary, $ghost }) => ($primary ? liqV3.goldLine : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
+    ${({ $primary, $ghost }) => ($primary ? 'transparent' : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary, $ghost }) =>
     $primary ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)' : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
@@ -105,48 +108,29 @@ const LinkBtn = styled(Link)<{ $primary?: boolean; $ghost?: boolean }>`
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
 `
 
-const AiHint = styled.button`
-  appearance: none;
-  cursor: pointer;
-  border: 0;
-  background: transparent;
-  color: ${liqV3.mute};
-  font-size: 11px;
-  font-weight: 650;
-  text-align: left;
-  padding: 0;
-
-  span {
-    color: ${liqV3.gold};
-  }
-`
-
 const Snapshot = styled.section`
-  margin-top: 10px;
+  margin-top: 0;
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(96px, 1fr);
-  gap: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border-radius: ${liqV3.radius};
-  border: 1px solid ${liqV3.line};
-  background: rgba(255, 255, 255, 0.02);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
 
-  @media (min-width: 960px) {
-    grid-auto-flow: unset;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    overflow: visible;
+  @media (max-width: 1023px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
 const SnapCell = styled.div`
-  min-width: 96px;
-  padding: 10px 12px;
-  border-right: 1px solid ${liqV3.line};
-  &:last-child {
-    border-right: 0;
-  }
+  min-width: 0;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid ${liqV3.line};
+  background: rgba(18, 18, 18, 0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 `
 
 const SnapLabel = styled.div`
@@ -167,7 +151,7 @@ const SnapValue = styled.div`
 `
 
 const Tabs = styled.div`
-  margin-top: 12px;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -355,17 +339,17 @@ const LiquidityV3Body: React.FC = () => {
         <div>
           <HeroTitle>{LIQ_V3_COPY.title}</HeroTitle>
           <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
-          <HeroActions style={{ marginTop: 10 }}>
+          <HeroActions>
             <Btn $primary type="button" onClick={goAdd} data-testid="liquidity-v3-hero-add">
               {LIQ_V3_COPY.addCta}
             </Btn>
             <Btn $ghost type="button" onClick={goPositions} data-testid="liquidity-v3-hero-positions">
               {LIQ_V3_COPY.positionsCta}
             </Btn>
+            <Btn type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai">
+              {LIQ_V3_COPY.aiEntry} · BETA
+            </Btn>
           </HeroActions>
-          <AiHint type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai" style={{ marginTop: 8 }}>
-            {LIQ_V3_COPY.aiEntry} <span>{LIQ_V3_COPY.aiBeta}</span>
-          </AiHint>
         </div>
       </Hero>
 

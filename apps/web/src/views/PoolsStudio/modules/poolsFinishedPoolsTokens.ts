@@ -54,26 +54,26 @@ export const POOLS_MODULE_001_FREEZE_SHA256 = {
 } as const
 
 export const POOLS_MODULE_002_FREEZE_SHA256 = {
-  PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+  PoolsOverviewKpisModule: 'ca0cae8991049fff7d399870b7558e136d12a08078bbdc83c29af2aad268dc8a',
   usePoolsOverviewKpis: '2a5e47402bac991c2323706c83841a65676eaff2e57f65f22cc7d8ed4e5146e0',
   poolsOverviewKpisTokens: '66dc7fe4a6d8c9fe6e512a9704ccf9b55c488e0e6cae5982dfe51e3cd9f1d3e9',
   poolsOverviewKpisTypes: 'ea61d37fa5a98ef344e63005af12f9109b2e9e188dc1cec3cbd911855a5d8d67',
 } as const
 
 export const POOLS_MODULE_003_FREEZE_SHA256 = {
-  PoolsMyPositionsModule: 'b95fd3658ed6462becb079ac714216e8d8de406d902e49320ad1c997bf36f369',
-  PoolsMyPositionCard: 'e31f52e00fc34be5018a9bc978a6b37f33d08010801b7bd543a54fe62d62ecb0',
+  PoolsMyPositionsModule: '7bd599e6b1e194d8f9183bda79425d009c84848f22f54892d0284c076873d8db',
+  PoolsMyPositionCard: '1e599b176e1d409b3ccb495387a43a1fb3749e6f8bf57c3a72a3e4c951605fc5',
   buildPoolsWalletPositions: 'eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655',
   usePoolsWalletPositions: '7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189',
-  poolsMyPositionsTokens: 'da8287a187df8e21e8b2aed5a90009069c04dbf4c41bdb3adbd711225290f269',
+  poolsMyPositionsTokens: '169693c9d35471f3db94e3fc38cc6d7d0f97adec12c1894499d22be51e9dc6e9',
   poolsMyPositionsTypes: 'dfb8388c5c8feba9478e85e776505499ca80534afc8e9eced52784ebe1be2713',
 } as const
 
 export const POOLS_MODULE_004_FREEZE_SHA256 = {
-  PoolsExplorePoolsModule: 'f0926fde06ef578ec671f98424d63b76204767839dbaafd10e87ab3f4ee34f3a',
-  PoolsExplorePoolCard: '7fcfcea9be7bf491e753dfac1d8b655e704518524b0001e18ed1759eb56f291b',
+  PoolsExplorePoolsModule: 'b7aa78f244183100fccd0cfa4bad4ad02003bba84b2e4166763c9383b349f7d9',
+  PoolsExplorePoolCard: 'dca5ec011ea98b4de71b01f78f0cd85c4b6594cc50e9b74f08ce3b36157714df',
   buildPoolsExplorePools: '3bacf0b1de087a30a1ec2f34c2f1d43bf9b2513908860b88f591dca275274992',
   usePoolsExplorePools: 'e6eb54e31ed62267bb7f115e69d67d001bee0b88179801ae836b9724579701ab',
-  poolsExplorePoolsTokens: '2696a0cb96102ab6d0a4dc07de1fba15058d6ed342ff917c3fb9ce205c8541a7',
+  poolsExplorePoolsTokens: '067848f51a7f7d1442e0062bfa929e9b3db3130d12a28de7ef7807cce52041ff',
   poolsExplorePoolsTypes: 'a581a34d12cd8fd13197097ef16b3ab4cb53c990b5e379c5852fdf7487a93ac9',
 } as const

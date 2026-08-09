@@ -4,7 +4,7 @@
 import { uxRebuildColors, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 
 export const liqV3 = {
-  contentMax: uxRebuildLayout.contentMax,
+  contentMax: '1376px',
   pageBg: uxRebuildColors.pageBg,
   gold: uxRebuildColors.gold,
   goldLine: 'rgba(221, 185, 47, 0.32)',
@@ -15,8 +15,12 @@ export const liqV3 = {
   panel: 'rgba(14, 14, 14, 0.96)',
   panel2: 'rgba(18, 18, 18, 0.98)',
   radius: uxRebuildRadius.card,
-  heroMaxH: '200px',
+  heroMaxH: '260px',
   emptyMaxH: '120px',
+  titleSize: 'clamp(36px, 4vw, 52px)',
+  titleLine: '1.1',
+  descSize: '16px',
+  ctaH: '44px',
 } as const
 
 export const LIQ_V3_LIVE_CHAINS: Array<{ id: number; label: string }> = [

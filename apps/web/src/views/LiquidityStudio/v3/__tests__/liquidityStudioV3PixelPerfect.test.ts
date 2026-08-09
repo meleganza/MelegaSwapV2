@@ -38,7 +38,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
 
   it('compact hero + snapshot truth source', () => {
     expect(shell).toContain('liquidity-v3-hero')
-    expect(shell).toContain('max-height: ${liqV3.heroMaxH}')
+    expect(shell).toContain('min-height: ${liqV3.heroMaxH}')
     expect(shell).toContain('liquidity-v3-snapshot')
     expect(shell).toContain('GLOBAL_DATA_TRUTH_PIPELINE')
     expect(shell).toContain('useLiquidityMarketSnapshot')

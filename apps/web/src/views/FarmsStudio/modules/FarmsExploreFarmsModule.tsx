@@ -3,14 +3,16 @@
  * Does not modify Modules 001–003. Does not mount Modules 005–010.
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsExplore, FARMS_EXPLORE_FILTERS, FARMS_EXPLORE_SORTS } from './farmsExploreFarmsTokens'
 import { useExploreFarms } from './useFarmsExploreFarms'
 import { FarmsExploreFarmCard } from './FarmsExploreFarmCard'
-import type { FarmsExploreFilter, FarmsExploreSort } from './farmsExploreFarmsTypes'
+import type { ExploreFarmViewModel, FarmsExploreFilter, FarmsExploreSort } from './farmsExploreFarmsTypes'
 
 const pulse = keyframes`
   0% { opacity: 0.45; }
@@ -22,7 +24,7 @@ const Module = styled.section`
   width: 100%;
   max-width: ${farmsExplore.contentMax};
   /* Parent Content gap 32px → 16px after My Farms / Advisor row */
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -305,8 +307,160 @@ const Retry = styled.button`
   }
 `
 
+const ViewToggle = styled.div`
+  display: inline-flex;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+`
+
+const ToggleBtn = styled.button<{ $active?: boolean }>`
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
+  color: ${({ $active }) => ($active ? farmsExplore.gold : '#f5f5f5')};
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+`
+
+const List = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+`
+
+const ListRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(160px, 1.6fr) minmax(80px, 0.9fr) minmax(70px, 0.8fr) minmax(64px, 0.7fr) minmax(70px, 0.8fr) minmax(200px, 1.2fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(19, 19, 19, 0.96);
+  min-width: 0;
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+`
+
+const ListCell = styled.div`
+  min-width: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.88);
+`
+
+const ListLabel = styled.div`
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2px;
+  @media (min-width: 1024px) {
+    display: none;
+  }
+`
+
+const ListActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`
+
+const ListBtn = styled.button`
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+`
+
+function ExploreFarmListRow({ farm }: { farm: ExploreFarmViewModel }) {
+  const { requestModal } = useFarmsRuntime()
+  const unavailable = farm.primaryAction === 'Farm Unavailable'
+  return (
+    <ListRow data-testid="farms-explore-list-row">
+      <ListCell>
+        <ListLabel>Pair</ListLabel>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+            <MelegaTokenAvatar
+              name={farm.token0.symbol}
+              symbol={farm.token0.symbol}
+              address={farm.token0.address ?? undefined}
+              chainId={farm.chainId}
+              size={22}
+              radius="circle"
+            />
+            <span style={{ marginLeft: -8, display: 'inline-flex' }}>
+              <MelegaTokenAvatar
+                name={farm.token1.symbol}
+                symbol={farm.token1.symbol}
+                address={farm.token1.address ?? undefined}
+                chainId={farm.chainId}
+                size={22}
+                radius="circle"
+              />
+            </span>
+          </span>
+          <strong style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{farm.title}</strong>
+        </div>
+      </ListCell>
+      <ListCell>
+        <ListLabel>TVL</ListLabel>
+        {farm.tvl}
+      </ListCell>
+      <ListCell>
+        <ListLabel>APR</ListLabel>
+        {farm.apr}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Multiplier</ListLabel>
+        {farm.multiplier || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Status</ListLabel>
+        {farm.statusLabel}
+      </ListCell>
+      <ListCell>
+        <ListActions>
+          <ListBtn
+            type="button"
+            disabled={unavailable || farm.primaryAction === 'Connect Wallet'}
+            onClick={() => {
+              if (unavailable) return
+              requestModal(farm.sourceCard, 'stake')
+            }}
+          >
+            {farm.primaryAction.includes('Stake') || farm.primaryAction === 'Approve LP' ? 'Stake' : farm.primaryAction}
+          </ListBtn>
+          <ListBtn
+            type="button"
+            disabled={unavailable || farm.primaryAction === 'Connect Wallet'}
+            onClick={() => requestModal(farm.sourceCard, 'stake')}
+          >
+            Manage
+          </ListBtn>
+        </ListActions>
+      </ListCell>
+    </ListRow>
+  )
+}
+
 export const FarmsExploreFarmsModule: React.FC = () => {
   const vm = useExploreFarms()
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
 
   const showCount = vm.state !== 'loading' && vm.state !== 'unavailable' && vm.totalActive > 0
 
@@ -318,6 +472,7 @@ export const FarmsExploreFarmsModule: React.FC = () => {
       data-fs-explore-farms="true"
       data-multichain-inventory="true"
       data-module-state={vm.state}
+      data-explore-view={viewMode}
       aria-labelledby="farms-explore-farms-title"
     >
       <Header>
@@ -327,11 +482,21 @@ export const FarmsExploreFarmsModule: React.FC = () => {
             <Count aria-label={`${vm.totalActive} active farms`}>{vm.totalActive} farms · all LIVE chains</Count>
           ) : null}
         </TitleRow>
-        {vm.freshness ? (
-          <Freshness aria-label={`Source freshness ${vm.freshness}`}>
-            {vm.freshness === 'stale' ? 'Stale' : vm.freshness === 'partial' ? 'Partial' : 'Live'}
-          </Freshness>
-        ) : null}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {vm.freshness ? (
+            <Freshness aria-label={`Source freshness ${vm.freshness}`}>
+              {vm.freshness === 'stale' ? 'Stale' : vm.freshness === 'partial' ? 'Partial' : 'Live'}
+            </Freshness>
+          ) : null}
+          <ViewToggle role="group" aria-label="Explore farms view">
+            <ToggleBtn type="button" $active={viewMode === 'cards'} onClick={() => setViewMode('cards')}>
+              Cards
+            </ToggleBtn>
+            <ToggleBtn type="button" $active={viewMode === 'list'} onClick={() => setViewMode('list')}>
+              List
+            </ToggleBtn>
+          </ViewToggle>
+        </div>
       </Header>
 
       <Toolbar role="search" aria-label="Explore farms search and sort">
@@ -420,13 +585,21 @@ export const FarmsExploreFarmsModule: React.FC = () => {
           </Empty>
         ) : (
           <>
-            <Grid data-testid="farms-explore-grid">
-              {vm.visibleFarms.map((farm) => (
-                <Item key={farm.farmId}>
-                  <FarmsExploreFarmCard farm={farm} />
-                </Item>
-              ))}
-            </Grid>
+            {viewMode === 'list' ? (
+              <List data-testid="farms-explore-list">
+                {vm.visibleFarms.map((farm) => (
+                  <ExploreFarmListRow key={farm.farmId} farm={farm} />
+                ))}
+              </List>
+            ) : (
+              <Grid data-testid="farms-explore-grid">
+                {vm.visibleFarms.map((farm) => (
+                  <Item key={farm.farmId}>
+                    <FarmsExploreFarmCard farm={farm} />
+                  </Item>
+                ))}
+              </Grid>
+            )}
             {vm.hasMore ? (
               <LoadMore type="button" onClick={vm.loadMore} data-testid="farms-explore-load-more">
                 Load More

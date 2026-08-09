@@ -40,12 +40,12 @@ const Content = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 
   @media (max-width: 767px) {
     margin-top: 16px;
     padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
-    gap: 12px;
+    gap: 16px;
   }
 `
 

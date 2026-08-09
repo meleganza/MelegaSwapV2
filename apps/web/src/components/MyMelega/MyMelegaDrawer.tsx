@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { useAccount, useDisconnect } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import {
@@ -71,6 +72,21 @@ const Head = styled.header`
   border-bottom: 1px solid ${line};
   background: rgba(12, 12, 12, 0.96);
   backdrop-filter: blur(10px);
+`
+
+const BrandRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+`
+
+const BrandLogo = styled.img`
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
 `
 
 const Title = styled.h2`
@@ -357,7 +373,10 @@ export const MyMelegaDrawer: React.FC = () => {
       >
         <Head>
           <div style={{ minWidth: 0 }}>
-            <Title id={titleId}>MY MELEGA</Title>
+            <BrandRow>
+              <BrandLogo src={MELEGA_LOGO_URI} alt="" width={28} height={28} data-testid="my-melega-logo" />
+              <Title id={titleId}>MY MELEGA</Title>
+            </BrandRow>
             {data.connected && address ? (
               <>
                 <WalletLine>
