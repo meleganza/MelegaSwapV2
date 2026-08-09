@@ -855,16 +855,12 @@ export const ListWorkspace: React.FC = () => {
               data-lifecycle="DEPLOYED_VALIDATED_BOUND_READY"
               data-blocker={CREATE_TOKEN_READINESS.blockerCode ?? 'none'}
             >
-              Create Token READY — factory {CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}. Creation fee: 0.10
-              BNB ({CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) paid to MELEGA TREASURY WALLET{' '}
-              {CREATE_TOKEN_FEE_RECIPIENT}. Connect wallet → configure token → factory creates token. No Founder
-              involvement. No Treasury Runtime.
+              Create Token — connect your wallet, set name, symbol and supply, then confirm. Creation fee: 0.10 BNB.
+              Network: BNB Smart Chain.
             </Banner>
           ) : (
             <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
-              Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
-              (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.10 BNB (
-              {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
+              Create Token is temporarily unavailable. Creation fee: 0.10 BNB. Network: BNB Smart Chain.
             </Banner>
           )}
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
@@ -895,24 +891,18 @@ export const ListWorkspace: React.FC = () => {
             <Input value={values.social || ''} onChange={set('social')} placeholder="X / Telegram / Discord" />
           </Field>
           <Banner data-testid="list-create-token-review" data-review="factual">
-            Review — Network: {review.network}. Factory: {review.factoryAddress ?? 'not deployed'}. Name:{' '}
-            {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply: {review.totalSupply || '—'}. Decimals:{' '}
-            {review.decimals}. Owner: {review.owner || '—'}. Fixed supply: yes. Mintability: {review.mintability}. Tax:{' '}
-            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: 0.10 BNB (
-            {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED. Fee recipient:{' '}
-            {review.feeRecipient}.
+            Review — Name: {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply:{' '}
+            {review.totalSupply || '—'}. Decimals: {review.decimals}. Owner: {review.owner || '—'}. Creation fee: 0.10
+            BNB. Network: BNB Smart Chain.
           </Banner>
           {LIST_CREATE_TOKEN_AVAILABLE ? (
             <Banner data-testid="list-create-token-cta-ready">
-              Create Token — user flow unlocked ({CREATE_TOKEN_READINESS.uiState} / READY). Pay 0.10 BNB to MELEGA
-              TREASURY WALLET via CreateTokenFactoryV1. LIST_CREATE_TOKEN_AVAILABLE=true. Drafts autosaved until
-              wallet confirm.
+              Create Token — confirm in your wallet to deploy. Creation fee: 0.10 BNB on BNB Smart Chain. Drafts are
+              autosaved until you confirm.
             </Banner>
           ) : (
             <Banner data-testid="list-create-token-cta-blocked">
-              Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
-              {CREATE_TOKEN_READINESS.blockerCode}). Creation fee APPROVED. LIST_CREATE_TOKEN_AVAILABLE=
-              {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
+              Create Token — deployment is not available right now. Your draft remains saved. Creation fee: 0.10 BNB.
             </Banner>
           )}
           <ListFeaturedCheckout
@@ -1185,13 +1175,13 @@ export const ListWorkspace: React.FC = () => {
                 Decimals <strong>{values.decimals || '18'}</strong>
               </ContextRow>
               <ContextRow>
-                Factory <strong>{CREATE_TOKEN_READINESS.factoryAddress ?? 'Not deployed'}</strong>
+                Network <strong>BNB Smart Chain</strong>
               </ContextRow>
               <ContextRow>
-                Readiness <strong>{CREATE_TOKEN_READINESS.uiState}</strong>
+                Creation fee <strong>0.10 BNB</strong>
               </ContextRow>
               <ContextRow>
-                Warnings <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'None' : 'Factory deployment pending'}</strong>
+                Status <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'Ready' : 'Unavailable'}</strong>
               </ContextRow>
             </ContextCard>
           ) : (

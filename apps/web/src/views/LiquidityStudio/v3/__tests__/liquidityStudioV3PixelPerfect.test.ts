@@ -36,14 +36,18 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(tokens).toContain("tabAi: 'AI Liquidity Builder · BETA'")
   })
 
-  it('compact hero + snapshot truth source', () => {
+  it('Farms/Pools-parity hero + snapshot truth source on single page', () => {
     expect(shell).toContain('liquidity-v3-hero')
     expect(shell).toContain('min-height: ${liqV3.heroMaxH}')
+    expect(shell).toContain('LiquidityHeroArtwork')
+    expect(shell).toContain('LiquidityHeroTrustPanel')
+    expect(shell).toContain('liquidity-v3-tabs')
     expect(shell).toContain('liquidity-v3-snapshot')
     expect(shell).toContain('GLOBAL_DATA_TRUTH_PIPELINE')
     expect(shell).toContain('useLiquidityMarketSnapshot')
     expect(shell).toContain('truthDash')
     expect(shell).not.toContain('Source not configured')
+    expect(tokens).toContain("positionsCta: 'My Liquidity'")
   })
 
   it('compact empty state + deposited value primary', () => {

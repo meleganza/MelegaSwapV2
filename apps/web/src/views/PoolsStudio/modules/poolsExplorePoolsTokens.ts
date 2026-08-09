@@ -83,7 +83,7 @@ export const POOLS_MODULE_002_FREEZE_SHA256 = {
 } as const
 
 export const POOLS_MODULE_003_FREEZE_SHA256 = {
-  PoolsMyPositionsModule: '7bd599e6b1e194d8f9183bda79425d009c84848f22f54892d0284c076873d8db',
+  PoolsMyPositionsModule: '1a5fde88ad2931a18825bedd12a1c3af46d8aedd8c9d202b66fee04ccca6c300',
   PoolsMyPositionCard: '1e599b176e1d409b3ccb495387a43a1fb3749e6f8bf57c3a72a3e4c951605fc5',
   buildPoolsWalletPositions: 'eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655',
   usePoolsWalletPositions: '7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189',

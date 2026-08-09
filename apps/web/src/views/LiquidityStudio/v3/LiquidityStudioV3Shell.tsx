@@ -15,6 +15,8 @@ import { LiquidityAddModule } from '../modules/LiquidityAddModule'
 import { LiquidityMyPositionsModule } from '../modules/LiquidityMyPositionsModule'
 import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
 import { useLiquidityMarketSnapshot } from '../modules/useLiquidityMarketSnapshot'
+import { LiquidityHeroArtwork } from '../modules/LiquidityHeroArtwork'
+import { LiquidityHeroTrustPanel } from '../modules/LiquidityHeroTrustPanel'
 import { LiquidityRemovePanel } from './LiquidityRemovePanel'
 import { LIQ_V3_COPY, LIQ_V3_LIVE_CHAINS, liqV3, type LiquidityV3Tab } from './liquidityV3Tokens'
 
@@ -46,9 +48,36 @@ const Hero = styled.section`
     radial-gradient(ellipse 36% 70% at 18% 40%, rgba(34, 197, 94, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
     transparent;
   display: grid;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(220px, 1.1fr) minmax(220px, 0.9fr);
+  column-gap: 28px;
+  align-items: center;
   min-width: 0;
-  align-content: center;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    row-gap: 16px;
+  }
+
+  @media (max-width: 767px) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+`
+
+const HeroCopy = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `
 
 const HeroTitle = styled.h1`
@@ -74,6 +103,30 @@ const HeroActions = styled.div`
   gap: 12px;
   align-items: center;
   margin-top: 24px;
+`
+
+const HeroVisual = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 1023px) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+`
+
+const HeroTrust = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  @media (max-width: 1023px) {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
 `
 
 const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
@@ -335,22 +388,28 @@ const LiquidityV3Body: React.FC = () => {
 
   return (
     <>
-      <Hero data-testid="liquidity-v3-hero">
-        <div>
+      <Hero data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="farms-pools-parity">
+        <HeroCopy>
           <HeroTitle>{LIQ_V3_COPY.title}</HeroTitle>
           <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
           <HeroActions>
-            <Btn $primary type="button" onClick={goAdd} data-testid="liquidity-v3-hero-add">
-              {LIQ_V3_COPY.addCta}
-            </Btn>
-            <Btn $ghost type="button" onClick={goPositions} data-testid="liquidity-v3-hero-positions">
+            <Btn $primary type="button" onClick={goPositions} data-testid="liquidity-v3-hero-positions">
               {LIQ_V3_COPY.positionsCta}
             </Btn>
-            <Btn type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai">
-              {LIQ_V3_COPY.aiEntry} · BETA
+            <Btn type="button" onClick={goAdd} data-testid="liquidity-v3-hero-add">
+              {LIQ_V3_COPY.addCta}
+            </Btn>
+            <Btn $ghost type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai">
+              {LIQ_V3_COPY.aiEntry}
             </Btn>
           </HeroActions>
-        </div>
+        </HeroCopy>
+        <HeroVisual data-testid="liquidity-v3-hero-visual">
+          <LiquidityHeroArtwork />
+        </HeroVisual>
+        <HeroTrust data-testid="liquidity-v3-hero-trust">
+          <LiquidityHeroTrustPanel />
+        </HeroTrust>
       </Hero>
 
       <Snapshot

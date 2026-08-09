@@ -566,8 +566,7 @@ export const useHomeTradeData = () => {
   }, [farms, allFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
-    // Prefer factual TVL/rewards even when APR cannot be certified. Rank: TVL → volume → fees → APR.
-    // Shared resolvePoolTvlUsd (stake × trusted price) — same helper as useGetTopPoolsByApr.
+    // Best-performing Top Pools: APR → TVL (reuse Data Truth + eligibility; never empty/inactive).
     const marcoUsd = marcoPrice?.toNumber?.()
     const hints = { marcoUsd: marcoUsd && marcoUsd > 0 ? marcoUsd : undefined }
     const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
@@ -588,18 +587,23 @@ export const useHomeTradeData = () => {
         const feesUsd = 0
         return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
       })
-      // Certified economics only — same membership spirit as Pools Studio Explore.
-      .filter((row) => row.tvlUsd > 0 || (row.aprValue != null && row.aprValue > 0))
-      .sort((a, b) =>
-        compareYieldTruthDesc(
-          { sortTvl: a.tvlUsd, sortApr: a.aprValue ?? -1, sortVolume: a.volumeUsd, sortActivity: a.feesUsd },
-          { sortTvl: b.tvlUsd, sortApr: b.aprValue ?? -1, sortVolume: b.volumeUsd, sortActivity: b.feesUsd },
-        ) ||
-        (a.pool.contractAddress || a.pool.sousId || '')
+      .filter(
+        (row) =>
+          row.eligibility.eligible &&
+          row.tvlUsd > 0 &&
+          row.aprValue != null &&
+          row.aprValue > 0,
+      )
+      .sort((a, b) => {
+        const aprDelta = (b.aprValue ?? 0) - (a.aprValue ?? 0)
+        if (aprDelta !== 0) return aprDelta
+        const tvlDelta = b.tvlUsd - a.tvlUsd
+        if (tvlDelta !== 0) return tvlDelta
+        return (a.pool.contractAddress || a.pool.sousId || '')
           .toString()
           .toLowerCase()
-          .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
-      )
+          .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase())
+      })
       .slice(0, 5)
 
     const toEarnRow = (pool: Pool.DeserializedPool<Token>, tvlUsd: number, aprValue?: number): EarnRow => {

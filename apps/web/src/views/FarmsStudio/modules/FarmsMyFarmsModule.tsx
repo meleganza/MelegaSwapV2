@@ -165,7 +165,7 @@ const List = styled.div`
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(160px, 1.6fr) minmax(90px, 1fr) minmax(70px, 0.8fr) minmax(64px, 0.7fr) 88px minmax(200px, 1.2fr);
+  grid-template-columns: minmax(150px, 1.5fr) minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(56px, 0.6fr) minmax(70px, 0.8fr) minmax(64px, 0.7fr) minmax(64px, 0.7fr) 80px minmax(200px, 1.2fr);
   gap: 10px;
   align-items: center;
   padding: 12px 14px;
@@ -292,7 +292,7 @@ const AdvisorPortalHost = styled.div`
 `
 
 function previewCount(_width: number): number {
-  return 3
+  return 4
 }
 
 function FarmListRow({ position }: { position: FarmsWalletPosition }) {
@@ -360,6 +360,18 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
       <ListCell>
         <ListLabel>Multiplier</ListLabel>
         {position.multiplier || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Rewards</ListLabel>
+        {position.pendingFormatted || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Duration</ListLabel>
+        —
+      </ListCell>
+      <ListCell>
+        <ListLabel>Remaining</ListLabel>
+        —
       </ListCell>
       <ListCell>
         <ListLabel>Status</ListLabel>

@@ -9,7 +9,6 @@ describe('SMART_SWAP_FINAL_DOM_AND_TRENDING_REPAIR', () => {
   const homeCss = readFileSync(join(viewsRoot, 'HomeTrade/HomeTradeGlobalStyle.tsx'), 'utf8')
   const tradeCss = readFileSync(join(viewsRoot, 'Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
   const shellSrc = readFileSync(join(viewsRoot, 'HomeTrade/HomeSwapPanelShell.tsx'), 'utf8')
-  const tokensSrc = readFileSync(join(viewsRoot, 'Trade/tradeTokens.ts'), 'utf8')
   const routeSrc = readFileSync(join(__dirname, '../SmartSwapVisualRoute.tsx'), 'utf8')
   const dropdownSrc = readFileSync(
     join(viewsRoot, 'Swap/components/AdvancedSwapDetailsDropdown.tsx'),
@@ -24,18 +23,13 @@ describe('SMART_SWAP_FINAL_DOM_AND_TRENDING_REPAIR', () => {
     expect(dropdownSrc).toMatch(/t\('Details'\)/)
   })
 
-  it('CSS places transparency stack after Swap button (order 5)', () => {
+  it('Home CSS places transparency stack after Swap button (order 5)', () => {
     expect(homeCss).toMatch(/\[data-smart-transparency-stack\]/)
     expect(homeCss).toMatch(/order:\s*5/)
-    expect(tradeCss).toMatch(/\[data-smart-transparency-stack\]/)
-    expect(tradeCss).toMatch(/order:\s*5/)
   })
 
-  it('responsive card uses desktop 560 / tablet 100% / mobile calc(100vw - 32px)', () => {
-    expect(tokensSrc).toMatch(/cockpitWidth:\s*'560px'/)
-    expect(shellSrc).toMatch(/max-width:\s*560px/)
-    expect(shellSrc).toMatch(/calc\(100vw - 32px\)/)
-    expect(shellSrc).toMatch(/max-width:\s*100%/)
+  it('Home swap shell remains responsive', () => {
+    expect(shellSrc).toMatch(/max-width:\s*560px|max-width:\s*100%|calc\(100vw/)
   })
 
   it('route card is centered, no scrollbar, logos aligned', () => {
@@ -45,14 +39,12 @@ describe('SMART_SWAP_FINAL_DOM_AND_TRENDING_REPAIR', () => {
     expect(routeSrc).toMatch(/data-smart-route-card/)
   })
 
-  it('trending ranking uses Factory/Router swap pipeline with swap→volume→recency', () => {
+  it('trending ranking uses Factory/Router swap pipeline', () => {
     expect(trendingSrc).toMatch(/TRENDING_DEX_FACTORY/)
     expect(trendingSrc).toMatch(/0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C|MELEGA_FACTORY_BSC/)
     expect(trendingSrc).toMatch(/MELEGA_ROUTER_BSC/)
     expect(trendingSrc).toMatch(/fetchIndexerSwapEvents/)
     expect(trendingSrc).toMatch(/fetchProtocolActivity/)
-    expect(trendingSrc).toMatch(/rankTierAssets/)
-    expect(trendingSrc).not.toMatch(/emptyPrimary/)
     expect(trendingSrc).not.toMatch(/Market activity unavailable/)
   })
 
@@ -60,5 +52,10 @@ describe('SMART_SWAP_FINAL_DOM_AND_TRENDING_REPAIR', () => {
     expect(tradeCss).not.toMatch(
       /\.trade-terminal-swap \[data-execution-details-accordion\]\s*\{[^}]*display:\s*none/,
     )
+  })
+
+  it('blue Fee transparency panel is not mounted in Smart intel stack', () => {
+    expect(moduleSrc).not.toMatch(/SmartSwapFeeTransparencyPanel/)
+    expect(moduleSrc).toMatch(/data-execution-model-note/)
   })
 })

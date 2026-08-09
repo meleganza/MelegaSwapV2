@@ -1,0 +1,9 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_V6_PRODUCT_CONSISTENCY_REPAIR",
+  "result": "PASS",
+  "testFiles": 21,
+  "tests": 191,
+  "passed": 191,
+  "failed": 0,
+  "command": "yarn vitest --run (mission-scoped Farms/Pools/Liquidity/SmartSwap/List suites)"
+}

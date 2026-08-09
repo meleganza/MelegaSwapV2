@@ -77,7 +77,7 @@ export const POOLS_MODULE_002_FREEZE_SHA256 = {
 } as const
 
 export const POOLS_MODULE_003_FREEZE_SHA256 = {
-  PoolsMyPositionsModule: '7bd599e6b1e194d8f9183bda79425d009c84848f22f54892d0284c076873d8db',
+  PoolsMyPositionsModule: '1a5fde88ad2931a18825bedd12a1c3af46d8aedd8c9d202b66fee04ccca6c300',
   PoolsMyPositionCard: '1e599b176e1d409b3ccb495387a43a1fb3749e6f8bf57c3a72a3e4c951605fc5',
   buildPoolsWalletPositions: 'eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655',
   usePoolsWalletPositions: '7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189',
@@ -86,11 +86,11 @@ export const POOLS_MODULE_003_FREEZE_SHA256 = {
 } as const
 
 export const POOLS_MODULE_004_FREEZE_SHA256 = {
-  PoolsExplorePoolsModule: 'b7aa78f244183100fccd0cfa4bad4ad02003bba84b2e4166763c9383b349f7d9',
-  PoolsExplorePoolCard: 'dca5ec011ea98b4de71b01f78f0cd85c4b6594cc50e9b74f08ce3b36157714df',
+  PoolsExplorePoolsModule: 'c51d2e25afacd23485637c030ea084b423ef9072797984481e9e32d3d5a7186d',
+  PoolsExplorePoolCard: '096f6c1ee8f9c4daadd763ebd135d4a709e211a19deb20b3ef994712d548a437',
   buildPoolsExplorePools: '3bacf0b1de087a30a1ec2f34c2f1d43bf9b2513908860b88f591dca275274992',
   usePoolsExplorePools: 'e6eb54e31ed62267bb7f115e69d67d001bee0b88179801ae836b9724579701ab',
-  poolsExplorePoolsTokens: '067848f51a7f7d1442e0062bfa929e9b3db3130d12a28de7ef7807cce52041ff',
+  poolsExplorePoolsTokens: 'c79ef4d5346c263accbd1dba94fbca8c630a144dbca63e7ade03b2821f39c0ae',
   poolsExplorePoolsTypes: 'a581a34d12cd8fd13197097ef16b3ab4cb53c990b5e379c5852fdf7487a93ac9',
 } as const
 
@@ -99,7 +99,7 @@ export const POOLS_MODULE_005_FREEZE_SHA256 = {
   PoolsFinishedPoolCard: '776ddedc9d06d17c4bf7ac27a0bdad8ab46dc60fc7be8705d4f8875cbf225a84',
   buildPoolsFinishedPools: '6faf81b57a731d9fe2be33260a08d8a4581ed7adc1c7c335ac267b9ca273f395',
   usePoolsFinishedPools: 'e030c4662e941042954fa460921c82bd134339685928bb79c107c15950d6a64c',
-  poolsFinishedPoolsTokens: 'cb46e112ce4fe5226bb48dd5c29f28292b9bc21a7a976ad03777073dcf707df1',
+  poolsFinishedPoolsTokens: 'c476bdf9654f0b41420fc95b6d9b88bbcec9ab5a5c9adddea660d47349b65998',
   poolsFinishedPoolsTypes: '6ad0d327797b7d115c8c8e315310c16c10ef9fba3b0ed4a2468d2bf7afcbe056',
 } as const
 
@@ -108,6 +108,6 @@ export const POOLS_MODULE_006_FREEZE_SHA256 = {
   PoolsRewardAdvisorCard: 'cde3f4a486bcf60552aeb1cd9a2770ce2bc02910ce444ccbe8d0b78465c574e8',
   buildPoolsRewardAdvisor: 'c4013a019cd180a351ac633831bd70974217bd913374460e5d54c3319e7ab40d',
   usePoolsRewardAdvisor: '0e59b77545d64877e7a491d1cf984ac38afa8c82e597b7d9be0a8b231cbeb52b',
-  poolsRewardAdvisorTokens: 'bdd6de2dd855f7475b63f99340b91d19f6072f47232217f29f08670927d307cf',
+  poolsRewardAdvisorTokens: 'ebeb172482d34346fd2ecd6ddf25a31278af0971f2fee8c41ddbc6a588089586',
   poolsRewardAdvisorTypes: 'd62dd3c1a49b5602a26e8ce526629424b8d28a5b7096638a643a42059eaf1b7c',
 } as const

@@ -1,0 +1,6 @@
+{
+  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_V6_PRODUCT_CONSISTENCY_REPAIR",
+  "command": "yarn next build",
+  "result": "PASS",
+  "exitCode": 0
+}

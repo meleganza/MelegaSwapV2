@@ -135,8 +135,6 @@ export function mapFarmToPreviewCard(
     risk: farm.isStable ? 'Stable pair' : 'Standard',
   }
 
-  const lpStaked = farm.lpTotalSupply ? getBalanceNumber(farm.lpTotalSupply, 18) : 0
-
   return {
     id: `farm-${farm.pid}`,
     pid: farm.pid,
@@ -149,7 +147,9 @@ export function mapFarmToPreviewCard(
     dailyRewards: formatFarmDailyRewards(emissionState, dailyMarco, rewardSymbol),
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : METRIC_STATUS.UNAVAILABLE,
     rewardToken: rewardSymbol,
-    participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : METRIC_STATUS.UNAVAILABLE,
+    // Never map LP supply / emission amounts to participants (e.g. "1.505.47M").
+    // Show — until a verified participant census exists.
+    participants: METRIC_STATUS.UNAVAILABLE,
     cta: status === 'finished' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawFarm: farm,

@@ -391,9 +391,6 @@ function ExplorePoolListRow({ pool }: { pool: PoolsExplorePoolCardModel }) {
           >
             {pool.primaryAction === 'Stake' || pool.primaryAction === 'Connect Wallet' ? 'Stake' : pool.primaryAction}
           </ListBtn>
-          <ListBtn type="button" onClick={() => requestModal(pool.sourceCard, 'stake')}>
-            Manage
-          </ListBtn>
           {pool.detailsHref ? (
             <ListBtn type="button" onClick={() => window.open(pool.detailsHref!, '_blank', 'noopener,noreferrer')}>
               View Pool
@@ -412,9 +409,54 @@ function ExplorePoolListRow({ pool }: { pool: PoolsExplorePoolCardModel }) {
   )
 }
 
+const FiltersMenu = styled.div`
+  position: relative;
+  flex: 0 0 auto;
+`
+
+const FiltersBtn = styled.button`
+  height: 40px;
+  min-height: ${poolsExplore.touchMin};
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+`
+
+const FiltersPanel = styled.div`
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: min(320px, 92vw);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(16, 16, 16, 0.98);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
+
+const FilterLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+`
+
 export const PoolsExplorePoolsModule: React.FC = () => {
   const vm = usePoolsExplorePools()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   return (
     <Module
@@ -443,54 +485,76 @@ export const PoolsExplorePoolsModule: React.FC = () => {
         </ViewToggle>
       </Header>
 
-      <Toolbar>
+      <Toolbar data-testid="pools-explore-compact-toolbar">
         <Search
           type="search"
-          placeholder="Search pool, token, reward, address"
+          placeholder="Search pool / token / address"
           value={vm.search}
           onChange={(e) => vm.setSearch(e.target.value)}
           aria-label="Search active staking pools"
         />
-        <Select
-          value={vm.sort}
-          aria-label="Sort active pools"
-          onChange={(e) => vm.setSort(e.target.value as PoolsExploreSort)}
-        >
-          {POOLS_EXPLORE_SORTS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </Select>
+        <FiltersMenu>
+          <FiltersBtn
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-haspopup="true"
+            data-testid="pools-explore-filters"
+            onClick={() => setFiltersOpen((v) => !v)}
+          >
+            Filters
+          </FiltersBtn>
+          {filtersOpen ? (
+            <FiltersPanel role="dialog" aria-label="Pool filters" data-testid="pools-explore-filters-panel">
+              <FilterLabel>
+                Chain
+                <Select
+                  value={String(vm.chainFilter)}
+                  aria-label="Chain filter"
+                  data-testid="pools-chain-filters"
+                  onChange={(e) => {
+                    const v = e.target.value
+                    vm.setChainFilter(v === 'all' ? 'all' : (Number(v) as any))
+                  }}
+                >
+                  {LIVE_CHAIN_FILTERS.map((c) => (
+                    <option key={String(c.id)} value={String(c.id)}>
+                      {c.label}
+                    </option>
+                  ))}
+                </Select>
+              </FilterLabel>
+              <FilterLabel>
+                Type
+                <Select
+                  value={vm.filter}
+                  aria-label="Pool type filter"
+                  onChange={(e) => vm.setFilter(e.target.value as PoolsExploreFilter)}
+                >
+                  {POOLS_EXPLORE_FILTERS.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </Select>
+              </FilterLabel>
+              <FilterLabel>
+                Sort
+                <Select
+                  value={vm.sort}
+                  aria-label="Sort active pools"
+                  onChange={(e) => vm.setSort(e.target.value as PoolsExploreSort)}
+                >
+                  {POOLS_EXPLORE_SORTS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </Select>
+              </FilterLabel>
+            </FiltersPanel>
+          ) : null}
+        </FiltersMenu>
       </Toolbar>
-
-      <FilterRow role="toolbar" aria-label="Explore pool chains" data-testid="pools-chain-filters">
-        {LIVE_CHAIN_FILTERS.map((c) => (
-          <Chip
-            key={String(c.id)}
-            type="button"
-            $active={vm.chainFilter === c.id}
-            aria-pressed={vm.chainFilter === c.id}
-            onClick={() => vm.setChainFilter(c.id)}
-          >
-            {c.label}
-          </Chip>
-        ))}
-      </FilterRow>
-
-      <FilterRow role="toolbar" aria-label="Explore pool filters">
-        {POOLS_EXPLORE_FILTERS.map((f) => (
-          <Chip
-            key={f}
-            type="button"
-            $active={vm.filter === f}
-            aria-pressed={vm.filter === f}
-            onClick={() => vm.setFilter(f as PoolsExploreFilter)}
-          >
-            {f}
-          </Chip>
-        ))}
-      </FilterRow>
 
       {vm.disclosure ? <Disclosure>{vm.disclosure}</Disclosure> : null}
 

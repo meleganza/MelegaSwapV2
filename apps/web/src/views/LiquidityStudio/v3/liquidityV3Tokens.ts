@@ -38,7 +38,7 @@ export const LIQ_V3_COPY = {
   title: 'Liquidity',
   subtitle: 'Provide liquidity, earn fees, and manage your positions across Melega DEX.',
   addCta: 'Add Liquidity',
-  positionsCta: 'My Positions',
+  positionsCta: 'My Liquidity',
   aiEntry: 'AI Liquidity Builder',
   aiSub: 'Automate liquidity building for your token.',
   aiBeta: 'BETA · BNB only',

@@ -33,7 +33,7 @@ describe('Founder amendment P0-9 — Explore Pools density grid', () => {
     expect(card).not.toContain('<Desc>')
     expect(card).not.toContain('pool.description')
     expect(card).toContain('Stake')
-    expect(card).toContain('Manage')
+    expect(card).not.toContain("aria-label={`Manage ${pool.title}`}")
     expect(card).toContain('View Pool')
     // Actions remain flexible/ellipsis-safe so both fit in the denser 4–5 up cards.
     expect(card).toMatch(/flex: 1 1 0;/)

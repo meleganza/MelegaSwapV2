@@ -371,26 +371,6 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
                 ? 'Connect Wallet'
                 : 'Stake'}
         </Btn>
-        <Btn
-          type="button"
-          data-testid="pools-explore-manage"
-          disabled={pool.primaryAction === 'Unavailable' || pool.primaryAction === 'Connect Wallet' || busy}
-          aria-label={`Manage ${pool.title}`}
-          onClick={() => {
-            if (pool.primaryAction === 'Switch Network') {
-              setSwitchOpen(true)
-              return
-            }
-            setBusy(true)
-            try {
-              requestModal(pool.sourceCard, 'stake')
-            } finally {
-              window.setTimeout(() => setBusy(false), 1200)
-            }
-          }}
-        >
-          Manage
-        </Btn>
         {contractUrl && contractAddress ? (
           <Btn
             type="button"

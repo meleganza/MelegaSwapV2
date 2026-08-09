@@ -449,7 +449,7 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const hideAdvisor = variant === 'with-create-side'
 
-  const limit = 3
+  const limit = 4
   const shown = useMemo(() => {
     if (expanded) return vm.positions
     return vm.visiblePositions.slice(0, limit)
