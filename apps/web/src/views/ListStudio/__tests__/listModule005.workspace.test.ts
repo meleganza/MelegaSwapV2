@@ -44,6 +44,7 @@ describe('LIST Workspace (founder-final)', () => {
   it('keeps create-token honest about factory deployment blocker', () => {
     const ws = load('ListWorkspace.tsx')
     expect(ws).toContain('LIST_CREATE_TOKEN_AVAILABLE')
-    expect(ws).toContain('CREATE_TOKEN_FACTORY_NOT_DEPLOYED')
+    expect(ws).toContain('list-create-token-blocker')
+    expect(ws).toContain('Create Token is temporarily unavailable')
   })
 })
