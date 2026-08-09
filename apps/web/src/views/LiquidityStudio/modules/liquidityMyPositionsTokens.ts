@@ -43,6 +43,7 @@ export const LIQUIDITY_MY_POSITIONS_COPY = {
   title: 'My Liquidity',
   description: 'Liquidity positions belonging to your connected wallet.',
   emptyConnected: 'No liquidity positions yet.',
+  emptyTimedOut: 'Positions could not be certified in time. Try again or switch network.',
   emptyDisconnected: 'Connect wallet to view positions.',
   explorePools: 'Explore Pools',
   connect: 'Connect Wallet',

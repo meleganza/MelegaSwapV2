@@ -472,11 +472,14 @@ function PositionListRow({
   )
 }
 
+type PendingSwitch = { row: LiquidityPositionRow; intent: 'manage' | 'remove' }
+
 const LiquidityMyPositionsBody: React.FC = () => {
   const {
     account,
     positions,
-    positionsLoading,
+    positionsPhase,
+    positionsTimedOut,
     setSelectedPositionId,
     setMode,
     setCurrencyA,
@@ -484,7 +487,7 @@ const LiquidityMyPositionsBody: React.FC = () => {
   } = useLiquidityRuntime()
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
-  const [pendingSwitch, setPendingSwitch] = useState<LiquidityPositionRow | null>(null)
+  const [pendingSwitch, setPendingSwitch] = useState<PendingSwitch | null>(null)
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [expanded, setExpanded] = useState(false)
   const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
@@ -505,11 +508,21 @@ const LiquidityMyPositionsBody: React.FC = () => {
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
 
+  const proceedRemove = useCallback(
+    (row: LiquidityPositionRow) => {
+      setSelectedPositionId(row.id)
+      setCurrencyA(row.pair.token0)
+      setCurrencyB(row.pair.token1)
+      setMode('Remove Liquidity')
+    },
+    [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
+  )
+
   const onManage = useCallback(
     (row: LiquidityPositionRow) => {
       const target = row.chainId ?? row.pair.token0.chainId
       if (account && target != null && chainId != null && target !== chainId) {
-        setPendingSwitch(row)
+        setPendingSwitch({ row, intent: 'manage' })
         return
       }
       proceedManage(row)
@@ -521,35 +534,40 @@ const LiquidityMyPositionsBody: React.FC = () => {
     (row: LiquidityPositionRow) => {
       const target = row.chainId ?? row.pair.token0.chainId
       if (account && target != null && chainId != null && target !== chainId) {
-        setPendingSwitch(row)
+        setPendingSwitch({ row, intent: 'remove' })
         return
       }
-      setSelectedPositionId(row.id)
-      setCurrencyA(row.pair.token0)
-      setCurrencyB(row.pair.token1)
-      setMode('Remove Liquidity')
-      // V3: open remove workspace; confirm modal stays on CTA (existing execution path).
+      proceedRemove(row)
     },
-    [account, chainId, setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
+    [account, chainId, proceedRemove],
   )
 
   const confirmSwitch = useCallback(async () => {
     if (!pendingSwitch) return
-    const target = pendingSwitch.chainId ?? pendingSwitch.pair.token0.chainId
+    const target = pendingSwitch.row.chainId ?? pendingSwitch.row.pair.token0.chainId
     try {
       if (target != null) await switchNetworkAsync(target)
-      proceedManage(pendingSwitch)
+      if (pendingSwitch.intent === 'remove') proceedRemove(pendingSwitch.row)
+      else proceedManage(pendingSwitch.row)
     } finally {
       setPendingSwitch(null)
     }
-  }, [pendingSwitch, switchNetworkAsync, proceedManage])
+  }, [pendingSwitch, switchNetworkAsync, proceedManage, proceedRemove])
 
   return (
     <Main data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="full-width">
       <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
       <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
 
-      {!account ? (
+      <div
+        data-testid="liquidity-my-positions-phase"
+        data-positions-phase={positionsPhase}
+        data-positions-timed-out={positionsTimedOut ? '1' : '0'}
+        hidden
+        aria-hidden
+      />
+
+      {positionsPhase === 'connecting' ? (
         <Empty data-testid="liquidity-my-positions-disconnected">
           <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyDisconnected}</EmptyText>
           <EmptyActions>
@@ -560,13 +578,21 @@ const LiquidityMyPositionsBody: React.FC = () => {
         </Empty>
       ) : null}
 
-      {account && positionsLoading ? (
-        <Skeleton data-testid="liquidity-my-positions-skeleton" aria-label="Loading positions" />
+      {positionsPhase === 'fetching' ? (
+        <Skeleton
+          data-testid="liquidity-my-positions-skeleton"
+          aria-label="Fetching positions"
+          data-positions-loading="fetching"
+        />
       ) : null}
 
-      {account && !positionsLoading && positions.length === 0 ? (
+      {positionsPhase === 'empty' ? (
         <Empty data-testid="liquidity-my-positions-empty">
-          <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
+          <EmptyText>
+            {positionsTimedOut
+              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
+              : LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}
+          </EmptyText>
           <EmptyActions>
             <PrimaryBtn
               type="button"
@@ -582,7 +608,7 @@ const LiquidityMyPositionsBody: React.FC = () => {
         </Empty>
       ) : null}
 
-      {account && !positionsLoading && positions.length > 0 ? (
+      {positionsPhase === 'ready' ? (
         <>
           <Toolbar data-testid="liquidity-my-positions-toolbar">
             <ViewToggle role="group" aria-label="Positions layout">
@@ -641,9 +667,11 @@ const LiquidityMyPositionsBody: React.FC = () => {
 
       <ChainSwitchConfirmDialog
         open={Boolean(pendingSwitch)}
-        targetChainId={pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56}
+        targetChainId={
+          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56
+        }
         productLabel={`This liquidity position is on ${chainDisplayName(
-          pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56,
+          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56,
         )}. Switch network to continue?`}
         onCancel={() => setPendingSwitch(null)}
         onConfirm={() => {

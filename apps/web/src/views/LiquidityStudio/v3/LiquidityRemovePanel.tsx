@@ -1,6 +1,6 @@
 /**
  * Liquidity Studio V3 — Remove Liquidity workspace (presentation).
- * Uses existing burn runtime / confirm modal — no execution changes.
+ * Uses existing burn runtime + MelegaModal confirm — no contract changes.
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -122,6 +122,7 @@ export const LiquidityRemovePanel: React.FC = () => {
     onPrimaryAction,
     primaryCtaLabel,
     slippageLabel,
+    removeConfirmModal,
   } = useLiquidityRuntime()
 
   const deposited = formatPositionUsd(positionDetails?.usdValue)
@@ -129,12 +130,17 @@ export const LiquidityRemovePanel: React.FC = () => {
   const lpBal = selectedPosition?.lpBalance?.greaterThan(0)
     ? selectedPosition.lpBalance.toSignificant(6)
     : '—'
+  const removalLabel = removePercent === '100' ? 'MAX' : `${removePercent}%`
 
   return (
-    <Shell data-testid="liquidity-v3-remove" data-liquidity-remove="v3">
+    <Shell
+      data-testid="liquidity-v3-remove"
+      data-liquidity-remove="v3"
+      data-remove-percent={removePercent}
+    >
       <Panel>
         <Title>Remove Liquidity</Title>
-        <Sub>Choose how much LP to withdraw. Execution uses the existing remove flow.</Sub>
+        <Sub>Choose how much LP to withdraw. Confirm opens the Melega withdrawal review.</Sub>
 
         <Row>
           <Label>Position</Label>
@@ -152,14 +158,19 @@ export const LiquidityRemovePanel: React.FC = () => {
           <Label>LP balance</Label>
           <Value data-secondary-metric="lp-amount">{lpBal}</Value>
         </Row>
+        <Row>
+          <Label>LP removed</Label>
+          <Value data-testid="liquidity-remove-lp-pct">{removalLabel}</Value>
+        </Row>
 
         <Percents role="group" aria-label="Remove percentage" data-testid="liquidity-remove-percents">
           {PERCENTS.map((p) => (
             <PctBtn
               key={p}
               type="button"
-              $on={removePercent === p || (p === '100' && removePercent === '100')}
-              onClick={() => onRemovePercent(p === '100' ? '100' : p)}
+              $on={removePercent === p}
+              aria-pressed={removePercent === p}
+              onClick={() => onRemovePercent(p)}
               data-testid={`liquidity-remove-pct-${p}`}
             >
               {p === '100' ? 'MAX' : `${p}%`}
@@ -188,6 +199,8 @@ export const LiquidityRemovePanel: React.FC = () => {
           <Value data-testid="liquidity-remove-out-b">{typedValueB || '—'}</Value>
         </Row>
       </Panel>
+
+      {removeConfirmModal}
     </Shell>
   )
 }

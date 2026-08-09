@@ -370,11 +370,13 @@ const LiquidityV3Body: React.FC = () => {
   const showFarmNudge = tab === 'positions' && positions.length > 0
   const removing = isRemoveMode(mode)
 
-  // One-shot deep-link hydrate from ?view=
+  // One-shot deep-link hydrate from ?view= (wait for query parse when asPath has view=)
   useEffect(() => {
     if (!router.isReady || hydratedRef.current) return
+    const raw = router.query.view
+    const view = Array.isArray(raw) ? raw[0] : typeof raw === 'string' ? raw : undefined
+    if (router.asPath.includes('view=') && view === undefined) return
     hydratedRef.current = true
-    const view = typeof router.query.view === 'string' ? router.query.view : undefined
     if (view === 'building') {
       setTab('building')
       setAiMounted(true)
@@ -387,7 +389,7 @@ const LiquidityV3Body: React.FC = () => {
       setMode('My Positions', { syncUrl: false })
     }
     setTabsReady(true)
-  }, [router.isReady, router.query.view, setMode])
+  }, [router.isReady, router.query.view, router.asPath, setMode])
 
   // External execution paths only: Remove Liquidity, or Manage → Add from My Liquidity.
   useEffect(() => {

@@ -1,7 +1,9 @@
 /**
- * Factory-enumerated AMM pairs for wallet LP discovery.
+ * Factory-enumerated AMM pairs for wallet LP discovery (BNB indexer).
  * Extends tracked-pair scanning so historical Melega LPs are balance-gated
  * even when the pair was never user-saved.
+ *
+ * Base / non-BNB chains must NOT hit the BSC indexer — that freezes hydration.
  */
 
 import { useMemo } from 'react'
@@ -20,27 +22,47 @@ type PairsPage = {
 
 const PAGE_SIZE = 100
 const MAX_PAGES = 40
+/** Cap factory enumeration so Liquidity Studio never freezes on indexer lag. */
+const FACTORY_FETCH_TIMEOUT_MS = 10_000
+
+function isBnbFactoryChain(chainId?: number): boolean {
+  return chainId === 56 || chainId === 97
+}
 
 async function fetchAllFactoryPairs(): Promise<ClassifiedAmmPair[]> {
-  const all: ClassifiedAmmPair[] = []
-  let page = 1
-  let total = Infinity
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null
+  const timer =
+    controller != null
+      ? setTimeout(() => controller.abort(), FACTORY_FETCH_TIMEOUT_MS)
+      : null
 
-  while (all.length < total && page <= MAX_PAGES) {
-    const res = await fetch(`/api/indexer/pairs?page=${page}&pageSize=${PAGE_SIZE}`)
-    if (!res.ok) {
-      if (page === 1) return []
-      break
+  try {
+    const all: ClassifiedAmmPair[] = []
+    let page = 1
+    let total = Infinity
+
+    while (all.length < total && page <= MAX_PAGES) {
+      const res = await fetch(`/api/indexer/pairs?page=${page}&pageSize=${PAGE_SIZE}`, {
+        signal: controller?.signal,
+      })
+      if (!res.ok) {
+        if (page === 1) return []
+        break
+      }
+      const data = (await res.json()) as PairsPage
+      const rows = data.rows ?? []
+      total = typeof data.total === 'number' ? data.total : all.length + rows.length
+      all.push(...rows)
+      if (rows.length === 0) break
+      page += 1
     }
-    const data = (await res.json()) as PairsPage
-    const rows = data.rows ?? []
-    total = typeof data.total === 'number' ? data.total : all.length + rows.length
-    all.push(...rows)
-    if (rows.length === 0) break
-    page += 1
-  }
 
-  return all
+    return all
+  } catch {
+    return []
+  } finally {
+    if (timer != null) clearTimeout(timer)
+  }
 }
 
 function safeAddress(value?: string): string | null {
@@ -61,14 +83,19 @@ function pairToTokens(pair: ClassifiedAmmPair): [ERC20Token, ERC20Token] | null 
   return [t0, t1]
 }
 
-export function useFactoryLiquidityTokenPairs(enabled: boolean): {
+export function useFactoryLiquidityTokenPairs(
+  enabled: boolean,
+  chainId?: number,
+): {
   factoryTokenPairs: [ERC20Token, ERC20Token][]
   factoryPairCount: number | null
   isLoading: boolean
   error: string | null
+  factoryEnabled: boolean
 } {
+  const factoryEnabled = Boolean(enabled && isBnbFactoryChain(chainId))
   const { data, error, isLoading } = useSWR(
-    enabled ? 'factory-liquidity-token-pairs-v1' : null,
+    factoryEnabled ? `factory-liquidity-token-pairs-v2-${chainId ?? 56}` : null,
     fetchAllFactoryPairs,
     { revalidateOnFocus: false, dedupingInterval: 60_000 },
   )
@@ -94,7 +121,8 @@ export function useFactoryLiquidityTokenPairs(enabled: boolean): {
   return {
     factoryTokenPairs,
     factoryPairCount: data ? data.length : null,
-    isLoading: Boolean(enabled) && isLoading && !data,
+    isLoading: factoryEnabled && isLoading && !data,
     error: error ? (error instanceof Error ? error.message : String(error)) : null,
+    factoryEnabled,
   }
 }
