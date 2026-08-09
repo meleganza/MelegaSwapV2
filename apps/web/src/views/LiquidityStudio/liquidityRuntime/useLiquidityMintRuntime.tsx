@@ -191,7 +191,12 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const initialView = typeof router.query.view === 'string' ? router.query.view : undefined
+  const initialViewRaw = router.query.view
+  const initialView = Array.isArray(initialViewRaw)
+    ? initialViewRaw[0]
+    : typeof initialViewRaw === 'string'
+      ? initialViewRaw
+      : undefined
   /** V3 product restore — default landing is My Liquidity (positions). Deep links still win via ?view=. */
   const [mode, setModeState] = useState<LiquidityStudioMode>(
     (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',

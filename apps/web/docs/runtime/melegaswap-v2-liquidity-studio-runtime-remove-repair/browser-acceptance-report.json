@@ -30,7 +30,7 @@
     }
   ],
   "pass": true,
-  "timestamp": "2026-08-09T18:59:35.178Z",
+  "timestamp": "2026-08-09T19:59:15.332Z",
   "notes": [
     "Wallet-connected Base remove tx requires live wallet — covered by code contracts + Confirm Withdrawal wiring.",
     "Factory indexer gated to BNB; Base uses tracked/farm pairs only."
