@@ -156,25 +156,6 @@ const Status = styled.span<{ $tone: string }>`
         : 'rgba(255,255,255,0.06)'};
 `
 
-const MultiBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 22px;
-  min-width: 40px;
-  max-width: 100%;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  color: ${farmsExplore.gold};
-  background: rgba(244, 196, 48, 0.12);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
-`
-
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -250,19 +231,22 @@ const ContractLink = styled.a`
 `
 
 const Actions = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-top: auto;
   min-width: 0;
   width: 100%;
+  box-sizing: border-box;
 
   > * {
+    flex: 1 1 calc(50% - 6px);
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    box-sizing: border-box;
   }
 `
 
@@ -450,12 +434,11 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             <Earn>{farm.earnLine}</Earn>
           </TextCol>
         </Identity>
-        <Badges>
+        <Badges data-testid="farms-explore-badges">
           <MelegaExploreChainBadge chainId={farm.chainId} />
           <Status $tone={farm.statusLabel} aria-label={`Status ${farm.statusLabel}`}>
             {farm.statusLabel}
           </Status>
-          {farm.multiplier ? <MultiBadge aria-label={`${farm.multiplier} multiplier`}>{farm.multiplier}</MultiBadge> : null}
         </Badges>
       </Header>
 
@@ -470,6 +453,10 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           <MetricLabel>TVL</MetricLabel>
           <MetricValue>{truthDash(farm.tvl)}</MetricValue>
         </Metric>
+        <Metric data-testid="farms-explore-multiplier-slot">
+          <MetricLabel>Multiplier</MetricLabel>
+          <MetricValue>{farm.multiplier || '—'}</MetricValue>
+        </Metric>
         <Metric>
           <MetricLabel>24H Vol</MetricLabel>
           <MetricValue>{truthDash(farm.volume24h)}</MetricValue>
@@ -479,20 +466,16 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           <MetricValue>{truthDash(farm.fees24h)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Reward</MetricLabel>
-          <MetricValue>{truthDash(farm.rewardToken.symbol)}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Remaining</MetricLabel>
-          <MetricValue>{truthDash(farm.rewardsRemaining)}</MetricValue>
+          <MetricLabel>Participants</MetricLabel>
+          <MetricValue>{truthDash(farm.participants)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>Duration</MetricLabel>
           <MetricValue>{truthDash(farm.rewardDuration)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Participants</MetricLabel>
-          <MetricValue>{truthDash(farm.participants)}</MetricValue>
+          <MetricLabel>Remaining</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardsRemaining)}</MetricValue>
         </Metric>
       </Metrics>
 
@@ -535,20 +518,6 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
                     : primaryLabel}
           </Btn>
         )}
-        <Btn
-          type="button"
-          disabled={farm.primaryAction === 'Farm Unavailable' || farm.primaryAction === 'Connect Wallet'}
-          data-testid="farms-explore-manage"
-          onClick={() => {
-            if (farm.primaryAction === 'Switch Network') {
-              setSwitchOpen(true)
-              return
-            }
-            requestModal(farm.sourceCard, 'stake')
-          }}
-        >
-          Manage
-        </Btn>
         {farm.masterbuilder ? (
           <LinkBtn
             href={getBlockExploreLink(farm.masterbuilder, 'address', farm.chainId)}

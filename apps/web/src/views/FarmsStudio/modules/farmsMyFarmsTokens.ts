@@ -11,19 +11,21 @@ export const farmsMyFarms = {
   mockupSha256: FARMS_FOUNDER_MOCKUP.sha256,
   module001MockupSha256: farmsHero.mockupSha256,
   module002MockupSha256: farmsOverviewKpis.mockupSha256,
-  contentMax: '1376px', rowW: '1376px', leftW: '936px', columnGap: '16px', rightSlotW: '424px',
+  contentMax: '1376px', rowW: '1376px',
+  /** Full-width My Farms — no advisor secondary column (FARM-02 / FARM-03). */
+  columnGap: '0px',
   moduleH: '360px', moduleRadius: '16px', moduleBorder: '1px solid rgba(255,255,255,0.085)',
   moduleBg: 'linear-gradient(145deg, rgba(18,18,18,0.98), rgba(12,12,12,0.98))',
   moduleShadow: '0 16px 36px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.025)',
   headerH: '60px', headerPadX: '18px', titleSize: '16px', titleLine: '22px', titleWeight: 750, titleColor: '#F5F5F5',
   countMinW: '24px', countH: '22px', countRadius: '999px', countBg: 'rgba(244,196,48,0.18)', countColor: '#F4C430', countSize: '11px',
-  viewAllW: '116px', viewAllH: '34px', contentPadX: '18px', contentW: '900px',
+  viewAllW: '116px', viewAllH: '34px', contentPadX: '18px', contentW: '100%',
   cardW: '288px', cardH: '276px', cardGap: '18px', cardPad: '16px', cardRadius: '13px',
   cardBorder: '1px solid rgba(255,255,255,0.08)', cardBg: 'rgba(19,19,19,0.96)',
   stakeLogo: 32, rewardLogo: 22, logoOverlap: -8,
   statusH: '24px', statusRadius: '999px', gold: '#F4C430', focusRing: '2px solid #F4C430', focusOffset: '2px',
-  mobileBreak: '767px', tabletBreak: '1199px', mobileHeaderH: '56px', mobileCardMinH: '250px', mobileCardGap: '10px',
-  touchMin: '44px', maxVisibleDesktop: 3,
+  mobileBreak: '767px', tabletBreak: '1279px', mobileHeaderH: '56px', mobileCardMinH: '250px', mobileCardGap: '10px',
+  touchMin: '44px', maxVisibleDesktop: 4,
 } as const
 
 export const FARMS_MODULE_001_FREEZE_SHA256 = {

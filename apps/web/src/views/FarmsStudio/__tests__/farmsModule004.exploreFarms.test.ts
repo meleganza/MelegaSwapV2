@@ -252,8 +252,8 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       search: '',
     })
     expect(partial.state).toBe('partial')
-    expect(partial.farms[0].apr).toBe('Unavailable')
-    expect(partial.farms[0].tvl).toBe('Unavailable')
+    expect(partial.farms[0].apr).toBe('—')
+    expect(partial.farms[0].tvl).toBe('—')
     expect(partial.farms[0].tvl).not.toBe('$0')
   })
 

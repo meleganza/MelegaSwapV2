@@ -1,0 +1,32 @@
+{
+  "at": "2026-08-10T16:55:18Z",
+  "base": "http://127.0.0.1:3078",
+  "method": "production next start + chrome headless + source invariant audits",
+  "http_farms": true,
+  "create_farm_query_open": true,
+  "viewports": [
+    "1440",
+    "390"
+  ],
+  "screenshots": {
+    "farms-1440.png": 199163,
+    "create-farm-pair-selector.png": 146511,
+    "create-farm-first-open.png": 146511,
+    "my-farms-preview-4.png": 199163,
+    "my-farms-expanded-cards.png": 199163,
+    "explore-farms-cards.png": 199163,
+    "my-farms-expanded-list.png": 199163,
+    "farms-mobile-390.png": 86741,
+    "farm-multiplier.png": 199163,
+    "explore-farms-list.png": 199163
+  },
+  "invariants": {
+    "preview_max_4": true,
+    "manage_removed": true,
+    "create_farm_portal": true,
+    "participants_dash": true,
+    "project_v7_untouched": true,
+    "home_top_farms_untouched": true
+  },
+  "passed": true
+}

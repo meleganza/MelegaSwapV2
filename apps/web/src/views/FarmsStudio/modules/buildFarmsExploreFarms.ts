@@ -6,7 +6,6 @@
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
-import { truthDash } from 'lib/data-truth'
 import { auditFarmProvenance } from 'lib/data-truth/yieldProvenanceAudit'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
@@ -100,7 +99,7 @@ function resolveApr(card: FarmPreviewCard): {
   const parsed = parseAprNumber(card)
   if (!parsed.available) {
     return {
-      display: 'Unavailable',
+      display: '—',
       label: 'APR',
       state: 'APR unavailable',
       sustainable: null,
@@ -139,9 +138,9 @@ function resolveTvl(card: FarmPreviewCard): {
     label === '$0' ||
     label === '$0.00'
   ) {
-    return { display: 'Unavailable', state: 'TVL unavailable', sort: 0, available: false }
+    return { display: '—', state: 'TVL unavailable', sort: 0, available: false }
   }
-  return { display: 'Unavailable', state: 'Partial valuation', sort: 0, available: false }
+  return { display: '—', state: 'Partial valuation', sort: 0, available: false }
 }
 
 function resolveMultiplier(card: FarmPreviewCard): string | null {
@@ -347,7 +346,7 @@ export function cardToExploreFarmModel(
     tvlState: tvl.state,
     multiplier,
     rewardRate,
-    totalStaked: card.participants && !isUnavailableFarmMetric(card.participants) ? card.participants : null,
+    totalStaked: null,
     userWalletLpBalance: wallet.display,
     userWalletLpBalanceState: wallet.state,
     allowanceState: allowance.state,
@@ -380,22 +379,49 @@ export function cardToExploreFarmModel(
     isNativePair: isNativePair(raw),
     hasWalletLp: wallet.hasLp,
     isApproved: allowance.approved,
-    volume24h: '—',
-    fees24h: '—',
+    volume24h: resolveFarmVolume24h(card),
+    fees24h: resolveFarmFees24h(card),
     rewardsRemaining: '—',
-    rewardDuration: '—',
-    participants: truthDash(sanitizeFarmParticipants(card.participants)),
+    rewardDuration: resolveFarmDuration(card, multiplier),
+    participants: resolveFarmParticipants(card),
   }
 }
 
-/** Participants must be a verified census count — never LP supply / emission token amounts. */
-function sanitizeFarmParticipants(raw?: string | null): string | null {
-  if (!raw || isUnavailableFarmMetric(raw)) return null
-  const t = raw.trim()
-  // Reject token-amount style values (decimals, M/K/B suffixes, multi-dot locales).
-  if (/[.]/.test(t) || /[mkb]$/i.test(t) || /\d+\.\d+/.test(t)) return null
-  if (!/^\d{1,7}$/.test(t.replace(/,/g, ''))) return null
-  return t
+/** Participants = unique wallet census only. Never LP supply / emissions / token amounts. */
+function resolveFarmParticipants(_card: FarmPreviewCard): string {
+  return '—'
+}
+
+/**
+ * Factual duration for MasterChef farms:
+ * - Live with positive multiplier → Ongoing (continuous emission schedule)
+ * - Otherwise uncertified → —
+ * Never invent calendar ends from unrelated timestamps.
+ */
+function resolveFarmDuration(card: FarmPreviewCard, multiplier: string | null): string {
+  if (card.status === 'live' && multiplier) return 'Ongoing'
+  if (card.status === 'finished') return 'Ended'
+  return '—'
+}
+
+/**
+ * Remaining time vs Rewards left are separate fields.
+ * MasterChef farms do not expose a certified remaining-budget clock here → —
+ */
+function resolveFarmRemaining(): string {
+  return '—'
+}
+
+/**
+ * 24H volume / fees for farms come only from certified LP/pair market rows.
+ * FarmPreviewCard does not currently carry certified pair volume — never invent from TVL/emissions.
+ */
+function resolveFarmVolume24h(_card: FarmPreviewCard): string {
+  return '—'
+}
+
+function resolveFarmFees24h(_card: FarmPreviewCard): string {
+  return '—'
 }
 
 /** Stable dedupe by canonical identity chainId + masterChef + pid (never symbol-only). */

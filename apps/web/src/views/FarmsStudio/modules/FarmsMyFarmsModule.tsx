@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsMyFarms } from './farmsMyFarmsTokens'
@@ -143,11 +142,9 @@ const Grid = styled.ul`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: ${farmsMyFarms.cardGap};
-  @media (max-width: 1199px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  min-width: 0;
   @media (max-width: ${farmsMyFarms.tabletBreak}) {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   @media (max-width: ${farmsMyFarms.mobileBreak}) {
     grid-template-columns: 1fr;
@@ -161,11 +158,27 @@ const List = styled.div`
   flex-direction: column;
   gap: 8px;
   min-width: 0;
+  overflow-x: auto;
+`
+
+const ListHeader = styled.div`
+  display: grid;
+  grid-template-columns: minmax(160px, 1.6fr) minmax(72px, 0.7fr) minmax(88px, 0.9fr) minmax(64px, 0.7fr) minmax(72px, 0.7fr) minmax(88px, 0.9fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(200px, 1.2fr);
+  gap: 10px;
+  padding: 0 14px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  @media (max-width: 1023px) {
+    display: none;
+  }
 `
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(150px, 1.5fr) minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(56px, 0.6fr) minmax(70px, 0.8fr) minmax(64px, 0.7fr) minmax(64px, 0.7fr) 80px minmax(200px, 1.2fr);
+  grid-template-columns: minmax(160px, 1.6fr) minmax(72px, 0.7fr) minmax(88px, 0.9fr) minmax(64px, 0.7fr) minmax(72px, 0.7fr) minmax(88px, 0.9fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(200px, 1.2fr);
   gap: 10px;
   align-items: center;
   padding: 12px 14px;
@@ -282,17 +295,18 @@ const LiveRegion = styled.div`
   clip: rect(0 0 0 0);
 `
 
-/** Portal host for Module 006 — does not reserve blank desktop column width. */
+/** Portal host for Module 006 — clipped; must not reserve blank column width (FARM-03). */
 const AdvisorPortalHost = styled.div`
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
+  pointer-events: none;
 `
 
 function previewCount(_width: number): number {
-  return 4
+  return farmsMyFarms.maxVisibleDesktop
 }
 
 function FarmListRow({ position }: { position: FarmsWalletPosition }) {
@@ -317,9 +331,9 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
   return (
     <ListRow data-testid="farms-my-farm-list-row">
       <ListCell>
-        <ListLabel>Pair</ListLabel>
+        <ListLabel>Farm</ListLabel>
         <PairCell>
-          <Logos aria-hidden>
+          <Logos aria-hidden data-testid="farms-my-list-token-logos">
             <Logo>
               <MelegaTokenAvatar
                 name={position.token0.symbol}
@@ -345,29 +359,41 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
             <strong style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {position.title}
             </strong>
-            <MelegaExploreChainBadge chainId={position.chainId} />
+            {position.stakedLpFormatted ? (
+              <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                {position.stakedLpFormatted}
+              </span>
+            ) : null}
           </div>
         </PairCell>
       </ListCell>
+      <ListCell>
+        <ListLabel>Chain</ListLabel>
+        <MelegaExploreChainBadge chainId={position.chainId} />
+      </ListCell>
       <ListCell data-primary-metric="deposited-value">
-        <ListLabel>Deposited</ListLabel>
+        <ListLabel>Deposited Value</ListLabel>
         {deposited}
       </ListCell>
       <ListCell>
         <ListLabel>APR</ListLabel>
         {position.apr && position.apr !== '0%' ? position.apr : '—'}
       </ListCell>
-      <ListCell>
+      <ListCell data-testid="farms-my-list-multiplier">
         <ListLabel>Multiplier</ListLabel>
         {position.multiplier || '—'}
       </ListCell>
       <ListCell>
-        <ListLabel>Rewards</ListLabel>
+        <ListLabel>Pending Rewards</ListLabel>
         {position.pendingFormatted || '—'}
       </ListCell>
       <ListCell>
-        <ListLabel>Duration</ListLabel>
+        <ListLabel>Volume 24H</ListLabel>
         —
+      </ListCell>
+      <ListCell>
+        <ListLabel>Duration</ListLabel>
+        {position.farmStatus === 'ACTIVE' && position.multiplier ? 'Ongoing' : '—'}
       </ListCell>
       <ListCell>
         <ListLabel>Remaining</ListLabel>
@@ -383,6 +409,7 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
             type="button"
             disabled={!enabled('claim') || busy === 'claim'}
             data-action="harvest"
+            data-testid="farms-my-harvest"
             onClick={() => run('claim')}
           >
             {busy === 'claim' ? 'Harvesting…' : 'Harvest'}
@@ -391,6 +418,7 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
             type="button"
             disabled={!enabled('stake') || busy === 'stake'}
             data-action="stake-more"
+            data-testid="farms-my-stake-more"
             onClick={() => run('stake')}
           >
             Stake More
@@ -399,6 +427,7 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
             type="button"
             disabled={!enabled('unstake') || busy === 'unstake'}
             data-action="withdraw"
+            data-testid="farms-my-withdraw"
             onClick={() => run('unstake')}
           >
             {busy === 'unstake' ? 'Withdrawing…' : 'Withdraw'}
@@ -430,7 +459,8 @@ export const FarmsMyFarmsModule: React.FC = () => {
 
   const canExpand = (vm.totalCount ?? vm.positions.length) > limit
 
-  if (vm.state === 'empty') {
+  // Hide when empty or disconnected — full-width module must not sit under KPIs unused (FARM-02).
+  if (vm.state === 'empty' || vm.state === 'disconnected') {
     return null
   }
 
@@ -439,6 +469,7 @@ export const FarmsMyFarmsModule: React.FC = () => {
       data-testid="farms-my-farms-module"
       data-farms-module="003"
       data-pixel-farms-my-farms="full-width"
+      data-my-farms-preview-max={String(farmsMyFarms.maxVisibleDesktop)}
       data-module-state={vm.state}
       data-my-farms-expanded={expanded ? 'true' : 'false'}
       data-my-farms-view={viewMode}
@@ -480,15 +511,9 @@ export const FarmsMyFarmsModule: React.FC = () => {
         <Body>
           {vm.moduleDisclosure ? <StateDesc role="status">{vm.moduleDisclosure}</StateDesc> : null}
           <LiveRegion aria-live="polite">{vm.liveRegion}</LiveRegion>
-          {vm.state === 'disconnected' ? (
-            <Center>
-              <StateTitle>Connect your wallet to view farm positions</StateTitle>
-              <ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton>
-            </Center>
-          ) : null}
           {vm.state === 'loading' ? (
             <Grid aria-busy="true" aria-label="Loading farm positions">
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2, 3].map((i) => (
                 <li key={i}>
                   <Skeleton data-testid="farms-my-farms-skeleton" />
                 </li>
@@ -504,6 +529,19 @@ export const FarmsMyFarmsModule: React.FC = () => {
           {(['ready', 'partial', 'stale'] as const).includes(vm.state as 'ready') ? (
             viewMode === 'list' && expanded ? (
               <List data-testid="farms-my-farms-list">
+                <ListHeader data-testid="farms-my-farms-list-header">
+                  <span>Farm</span>
+                  <span>Chain</span>
+                  <span>Deposited Value</span>
+                  <span>APR</span>
+                  <span>Multiplier</span>
+                  <span>Pending Rewards</span>
+                  <span>Volume 24H</span>
+                  <span>Duration</span>
+                  <span>Remaining</span>
+                  <span>Status</span>
+                  <span>Actions</span>
+                </ListHeader>
                 {shown.map((position) => (
                   <FarmListRow key={position.positionId} position={position} />
                 ))}

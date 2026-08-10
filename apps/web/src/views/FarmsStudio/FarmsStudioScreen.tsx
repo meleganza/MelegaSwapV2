@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
@@ -57,17 +57,30 @@ const Content = styled.div`
 export const FarmsStudioScreen: React.FC = () => {
   const router = useRouter()
   const [createOpen, setCreateOpen] = useState(false)
+  const [everOpened, setEverOpened] = useState(false)
+  const createOpenRef = useRef(false)
 
   useEffect(() => {
+    createOpenRef.current = createOpen
+  }, [createOpen])
+
+  useEffect(() => {
+    if (!router.isReady) return
     const q = router.query.create
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
-    if (q === '1' || q === 'true' || hash === '#create-farm') {
+    const shouldOpen = q === '1' || q === 'true' || hash === '#create-farm'
+    if (shouldOpen) {
       setCreateOpen(true)
+      setEverOpened(true)
     }
-  }, [router.query.create])
+  }, [router.isReady, router.query.create])
 
   const openCreate = useCallback(() => {
+    if (createOpenRef.current) return
     setCreateOpen(true)
+    setEverOpened(true)
+    const q = router.query.create
+    if (q === '1' || q === 'true') return
     void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
       shallow: true,
     })
@@ -75,6 +88,8 @@ export const FarmsStudioScreen: React.FC = () => {
 
   const closeCreate = useCallback(() => {
     setCreateOpen(false)
+    const q = router.query.create
+    if (q !== '1' && q !== 'true') return
     const nextQuery = { ...router.query }
     delete nextQuery.create
     void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
@@ -103,6 +118,7 @@ export const FarmsStudioScreen: React.FC = () => {
       data-r200-premium="true"
       data-fs-wallet-first="true"
       data-farms-create-modal={createOpen ? 'open' : 'closed'}
+      data-create-farm-first-open-stable="true"
     >
       <PageMeta />
       <FarmsStudioGlobalStyle />
@@ -124,26 +140,28 @@ export const FarmsStudioScreen: React.FC = () => {
             <FarmsExploreFarmsModule />
           </DataSurfaceErrorBoundary>
         </Content>
-        <MelegaModal
-          open={createOpen}
-          onClose={closeCreate}
-          title="Create Farm"
-          subtitle="Configure pair, rewards, budget and duration."
-          size="md"
-          testId="create-farm-modal"
-          closeTestId="create-farm-modal-close"
-          ariaLabel="Create Farm"
-          flush
-        >
-          <div id="create-farm" data-fs-create-farm-section>
-            <DataSurfaceErrorBoundary
-              surface="Create Farm"
-              userReason="Create Farm configuration is temporarily unavailable."
-            >
-              <CreateFarmWorkspace />
-            </DataSurfaceErrorBoundary>
-          </div>
-        </MelegaModal>
+        {everOpened ? (
+          <MelegaModal
+            open={createOpen}
+            onClose={closeCreate}
+            title="Create Farm"
+            subtitle="Configure pair, rewards, budget and duration."
+            size="md"
+            testId="create-farm-modal"
+            closeTestId="create-farm-modal-close"
+            ariaLabel="Create Farm"
+            flush
+          >
+            <div id="create-farm" data-fs-create-farm-section>
+              <DataSurfaceErrorBoundary
+                surface="Create Farm"
+                userReason="Create Farm configuration is temporarily unavailable."
+              >
+                <CreateFarmWorkspace />
+              </DataSurfaceErrorBoundary>
+            </div>
+          </MelegaModal>
+        ) : null}
       </FarmsRuntimeProvider>
     </Root>
   )

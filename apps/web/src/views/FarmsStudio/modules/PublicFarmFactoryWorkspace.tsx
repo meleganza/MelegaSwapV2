@@ -3,12 +3,16 @@
  * Protocol engines (eligibility, fees, drafts, capability) stay identical underneath.
  * No protocol terminology is shown to users.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/router'
 import { typography } from 'design-system/melega'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
+import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from 'views/LiquidityStudio/liquidityBuilding/addresses'
 import { farmsHero } from './farmsHeroTokens'
@@ -32,10 +36,11 @@ import { resolvePublicFarmFactoryFee } from './publicFarmFactoryFee'
 import {
   PUBLIC_FARM_MINIMUM_TVL_BNB,
   evaluatePublicFarmEligibility,
+  estimatePairTvlBnb,
   rejectMarcoReward,
   type PublicFarmEligibilityResult,
 } from './publicFarmEligibility'
-import { filterPairsForFarmFactory, toSelectedPair } from './publicFarmPairSearch'
+import { filterPairsForFarmFactory, formatFarmPairLabel, toSelectedPair } from './publicFarmPairSearch'
 
 const Section = styled.section`
   width: 100%;
@@ -263,28 +268,89 @@ const MetricValue = styled.span`
   color: #f5f5f5;
 `
 
-const PairList = styled.ul`
+const PairSearchWrap = styled.div`
+  position: relative;
+  min-width: 0;
+`
+
+const PairDropdown = styled.div<{ $top: number; $left: number; $width: number }>`
+  position: fixed;
+  z-index: ${melegaZIndex.overlayStacked};
+  top: ${({ $top }) => $top}px;
+  left: ${({ $left }) => $left}px;
+  width: ${({ $width }) => $width}px;
+  max-height: min(280px, calc(100vh - 24px));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+`
+
+const PairDropdownList = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  max-height: 240px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 220px;
-  overflow: auto;
+  gap: 4px;
 `
 
-const PairItem = styled.button<{ $active?: boolean }>`
+const PairDropdownItem = styled.button<{ $active?: boolean }>`
   width: 100%;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
   border-radius: 10px;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.45)' : 'rgba(255, 255, 255, 0.08)')};
-  background: ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.08)' : 'rgba(255, 255, 255, 0.02)')};
+  background: ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.08)' : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.35)' : 'transparent')};
   color: #f2f2f2;
-  padding: 12px 14px;
+  padding: 10px 12px;
   cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+`
+
+const PairDropdownMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+`
+
+const PairDropdownName = styled.span`
   font-size: 14px;
+  font-weight: 700;
+  color: #f2f2f2;
   line-height: 18px;
+`
+
+const PairDropdownSub = styled.span`
+  font-size: 11px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.5);
+`
+
+const PairTokenStack = styled.div`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  & > *:nth-child(2) {
+    margin-left: -8px;
+  }
 `
 
 const Remediation = styled.div`
@@ -463,6 +529,12 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   const router = useRouter()
   const [draft, setDraft] = useState<PublicFarmFactoryDraft>(() => createDefaultPublicFarmFactoryDraft())
   const [pairQuery, setPairQuery] = useState('')
+  const [pairDropdownOpen, setPairDropdownOpen] = useState(false)
+  const pairSearchRef = useRef<HTMLInputElement>(null)
+  const pairDropdownRef = useRef<HTMLDivElement>(null)
+  const [pairDropdownCoords, setPairDropdownCoords] = useState<{ top: number; left: number; width: number } | null>(
+    null,
+  )
   const [hydrated, setHydrated] = useState(false)
   const [createSoftNote, setCreateSoftNote] = useState<string | null>(null)
   const [openAcc, setOpenAcc] = useState<'pair' | 'reward' | 'budget' | 'advanced'>('pair')
@@ -478,6 +550,53 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   })
 
   const filteredPairs = useMemo(() => filterPairsForFarmFactory(pairs, pairQuery), [pairs, pairQuery])
+
+  const syncPairDropdownCoords = useCallback(() => {
+    const el = pairSearchRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const width = Math.max(rect.width, 280)
+    const preferredTop = rect.bottom + 6
+    const maxTop = window.innerHeight - 24 - 280
+    const top = Math.min(preferredTop, Math.max(12, maxTop))
+    let left = rect.left
+    if (left + width > window.innerWidth - 12) left = Math.max(12, window.innerWidth - width - 12)
+    setPairDropdownCoords({ top, left, width })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!pairDropdownOpen) {
+      setPairDropdownCoords(null)
+      return
+    }
+    syncPairDropdownCoords()
+    const onScroll = () => syncPairDropdownCoords()
+    window.addEventListener('resize', syncPairDropdownCoords)
+    window.addEventListener('scroll', onScroll, true)
+    return () => {
+      window.removeEventListener('resize', syncPairDropdownCoords)
+      window.removeEventListener('scroll', onScroll, true)
+    }
+  }, [pairDropdownOpen, syncPairDropdownCoords])
+
+  useEffect(() => {
+    if (!pairDropdownOpen) return
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node
+      if (pairSearchRef.current?.contains(t)) return
+      if (pairDropdownRef.current?.contains(t)) return
+      setPairDropdownOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPairDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [pairDropdownOpen])
 
   const patch = useCallback((partial: Partial<PublicFarmFactoryDraft>) => {
     setDraft((prev) => {
@@ -562,6 +681,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
   const selectPair = (pair: PublicFarmSelectedPair) => {
     setCreateSoftNote(null)
+    setPairDropdownOpen(false)
     patch({ selectedPair: pair, selectionMode: 'search_existing' })
   }
 
@@ -632,7 +752,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                     }
                     patch({ selectionMode: 'create_new' })
                     saveDraftToStorage(next)
-                    if (typeof window !== 'undefined') window.location.href = createPairHref
+                    void router.push(createPairHref)
                   }}
                 >
                   ○ {CREATE_FARM_UX.createNew}
@@ -645,35 +765,89 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 <Hint>{CREATE_FARM_UX.searchHint}</Hint>
                 <Field>
                   <Label>Search</Label>
-                  <InputBox
-                    value={pairQuery}
-                    onChange={(e) => setPairQuery(e.target.value)}
-                    placeholder={CREATE_FARM_UX.searchPlaceholder}
-                    aria-label="Search existing pair"
-                    data-testid="public-farm-pair-query"
-                  />
+                  <PairSearchWrap>
+                    <InputBox
+                      ref={pairSearchRef}
+                      value={pairQuery}
+                      onChange={(e) => {
+                        setPairQuery(e.target.value)
+                        setPairDropdownOpen(true)
+                      }}
+                      onFocus={() => setPairDropdownOpen(true)}
+                      placeholder={CREATE_FARM_UX.searchPlaceholder}
+                      aria-label="Search existing pair"
+                      aria-expanded={pairDropdownOpen}
+                      aria-haspopup="listbox"
+                      data-testid="public-farm-pair-query"
+                    />
+                    {pairDropdownOpen && pairDropdownCoords && typeof document !== 'undefined'
+                      ? createPortal(
+                          <PairDropdown
+                            ref={pairDropdownRef}
+                            $top={pairDropdownCoords.top}
+                            $left={pairDropdownCoords.left}
+                            $width={pairDropdownCoords.width}
+                            data-testid="create-farm-pair-dropdown"
+                            role="listbox"
+                            aria-label="Pair search results"
+                          >
+                            <PairDropdownList>
+                              {filteredPairs.slice(0, 12).map((p) => {
+                                const labels = formatFarmPairLabel(p)
+                                const selected = toSelectedPair(p)
+                                const active =
+                                  draft.selectedPair?.pairAddress.toLowerCase() === selected.pairAddress.toLowerCase()
+                                const tvlBnb = estimatePairTvlBnb(p)
+                                const tvlLabel =
+                                  tvlBnb != null && Number.isFinite(tvlBnb) ? `${tvlBnb.toFixed(2)} BNB TVL` : null
+                                return (
+                                  <li key={selected.pairAddress}>
+                                    <PairDropdownItem
+                                      type="button"
+                                      role="option"
+                                      aria-selected={active}
+                                      $active={active}
+                                      data-testid={`public-farm-pair-option-${selected.pairAddress.toLowerCase()}`}
+                                      onClick={() => selectPair(selected)}
+                                    >
+                                      <PairTokenStack>
+                                        <MelegaTokenAvatar
+                                          name={labels.symbol0}
+                                          symbol={labels.symbol0}
+                                          address={p.token0}
+                                          chainId={MELEGA_CHAIN_ID}
+                                          size={28}
+                                          radius="circle"
+                                        />
+                                        <MelegaTokenAvatar
+                                          name={labels.symbol1}
+                                          symbol={labels.symbol1}
+                                          address={p.token1}
+                                          chainId={MELEGA_CHAIN_ID}
+                                          size={28}
+                                          radius="circle"
+                                        />
+                                      </PairTokenStack>
+                                      <PairDropdownMeta>
+                                        <PairDropdownName>
+                                          {labels.symbol0}/{labels.symbol1}
+                                        </PairDropdownName>
+                                        <PairDropdownSub>
+                                          BNB Chain
+                                          {tvlLabel ? ` · ${tvlLabel}` : ''}
+                                        </PairDropdownSub>
+                                      </PairDropdownMeta>
+                                    </PairDropdownItem>
+                                  </li>
+                                )
+                              })}
+                            </PairDropdownList>
+                          </PairDropdown>,
+                          document.body,
+                        )
+                      : null}
+                  </PairSearchWrap>
                 </Field>
-                <PairList>
-                  {filteredPairs.slice(0, 12).map((p) => {
-                    const selected = toSelectedPair(p)
-                    const active =
-                      draft.selectedPair?.pairAddress.toLowerCase() === selected.pairAddress.toLowerCase()
-                    return (
-                      <li key={selected.pairAddress}>
-                        <PairItem
-                          type="button"
-                          $active={active}
-                          data-testid={`public-farm-pair-option-${selected.pairAddress.toLowerCase()}`}
-                          onClick={() => selectPair(selected)}
-                        >
-                          <strong>
-                            {selected.symbol0}/{selected.symbol1}
-                          </strong>
-                        </PairItem>
-                      </li>
-                    )
-                  })}
-                </PairList>
               </Panel>
             )}
 
