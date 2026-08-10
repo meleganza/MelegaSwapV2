@@ -15,6 +15,7 @@ import {
   useLiquidityPositionDetails,
   type LiquidityPositionRow,
 } from '../liquidityRuntime/useLiquidityPositions'
+import { useLPApr } from 'state/swap/useLPApr'
 import {
   formatPoolShare,
   formatPositionUsd,
@@ -43,22 +44,22 @@ const Main = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 20px;
+  line-height: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: ${liquidityMyPositions.text};
 `
 
 const Desc = styled.p`
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 20px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 18px;
   color: ${liquidityMyPositions.muted};
 `
 
 const Grid = styled.div`
-  margin-top: 16px;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: ${liquidityMyPositions.columnGap};
@@ -83,14 +84,14 @@ const Card = styled.article`
   padding: ${liquidityMyPositions.cardPad};
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 `
 
 const PairRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 `
 
@@ -125,8 +126,8 @@ const Status = styled.span<{ $tone: string }>`
 const Metrics = styled.dl`
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 `
 
 const Metric = styled.div`
@@ -254,6 +255,100 @@ const Skeleton = styled.div`
   );
 `
 
+
+const Toolbar = styled.div`
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+`
+
+const ViewToggle = styled.div`
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.28);
+`
+
+const ViewBtn = styled.button<{ $on?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ $on }) => ($on ? 'rgba(221, 185, 47, 0.35)' : 'transparent')};
+  background: ${({ $on }) => ($on ? 'rgba(221, 185, 47, 0.12)' : 'transparent')};
+  color: ${({ $on }) => ($on ? '#fff' : liquidityMyPositions.muted)};
+  font-size: 12px;
+  font-weight: 750;
+`
+
+const ListTable = styled.div`
+  margin-top: 14px;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: ${liquidityMyPositions.cardRadius};
+  border: ${liquidityMyPositions.cardBorder};
+  background: ${liquidityMyPositions.cardBg};
+`
+
+const ListHead = styled.div`
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${liquidityMyPositions.dim};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 720px;
+`
+
+const ListRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  gap: 8px;
+  padding: 12px 14px;
+  align-items: center;
+  min-width: 720px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+`
+
+const ListCell = styled.div`
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 650;
+  color: ${liquidityMyPositions.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const MoreBtn = styled.button`
+  appearance: none;
+  margin-top: 12px;
+  cursor: pointer;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: ${liquidityMyPositions.text};
+  font-size: 13px;
+  font-weight: 700;
+`
+
 function PositionCard({
   row,
   onManage,
@@ -264,6 +359,11 @@ function PositionCard({
   onRemove: (row: LiquidityPositionRow) => void
 }) {
   const details = useLiquidityPositionDetails(row)
+  const lpApr = useLPApr(row.pair)
+  const aprLabel =
+    lpApr?.lpApr7d != null && Number.isFinite(lpApr.lpApr7d)
+      ? `${lpApr.lpApr7d >= 100 ? lpApr.lpApr7d.toFixed(0) : lpApr.lpApr7d.toFixed(2)}%`
+      : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const lpLabel = row.lpBalance?.greaterThan(0) ? row.lpBalance.toSignificant(6) : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const valueLabel = formatPositionUsd(details.usdValue)
   const shareLabel = formatPoolShare(details.poolShare)
@@ -285,7 +385,7 @@ function PositionCard({
             name={token0.name}
             address={token0.address}
             chainId={positionChainId}
-            size={32}
+            size={28}
             radius="circle"
           />
           <MelegaTokenAvatar
@@ -293,7 +393,7 @@ function PositionCard({
             name={token1.name}
             address={token1.address}
             chainId={positionChainId}
-            size={32}
+            size={28}
             radius="circle"
           />
         </Logos>
@@ -310,7 +410,7 @@ function PositionCard({
 
       <Metrics data-testid="liquidity-my-positions-metrics">
         <Metric data-primary-metric="deposited-value">
-          <MetricLabel>Deposited value</MetricLabel>
+          <MetricLabel>Position value</MetricLabel>
           <MetricValue>{valueLabel}</MetricValue>
         </Metric>
         <Metric>
@@ -320,6 +420,10 @@ function PositionCard({
         <Metric>
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.feesEarned}</MetricLabel>
           <MetricValue>{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</MetricValue>
+        </Metric>
+        <Metric data-testid="liquidity-my-positions-apr">
+          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.apr}</MetricLabel>
+          <MetricValue>{aprLabel}</MetricValue>
         </Metric>
         <Metric data-secondary-metric="lp-amount">
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.lpBalance}</MetricLabel>
@@ -331,6 +435,9 @@ function PositionCard({
         <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
           {LIQUIDITY_MY_POSITIONS_COPY.manage}
         </PrimaryBtn>
+        <SecondaryBtn type="button" data-testid="liquidity-my-positions-add-more" onClick={() => onManage(row)}>
+          {LIQUIDITY_MY_POSITIONS_COPY.addMore}
+        </SecondaryBtn>
         <SecondaryBtn type="button" data-testid="liquidity-my-positions-remove" onClick={() => onRemove(row)}>
           {LIQUIDITY_MY_POSITIONS_COPY.remove}
         </SecondaryBtn>
@@ -339,19 +446,71 @@ function PositionCard({
   )
 }
 
+
+function PositionListRow({
+  row,
+  onManage,
+  onRemove,
+}: {
+  row: LiquidityPositionRow
+  onManage: (row: LiquidityPositionRow) => void
+  onRemove: (row: LiquidityPositionRow) => void
+}) {
+  const details = useLiquidityPositionDetails(row)
+  const valueLabel = formatPositionUsd(details.usdValue)
+  const shareLabel = formatPoolShare(details.poolShare)
+  const token0 = row.pair.token0
+  const positionChainId = row.chainId ?? token0.chainId ?? liquidityMyPositions.chainId
+
+  return (
+    <ListRow data-testid="liquidity-my-positions-list-row" data-position-id={row.id}>
+      <ListCell data-testid="liquidity-my-positions-list-pair">{row.pairLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-chain">
+        <MelegaExploreChainBadge chainId={positionChainId} />
+      </ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-value">{valueLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-share">{shareLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-fees">{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</ListCell>
+      <ListCell>
+        <Actions style={{ marginTop: 0 }}>
+          <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.manage}
+          </PrimaryBtn>
+          <SecondaryBtn type="button" data-testid="liquidity-my-positions-add-more" onClick={() => onManage(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.addMore}
+          </SecondaryBtn>
+          <SecondaryBtn type="button" data-testid="liquidity-my-positions-remove" onClick={() => onRemove(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.remove}
+          </SecondaryBtn>
+        </Actions>
+      </ListCell>
+    </ListRow>
+  )
+}
+
+type PendingSwitch = { row: LiquidityPositionRow; intent: 'manage' | 'remove' }
+
 const LiquidityMyPositionsBody: React.FC = () => {
   const {
     account,
     positions,
-    positionsLoading,
+    positionsPhase,
+    positionsTimedOut,
     setSelectedPositionId,
     setMode,
     setCurrencyA,
     setCurrencyB,
+    retryPositions,
   } = useLiquidityRuntime()
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
-  const [pendingSwitch, setPendingSwitch] = useState<LiquidityPositionRow | null>(null)
+  const [pendingSwitch, setPendingSwitch] = useState<PendingSwitch | null>(null)
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
+  const [expanded, setExpanded] = useState(false)
+  const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
+  const visiblePositions =
+    expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
+  const canExpand = positions.length > previewMin
 
   const proceedManage = useCallback(
     (row: LiquidityPositionRow) => {
@@ -366,11 +525,21 @@ const LiquidityMyPositionsBody: React.FC = () => {
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
 
+  const proceedRemove = useCallback(
+    (row: LiquidityPositionRow) => {
+      setSelectedPositionId(row.id)
+      setCurrencyA(row.pair.token0)
+      setCurrencyB(row.pair.token1)
+      setMode('Remove Liquidity')
+    },
+    [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
+  )
+
   const onManage = useCallback(
     (row: LiquidityPositionRow) => {
       const target = row.chainId ?? row.pair.token0.chainId
       if (account && target != null && chainId != null && target !== chainId) {
-        setPendingSwitch(row)
+        setPendingSwitch({ row, intent: 'manage' })
         return
       }
       proceedManage(row)
@@ -382,35 +551,40 @@ const LiquidityMyPositionsBody: React.FC = () => {
     (row: LiquidityPositionRow) => {
       const target = row.chainId ?? row.pair.token0.chainId
       if (account && target != null && chainId != null && target !== chainId) {
-        setPendingSwitch(row)
+        setPendingSwitch({ row, intent: 'remove' })
         return
       }
-      setSelectedPositionId(row.id)
-      setCurrencyA(row.pair.token0)
-      setCurrencyB(row.pair.token1)
-      setMode('Remove Liquidity')
-      // V3: open remove workspace; confirm modal stays on CTA (existing execution path).
+      proceedRemove(row)
     },
-    [account, chainId, setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
+    [account, chainId, proceedRemove],
   )
 
   const confirmSwitch = useCallback(async () => {
     if (!pendingSwitch) return
-    const target = pendingSwitch.chainId ?? pendingSwitch.pair.token0.chainId
+    const target = pendingSwitch.row.chainId ?? pendingSwitch.row.pair.token0.chainId
     try {
       if (target != null) await switchNetworkAsync(target)
-      proceedManage(pendingSwitch)
+      if (pendingSwitch.intent === 'remove') proceedRemove(pendingSwitch.row)
+      else proceedManage(pendingSwitch.row)
     } finally {
       setPendingSwitch(null)
     }
-  }, [pendingSwitch, switchNetworkAsync, proceedManage])
+  }, [pendingSwitch, switchNetworkAsync, proceedManage, proceedRemove])
 
   return (
     <Main data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="full-width">
       <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
       <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
 
-      {!account ? (
+      <div
+        data-testid="liquidity-my-positions-phase"
+        data-positions-phase={positionsPhase}
+        data-positions-timed-out={positionsTimedOut ? '1' : '0'}
+        hidden
+        aria-hidden
+      />
+
+      {positionsPhase === 'connecting' ? (
         <Empty data-testid="liquidity-my-positions-disconnected">
           <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyDisconnected}</EmptyText>
           <EmptyActions>
@@ -421,11 +595,15 @@ const LiquidityMyPositionsBody: React.FC = () => {
         </Empty>
       ) : null}
 
-      {account && positionsLoading ? (
-        <Skeleton data-testid="liquidity-my-positions-skeleton" aria-label="Loading positions" />
+      {positionsPhase === 'fetching' ? (
+        <Skeleton
+          data-testid="liquidity-my-positions-skeleton"
+          aria-label="Fetching positions"
+          data-positions-loading="fetching"
+        />
       ) : null}
 
-      {account && !positionsLoading && positions.length === 0 ? (
+      {positionsPhase === 'empty' ? (
         <Empty data-testid="liquidity-my-positions-empty">
           <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
           <EmptyActions>
@@ -434,7 +612,6 @@ const LiquidityMyPositionsBody: React.FC = () => {
               data-testid="liquidity-my-positions-empty-add"
               onClick={() => {
                 setMode('Add Liquidity')
-                document.getElementById('add-liquidity')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
               }}
             >
               Add Liquidity
@@ -443,19 +620,96 @@ const LiquidityMyPositionsBody: React.FC = () => {
         </Empty>
       ) : null}
 
-      {account && !positionsLoading && positions.length > 0 ? (
-        <Grid data-testid="liquidity-my-positions-grid">
-          {positions.map((row) => (
-            <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
-          ))}
-        </Grid>
+      {positionsPhase === 'error' ? (
+        <Empty data-testid="liquidity-my-positions-error">
+          <EmptyText>
+            {positionsTimedOut
+              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
+              : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
+          </EmptyText>
+          <EmptyActions>
+            <PrimaryBtn
+              type="button"
+              data-testid="liquidity-my-positions-retry"
+              onClick={() => retryPositions()}
+            >
+              {LIQUIDITY_MY_POSITIONS_COPY.retry}
+            </PrimaryBtn>
+            <SecondaryBtn
+              type="button"
+              data-testid="liquidity-my-positions-empty-add"
+              onClick={() => setMode('Add Liquidity')}
+            >
+              Add Liquidity
+            </SecondaryBtn>
+          </EmptyActions>
+        </Empty>
+      ) : null}
+
+      {positionsPhase === 'ready' ? (
+        <>
+          <Toolbar data-testid="liquidity-my-positions-toolbar">
+            <ViewToggle role="group" aria-label="Positions layout">
+              <ViewBtn
+                type="button"
+                $on={viewMode === 'cards'}
+                onClick={() => setViewMode('cards')}
+                data-testid="liquidity-my-positions-view-cards"
+              >
+                {LIQUIDITY_MY_POSITIONS_COPY.viewCards}
+              </ViewBtn>
+              <ViewBtn
+                type="button"
+                $on={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+                data-testid="liquidity-my-positions-view-list"
+              >
+                {LIQUIDITY_MY_POSITIONS_COPY.viewList}
+              </ViewBtn>
+            </ViewToggle>
+          </Toolbar>
+
+          {viewMode === 'cards' ? (
+            <Grid data-testid="liquidity-my-positions-grid">
+              {visiblePositions.map((row) => (
+                <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
+              ))}
+            </Grid>
+          ) : (
+            <ListTable data-testid="liquidity-my-positions-list">
+              <ListHead>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colPair}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colChain}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colValue}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colShare}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colFees}</span>
+                <span>{LIQUIDITY_MY_POSITIONS_COPY.colActions}</span>
+              </ListHead>
+              {visiblePositions.map((row) => (
+                <PositionListRow key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
+              ))}
+            </ListTable>
+          )}
+
+          {canExpand ? (
+            <MoreBtn
+              type="button"
+              data-testid="liquidity-my-positions-expand"
+              onClick={() => setExpanded((v) => !v)}
+            >
+              {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
+            </MoreBtn>
+          ) : null}
+        </>
       ) : null}
 
       <ChainSwitchConfirmDialog
         open={Boolean(pendingSwitch)}
-        targetChainId={pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56}
+        targetChainId={
+          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56
+        }
         productLabel={`This liquidity position is on ${chainDisplayName(
-          pendingSwitch?.chainId ?? pendingSwitch?.pair.token0.chainId ?? 56,
+          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56,
         )}. Switch network to continue?`}
         onCancel={() => setPendingSwitch(null)}
         onConfirm={() => {

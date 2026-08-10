@@ -56,6 +56,14 @@ export const IconMenu: React.FC<{ size?: number }> = ({ size = 20 }) => (
   </svg>
 )
 
+/** Compact user silhouette for My Melega trigger. */
+export const IconUser: React.FC<{ size?: number }> = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M5.5 19.5c1.5-3.2 3.8-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+  </svg>
+)
+
 export const IconTrendingUp: React.FC<{ size?: number }> = ({ size = 17 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
     <path d="M3 17l6-6 4 4 7-7" />

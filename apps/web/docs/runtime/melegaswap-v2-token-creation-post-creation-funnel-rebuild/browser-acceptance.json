@@ -1,0 +1,51 @@
+{
+  "mission": "MELEGASWAP_V2_TOKEN_CREATION_POST_CREATION_FUNNEL_REBUILD",
+  "mode": "source_invariant_acceptance",
+  "generatedAt": "2026-08-09T14:07:01.444Z",
+  "viewports": [
+    1440,
+    1280,
+    1024,
+    390
+  ],
+  "note": "Create Token Publish → success funnel; Featured/Trend absent until Growth Hub after claim.",
+  "checks": [
+    {
+      "id": "featured_removed_from_create_form",
+      "ok": true
+    },
+    {
+      "id": "trend_removed_from_create_form",
+      "ok": true
+    },
+    {
+      "id": "success_funnel_mounted",
+      "ok": true
+    },
+    {
+      "id": "success_title",
+      "ok": true
+    },
+    {
+      "id": "add_liquidity_cta",
+      "ok": true
+    },
+    {
+      "id": "claim_cta",
+      "ok": true
+    },
+    {
+      "id": "community_locked",
+      "ok": true
+    },
+    {
+      "id": "no_checkout_in_funnel",
+      "ok": true
+    },
+    {
+      "id": "growth_hub_preserved",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

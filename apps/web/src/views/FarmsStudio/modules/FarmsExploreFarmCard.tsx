@@ -22,7 +22,8 @@ const Card = styled.article`
   position: relative;
   width: 100%;
   max-width: ${farmsExplore.cardW};
-  height: ${farmsExplore.cardH};
+  height: auto;
+  min-height: ${farmsExplore.cardH};
   box-sizing: border-box;
   padding: ${farmsExplore.cardPad};
   border-radius: ${farmsExplore.cardRadius};
@@ -34,6 +35,7 @@ const Card = styled.article`
   /* Founder amendment P0-6: tighter vertical rhythm for denser grids. */
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
   font-family: ${typography.fontFamily.body};
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 
@@ -252,6 +254,16 @@ const Actions = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-top: auto;
+  min-width: 0;
+  width: 100%;
+
+  > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 `
 
 const Btn = styled.button<{ $primary?: boolean }>`

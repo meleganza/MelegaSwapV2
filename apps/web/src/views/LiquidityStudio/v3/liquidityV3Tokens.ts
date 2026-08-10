@@ -1,22 +1,38 @@
 /**
- * Liquidity Studio V3 — presentation tokens (match Project Page V5 / Farms).
+ * Liquidity Studio V3 — presentation tokens (Farms / Pools / Project Page parity).
  */
-import { uxRebuildColors, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
+import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 
 export const liqV3 = {
-  contentMax: uxRebuildLayout.contentMax,
+  contentMax: '1376px',
   pageBg: uxRebuildColors.pageBg,
-  gold: uxRebuildColors.gold,
-  goldLine: 'rgba(221, 185, 47, 0.32)',
+  /** Farms/Pools hero gold (premium parity). */
+  gold: '#F4C430',
+  goldHover: '#FFD34D',
+  goldLine: 'rgba(244, 196, 48, 0.45)',
   text: uxRebuildColors.text,
   mute: uxRebuildColors.secondary,
   mute2: uxRebuildColors.muted,
-  line: 'rgba(255, 255, 255, 0.08)',
-  panel: 'rgba(14, 14, 14, 0.96)',
+  line: 'rgba(255, 255, 255, 0.09)',
+  panel: 'rgba(15, 15, 15, 0.92)',
   panel2: 'rgba(18, 18, 18, 0.98)',
   radius: uxRebuildRadius.card,
-  heroMaxH: '200px',
-  emptyMaxH: '120px',
+  /** Dense laptop hero — full first viewport with snapshot (Farms language, tighter chrome). */
+  heroMaxH: '220px',
+  leftW: '440px',
+  artworkW: '480px',
+  trustW: '360px',
+  columnGap: '20px',
+  emptyMaxH: '100px',
+  titleSize: '44px',
+  titleLine: '48px',
+  descSize: '15px',
+  descLine: '22px',
+  ctaH: '40px',
+  pagePadY: '16px',
+  pageGap: '14px',
+  tabletBreak: '1199px',
+  mobileBreak: '767px',
 } as const
 
 export const LIQ_V3_LIVE_CHAINS: Array<{ id: number; label: string }> = [
@@ -34,11 +50,14 @@ export const LIQ_V3_COPY = {
   title: 'Liquidity',
   subtitle: 'Provide liquidity, earn fees, and manage your positions across Melega DEX.',
   addCta: 'Add Liquidity',
-  positionsCta: 'My Positions',
+  positionsCta: 'My Liquidity',
   aiEntry: 'AI Liquidity Builder',
-  aiSub: 'Automate liquidity building for your token.',
+  aiSub: 'Automate liquidity growth for your token.',
   aiBeta: 'BETA · BNB only',
-  aiOpen: 'Open Liquidity Builder',
+  aiOpen: 'Start Builder',
+  aiStep1: 'Setup',
+  aiStep2: 'Review',
+  aiStep3: 'Activate',
   tabPositions: 'My Liquidity',
   tabAdd: 'Add Liquidity',
   tabAi: 'AI Liquidity Builder · BETA',

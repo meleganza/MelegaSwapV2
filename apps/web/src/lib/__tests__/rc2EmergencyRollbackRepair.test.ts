@@ -51,8 +51,8 @@ describe('RC2 emergency — header / bottom nav', () => {
       'Farms',
       'Pools',
       'List',
-      'Portfolio',
     ])
+    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
   it('bottom nav restored away from RC2 journey set', () => {

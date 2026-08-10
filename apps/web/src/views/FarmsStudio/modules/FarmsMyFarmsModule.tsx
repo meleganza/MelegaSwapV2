@@ -1,22 +1,26 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsMyFarms } from './farmsMyFarmsTokens'
 import { useFarmsWalletPositions } from './useFarmsWalletPositions'
 import { FarmsMyFarmCard } from './FarmsMyFarmCard'
-import type { FarmsWalletPosition } from './farmsMyFarmsTypes'
+import type { FarmsPositionAction, FarmsWalletPosition } from './farmsMyFarmsTypes'
 
 const pulse = keyframes`0%,100%{opacity:.45}50%{opacity:.8}`
 
 const Row = styled.section`
   width: 100%;
   max-width: ${farmsMyFarms.contentMax};
-  margin-top: -16px;
+  margin-top: 0;
   display: block;
   font-family: ${typography.fontFamily.body};
   min-width: 0;
+  position: relative;
+  z-index: 0;
   @media (prefers-reduced-motion: reduce) {
     * {
       animation: none !important;
@@ -161,7 +165,7 @@ const List = styled.div`
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(120px, 1.4fr) 72px minmax(90px, 1fr) minmax(70px, 0.8fr) minmax(90px, 1fr) 88px minmax(180px, 1.2fr);
+  grid-template-columns: minmax(150px, 1.5fr) minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(56px, 0.6fr) minmax(70px, 0.8fr) minmax(64px, 0.7fr) minmax(64px, 0.7fr) 80px minmax(200px, 1.2fr);
   gap: 10px;
   align-items: center;
   padding: 12px 14px;
@@ -173,6 +177,26 @@ const ListRow = styled.div`
     grid-template-columns: 1fr;
     gap: 8px;
   }
+`
+
+const PairCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+`
+
+const Logos = styled.div`
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+`
+
+const Logo = styled.span<{ $offset?: boolean }>`
+  display: inline-flex;
+  margin-left: ${({ $offset }) => ($offset ? '-8px' : '0')};
+  position: relative;
+  z-index: ${({ $offset }) => ($offset ? 2 : 1)};
 `
 
 const ListCell = styled.div`
@@ -267,16 +291,25 @@ const AdvisorPortalHost = styled.div`
   clip: rect(0 0 0 0);
 `
 
-function previewCount(width: number): number {
-  if (width >= 1280) return 4
-  if (width >= 1024) return 3
-  return 3
+function previewCount(_width: number): number {
+  return 4
 }
 
 function FarmListRow({ position }: { position: FarmsWalletPosition }) {
-  const actions = position.actions ?? []
-  const has = (kind: FarmsWalletPosition['actions'][number]['kind']) =>
-    actions.some((a) => a.kind === kind && a.enabled)
+  const { requestModal } = useFarmsRuntime()
+  const [busy, setBusy] = useState<FarmsPositionAction['kind'] | null>(null)
+  const run = (kind: FarmsPositionAction['kind']) => {
+    const action = (position.actions ?? []).find((a) => a.kind === kind && a.enabled && a.modalAction)
+    if (!action?.modalAction) return
+    setBusy(kind)
+    try {
+      requestModal(position.sourceCard, action.modalAction)
+    } finally {
+      window.setTimeout(() => setBusy(null), 1200)
+    }
+  }
+  const enabled = (kind: FarmsPositionAction['kind']) =>
+    (position.actions ?? []).some((a) => a.kind === kind && a.enabled && a.modalAction)
   const deposited =
     position.depositedUsdAvailable !== false
       ? position.stakedFormatted || position.stakedValue || '—'
@@ -285,11 +318,36 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
     <ListRow data-testid="farms-my-farm-list-row">
       <ListCell>
         <ListLabel>Pair</ListLabel>
-        <strong>{position.title}</strong>
-      </ListCell>
-      <ListCell>
-        <ListLabel>Chain</ListLabel>
-        <MelegaExploreChainBadge chainId={position.chainId} />
+        <PairCell>
+          <Logos aria-hidden>
+            <Logo>
+              <MelegaTokenAvatar
+                name={position.token0.symbol}
+                symbol={position.token0.symbol}
+                address={position.token0.address ?? undefined}
+                chainId={position.chainId}
+                size={22}
+                radius="circle"
+              />
+            </Logo>
+            <Logo $offset>
+              <MelegaTokenAvatar
+                name={position.token1.symbol}
+                symbol={position.token1.symbol}
+                address={position.token1.address ?? undefined}
+                chainId={position.chainId}
+                size={22}
+                radius="circle"
+              />
+            </Logo>
+          </Logos>
+          <div style={{ minWidth: 0 }}>
+            <strong style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {position.title}
+            </strong>
+            <MelegaExploreChainBadge chainId={position.chainId} />
+          </div>
+        </PairCell>
       </ListCell>
       <ListCell data-primary-metric="deposited-value">
         <ListLabel>Deposited</ListLabel>
@@ -300,8 +358,20 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
         {position.apr && position.apr !== '0%' ? position.apr : '—'}
       </ListCell>
       <ListCell>
-        <ListLabel>Pending</ListLabel>
+        <ListLabel>Multiplier</ListLabel>
+        {position.multiplier || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Rewards</ListLabel>
         {position.pendingFormatted || '—'}
+      </ListCell>
+      <ListCell>
+        <ListLabel>Duration</ListLabel>
+        —
+      </ListCell>
+      <ListCell>
+        <ListLabel>Remaining</ListLabel>
+        —
       </ListCell>
       <ListCell>
         <ListLabel>Status</ListLabel>
@@ -309,14 +379,29 @@ function FarmListRow({ position }: { position: FarmsWalletPosition }) {
       </ListCell>
       <ListCell>
         <Actions>
-          <ActionBtn type="button" disabled={!has('claim')} data-action="harvest">
-            Harvest
+          <ActionBtn
+            type="button"
+            disabled={!enabled('claim') || busy === 'claim'}
+            data-action="harvest"
+            onClick={() => run('claim')}
+          >
+            {busy === 'claim' ? 'Harvesting…' : 'Harvest'}
           </ActionBtn>
-          <ActionBtn type="button" disabled={!has('stake')} data-action="stake-more">
+          <ActionBtn
+            type="button"
+            disabled={!enabled('stake') || busy === 'stake'}
+            data-action="stake-more"
+            onClick={() => run('stake')}
+          >
             Stake More
           </ActionBtn>
-          <ActionBtn type="button" disabled={!has('unstake')} data-action="withdraw">
-            Withdraw
+          <ActionBtn
+            type="button"
+            disabled={!enabled('unstake') || busy === 'unstake'}
+            data-action="withdraw"
+            onClick={() => run('unstake')}
+          >
+            {busy === 'unstake' ? 'Withdrawing…' : 'Withdraw'}
           </ActionBtn>
         </Actions>
       </ListCell>

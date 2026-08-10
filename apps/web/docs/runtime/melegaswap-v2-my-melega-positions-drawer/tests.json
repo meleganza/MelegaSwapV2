@@ -1,0 +1,25 @@
+{
+  "at": "2026-08-08T06:34:00.000Z",
+  "command": "yarn vitest run src/lib/data-truth/__tests__/myMelegaPositions.test.ts src/app-shell/__tests__/dexUxRebuild.nav.test.ts src/app-shell/__tests__/ds0012.globalHeader.test.ts src/lib/__tests__/rc2EmergencyRollbackRepair.test.ts src/lib/__tests__/homeProductExperienceRefinement.test.ts + related Portfolio/Farms/Pools/Liquidity/design-system suites",
+  "missionSuite": {
+    "file": "src/lib/data-truth/__tests__/myMelegaPositions.test.ts",
+    "passed": 10,
+    "failed": 0
+  },
+  "related": {
+    "passedFiles": 12,
+    "passedTests": 72,
+    "failed": 0
+  },
+  "contractsCovered": [
+    "hamburger removed",
+    "My Melega trigger exists",
+    "Portfolio removed from primary nav",
+    "drawer portal + z-index overlay",
+    "disconnected / zero / farm / liquidity / pool / builder / claimables",
+    "View Full Portfolio route",
+    "All Chains filter set",
+    "no Passport copy"
+  ],
+  "pass": true
+}

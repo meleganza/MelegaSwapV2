@@ -34,7 +34,7 @@ export const FARMS_MODULE_001_FREEZE_SHA256 = {
 } as const
 
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
-  FarmsOverviewKpisModule: '086755b1373c10432dc496b59c96f757a86ac47f6d30b86bcaff05bc2a50a1d2',
+  FarmsOverviewKpisModule: 'f4d119abf68e9791ee14bc89e7571368591886e1a53b2525f6174bb794a0ba9c',
   farmsOverviewKpisTokens: '1abe4ad7cf3aea392b791f5c7206e2d87b1ae0abb8582917d700da503ea70eb9',
   buildFarmsOverviewKpis: '63ba986be3690c3d0b9241368db362e00eac87eda0acc4f68417b64ce0eb66c9',
   useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',

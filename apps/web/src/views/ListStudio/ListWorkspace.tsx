@@ -13,10 +13,11 @@ import { ListTrendBoostCheckout } from './ListTrendBoostCheckout'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
 import { buildReviewFacts } from './createToken/createTokenTx'
+import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
 import {
-  CREATE_TOKEN_CANONICAL_DEPLOYMENT,
-  CREATE_TOKEN_FEE_RECIPIENT,
-} from 'config/constants/createTokenFactoryDeployment'
+  buildCreateTokenSuccessModel,
+  type CreateTokenSuccessModel,
+} from './createToken/createTokenPostCreationTypes'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -664,6 +665,8 @@ export const ListWorkspace: React.FC = () => {
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const [pendingDescription, setPendingDescription] = useState<string | null>(null)
+  const [createTokenPhase, setCreateTokenPhase] = useState<'form' | 'success'>('form')
+  const [createdToken, setCreatedToken] = useState<CreateTokenSuccessModel | null>(null)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const querySlug =
     typeof router.query.slug === 'string' && router.query.slug.trim()
@@ -675,6 +678,8 @@ export const ListWorkspace: React.FC = () => {
     setAttempted(false)
     setSavedAt(null)
     setPendingDescription(null)
+    setCreateTokenPhase('form')
+    setCreatedToken(null)
     if (!listIntent) {
       setValues({})
       return
@@ -741,18 +746,46 @@ export const ListWorkspace: React.FC = () => {
     }
   }, [values, listIntent])
 
+  // Deep-link / handoff into post-create success (never invent address).
+  useEffect(() => {
+    if (listIntent !== 'create-token' || !router.isReady) return
+    const createdFlag = router.query.created === '1' || router.query.phase === 'success'
+    const qToken =
+      (typeof router.query.token === 'string' && router.query.token) ||
+      (typeof router.query.address === 'string' && router.query.address) ||
+      values.tokenAddress ||
+      values.contract ||
+      null
+    if (!createdFlag && values.postCreate !== '1') return
+    const model = buildCreateTokenSuccessModel({
+      name: (typeof router.query.name === 'string' && router.query.name) || values.name,
+      symbol: (typeof router.query.symbol === 'string' && router.query.symbol) || values.ticker,
+      logoUrl: values.logo || null,
+      contractAddress: qToken,
+      chainId: 56,
+    })
+    setCreatedToken(model)
+    setCreateTokenPhase('success')
+  }, [listIntent, router.isReady, router.query, values.name, values.ticker, values.logo, values.tokenAddress, values.contract, values.postCreate])
+
   const pct = completionPct(listIntent, values)
   const status: StatusKind = useMemo(() => {
     if (!listIntent) return 'Draft'
+    if (listIntent === 'create-token' && createTokenPhase === 'success') return 'Ready'
     if (pct >= 100 && step >= 3) return 'Review Required'
     if (pct >= 100) return 'Ready'
     if (savedAt) return 'Autosaved'
     return 'Draft'
-  }, [listIntent, pct, savedAt, step])
+  }, [listIntent, pct, savedAt, step, createTokenPhase])
 
   const savedLabel = relativeSaved(savedAt, now)
-  const primaryLabel = step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75) ? 'Publish' : 'Continue'
-  const canPublishish = listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue'
+  const createTokenSuccess = listIntent === 'create-token' && createTokenPhase === 'success' && createdToken
+  const primaryLabel = createTokenSuccess
+    ? 'Done'
+    : step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75)
+      ? 'Publish'
+      : 'Continue'
+  const canPublishish = listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue' || primaryLabel === 'Done'
   const usesCopilot = listIntent === 'create-project' || listIntent === 'ai-assistant'
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -782,8 +815,27 @@ export const ListWorkspace: React.FC = () => {
     )
   }
 
+  const enterCreateTokenSuccess = () => {
+    const model = buildCreateTokenSuccessModel({
+      name: values.name,
+      symbol: values.ticker,
+      logoUrl: values.logo || null,
+      contractAddress: values.tokenAddress || values.contract || null,
+      chainId: 56,
+    })
+    setCreatedToken(model)
+    setCreateTokenPhase('success')
+    setValues((v) => ({ ...v, postCreate: '1' }))
+  }
+
   const onContinue = () => {
     if (!listIntent) return
+    if (listIntent === 'create-token' && createTokenPhase === 'success') {
+      clearListIntent()
+      setCreateTokenPhase('form')
+      setCreatedToken(null)
+      return
+    }
     const req = REQUIRED[listIntent].filter((f) => f.required)
     const missing = req.some((f) => !filled(values[f.key]))
     if (missing && step === 0) {
@@ -791,6 +843,20 @@ export const ListWorkspace: React.FC = () => {
       return
     }
     if (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE && step >= TOTAL_DOTS - 2) {
+      return
+    }
+    // Final Publish on Create Token → post-creation funnel (no Featured / Trend Boost).
+    if (
+      listIntent === 'create-token' &&
+      LIST_CREATE_TOKEN_AVAILABLE &&
+      (step >= TOTAL_DOTS - 1 || primaryLabel === 'Publish')
+    ) {
+      const stillMissing = req.some((f) => !filled(values[f.key]))
+      if (stillMissing) {
+        setAttempted(true)
+        return
+      }
+      enterCreateTokenSuccess()
       return
     }
     setStep((s) => Math.min(TOTAL_DOTS - 1, s + 1))
@@ -835,6 +901,9 @@ export const ListWorkspace: React.FC = () => {
     }
 
     if (listIntent === 'create-token') {
+      if (createTokenPhase === 'success' && createdToken) {
+        return <CreateTokenPostCreationFunnel model={createdToken} />
+      }
       const decimalsNum = Number.parseInt(values.decimals || '18', 10)
       const review = buildReviewFacts({
         name: values.name || '',
@@ -848,6 +917,7 @@ export const ListWorkspace: React.FC = () => {
           data-testid="list-workspace-form"
           data-create-token-status={CREATE_TOKEN_READINESS.status}
           data-create-token-ui-state={CREATE_TOKEN_READINESS.uiState}
+          data-create-token-phase="form"
         >
           {LIST_CREATE_TOKEN_AVAILABLE ? (
             <Banner
@@ -855,16 +925,12 @@ export const ListWorkspace: React.FC = () => {
               data-lifecycle="DEPLOYED_VALIDATED_BOUND_READY"
               data-blocker={CREATE_TOKEN_READINESS.blockerCode ?? 'none'}
             >
-              Create Token READY — factory {CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}. Creation fee: 0.10
-              BNB ({CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) paid to MELEGA TREASURY WALLET{' '}
-              {CREATE_TOKEN_FEE_RECIPIENT}. Connect wallet → configure token → factory creates token. No Founder
-              involvement. No Treasury Runtime.
+              Create Token — connect your wallet, set name, symbol and supply, then confirm. Creation fee: 0.10 BNB.
+              Network: BNB Smart Chain.
             </Banner>
           ) : (
             <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
-              Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
-              (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.10 BNB (
-              {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
+              Create Token is temporarily unavailable. Creation fee: 0.10 BNB. Network: BNB Smart Chain.
             </Banner>
           )}
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
@@ -895,58 +961,20 @@ export const ListWorkspace: React.FC = () => {
             <Input value={values.social || ''} onChange={set('social')} placeholder="X / Telegram / Discord" />
           </Field>
           <Banner data-testid="list-create-token-review" data-review="factual">
-            Review — Network: {review.network}. Factory: {review.factoryAddress ?? 'not deployed'}. Name:{' '}
-            {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply: {review.totalSupply || '—'}. Decimals:{' '}
-            {review.decimals}. Owner: {review.owner || '—'}. Fixed supply: yes. Mintability: {review.mintability}. Tax:{' '}
-            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: 0.10 BNB (
-            {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED. Fee recipient:{' '}
-            {review.feeRecipient}.
+            Review — Name: {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply:{' '}
+            {review.totalSupply || '—'}. Decimals: {review.decimals}. Owner: {review.owner || '—'}. Creation fee: 0.10
+            BNB. Network: BNB Smart Chain.
           </Banner>
           {LIST_CREATE_TOKEN_AVAILABLE ? (
             <Banner data-testid="list-create-token-cta-ready">
-              Create Token — user flow unlocked ({CREATE_TOKEN_READINESS.uiState} / READY). Pay 0.10 BNB to MELEGA
-              TREASURY WALLET via CreateTokenFactoryV1. LIST_CREATE_TOKEN_AVAILABLE=true. Drafts autosaved until
-              wallet confirm.
+              Create Token — confirm in your wallet to deploy. Creation fee: 0.10 BNB on BNB Smart Chain. Drafts are
+              autosaved until you confirm.
             </Banner>
           ) : (
             <Banner data-testid="list-create-token-cta-blocked">
-              Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
-              {CREATE_TOKEN_READINESS.blockerCode}). Creation fee APPROVED. LIST_CREATE_TOKEN_AVAILABLE=
-              {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
+              Create Token — deployment is not available right now. Your draft remains saved. Creation fee: 0.10 BNB.
             </Banner>
           )}
-          <ListFeaturedCheckout
-            testId="list-create-token-featured"
-            sourceFlow="create-project"
-            projectId={
-              filled(values.name)
-                ? `token:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-                : ''
-            }
-            projectSlug={
-              filled(values.name)
-                ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                : null
-            }
-            projectContract={null}
-            buyerWallet={values.owner || values.wallet || null}
-            identityReady={filled(values.name) && filled(values.ticker) && filled(values.supply)}
-          />
-          <ListTrendBoostCheckout
-            testId="list-create-token-trend-boost"
-            projectId={
-              filled(values.name)
-                ? `token:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-                : ''
-            }
-            projectSlug={
-              filled(values.name)
-                ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                : null
-            }
-            buyerWallet={values.owner || values.wallet || null}
-            identityReady={filled(values.name) && filled(values.ticker) && filled(values.supply)}
-          />
         </FormStack>
       )
     }
@@ -1171,6 +1199,31 @@ export const ListWorkspace: React.FC = () => {
     }
 
     if (listIntent === 'create-token') {
+      if (createTokenPhase === 'success' && createdToken) {
+        return (
+          <>
+            {ring}
+            <ContextCard data-testid="list-workspace-context">
+              <ContextTitle>Next steps</ContextTitle>
+              <ContextRow>
+                Token <strong>{createdToken.symbol}</strong>
+              </ContextRow>
+              <ContextRow>
+                Contract <strong>{createdToken.contractStatus}</strong>
+              </ContextRow>
+              <ContextRow>
+                Liquidity <strong>AVAILABLE</strong>
+              </ContextRow>
+              <ContextRow>
+                Project page <strong>PENDING</strong>
+              </ContextRow>
+              <ContextRow>
+                Promotion tools <strong>LOCKED</strong>
+              </ContextRow>
+            </ContextCard>
+          </>
+        )
+      }
       const hasAny = filled(values.name) || filled(values.ticker) || filled(values.supply)
       return (
         <>
@@ -1185,13 +1238,13 @@ export const ListWorkspace: React.FC = () => {
                 Decimals <strong>{values.decimals || '18'}</strong>
               </ContextRow>
               <ContextRow>
-                Factory <strong>{CREATE_TOKEN_READINESS.factoryAddress ?? 'Not deployed'}</strong>
+                Network <strong>BNB Smart Chain</strong>
               </ContextRow>
               <ContextRow>
-                Readiness <strong>{CREATE_TOKEN_READINESS.uiState}</strong>
+                Creation fee <strong>0.10 BNB</strong>
               </ContextRow>
               <ContextRow>
-                Warnings <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'None' : 'Factory deployment pending'}</strong>
+                Status <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'Ready' : 'Unavailable'}</strong>
               </ContextRow>
             </ContextCard>
           ) : (

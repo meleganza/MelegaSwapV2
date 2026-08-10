@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { Currency, CurrencyAmount, ERC20Token, Pair, Percent, Token } from '@pancakeswap/sdk'
 import { useAccount } from 'wagmi'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { PairState, usePairs } from 'hooks/usePairs'
@@ -14,6 +15,11 @@ import {
   type WalletLpOwnershipSource,
 } from './walletLpPositionMath'
 import { useFactoryLiquidityTokenPairs } from './useFactoryLiquidityTokenPairs'
+
+/** Deterministic wallet LP hydration lifecycle (UI never freezes on partial state). */
+export type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'
+
+const POSITIONS_FETCH_TIMEOUT_MS = 12_000
 
 function pairKey(tokens: [ERC20Token, ERC20Token]): string {
   return [tokens[0].address, tokens[1].address]
@@ -56,8 +62,14 @@ function usePositionUsdValue(
 
 export function useLiquidityPositions() {
   const { address: account } = useAccount()
+  const { chainId } = useActiveChainId()
   const trackedTokenPairs = useTrackedTokenPairs()
-  const { factoryTokenPairs, factoryPairCount } = useFactoryLiquidityTokenPairs(Boolean(account))
+  const {
+    factoryTokenPairs,
+    factoryPairCount,
+    isLoading: factoryLoading,
+    factoryEnabled,
+  } = useFactoryLiquidityTokenPairs(Boolean(account), chainId)
 
   /** Tracked + factory-enumerated pairs (deduped). Balance gate hides empty LPs. */
   const discoveryTokenPairs = useMemo(() => {
@@ -100,6 +112,7 @@ export function useLiquidityPositions() {
   const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
   const v2IsLoading =
     fetchingV2PairBalances ||
+    factoryLoading ||
     v2Pairs?.length < liquidityTokensWithBalances.length ||
     Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))
 
@@ -155,16 +168,61 @@ export function useLiquidityPositions() {
   }, [stablePairs, v2PairsBalances])
 
   const positions = useMemo(() => [...v2Positions, ...stablePositions], [v2Positions, stablePositions])
-  const isLoading = Boolean(account) && v2IsLoading
+  const rawLoading = Boolean(account) && v2IsLoading
+
+  const [timedOut, setTimedOut] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
+
+  // Reset timeout when wallet / chain / load cycle / manual retry changes.
+  useEffect(() => {
+    setTimedOut(false)
+  }, [account, chainId, retryNonce])
+
+  useEffect(() => {
+    if (!account || !rawLoading || positions.length > 0) {
+      if (!rawLoading) setTimedOut(false)
+      return undefined
+    }
+    const timer = window.setTimeout(() => setTimedOut(true), POSITIONS_FETCH_TIMEOUT_MS)
+    return () => window.clearTimeout(timer)
+  }, [account, rawLoading, positions.length, chainId, retryNonce])
+
+  const isLoading = rawLoading && !timedOut
+
+  const positionsPhase: LiquidityPositionsPhase = !account
+    ? 'connecting'
+    : timedOut && positions.length === 0
+      ? 'error'
+      : isLoading
+        ? 'fetching'
+        : positions.length > 0
+          ? 'ready'
+          : 'empty'
+
+  const retryPositions = () => setRetryNonce((n) => n + 1)
 
   useEffect(() => {
     emitCivilizationEvent('liquidity_position_changed', 'liquidity', {
       positionCount: positions.length,
       account: account ?? null,
+      phase: positionsPhase,
+      timedOut,
+      factoryEnabled,
+      chainId: chainId ?? null,
     })
-  }, [positions.length, account])
+  }, [positions.length, account, positionsPhase, timedOut, factoryEnabled, chainId])
 
-  return { positions, isLoading, account, factoryPairCount, discoveryPairCount: discoveryTokenPairs.length }
+  return {
+    positions,
+    isLoading,
+    positionsPhase,
+    positionsTimedOut: timedOut,
+    retryPositions,
+    account,
+    factoryPairCount,
+    discoveryPairCount: discoveryTokenPairs.length,
+    factoryEnabled,
+  }
 }
 
 export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {

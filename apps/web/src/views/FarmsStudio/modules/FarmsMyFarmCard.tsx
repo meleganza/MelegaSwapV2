@@ -4,6 +4,7 @@ import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { getBlockExploreLink } from 'utils'
+import { YieldActivitySparkline } from 'components/YieldActivitySparkline'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsMyFarms } from './farmsMyFarmsTokens'
 import type { FarmsPositionAction, FarmsWalletPosition } from './farmsMyFarmsTypes'
@@ -276,12 +277,20 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
           <Label>APR</Label>
           <Value>{position.apr && position.apr !== '0%' ? position.apr : '—'}</Value>
         </div>
+        <div>
+          <Label>Multiplier</Label>
+          <Value>{position.multiplier || '—'}</Value>
+        </div>
         <State data-testid="farms-my-farm-chain-note">
           This farm is on {chainShort(position.chainId)}.
           {position.farmStateLine ? ` · ${position.farmStateLine}` : ''}
           {position.pid != null ? ` · pid ${position.pid}` : ''}
         </State>
       </Metrics>
+      <YieldActivitySparkline
+        pairAddress={position.lpToken?.address}
+        testId="farms-my-activity-spark"
+      />
       <ContractLinks>
         {farmExplorer ? (
           <ContractLink href={farmExplorer} target="_blank" rel="noopener noreferrer" data-testid="farms-my-farm-contract">

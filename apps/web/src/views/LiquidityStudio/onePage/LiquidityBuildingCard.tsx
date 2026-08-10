@@ -41,7 +41,7 @@ import {
 } from '../liquidityBuilding/portfolioDisplay'
 
 const BUILDER_STEPS = [
-  { n: 1, label: 'Set up' },
+  { n: 1, label: 'Setup' },
   { n: 2, label: 'Review' },
   { n: 3, label: 'Activate' },
 ] as const
@@ -62,12 +62,13 @@ const goldHaloPulse = keyframes`
   }
 `
 
-const Card = styled.section<{ $compact?: boolean }>`
-  width: ${liqOne.col};
+const Card = styled.section<{ $compact?: boolean; $wide?: boolean }>`
+  /* V3 studio: forceExpanded → full-width dashboard (not 672px dual-pane column). */
+  width: ${({ $wide }) => ($wide ? '100%' : liqOne.col)};
   max-width: 100%;
   /* Geometry exception: inactive summary stays compact — no 860px empty shell. */
-  height: ${({ $compact }) => ($compact ? 'auto' : liqOne.mainRowH)};
-  max-height: ${({ $compact }) => ($compact ? 'none' : liqOne.mainRowH)};
+  height: ${({ $compact, $wide }) => ($compact || $wide ? 'auto' : liqOne.mainRowH)};
+  max-height: ${({ $compact, $wide }) => ($compact || $wide ? 'none' : liqOne.mainRowH)};
   box-sizing: border-box;
   padding: 0;
   border-radius: ${liqOne.cardRadius};
@@ -79,7 +80,7 @@ const Card = styled.section<{ $compact?: boolean }>`
     0 18px 48px rgba(0, 0, 0, 0.35),
     0 0 18px rgba(221, 185, 47, 0.08);
   animation: ${goldHaloPulse} 3.6s ease-in-out infinite;
-  overflow: ${({ $compact }) => ($compact ? 'visible' : 'hidden')};
+  overflow: ${({ $compact, $wide }) => ($compact || $wide ? 'visible' : 'hidden')};
   display: flex;
   flex-direction: column;
   font-family: ${liqOne.font};
@@ -485,6 +486,19 @@ const TokenChip = styled.button<{ $on?: boolean }>`
   }
 `
 
+const StudioDash = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  min-width: 0;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+    gap: 18px;
+  }
+`
+
 const MetaGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -822,12 +836,14 @@ function resolveProgramUnavailableReason(input: {
 type LiquidityBuildingCardProps = {
   /** IA workspace: open setup immediately — no click-to-expand shell. */
   forceExpanded?: boolean
+  /** V3 Liquidity Studio owns ?view= — keep true for the whole mount lifetime (not only active tab). */
+  studioOwnedUrl?: boolean
 }
 
 export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuildingCardProps>(
-  function LiquidityBuildingCard({ forceExpanded = false }, ref) {
+  function LiquidityBuildingCard({ forceExpanded = false, studioOwnedUrl = false }, ref) {
   const router = useRouter()
-  const card = useLiquidityBuildingCard()
+  const card = useLiquidityBuildingCard({ disableUrlSync: studioOwnedUrl })
   const inventory = useLbOwnerPrograms(card.account)
   const deepLinkProgram = programFromQuery(router.query.program)
   const indexedDetail = useLbProgramDetail(deepLinkProgram)
@@ -848,18 +864,22 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     setAdvancedOpen(false)
     setStepError(null)
     card.reset()
-    void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
-      shallow: true,
-    })
+    if (!studioOwnedUrl) {
+      // Use router.pathname — hardcoded '/liquidity-studio' breaks trailingSlash and hard-reloads the page.
+      void router.replace({ pathname: router.pathname, query: { view: 'building' } }, undefined, {
+        shallow: true,
+      })
+    }
     inventory.refetch()
   }
 
   const openProgramDetail = (programAddress: string) => {
     setSetupStarted(false)
     setStepError(null)
+    if (studioOwnedUrl) return
     void router.replace(
       {
-        pathname: '/liquidity-studio',
+        pathname: router.pathname,
         query: { view: 'building', program: programAddress, step: 'dashboard' },
       },
       undefined,
@@ -886,20 +906,25 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   /**
    * Guard: /liquidity-studio/?view=building&step=setup with an existing program must not stay on create.
    * Clear setup query and return to portfolio inventory.
+   * Only while the building view is active — never steal other V3 tabs.
    */
   React.useEffect(() => {
+    if (studioOwnedUrl) return
     if (!router.isReady) return
+    const view = typeof router.query.view === 'string' ? router.query.view : undefined
+    if (view !== 'building') return
     if (setupStarted || deepLinkProgram) return
     if (inventory.loading || inventory.programs.length === 0) return
     const step = stepFromQuery(router.query.step)
     if (step === 'setup' || step === 'review' || step === 'status') {
       card.backToEntry()
-      void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
+      void router.replace({ pathname: router.pathname, query: { view: 'building' } }, undefined, {
         shallow: true,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    studioOwnedUrl,
     router.isReady,
     router.query.step,
     setupStarted,
@@ -961,7 +986,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     card.startSetup()
     setSetupStarted(true)
     setStepError(null)
-    void router.replace({ pathname: '/liquidity-studio', query: { view: 'building', step: 'setup' } }, undefined, {
+    // V3 studio owns ?view= — do not shallow-replace (races tab chrome).
+    if (studioOwnedUrl) return
+    void router.replace({ pathname: router.pathname, query: { view: 'building', step: 'setup' } }, undefined, {
       shallow: true,
     })
   }
@@ -1138,9 +1165,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         setBuilderStep(1)
         inventory.refetch()
         card.reset()
-        void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
-          shallow: true,
-        })
+        if (!studioOwnedUrl) {
+          void router.replace({ pathname: router.pathname, query: { view: 'building' } }, undefined, {
+            shallow: true,
+          })
+        }
       }
     } finally {
       setActivating(false)
@@ -1419,7 +1448,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         : '—'
 
     return (
-      <div data-testid="liq-lb-single-surface" data-lb-surface="exploded" data-lb-step={builderStep}>
+      <div
+        data-testid="liq-lb-single-surface"
+        data-lb-surface="exploded"
+        data-lb-step={builderStep}
+        data-lb-studio-dash={forceExpanded ? '1' : '0'}
+      >
         <StepTrack data-testid="liq-lb-step-track" aria-label="Builder status">
           {BUILDER_STEPS.map((s) => (
             <StepItem key={s.n} $active={builderStep === s.n} $done={builderStep > s.n}>
@@ -1439,6 +1473,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           <Link href={LB_UX.docsFees}>Fees</Link>
         </DocsRow>
 
+        <StudioDash data-testid="liq-lb-studio-dash">
         <div data-testid="liq-lb-step-configure" data-lb-exploded-form="1">
           <MetaGrid data-testid="liq-lb-exploded-grid">
             <MetaCell style={{ gridColumn: '1 / -1' }}>
@@ -1666,62 +1701,65 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           </Accordion>
         </div>
 
-        <div data-testid="liq-lb-step-review" data-lb-inline-review="1">
-          <SummaryStrip data-testid="liq-lb-summary">{summaryLine}</SummaryStrip>
-        </div>
+        <div data-testid="liq-lb-studio-aside">
+          <div data-testid="liq-lb-step-review" data-lb-inline-review="1">
+            <SummaryStrip data-testid="liq-lb-summary">{summaryLine}</SummaryStrip>
+          </div>
 
-        {(builderStep === 3 || activating) && !isActive ? (
-          <ActivateGuide data-testid="liq-lb-activation-guide">
-            <ActivateGuideTitle>{LB_UX.activationRequiresTitle}</ActivateGuideTitle>
-            <ActivateGuideList>
-              <li data-testid="liq-lb-wallet-step-1">{LB_UX.activationStepApprove}</li>
-              <li data-testid="liq-lb-wallet-step-2">{LB_UX.activationStepDeposit}</li>
-              <li data-testid="liq-lb-wallet-step-3">{LB_UX.activationStepActivate}</li>
-            </ActivateGuideList>
-            {activating ? (
-              <ActivateLive data-testid="liq-lb-activation-live" aria-live="polite">
-                {(
-                  [
-                    {
-                      phase: 'CREATE_PROGRAM' as const,
-                      label: LB_UX.activationLiveCreating,
-                      doneLabel: 'Program created',
-                    },
-                    {
-                      phase: 'APPROVE' as const,
-                      label: LB_UX.activationLiveApproved,
-                      doneLabel: LB_UX.activationLiveApproved,
-                    },
-                    {
-                      phase: 'DEPOSIT' as const,
-                      label: LB_UX.activationLiveDeposited,
-                      doneLabel: LB_UX.activationLiveDeposited,
-                    },
-                    {
-                      phase: 'ACTIVATE' as const,
-                      label: LB_UX.activationLiveActivated,
-                      doneLabel: LB_UX.activationLiveActivated,
-                    },
-                  ] as const
-                ).map((step) => {
-                  const done = activateDonePhases.includes(step.phase)
-                  const active = activatePhase === step.phase && !done
-                  const state = done ? 'done' : active ? 'active' : 'pending'
-                  return (
-                    <ActivateLiveItem
-                      key={step.phase}
-                      $state={state}
-                      data-testid={`liq-lb-live-${step.phase.toLowerCase()}`}
-                      data-state={state}
-                    >
-                      {done ? `✓ ${step.doneLabel}` : active ? `… ${activateHint || step.label}` : step.label}
-                    </ActivateLiveItem>
-                  )
-                })}
-              </ActivateLive>
-            ) : null}
-          </ActivateGuide>
-        ) : null}
+          {(builderStep === 3 || activating) && !isActive ? (
+            <ActivateGuide data-testid="liq-lb-activation-guide">
+              <ActivateGuideTitle>{LB_UX.activationRequiresTitle}</ActivateGuideTitle>
+              <ActivateGuideList>
+                <li data-testid="liq-lb-wallet-step-1">{LB_UX.activationStepApprove}</li>
+                <li data-testid="liq-lb-wallet-step-2">{LB_UX.activationStepDeposit}</li>
+                <li data-testid="liq-lb-wallet-step-3">{LB_UX.activationStepActivate}</li>
+              </ActivateGuideList>
+              {activating ? (
+                <ActivateLive data-testid="liq-lb-activation-live" aria-live="polite">
+                  {(
+                    [
+                      {
+                        phase: 'CREATE_PROGRAM' as const,
+                        label: LB_UX.activationLiveCreating,
+                        doneLabel: 'Program created',
+                      },
+                      {
+                        phase: 'APPROVE' as const,
+                        label: LB_UX.activationLiveApproved,
+                        doneLabel: LB_UX.activationLiveApproved,
+                      },
+                      {
+                        phase: 'DEPOSIT' as const,
+                        label: LB_UX.activationLiveDeposited,
+                        doneLabel: LB_UX.activationLiveDeposited,
+                      },
+                      {
+                        phase: 'ACTIVATE' as const,
+                        label: LB_UX.activationLiveActivated,
+                        doneLabel: LB_UX.activationLiveActivated,
+                      },
+                    ] as const
+                  ).map((step) => {
+                    const done = activateDonePhases.includes(step.phase)
+                    const active = activatePhase === step.phase && !done
+                    const state = done ? 'done' : active ? 'active' : 'pending'
+                    return (
+                      <ActivateLiveItem
+                        key={step.phase}
+                        $state={state}
+                        data-testid={`liq-lb-live-${step.phase.toLowerCase()}`}
+                        data-state={state}
+                      >
+                        {done ? `✓ ${step.doneLabel}` : active ? `… ${activateHint || step.label}` : step.label}
+                      </ActivateLiveItem>
+                    )
+                  })}
+                </ActivateLive>
+              ) : null}
+            </ActivateGuide>
+          ) : null}
+        </div>
+        </StudioDash>
 
         <div data-testid="liq-lb-step-activate" hidden aria-hidden>
           {/* Compatibility sentinel for prior wizard tests — activation is footer CTA only. */}
@@ -1770,7 +1808,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       data-lb-module="002"
       data-lb-compact={compactLayout ? '1' : '0'}
       data-lb-single-surface="1"
+      data-lb-wide-dashboard={forceExpanded ? '1' : '0'}
       $compact={compactLayout}
+      $wide={forceExpanded}
     >
       <Hero
         $tight={inFlow || isActive || compactInactive || showPortfolio}

@@ -87,10 +87,10 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(LIQUIDITY_HERO_COPY.trustTitle).toBe('Why provide liquidity?')
     expect(LIQUIDITY_HERO_COPY.trustItems).toHaveLength(4)
     expect(LIQUIDITY_HERO_COPY.trustItems.map((i) => i.title)).toEqual([
-      'Non-custodial Ownership',
-      'Transparent Pools',
-      'Earn Fees',
-      'Open Ecosystem',
+      'Non-custodial ownership',
+      'Transparent pools',
+      'Earn fees',
+      'Open ecosystem',
     ])
     // IA redesign: redundant journey copy removed from Hero — journeys live in workspace.
     expect(LIQUIDITY_HERO_COPY.journeys).toBe('')

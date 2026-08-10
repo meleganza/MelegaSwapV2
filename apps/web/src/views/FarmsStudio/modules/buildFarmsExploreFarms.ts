@@ -384,10 +384,18 @@ export function cardToExploreFarmModel(
     fees24h: '—',
     rewardsRemaining: '—',
     rewardDuration: '—',
-    participants: truthDash(
-      card.participants && !isUnavailableFarmMetric(card.participants) ? card.participants : null,
-    ),
+    participants: truthDash(sanitizeFarmParticipants(card.participants)),
   }
+}
+
+/** Participants must be a verified census count — never LP supply / emission token amounts. */
+function sanitizeFarmParticipants(raw?: string | null): string | null {
+  if (!raw || isUnavailableFarmMetric(raw)) return null
+  const t = raw.trim()
+  // Reject token-amount style values (decimals, M/K/B suffixes, multi-dot locales).
+  if (/[.]/.test(t) || /[mkb]$/i.test(t) || /\d+\.\d+/.test(t)) return null
+  if (!/^\d{1,7}$/.test(t.replace(/,/g, ''))) return null
+  return t
 }
 
 /** Stable dedupe by canonical identity chainId + masterChef + pid (never symbol-only). */

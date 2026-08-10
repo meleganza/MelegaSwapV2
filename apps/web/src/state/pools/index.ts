@@ -202,7 +202,8 @@ export const fetchPoolsPublicDataAsync =
 
       const liveData = pools.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
-        const totalStaking = totalStakingsSousIdMap[pool.sousId]
+        // FA-V5-001: fetch skips sousId 0 / empty-address configs — never read .totalStaked on undefined.
+        const totalStaking = totalStakingsSousIdMap[pool.sousId] ?? { totalStaked: '0' }
         const onChainReward = rewardPerBlockSousIdMap[pool.sousId]
         const resolvedTokenPerBlock =
           onChainReward?.rewardPerBlock != null

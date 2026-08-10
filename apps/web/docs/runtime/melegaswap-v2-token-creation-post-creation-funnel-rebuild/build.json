@@ -1,0 +1,6 @@
+{
+  "mission": "MELEGASWAP_V2_TOKEN_CREATION_POST_CREATION_FUNNEL_REBUILD",
+  "command": "yarn next build",
+  "result": "PASS",
+  "exitCode": 0
+}

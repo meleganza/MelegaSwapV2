@@ -1,6 +1,7 @@
 /**
  * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Liquidity · Farms · Pools · List · Portfolio
+ * Home · Liquidity · Farms · Pools · List
+ * Portfolio is secondary via My Melega → View Full Portfolio (/portfolio kept).
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -194,16 +195,5 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
       p === '/launch' ||
       p === '/new-project' ||
       p.startsWith('/build-studio'),
-  },
-  {
-    id: 'passport',
-    label: 'Portfolio',
-    kind: 'link',
-    href: '/portfolio',
-    match: (p) =>
-      p.startsWith('/portfolio') ||
-      p.startsWith('/passport') ||
-      p.startsWith('/command-center') ||
-      p.startsWith('/workspace'),
   },
 ]

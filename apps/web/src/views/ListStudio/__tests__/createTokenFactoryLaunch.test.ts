@@ -211,7 +211,9 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     expect(ws).toContain('list-create-token-cta-ready')
     expect(ws).toContain('list-create-token-ready')
     expect(ws).toContain('0.10 BNB')
-    expect(ws).toContain('CREATE_TOKEN_READINESS.uiState')
+    expect(ws).toContain('BNB Smart Chain')
+    expect(ws).not.toContain('creationFeeWei} wei')
+    expect(ws).not.toContain('CreateTokenFactoryV1')
   })
 
   it('does not alter Liquidity Builder mainnet binding', () => {

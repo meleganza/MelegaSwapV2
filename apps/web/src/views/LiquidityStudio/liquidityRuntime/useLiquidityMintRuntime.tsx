@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, Token } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Token } from '@pancakeswap/sdk'
 import { CAKE, USDC } from '@pancakeswap/tokens'
-import { useModal } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -25,8 +24,14 @@ import { calculateGasMargin, calculateSlippageAmount, useRouterContract } from '
 import currencyId from 'utils/currencyId'
 import { logError } from 'utils/sentry'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
-import ConfirmAddLiquidityModal from 'views/AddLiquidity/components/ConfirmAddLiquidityModal'
-import ConfirmLiquidityModal from 'views/Swap/components/ConfirmRemoveLiquidityModal'
+import {
+  LiquidityAddConfirmModal,
+  type AddTxLifecycle,
+} from '../v3/LiquidityAddConfirmModal'
+import {
+  LiquidityRemoveConfirmModal,
+  type RemoveTxLifecycle,
+} from '../v3/LiquidityRemoveConfirmModal'
 import {
   formatAmount,
   formatPct,
@@ -37,7 +42,12 @@ import {
   estimateImpermanentLossPct,
 } from './formatLiquidityRuntime'
 import { runtimeErrorFromPhase, type LiquidityRuntimeError } from './liquidityRuntimeErrors'
-import { useLiquidityPositions, useLiquidityPositionDetails, type LiquidityPositionRow } from './useLiquidityPositions'
+import {
+  useLiquidityPositions,
+  useLiquidityPositionDetails,
+  type LiquidityPositionRow,
+  type LiquidityPositionsPhase,
+} from './useLiquidityPositions'
 import {
   buildLiquidityWalletPortfolio,
 } from './buildLiquidityWalletPortfolio'
@@ -119,9 +129,14 @@ export interface LiquidityMachinePayload {
   lpSubmitDeferral: typeof LP_SUBMIT_DEFERRAL.deferralReason
 }
 
+export type SetLiquidityModeOptions = {
+  /** Default true. V3 tab chrome passes false and owns URL separately to avoid replace races. */
+  syncUrl?: boolean
+}
+
 export interface LiquidityMintRuntime {
   mode: LiquidityStudioMode
-  setMode: (mode: LiquidityStudioMode) => void
+  setMode: (mode: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => void
   phase: LiquidityRuntimePhase
   loadingLabel?: string
   error: LiquidityRuntimeError | null
@@ -143,6 +158,9 @@ export interface LiquidityMintRuntime {
   account?: string
   positions: LiquidityPositionRow[]
   positionsLoading: boolean
+  positionsPhase: LiquidityPositionsPhase
+  positionsTimedOut: boolean
+  retryPositions: () => void
   /** WalletPortfolio assembled from the same producer rows — no second scan. */
   liquidityWalletPortfolio: WalletPortfolio
   selectedPositionId?: string
@@ -157,6 +175,16 @@ export interface LiquidityMintRuntime {
   removePercent: string
   openAddModal: () => void
   openRemoveModal: () => void
+  removeConfirmOpen: boolean
+  closeRemoveConfirm: () => void
+  confirmRemoveWithdrawal: () => void
+  removeTxLifecycle: RemoveTxLifecycle
+  removeConfirmModal: React.ReactNode
+  addConfirmOpen: boolean
+  closeAddConfirm: () => void
+  confirmAddDeposit: () => void
+  addTxLifecycle: AddTxLifecycle
+  addConfirmModal: React.ReactNode
 }
 
 export function useLiquidityMintRuntime(): LiquidityMintRuntime {
@@ -171,21 +199,22 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const initialView = typeof router.query.view === 'string' ? router.query.view : undefined
-  /** DS001.3 — default landing is Studio home (no view). Mode only applies to deep-linked products. */
+  const initialViewRaw = router.query.view
+  const initialView = Array.isArray(initialViewRaw)
+    ? initialViewRaw[0]
+    : typeof initialViewRaw === 'string'
+      ? initialViewRaw
+      : undefined
+  /** V3 product restore — default landing is My Liquidity (positions). Deep links still win via ?view=. */
   const [mode, setModeState] = useState<LiquidityStudioMode>(
-    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'Add Liquidity',
+    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',
   )
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
 
-  useEffect(() => {
-    const view = typeof router.query.view === 'string' ? router.query.view : undefined
-    if (!view) return
-    const next = LIQUIDITY_VIEW_TO_MODE[view]
-    if (next) setModeState(next)
-  }, [router.query.view])
+  // Intentionally no continuous URL→mode sync. Initial mode comes from useState(initialView).
+  // Continuous sync raced V3 local tabs (shallow replace / AI step query) and snapped wrong panels.
 
   const defaultB = useMemo(() => {
     if (!chainId) return undefined
@@ -208,13 +237,25 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const { typedValue: burnTypedValue } = useBurnState()
 
   const setMode = useCallback(
-    (next: LiquidityStudioMode) => {
+    (next: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => {
       setModeState(next)
-      if (next === 'Remove Liquidity') onBurnInput('50')
+      if (next === 'Remove Liquidity') onBurnInput(BurnField.LIQUIDITY_PERCENT, '50')
+      if (opts?.syncUrl === false) return
       const view = LIQUIDITY_MODE_TO_VIEW[next]
-      const nextQuery = { ...router.query }
+      const current = typeof router.query.view === 'string' ? router.query.view : undefined
+      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query }
       if (view) nextQuery.view = view
       else delete nextQuery.view
+      // AI builder deep-link params must not leak onto Add / My Liquidity URLs.
+      if (view !== 'building') {
+        delete nextQuery.step
+        delete nextQuery.program
+      }
+      const strayBuilderParams =
+        view !== 'building' && (Boolean(router.query.step) || Boolean(router.query.program))
+      // Avoid redundant shallow replaces — they race tab chrome and cause flash / wrong selection.
+      if (view === current && !strayBuilderParams) return
+      if (!view && current === undefined && !strayBuilderParams) return
       void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
     },
     [onBurnInput, router],
@@ -237,9 +278,30 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const lpAprData = useLPApr(pair ?? undefined)
   const poolAddress = pair?.liquidityToken?.address
 
-  const { positions, isLoading: positionsLoading } = useLiquidityPositions()
+  const {
+    positions,
+    isLoading: positionsLoading,
+    positionsPhase,
+    positionsTimedOut,
+    retryPositions,
+  } = useLiquidityPositions()
 
-  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+  const chainName =
+    chainId === 56
+      ? 'BNB Chain'
+      : chainId === 97
+        ? 'BNB Testnet'
+        : chainId === 8453
+          ? 'Base'
+          : chainId === 137
+            ? 'Polygon'
+            : chainId === 1
+              ? 'Ethereum'
+              : chainId === 42161
+                ? 'Arbitrum'
+                : chainId === 43114
+                  ? 'Avalanche'
+                  : 'Unknown'
   const liquidityWalletPortfolio = useMemo(
     () =>
       buildLiquidityWalletPortfolio({
@@ -351,6 +413,8 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     isRemove,
     approvalA,
     approvalB,
+    liquidityApproval,
+    burnInfo.parsedAmounts,
     parsedAmounts,
     mintError,
     liquidityMinted,
@@ -466,7 +530,8 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
 
   const onRemovePercent = useCallback(
     (pct: string) => {
-      onBurnInput(pct)
+      // Must match RemoveLiquidity: Field.LIQUIDITY_PERCENT + percent string.
+      onBurnInput(BurnField.LIQUIDITY_PERCENT, pct)
     },
     [onBurnInput],
   )
@@ -476,13 +541,33 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     liquidityErrorMessage: undefined as string | undefined,
     txHash: undefined as string | undefined,
   })
+  const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false)
+  const [removeTxLifecycle, setRemoveTxLifecycle] = useState<RemoveTxLifecycle>('review')
+  const [addConfirmOpen, setAddConfirmOpen] = useState(false)
+  const [addTxLifecycle, setAddTxLifecycle] = useState<AddTxLifecycle>('review')
 
   const onAdd = useCallback(async () => {
     // KAP-006E: direct router submit — liquidityRuntime canonical; see lpSubmitDeferral.ts
-    if (!chainId || !account || !routerContract) return
+    if (!chainId || !account || !routerContract) {
+      setAddTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Missing wallet, network, or router — cannot add liquidity.',
+        txHash: undefined,
+      })
+      return
+    }
     const parsedAmountA = parsedAmounts[Field.CURRENCY_A]
     const parsedAmountB = parsedAmounts[Field.CURRENCY_B]
-    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) return
+    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
+      setAddTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Enter both token amounts before confirming.',
+        txHash: undefined,
+      })
+      return
+    }
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
@@ -523,30 +608,40 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       value = null
     }
 
+    setAddTxLifecycle('preparing')
     setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
     try {
       const estimatedGasLimit = await estimate(...args, value ? { value } : {})
+      setAddTxLifecycle('waiting_wallet')
       const response = await method(...args, {
         ...(value ? { value } : {}),
         gasLimit: calculateGasMargin(estimatedGasLimit),
       })
+      setAddTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
       addTransaction(response, {
         summary: `Add ${parsedAmountA.toSignificant(3)} ${currencyA.symbol} and ${parsedAmountB.toSignificant(3)} ${currencyB.symbol}`,
         type: 'add-liquidity',
       })
+      try {
+        await response.wait?.(1)
+        setAddTxLifecycle('confirmed')
+      } catch {
+        setAddTxLifecycle('confirmed')
+      }
       onFieldAInput('')
     } catch (err: unknown) {
       const code = (err as { code?: number })?.code
       if (code !== 4001) logError(err)
+      setAddTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
         liquidityErrorMessage:
-          code !== 4001
-            ? t('Add liquidity failed: %message%', {
+          code === 4001
+            ? 'Wallet rejected the transaction.'
+            : t('Add liquidity failed: %message%', {
                 message: transactionErrorToUserReadableMessage(err, t),
-              })
-            : undefined,
+              }),
         txHash: undefined,
       })
     }
@@ -565,45 +660,47 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     t,
   ])
 
-  const pendingText = t('Supplying %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    symbolA: currencies[Field.CURRENCY_A]?.symbol ?? '',
-    amountB: parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-    symbolB: currencies[Field.CURRENCY_B]?.symbol ?? '',
-  })
+  const closeAddConfirm = useCallback(() => {
+    if (addTxLifecycle === 'preparing' || addTxLifecycle === 'waiting_wallet') return
+    setAddConfirmOpen(false)
+    setAddTxLifecycle('review')
+    if (txHash) onFieldAInput('')
+  }, [addTxLifecycle, txHash, onFieldAInput])
 
-  const [onPresentAddLiquidityModal] = useModal(
-    <ConfirmAddLiquidityModal
-      title={noLiquidity ? t('You are creating a trading pair') : t('You will receive')}
-      customOnDismiss={() => {
-        if (txHash) onFieldAInput('')
-      }}
-      attemptingTxn={attemptingTxn}
-      hash={txHash}
-      pendingText={pendingText}
-      currencyToAdd={pair?.liquidityToken}
-      allowedSlippage={allowedSlippage}
-      onAdd={onAdd}
-      parsedAmounts={parsedAmounts}
-      currencies={currencies}
-      liquidityErrorMessage={liquidityErrorMessage}
-      price={price}
-      noLiquidity={noLiquidity}
-      poolTokenPercentage={poolTokenPercentage}
-      liquidityMinted={liquidityMinted}
-    />,
-    true,
-    true,
-    'liquidityStudioAddModal',
-  )
+  const openAddModal = useCallback(() => {
+    setAddTxLifecycle('review')
+    setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: undefined })
+    setAddConfirmOpen(true)
+  }, [])
+
+  const confirmAddDeposit = useCallback(() => {
+    void onAdd()
+  }, [onAdd])
 
   const onRemove = useCallback(async () => {
-    if (!chainId || !account || !routerContract || !pair) return
+    if (!chainId || !account || !routerContract || !pair) {
+      setRemoveTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Missing wallet, network, or pool — cannot remove liquidity.',
+        txHash: undefined,
+      })
+      return
+    }
     const liquidityAmount = burnInfo.parsedAmounts[BurnField.LIQUIDITY]
     const amountA = burnInfo.parsedAmounts[BurnField.CURRENCY_A]
     const amountB = burnInfo.parsedAmounts[BurnField.CURRENCY_B]
-    if (!liquidityAmount || !amountA || !amountB || !deadline) return
+    if (!liquidityAmount || !amountA || !amountB || !deadline) {
+      setRemoveTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Choose a removal percentage before confirming.',
+        txHash: undefined,
+      })
+      return
+    }
 
+    setRemoveTxLifecycle('preparing')
     setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
     try {
       const tokenA = currencyA?.wrapped
@@ -613,6 +710,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         [BurnField.CURRENCY_B]: calculateSlippageAmount(amountB, allowedSlippage)[0],
       }
       let response: TransactionResponse
+      setRemoveTxLifecycle('waiting_wallet')
       if (currencyA?.isNative || currencyB?.isNative) {
         const tokenBIsNative = currencyB?.isNative
         const estimate = routerContract.estimateGas.removeLiquidityETH
@@ -642,21 +740,30 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         const estimatedGasLimit = await estimate(...args)
         response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit) })
       }
+      setRemoveTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
       addTransaction(response, {
         summary: `Remove ${currencyA?.symbol}/${currencyB?.symbol} liquidity`,
         type: 'remove-liquidity',
       })
-      onBurnInput('')
+      try {
+        await response.wait?.(1)
+        setRemoveTxLifecycle('confirmed')
+      } catch {
+        // Submitted is still a success for wallet acceptance; receipt wait is best-effort.
+        setRemoveTxLifecycle('confirmed')
+      }
+      onBurnInput(BurnField.LIQUIDITY_PERCENT, '0')
     } catch (err: unknown) {
       const code = (err as { code?: number })?.code
       if (code !== 4001) logError(err)
+      setRemoveTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
         liquidityErrorMessage:
-          code !== 4001
-            ? transactionErrorToUserReadableMessage(err, t)
-            : undefined,
+          code === 4001
+            ? 'Wallet rejected the transaction.'
+            : transactionErrorToUserReadableMessage(err, t),
         txHash: undefined,
       })
     }
@@ -675,34 +782,43 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     t,
   ])
 
-  const [onPresentRemoveLiquidityModal] = useModal(
-    <ConfirmLiquidityModal
-      title={t('You will receive')}
-      customOnDismiss={() => {
-        if (txHash) onBurnInput('')
-      }}
-      attemptingTxn={attemptingTxn}
-      hash={txHash || ''}
-      pendingText={t('Removing liquidity')}
-      allowedSlippage={allowedSlippage}
-      onRemove={onRemove}
-      parsedAmounts={burnInfo.parsedAmounts}
-      currencyA={currencyA}
-      currencyB={currencyB}
-      tokenA={currencyA?.wrapped!}
-      tokenB={currencyB?.wrapped!}
-      approval={liquidityApproval}
-      liquidityErrorMessage={liquidityErrorMessage}
-      isZap={false}
-      toggleZapMode={() => undefined}
-    />,
-    true,
-    true,
-    'liquidityStudioRemoveModal',
-  )
+  const closeRemoveConfirm = useCallback(() => {
+    if (removeTxLifecycle === 'preparing' || removeTxLifecycle === 'waiting_wallet') return
+    setRemoveConfirmOpen(false)
+    setRemoveTxLifecycle('review')
+    if (txHash) onBurnInput(BurnField.LIQUIDITY_PERCENT, '0')
+  }, [removeTxLifecycle, txHash, onBurnInput])
 
-  const openAddModal = useCallback(() => onPresentAddLiquidityModal(), [onPresentAddLiquidityModal])
-  const openRemoveModal = useCallback(() => onPresentRemoveLiquidityModal(), [onPresentRemoveLiquidityModal])
+  const openRemoveModal = useCallback(() => {
+    setRemoveTxLifecycle('review')
+    setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: undefined })
+    setRemoveConfirmOpen(true)
+  }, [])
+
+  const confirmRemoveWithdrawal = useCallback(() => {
+    void onRemove()
+  }, [onRemove])
+
+  const removeMinReceivedLabel = useMemo(() => {
+    const amountA = burnInfo.parsedAmounts[BurnField.CURRENCY_A]
+    const amountB = burnInfo.parsedAmounts[BurnField.CURRENCY_B]
+    if (!amountA || !amountB) return '—'
+    try {
+      const minA = CurrencyAmount.fromRawAmount(
+        amountA.currency,
+        calculateSlippageAmount(amountA, allowedSlippage)[0],
+      )
+      const minB = CurrencyAmount.fromRawAmount(
+        amountB.currency,
+        calculateSlippageAmount(amountB, allowedSlippage)[0],
+      )
+      return `${minA.toSignificant(6)} ${currencyA?.symbol ?? ''} + ${minB.toSignificant(6)} ${
+        currencyB?.symbol ?? ''
+      }`.trim()
+    } catch {
+      return '—'
+    }
+  }, [burnInfo.parsedAmounts, allowedSlippage, currencyA?.symbol, currencyB?.symbol])
 
   const onPrimaryAction = useCallback(() => {
     if (isSimulation) return
@@ -712,6 +828,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         approveLiquidityCallback()
         return
       }
+      if (liquidityApproval === ApprovalState.PENDING) return
       openRemoveModal()
       return
     }
@@ -856,6 +973,9 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     account,
     positions,
     positionsLoading,
+    positionsPhase,
+    positionsTimedOut,
+    retryPositions,
     liquidityWalletPortfolio,
     selectedPositionId: selectedPosition?.id,
     setSelectedPositionId,
@@ -869,5 +989,62 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     removePercent: burnTypedValue || '50',
     openAddModal,
     openRemoveModal,
+    removeConfirmOpen,
+    closeRemoveConfirm,
+    confirmRemoveWithdrawal,
+    removeTxLifecycle,
+    removeConfirmModal: (
+      <LiquidityRemoveConfirmModal
+        open={removeConfirmOpen}
+        onClose={closeRemoveConfirm}
+        onConfirm={confirmRemoveWithdrawal}
+        pairLabel={resolvedPairLabel}
+        chainId={chainId}
+        removePercent={burnTypedValue || '50'}
+        tokenASymbol={currencyA?.symbol}
+        tokenBSymbol={currencyB?.symbol}
+        amountA={burnInfo.parsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6)}
+        amountB={burnInfo.parsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6)}
+        minimumReceived={removeMinReceivedLabel}
+        priceImpact="—"
+        slippageLabel={formatSlippage(allowedSlippage)}
+        lifecycle={removeTxLifecycle}
+        errorMessage={liquidityErrorMessage}
+        txHash={txHash}
+        canConfirm={Boolean(
+          burnInfo.parsedAmounts[BurnField.LIQUIDITY] && liquidityApproval === ApprovalState.APPROVED,
+        )}
+      />
+    ),
+    addConfirmOpen,
+    closeAddConfirm,
+    confirmAddDeposit,
+    addTxLifecycle,
+    addConfirmModal: (
+      <LiquidityAddConfirmModal
+        open={addConfirmOpen}
+        onClose={closeAddConfirm}
+        onConfirm={confirmAddDeposit}
+        pairLabel={resolvedPairLabel}
+        chainId={chainId}
+        tokenASymbol={currencyA?.symbol}
+        tokenBSymbol={currencyB?.symbol}
+        amountA={parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}
+        amountB={parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}
+        lpMinted={liquidityMinted?.toSignificant(6)}
+        poolShare={poolTokenPercentage ? formatPercentShare(poolTokenPercentage) : undefined}
+        slippageLabel={formatSlippage(allowedSlippage)}
+        noLiquidity={noLiquidity}
+        lifecycle={addTxLifecycle}
+        errorMessage={liquidityErrorMessage}
+        txHash={txHash}
+        canConfirm={Boolean(
+          parsedAmounts[Field.CURRENCY_A] &&
+            parsedAmounts[Field.CURRENCY_B] &&
+            approvalA === ApprovalState.APPROVED &&
+            approvalB === ApprovalState.APPROVED,
+        )}
+      />
+    ),
   }
 }

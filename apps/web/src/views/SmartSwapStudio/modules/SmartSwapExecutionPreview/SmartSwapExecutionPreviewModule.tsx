@@ -11,7 +11,6 @@ import { SmartSwapInsightCard } from './SmartSwapInsightCard'
 import { resolveExecutionSourceLabel } from './resolveExecutionSourceLabel'
 import { useSmartSwapExecutionPreview } from './useSmartSwapExecutionPreview'
 import { useSmartSwapFeeTransparency } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
-import { SmartSwapFeeTransparencyPanel } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
 import { useSmartSwapAIAssistance } from 'views/SmartSwapStudio/modules/SmartSwapAIAssistance'
 import {
   SmartSwapExecutionHandoffPanel,
@@ -24,7 +23,7 @@ export type SmartSwapIntelMode = 'instant' | 'smart'
 export type SmartSwapExecutionPreviewModuleProps = {
   /** @deprecated use mode */
   showSmartTransparency?: boolean
-  /** Instant = Details only; Smart = Route/Metrics/Fee/AI + Details */
+  /** Instant = Details only; Smart = Route/Metrics/AI + Details */
   mode?: SmartSwapIntelMode
 }
 
@@ -42,11 +41,8 @@ const Stack = styled.div`
   & > [data-smart-compact-metrics] {
     order: 2;
   }
-  & > [data-smart-swap-module='004'] {
-    order: 3;
-  }
   & > [data-insight='ai'] {
-    order: 4;
+    order: 3;
   }
   & > [data-execution-details-accordion] {
     order: 5;
@@ -208,7 +204,6 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
             idle={idle}
           />
           <SmartSwapCompactMetrics items={metrics} />
-          <SmartSwapFeeTransparencyPanel model={feeModel} compact />
           <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
         </>
       ) : null}
@@ -230,6 +225,9 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
           <PanelInner>
             <PanelBody id="smart-execution-details-panel" role="region" aria-labelledby="smart-execution-details-toggle">
               <SmartSwapExecutionPreviewPanel result={result} embedded idle={idle} />
+              <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }} data-execution-model-note>
+                Execution: non-custodial wallet transaction
+              </p>
               {preview?.freshness ? (
                 <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>Freshness: {preview.freshness}</p>
               ) : null}

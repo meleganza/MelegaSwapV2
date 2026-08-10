@@ -13,7 +13,10 @@ import {
   colors,
   ds001Layout,
 } from 'design-system/melega'
+import { IconUser } from 'design-system/melega/components/GlobalHeader/HeaderIcons'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
+import MyMelegaDrawer from 'components/MyMelega/MyMelegaDrawer'
+import { MyMelegaProvider, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
@@ -122,8 +125,51 @@ const MobileNetwork = styled.div`
   }
 `
 
+const MobileMyMelegaTrigger = styled.button`
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: linear-gradient(160deg, rgba(244, 196, 48, 0.16) 0%, rgba(20, 20, 20, 0.9) 100%);
+  color: ${uxRebuildColors.gold};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid ${uxRebuildColors.gold};
+    outline-offset: 2px;
+  }
+
+  &[aria-expanded='true'] {
+    border-color: rgba(244, 196, 48, 0.7);
+  }
+`
+
 export interface MelegaAppShellProps {
   children: React.ReactNode
+}
+
+const MobileMyMelegaButton: React.FC = () => {
+  const { open, toggleDrawer } = useMyMelegaDrawer()
+  return (
+    <MobileMyMelegaTrigger
+      type="button"
+      aria-label="Open My Melega"
+      title="My Melega"
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      data-testid="melega-mobile-my-melega"
+      onClick={toggleDrawer}
+    >
+      <IconUser size={18} />
+    </MobileMyMelegaTrigger>
+  )
 }
 
 /**
@@ -131,7 +177,7 @@ export interface MelegaAppShellProps {
  * Desktop: 72px global header + 44px Trending Bar, no permanent left sidebar.
  * Mobile (<1024): compact mobile header + 40px Trending Bar + bottom navigation.
  */
-const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
+const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
   const { address } = useAccount()
 
@@ -149,7 +195,6 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const activeBottomId = shellBottomNavItems.find((item) => item.match(pathname))?.id
 
   return (
-    <TopMoversSnapshotProvider>
     <Root data-melega-app-shell data-melega-shell-no-sidebar>
       <AppShellUIKitNeutralizer />
 
@@ -170,6 +215,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
             Connect
           </ConnectWalletButton>
         )}
+        <MobileMyMelegaButton />
       </MobileHeader>
 
       <DesktopMain data-melega-shell-main>
@@ -182,9 +228,17 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       </DesktopMain>
 
       <MelegaBottomNavigation items={bottomItems} activeId={activeBottomId} />
+      <MyMelegaDrawer />
     </Root>
-    </TopMoversSnapshotProvider>
   )
 }
+
+const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => (
+  <TopMoversSnapshotProvider>
+    <MyMelegaProvider>
+      <MelegaAppShellInner>{children}</MelegaAppShellInner>
+    </MyMelegaProvider>
+  </TopMoversSnapshotProvider>
+)
 
 export default MelegaAppShell

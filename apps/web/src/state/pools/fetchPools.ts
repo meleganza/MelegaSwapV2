@@ -1,159 +1,112 @@
 import BigNumber from 'bignumber.js'
-import fromPairs from 'lodash/fromPairs'
-// import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
-import poolsConfig, { livePools1, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
+import poolsConfig, {
+  livePools1,
+  livePools8453,
+  livePools137,
+  livePools42161,
+  livePools43114,
+} from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
-import multicall, { multicallv2 } from 'utils/multicall'
+import multicall from 'utils/multicall'
 import { getAddress } from 'utils/addressHelpers'
-// import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
-// import chunk from 'lodash/chunk'
-// import sousChef from '../../config/abi/sousChef.json'
-// import sousChefV3 from '../../config/abi/sousChefV3.json'
 
-const livePoolsWithEndBsc = poolsConfig.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsWithEndEth = livePools1.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsWithEndBase = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsWithEndPolygon = livePools137.filter((p) => p?.sousId !== 0 && !p?.isFinished)
+type PoolConfig = (typeof poolsConfig)[number]
 
-const startEndBlockCallsOnEth = livePoolsWithEndEth.flatMap((poolConfig) => {
-  return [
-    {
-      address: getAddress(poolConfig?.contractAddress, 1),
-      name: 'startBlock',
-    },
-    {
-      address: getAddress(poolConfig.contractAddress, 1),
-      name: 'bonusEndBlock',
-    },
-  ]
-})
+function stakingTokenAddress(pool: PoolConfig, chainId: number): string {
+  const raw = pool.stakingToken?.address as unknown
+  if (typeof raw === 'string') return raw
+  if (raw && typeof raw === 'object') return getAddress(raw as PoolConfig['contractAddress'], chainId)
+  return ''
+}
 
-const startEndBlockCallsOnBsc = livePoolsWithEndBsc.flatMap((poolConfig) => {
-  return [
-    {
-      address: getAddress(poolConfig?.contractAddress, 56),
-      name: 'startBlock',
-    },
-    {
-      address: getAddress(poolConfig.contractAddress, 56),
-      name: 'bonusEndBlock',
-    },
-  ]
-})
+/** Pools with a resolvable SmartChef + stake token on the active chain only. */
+function poolsForChain(chainId: number): PoolConfig[] {
+  const list: PoolConfig[] =
+    chainId === 1
+      ? livePools1
+      : chainId === 137
+        ? livePools137
+        : chainId === 8453
+          ? livePools8453
+          : chainId === 42161
+            ? livePools42161
+            : chainId === 43114
+              ? livePools43114
+              : poolsConfig
 
-const startEndBlockCallsOnPolygon = livePoolsWithEndPolygon.flatMap((poolConfig) => {
-  return [
-    {
-      address: getAddress(poolConfig?.contractAddress, 137),
-      name: 'startBlock',
-    },
-    {
-      address: getAddress(poolConfig.contractAddress, 137),
-      name: 'bonusEndBlock',
-    },
-  ]
-})
+  return list.filter((pool) => {
+    if (!pool || pool.sousId === 0) return false
+    const chef = getAddress(pool.contractAddress, chainId)
+    const stake = stakingTokenAddress(pool, chainId)
+    return Boolean(chef && chef.length >= 42 && stake && stake.length >= 42)
+  })
+}
 
-const startEndBlockCallsOnBase = livePoolsWithEndBase.flatMap((poolConfig) => {
-  return [
-    {
-      address: getAddress(poolConfig?.contractAddress, 8453),
-      name: 'startBlock',
-    },
-    {
-      address: getAddress(poolConfig.contractAddress, 8453),
-      name: 'bonusEndBlock',
-    },
-  ]
-})
+function livePoolsWithEnd(chainId: number): PoolConfig[] {
+  return poolsForChain(chainId).filter((p) => !p?.isFinished)
+}
 
-export const fetchPoolsBlockLimits = async (chainId) => {
-  const startEndBlockRaw = await multicall(
-    sousChefABI,
-    chainId === 1 ? startEndBlockCallsOnEth
-      : chainId === 137 ? startEndBlockCallsOnPolygon
-        : chainId === 8453 ? startEndBlockCallsOnBase
-          : startEndBlockCallsOnBsc,
-    chainId,
-  )
-  
+function startEndBlockCalls(chainId: number) {
+  return livePoolsWithEnd(chainId).flatMap((poolConfig) => {
+    const address = getAddress(poolConfig.contractAddress, chainId)
+    return [
+      { address, name: 'startBlock' },
+      { address, name: 'bonusEndBlock' },
+    ]
+  })
+}
+
+function balanceOfCalls(chainId: number) {
+  return poolsForChain(chainId).map((poolConfig) => ({
+    address: stakingTokenAddress(poolConfig, chainId),
+    name: 'balanceOf',
+    params: [getAddress(poolConfig.contractAddress, chainId)],
+  }))
+}
+
+function rewardPerBlockCalls(chainId: number) {
+  return livePoolsWithEnd(chainId).map((poolConfig) => ({
+    address: getAddress(poolConfig.contractAddress, chainId),
+    name: 'rewardPerBlock',
+  }))
+}
+
+export const fetchPoolsBlockLimits = async (chainId: number) => {
+  const livePools = livePoolsWithEnd(chainId)
+  const calls = startEndBlockCalls(chainId)
+  if (!calls.length) return []
+
+  const startEndBlockRaw = await multicall(sousChefABI, calls, chainId)
+
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
-
     if (!resultArray[chunkIndex]) {
       // eslint-disable-next-line no-param-reassign
-      resultArray[chunkIndex] = [] // start a new chunk
+      resultArray[chunkIndex] = []
     }
-
     resultArray[chunkIndex].push(item)
-
     return resultArray
-  }, [])
-  const livePools =
-    chainId === 1 ? livePoolsWithEndEth
-      : chainId === 137 ? livePoolsWithEndPolygon
-        : chainId === 8453 ? livePoolsWithEndBase
-          : livePoolsWithEndBsc
-  
+  }, [] as unknown[][])
+
   return livePools.map((cakePoolConfig, index) => {
-    const [[startBlock], [endBlock]] = startEndBlockResult[index]
+    const chunk = startEndBlockResult[index]
+    const startBlock = chunk?.[0]?.[0]
+    const endBlock = chunk?.[1]?.[0]
     return {
       sousId: cakePoolConfig.sousId,
-      startBlock: startBlock.toNumber(),
-      endBlock: endBlock.toNumber(),
+      startBlock: startBlock?.toNumber?.() ?? 0,
+      endBlock: endBlock?.toNumber?.() ?? 0,
     }
   })
 }
 
-const poolsBalanceOf = poolsConfig.map((poolConfig) => {
-  return {
-    address: poolConfig.stakingToken.address,
-    name: 'balanceOf',
-    params: [getAddress(poolConfig.contractAddress)],
-  }
-})
-
-const poolsBalanceOfOnEth = livePools1.map((poolConfig) => {
-  return {
-    address: poolConfig.stakingToken.address,
-    name: 'balanceOf',
-    params: [getAddress(poolConfig.contractAddress, 1)],
-  }
-})
-
-const poolsBalanceOfOnPolygon = livePools137.map((poolConfig) => {
-  return {
-    address: poolConfig.stakingToken.address,
-    name: 'balanceOf',
-    params: [getAddress(poolConfig.contractAddress, 137)],
-  }
-})
-
-const poolsBalanceOfOnBase = livePools8453.map((poolConfig) => {
-  return {
-    address: poolConfig.stakingToken.address,
-    name: 'balanceOf',
-    params: [getAddress(poolConfig.contractAddress, 8453)],
-  }
-})
-
 export const fetchPoolsTotalStaking = async (chainId: number) => {
-  const poolsTotalStaked = await multicall(
-    erc20ABI,
-    chainId === 1 ? poolsBalanceOfOnEth
-      : chainId === 137 ? poolsBalanceOfOnPolygon
-        : chainId === 8453 ? poolsBalanceOfOnBase
-          : poolsBalanceOf,
-    chainId,
-  )
+  const pools = poolsForChain(chainId)
+  const calls = balanceOfCalls(chainId)
+  if (!calls.length) return []
 
-  const pools =
-    chainId === 1 ? livePools1
-      : chainId === 137 ? livePools137
-        : chainId === 8453 ? livePools8453
-          : chainId === 42161 ? livePools42161
-            : poolsConfig
+  const poolsTotalStaked = await multicall(erc20ABI, calls, chainId)
 
   return pools.map((p, index) => ({
     sousId: p.sousId,
@@ -161,45 +114,11 @@ export const fetchPoolsTotalStaking = async (chainId: number) => {
   }))
 }
 
-const rewardPerBlockCallsOnBsc = livePoolsWithEndBsc.map((poolConfig) => ({
-  address: getAddress(poolConfig.contractAddress, 56),
-  name: 'rewardPerBlock',
-}))
-
-const rewardPerBlockCallsOnEth = livePoolsWithEndEth.map((poolConfig) => ({
-  address: getAddress(poolConfig.contractAddress, 1),
-  name: 'rewardPerBlock',
-}))
-
-const rewardPerBlockCallsOnPolygon = livePoolsWithEndPolygon.map((poolConfig) => ({
-  address: getAddress(poolConfig.contractAddress, 137),
-  name: 'rewardPerBlock',
-}))
-
-const rewardPerBlockCallsOnBase = livePoolsWithEndBase.map((poolConfig) => ({
-  address: getAddress(poolConfig.contractAddress, 8453),
-  name: 'rewardPerBlock',
-}))
-
 export const fetchPoolsRewardPerBlock = async (chainId: number) => {
-  const calls =
-    chainId === 1
-      ? rewardPerBlockCallsOnEth
-      : chainId === 137
-        ? rewardPerBlockCallsOnPolygon
-        : chainId === 8453
-          ? rewardPerBlockCallsOnBase
-          : rewardPerBlockCallsOnBsc
+  const livePools = livePoolsWithEnd(chainId)
+  const calls = rewardPerBlockCalls(chainId)
   if (!calls.length) return []
   const raw = await multicall(sousChefABI, calls, chainId)
-  const livePools =
-    chainId === 1
-      ? livePoolsWithEndEth
-      : chainId === 137
-        ? livePoolsWithEndPolygon
-        : chainId === 8453
-          ? livePoolsWithEndBase
-          : livePoolsWithEndBsc
   return livePools.map((p, index) => ({
     sousId: p.sousId,
     rewardPerBlock: new BigNumber(raw[index]).toJSON(),

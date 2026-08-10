@@ -10,15 +10,15 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header is Home · Liquidity · Farms · Pools · List · Portfolio', () => {
+  it('primary header is Home · Liquidity · Farms · Pools · List (Portfolio via My Melega)', () => {
     expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
       'Home',
       'Liquidity',
       'Farms',
       'Pools',
       'List',
-      'Portfolio',
     ])
+    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Trade')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Projects')).toBe(false)
     const list = GLOBAL_HEADER_NAV.find((i) => i.id === 'list')

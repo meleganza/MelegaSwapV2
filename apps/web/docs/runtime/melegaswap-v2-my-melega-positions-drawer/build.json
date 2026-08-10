@@ -1,0 +1,8 @@
+{
+  "at": "2026-08-08T06:28:00.000Z",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "exitCode": 0,
+  "pass": true,
+  "notes": "ESLint config warning (next/babel) pre-existing; types validation skipped by project config; optimized production build succeeded."
+}

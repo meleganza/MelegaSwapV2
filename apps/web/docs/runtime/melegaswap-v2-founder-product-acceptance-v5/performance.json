@@ -1,0 +1,347 @@
+{
+  "base": "http://127.0.0.1:3066",
+  "nav": [
+    {
+      "label": "home",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 2005,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "click-Liquidity",
+      "kind": "click",
+      "from": "http://127.0.0.1:3066/",
+      "url": "http://127.0.0.1:3066/liquidity-studio/",
+      "ms": 1320,
+      "homeStuck": true,
+      "aria": [
+        "Home",
+        "Liquidity",
+        "Farms",
+        "Pools",
+        "ListNEW"
+      ]
+    },
+    {
+      "label": "click-Farms",
+      "kind": "click",
+      "from": "http://127.0.0.1:3066/liquidity-studio/",
+      "url": "http://127.0.0.1:3066/liquidity-studio/",
+      "ms": 814,
+      "homeStuck": false,
+      "aria": [
+        "Home",
+        "Liquidity",
+        "Farms",
+        "Pools",
+        "ListNEW"
+      ]
+    },
+    {
+      "label": "click-Pools",
+      "kind": "click",
+      "from": "http://127.0.0.1:3066/liquidity-studio/",
+      "url": "http://127.0.0.1:3066/pools/",
+      "ms": 1287,
+      "homeStuck": false,
+      "aria": [
+        "Home",
+        "Liquidity",
+        "Farms",
+        "Pools",
+        "ListNEW"
+      ]
+    },
+    {
+      "label": "click-List",
+      "kind": "click",
+      "from": "http://127.0.0.1:3066/pools/",
+      "url": "http://127.0.0.1:3066/list/",
+      "ms": 719,
+      "homeStuck": false,
+      "aria": [
+        "Home",
+        "Liquidity",
+        "Farms",
+        "Pools",
+        "ListNEW"
+      ]
+    },
+    {
+      "label": "click-Home",
+      "kind": "click",
+      "from": "http://127.0.0.1:3066/list/",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 891,
+      "homeStuck": false,
+      "aria": [
+        "Home",
+        "Liquidity",
+        "Farms",
+        "Pools",
+        "ListNEW"
+      ]
+    },
+    {
+      "label": "projects",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/projects/",
+      "ms": 1346,
+      "path": "/projects/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-marco",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@marco/",
+      "ms": 1553,
+      "path": "/@marco/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-mm72",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@mm72/",
+      "ms": 1512,
+      "path": "/@mm72/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-eyed",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@eyed/",
+      "ms": 1554,
+      "path": "/@eyed/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-blion",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@blion/",
+      "ms": 1539,
+      "path": "/@blion/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-young-degens",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@young-degens/",
+      "ms": 1526,
+      "path": "/@young-degens/",
+      "homeStuck": false
+    },
+    {
+      "label": "liquidity",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/liquidity-studio/",
+      "ms": 1458,
+      "path": "/liquidity-studio/",
+      "homeStuck": false
+    },
+    {
+      "label": "farms",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/farms/",
+      "ms": 1343,
+      "path": "/farms/",
+      "homeStuck": false
+    },
+    {
+      "label": "pools",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/pools/",
+      "ms": 2187,
+      "path": "/pools/",
+      "homeStuck": false
+    },
+    {
+      "label": "audit",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/audit/",
+      "ms": 1326,
+      "path": "/audit/",
+      "homeStuck": false
+    },
+    {
+      "label": "mm-home",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 939,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "mm-project",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@marco/",
+      "ms": 941,
+      "path": "/@marco/",
+      "homeStuck": false
+    },
+    {
+      "label": "mm-liquidity",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/liquidity-studio/",
+      "ms": 1123,
+      "path": "/liquidity-studio/",
+      "homeStuck": false
+    },
+    {
+      "label": "mm-farms",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/farms/",
+      "ms": 1224,
+      "path": "/farms/",
+      "homeStuck": false
+    },
+    {
+      "label": "mm-pools",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/pools/",
+      "ms": 1203,
+      "path": "/pools/",
+      "homeStuck": false
+    },
+    {
+      "label": "portfolio",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/portfolio/",
+      "ms": 1547,
+      "path": "/portfolio/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-boost",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@marco/",
+      "ms": 1118,
+      "path": "/@marco/",
+      "homeStuck": false
+    },
+    {
+      "label": "net-modal",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 820,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "swap",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/swap/",
+      "ms": 1138,
+      "path": "/swap/",
+      "homeStuck": false
+    },
+    {
+      "label": "resp-home-1440",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 779,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "resp-home-1280",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 877,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "resp-home-1024",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 836,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "resp-home-768",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 925,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "resp-home-390",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 1094,
+      "path": "/",
+      "homeStuck": false
+    }
+  ],
+  "slow": [
+    {
+      "label": "home",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/",
+      "ms": 2005,
+      "path": "/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-marco",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@marco/",
+      "ms": 1553,
+      "path": "/@marco/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-mm72",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@mm72/",
+      "ms": 1512,
+      "path": "/@mm72/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-eyed",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@eyed/",
+      "ms": 1554,
+      "path": "/@eyed/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-blion",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@blion/",
+      "ms": 1539,
+      "path": "/@blion/",
+      "homeStuck": false
+    },
+    {
+      "label": "project-young-degens",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/@young-degens/",
+      "ms": 1526,
+      "path": "/@young-degens/",
+      "homeStuck": false
+    },
+    {
+      "label": "pools",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/pools/",
+      "ms": 2187,
+      "path": "/pools/",
+      "homeStuck": false
+    },
+    {
+      "label": "portfolio",
+      "kind": "goto",
+      "url": "http://127.0.0.1:3066/portfolio/",
+      "ms": 1547,
+      "path": "/portfolio/",
+      "homeStuck": false
+    }
+  ],
+  "p1Slow": []
+}

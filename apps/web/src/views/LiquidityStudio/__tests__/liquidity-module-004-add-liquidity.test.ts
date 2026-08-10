@@ -33,24 +33,19 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     )
   })
 
-  it('locks desktop geometry 1376 container / 900+24+424 panels', () => {
+  it('locks desktop geometry 1376 container / 50-50 panels', () => {
     expect(liquidityAdd.contentMax).toBe('1376px')
-    expect(liquidityAdd.mainW).toBe('900px')
-    expect(liquidityAdd.sideW).toBe('424px')
-    expect(liquidityAdd.columnGap).toBe('24px')
-    const panelSum =
-      parseInt(liquidityAdd.mainW, 10) +
-      parseInt(liquidityAdd.columnGap, 10) +
-      parseInt(liquidityAdd.sideW, 10)
-    // Mission panel contract (900 + 24 + 424); remaining width is page/chrome margin inside 1376.
-    expect(panelSum).toBe(1348)
-    expect(parseInt(liquidityAdd.contentMax, 10) - panelSum).toBe(28)
+    expect(liquidityAdd.mainW).toBe('50%')
+    expect(liquidityAdd.sideW).toBe('50%')
+    expect(liquidityAdd.columnGap).toBe('16px')
+    expect(liquidityAdd.cardPad).toBe('16px')
 
     const mod = load('modules/LiquidityAddModule.tsx')
     // Standalone geometry retained; Actions IA embeds via embedded-stack.
-    expect(mod).toContain("'58-42-workspace'")
+    expect(mod).toContain("'50-50-workspace'")
     expect(mod).toContain("'embedded-stack'")
     expect(mod).toContain('grid-template-columns: 1fr')
+    expect(mod).toContain('minmax(0, 1fr) minmax(0, 1fr)')
   })
 
   it('consumes existing mint runtime and slippage settings — no second engine', () => {
