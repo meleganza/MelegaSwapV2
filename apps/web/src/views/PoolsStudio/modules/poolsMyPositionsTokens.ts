@@ -85,7 +85,7 @@ export const poolsMyPositions = {
   mobileCardGap: '10px',
   touchMin: '44px',
 
-  maxVisibleDesktop: 3,
+  maxVisibleDesktop: 4,
 } as const
 
 /** Frozen Module 001 / 002 source SHAs (byte-identical guard). */

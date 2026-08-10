@@ -1,0 +1,68 @@
+{
+  "at": "2026-08-10T11:34:12.928Z",
+  "base": "http://127.0.0.1:3067",
+  "viewports": {
+    "390": {
+      "overflow": false,
+      "toolbar": true,
+      "manage": false
+    },
+    "1024": {
+      "overflow": false,
+      "toolbar": true,
+      "manage": false
+    },
+    "1280": {
+      "overflow": false,
+      "toolbar": true,
+      "manage": false
+    },
+    "1440": {
+      "healthy": true,
+      "explore": true,
+      "toolbar": true,
+      "myPositionsShown": false,
+      "managePresent": false,
+      "stake": true,
+      "viewPool": true,
+      "spark": 188,
+      "cards": 188,
+      "overflow": false,
+      "viewAllLabel": false,
+      "viewAllText": null
+    }
+  },
+  "checks": {
+    "home": {
+      "healthy": true,
+      "hasTopPools": true
+    },
+    "exploreList": true,
+    "myPositionsHiddenOrFew": true,
+    "tokenSelector": {
+      "open": true,
+      "inBody": true,
+      "position": "fixed",
+      "zIndex": "10050",
+      "height": 238,
+      "width": 220,
+      "clippedGuess": false
+    },
+    "pass": true,
+    "myPositionsModuleHiddenWhenDisconnected": true,
+    "myPositionsScreenshots": "note-placeholders-because-wallet-disconnected"
+  },
+  "bugs": [],
+  "screenshots": {
+    "my-positions-expanded-list.png": 44467,
+    "explore-pools-list.png": 166824,
+    "explore-pools-cards.png": 1690496,
+    "pools-mobile-390.png": 82033,
+    "my-positions-expanded-cards.png": 44467,
+    "explore-toolbar.png": 6071,
+    "my-positions-preview.png": 44467,
+    "create-pool-token-selector.png": 152507,
+    "pools-1440.png": 166546
+  },
+  "requiredScreenshotsPresent": true
+}

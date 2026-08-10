@@ -46,13 +46,14 @@ describe('Product IA refinement — Pools product UX redesign', () => {
     expect(runtime).toMatch(/mapPoolToPreviewCard\(p, currentBlockRef\.current/)
   })
 
-  it('pool cards expose SmartChef explorer link (chain-aware) + Stake/Manage/View Pool', () => {
+  it('pool cards expose SmartChef explorer link (chain-aware) + Stake/View Pool', () => {
     const explore = readFileSync(path.join(ROOT, 'modules/PoolsExplorePoolCard.tsx'), 'utf8')
     const positions = readFileSync(path.join(ROOT, 'modules/PoolsMyPositionCard.tsx'), 'utf8')
     const featured = readFileSync(path.join(ROOT, 'modules/PoolsHeroFeaturedCompact.tsx'), 'utf8')
     expect(explore).toMatch(/getBlockExploreName|getBlockExploreLink/)
     expect(explore).toContain('View Pool')
-    expect(explore).toContain('Manage')
+    expect(explore).not.toContain('Manage')
+    expect(explore).not.toContain('pools-explore-manage')
     expect(explore).toContain('Stake')
     expect(explore).toContain('noopener,noreferrer')
     expect(positions).toMatch(/getBlockExploreName|getBlockExploreLink/)

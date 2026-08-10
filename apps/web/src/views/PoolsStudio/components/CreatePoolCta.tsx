@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import styled, { css, keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { poolsStudioColors } from '../poolsStudioTokens'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -592,17 +594,28 @@ const TokenLogo = styled.span`
   flex-shrink: 0;
 `
 
-const Dropdown = styled.div`
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
+const Dropdown = styled.div<{ $top: number; $left: number; $width: number }>`
+  position: fixed;
+  z-index: ${melegaZIndex.overlayStacked};
+  top: ${({ $top }) => $top}px;
+  left: ${({ $left }) => $left}px;
+  width: ${({ $width }) => $width}px;
+  max-height: min(280px, calc(100vh - 24px));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: #1a1a1a;
   border: 1px solid #333333;
   border-radius: 12px;
   padding: 8px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+`
+
+const DropdownList = styled.div`
+  overflow-y: auto;
+  max-height: 220px;
+  min-height: 0;
 `
 
 const SearchInput = styled.input`
@@ -864,19 +877,59 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const wrapRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null)
 
   const filtered = useMemo(
     () => TOKEN_OPTIONS.filter((t) => t.toLowerCase().includes(query.trim().toLowerCase())),
     [query],
   )
 
+  const syncCoords = useCallback(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const width = Math.max(rect.width, 220)
+    const preferredTop = rect.bottom + 6
+    const maxTop = window.innerHeight - 24 - 280
+    const top = Math.min(preferredTop, Math.max(12, maxTop))
+    let left = rect.left
+    if (left + width > window.innerWidth - 12) left = Math.max(12, window.innerWidth - width - 12)
+    setCoords({ top, left, width })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setCoords(null)
+      return
+    }
+    syncCoords()
+    const onScroll = () => syncCoords()
+    window.addEventListener('resize', syncCoords)
+    window.addEventListener('scroll', onScroll, true)
+    return () => {
+      window.removeEventListener('resize', syncCoords)
+      window.removeEventListener('scroll', onScroll, true)
+    }
+  }, [open, syncCoords])
+
   useEffect(() => {
     if (!open) return
     const onDoc = (e: MouseEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (wrapRef.current?.contains(t)) return
+      if (dropdownRef.current?.contains(t)) return
+      setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
     }
     document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onKey)
+    }
   }, [open])
 
   return (
@@ -886,37 +939,54 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
         <SelectBtn
           type="button"
           aria-label={label}
+          aria-expanded={open}
+          aria-haspopup="listbox"
           data-ps-create-token-select
           onClick={() => setOpen((v) => !v)}
         >
           <TokenAvatar symbol={value} />
           <span>{value || 'Select token'}</span>
         </SelectBtn>
-        {open ? (
-          <Dropdown data-ps-create-token-dropdown>
-            <SearchInput
-              placeholder="Search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              data-ps-create-token-search
-              autoFocus
-            />
-            {filtered.map((token) => (
-              <DropdownItem
-                key={token}
-                type="button"
-                onClick={() => {
-                  onChange(token)
-                  setOpen(false)
-                  setQuery('')
-                }}
+        {open && coords && typeof document !== 'undefined'
+          ? createPortal(
+              <Dropdown
+                ref={dropdownRef}
+                $top={coords.top}
+                $left={coords.left}
+                $width={coords.width}
+                data-ps-create-token-dropdown
+                role="listbox"
+                aria-label={label}
               >
-                <TokenAvatar symbol={token} />
-                {token}
-              </DropdownItem>
-            ))}
-          </Dropdown>
-        ) : null}
+                <SearchInput
+                  placeholder="Search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  data-ps-create-token-search
+                  autoFocus
+                />
+                <DropdownList>
+                  {filtered.map((token) => (
+                    <DropdownItem
+                      key={token}
+                      type="button"
+                      role="option"
+                      aria-selected={token === value}
+                      onClick={() => {
+                        onChange(token)
+                        setOpen(false)
+                        setQuery('')
+                      }}
+                    >
+                      <TokenAvatar symbol={token} />
+                      {token}
+                    </DropdownItem>
+                  ))}
+                </DropdownList>
+              </Dropdown>,
+              document.body,
+            )
+          : null}
       </SelectWrap>
     </Field>
   )

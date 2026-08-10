@@ -140,17 +140,19 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(vm.pools[0].stakeEnabled).toBe(true)
   })
 
-  it('wires Remaining/Emission from preview facts and keeps Participants as —', () => {
+  it('wires Remaining duration / Rewards left / Emission and keeps Participants as —', () => {
     const model = cardToExploreModel(
       makeCard({
         id: 'econ-1',
+        estimatedDuration: '12d 4h',
         remainingRewards: '12.5K ASTER',
         dailyRewards: '240 ASTER',
         participants: '1.2K',
       }),
       56,
     )!
-    expect(model.remainingDisplay).toBe('12.5K ASTER')
+    expect(model.remainingDisplay).toBe('12d 4h')
+    expect(model.rewardsLeftDisplay).toBe('12.5K ASTER')
     expect(model.emissionDisplay).toBe('240 ASTER')
     expect(model.participantsDisplay).toBe('—')
   })

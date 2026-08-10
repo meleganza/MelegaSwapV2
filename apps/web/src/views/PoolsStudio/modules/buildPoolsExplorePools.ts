@@ -127,8 +127,23 @@ function truthLabel(value?: string | null): string {
   return value
 }
 
+/** Remaining = remaining reward duration only — never mix with reward inventory. */
 function resolveRemaining(card: PoolPreviewCard): string {
-  return truthLabel(card.remainingRewards || card.analyzePreview?.remainingRewards || card.estimatedDuration)
+  return truthLabel(card.estimatedDuration || card.analyzePreview?.emissionEndEstimate || null)
+}
+
+/** Rewards left = remaining reward inventory when factual. */
+function resolveRewardsLeft(card: PoolPreviewCard): string {
+  return truthLabel(card.remainingRewards || card.analyzePreview?.remainingRewards || null)
+}
+
+/** Duration = lock model / schedule label — not remaining countdown. */
+function resolveDurationDisplay(card: PoolPreviewCard, lock: PoolsExploreLockType): string {
+  if (lock === 'Flexible') return 'Flexible'
+  const ends = truthLabel(card.analyzePreview?.emissionEndEstimate || null)
+  if (ends !== '—') return ends
+  if (lock !== 'Custom') return lock
+  return truthLabel(card.estimatedDuration || null)
 }
 
 function resolveEmission(card: PoolPreviewCard): string {
@@ -241,7 +256,9 @@ export function cardToExploreModel(
     tvlSupport: tvl.support,
     participantsDisplay: resolveParticipants(card),
     remainingDisplay: resolveRemaining(card),
+    rewardsLeftDisplay: resolveRewardsLeft(card),
     emissionDisplay: resolveEmission(card),
+    durationDisplay: resolveDurationDisplay(card, lockType),
     lockType,
     stakeToken: {
       symbol: stakeSymbol,

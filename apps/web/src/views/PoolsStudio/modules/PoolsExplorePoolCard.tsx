@@ -323,9 +323,15 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
           <MetricLabel>Remaining</MetricLabel>
           <MetricValue>{truthDash(pool.remainingDisplay)}</MetricValue>
         </Metric>
+        {pool.rewardsLeftDisplay && pool.rewardsLeftDisplay !== '—' ? (
+          <Metric>
+            <MetricLabel>Rewards left</MetricLabel>
+            <MetricValue>{truthDash(pool.rewardsLeftDisplay)}</MetricValue>
+          </Metric>
+        ) : null}
         <Metric>
           <MetricLabel>Duration</MetricLabel>
-          <MetricValue>{truthDash(pool.lockType)}</MetricValue>
+          <MetricValue>{truthDash(pool.durationDisplay)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>Participants</MetricLabel>
@@ -342,7 +348,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
       </LockLine>
 
       <YieldActivitySparkline
-        pairAddress={pool.stakeToken.address}
+        pairAddress={pool.isLp ? pool.stakeToken.address : null}
         testId="pools-explore-activity-spark"
       />
 
@@ -368,26 +374,6 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
               : pool.primaryAction === 'Connect Wallet'
                 ? 'Connect Wallet'
                 : 'Stake'}
-        </Btn>
-        <Btn
-          type="button"
-          data-testid="pools-explore-manage"
-          disabled={pool.primaryAction === 'Unavailable' || pool.primaryAction === 'Connect Wallet' || busy}
-          aria-label={`Manage ${pool.title}`}
-          onClick={() => {
-            if (pool.primaryAction === 'Switch Network') {
-              setSwitchOpen(true)
-              return
-            }
-            setBusy(true)
-            try {
-              requestModal(pool.sourceCard, 'stake')
-            } finally {
-              window.setTimeout(() => setBusy(false), 1200)
-            }
-          }}
-        >
-          Manage
         </Btn>
         {contractUrl && contractAddress ? (
           <Btn

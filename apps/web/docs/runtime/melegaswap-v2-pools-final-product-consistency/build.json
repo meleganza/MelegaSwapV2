@@ -1,0 +1,6 @@
+{
+  "at": "2026-08-10T11:35:07Z",
+  "command": "yarn next build",
+  "result": "passed",
+  "notes": "Fixed broken @pancakeswap/sdk symlink (was pointing at MelegaSwapV2-post-recovery-truth worktree) before build."
+}

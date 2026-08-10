@@ -42,8 +42,13 @@ export interface PoolsExplorePoolCardModel {
   tvlSupport: string | null
   /** Always — unless a truthful wallet census exists (none today). */
   participantsDisplay: string
+  /** Remaining reward duration (not reward inventory). */
   remainingDisplay: string
+  /** Remaining reward inventory when factual. */
+  rewardsLeftDisplay: string
   emissionDisplay: string
+  /** Lock / schedule label (Flexible, 30 Days, Ends date, …). */
+  durationDisplay: string
   lockType: PoolsExploreLockType
   stakeToken: { symbol: string; address: string | null; chainId: number | null }
   rewardToken: { symbol: string; address: string | null; chainId: number | null }
