@@ -43,17 +43,17 @@ const Main = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 20px;
+  line-height: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: ${liquidityMyPositions.text};
 `
 
 const Desc = styled.p`
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 20px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 18px;
   color: ${liquidityMyPositions.muted};
 `
 
@@ -425,6 +425,9 @@ function PositionCard({
         <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
           {LIQUIDITY_MY_POSITIONS_COPY.manage}
         </PrimaryBtn>
+        <SecondaryBtn type="button" data-testid="liquidity-my-positions-add-more" onClick={() => onManage(row)}>
+          {LIQUIDITY_MY_POSITIONS_COPY.addMore}
+        </SecondaryBtn>
         <SecondaryBtn type="button" data-testid="liquidity-my-positions-remove" onClick={() => onRemove(row)}>
           {LIQUIDITY_MY_POSITIONS_COPY.remove}
         </SecondaryBtn>
@@ -463,6 +466,9 @@ function PositionListRow({
           <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
             {LIQUIDITY_MY_POSITIONS_COPY.manage}
           </PrimaryBtn>
+          <SecondaryBtn type="button" data-testid="liquidity-my-positions-add-more" onClick={() => onManage(row)}>
+            {LIQUIDITY_MY_POSITIONS_COPY.addMore}
+          </SecondaryBtn>
           <SecondaryBtn type="button" data-testid="liquidity-my-positions-remove" onClick={() => onRemove(row)}>
             {LIQUIDITY_MY_POSITIONS_COPY.remove}
           </SecondaryBtn>

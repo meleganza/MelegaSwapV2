@@ -48,17 +48,18 @@ const Hero = styled.section`
     radial-gradient(ellipse 36% 70% at 18% 40%, rgba(34, 197, 94, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
     transparent;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(220px, 1.1fr) minmax(220px, 0.9fr);
-  column-gap: 28px;
+  grid-template-columns: ${liqV3.leftW} ${liqV3.artworkW} ${liqV3.trustW};
+  column-gap: ${liqV3.columnGap};
   align-items: center;
   min-width: 0;
 
-  @media (max-width: 1023px) {
+  @media (max-width: ${liqV3.tabletBreak}) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    row-gap: 16px;
+    column-gap: 24px;
+    row-gap: 20px;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: ${liqV3.mobileBreak}) {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -75,9 +76,14 @@ const Hero = styled.section`
 
 const HeroCopy = styled.div`
   min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  @media (max-width: ${liqV3.tabletBreak}) {
+    grid-column: 1;
+  }
 `
 
 const HeroTitle = styled.h1`
@@ -87,14 +93,19 @@ const HeroTitle = styled.h1`
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #f7f7f7;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    font-size: 42px;
+    line-height: 46px;
+  }
 `
 
 const HeroSub = styled.p`
   margin: 14px 0 0;
   font-size: ${liqV3.descSize};
-  line-height: 24px;
+  line-height: ${liqV3.descLine};
   color: rgba(255, 255, 255, 0.66);
-  max-width: 38rem;
+  max-width: 380px;
 `
 
 const HeroActions = styled.div`
@@ -107,11 +118,12 @@ const HeroActions = styled.div`
 
 const HeroVisual = styled.div`
   min-width: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  @media (max-width: 1023px) {
+  @media (max-width: ${liqV3.tabletBreak}) {
     grid-column: 2;
     grid-row: 1;
   }
@@ -119,11 +131,12 @@ const HeroVisual = styled.div`
 
 const HeroTrust = styled.div`
   min-width: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
-  @media (max-width: 1023px) {
+  @media (max-width: ${liqV3.tabletBreak}) {
     grid-column: 1 / -1;
     justify-content: center;
   }
@@ -140,8 +153,13 @@ const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
   border: 1px solid
     ${({ $primary, $ghost }) => ($primary ? 'transparent' : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary, $ghost }) =>
-    $primary ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)' : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
+    $primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
+
+  &:hover:not(:disabled) {
+    background: ${({ $primary, $ghost }) =>
+      $primary ? liqV3.goldHover : $ghost ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.07)'};
+  }
 `
 
 const LinkBtn = styled(Link)<{ $primary?: boolean; $ghost?: boolean }>`
@@ -157,7 +175,7 @@ const LinkBtn = styled(Link)<{ $primary?: boolean; $ghost?: boolean }>`
   border: 1px solid
     ${({ $primary, $ghost }) => ($primary ? liqV3.goldLine : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary, $ghost }) =>
-    $primary ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)' : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
+    $primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
 `
 
@@ -168,22 +186,33 @@ const Snapshot = styled.section`
   gap: 10px;
   min-width: 0;
 
-  @media (max-width: 1023px) {
+  @media (max-width: ${liqV3.tabletBreak}) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: ${liqV3.mobileBreak}) {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+
+    & > * {
+      flex: 0 0 min(72%, 220px);
+      scroll-snap-align: start;
+    }
   }
 `
 
 const SnapCell = styled.div`
   min-width: 0;
-  min-height: 76px;
-  padding: 14px 14px;
+  min-height: 72px;
+  padding: 12px 14px;
   border-radius: 14px;
   border: 1px solid ${liqV3.line};
-  background: rgba(18, 18, 18, 0.92);
+  background: ${liqV3.panel};
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   display: flex;
   flex-direction: column;
@@ -259,27 +288,75 @@ const AiWide = styled.div`
 `
 
 const AiEntry = styled.div`
-  padding: 16px;
+  padding: 18px 20px;
   border-radius: ${liqV3.radius};
   border: 1px solid ${liqV3.goldLine};
   background:
     radial-gradient(ellipse 80% 60% at 8% 0%, rgba(242, 200, 76, 0.1), transparent 55%),
     linear-gradient(165deg, rgba(22, 20, 12, 0.98), rgba(12, 12, 12, 0.98));
   display: grid;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1.45fr) auto;
+  gap: 16px 20px;
+  align-items: center;
   margin-bottom: 12px;
+  min-width: 0;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const AiSteps = styled.ol`
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const AiStep = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: 1px solid ${liqV3.line};
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 12px;
+  font-weight: 700;
+  color: ${liqV3.mute};
+`
+
+const AiStepNum = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(244, 196, 48, 0.16);
+  color: ${liqV3.gold};
+  font-size: 11px;
+  font-weight: 800;
 `
 
 const AiTitle = styled.h2`
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #fff;
 `
 
 const AiSub = styled.p`
-  margin: 0;
+  margin: 6px 0 0;
   font-size: 13px;
+  line-height: 1.4;
   color: ${liqV3.mute};
 `
 
@@ -367,6 +444,8 @@ const LiquidityV3Body: React.FC = () => {
   const [tabsReady, setTabsReady] = useState(false)
   const hydratedRef = React.useRef(false)
   const prevModeRef = React.useRef(mode)
+  const tabRef = React.useRef<LiquidityV3Tab>(tab)
+  tabRef.current = tab
   const showFarmNudge = tab === 'positions' && positions.length > 0
   const removing = isRemoveMode(mode)
 
@@ -419,30 +498,39 @@ const LiquidityV3Body: React.FC = () => {
   )
 
   // Debounced shareable ?view= mirror (never drives tab chrome).
+  // Depend on primitive query fields — not the whole `router` object — so shallow
+  // replaces cannot cancel the debounce timer before it commits.
+  const queryView = typeof router.query.view === 'string' ? router.query.view : undefined
+  const queryStep = Array.isArray(router.query.step) ? router.query.step[0] : router.query.step
+  const queryProgram = Array.isArray(router.query.program)
+    ? router.query.program[0]
+    : router.query.program
+
   useEffect(() => {
     if (!router.isReady || !hydratedRef.current) return
-    const view = tab === 'building' ? 'building' : tab === 'add' ? (removing ? 'remove' : 'add') : 'positions'
-    const current = typeof router.query.view === 'string' ? router.query.view : undefined
-    const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view }
-    if (tab !== 'building') {
-      delete nextQuery.step
-      delete nextQuery.program
-    }
-    const stray = tab !== 'building' && (Boolean(router.query.step) || Boolean(router.query.program))
-    if (view === current && !stray) return undefined
+    const desired = (t: LiquidityV3Tab) =>
+      t === 'building' ? 'building' : t === 'add' ? (removing ? 'remove' : 'add') : 'positions'
+    const view = desired(tab)
+    const stray = tab !== 'building' && (Boolean(queryStep) || Boolean(queryProgram))
+    if (view === queryView && !stray) return undefined
+    const pathname = router.pathname
     const timer = window.setTimeout(() => {
-      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
-    }, 160)
+      // Always mirror the live tab — never flush a stale scheduled view after a later click.
+      const liveTab = tabRef.current
+      const liveView = desired(liveTab)
+      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view: liveView }
+      if (liveTab !== 'building') {
+        delete nextQuery.step
+        delete nextQuery.program
+      }
+      void router.replace({ pathname, query: nextQuery }, undefined, { shallow: true })
+    }, 120)
     return () => window.clearTimeout(timer)
-  }, [tab, removing, router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitives only; avoid router identity churn
+  }, [tab, removing, router.isReady, router.pathname, queryView, queryStep, queryProgram])
 
   const goAdd = useCallback(() => {
     selectTab('add')
-    if (typeof document !== 'undefined') {
-      window.setTimeout(() => {
-        document.getElementById('add-liquidity')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 50)
-    }
   }, [selectTab])
 
   const goPositions = useCallback(() => selectTab('positions'), [selectTab])
@@ -601,16 +689,42 @@ const LiquidityV3Body: React.FC = () => {
           data-testid="liquidity-v3-panel-ai"
           aria-hidden={tab !== 'building'}
         >
-          <AiEntry data-testid="liquidity-v3-ai-entry">
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <AiTitle>{LIQ_V3_COPY.aiEntry}</AiTitle>
-              <Badge data-testid="liquidity-v3-ai-beta">{LIQ_V3_COPY.aiBeta}</Badge>
+          <AiEntry data-testid="liquidity-v3-ai-entry" data-ai-layout="horizontal">
+            <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <AiTitle>{LIQ_V3_COPY.aiEntry}</AiTitle>
+                <Badge data-testid="liquidity-v3-ai-beta">{LIQ_V3_COPY.aiBeta}</Badge>
+              </div>
+              <AiSub>{LIQ_V3_COPY.aiSub}</AiSub>
+              <AiSteps aria-label="Builder steps" data-testid="liquidity-v3-ai-steps">
+                <AiStep>
+                  <AiStepNum>1</AiStepNum>
+                  {LIQ_V3_COPY.aiStep1}
+                </AiStep>
+                <AiStep>
+                  <AiStepNum>2</AiStepNum>
+                  {LIQ_V3_COPY.aiStep2}
+                </AiStep>
+                <AiStep>
+                  <AiStepNum>3</AiStepNum>
+                  {LIQ_V3_COPY.aiStep3}
+                </AiStep>
+              </AiSteps>
             </div>
-            <AiSub>{LIQ_V3_COPY.aiSub}</AiSub>
+            <Btn
+              $primary
+              type="button"
+              data-testid="liquidity-v3-ai-start"
+              onClick={() => {
+                selectTab('building')
+                setAiMounted(true)
+              }}
+            >
+              {LIQ_V3_COPY.aiOpen}
+            </Btn>
           </AiEntry>
           {lbSupported ? (
             <AiWide data-testid="liquidity-v3-ai-builder">
-              {/* Mount once visited; keep mounted thereafter (no flash). forceExpanded only on AI tab. */}
               {aiMounted ? (
                 <LiquidityBuildingCard forceExpanded={tab === 'building'} studioOwnedUrl />
               ) : null}

@@ -40,6 +40,8 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
 
   it('remove confirm uses MelegaModal V3 (not You will receive pancake modal)', () => {
     expect(runtime).toContain('LiquidityRemoveConfirmModal')
+    expect(runtime).toContain('LiquidityAddConfirmModal')
+    expect(runtime).not.toContain('ConfirmAddLiquidityModal')
     expect(runtime).not.toContain("title={t('You will receive')}")
     expect(runtime).not.toContain('ConfirmLiquidityModal')
     expect(removeModal).toContain('Remove Liquidity')

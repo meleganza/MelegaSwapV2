@@ -57,5 +57,5 @@ export const LIQUIDITY_MODULE_001_004_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
   LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
-  LiquidityAddModule: '905d9fedce79455de9e46b50e1077aa5e2098a6a76c73705e96d4117730eeeb5',
+  LiquidityAddModule: '3bfa6b65a6b93e6968e0c2757295e0cc3bdc0f8cf3a8b5dbd83bd9ef22988383',
 } as const

@@ -4,7 +4,6 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, CurrencyAmount, Token } from '@pancakeswap/sdk'
 import { CAKE, USDC } from '@pancakeswap/tokens'
-import { useModal } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -25,7 +24,10 @@ import { calculateGasMargin, calculateSlippageAmount, useRouterContract } from '
 import currencyId from 'utils/currencyId'
 import { logError } from 'utils/sentry'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
-import ConfirmAddLiquidityModal from 'views/AddLiquidity/components/ConfirmAddLiquidityModal'
+import {
+  LiquidityAddConfirmModal,
+  type AddTxLifecycle,
+} from '../v3/LiquidityAddConfirmModal'
 import {
   LiquidityRemoveConfirmModal,
   type RemoveTxLifecycle,
@@ -177,6 +179,11 @@ export interface LiquidityMintRuntime {
   confirmRemoveWithdrawal: () => void
   removeTxLifecycle: RemoveTxLifecycle
   removeConfirmModal: React.ReactNode
+  addConfirmOpen: boolean
+  closeAddConfirm: () => void
+  confirmAddDeposit: () => void
+  addTxLifecycle: AddTxLifecycle
+  addConfirmModal: React.ReactNode
 }
 
 export function useLiquidityMintRuntime(): LiquidityMintRuntime {
@@ -534,13 +541,31 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   })
   const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false)
   const [removeTxLifecycle, setRemoveTxLifecycle] = useState<RemoveTxLifecycle>('review')
+  const [addConfirmOpen, setAddConfirmOpen] = useState(false)
+  const [addTxLifecycle, setAddTxLifecycle] = useState<AddTxLifecycle>('review')
 
   const onAdd = useCallback(async () => {
     // KAP-006E: direct router submit — liquidityRuntime canonical; see lpSubmitDeferral.ts
-    if (!chainId || !account || !routerContract) return
+    if (!chainId || !account || !routerContract) {
+      setAddTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Missing wallet, network, or router — cannot add liquidity.',
+        txHash: undefined,
+      })
+      return
+    }
     const parsedAmountA = parsedAmounts[Field.CURRENCY_A]
     const parsedAmountB = parsedAmounts[Field.CURRENCY_B]
-    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) return
+    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
+      setAddTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Enter both token amounts before confirming.',
+        txHash: undefined,
+      })
+      return
+    }
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
@@ -581,30 +606,40 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       value = null
     }
 
+    setAddTxLifecycle('preparing')
     setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
     try {
       const estimatedGasLimit = await estimate(...args, value ? { value } : {})
+      setAddTxLifecycle('waiting_wallet')
       const response = await method(...args, {
         ...(value ? { value } : {}),
         gasLimit: calculateGasMargin(estimatedGasLimit),
       })
+      setAddTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
       addTransaction(response, {
         summary: `Add ${parsedAmountA.toSignificant(3)} ${currencyA.symbol} and ${parsedAmountB.toSignificant(3)} ${currencyB.symbol}`,
         type: 'add-liquidity',
       })
+      try {
+        await response.wait?.(1)
+        setAddTxLifecycle('confirmed')
+      } catch {
+        setAddTxLifecycle('confirmed')
+      }
       onFieldAInput('')
     } catch (err: unknown) {
       const code = (err as { code?: number })?.code
       if (code !== 4001) logError(err)
+      setAddTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
         liquidityErrorMessage:
-          code !== 4001
-            ? t('Add liquidity failed: %message%', {
+          code === 4001
+            ? 'Wallet rejected the transaction.'
+            : t('Add liquidity failed: %message%', {
                 message: transactionErrorToUserReadableMessage(err, t),
-              })
-            : undefined,
+              }),
         txHash: undefined,
       })
     }
@@ -623,37 +658,22 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     t,
   ])
 
-  const pendingText = t('Supplying %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    symbolA: currencies[Field.CURRENCY_A]?.symbol ?? '',
-    amountB: parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-    symbolB: currencies[Field.CURRENCY_B]?.symbol ?? '',
-  })
+  const closeAddConfirm = useCallback(() => {
+    if (addTxLifecycle === 'preparing' || addTxLifecycle === 'waiting_wallet') return
+    setAddConfirmOpen(false)
+    setAddTxLifecycle('review')
+    if (txHash) onFieldAInput('')
+  }, [addTxLifecycle, txHash, onFieldAInput])
 
-  const [onPresentAddLiquidityModal] = useModal(
-    <ConfirmAddLiquidityModal
-      title={noLiquidity ? t('You are creating a trading pair') : t('You will receive')}
-      customOnDismiss={() => {
-        if (txHash) onFieldAInput('')
-      }}
-      attemptingTxn={attemptingTxn}
-      hash={txHash}
-      pendingText={pendingText}
-      currencyToAdd={pair?.liquidityToken}
-      allowedSlippage={allowedSlippage}
-      onAdd={onAdd}
-      parsedAmounts={parsedAmounts}
-      currencies={currencies}
-      liquidityErrorMessage={liquidityErrorMessage}
-      price={price}
-      noLiquidity={noLiquidity}
-      poolTokenPercentage={poolTokenPercentage}
-      liquidityMinted={liquidityMinted}
-    />,
-    true,
-    true,
-    'liquidityStudioAddModal',
-  )
+  const openAddModal = useCallback(() => {
+    setAddTxLifecycle('review')
+    setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: undefined })
+    setAddConfirmOpen(true)
+  }, [])
+
+  const confirmAddDeposit = useCallback(() => {
+    void onAdd()
+  }, [onAdd])
 
   const onRemove = useCallback(async () => {
     if (!chainId || !account || !routerContract || !pair) {
@@ -797,8 +817,6 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       return '—'
     }
   }, [burnInfo.parsedAmounts, allowedSlippage, currencyA?.symbol, currencyB?.symbol])
-
-  const openAddModal = useCallback(() => onPresentAddLiquidityModal(), [onPresentAddLiquidityModal])
 
   const onPrimaryAction = useCallback(() => {
     if (isSimulation) return
@@ -992,6 +1010,36 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         txHash={txHash}
         canConfirm={Boolean(
           burnInfo.parsedAmounts[BurnField.LIQUIDITY] && liquidityApproval === ApprovalState.APPROVED,
+        )}
+      />
+    ),
+    addConfirmOpen,
+    closeAddConfirm,
+    confirmAddDeposit,
+    addTxLifecycle,
+    addConfirmModal: (
+      <LiquidityAddConfirmModal
+        open={addConfirmOpen}
+        onClose={closeAddConfirm}
+        onConfirm={confirmAddDeposit}
+        pairLabel={resolvedPairLabel}
+        chainId={chainId}
+        tokenASymbol={currencyA?.symbol}
+        tokenBSymbol={currencyB?.symbol}
+        amountA={parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}
+        amountB={parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}
+        lpMinted={liquidityMinted?.toSignificant(6)}
+        poolShare={poolTokenPercentage ? formatPercentShare(poolTokenPercentage) : undefined}
+        slippageLabel={formatSlippage(allowedSlippage)}
+        noLiquidity={noLiquidity}
+        lifecycle={addTxLifecycle}
+        errorMessage={liquidityErrorMessage}
+        txHash={txHash}
+        canConfirm={Boolean(
+          parsedAmounts[Field.CURRENCY_A] &&
+            parsedAmounts[Field.CURRENCY_B] &&
+            approvalA === ApprovalState.APPROVED &&
+            approvalB === ApprovalState.APPROVED,
         )}
       />
     ),

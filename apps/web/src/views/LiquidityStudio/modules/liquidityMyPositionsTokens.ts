@@ -19,7 +19,7 @@ export const liquidityMyPositions = {
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
   cardPad: '18px',
-  cardMinH: '168px',
+  cardMinH: '148px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -53,7 +53,8 @@ export const LIQUIDITY_MY_POSITIONS_COPY = {
   feesEarned: 'Fees earned',
   status: 'Status',
   manage: 'Manage',
-  remove: 'Remove Liquidity',
+  addMore: 'Add More',
+  remove: 'Remove',
   emptyMetric: '—',
   statusActive: 'ACTIVE',
   statusUnavailable: 'UNAVAILABLE',

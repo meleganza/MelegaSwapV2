@@ -6,8 +6,9 @@ import styled from 'styled-components'
 import { LIQUIDITY_HERO_COPY, liquidityHero } from './liquidityHeroTokens'
 
 const Panel = styled.aside`
-  width: ${liquidityHero.trustBoxW};
-  height: ${liquidityHero.trustBoxH};
+  width: min(100%, 360px);
+  min-height: 230px;
+  height: auto;
   max-width: 100%;
   box-sizing: border-box;
   border-radius: ${liquidityHero.trustRadius};
@@ -18,11 +19,10 @@ const Panel = styled.aside`
   flex-direction: column;
   gap: 12px;
   flex: 0 0 auto;
-  overflow: hidden;
+  overflow: visible;
 
   @media (max-width: ${liquidityHero.mobileBreak}) {
-    width: min(100%, ${liquidityHero.mobileTrustW});
-    height: auto;
+    width: 100%;
     min-height: 0;
   }
 `
