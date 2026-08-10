@@ -84,8 +84,7 @@ const Btn = styled.button<{ $primary?: boolean }>`
   font-weight: 800;
   border: 1px solid
     ${({ $primary }) => ($primary ? 'transparent' : 'rgba(255,255,255,0.14)')};
-  background: ${({ $primary }) =>
-    $primary ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)' : 'rgba(255,255,255,0.04)'};
+  background: ${({ $primary }) => ($primary ? liqV3.gold : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
 
   &:disabled {

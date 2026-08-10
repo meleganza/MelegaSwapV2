@@ -7,17 +7,17 @@ import { LIQUIDITY_HERO_COPY, liquidityHero } from './liquidityHeroTokens'
 
 const Panel = styled.aside`
   width: min(100%, 360px);
-  min-height: 230px;
+  min-height: 190px;
   height: auto;
   max-width: 100%;
   box-sizing: border-box;
   border-radius: ${liquidityHero.trustRadius};
   border: ${liquidityHero.trustBorder};
   background: ${liquidityHero.trustBg};
-  padding: ${liquidityHero.trustPad};
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   flex: 0 0 auto;
   overflow: visible;
 

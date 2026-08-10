@@ -70,7 +70,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(add).toContain('Create Pool & Add Liquidity')
     expect(add).toContain('liquidity-add-advanced')
     expect(add).toContain('<summary>Advanced</summary>')
-    expect(add).toContain('58-42-workspace')
+    expect(add).toContain('50-50-workspace')
     expect(add).toContain('liquidity-add-pool-state')
   })
 

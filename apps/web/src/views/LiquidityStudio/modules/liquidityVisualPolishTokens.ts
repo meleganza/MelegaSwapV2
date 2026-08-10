@@ -37,7 +37,7 @@ export const liquidityVisualPolish = {
 export const LIQUIDITY_MODULE_001_FREEZE_SHA256 = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityHeroArtwork: '8d950ad6ba310662e9a3f2e6e3e27d45452c50d36410b41ea9ca0c7040ca973e',
-  LiquidityHeroTrustPanel: '4f822ac0f32bdbf52d5d66fb2ee3a33cbcf3226391605288f5370243b93803f1',
+  LiquidityHeroTrustPanel: 'f41d03c8e58bc3f3f03c5e26ff3c2d42fb90d1911e3e2258c214c8873f6a0af5',
   liquidityHeroTokens: '336149e0e5d0ea67dd9008b3151c6af80678a24425840feff84d04660bb03ab8',
 } as const
 
@@ -55,8 +55,8 @@ export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
-  LiquidityAddModule: '3bfa6b65a6b93e6968e0c2757295e0cc3bdc0f8cf3a8b5dbd83bd9ef22988383',
-  liquidityAddTokens: '5377efc9eaa232b6aa891aca95739e6e14b5ed9cca998f376071e5412fdb0c4a',
+  LiquidityAddModule: '4261384e0d2d9c1ccbd289807fbf53871ca623b3a695d564d8e2b6e80d1c5b63',
+  liquidityAddTokens: 'e4c577b9399553d2f976e3f7cdd2d0e51c85e1d6c376245d48c9b243e82aa70c',
   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
 } as const
 
@@ -68,8 +68,8 @@ export const LIQUIDITY_MODULE_005_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_006_FREEZE_SHA256 = {
-  LiquidityMyPositionsModule: '2d585953a7c5f31856f7c87b83eeeb06d3ec2d015cc8b9a9ecb4930ee14dfe33',
-  liquidityMyPositionsTokens: '034b0f4970c8b3421b203baa071ccd30da766f8b96cf2c4951b95a2c2327cc43',
+  LiquidityMyPositionsModule: '35a1854f37336030e05aa33b208920b372a71983e70dc56690aabe0be1c45038',
+  liquidityMyPositionsTokens: 'abce42d2cb12107085249fe807542b6f1c97a750601ad372d3522383846d75d9',
   liquidityMyPositionsModel: 'd5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139',
 } as const
 
@@ -81,7 +81,7 @@ export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_RUNTIME_FREEZE_SHA256 = {
-  useLiquidityMintRuntime: '601719087a70f66740bb104dcecf48021b757fb709b525231855df3466b5758a',
+  useLiquidityMintRuntime: '46edb9319a17aaba088b180170ff05130299e3c14882083c9ce9103da8db80ff',
   LiquidityRuntimeContext: '1c17119c192b27c82e4c3d1b84a4be3c278740fc1d8ef63a18b5254de6521515',
 } as const
 

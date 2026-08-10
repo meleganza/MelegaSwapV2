@@ -23,11 +23,11 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
     expect(tokens).toContain("leftW: '440px'")
     expect(tokens).toContain("artworkW: '480px'")
     expect(tokens).toContain("trustW: '360px'")
-    expect(tokens).toContain("heroMaxH: '260px'")
+    expect(tokens).toContain("heroMaxH: '220px'")
     expect(tokens).toContain("gold: '#F4C430'")
     expect(shell).toContain('LiquidityHeroArtwork')
     expect(shell).toContain('LiquidityHeroTrustPanel')
-    expect(trust).toContain('min-height: 230px')
+    expect(trust).toContain('min-height: 190px')
   })
 
   it('single-surface tabs stay mounted without route remount flash', () => {
@@ -75,7 +75,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
   })
 
   it('Add Liquidity keeps two-column workspace', () => {
-    expect(add).toContain('58-42-workspace')
-    expect(add).toContain('minmax(0, 1.2fr) minmax(0, 0.8fr)')
+    expect(add).toContain('50-50-workspace')
+    expect(add).toContain('minmax(0, 1fr) minmax(0, 1fr)')
   })
 })

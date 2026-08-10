@@ -41,9 +41,9 @@ const Shell = styled.section<{ $embedded?: boolean }>`
 const Layout = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   display: grid;
-  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1.2fr) minmax(0, 0.8fr)')};
-  column-gap: ${({ $embedded }) => ($embedded ? '0' : '20px')};
-  row-gap: ${({ $embedded }) => ($embedded ? '12px' : '16px')};
+  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)')};
+  column-gap: ${({ $embedded }) => ($embedded ? '0' : liquidityAdd.columnGap)};
+  row-gap: ${({ $embedded }) => ($embedded ? '12px' : '14px')};
   align-items: start;
   min-width: 0;
 
@@ -564,7 +564,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     <Layout
       $embedded={embedded}
       data-testid="liquidity-add-layout"
-      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '58-42-workspace'}
+      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '50-50-workspace'}
       data-liquidity-add-embedded={embedded ? '1' : '0'}
     >
       <Panel $embedded={embedded} data-testid="liquidity-add-form-panel">

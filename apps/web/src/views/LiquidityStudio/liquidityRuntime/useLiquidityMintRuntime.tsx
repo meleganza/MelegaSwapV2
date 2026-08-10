@@ -160,6 +160,7 @@ export interface LiquidityMintRuntime {
   positionsLoading: boolean
   positionsPhase: LiquidityPositionsPhase
   positionsTimedOut: boolean
+  retryPositions: () => void
   /** WalletPortfolio assembled from the same producer rows — no second scan. */
   liquidityWalletPortfolio: WalletPortfolio
   selectedPositionId?: string
@@ -282,6 +283,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     isLoading: positionsLoading,
     positionsPhase,
     positionsTimedOut,
+    retryPositions,
   } = useLiquidityPositions()
 
   const chainName =
@@ -973,6 +975,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     positionsLoading,
     positionsPhase,
     positionsTimedOut,
+    retryPositions,
     liquidityWalletPortfolio,
     selectedPositionId: selectedPosition?.id,
     setSelectedPositionId,

@@ -26,21 +26,21 @@ const Page = styled.div`
   overflow-x: hidden;
   background: ${liqV3.pageBg};
   box-sizing: border-box;
-  padding: 24px 12px 48px;
+  padding: ${liqV3.pagePadY} 12px 40px;
   max-width: ${liqV3.contentMax};
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: ${liqV3.pageGap};
 
   @media (min-width: 768px) {
-    padding: 24px 0 56px;
+    padding: ${liqV3.pagePadY} 0 48px;
   }
 `
 
 const Hero = styled.section`
   min-height: ${liqV3.heroMaxH};
-  padding: 8px 0 4px;
+  padding: 0;
   border: none;
   border-radius: 0;
   background:
@@ -55,15 +55,15 @@ const Hero = styled.section`
 
   @media (max-width: ${liqV3.tabletBreak}) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 24px;
-    row-gap: 20px;
+    column-gap: 20px;
+    row-gap: 14px;
   }
 
   @media (max-width: ${liqV3.mobileBreak}) {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 14px;
+    gap: 12px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -101,7 +101,7 @@ const HeroTitle = styled.h1`
 `
 
 const HeroSub = styled.p`
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   font-size: ${liqV3.descSize};
   line-height: ${liqV3.descLine};
   color: rgba(255, 255, 255, 0.66);
@@ -111,9 +111,9 @@ const HeroSub = styled.p`
 const HeroActions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 14px;
 `
 
 const HeroVisual = styled.div`
@@ -208,12 +208,12 @@ const Snapshot = styled.section`
 
 const SnapCell = styled.div`
   min-width: 0;
-  min-height: 72px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  min-height: 60px;
+  padding: 10px 12px;
+  border-radius: 12px;
   border: 1px solid ${liqV3.line};
   background: ${liqV3.panel};
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -264,13 +264,19 @@ const TabBtn = styled.button<{ $on?: boolean }>`
 `
 
 const Workspace = styled.section`
-  margin-top: 12px;
+  margin-top: 4px;
   min-width: 0;
   position: relative;
 `
 
 /** Keep all tab panels mounted — hide inactive to prevent black flash / remount races. */
 const Panel = styled.div<{ $active: boolean }>`
+  display: ${({ $active }) => ($active ? 'block' : 'none')};
+  min-width: 0;
+`
+
+/** Add ↔ Remove stay mounted inside the Add tab (no form remount flash). */
+const SubPanel = styled.div<{ $active: boolean }>`
   display: ${({ $active }) => ($active ? 'block' : 'none')};
   min-width: 0;
 `
@@ -288,7 +294,7 @@ const AiWide = styled.div`
 `
 
 const AiEntry = styled.div`
-  padding: 18px 20px;
+  padding: 12px 14px;
   border-radius: ${liqV3.radius};
   border: 1px solid ${liqV3.goldLine};
   background:
@@ -296,9 +302,9 @@ const AiEntry = styled.div`
     linear-gradient(165deg, rgba(22, 20, 12, 0.98), rgba(12, 12, 12, 0.98));
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) auto;
-  gap: 16px 20px;
+  gap: 10px 14px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   min-width: 0;
 
   @media (max-width: ${liqV3.mobileBreak}) {
@@ -308,11 +314,11 @@ const AiEntry = styled.div`
 
 const AiSteps = styled.ol`
   list-style: none;
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 
   @media (max-width: ${liqV3.mobileBreak}) {
     grid-template-columns: 1fr;
@@ -323,8 +329,8 @@ const AiStep = styled.li`
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 6px 10px;
+  min-height: 30px;
+  padding: 4px 8px;
   border-radius: 9px;
   border: 1px solid ${liqV3.line};
   background: rgba(255, 255, 255, 0.02);
@@ -348,15 +354,15 @@ const AiStepNum = styled.span`
 
 const AiTitle = styled.h2`
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #fff;
 `
 
 const AiSub = styled.p`
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.35;
   color: ${liqV3.mute};
 `
 
@@ -487,15 +493,12 @@ const LiquidityV3Body: React.FC = () => {
     if (tab === 'building') setAiMounted(true)
   }, [tab])
 
-  const selectTab = useCallback(
-    (next: LiquidityV3Tab) => {
-      setTab(next)
-      if (next === 'building') setAiMounted(true)
-      // Mode for execution only — URL is mirrored below (debounced). Avoids replace races.
-      setMode(tabToMode(next), { syncUrl: false })
-    },
-    [setMode],
-  )
+  // Prefetch AI module after first paint so first AI tab visit does not remount a blank shell.
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+    const t = window.setTimeout(() => setAiMounted(true), 500)
+    return () => window.clearTimeout(t)
+  }, [])
 
   // Debounced shareable ?view= mirror (never drives tab chrome).
   // Depend on primitive query fields — not the whole `router` object — so shallow
@@ -505,6 +508,37 @@ const LiquidityV3Body: React.FC = () => {
   const queryProgram = Array.isArray(router.query.program)
     ? router.query.program[0]
     : router.query.program
+
+  const flushViewMirror = useCallback(
+    (next: LiquidityV3Tab) => {
+      if (!router.isReady || !hydratedRef.current) return
+      const liveView = next === 'building' ? 'building' : next === 'add' ? (removing ? 'remove' : 'add') : 'positions'
+      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view: liveView }
+      if (next !== 'building') {
+        delete nextQuery.step
+        delete nextQuery.program
+      }
+      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, {
+        shallow: true,
+        scroll: false,
+      })
+    },
+    [removing, router],
+  )
+
+  const selectTab = useCallback(
+    (next: LiquidityV3Tab) => {
+      setTab(next)
+      if (next === 'building') setAiMounted(true)
+      // Mode for execution only — URL is mirrored below (debounced). Avoids replace races.
+      setMode(tabToMode(next), { syncUrl: false })
+      // Leaving AI must clear view=building immediately — stale building URLs cause hard remounts.
+      if (next !== 'building' && queryView === 'building') {
+        flushViewMirror(next)
+      }
+    },
+    [setMode, queryView, flushViewMirror],
+  )
 
   useEffect(() => {
     if (!router.isReady || !hydratedRef.current) return
@@ -523,7 +557,7 @@ const LiquidityV3Body: React.FC = () => {
         delete nextQuery.step
         delete nextQuery.program
       }
-      void router.replace({ pathname, query: nextQuery }, undefined, { shallow: true })
+      void router.replace({ pathname, query: nextQuery }, undefined, { shallow: true, scroll: false })
     }, 120)
     return () => window.clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- primitives only; avoid router identity churn
@@ -676,12 +710,12 @@ const LiquidityV3Body: React.FC = () => {
         </Panel>
 
         <Panel $active={tab === 'add'} data-testid="liquidity-v3-panel-add" aria-hidden={tab !== 'add'}>
-          {removing ? (
-            <LiquidityRemovePanel />
-          ) : (
-            /* Non-embedded: form + live preview side-by-side (desktop). */
+          <SubPanel $active={!removing} data-add-surface="mint" aria-hidden={removing}>
             <LiquidityAddModule />
-          )}
+          </SubPanel>
+          <SubPanel $active={removing} data-add-surface="burn" aria-hidden={!removing}>
+            <LiquidityRemovePanel />
+          </SubPanel>
         </Panel>
 
         <Panel

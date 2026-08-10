@@ -15,6 +15,7 @@ import {
   useLiquidityPositionDetails,
   type LiquidityPositionRow,
 } from '../liquidityRuntime/useLiquidityPositions'
+import { useLPApr } from 'state/swap/useLPApr'
 import {
   formatPoolShare,
   formatPositionUsd,
@@ -58,7 +59,7 @@ const Desc = styled.p`
 `
 
 const Grid = styled.div`
-  margin-top: 16px;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: ${liquidityMyPositions.columnGap};
@@ -83,14 +84,14 @@ const Card = styled.article`
   padding: ${liquidityMyPositions.cardPad};
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 `
 
 const PairRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 `
 
@@ -125,8 +126,8 @@ const Status = styled.span<{ $tone: string }>`
 const Metrics = styled.dl`
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 `
 
 const Metric = styled.div`
@@ -358,6 +359,11 @@ function PositionCard({
   onRemove: (row: LiquidityPositionRow) => void
 }) {
   const details = useLiquidityPositionDetails(row)
+  const lpApr = useLPApr(row.pair)
+  const aprLabel =
+    lpApr?.lpApr7d != null && Number.isFinite(lpApr.lpApr7d)
+      ? `${lpApr.lpApr7d >= 100 ? lpApr.lpApr7d.toFixed(0) : lpApr.lpApr7d.toFixed(2)}%`
+      : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const lpLabel = row.lpBalance?.greaterThan(0) ? row.lpBalance.toSignificant(6) : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const valueLabel = formatPositionUsd(details.usdValue)
   const shareLabel = formatPoolShare(details.poolShare)
@@ -379,7 +385,7 @@ function PositionCard({
             name={token0.name}
             address={token0.address}
             chainId={positionChainId}
-            size={32}
+            size={28}
             radius="circle"
           />
           <MelegaTokenAvatar
@@ -387,7 +393,7 @@ function PositionCard({
             name={token1.name}
             address={token1.address}
             chainId={positionChainId}
-            size={32}
+            size={28}
             radius="circle"
           />
         </Logos>
@@ -404,7 +410,7 @@ function PositionCard({
 
       <Metrics data-testid="liquidity-my-positions-metrics">
         <Metric data-primary-metric="deposited-value">
-          <MetricLabel>Deposited value</MetricLabel>
+          <MetricLabel>Position value</MetricLabel>
           <MetricValue>{valueLabel}</MetricValue>
         </Metric>
         <Metric>
@@ -414,6 +420,10 @@ function PositionCard({
         <Metric>
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.feesEarned}</MetricLabel>
           <MetricValue>{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</MetricValue>
+        </Metric>
+        <Metric data-testid="liquidity-my-positions-apr">
+          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.apr}</MetricLabel>
+          <MetricValue>{aprLabel}</MetricValue>
         </Metric>
         <Metric data-secondary-metric="lp-amount">
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.lpBalance}</MetricLabel>
@@ -490,6 +500,7 @@ const LiquidityMyPositionsBody: React.FC = () => {
     setMode,
     setCurrencyA,
     setCurrencyB,
+    retryPositions,
   } = useLiquidityRuntime()
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
@@ -594,22 +605,43 @@ const LiquidityMyPositionsBody: React.FC = () => {
 
       {positionsPhase === 'empty' ? (
         <Empty data-testid="liquidity-my-positions-empty">
-          <EmptyText>
-            {positionsTimedOut
-              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
-              : LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}
-          </EmptyText>
+          <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
           <EmptyActions>
             <PrimaryBtn
               type="button"
               data-testid="liquidity-my-positions-empty-add"
               onClick={() => {
                 setMode('Add Liquidity')
-                document.getElementById('add-liquidity')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
               }}
             >
               Add Liquidity
             </PrimaryBtn>
+          </EmptyActions>
+        </Empty>
+      ) : null}
+
+      {positionsPhase === 'error' ? (
+        <Empty data-testid="liquidity-my-positions-error">
+          <EmptyText>
+            {positionsTimedOut
+              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
+              : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
+          </EmptyText>
+          <EmptyActions>
+            <PrimaryBtn
+              type="button"
+              data-testid="liquidity-my-positions-retry"
+              onClick={() => retryPositions()}
+            >
+              {LIQUIDITY_MY_POSITIONS_COPY.retry}
+            </PrimaryBtn>
+            <SecondaryBtn
+              type="button"
+              data-testid="liquidity-my-positions-empty-add"
+              onClick={() => setMode('Add Liquidity')}
+            >
+              Add Liquidity
+            </SecondaryBtn>
           </EmptyActions>
         </Empty>
       ) : null}

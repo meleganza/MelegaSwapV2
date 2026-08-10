@@ -17,7 +17,7 @@ import {
 import { useFactoryLiquidityTokenPairs } from './useFactoryLiquidityTokenPairs'
 
 /** Deterministic wallet LP hydration lifecycle (UI never freezes on partial state). */
-export type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty'
+export type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'
 
 const POSITIONS_FETCH_TIMEOUT_MS = 12_000
 
@@ -171,11 +171,12 @@ export function useLiquidityPositions() {
   const rawLoading = Boolean(account) && v2IsLoading
 
   const [timedOut, setTimedOut] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
 
-  // Reset timeout when wallet / chain / load cycle changes.
+  // Reset timeout when wallet / chain / load cycle / manual retry changes.
   useEffect(() => {
     setTimedOut(false)
-  }, [account, chainId])
+  }, [account, chainId, retryNonce])
 
   useEffect(() => {
     if (!account || !rawLoading || positions.length > 0) {
@@ -184,17 +185,21 @@ export function useLiquidityPositions() {
     }
     const timer = window.setTimeout(() => setTimedOut(true), POSITIONS_FETCH_TIMEOUT_MS)
     return () => window.clearTimeout(timer)
-  }, [account, rawLoading, positions.length, chainId])
+  }, [account, rawLoading, positions.length, chainId, retryNonce])
 
   const isLoading = rawLoading && !timedOut
 
   const positionsPhase: LiquidityPositionsPhase = !account
     ? 'connecting'
-    : isLoading
-      ? 'fetching'
-      : positions.length > 0
-        ? 'ready'
-        : 'empty'
+    : timedOut && positions.length === 0
+      ? 'error'
+      : isLoading
+        ? 'fetching'
+        : positions.length > 0
+          ? 'ready'
+          : 'empty'
+
+  const retryPositions = () => setRetryNonce((n) => n + 1)
 
   useEffect(() => {
     emitCivilizationEvent('liquidity_position_changed', 'liquidity', {
@@ -212,6 +217,7 @@ export function useLiquidityPositions() {
     isLoading,
     positionsPhase,
     positionsTimedOut: timedOut,
+    retryPositions,
     account,
     factoryPairCount,
     discoveryPairCount: discoveryTokenPairs.length,

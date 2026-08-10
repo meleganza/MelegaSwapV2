@@ -31,11 +31,13 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
   })
 
   it('positions expose CONNECTING → FETCHING → READY → EMPTY lifecycle', () => {
-    expect(positions).toContain("type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty'")
+    expect(positions).toContain("type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'")
     expect(positions).toContain('POSITIONS_FETCH_TIMEOUT_MS')
     expect(positions).toContain("positionsPhase")
+    expect(positions).toContain('retryPositions')
     expect(myPos).toContain('data-positions-phase')
     expect(myPos).toContain('emptyTimedOut')
+    expect(myPos).toContain('liquidity-my-positions-retry')
   })
 
   it('remove confirm uses MelegaModal V3 (not You will receive pancake modal)', () => {

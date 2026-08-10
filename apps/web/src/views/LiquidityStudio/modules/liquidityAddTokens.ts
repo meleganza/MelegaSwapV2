@@ -10,14 +10,14 @@ export const liquidityAdd = {
 
   contentMax: '1376px',
   gapAfterDiscovery: '16px',
-  columnGap: '24px',
-  mainW: '900px',
-  sideW: '424px',
+  columnGap: '16px',
+  mainW: '50%',
+  sideW: '50%',
 
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
-  cardPad: '24px',
+  cardPad: '16px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -26,7 +26,7 @@ export const liquidityAdd = {
   dim: 'rgba(255,255,255,0.45)',
   danger: '#F87171',
 
-  ctaH: '48px',
+  ctaH: '44px',
   ctaRadius: '10px',
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
