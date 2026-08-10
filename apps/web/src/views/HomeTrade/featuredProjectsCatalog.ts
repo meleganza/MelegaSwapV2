@@ -4,6 +4,7 @@
  */
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 
 export const FOUNDER_FEATURED_SLUGS = ['mm72', 'eyed', 'young-degens', 'blion'] as const
 
@@ -61,15 +62,14 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
   const description = project?.tagline ?? project?.description?.slice(0, 120)
   const category = project?.sectorTags?.[0] ?? project?.projectType
 
-  // No canonical registry project matched — the `/@slug` href would 404, so this
-  // entry can never be a real navigation target and must be excluded from rotation.
+  // No canonical registry project matched — prefer token route when address known.
   if (!project && !tokenFromList) {
     return {
       slug,
       displayName: symbolHint,
       symbol: symbolHint,
       chainId: 56,
-      href: `/@${slug}`,
+      href: '/projects',
       resolved: false,
       resolutionFailure: `No registry or token-list identity for ${slug}`,
       eligibleForRotation: false,
@@ -85,7 +85,9 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
       logoUrl,
       description,
       category,
-      href: project ? `/@${project.slug}` : `/@${slug}`,
+      href: project
+        ? resolveCanonicalProjectHref({ slug: project.slug, chainId: 56 })
+        : '/projects',
       resolved: false,
       resolutionFailure: `Missing BSC token address for ${slug}`,
       eligibleForRotation: Boolean(project),
@@ -101,7 +103,11 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
     logoUrl,
     description,
     category,
-    href: `/@${project?.slug ?? slug}`,
+    href: resolveCanonicalProjectHref({
+      slug: project?.slug,
+      chainId: 56,
+      address,
+    }),
     resolved: true,
     eligibleForRotation: Boolean(project),
   }

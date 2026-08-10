@@ -407,7 +407,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   Trade
                 </TradeBtn>
                 <ViewLink
-                  href={`/@${p.slug}`}
+                  href={p.href}
                   prefetch={false}
                   data-testid={`featured-view-${p.slug}`}
                   onClick={() => markProjectNavClick()}

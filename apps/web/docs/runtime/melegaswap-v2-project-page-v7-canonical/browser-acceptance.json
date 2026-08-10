@@ -1,0 +1,25 @@
+{
+  "at": "2026-08-10T10:15:41Z",
+  "base": "http://127.0.0.1:3066",
+  "checks": {
+    "claimed_v7_shell": true,
+    "unclaimed_mode": true,
+    "unclaimed_claim_cta": true,
+    "unclaimed_no_fake_desc_socials": true,
+    "no_buy_token": true,
+    "no_technical_transparency": true,
+    "smart_swap_cta": true,
+    "marco_token_redirect_to_slug": true,
+    "economy_address_matched_farms_pools": true,
+    "melega_score_visible": true,
+    "screenshots": {
+      "activity-score.png": 144768,
+      "claimed-desktop.png": 163760,
+      "claimed-mobile.png": 187830,
+      "project-economy.png": 151914,
+      "smart-swap-hero.png": 54453,
+      "unclaimed-desktop.png": 170058
+    }
+  },
+  "pass": true
+}

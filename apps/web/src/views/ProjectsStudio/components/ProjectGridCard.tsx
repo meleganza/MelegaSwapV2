@@ -9,6 +9,7 @@ import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
 import { markProjectNavClick } from 'views/ProjectPage/v5/projectPagePerf'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { buildSwapHref, formatListedAgo, projectMarketIdentity } from '../projectsDirectoryV3'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
@@ -281,7 +282,13 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
           chainId,
           source: 'projects-directory',
         })
-  const projectHref = project.projectHref ?? `/@${project.slug}/`
+  const projectHref =
+    project.projectHref ??
+    resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId,
+      address: project.contractAddress,
+    })
   const price = project.priceDisplay ?? '—'
   const change = project.change24hDisplay ?? '—'
   const changePct = project.change24hPct

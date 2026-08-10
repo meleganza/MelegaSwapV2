@@ -4,6 +4,7 @@ import { formatPendingReviewStatusLabel } from 'registry/projects/pending/update
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { StaticProjectRecord } from 'registry/projects/types'
 import type { DexAssetRecord } from 'lib/dex-asset-index'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { FOUNDER_FEATURED_SLUGS } from 'views/HomeTrade/featuredProjectsCatalog'
 import type {
   MetricTone,
@@ -45,7 +46,11 @@ export function mapIndexedAssetToPreviewCard(asset: DexAssetRecord, rank: number
   const slug = asset.registrySlug
   const featured = FEATURED_SLUG_SET.has(slug)
   const verified = asset.status === 'canonical' || asset.sources.includes('registry')
-  const projectHref = slug ? `/@${slug}/` : `/project/${asset.address}`
+  const projectHref = resolveCanonicalProjectHref({
+    slug,
+    chainId: asset.chainId,
+    address: asset.address,
+  })
   const chainId = asset.chainId
   return {
     id: `indexed-${asset.chainId}-${asset.address.toLowerCase()}`,
@@ -202,7 +207,11 @@ export function mapProjectToPreviewCard(
       ? `/swap?outputCurrency=${token.address}&chain=${chainId}&source=projects-directory`
       : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
-    projectHref: `/@${project.slug}/`,
+    projectHref: resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId,
+      address: token?.address,
+    }),
   }
 }
 
@@ -251,7 +260,10 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     contractAddress: pending.contract,
     tradeHref: `/swap?outputCurrency=${pending.contract}&chain=${pending.chain}&source=projects-directory`,
     radarHref: `/radar?contract=${pending.contract}`,
-    projectHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
+    projectHref: resolveCanonicalProjectHref({
+      chainId: pending.chain,
+      address: pending.contract,
+    }),
     registryTier: 'pending',
     pendingId: pending.id,
     reviewStatus: formatPendingReviewStatusLabel(pending.status),
@@ -365,7 +377,11 @@ export function buildFeaturedProject(
     contractAddress: token?.address,
     spaceUrl: project.spaceProfileUrl,
     tradeHref: project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
-    projectHref: `/@${project.slug}/`,
+    projectHref: resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId: token?.chainId ?? project.supportedChains?.[0] ?? 56,
+      address: token?.address,
+    }),
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     price,
     priceChange,

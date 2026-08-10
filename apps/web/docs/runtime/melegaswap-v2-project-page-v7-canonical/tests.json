@@ -1,0 +1,12 @@
+{
+  "at": "2026-08-10T10:14:39Z",
+  "suites": [
+    "src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts",
+    "src/views/HomeTrade/__tests__/founderAmendmentP02FeaturedTradeRouting.test.ts",
+    "src/views/ProjectsStudio/projectsRuntime/__tests__/projectsRuntime.test.ts",
+    "src/views/TrendingStudio/trendingRuntime/__tests__/trendingRuntime.test.ts",
+    "src/lib/global-search/__tests__/global-search.test.ts"
+  ],
+  "result": "passed",
+  "vitest": "8+24 related tests passed"
+}

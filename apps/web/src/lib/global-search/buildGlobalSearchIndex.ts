@@ -5,6 +5,7 @@ import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
 import { getAllVenues } from 'registry/venues/getAllVenues'
 import { LEGACY_BSC_MASTER_CHEF } from 'registry/venues/constants'
 import { SURFACE_MAP_RECORDS } from 'lib/surface-map/surface-map'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import type { GlobalSearchAction, GlobalSearchCategory, GlobalSearchEntry } from './types'
 
@@ -229,8 +230,12 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
   })
 
   buildDexTokenIndex().forEach((token) => {
-    const projectHref = token.registryProject?.slug ? `/@${token.registryProject.slug}/` : null
-    const href = `/swap?outputCurrency=${token.address}`
+    const projectHref = resolveCanonicalProjectHref({
+      slug: token.registryProject?.slug,
+      chainId: token.chainId,
+      address: token.address,
+    })
+    const href = projectHref
     const chainLabel =
       token.chainId === 56
         ? 'BSC'
