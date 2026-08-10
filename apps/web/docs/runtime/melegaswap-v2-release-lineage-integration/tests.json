@@ -1,0 +1,30 @@
+{
+  "at": "2026-08-10T14:46:01Z",
+  "suites": [
+    {
+      "name": "Project/Pools/Liquidity matrix",
+      "result": "PASS",
+      "files": 35,
+      "tests": 266
+    },
+    {
+      "name": "Modal V3 + Melega Modal",
+      "result": "PASS",
+      "files": 2,
+      "tests": 13
+    },
+    {
+      "name": "Core lineage (V7, Pools final, Home Top Pools, GDT)",
+      "result": "PASS",
+      "files": 4,
+      "tests": 29
+    },
+    {
+      "name": "Liquidity Studio V3 polish/remove/tab/premium",
+      "result": "PASS",
+      "files": 5,
+      "tests": 43
+    }
+  ],
+  "passed": true
+}

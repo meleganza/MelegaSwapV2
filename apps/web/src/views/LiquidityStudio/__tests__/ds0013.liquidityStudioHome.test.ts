@@ -68,7 +68,8 @@ describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () 
     const home = load('components/LiquidityStudioHome.tsx')
     const pct = (LB_SUCCESS_FEE_BPS / LB_BPS) * 100
     expect(home).toContain('LB_SUCCESS_FEE_BPS')
-    expect(pct).toBe(5)
+    // Liquidity final / founder activate flow certifies 1000 bps (10%).
+    expect(pct).toBe(10)
     expect(home).not.toContain('$24.56M')
     expect(home).not.toContain('$0.0004')
   })

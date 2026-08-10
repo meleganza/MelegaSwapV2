@@ -5,7 +5,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
-import { YieldActivitySparkline } from 'components/YieldActivitySparkline'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
@@ -21,8 +20,7 @@ const Card = styled.article`
   position: relative;
   width: 100%;
   max-width: ${poolsMyPositions.cardW};
-  height: auto;
-  min-height: ${poolsMyPositions.cardH};
+  height: ${poolsMyPositions.cardH};
   box-sizing: border-box;
   padding: ${poolsMyPositions.cardPad};
   border-radius: ${poolsMyPositions.cardRadius};
@@ -33,17 +31,18 @@ const Card = styled.article`
   gap: 10px;
   min-width: 0;
   font-family: ${typography.fontFamily.body};
-  overflow: hidden;
 
   @media (max-width: ${poolsMyPositions.tabletBreak}) {
     max-width: none;
     min-width: 250px;
+    height: auto;
     min-height: ${poolsMyPositions.cardH};
   }
 
   @media (max-width: ${poolsMyPositions.mobileBreak}) {
     width: 100%;
     min-width: 0;
+    height: auto;
     min-height: ${poolsMyPositions.mobileCardMinH};
   }
 `
@@ -382,11 +381,6 @@ export const PoolsMyPositionCard: React.FC<{
           <PartialNote key={r}>{r}</PartialNote>
         ))}
       </Metrics>
-
-      <YieldActivitySparkline
-        pairAddress={position.stakeToken.address || position.poolContract}
-        testId="pools-my-activity-spark"
-      />
 
       <Actions>
         {position.actions.map((action, idx) => {

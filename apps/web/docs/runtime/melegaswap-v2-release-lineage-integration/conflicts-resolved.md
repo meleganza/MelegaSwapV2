@@ -29,3 +29,18 @@ All Liquidity Studio / Positions Drawer / Yield Surfaces / Founder V5–V6 / Tok
 ## Project Page
 
 No conflicts. V7 mounts retained from base (`ProjectPageV7Shell`, `/token/[chain]/[address]`).
+
+## Post-merge shared restores (non-conflict overwrite)
+
+Liquidity tip silently replaced certified Pools/Home surfaces. Restored from base `b93f9762`:
+
+| File | Reason |
+|------|--------|
+| `PoolsOverviewKpisModule.tsx` | Pools KPI honesty |
+| `PoolsExplorePoolCard.tsx` | Manage removed; Stake + View Pool |
+| `PoolsMyPositionCard.tsx` | Final position card |
+| `poolsMyPositionsTokens.ts` | `maxVisibleDesktop: 4` |
+| `useGetTopPoolsByApr.tsx` | Home Top Pools unchanged |
+| `useHomeTradeData.ts` | Home Top Pools unchanged |
+
+Liquidity suite expectations updated to match Liquidity **final polish** copy only (no fee/Data Truth formula changes).

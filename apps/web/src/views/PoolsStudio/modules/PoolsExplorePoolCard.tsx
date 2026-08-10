@@ -21,9 +21,7 @@ const Card = styled.article`
   position: relative;
   width: 100%;
   max-width: ${poolsExplore.cardW};
-  height: auto;
-  min-height: ${poolsExplore.cardH};
-  overflow: hidden;
+  height: ${poolsExplore.cardH};
   box-sizing: border-box;
   padding: ${poolsExplore.cardPad};
   border-radius: ${poolsExplore.cardRadius};

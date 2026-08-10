@@ -1,0 +1,19 @@
+{
+  "project_page_v7": {
+    "claimed_route": "/@marco \u2192 ProjectPageV7Shell",
+    "unclaimed_route": "/token/{chain}/{address} \u2192 ProjectPageV7Shell",
+    "status": "PASS"
+  },
+  "pools_final": {
+    "preview_max_4": true,
+    "cards_list": true,
+    "manage_removed": true,
+    "create_pool_portal": true,
+    "status": "PASS"
+  },
+  "liquidity_final": {
+    "v3_shell_mounted": true,
+    "remove_confirm_modal": true,
+    "status": "PASS"
+  }
+}

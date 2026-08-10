@@ -1,0 +1,94 @@
+{
+  "at": "2026-08-10T14:46:01Z",
+  "base": "http://127.0.0.1:3077",
+  "method": "curl-L + chrome-headless screenshots + MCP Home\u2192Projects + source invariant audit",
+  "viewports_covered": [
+    "1024",
+    "1280",
+    "1440",
+    "390"
+  ],
+  "sequential_lineage_paths": [
+    "/",
+    "/projects/",
+    "/@marco/",
+    "/liquidity/",
+    "/pools/",
+    "/@marco/",
+    "/liquidity/",
+    "/pools/"
+  ],
+  "mcp_observed": {
+    "home": true,
+    "projects": true,
+    "note": "MCP disconnected mid-run; remaining routes via production HTTP"
+  },
+  "http_checks": {
+    "home": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/",
+      "ok": true,
+      "bytes": 36637
+    },
+    "projects": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/projects/",
+      "ok": true,
+      "bytes": 35863
+    },
+    "project_claimed": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/@marco/",
+      "ok": true,
+      "bytes": 165407
+    },
+    "liquidity": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/liquidity/",
+      "ok": true,
+      "bytes": 36329
+    },
+    "pools": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/pools/",
+      "ok": true,
+      "bytes": 36375
+    },
+    "unclaimed": {
+      "http": "200",
+      "url": "http://127.0.0.1:3077/token/bsc/0x00000000000000000000000000000000000000aa/",
+      "ok": true,
+      "bytes": 38181
+    }
+  },
+  "invariants": {
+    "project_v7_claimed": true,
+    "project_v7_unclaimed": true,
+    "no_v6_mount_on_entry": true,
+    "liquidity_v3": true,
+    "pools_studio": true,
+    "pools_preview_4": true,
+    "pools_cards_list": true,
+    "pools_manage_removed": true,
+    "create_pool_portal": true,
+    "liq_remove_modal": true
+  },
+  "screenshots": {
+    "marco-1440.png": 5848,
+    "home-390.png": 65613,
+    "liquidity-1280.png": 216257,
+    "home-1440.png": 197590,
+    "home-1280.png": 162927,
+    "liquidity-1440.png": 5848,
+    "pools-1024.png": 173566,
+    "pools-1280.png": 4710,
+    "liquidity-390.png": 138016,
+    "projects-1440.png": 191107,
+    "unclaimed-1440.png": 5848,
+    "marco-390.png": 78686,
+    "liquidity-1024.png": 3938,
+    "pools-390.png": 77872
+  },
+  "good_screenshot_count": 12,
+  "passed": true
+}

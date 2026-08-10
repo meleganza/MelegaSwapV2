@@ -20,7 +20,7 @@ const Module = styled.section`
   max-width: ${poolsOverviewKpis.contentMax};
   height: ${poolsOverviewKpis.moduleH};
   /* Parent Content gap is 32px; negative margin yields 16px after Hero. */
-  margin-top: 0;
+  margin-top: -16px;
   box-sizing: border-box;
   font-family: ${typography.fontFamily.body};
   min-width: 0;

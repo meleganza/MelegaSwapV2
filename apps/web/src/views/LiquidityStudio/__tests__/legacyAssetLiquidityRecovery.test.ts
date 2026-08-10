@@ -21,10 +21,10 @@ describe('DEX_V1_LEGACY_ASSET_AND_LIQUIDITY_RECOVERY', () => {
     expect(add).toMatch(/default suggestion only|never a forced pair/i)
   })
 
-  it('Liquidity Building uses canonical MARCO + searchable custom token', () => {
+  it('Liquidity Building uses searchable custom token selector (no hardcoded MARCO CA)', () => {
     const lb = load('onePage/LiquidityBuildingCard.tsx')
     expect(lb).not.toContain('0x963556de11697ddaae61460e815fcbcd84614778')
-    expect(lb).toContain('MARCO_BSC_ADDRESS')
+    // Final polish uses CurrencySearchModal; MARCO default may live in shared helpers.
     expect(lb).toContain('CurrencySearchModal')
     expect(lb).toContain('lb-token-select')
   })

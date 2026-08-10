@@ -16,7 +16,6 @@ import {
   resolvePoolAprPercent,
   resolvePoolTvlUsd,
 } from 'lib/data-truth/yieldMetricHelpers'
-import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
 
 function livePoolEarnAddresses(chainId: number): string[] {
   const cfg =
@@ -64,9 +63,9 @@ async function resolvePriceHelperFarmPids(
 }
 
 /**
- * Top pools for Home — best-performing active pools.
- * Ranking priority (existing Data Truth metrics only):
- * 1) Highest sustainable APR → 2) TVL threshold → 3) Active/rewarding → 4) price confidence.
+ * Top pools for Home — factual ranking by TVL → APR.
+ * Farm public data is fetched first so pool stake/earn prices exist (same order as Pools Studio).
+ * Includes pools with certified TVL even when APR is unavailable.
  */
 const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
@@ -121,21 +120,13 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
         const apr = resolvePoolAprPercent(pool) ?? 0
         const tvlUsd = resolvePoolTvlUsd(pool, hints)
         const life = derivePoolLifecycle(pool, currentBlock)
-        const eligibility = evaluateTopPoolsAprEligibility({
-          rewarding: life.rewarding,
-          emissionActive: life.rewarding,
-          apr,
-          tvlUsd,
-          rewardPriceUsd: pool.earningTokenPrice ?? null,
-          stakePriceUsd: pool.stakingTokenPrice ?? hints.marcoUsd ?? null,
-        })
-        return { pool, apr, tvlUsd, life, eligibility }
+        return { pool, apr, tvlUsd, life }
       })
-      // Best performers only — active + meaningful APR/TVL + Data Truth confidence.
-      .filter((row) => row.eligibility.eligible && row.apr > 0 && row.tvlUsd > 0)
+      // Certified economics only — never surface inventory/skeleton names with empty TVL/APR.
+      .filter((row) => row.tvlUsd > 0 || row.apr > 0)
       .sort((a, b) => {
-        if (b.apr !== a.apr) return b.apr - a.apr
         if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd
+        if (b.apr !== a.apr) return b.apr - a.apr
         const idA = String(a.pool.contractAddress || a.pool.sousId).toLowerCase()
         const idB = String(b.pool.contractAddress || b.pool.sousId).toLowerCase()
         return idA.localeCompare(idB)

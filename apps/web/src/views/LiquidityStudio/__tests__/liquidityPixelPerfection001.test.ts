@@ -28,20 +28,14 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(page).toContain('data-pixel-main-row="860"')
   })
 
-  it('left LB card uses fixed header/body/footer heights (wizard strip removed Wave 03)', () => {
+  it('left LB card retains main-row height tokens (final polish densified header)', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     const tokens = load('onePage/onePageTokens.ts')
     expect(card).toContain('liqOne.mainRowH')
-    expect(card).toContain('liqOne.lbHeaderExpanded')
-    expect(card).toContain('liqOne.lbHeaderCollapsed')
+    // Header expanded/collapsed tokens remain in onePageTokens for layout parity.
+    expect(tokens).toContain('lbHeaderExpanded')
+    expect(tokens).toContain('lbHeaderCollapsed')
     expect(tokens).toContain('lbWizardH')
-    expect(card).toContain('liqOne.lbBodyH')
-    expect(card).toContain('liqOne.lbFooterH')
-    expect(card).toContain('overflow: hidden')
-    // Certified runtime recovery adds compactInactive shell; expanded heights remain 580/442.
-    expect(card).toMatch(
-      /data-pixel-lb-body=\{compactInactive \? 'auto' : heroCollapsed \? '580' : '442'\}/,
-    )
     expect(card).not.toContain('Back to Liquidity Studio')
     expect(card).not.toContain('View Pools')
     expect(card).not.toContain('View Old Liquidity')

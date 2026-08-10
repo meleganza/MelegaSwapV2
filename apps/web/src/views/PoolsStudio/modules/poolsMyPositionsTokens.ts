@@ -97,7 +97,7 @@ export const POOLS_MODULE_001_FREEZE_SHA256 = {
 } as const
 
 export const POOLS_MODULE_002_FREEZE_SHA256 = {
-  PoolsOverviewKpisModule: 'ca0cae8991049fff7d399870b7558e136d12a08078bbdc83c29af2aad268dc8a',
+  PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
   usePoolsOverviewKpis: '2a5e47402bac991c2323706c83841a65676eaff2e57f65f22cc7d8ed4e5146e0',
   poolsOverviewKpisTokens: '66dc7fe4a6d8c9fe6e512a9704ccf9b55c488e0e6cae5982dfe51e3cd9f1d3e9',
   poolsOverviewKpisTypes: 'ea61d37fa5a98ef344e63005af12f9109b2e9e188dc1cec3cbd911855a5d8d67',
