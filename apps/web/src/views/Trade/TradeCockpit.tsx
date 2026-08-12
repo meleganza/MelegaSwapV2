@@ -1,4 +1,5 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -19,6 +20,12 @@ import TradeHistoryPanel from './components/TradeHistoryPanel'
 import TradeRouterPanel from './components/TradeRouterPanel'
 import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
 import type { TradeMode } from './tradeTokens'
+import SmartSwapBridgeTabs, { TradeWorkspaceTab } from 'views/MarcoBridge/SmartSwapBridgeTabs'
+
+const MarcoBridgeWorkspace = dynamic(() => import('views/MarcoBridge/MarcoBridgeWorkspace'), {
+  ssr: false,
+  loading: () => null,
+})
 
 const Shell = styled.div`
   width: 100%;
@@ -53,27 +60,10 @@ const CockpitHeader = styled.div`
   flex-shrink: 0;
 `
 
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-`
-
-const Title = styled.h2`
-  margin: 0;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 38px;
-  color: #ffffff;
-`
-
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16px;
-  color: #a8a8a8;
+const Bolt = styled.span`
+  color: #f7c948;
+  font-size: 20px;
+  line-height: 1;
 `
 
 const Toolbar = styled.div`
@@ -161,6 +151,7 @@ export interface TradeCockpitProps {
 }
 
 export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
+  const [activeTab, setActiveTab] = useState<TradeWorkspaceTab>('swap')
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
   const warningSwapHandler = useTradeWarningImport()
@@ -232,30 +223,38 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
-          <TitleBlock>
-            <Title>Swap</Title>
-            <Subtitle>Swap through the best available multichain route.</Subtitle>
-          </TitleBlock>
-          <Toolbar data-trade-cockpit-toolbar>
-            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-              <SettingsIcon />
-            </IconBtn>
-            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
-              <RefreshIcon />
-            </IconBtn>
-          </Toolbar>
+          <Bolt aria-hidden>⚡</Bolt>
+          <SmartSwapBridgeTabs active={activeTab} onChange={setActiveTab} />
+          {activeTab === 'swap' ? (
+            <Toolbar data-trade-cockpit-toolbar>
+              <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+                <SettingsIcon />
+              </IconBtn>
+              <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+                <RefreshIcon />
+              </IconBtn>
+            </Toolbar>
+          ) : (
+            <span />
+          )}
         </CockpitHeader>
-        <Divider />
-        <TradeSmartRouteBox />
-        <SwapFormWrap
-          ref={swapBodyRef}
-          className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
-          data-wallet-connected={account ? 'true' : 'false'}
-          data-trade-swap-form
-        >
-          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-          <TradeRouteLine />
-        </SwapFormWrap>
+        {activeTab === 'bridge' ? (
+          <MarcoBridgeWorkspace />
+        ) : (
+          <>
+            <Divider />
+            <TradeSmartRouteBox />
+            <SwapFormWrap
+              ref={swapBodyRef}
+              className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
+              data-wallet-connected={account ? 'true' : 'false'}
+              data-trade-swap-form
+            >
+              <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+              <TradeRouteLine />
+            </SwapFormWrap>
+          </>
+        )}
       </Panel>
     </Shell>
   )
