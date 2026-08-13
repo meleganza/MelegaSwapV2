@@ -158,7 +158,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     border-radius: 14px !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 14px !important;
+    padding: 14px 14px 28px !important;
     position: relative !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
@@ -174,16 +174,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 96px !important;
-    height: 96px !important;
-    max-height: 96px !important;
+    min-height: 108px !important;
+    height: 108px !important;
+    max-height: 108px !important;
     margin-top: 0 !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 96px !important;
-    height: 96px !important;
-    max-height: 96px !important;
+    min-height: 108px !important;
+    height: 108px !important;
+    max-height: 108px !important;
     margin-top: 0 !important;
   }
 
@@ -249,6 +249,34 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap #swap-currency-output::before {
     content: 'TO (ESTIMATED)';
+  }
+
+  .trade-terminal-swap [data-compact-wallet-controls] {
+    position: absolute !important;
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 7px !important;
+    height: 18px !important;
+    z-index: 4 !important;
+    white-space: nowrap !important;
+  }
+
+  .trade-terminal-swap [data-wallet-percent-actions] button {
+    min-width: 0 !important;
+    width: auto !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    padding: 0 4px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #f7c948 !important;
+    font-size: 10px !important;
+    line-height: 18px !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input > [class*='InputPanel'],
+  .trade-terminal-swap #swap-currency-output > [class*='InputPanel'] {
+    display: none !important;
   }
 
   .trade-terminal-swap .token-amount-input,

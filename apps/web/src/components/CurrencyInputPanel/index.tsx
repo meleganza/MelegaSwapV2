@@ -113,6 +113,7 @@ interface CurrencyInputPanelProps {
   error?: boolean
   showBUSD?: boolean
   tokensToShow?: Token[]
+  compactWalletControls?: boolean
 }
 export default function CurrencyInputPanel({
   value,
@@ -141,6 +142,7 @@ export default function CurrencyInputPanel({
   error,
   showBUSD,
   tokensToShow,
+  compactWalletControls = false,
 }: CurrencyInputPanelProps) {
   const { address: account } = useAccount()
   const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
@@ -347,6 +349,38 @@ export default function CurrencyInputPanel({
         <div style={{ paddingBottom: '10px' }}></div>
         {disabled && <Overlay />}
       </InputPanel>
+      {compactWalletControls && account ? (
+        <Flex
+          data-compact-wallet-controls
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ gap: '8px' }}
+        >
+          <Text color="textSubtle" fontSize="11px" data-wallet-balance>
+            {!hideBalance && currency
+              ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
+              : '—'}
+          </Text>
+          {showQuickInputButton && maxAmount?.greaterThan(0) && onPercentInput ? (
+            <Flex alignItems="center" style={{ gap: '4px' }} data-wallet-percent-actions>
+              {[25, 50].map((percent) => (
+                <Button
+                  key={`compact-percent-${percent}`}
+                  type="button"
+                  scale="xs"
+                  variant="text"
+                  onClick={() => onPercentInput(percent)}
+                >
+                  {percent}%
+                </Button>
+              ))}
+              <Button type="button" scale="xs" variant="text" onClick={onMax}>
+                100%
+              </Button>
+            </Flex>
+          ) : null}
+        </Flex>
+      ) : null}
     </Container>
   )
 }

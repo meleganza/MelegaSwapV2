@@ -15,6 +15,7 @@ import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens, useWarningTokens } from './Tokens'
 import { useActiveChainId } from './useActiveChainId'
+import { useCanonicalMarcoPair } from './useCanonicalMarcoPair'
 
 export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const { chainId } = useActiveChainId()
@@ -72,6 +73,7 @@ export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): P
   )
 
   const allPairs = usePairs(allPairCombinations)
+  const canonicalMarcoPair = useCanonicalMarcoPair(tokenA, tokenB)
 
   // only pass along valid pairs, non-duplicated pairs
   return useMemo(
@@ -84,9 +86,9 @@ export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): P
           .reduce<{ [pairAddress: string]: Pair }>((memo, [, curr]) => {
             memo[curr.liquidityToken.address] = memo[curr.liquidityToken.address] ?? curr
             return memo
-          }, {}),
+          }, canonicalMarcoPair ? { [canonicalMarcoPair.liquidityToken.address]: canonicalMarcoPair } : {}),
       ),
-    [allPairs],
+    [allPairs, canonicalMarcoPair],
   )
 }
 

@@ -11,6 +11,7 @@ import { enrichProject } from 'registry/projects/discovery'
 import { serializeProjectManifest } from 'registry/projects/intelligence'
 import { buildDexAssetIndex } from 'lib/dex-asset-index/buildDexAssetIndex'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { bscTokens } from '@pancakeswap/tokens'
 import { getProjectClaimByContract, toPublicProjectClaim } from 'lib/project-claims'
 
 type ListedTokenEntry = {
@@ -33,6 +34,14 @@ function resolveDexListing(contract: string, chainId: number) {
       candidate.address?.toLowerCase() === normalized &&
       candidate.surfaces.trade,
   )
+  const packageToken =
+    chainId === 56
+      ? Object.values(bscTokens).find((token) => token?.address?.toLowerCase() === normalized)
+      : undefined
+  const legacyProjectLink =
+    typeof packageToken?.name === 'string' && /^https?:\/\//i.test(packageToken.name)
+      ? packageToken.name
+      : null
 
   if (!asset) {
     return {
@@ -42,6 +51,7 @@ function resolveDexListing(contract: string, chainId: number) {
       name: null,
       symbol: null,
       logo: null,
+      website: null,
       surfaces: null,
     }
   }
@@ -54,6 +64,7 @@ function resolveDexListing(contract: string, chainId: number) {
     symbol: tokenListEntry?.symbol ?? asset.symbol,
     // Prefer the normalized local asset path; legacy token-list URLs may omit the chain segment.
     logo: asset.logo ?? tokenListEntry?.logoURI ?? null,
+    website: packageToken?.projectLink ?? legacyProjectLink,
     surfaces: asset.surfaces,
   }
 }

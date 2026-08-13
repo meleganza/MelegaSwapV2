@@ -61,6 +61,8 @@ type DetectedProject = {
   slug: string | null
   projectPageExists: boolean
   explorerUrl: string | null
+  dexListed: boolean
+  website: string | null
 }
 
 type ProjectDraft = {
@@ -428,6 +430,15 @@ type RegistryDetection = {
     slug?: string | null
     tokens?: Array<{ chainId?: number | string; symbol?: string }>
   } | null
+  dex?: {
+    listed?: boolean
+    projectClaimed?: boolean
+    registrySlug?: string | null
+    name?: string | null
+    symbol?: string | null
+    logo?: string | null
+    website?: string | null
+  } | null
 }
 
 function parseDetectedProject(
@@ -438,9 +449,10 @@ function parseDetectedProject(
   if (!json?.ok || !json?.onChain) return null
   const canonical = json.tier === 'canonical'
   const project = json.project ?? null
+  const dex = json.dex ?? null
   const token = project?.tokens?.find((item) => Number(item.chainId) === requestedChain)
-  const name = String(project?.displayName ?? json.onChain.name ?? json.profile?.name?.value ?? 'Detected token')
-  const symbol = String(token?.symbol ?? json.onChain.symbol ?? json.profile?.symbol?.value ?? 'TOKEN')
+  const name = String(project?.displayName ?? dex?.name ?? json.onChain.name ?? json.profile?.name?.value ?? 'Detected token')
+  const symbol = String(token?.symbol ?? dex?.symbol ?? json.onChain.symbol ?? json.profile?.symbol?.value ?? 'TOKEN')
   return {
     tier: canonical ? 'canonical' : 'pending',
     name,
@@ -449,10 +461,12 @@ function parseDetectedProject(
     chainId: requestedChain,
     decimals: Number.isFinite(Number(json.onChain.decimals)) ? Number(json.onChain.decimals) : null,
     totalSupply: json.onChain.totalSupplyFormatted ?? null,
-    logoUrl: project?.logoUrl ?? null,
-    slug: project?.slug ?? null,
+    logoUrl: project?.logoUrl ?? dex?.logo ?? null,
+    slug: project?.slug ?? dex?.registrySlug ?? null,
     projectPageExists: Boolean(canonical && project?.slug),
     explorerUrl: json.onChain.explorerUrl ?? null,
+    dexListed: Boolean(dex?.listed),
+    website: dex?.website ?? null,
   }
 }
 
@@ -550,7 +564,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       const next = parseDetectedProject(json, contract.trim(), identityChain)
       if (!next) throw new Error('The token identity could not be resolved.')
       setDetected(next)
-      setDraft((current) => ({ ...current, handle: current.handle || next.slug || next.symbol.toLowerCase() }))
+      setDraft((current) => ({
+        ...current,
+        handle: current.handle || next.slug || next.symbol.toLowerCase(),
+        logoUrl: current.logoUrl || next.logoUrl || '',
+        website: current.website || next.website || '',
+      }))
     } catch (cause) {
       setDetected(null)
       setError(cause instanceof Error ? cause.message : String(cause))
@@ -932,6 +951,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <PreviewLine>Supply · {compactSupply(detected.totalSupply)}</PreviewLine>
             <PreviewLine>Decimals · {detected.decimals ?? 'Unavailable'}</PreviewLine>
             <PreviewLine>Project Page · {detected.projectPageExists ? `@${detected.slug}` : 'Required'}</PreviewLine>
+            <PreviewLine>DEX listing · {detected.dexListed ? 'MelegaSwap listed' : 'Not verified'}</PreviewLine>
+            {detected.website ? <PreviewLine>Website · {detected.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</PreviewLine> : null}
           </>
         ) : (
           <PreviewLine>Paste a contract to load canonical data.</PreviewLine>
@@ -1053,7 +1074,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         <Badge $green={detected.projectPageExists}>
                           {detected.projectPageExists ? `Project Page @${detected.slug}` : 'Project Page required'}
                         </Badge>
-                        {detected.tier === 'canonical' ? (
+                        {detected.dexListed ? (
                           <Badge $green>Listed</Badge>
                         ) : (
                           <Badge>Detected on-chain</Badge>
