@@ -179,7 +179,12 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ productAction, onPro
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
-          <SmartSwapProductTabs value={productAction} onChange={onProductActionChange} />
+          <SmartSwapProductTabs
+            value={productAction}
+            onChange={onProductActionChange}
+            bridgeLabel="MARCO Bridge"
+            showBridgeNewBadge
+          />
           {productAction === 'swap' ? (
             <Toolbar data-trade-cockpit-toolbar>
               <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>

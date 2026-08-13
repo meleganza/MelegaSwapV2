@@ -104,17 +104,54 @@ const Featured = styled.div`
   min-width: 0;
   display: flex;
   align-items: stretch;
+  box-sizing: border-box;
+  padding: 4px 0;
 
   & > section {
     width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
   }
 
   & > section > div {
     height: 100%;
+    min-height: 0;
+    grid-auto-rows: minmax(0, 1fr);
   }
 
   & article {
     height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    padding: 8px 10px;
+    gap: 3px;
+  }
+
+  & article > :nth-child(3) {
+    min-height: 8px;
+    height: 8px;
+  }
+
+  & article > :nth-child(4) > div > :first-child {
+    white-space: nowrap;
+    font-size: 8px;
+    line-height: 10px;
+  }
+
+  & article > :last-child a {
+    height: 28px;
+    min-height: 28px;
+  }
+
+  @media (max-width: 1099px) {
+    padding: 3px 0;
+  }
+
+  @media (max-width: 767px) {
+    padding: 2px 0;
   }
 `
 

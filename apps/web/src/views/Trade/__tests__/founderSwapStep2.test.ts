@@ -13,12 +13,16 @@ describe('Founder Step 2 — approved Swap page contract', () => {
     expect(heroSource).toContain('<Title>Swap</Title>')
     expect(heroSource).toContain('<FeaturedProjectsRail />')
     expect(heroSource).toContain('data-canonical-hero-height="216"')
+    expect(heroSource).toContain('padding: 4px 0;')
+    expect(heroSource).toContain('max-height: 100%;')
   })
 
   it('lifts the Swap/Bridge state to the one-page terminal', () => {
     expect(terminalSource).toContain("React.useState<SmartSwapProductAction>('swap')")
     expect(terminalSource).toContain('productAction={productAction}')
     expect(cockpitSource).toContain('onProductActionChange: (action: SmartSwapProductAction) => void')
+    expect(cockpitSource).toContain('bridgeLabel="MARCO Bridge"')
+    expect(cockpitSource).toContain('showBridgeNewBadge')
     expect(cockpitSource).not.toContain("useState<SmartSwapProductAction>('swap')")
   })
 
