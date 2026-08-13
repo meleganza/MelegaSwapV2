@@ -42,6 +42,7 @@ describe('LIST Workspace (founder-final)', () => {
 
   it('opens the unified workspace as an official listing modal', () => {
     const screen = load('ListStudioScreen.tsx')
+    expect(screen).toContain("dynamic(() => import('./ListWorkspace')")
     expect(screen).toContain('list-adaptive-modal')
     expect(screen).toContain('aria-label="Melega DEX listing flow"')
     expect(screen).toContain('<ListContractFirstFunnel')

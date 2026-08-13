@@ -1,11 +1,13 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { ListWorkspace } from './ListWorkspace'
 import { listOne } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListContractFirstFunnel } from './ListContractFirstFunnel'
+
+const ListWorkspace = dynamic(() => import('./ListWorkspace').then((module) => module.ListWorkspace), { ssr: false })
 
 const Root = styled.div`
   color: ${uxRebuildColors.text};
