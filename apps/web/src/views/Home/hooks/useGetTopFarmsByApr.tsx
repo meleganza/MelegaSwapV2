@@ -7,8 +7,8 @@ import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getMasterChefAddress } from 'utils/addressHelpers'
+import { compareYieldTruthDesc } from 'lib/data-truth/yieldTruthRanking'
 import { getFarmApr } from 'utils/apr'
-import isArchivedPid from 'utils/farmHelpers'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -41,7 +41,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       try {
         const farmsConfig = await getFarmConfig(chainId)
         const activeFarms = (farmsConfig ?? []).filter(
-          (farm) => farm.pid !== 0 && !isArchivedPid(farm.pid) && String(farm.multiplier ?? '1X').toUpperCase() !== '0X',
+          (farm) => farm.pid !== 0 && String(farm.multiplier ?? '1X').toUpperCase() !== '0X',
         )
         if (activeFarms.length === 0) {
           setFetchStatus(FetchStatus.SUCCESS)
@@ -71,7 +71,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
     const getTopFarmsByApr = (farmsState: DeserializedFarm[]) => {
       if (!chainId) return
       const farmsWithPrices = farmsState.filter(
-        (farm) => farm.pid !== 0 && !isArchivedPid(farm.pid) && String(farm.multiplier ?? '1X').toUpperCase() !== '0X' && farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd,
+        (farm) => farm.pid !== 0 && farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd,
       )
       const farmsWithApr: FarmWithStakedValue[] = farmsWithPrices.map((farm) => {
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
@@ -88,22 +88,25 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
 
-      const sortedByTruth = [...farmsWithApr].filter((farm) => (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0) > 0).sort((a, b) => {
+      const sortedByTruth = [...farmsWithApr].sort((a, b) => {
         const tvlA = a.liquidity?.toNumber?.() ?? 0
         const tvlB = b.liquidity?.toNumber?.() ?? 0
         const aprA = (a.apr ?? 0) + (a.lpRewardsApr ?? 0)
         const aprB = (b.apr ?? 0) + (b.lpRewardsApr ?? 0)
         const volA = a.lpRewardsApr && a.lpRewardsApr > 0 ? a.lpRewardsApr : 0
         const volB = b.lpRewardsApr && b.lpRewardsApr > 0 ? b.lpRewardsApr : 0
-        return aprB - aprA || tvlB - tvlA || volB - volA || a.pid - b.pid
+        return compareYieldTruthDesc(
+          { sortTvl: tvlA, sortApr: aprA > 0 ? aprA : -1, sortVolume: volA },
+          { sortTvl: tvlB, sortApr: aprB > 0 ? aprB : -1, sortVolume: volB },
+        )
       })
       setTopFarms(sortedByTruth.slice(0, 5))
     }
 
-    if (fetchStatus === FetchStatus.SUCCESS && farms?.length) {
+    if (fetchStatus === FetchStatus.SUCCESS && topFarms.length === 0 && farms?.length) {
       getTopFarmsByApr(farms)
     }
-  }, [farms, fetchStatus, cakePriceBusd, regularCakePerBlock, chainId])
+  }, [farms, fetchStatus, cakePriceBusd, regularCakePerBlock, topFarms.length, chainId])
 
   return { topFarms, fetchStatus }
 }

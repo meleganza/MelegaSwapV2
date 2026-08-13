@@ -667,6 +667,7 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
@@ -706,6 +707,7 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <RowMetric>{row.apr || '—'}</RowMetric>
                   </DiscRow>

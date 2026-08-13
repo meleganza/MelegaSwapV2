@@ -35,9 +35,10 @@ import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 import {
   countLiveActiveFarmConfigs,
   countLivePoolConfigs,
+  listLiveFarmInventoryPreview,
   liveInventoryProvenance,
 } from 'lib/data-truth/liveInventoryCounts'
-import isArchivedPid from 'utils/farmHelpers'
+import { compareYieldTruthDesc } from 'lib/data-truth/yieldTruthRanking'
 import {
   farmPairLabel,
   formatFarmTvlDisplay,
@@ -46,6 +47,7 @@ import {
   resolveFarmAprPercent,
   resolveFarmChainId,
   resolveFarmLiquidityUsd,
+  resolveFarmRewardToken,
   resolvePoolAprPercent,
   resolvePoolChainId,
   resolvePoolFeesDisplay,
@@ -174,6 +176,8 @@ const farmTvl = (farm: FarmWithStakedValue): string | undefined => formatFarmTvl
 const farmTvlUsd = (farm: FarmWithStakedValue): number => resolveFarmLiquidityUsd(farm)
 
 /** Factual farm reward label — dual earnLabel when present, else MARCO (MasterChef). */
+const farmRewards = (farm: FarmWithStakedValue): string => resolveFarmRewardToken(farm)
+
 const poolTvl = (
   pool: Pool.DeserializedPool<Token>,
   hints?: { marcoUsd?: number },
@@ -475,8 +479,8 @@ export const useHomeTradeData = () => {
     // Prefer active-chain farms (same runtime as Farms page), then pad with multichain inventory.
     // Ranking: TVL → APR → volume (LP fee APR proxy) → activity (multiplier weight).
     // Metrics via shared yieldMetricHelpers (same formulas as FarmsStudio enrichment).
-    const ranked = topFarms
-      .filter((f) => f.pid !== 0 && !isArchivedPid(f.pid) && (farmApr(f) ?? 0) > 0)
+    const ranked = farms
+      .filter((f) => f.pid !== 0)
       .map((farm) => {
         const apr = farmApr(farm)
         const tvl = farmTvl(farm)
@@ -493,6 +497,7 @@ export const useHomeTradeData = () => {
           apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
           aprUnavailable: !(apr && apr > 0),
           tvl: tvl || undefined,
+          rewards: farmRewards(farm),
           href: '/farms',
           chainId: farmChain,
           tokenSymbols: [token0, token1].filter(Boolean) as string[],
@@ -503,19 +508,69 @@ export const useHomeTradeData = () => {
           sortActivity: activity,
         }
       })
-      .sort((a, b) => b.sortApr - a.sortApr || b.sortTvl - a.sortTvl || a.id.localeCompare(b.id))
+      .sort((a, b) =>
+        compareYieldTruthDesc(
+          { sortTvl: a.sortTvl, sortApr: a.sortApr, sortVolume: a.sortVolume, sortActivity: a.sortActivity },
+          { sortTvl: b.sortTvl, sortApr: b.sortApr, sortVolume: b.sortVolume, sortActivity: b.sortActivity },
+        ),
+      )
       .slice(0, 5)
       .map(({ sortTvl: _t, sortApr: _a, sortVolume: _v, sortActivity: _act, ...row }) => row)
 
-    return ranked
-  }, [topFarms, chainId])
+    if (ranked.length >= 5) return ranked
+
+    const seen = new Set(ranked.map((r) => r.name.toLowerCase()))
+    const preview = listLiveFarmInventoryPreview(12)
+    const padded = [...ranked]
+    for (const row of preview) {
+      if (padded.length >= 5) break
+      if (seen.has(row.name.toLowerCase())) continue
+      seen.add(row.name.toLowerCase())
+      const runtimeMatch =
+        row.chainId === chainId
+          ? farms.find((f) => f.pid === Number(String(row.id).split('-').pop()))
+          : undefined
+      const apr = runtimeMatch ? farmApr(runtimeMatch) : undefined
+      const tvl = runtimeMatch ? farmTvl(runtimeMatch) : undefined
+      padded.push({
+        id: row.id,
+        name: row.name,
+        apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
+        aprUnavailable: !(apr && apr > 0),
+        tvl: tvl || undefined,
+        rewards: runtimeMatch ? farmRewards(runtimeMatch) : 'MARCO',
+        href: '/farms',
+        chainId: row.chainId,
+        tokenSymbols: row.name.includes('-')
+          ? row.name.split('-').map((s) => s.trim()).filter(Boolean)
+          : undefined,
+      })
+    }
+
+    if (padded.length > 0) return padded
+
+    return allFarms
+      .filter((f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X')
+      .slice(0, 5)
+      .map((farm) => ({
+        id: `farm-inv-${farm.pid}`,
+        name: farmPairLabel(farm),
+        apr: undefined,
+        aprUnavailable: true,
+        tvl: farmTvl(farm),
+        rewards: farmRewards(farm),
+        href: '/farms',
+        chainId: resolveFarmChainId(farm, chainId),
+        tokenSymbols: [farm.token?.symbol, farm.quoteToken?.symbol].filter(Boolean) as string[],
+      }))
+  }, [farms, allFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
     // Prefer factual TVL/rewards even when APR cannot be certified. Rank: TVL → volume → fees → APR.
     // Shared resolvePoolTvlUsd (stake × trusted price) — same helper as useGetTopPoolsByApr.
     const marcoUsd = marcoPrice?.toNumber?.()
     const hints = { marcoUsd: marcoUsd && marcoUsd > 0 ? marcoUsd : undefined }
-    const source = topPools.filter(Boolean)
+    const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
     const ranked = source
       .map((pool) => {
         const aprValue = poolApr(pool)
@@ -534,9 +589,12 @@ export const useHomeTradeData = () => {
         return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
       })
       // Certified economics only — same membership spirit as Pools Studio Explore.
-      .filter((row) => row.life.rewarding && row.aprValue != null && row.aprValue > 0)
+      .filter((row) => row.tvlUsd > 0 || (row.aprValue != null && row.aprValue > 0))
       .sort((a, b) =>
-        (b.aprValue ?? 0) - (a.aprValue ?? 0) || b.tvlUsd - a.tvlUsd ||
+        compareYieldTruthDesc(
+          { sortTvl: a.tvlUsd, sortApr: a.aprValue ?? -1, sortVolume: a.volumeUsd, sortActivity: a.feesUsd },
+          { sortTvl: b.tvlUsd, sortApr: b.aprValue ?? -1, sortVolume: b.volumeUsd, sortActivity: b.feesUsd },
+        ) ||
         (a.pool.contractAddress || a.pool.sousId || '')
           .toString()
           .toLowerCase()
@@ -557,6 +615,7 @@ export const useHomeTradeData = () => {
         tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool, hints),
         volume: resolvePoolVolumeDisplay(pool),
         fees: resolvePoolFeesDisplay(pool),
+        rewards: earn || undefined,
         href: '/pools',
         chainId: poolChain,
         tokenSymbols: [stake, earn].filter(Boolean) as string[],
@@ -573,7 +632,7 @@ export const useHomeTradeData = () => {
 
     // Never pad with inventory-only names (labels without certified TVL/APR).
     return fromRuntime
-  }, [topPools, currentBlock, chainId, marcoPrice])
+  }, [pools, allPools, currentBlock, chainId, marcoPrice])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 

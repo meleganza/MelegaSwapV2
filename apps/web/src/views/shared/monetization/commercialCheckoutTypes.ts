@@ -1,19 +1,28 @@
 export type CommercialServiceId =
   | 'featured'
   | 'trend-boost'
-  | 'sponsored-research'
-  | 'featured-farm'
-  | 'featured-pool'
   | 'liquidity'
   | 'create-farm'
   | 'create-pool'
   | 'claim-project'
 
-export type CommercialCheckoutStep = 'project' | 'service' | 'package' | 'chain' | 'payment' | 'review' | 'checkout'
+export type CommercialCheckoutStep =
+  | 'service'
+  | 'package'
+  | 'chain'
+  | 'payment'
+  | 'review'
+  | 'checkout'
 
-export type CommercialPaymentAsset = 'BNB' | 'USDT' | 'USDC' | 'MARCO' | 'MARCO_PAY' | 'M_CREDITS'
+export type CommercialPaymentAsset = 'BNB' | 'USDT' | 'USDC' | 'MARCO'
 
-export type MarketingHistoryKind = 'featured' | 'trend-boost' | 'claim' | 'farm' | 'pool' | 'liquidity'
+export type MarketingHistoryKind =
+  | 'featured'
+  | 'trend-boost'
+  | 'claim'
+  | 'farm'
+  | 'pool'
+  | 'liquidity'
 
 export type MarketingHistoryStatus = 'Completed' | 'Running' | 'Expired'
 
@@ -42,30 +51,6 @@ export const COMMERCIAL_SERVICES: Array<{
     description: 'Homepage + Projects rotation for maximum discovery.',
     priceHint: 'From $29',
     icon: '★',
-    needsPackage: true,
-  },
-  {
-    id: 'sponsored-research',
-    title: 'Featured Research',
-    description: 'Clearly labelled research placement for your verified project.',
-    priceHint: 'From $19',
-    icon: '◇',
-    needsPackage: true,
-  },
-  {
-    id: 'featured-farm',
-    title: 'Featured Farm',
-    description: 'Rotating premium placement for an active Melega farm.',
-    priceHint: 'From $29',
-    icon: '▣',
-    needsPackage: true,
-  },
-  {
-    id: 'featured-pool',
-    title: 'Featured Pool',
-    description: 'Rotating premium placement for an active staking pool.',
-    priceHint: 'From $29',
-    icon: '◉',
     needsPackage: true,
   },
   {
@@ -113,12 +98,10 @@ export const COMMERCIAL_SERVICES: Array<{
   },
 ]
 
-export const VISIBILITY_SERVICES = COMMERCIAL_SERVICES.filter((service) =>
-  ['featured', 'trend-boost', 'sponsored-research', 'featured-farm', 'featured-pool'].includes(service.id),
-)
-
 export const FEATURED_PACKAGE_BADGES = ['impressions', 'rotation', 'homepage', 'projects', 'ranking'] as const
 
 export const TREND_PACKAGE_BADGES = ['Estimated Reach', 'Discovery Boost', 'Trending Surface'] as const
 
-export const COMMERCIAL_CHAINS = [{ id: 56, label: 'BNB Chain', short: 'BSC' }] as const
+export const COMMERCIAL_CHAINS = [
+  { id: 56, label: 'BNB Chain', short: 'BSC' },
+] as const
