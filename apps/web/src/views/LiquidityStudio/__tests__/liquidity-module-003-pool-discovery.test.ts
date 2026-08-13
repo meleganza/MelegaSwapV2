@@ -76,6 +76,8 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(mod).toContain('min-width: 1920px')
     expect(mod).toContain('repeat(3, minmax(0, 1fr))')
     expect(mod).toContain('repeat(2, minmax(0, 1fr))')
+    expect(mod).toContain('const pageIncrement = 10')
+    expect(liquidityPoolDiscovery.pageSize).toBe(10)
   })
 
   it('ships locked Explore Pools copy and empty / unavailable honesty', () => {
@@ -152,6 +154,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
       'tvl',
     )
     expect(byTvl[0].tvlUsd).toBe(99)
+    expect(byTvl.map((card) => card.tvlUsd)).toEqual([99, 10])
   })
 
   it('uses address-based logo resolver and /add CTA without execution', () => {
@@ -185,7 +188,6 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     // V3 supersedes Explore on primary page; discovery module retained offline
     expect(page).not.toContain('LiquidityPoolDiscoveryModule')
   })
-
 
   it('does not invent pool databases or fake metric literals in module sources', () => {
     const bundle = [

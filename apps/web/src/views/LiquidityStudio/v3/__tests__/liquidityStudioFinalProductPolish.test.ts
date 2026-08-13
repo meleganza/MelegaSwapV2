@@ -62,6 +62,8 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_POLISH', () => {
     expect(add).toContain('single-card-horizontal')
     expect(add).toContain('liquidity-add-horizontal-workspace')
     expect(add).toContain('data-liquidity-preview="integrated"')
+    expect(add).toContain('data-liquidity-ratio-source')
+    expect(add).toContain("'runtime-preview' : 'awaiting-amounts'")
     expect(add).not.toContain('50-50-workspace')
   })
 

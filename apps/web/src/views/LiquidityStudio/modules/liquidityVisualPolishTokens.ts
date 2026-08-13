@@ -55,7 +55,7 @@ export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
-  LiquidityAddModule: '4261384e0d2d9c1ccbd289807fbf53871ca623b3a695d564d8e2b6e80d1c5b63',
+  LiquidityAddModule: '10111db6247476457ec6e6f385b4202f22e2ebe11588c83be498d19e69a3b535',
   liquidityAddTokens: 'e4c577b9399553d2f976e3f7cdd2d0e51c85e1d6c376245d48c9b243e82aa70c',
   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
 } as const

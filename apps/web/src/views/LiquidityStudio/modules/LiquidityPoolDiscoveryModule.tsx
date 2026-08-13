@@ -267,7 +267,7 @@ export const LiquidityPoolDiscoveryModule: React.FC<{ embedded?: boolean }> = ({
   const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [view, setView] = useState<'cards' | 'list'>('cards')
-  const pageIncrement = 8
+  const pageIncrement = 10
   const [pageSize, setPageSize] = useState(pageIncrement)
 
   useEffect(() => {

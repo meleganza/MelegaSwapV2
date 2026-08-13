@@ -36,7 +36,7 @@ export const liquidityPoolDiscovery = {
   chainId: 56,
 
   /** Visible page size — factory inventory may be larger; no invented rows. */
-  pageSize: 18,
+  pageSize: 10,
   skeletonCount: 12,
   /** 5 cols ≥1440 content; 6 at 1920 when readable. */
   desktopColumns: 5,

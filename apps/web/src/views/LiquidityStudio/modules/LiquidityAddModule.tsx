@@ -346,6 +346,44 @@ const PreviewList = styled.dl`
   }
 `
 
+const BalancePreview = styled.div<{ $ready: boolean }>`
+  position: relative;
+  min-height: 82px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, rgba(244, 196, 48, 0.08), rgba(244, 196, 48, 0.015));
+  opacity: ${({ $ready }) => ($ready ? 1 : 0.72)};
+`
+
+const BalancePreviewHeader = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 750;
+  color: ${liquidityAdd.dim};
+
+  strong {
+    color: ${liquidityAdd.gold};
+    font-weight: 800;
+  }
+`
+
+const BalanceCurve = styled.svg`
+  position: absolute;
+  inset: 26px 0 0;
+  width: 100%;
+  height: 58px;
+`
+
 const PreviewRow = styled.div<{ $wide?: boolean }>`
   display: flex;
   flex-direction: column;
@@ -590,6 +628,8 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     return LIQUIDITY_ADD_COPY.emptyMetric
   }, [currencyA?.symbol, currencyB?.symbol, preview.tokenAPct, preview.tokenBPct])
 
+  const hasFactualRatio = preview.tokenAPct > 0 || preview.tokenBPct > 0
+
   const depositedLabel = useMemo(() => {
     const a = typedValueA && typedValueA !== '0.0' ? `${typedValueA} ${currencyA?.symbol ?? ''}`.trim() : null
     const b = typedValueB && typedValueB !== '0.0' ? `${typedValueB} ${currencyB?.symbol ?? ''}`.trim() : null
@@ -783,6 +823,34 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             <Title as="h3" style={{ fontSize: embedded ? 16 : 18, lineHeight: embedded ? '22px' : '24px' }}>
               {LIQUIDITY_ADD_COPY.previewTitle}
             </Title>
+            <BalancePreview
+              $ready={hasFactualRatio}
+              role="img"
+              aria-label={hasFactualRatio ? `Pool balance ${ratioLabel}` : 'Pool balance awaiting amounts'}
+              data-testid="liquidity-add-balance-preview"
+              data-liquidity-ratio-source={hasFactualRatio ? 'runtime-preview' : 'awaiting-amounts'}
+            >
+              <BalancePreviewHeader>
+                <span>Pool balance</span>
+                <strong>{hasFactualRatio ? ratioLabel : 'Awaiting amounts'}</strong>
+              </BalancePreviewHeader>
+              <BalanceCurve viewBox="0 0 320 58" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="liquidity-balance-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#f4c430" stopOpacity="0.24" />
+                    <stop offset="1" stopColor="#f4c430" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path d="M0 50 C72 10 214 1 320 24 L320 58 L0 58 Z" fill="url(#liquidity-balance-fill)" />
+                <path
+                  d="M0 50 C72 10 214 1 320 24"
+                  fill="none"
+                  stroke="#f4c430"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </BalanceCurve>
+            </BalancePreview>
             <PreviewList>
               <PreviewRow>
                 <PreviewDt>{LIQUIDITY_ADD_COPY.previewPair}</PreviewDt>
