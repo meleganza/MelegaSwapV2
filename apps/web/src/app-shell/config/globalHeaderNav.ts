@@ -163,10 +163,25 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     match: (p) => p === '/',
   },
   {
+    id: 'swap',
+    label: 'Swap',
+    kind: 'link',
+    href: '/swap',
+    match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+  },
+  {
+    id: 'bridge',
+    label: 'Bridge',
+    kind: 'link',
+    href: '/bridge',
+    match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
+    compactHide: true,
+  },
+  {
     id: 'liquidity',
     label: 'Liquidity',
     kind: 'link',
-    href: '/liquidity-studio',
+    href: '/liquidity',
     match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
   },
   {

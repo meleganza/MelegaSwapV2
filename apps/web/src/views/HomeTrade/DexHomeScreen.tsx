@@ -193,11 +193,11 @@ const Trust = styled.p`
 
 const SwapWrap = styled.div`
   width: 100%;
-  border-radius: 18px;
-  border: 1px solid #242424;
-  background: rgba(16, 16, 16, 0.96);
-  box-shadow: ${uxRebuildShadow.elevated};
-  padding: 18px;
+  border-radius: 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
   box-sizing: border-box;
   min-height: 332px;
 
@@ -667,7 +667,6 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
-                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
@@ -707,7 +706,6 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
-                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <RowMetric>{row.apr || '—'}</RowMetric>
                   </DiscRow>

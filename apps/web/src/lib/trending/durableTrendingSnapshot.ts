@@ -6,7 +6,8 @@
 import type { MelegaTickerItem } from 'design-system/melega'
 
 const STORAGE_KEY = 'melega.trending.durable-snapshot.v1'
-const MAX_AGE_MS = 6 * 60 * 60 * 1000 // 6h last-good window
+// Movers lose meaning quickly: retain a last-good result only as a short outage bridge.
+const MAX_AGE_MS = 15 * 60 * 1000
 /** Minimum display tenure before a non-material identity churn can replace the snapshot. */
 export const MIN_TRENDING_TENURE_MS = 12_000
 /** A live candidate must be at least this fraction of the last-good size to replace it. */
