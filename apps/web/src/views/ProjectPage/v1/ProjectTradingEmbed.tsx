@@ -2,7 +2,7 @@
  * Section 3 — Trading embed. Reuses SmartSwapForm (do not modify Swap/Smart Swap sources).
  * Chain is forced from the Project Page deployment — no manual chain picker.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -94,18 +94,6 @@ const ProjectSwapFormIsland = dynamic(() => import('./ProjectSwapFormIsland'), {
   loading: () => <SwapSkeleton $hero aria-label="Loading trade form" />,
 })
 
-const MarcoBridgeWorkspace = dynamic(() => import('views/MarcoBridge/MarcoBridgeWorkspace'), {
-  ssr: false,
-  loading: () => <SwapSkeleton $hero aria-label="Loading bridge" />,
-})
-
-const BridgeTabs = dynamic(() => import('views/MarcoBridge/SmartSwapBridgeTabs'), { ssr: false })
-const Bolt = styled.span`
-  color: #f7c948;
-  font-size: 20px;
-  line-height: 1;
-`
-
 interface Props {
   slug: string
   marketsDocument: ProjectMarketsDocument
@@ -137,8 +125,14 @@ function resolveDefaultPair(
   }
   const onChainBuy =
     marketsDocument.swapDestinations.find(
-      (d) => d.status === 'READY' && d.chainId === projectChainId && d.label.includes('buy'),
-    ) || marketsDocument.swapDestinations.find((d) => d.status === 'READY' && d.chainId === projectChainId)
+      (d) =>
+        d.status === 'READY' &&
+        d.chainId === projectChainId &&
+        d.label.includes('buy'),
+    ) ||
+    marketsDocument.swapDestinations.find(
+      (d) => d.status === 'READY' && d.chainId === projectChainId,
+    )
   if (onChainBuy) {
     return {
       inputCurrencyId: onChainBuy.inputCurrencyParam,
@@ -175,8 +169,6 @@ function ProjectSwapInner({
   contractAddress,
   nonBlockingChainAlign = false,
 }: InnerProps) {
-  const [activeTab, setActiveTab] = useState<'swap' | 'bridge'>('swap')
-  const isMarco = slug === 'marco'
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { chainId } = useActiveChainId()
@@ -196,22 +188,20 @@ function ProjectSwapInner({
 
   // Defer wallet chain align — never block hero paint on MetaMask prompts.
   useEffect(() => {
-    if (activeTab === 'bridge') return
     if (!account) return
     if (!isMelegaChainLive(projectChainId)) return
     if (chainId === projectChainId) return
     if (!canSwitch) return
-    const timer = window.setTimeout(
-      () => {
-        void switchNetworkAsync(projectChainId)
-      },
-      nonBlockingChainAlign ? 800 : 0,
-    )
+    const timer = window.setTimeout(() => {
+      void switchNetworkAsync(projectChainId)
+    }, nonBlockingChainAlign ? 800 : 0)
     return () => window.clearTimeout(timer)
-  }, [account, projectChainId, chainId, canSwitch, switchNetworkAsync, nonBlockingChainAlign, activeTab])
+  }, [account, projectChainId, chainId, canSwitch, switchNetworkAsync, nonBlockingChainAlign])
 
-  const queryInputCurrency = typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
-  const queryOutputCurrency = typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
+  const queryInputCurrency =
+    typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
+  const queryOutputCurrency =
+    typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
   const focusSwap = router.query.focus === 'swap'
   const tradeSource = typeof router.query.source === 'string' ? router.query.source : undefined
 
@@ -227,7 +217,6 @@ function ProjectSwapInner({
   const effectivePair = queryPair ?? defaultPair
 
   useEffect(() => {
-    if (activeTab === 'bridge') return
     if (!chainId || !native || !effectivePair) return
     if (chainId !== projectChainId && isMelegaChainLive(projectChainId)) return
     dispatch(
@@ -247,7 +236,6 @@ function ProjectSwapInner({
     effectivePair?.outputCurrencyId,
     dispatch,
     native,
-    activeTab,
   ])
 
   useEffect(() => {
@@ -256,7 +244,8 @@ function ProjectSwapInner({
       const root = swapBodyRef.current
       root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       const input =
-        root?.querySelector<HTMLElement>('input.token-amount-input') || root?.querySelector<HTMLElement>('input')
+        root?.querySelector<HTMLElement>('input.token-amount-input') ||
+        root?.querySelector<HTMLElement>('input')
       input?.focus({ preventScroll: true })
     }, 280)
     return () => window.clearTimeout(timer)
@@ -285,19 +274,6 @@ function ProjectSwapInner({
     if (btn instanceof HTMLElement) btn.click()
   }, [])
 
-  if (isMarco && activeTab === 'bridge') {
-    return (
-      <QuietSwapShell data-testid="project-v1-bridge-embed">
-        <HomeSwapPanelShell
-          headerLeading={<Bolt aria-hidden>⚡</Bolt>}
-          headerCenter={<BridgeTabs active={activeTab} onChange={setActiveTab} />}
-        >
-          <MarcoBridgeWorkspace />
-        </HomeSwapPanelShell>
-      </QuietSwapShell>
-    )
-  }
-
   if (!effectivePair) {
     return <Muted>Buying is not available for this project on Melega DEX yet.</Muted>
   }
@@ -325,9 +301,7 @@ function ProjectSwapInner({
         </Muted>
       ) : null}
       <HomeSwapPanelShell
-        headerLeading={isMarco ? <Bolt aria-hidden>⚡</Bolt> : undefined}
-        headerCenter={isMarco ? <BridgeTabs active={activeTab} onChange={setActiveTab} /> : undefined}
-        pairIndicator={isMarco ? undefined : pairIndicator}
+        pairIndicator={pairIndicator}
         toolbar={
           <>
             <HomeSwapIconButton type="button" aria-label="Trade settings" onClick={onPresentSettingsModal}>
@@ -393,7 +367,11 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       )}
       {!hero ? (
         <Grid $cols={4} style={{ marginBottom: 10 }}>
-          <Metric label="Chain" value={chainName} provenance={indexed('melega-chain-registry')} />
+          <Metric
+            label="Chain"
+            value={chainName}
+            provenance={indexed('melega-chain-registry')}
+          />
           <Metric
             label="Router"
             value={routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}
@@ -401,7 +379,11 @@ const ProjectTradingEmbed: React.FC<Props> = ({
           />
           <Metric
             label="Swap target"
-            value={contractAddress ? `${chain?.nativeCurrency.symbol ?? '—'} → Token` : 'Unavailable'}
+            value={
+              contractAddress
+                ? `${chain?.nativeCurrency.symbol ?? '—'} → Token`
+                : 'Unavailable'
+            }
             provenance={contractAddress ? indexed('project-registry') : UNAVAILABLE}
           />
           <Metric
@@ -421,7 +403,10 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       {!live || !swapReady ? (
         <ComingSoonBox data-testid="project-v1-trading-coming-soon">
           <Muted style={{ marginBottom: 6, color: pp.gold }}>Coming soon on {chainName}</Muted>
-          <Muted>Smart Swap for this network is preparing. Switch to a LIVE deployment (BNB or Base) to buy now.</Muted>
+          <Muted>
+            Smart Swap for this network is preparing. Switch to a LIVE deployment (BNB or Base) to buy
+            now.
+          </Muted>
         </ComingSoonBox>
       ) : (
         <SwapFeaturesProvider>
