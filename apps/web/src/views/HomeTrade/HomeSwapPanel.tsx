@@ -91,7 +91,14 @@ const HomeSwapInner: React.FC = () => {
   }, [experience])
 
   const headerLeading = useMemo(
-    () => <SmartSwapProductTabs value={productAction} onChange={setProductAction} />,
+    () => (
+      <SmartSwapProductTabs
+        value={productAction}
+        onChange={setProductAction}
+        bridgeLabel="MARCO Bridge"
+        showBridgeNewBadge
+      />
+    ),
     [productAction],
   )
 

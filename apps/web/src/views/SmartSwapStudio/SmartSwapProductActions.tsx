@@ -62,6 +62,21 @@ const Tab = styled.button<{ $active: boolean }>`
     flex: 1;
     min-width: 0;
   }
+
+  .smart-swap-tab-new {
+    display: inline-flex;
+    align-items: center;
+    height: 15px;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #7c3aed;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+  }
 `
 
 const ACTIONS: Array<{ id: SmartSwapProductAction; label: string }> = [
@@ -72,7 +87,9 @@ const ACTIONS: Array<{ id: SmartSwapProductAction; label: string }> = [
 export const SmartSwapProductTabs: React.FC<{
   value: SmartSwapProductAction
   onChange: (action: SmartSwapProductAction) => void
-}> = ({ value, onChange }) => (
+  bridgeLabel?: string
+  showBridgeNewBadge?: boolean
+}> = ({ value, onChange, bridgeLabel = 'Bridge', showBridgeNewBadge = false }) => (
   <Tabs role="tablist" aria-label="Trade actions" data-smart-swap-product-tabs data-folder-tabs>
     {ACTIONS.map((action) => (
       <Tab
@@ -83,7 +100,8 @@ export const SmartSwapProductTabs: React.FC<{
         $active={value === action.id}
         onClick={() => onChange(action.id)}
       >
-        {action.label}
+        {action.id === 'bridge' ? bridgeLabel : action.label}
+        {action.id === 'bridge' && showBridgeNewBadge ? <span className="smart-swap-tab-new">NEW</span> : null}
       </Tab>
     ))}
   </Tabs>

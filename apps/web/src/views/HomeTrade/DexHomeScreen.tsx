@@ -230,11 +230,11 @@ const Trust = styled.p`
 
 const SwapWrap = styled.div`
   width: 100%;
-  border-radius: 18px;
-  border: 1px solid ${uxRebuildColors.borderStrong};
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 40%), rgba(13, 15, 17, 0.96);
-  box-shadow: ${uxRebuildShadow.elevated};
-  padding: 18px;
+  border-radius: 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
   box-sizing: border-box;
   min-height: 332px;
 
@@ -704,7 +704,6 @@ const DexHomeScreenContent: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
-                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
@@ -744,7 +743,6 @@ const DexHomeScreenContent: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
-                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <RowMetric
                       title={row.aprUnavailable ? 'APR awaits a verified staking and reward-token price.' : undefined}

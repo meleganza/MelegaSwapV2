@@ -82,6 +82,8 @@ const TickerSlot = styled.div`
   width: auto;
   min-width: 0;
   height: 100%;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 `
 
@@ -89,9 +91,12 @@ const ActionSlot = styled.div`
   flex: 0 0 auto;
   display: flex;
   align-items: center;
+  justify-content: center;
+  height: 100%;
   padding-left: 10px;
   margin-left: 8px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 `
 
 export const MELEGA_TRENDING_BAR_DESKTOP_HEIGHT = TRENDING_BAR_DESKTOP_H
