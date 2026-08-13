@@ -66,7 +66,7 @@ export const LB_UX = {
   strategyRangeBody: 'Set a minimum and maximum intensity. The system chooses within your range.',
   decisionFrequencyLabel: 'Check frequency',
   decisionFrequencyHelp:
-    'How often Melega reviews the market. It only acts when conditions are safe.',
+    'Interval used to measure effective net buys after sells before deciding whether liquidity should be added.',
   reviewTitle: 'Review your liquidity program',
   reviewCta: 'Activate Liquidity Program',
   safetyNoGuarantees: 'No price guarantees.',
@@ -144,10 +144,10 @@ export const LB_UX = {
 } as const
 
 export const DECISION_FREQUENCY_OPTIONS = [
-  { label: '5 minutes', seconds: 300 as const },
-  { label: '15 minutes', seconds: 900 as const },
-  { label: '30 minutes', seconds: 1800 as const },
-  { label: '1 hour', seconds: 3600 as const },
+  { label: '5m', seconds: 300 as const },
+  { label: '15m', seconds: 900 as const },
+  { label: '30m', seconds: 1800 as const },
+  { label: '1h', seconds: 3600 as const },
 ]
 
 export type { LbUxPhase } from './liquidityBuildingStep'

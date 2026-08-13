@@ -667,8 +667,8 @@ export function LbSetupView({
             </Section>
 
             <Section>
-              <SectionTitle>Decision frequency</SectionTitle>
-              <SectionDesc>How often Melega evaluates market conditions.</SectionDesc>
+              <SectionTitle>Frequency</SectionTitle>
+              <SectionDesc>Interval used to measure effective net buys after sells before a liquidity decision.</SectionDesc>
               <FreqGrid>
                 {DECISION_FREQUENCY_OPTIONS.map((opt) => (
                   <FreqBtn

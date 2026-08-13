@@ -39,10 +39,10 @@ export type StrategyMode = 'FULL_AI' | 'DYNAMIC_RANGE'
 export type EpochSeconds = 300 | 900 | 1800 | 3600
 
 export const EPOCH_OPTIONS: { label: string; seconds: EpochSeconds; default?: boolean }[] = [
-  { label: '5 minutes', seconds: 300, default: true },
-  { label: '15 minutes', seconds: 900 },
-  { label: '30 minutes', seconds: 1800 },
-  { label: '1 hour', seconds: 3600 },
+  { label: '5m', seconds: 300, default: true },
+  { label: '15m', seconds: 900 },
+  { label: '30m', seconds: 1800 },
+  { label: '1h', seconds: 3600 },
 ]
 
 export type SetupDraft = {

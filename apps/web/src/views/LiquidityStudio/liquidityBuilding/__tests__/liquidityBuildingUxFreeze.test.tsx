@@ -42,10 +42,10 @@ describe('LB016 Liquidity Building UX freeze', () => {
   it('setup flow uses check frequency and Full AI / AI Optimized default', () => {
     expect(EMPTY_SETUP_DRAFT.strategy).toBe('FULL_AI')
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.label)).toEqual([
-      '5 minutes',
-      '15 minutes',
-      '30 minutes',
-      '1 hour',
+      '5m',
+      '15m',
+      '30m',
+      '1h',
     ])
     expect(LB_UX.decisionFrequencyLabel).toBe('Check frequency')
     expect(LB_UX.strategyFullAiTag).toBe('Recommended')

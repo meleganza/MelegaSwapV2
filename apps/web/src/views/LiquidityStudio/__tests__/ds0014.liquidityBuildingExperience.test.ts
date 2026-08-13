@@ -112,10 +112,10 @@ describe('DS001.4 Liquidity Building experience', () => {
   it('8. Decision Frequency uses only supported values', () => {
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.seconds)).toEqual([300, 900, 1800, 3600])
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.label)).toEqual([
-      '5 minutes',
-      '15 minutes',
-      '30 minutes',
-      '1 hour',
+      '5m',
+      '15m',
+      '30m',
+      '1h',
     ])
   })
 

@@ -52,18 +52,18 @@ const Panel = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   box-sizing: border-box;
   border-radius: ${liquidityAdd.cardRadius};
-  border: ${({ $embedded }) => ($embedded ? '1px solid rgba(255,255,255,0.06)' : liquidityAdd.cardBorder)};
-  background: ${({ $embedded }) => ($embedded ? 'rgba(8,8,8,0.55)' : liquidityAdd.cardBg)};
-  padding: ${({ $embedded }) => ($embedded ? '14px' : liquidityAdd.cardPad)};
+  border: ${({ $embedded }) => ($embedded ? '0' : liquidityAdd.cardBorder)};
+  background: ${({ $embedded }) => ($embedded ? 'transparent' : liquidityAdd.cardBg)};
+  padding: ${({ $embedded }) => ($embedded ? '0' : liquidityAdd.cardPad)};
   min-width: 0;
 `
 
 const HorizontalWorkspace = styled.div<{ $embedded?: boolean }>`
   margin-top: 14px;
   display: grid;
-  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1.55fr) minmax(280px, 0.72fr)')};
-  gap: ${({ $embedded }) => ($embedded ? '12px' : liquidityAdd.columnGap)};
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr);
+  gap: ${liquidityAdd.columnGap};
+  align-items: center;
   min-width: 0;
 
   @media (max-width: ${liquidityAdd.tabletBreak}) {
@@ -79,8 +79,8 @@ const PreviewRail = styled.aside<{ $embedded?: boolean }>`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  border-left: ${({ $embedded }) => ($embedded ? '0' : '1px solid rgba(255,255,255,0.08)')};
-  padding-left: ${({ $embedded }) => ($embedded ? '0' : '16px')};
+  border-left: 1px solid rgba(255,255,255,0.08);
+  padding-left: 16px;
 
   @media (max-width: ${liquidityAdd.tabletBreak}) {
     border-left: 0;
@@ -295,31 +295,14 @@ const NewPairBanner = styled.div`
   }
 `
 
-const Advanced = styled.details`
+const SlippageBar = styled.div`
   margin-top: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 8px 10px;
-
-  summary {
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.66);
-    list-style: none;
-  }
-
-  summary::-webkit-details-marker {
-    display: none;
-  }
-`
-
-const SlippageRow = styled.div`
-  margin-top: 10px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: 0 2px;
 `
 
 const SlippageBtn = styled.button`
@@ -683,27 +666,29 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           </NewPairBanner>
         ) : null}
 
-        <PairRow data-testid="liquidity-add-pair">
-          <Logos aria-hidden="true">
-            <MelegaTokenAvatar
-              symbol={currencyA?.symbol}
-              name={currencyA?.name}
-              address={currencyA?.wrapped?.address}
-              chainId={requestedChainId}
-              size={32}
-              radius="circle"
-            />
-            <MelegaTokenAvatar
-              symbol={currencyB?.symbol}
-              name={currencyB?.name}
-              address={currencyB?.wrapped?.address}
-              chainId={requestedChainId}
-              size={32}
-              radius="circle"
-            />
-          </Logos>
-          <PairName>{pairLabel || 'Select pair'}</PairName>
-        </PairRow>
+        {!embedded ? (
+          <PairRow data-testid="liquidity-add-pair">
+            <Logos aria-hidden="true">
+              <MelegaTokenAvatar
+                symbol={currencyA?.symbol}
+                name={currencyA?.name}
+                address={currencyA?.wrapped?.address}
+                chainId={requestedChainId}
+                size={32}
+                radius="circle"
+              />
+              <MelegaTokenAvatar
+                symbol={currencyB?.symbol}
+                name={currencyB?.name}
+                address={currencyB?.wrapped?.address}
+                chainId={requestedChainId}
+                size={32}
+                radius="circle"
+              />
+            </Logos>
+            <PairName>{pairLabel || 'Select pair'}</PairName>
+          </PairRow>
+        ) : null}
 
         <HorizontalWorkspace $embedded={embedded} data-testid="liquidity-add-horizontal-workspace">
           <FormColumn>
@@ -802,17 +787,14 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               </Metric>
             </Metrics>
 
-            <Advanced data-testid="liquidity-add-advanced">
-              <summary>Advanced</summary>
-              <SlippageRow>
-                <MetricLabel>
-                  {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
-                </MetricLabel>
-                <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
-                  Edit
-                </SlippageBtn>
-              </SlippageRow>
-            </Advanced>
+            <SlippageBar data-testid="liquidity-add-slippage-bar">
+              <MetricLabel>
+                {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
+              </MetricLabel>
+              <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
+                Edit
+              </SlippageBtn>
+            </SlippageBar>
           </FormColumn>
 
           <PreviewRail
@@ -858,7 +840,9 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               </PreviewRow>
               <PreviewRow>
                 <PreviewDt>Pool state</PreviewDt>
-                <PreviewDd data-testid="liquidity-add-pool-state">{noLiquidity ? 'New Pair' : 'Existing'}</PreviewDd>
+                <PreviewDd data-testid="liquidity-add-pool-state">
+                  {!currencyA || !currencyB ? 'Awaiting pair' : noLiquidity ? 'New Pair' : 'Existing'}
+                </PreviewDd>
               </PreviewRow>
               <PreviewRow $wide>
                 <PreviewDt>{LIQUIDITY_ADD_COPY.previewDeposited}</PreviewDt>

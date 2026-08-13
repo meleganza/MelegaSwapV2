@@ -23,16 +23,16 @@ import {
 } from './liquidityMyPositionsModel'
 import { LIQUIDITY_MY_POSITIONS_COPY, liquidityMyPositions } from './liquidityMyPositionsTokens'
 
-const Shell = styled.section`
+const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;
   max-width: ${liquidityMyPositions.contentMax};
-  margin: ${liquidityMyPositions.gapAfterActions} auto 0;
+  margin: ${({ $embedded }) => ($embedded ? '0' : `${liquidityMyPositions.gapAfterActions} auto 0`)};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
 
   @media (max-width: ${liquidityMyPositions.tabletBreak}) {
-    padding: 0 16px;
+    padding: ${({ $embedded }) => ($embedded ? '0' : '0 16px')};
   }
 `
 
@@ -61,11 +61,15 @@ const Desc = styled.p`
 const Grid = styled.div`
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: ${liquidityMyPositions.columnGap};
   min-width: 0;
 
   @media (max-width: ${liquidityMyPositions.tabletBreak}) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 900px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -524,7 +528,7 @@ function focusLiquidityEditor() {
   window.requestAnimationFrame(() => window.requestAnimationFrame(focus))
 }
 
-const LiquidityMyPositionsBody: React.FC = () => {
+const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const {
     account,
     positions,
@@ -606,8 +610,12 @@ const LiquidityMyPositionsBody: React.FC = () => {
 
   return (
     <Main data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="full-width">
-      <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
-      <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
+      {!embedded ? (
+        <>
+          <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
+          <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
+        </>
+      ) : null}
 
       <div
         data-testid="liquidity-my-positions-phase"
@@ -753,14 +761,15 @@ const LiquidityMyPositionsBody: React.FC = () => {
   )
 }
 
-export const LiquidityMyPositionsModule: React.FC = () => (
+export const LiquidityMyPositionsModule: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => (
   <Shell
+    $embedded={embedded}
     data-testid="liquidity-my-positions-module"
     data-liquidity-module="006-your-positions"
     data-liquidity-module-006="mounted"
     aria-labelledby="liquidity-my-positions-title"
   >
-    <LiquidityMyPositionsBody />
+    <LiquidityMyPositionsBody embedded={embedded} />
   </Shell>
 )
 

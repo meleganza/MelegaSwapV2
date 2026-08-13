@@ -327,7 +327,7 @@ export function useLiquidityBuildingCard(
   const effectiveStatus: ProgramStatus = programRead.snapshot.status ?? status
   const manageActions = availableManageActions(effectiveStatus)
   const decisionFrequencyLabel =
-    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? '5 minutes'
+    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? '5m'
 
   const metrics: ProgramMetrics =
     programRead.source === 'ON_CHAIN' ? programRead.snapshot.metrics : EMPTY_PROGRAM_METRICS

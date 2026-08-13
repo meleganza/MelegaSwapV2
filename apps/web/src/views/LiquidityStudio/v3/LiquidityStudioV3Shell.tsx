@@ -338,6 +338,59 @@ const ModeSwitch = styled.div`
   background: rgba(5, 5, 5, 0.72);
 `
 
+const AddRemoveCard = styled.div`
+  overflow: hidden;
+  border: 1px solid ${liqV3.line};
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(17, 18, 18, 0.98), rgba(8, 9, 9, 0.98));
+`
+
+const AddRemoveHeader = styled.div`
+  min-height: 76px;
+  padding: 12px 16px;
+  border-bottom: 1px solid ${liqV3.line};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  ${ModeSwitch} {
+    width: min(420px, 100%);
+    margin: 0;
+  }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+`
+
+const WorkspacePair = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+
+  span:last-child {
+    color: #16d99a;
+    font-size: 12px;
+  }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    justify-content: flex-start;
+  }
+`
+
+const AddRemoveBody = styled.div`
+  padding: 16px;
+`
+
 const ModeButton = styled.button<{ $active?: boolean }>`
   appearance: none;
   width: 50%;
@@ -498,12 +551,13 @@ function cardValue(cards: ReturnType<typeof useLiquidityMarketSnapshot>['cards']
 const LiquidityV3Body: React.FC = () => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
-  const { mode, setMode, positions, positionsPhase } = useLiquidityRuntime()
+  const { mode, setMode, positions, positionsPhase, pairLabel, noLiquidity } = useLiquidityRuntime()
   const snapshot = useLiquidityMarketSnapshot()
   const hydratedRef = React.useRef(false)
   const deferredDeepLinkScrollRef = React.useRef<string | null>(null)
   const removing = isRemoveMode(mode)
   const showFarmNudge = positions.length > 0
+  const hasSelectedPair = Boolean(pairLabel && !pairLabel.includes('?') && pairLabel !== 'Select pair')
 
   const scrollToSection = useCallback((id: string) => {
     window.requestAnimationFrame(() => {
@@ -523,7 +577,7 @@ const LiquidityV3Body: React.FC = () => {
     if (router.asPath.includes('view=') && view === undefined) return
     hydratedRef.current = true
 
-    let target = positions.length > 0 ? 'liquidity-positions' : 'liquidity-add'
+    let target = 'liquidity-positions'
     if (view === 'building') {
       setMode('Liquidity Building', { syncUrl: false })
       target = 'liquidity-builder'
@@ -531,10 +585,10 @@ const LiquidityV3Body: React.FC = () => {
       setMode(view === 'remove' ? 'Remove Liquidity' : 'Add Liquidity', { syncUrl: false })
       target = 'liquidity-add'
     } else if (view === 'explore') {
-      setMode(positions.length > 0 ? 'My Positions' : 'Add Liquidity', { syncUrl: false })
+      setMode('My Positions', { syncUrl: false })
       target = 'liquidity-explore'
     } else {
-      setMode(positions.length > 0 ? 'My Positions' : 'Add Liquidity', { syncUrl: false })
+      setMode('My Positions', { syncUrl: false })
     }
     if (
       (view === 'add' || view === 'remove') &&
@@ -595,7 +649,7 @@ const LiquidityV3Body: React.FC = () => {
   )
 
   const lbSupported = (chainId ?? 56) === 56
-  const addIndex = positions.length > 0 ? 2 : 1
+  const addIndex = 2
   const builderIndex = addIndex + 1
   const exploreIndex = builderIndex + 1
   const sectionNumber = (value: number) => String(value).padStart(2, '0')
@@ -607,16 +661,14 @@ const LiquidityV3Body: React.FC = () => {
           <HeroTitle $builder={false}>{LIQ_V3_COPY.title}</HeroTitle>
           <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
           <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
-            {positions.length > 0 ? (
-              <Btn
-                $ghost
-                type="button"
-                onClick={goPositions}
-                data-testid="liquidity-v3-hero-positions"
-              >
-                {LIQ_V3_COPY.positionsCta}
-              </Btn>
-            ) : null}
+            <Btn
+              $ghost
+              type="button"
+              onClick={goPositions}
+              data-testid="liquidity-v3-hero-positions"
+            >
+              My Positions
+            </Btn>
             <Btn
               $primary
               type="button"
@@ -656,15 +708,14 @@ const LiquidityV3Body: React.FC = () => {
         data-liquidity-panels="mounted"
         data-liquidity-navigation="anchors"
       >
-        {positions.length > 0 ? (
-          <Panel
-            id="liquidity-positions"
-            data-testid="liquidity-v3-panel-positions"
-          >
+        <Panel
+          id="liquidity-positions"
+          data-testid="liquidity-v3-panel-positions"
+        >
             <SectionHeader>
               <SectionTitleRow>
                 <SectionIndex>01</SectionIndex>
-                <SectionTitle>My Liquidity</SectionTitle>
+                <SectionTitle>My Positions</SectionTitle>
               </SectionTitleRow>
               <SectionMeta>Positions found in your connected wallet</SectionMeta>
             </SectionHeader>
@@ -675,7 +726,7 @@ const LiquidityV3Body: React.FC = () => {
                 </ChainChip>
               ))}
             </ChainLegend>
-            <LiquidityMyPositionsModule />
+            <LiquidityMyPositionsModule embedded />
             {showFarmNudge ? (
               <FarmNudge data-testid="liquidity-v3-farm-nudge">
                 <span>{LIQ_V3_COPY.createFarmNudge}</span>
@@ -684,8 +735,7 @@ const LiquidityV3Body: React.FC = () => {
                 </LinkBtn>
               </FarmNudge>
             ) : null}
-          </Panel>
-        ) : null}
+        </Panel>
 
         <Panel id="liquidity-add" data-testid="liquidity-v3-panel-add">
           <SectionHeader>
@@ -695,29 +745,39 @@ const LiquidityV3Body: React.FC = () => {
             </SectionTitleRow>
             <SectionMeta>Choose a pair · Enter amounts · Confirm once</SectionMeta>
           </SectionHeader>
-          <ModeSwitch role="group" aria-label="Liquidity action">
-            <ModeButton type="button" $active={!removing} onClick={goAdd} aria-pressed={!removing}>
-              Add
-            </ModeButton>
-            <ModeButton
-              type="button"
-              $active={removing}
-              onClick={goRemove}
-              disabled={positions.length === 0}
-              aria-pressed={removing}
-              title={positions.length === 0 ? 'No liquidity position available to remove' : undefined}
-            >
-              Remove
-            </ModeButton>
-          </ModeSwitch>
-          <ProgressiveSurface force label={removing ? 'Remove Liquidity' : 'Add Liquidity'}>
-            <SubPanel $active={!removing} data-add-surface="mint" aria-hidden={removing}>
-              <LiquidityAddModule />
-            </SubPanel>
-            <SubPanel $active={removing} data-add-surface="burn" aria-hidden={!removing}>
-              <LiquidityRemovePanel />
-            </SubPanel>
-          </ProgressiveSurface>
+          <AddRemoveCard data-testid="liquidity-add-remove-card">
+            <AddRemoveHeader>
+              <ModeSwitch role="group" aria-label="Liquidity action">
+                <ModeButton type="button" $active={!removing} onClick={goAdd} aria-pressed={!removing}>
+                  Add
+                </ModeButton>
+                <ModeButton
+                  type="button"
+                  $active={removing}
+                  onClick={goRemove}
+                  disabled={positions.length === 0}
+                  aria-pressed={removing}
+                  title={positions.length === 0 ? 'No liquidity position available to remove' : undefined}
+                >
+                  Remove
+                </ModeButton>
+              </ModeSwitch>
+              <WorkspacePair data-testid="liquidity-add-remove-pair-summary">
+                <strong>{hasSelectedPair ? pairLabel : 'Select pair'}</strong>
+                <span>{hasSelectedPair ? (noLiquidity ? '● New pair' : '● Active') : '● Awaiting pair'}</span>
+              </WorkspacePair>
+            </AddRemoveHeader>
+            <AddRemoveBody>
+              <ProgressiveSurface force label={removing ? 'Remove Liquidity' : 'Add Liquidity'}>
+                <SubPanel $active={!removing} data-add-surface="mint" aria-hidden={removing}>
+                  <LiquidityAddModule embedded />
+                </SubPanel>
+                <SubPanel $active={removing} data-add-surface="burn" aria-hidden={!removing}>
+                  <LiquidityRemovePanel />
+                </SubPanel>
+              </ProgressiveSurface>
+            </AddRemoveBody>
+          </AddRemoveCard>
         </Panel>
 
         <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">

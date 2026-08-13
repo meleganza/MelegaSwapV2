@@ -42,8 +42,11 @@ import {
 } from '../liquidityBuilding/portfolioDisplay'
 
 const BUILDER_STEPS = [
-  { n: 1, label: 'Configure plan' },
-  { n: 2, label: 'Review & activate' },
+  'Select pair',
+  'Deposit reserve',
+  'Strategy',
+  'Frequency',
+  'Start',
 ] as const
 type BuilderStep = 1 | 2
 
@@ -458,6 +461,22 @@ const TokenSelectorRow = styled.div`
   }
 `
 
+const PairLink = styled(Link)`
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid ${liqOne.goldBorder};
+  color: ${liqOne.gold};
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+`
+
 const TokenChip = styled.button<{ $on?: boolean }>`
   appearance: none;
   height: 36px;
@@ -682,10 +701,11 @@ const StepTrack = styled.ol`
   margin: 0 0 10px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 
   @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-bottom: 8px;
     gap: 4px;
   }
@@ -1567,28 +1587,32 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         data-lb-studio-dash={forceExpanded ? '1' : '0'}
       >
         <StepTrack data-testid="liq-lb-step-track" aria-label="Builder status">
-          {BUILDER_STEPS.map((s) => (
-            <StepItem key={s.n} $active={builderStep === s.n} $done={builderStep > s.n}>
-              <StepNum>{s.n}</StepNum>
-              {s.label}
+          {BUILDER_STEPS.map((label, index) => {
+            const stage = builderStep === 2 ? 5 : !tokenReady ? 1 : !budgetReady ? 2 : 3
+            const step = index + 1
+            return (
+            <StepItem key={label} $active={stage === step} $done={stage > step}>
+              <StepNum>{step}</StepNum>
+              {label}
             </StepItem>
-          ))}
+            )
+          })}
         </StepTrack>
 
         <FlowIntro data-testid="liq-lb-flow-intro">
           <FlowIntroCopy>
-            <FlowKicker>{builderStep === 1 ? 'Two required inputs' : 'Final check'}</FlowKicker>
+            <FlowKicker>{builderStep === 1 ? 'AI liquidity program' : 'Final check'}</FlowKicker>
             <FlowTitle>
-              {builderStep === 1 ? 'Choose your token and reserve' : 'Confirm your liquidity plan'}
+              {builderStep === 1 ? 'Build liquidity from verified net demand' : 'Confirm your liquidity plan'}
             </FlowTitle>
             <FlowSupport>
               {builderStep === 1
-                ? 'Melega applies a recommended market, goal and AI strategy automatically. You can customize them if needed.'
+                ? 'Select the pair, reserve the project tokens, choose a strategy and set how often Melega measures net buys after sells.'
                 : 'Review the plan once, then complete the guided wallet activation.'}
             </FlowSupport>
           </FlowIntroCopy>
           <FlowActions>
-            <DefaultPill>✓ Recommended defaults applied</DefaultPill>
+            <DefaultPill>✓ Non-custodial · LP owned by you</DefaultPill>
             <Link href={LB_UX.docsHowItWorks} data-testid="lb-docs-hub-link">
               How it works ↗
             </Link>
@@ -1600,8 +1624,8 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         <div data-testid="liq-lb-step-configure" data-lb-exploded-form="1">
           <MetaGrid data-testid="liq-lb-exploded-grid">
             <MetaCell style={{ gridColumn: '1 / -1' }}>
-              <MetaLabel>{LB_UX.tokenToGrowLabel}</MetaLabel>
-              <FieldHint>{LB_UX.tokenToGrowSupport}</FieldHint>
+              <MetaLabel>1 · Select pair</MetaLabel>
+              <FieldHint>Select a project token. Its existing Melega pair is detected automatically.</FieldHint>
               <TokenSelectorRow>
                 <TokenChip
                   type="button"
@@ -1612,18 +1636,20 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 >
                   {selectedTokenLabel}
                 </TokenChip>
-                <Input
-                  type="text"
-                  spellCheck={false}
-                  autoComplete="off"
-                  placeholder={LB_UX.tokenPastePlaceholder}
-                  value={addressInput}
-                  onChange={(e) => {
-                    setAddressInput(e.target.value.trim())
-                    setStepError(null)
-                  }}
-                  data-testid="lb-token-address-input"
-                />
+                {!tokenReady ? (
+                  <Input
+                    type="text"
+                    spellCheck={false}
+                    autoComplete="off"
+                    placeholder={`OR · ${LB_UX.tokenPastePlaceholder}`}
+                    value={addressInput}
+                    onChange={(e) => {
+                      setAddressInput(e.target.value.trim())
+                      setStepError(null)
+                    }}
+                    data-testid="lb-token-address-input"
+                  />
+                ) : null}
               </TokenSelectorRow>
               {tokenReady && selectedProjectToken ? (
                 <TokenIdentity data-testid="lb-token-identity">
@@ -1664,16 +1690,23 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                   <span data-testid="lb-token-market-status">{tokenMarketStatus}</span>
                 </StatusLine>
               </StatusRow> : null}
+              {tokenReady && !pair.loading && !pair.available ? (
+                <PairLink href="#liquidity-add" data-testid="lb-create-pair-in-add-liquidity">
+                  Create pair with Add Liquidity
+                </PairLink>
+              ) : null}
             </MetaCell>
 
             <MetaCell style={{ gridColumn: '1 / -1' }}>
               <MetaLabel>
-                {LB_UX.reserveLabel}
+                2 · Deposit token reserve
                 <FieldDoc href={LB_UX.docsTokenReserve} data-testid="lb-docs-link-reserve">
                   {LB_UX.docsFieldLink}
                 </FieldDoc>
               </MetaLabel>
-              <FieldHint>{LB_UX.reserveSupport}</FieldHint>
+              <FieldHint>
+                Set the maximum project-token reserve available for scheduled liquidity additions. The program cannot exceed it.
+              </FieldHint>
               <Input
                 type="text"
                 inputMode="decimal"
@@ -1688,66 +1721,10 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </MetaCell>
           </MetaGrid>
 
-          <Accordion data-testid="liq-lb-customize-plan">
-            <summary>Customize recommended plan</summary>
-            <AccordionBody>
-              <MetaGrid>
-                <MetaCell style={{ gridColumn: '1 / -1' }}>
-                  <MetaLabel>{LB_UX.quoteAssetLabel}</MetaLabel>
-                  <FieldHint>{LB_UX.quoteAssetSupport}</FieldHint>
-                  <TokenRow>
-                    {QUOTE_ASSET_OPTIONS.map((q) => (
-                      <TokenChip
-                        key={q.key}
-                        type="button"
-                        $on={card.draft.quoteAssetKey === q.key}
-                        onClick={() => {
-                          setStepError(null)
-                          card.setQuoteAssetKey(q.key)
-                        }}
-                        data-testid={`lb-quote-${q.key.toLowerCase()}`}
-                      >
-                        {q.label}
-                      </TokenChip>
-                    ))}
-                  </TokenRow>
-                  {!card.quoteEnabled && card.draft.quoteAssetKey !== 'WBNB' ? (
-                    <MetaValue style={{ marginTop: 6 }} data-testid="lb-quote-disabled-hint">
-                      {LB_UX.quoteNotEnabled}
-                    </MetaValue>
-                  ) : null}
-                </MetaCell>
-
-                <MetaCell style={{ gridColumn: '1 / -1' }}>
+          <MetaGrid data-testid="liq-lb-approved-plan">
+            <MetaCell style={{ gridColumn: '1 / -1' }}>
               <MetaLabel>
-                {LB_UX.liquidityGoalLabel}
-                <FieldDoc href={LB_UX.docsLiquidityGoals} data-testid="lb-docs-link-goal">
-                  {LB_UX.docsFieldLink}
-                </FieldDoc>
-              </MetaLabel>
-              <TokenRow>
-                {LIQUIDITY_GOAL_OPTIONS.map((g) => (
-                  <TokenChip
-                    key={g.key}
-                    type="button"
-                    $on={card.draft.liquidityGoal === g.key}
-                    onClick={() => card.setLiquidityGoal(g.key)}
-                    data-testid={`lb-goal-${g.key.toLowerCase()}`}
-                    title={g.tooltip}
-                    aria-label={`${g.label}. ${g.tooltip}`}
-                  >
-                    {g.label}
-                  </TokenChip>
-                ))}
-              </TokenRow>
-              <MetaValue style={{ marginTop: 6 }} data-testid="lb-goal-hint">
-                {LIQUIDITY_GOAL_OPTIONS.find((g) => g.key === card.draft.liquidityGoal)?.tooltip}
-              </MetaValue>
-                </MetaCell>
-
-                <MetaCell style={{ gridColumn: '1 / -1' }}>
-              <MetaLabel>
-                Liquidity Strategy
+                3 · Liquidity strategy
                 <FieldDoc href={LB_UX.docsStrategies} data-testid="lb-docs-link-strategy">
                   {LB_UX.docsFieldLink}
                 </FieldDoc>
@@ -1771,10 +1748,28 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <MetaValue style={{ marginTop: 6 }} data-testid="lb-strategy-hint">
                 {STRATEGY_PRESET_OPTIONS.find((s) => s.key === card.draft.strategyPreset)?.tooltip}
               </MetaValue>
-                </MetaCell>
-              </MetaGrid>
-            </AccordionBody>
-          </Accordion>
+            </MetaCell>
+
+            <MetaCell style={{ gridColumn: '1 / -1' }}>
+              <MetaLabel>4 · Frequency</MetaLabel>
+              <FieldHint>
+                Interval used to measure effective net buys after sells before deciding whether liquidity should be added.
+              </FieldHint>
+              <EpochRow>
+                {EPOCH_OPTIONS.map((o) => (
+                  <TokenChip
+                    key={o.seconds}
+                    type="button"
+                    $on={card.draft.epochSeconds === o.seconds}
+                    onClick={() => card.setEpoch(o.seconds)}
+                    data-testid={`lb-freq-${o.seconds}`}
+                  >
+                    {o.label}
+                  </TokenChip>
+                ))}
+              </EpochRow>
+            </MetaCell>
+          </MetaGrid>
 
           <Accordion
             open={advancedOpen}
@@ -1783,22 +1778,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           >
             <summary>{LB_UX.technicalTitle}</summary>
             <AccordionBody>
-              <Field>
-                {LB_UX.decisionFrequencyLabel}
-                <EpochRow>
-                  {EPOCH_OPTIONS.map((o) => (
-                    <TokenChip
-                      key={o.seconds}
-                      type="button"
-                      $on={card.draft.epochSeconds === o.seconds}
-                      onClick={() => card.setEpoch(o.seconds)}
-                      data-testid={`lb-freq-${o.seconds}`}
-                    >
-                      {o.seconds === 300 ? '5m' : o.seconds === 900 ? '15m' : o.seconds === 1800 ? '30m' : '1h'}
-                    </TokenChip>
-                  ))}
-                </EpochRow>
-              </Field>
               <div style={{ marginTop: 10 }} data-testid="lb-market-pair">
                 Detected pair: {marketPair}
               </div>
@@ -1850,12 +1829,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               </PreviewValue>
             </PreviewRow>
             <PreviewRow>
-              <PreviewKey>Goal</PreviewKey>
-              <PreviewValue>
-                {LIQUIDITY_GOAL_OPTIONS.find((g) => g.key === card.draft.liquidityGoal)?.label}
-              </PreviewValue>
-            </PreviewRow>
-            <PreviewRow>
               <PreviewKey>AI strategy</PreviewKey>
               <PreviewValue>
                 {STRATEGY_PRESET_OPTIONS.find((s) => s.key === card.draft.strategyPreset)?.title}
@@ -1888,12 +1861,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 <PreviewKey>Market</PreviewKey>
                 <PreviewValue>
                   {QUOTE_ASSET_OPTIONS.find((q) => q.key === card.draft.quoteAssetKey)?.label}
-                </PreviewValue>
-              </PreviewRow>
-              <PreviewRow>
-                <PreviewKey>Goal</PreviewKey>
-                <PreviewValue>
-                  {LIQUIDITY_GOAL_OPTIONS.find((g) => g.key === card.draft.liquidityGoal)?.label}
                 </PreviewValue>
               </PreviewRow>
               <PreviewRow>
