@@ -5,18 +5,17 @@ import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
+import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
-import TradePageHeader from './components/TradePageHeader'
+import TradeSwapHero from './components/TradeSwapHero'
 import TradeCockpit from './TradeCockpit'
 import TradeCenterPanel from './TradeCenterPanel'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
 import TradeRouterPanel from './components/TradeRouterPanel'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import useTradeTerminalData from './useTradeTerminalData'
-import useTradeVisibilityStatus from './useTradeVisibilityStatus'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
 import { tradeColors, tradeLayout } from './tradeTokens'
-import { resolveProjectByContractAddress, resolveProjectByTokenSymbol } from 'registry/projects/identity'
 
 const Root = styled.div`
   color: ${tradeColors.text};
@@ -49,7 +48,7 @@ const Content = styled.div`
 const TopGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
-  align-items: stretch;
+  align-items: start;
   min-width: 0;
 
   @media (min-width: 900px) {
@@ -91,13 +90,18 @@ const stretchColumn = `
   }
 `
 
-const AreaCockpit = styled.div`
-  grid-area: cockpit;
-  ${stretchColumn}
+const LeftWorkspace = styled.div`
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  gap: ${tradeLayout.verticalRhythm};
+  min-width: 0;
+  min-height: 0;
+  align-self: start;
 `
 
-const AreaCenter = styled.div`
-  grid-area: center;
+const AreaCockpit = styled.div`
+  grid-area: cockpit;
   ${stretchColumn}
 `
 
@@ -110,6 +114,7 @@ const AreaRoutes = styled.div`
 `
 
 export const TradeTerminalScreen: React.FC = () => {
+  const [productAction, setProductAction] = React.useState<SmartSwapProductAction>('swap')
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -119,22 +124,6 @@ export const TradeTerminalScreen: React.FC = () => {
 
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
-  const outputProject = React.useMemo(() => {
-    const byAddress = outputCurrencyId ? resolveProjectByContractAddress(outputCurrencyId) : undefined
-    return byAddress ?? resolveProjectByTokenSymbol(outputSymbol)
-  }, [outputCurrencyId, outputSymbol])
-  const projectPageActive = Boolean(
-    outputProject &&
-      outputProject.registryStatus === 'listed' &&
-      outputProject.capabilities.tradable.status === 'live' &&
-      outputProject.lifecycleStatus !== 'inactive',
-  )
-  const projectAddress =
-    outputCurrencyId ?? outputProject?.resources.tokens.find((token) => token.symbol === outputSymbol)?.address
-  const visibility = useTradeVisibilityStatus({
-    projectSlug: outputProject?.slug,
-    projectAddress,
-  })
 
   // Market/indexer reads are intentionally created once for the whole terminal.
   // TradeCenterPanel used to create a second identical runtime (SWR, multicall,
@@ -148,23 +137,13 @@ export const TradeTerminalScreen: React.FC = () => {
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <Content>
-        <TradePageHeader
-          inputSymbol={inputSymbol}
-          outputSymbol={outputSymbol}
-          projectName={outputProject?.displayName}
-          projectHref={projectPageActive ? `/@${outputProject?.slug}/` : undefined}
-          bridgeHref={outputSymbol.toUpperCase() === 'MARCO' ? '/bridge' : undefined}
-          featured={visibility.featured}
-          featuredRemaining={visibility.featuredRemaining}
-          boosted={visibility.boosted}
-          boostedRemaining={visibility.boostedRemaining}
-        />
+        <TradeSwapHero />
         <TradeRuntimeProvider>
           <TopGrid>
             <AreaCockpit>
-              <TradeCockpit />
+              <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
             </AreaCockpit>
-            <AreaCenter>
+            <LeftWorkspace>
               <TradeCenterPanel
                 data={tradeData}
                 inputSymbol={inputSymbol}
@@ -172,23 +151,37 @@ export const TradeTerminalScreen: React.FC = () => {
                 inputCurrencyId={inputCurrencyId}
                 outputCurrencyId={outputCurrencyId}
               />
-            </AreaCenter>
+              {productAction === 'bridge' ? (
+                <AreaSwaps data-bridge-recent-swaps="true">
+                  <TradeRecentSwaps
+                    rows={recentSwaps}
+                    isIndexing={isIndexing}
+                    swapEmptyReason={swapEmptyReason}
+                    missingReason={missingReason}
+                    missingReasonDetail={missingReasonDetail}
+                    swapDiagnostic={swapDiagnostic}
+                  />
+                </AreaSwaps>
+              ) : null}
+            </LeftWorkspace>
           </TopGrid>
-          <BottomGrid>
-            <AreaSwaps>
-              <TradeRecentSwaps
-                rows={recentSwaps}
-                isIndexing={isIndexing}
-                swapEmptyReason={swapEmptyReason}
-                missingReason={missingReason}
-                missingReasonDetail={missingReasonDetail}
-                swapDiagnostic={swapDiagnostic}
-              />
-            </AreaSwaps>
-            <AreaRoutes>
-              <TradeRouterPanel />
-            </AreaRoutes>
-          </BottomGrid>
+          {productAction === 'swap' ? (
+            <BottomGrid>
+              <AreaSwaps>
+                <TradeRecentSwaps
+                  rows={recentSwaps}
+                  isIndexing={isIndexing}
+                  swapEmptyReason={swapEmptyReason}
+                  missingReason={missingReason}
+                  missingReasonDetail={missingReasonDetail}
+                  swapDiagnostic={swapDiagnostic}
+                />
+              </AreaSwaps>
+              <AreaRoutes>
+                <TradeRouterPanel />
+              </AreaRoutes>
+            </BottomGrid>
+          ) : null}
         </TradeRuntimeProvider>
       </Content>
     </Root>

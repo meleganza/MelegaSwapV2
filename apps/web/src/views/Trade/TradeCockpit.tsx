@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
@@ -136,9 +136,13 @@ const RefreshIcon = () => (
   </svg>
 )
 
-export const TradeCockpit: React.FC = () => {
+export interface TradeCockpitProps {
+  productAction: SmartSwapProductAction
+  onProductActionChange: (action: SmartSwapProductAction) => void
+}
+
+export const TradeCockpit: React.FC<TradeCockpitProps> = ({ productAction, onProductActionChange }) => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
-  const [productAction, setProductAction] = useState<SmartSwapProductAction>('swap')
   const { account } = useWeb3React()
   const warningSwapHandler = useTradeWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
@@ -175,7 +179,7 @@ export const TradeCockpit: React.FC = () => {
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
-          <SmartSwapProductTabs value={productAction} onChange={setProductAction} />
+          <SmartSwapProductTabs value={productAction} onChange={onProductActionChange} />
           {productAction === 'swap' ? (
             <Toolbar data-trade-cockpit-toolbar>
               <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
