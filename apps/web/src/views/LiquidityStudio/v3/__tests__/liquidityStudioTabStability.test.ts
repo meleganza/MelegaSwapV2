@@ -67,9 +67,11 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_RESTORE tab stability', (
   it('hero CTAs mirror tab selection without route reload', () => {
     expect(shell).toContain('goPositions')
     expect(shell).toContain('goAdd')
+    expect(shell).toContain('goRemove')
     expect(shell).toContain('goAi')
     expect(shell).toContain('$primary={tab === \'positions\'}')
-    expect(shell).toContain('$primary={tab === \'add\'}')
+    expect(shell).toContain("$primary={tab === 'add' && !removing}")
+    expect(shell).toContain("$primary={tab === 'add' && removing}")
     expect(shell).toContain('$primary={tab === \'building\'}')
     expect(shell).not.toContain('router.push')
     expect(shell).not.toContain('href="/liquidity?view=')

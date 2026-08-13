@@ -123,7 +123,7 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     shortLabel: 'Base',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     explorer: 'https://basescan.org',
-    logo: '/images/chains/8453.png',
+    logo: '/images/chains/8453-1.png',
     status: 'LIVE',
     capabilities: {
       swap: true,
