@@ -255,7 +255,6 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             showMaxButton
             maxAmount={maxAmountInput}
             showQuickInputButton
-            compactWalletControls
             currency={currencies[Field.INPUT]}
             onUserInput={handleTypeInput}
             onPercentInput={handlePercentInput}
@@ -296,7 +295,6 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             onUserInput={handleTypeOutput}
             label={independentField === Field.INPUT && !showWrap && tradeInfo ? t('To (estimated)') : t('To')}
             showMaxButton={false}
-            compactWalletControls
             currency={currencies[Field.OUTPUT]}
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}

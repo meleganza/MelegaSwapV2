@@ -567,11 +567,6 @@ const LiquidityV3Body: React.FC = () => {
     selectTab('add')
   }, [selectTab])
 
-  const goRemove = useCallback(() => {
-    setTab('add')
-    setMode('Remove Liquidity', { syncUrl: false })
-  }, [setMode])
-
   const goPositions = useCallback(() => selectTab('positions'), [selectTab])
   const goAi = useCallback(() => selectTab('building'), [selectTab])
 
@@ -608,22 +603,13 @@ const LiquidityV3Body: React.FC = () => {
               {LIQ_V3_COPY.positionsCta}
             </Btn>
             <Btn
-              $primary={tab === 'add' && !removing}
+              $primary={tab === 'add'}
               type="button"
               onClick={goAdd}
               data-testid="liquidity-v3-hero-add"
               aria-selected={tab === 'add'}
             >
               {LIQ_V3_COPY.addCta}
-            </Btn>
-            <Btn
-              $primary={tab === 'add' && removing}
-              type="button"
-              onClick={goRemove}
-              data-testid="liquidity-v3-hero-remove"
-              aria-selected={tab === 'add' && removing}
-            >
-              {LIQ_V3_COPY.removeCta}
             </Btn>
             <Btn
               $primary={tab === 'building'}
@@ -671,22 +657,12 @@ const LiquidityV3Body: React.FC = () => {
         <TabBtn
           type="button"
           role="tab"
-          aria-selected={tab === 'add' && !removing}
-          $on={tab === 'add' && !removing}
+          aria-selected={tab === 'add'}
+          $on={tab === 'add'}
           onClick={() => selectTab('add')}
           data-testid="liquidity-v3-tab-add"
         >
           {LIQ_V3_COPY.tabAdd}
-        </TabBtn>
-        <TabBtn
-          type="button"
-          role="tab"
-          aria-selected={tab === 'add' && removing}
-          $on={tab === 'add' && removing}
-          onClick={goRemove}
-          data-testid="liquidity-v3-tab-remove"
-        >
-          {LIQ_V3_COPY.tabRemove}
         </TabBtn>
         <TabBtn
           type="button"

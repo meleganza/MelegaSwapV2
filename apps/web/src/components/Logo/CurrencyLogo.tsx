@@ -50,7 +50,7 @@ export default function CurrencyLogo({
         <StyledLogo
           badSrcs={BAD_SRCS}
           size={size}
-          srcs={[`/images/chains/8453-1.png`]}
+          srcs={[`/images/chains/8453.png`]}
           width={size}
           style={style}
         />

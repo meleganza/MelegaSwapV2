@@ -81,7 +81,7 @@ export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_RUNTIME_FREEZE_SHA256 = {
-  useLiquidityMintRuntime: '0cf3204a2ec6a2def1d40c979732f9ec949302ef480f0009dfbe572fbb941143',
+  useLiquidityMintRuntime: '46edb9319a17aaba088b180170ff05130299e3c14882083c9ce9103da8db80ff',
   LiquidityRuntimeContext: '1c17119c192b27c82e4c3d1b84a4be3c278740fc1d8ef63a18b5254de6521515',
 } as const
 

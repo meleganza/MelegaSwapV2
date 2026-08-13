@@ -84,10 +84,6 @@ const Overlay = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `
 
-const CompactWalletRow = styled.div`
-  display: none;
-`
-
 type ZapStyle = 'noZap' | 'zap'
 
 interface CurrencyInputPanelProps {
@@ -117,7 +113,6 @@ interface CurrencyInputPanelProps {
   error?: boolean
   showBUSD?: boolean
   tokensToShow?: Token[]
-  compactWalletControls?: boolean
 }
 export default function CurrencyInputPanel({
   value,
@@ -146,7 +141,6 @@ export default function CurrencyInputPanel({
   error,
   showBUSD,
   tokensToShow,
-  compactWalletControls = false,
 }: CurrencyInputPanelProps) {
   const { address: account } = useAccount()
   const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
@@ -258,59 +252,6 @@ export default function CurrencyInputPanel({
           </Flex>
         </CurrencySelectButton>
       </Flex>
-      {compactWalletControls ? (
-        <CompactWalletRow
-          className="compact-wallet-controls"
-          data-testid={`${id}-wallet-controls`}
-          data-wallet-balance-state={!account ? 'disconnected' : selectedCurrencyBalance ? 'ready' : 'loading'}
-        >
-          <Text
-            className="compact-wallet-balance"
-            title={selectedCurrencyBalance?.toExact()}
-            onClick={!disabled && onMax ? onMax : undefined}
-          >
-            {!account
-              ? t('Connect wallet to view balance')
-              : !currency
-                ? t('Select an asset')
-                : t('Balance: %balance% %symbol%', {
-                    balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading'),
-                    symbol: currency.symbol ?? '',
-                  })}
-          </Text>
-          {account && maxAmount?.greaterThan(0) && onPercentInput && !disabled ? (
-            <Flex className="compact-wallet-percentages" alignItems="center">
-              {[25, 50].map((percent) => (
-                <Button
-                  key={`compact-wallet-${id}-${percent}`}
-                  type="button"
-                  scale="xs"
-                  variant="secondary"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    onPercentInput(percent)
-                  }}
-                  data-testid={`${id}-percent-${percent}`}
-                >
-                  {percent}%
-                </Button>
-              ))}
-              <Button
-                type="button"
-                scale="xs"
-                variant="secondary"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onMax?.()
-                }}
-                data-testid={`${id}-percent-100`}
-              >
-                MAX
-              </Button>
-            </Flex>
-          ) : null}
-        </CompactWalletRow>
-      ) : null}
       <InputPanel>
         {account && (
           <Flex alignItems="center" justifyContent="space-between" p="0 1rem 0.75rem 0.75rem">

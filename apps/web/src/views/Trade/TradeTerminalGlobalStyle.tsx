@@ -166,16 +166,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 112px !important;
-    height: 112px !important;
-    max-height: 112px !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
     margin-top: 0 !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 112px !important;
-    height: 112px !important;
-    max-height: 112px !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
     margin-top: 0 !important;
   }
 
@@ -199,7 +199,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     position: absolute !important;
     left: 14px !important;
     right: 112px !important;
-    bottom: 40px !important;
+    bottom: 14px !important;
     top: auto !important;
     height: 32px !important;
     min-height: 32px !important;
@@ -240,52 +240,6 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap #swap-currency-output::before {
     content: 'TO (ESTIMATED)';
-  }
-
-  .trade-terminal-swap .compact-wallet-controls {
-    position: absolute !important;
-    left: 14px !important;
-    right: 14px !important;
-    bottom: 10px !important;
-    height: 24px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-    z-index: 4 !important;
-  }
-
-  .trade-terminal-swap .compact-wallet-balance {
-    min-width: 0 !important;
-    max-width: 148px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    color: #a7a7a7 !important;
-    font-size: 11px !important;
-    line-height: 20px !important;
-    cursor: pointer !important;
-  }
-
-  .trade-terminal-swap .compact-wallet-percentages {
-    gap: 4px !important;
-    flex-shrink: 0 !important;
-  }
-
-  .trade-terminal-swap .compact-wallet-percentages button {
-    width: auto !important;
-    min-width: 38px !important;
-    height: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
-    padding: 0 7px !important;
-    margin: 0 !important;
-    border-radius: 6px !important;
-    border: 1px solid rgba(244, 196, 48, 0.42) !important;
-    background: rgba(244, 196, 48, 0.08) !important;
-    color: ${tradeColors.goldBright} !important;
-    font-size: 10px !important;
-    font-weight: 800 !important;
   }
 
   .trade-terminal-swap .token-amount-input,
@@ -517,9 +471,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 112px !important;
-      height: 112px !important;
-      max-height: 112px !important;
+      min-height: 84px !important;
+      height: 84px !important;
+      max-height: 84px !important;
     }
 
     .trade-terminal-swap button[class*='SwapButton'],
@@ -539,14 +493,6 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
       overflow: hidden !important;
       text-overflow: ellipsis !important;
     }
-
-    .trade-swap-cockpit .trade-terminal-swap .compact-wallet-percentages button[type='button'] {
-      display: inline-flex !important;
-      width: auto !important;
-      max-width: none !important;
-      min-width: 36px !important;
-      min-height: 22px !important;
-    }
   }
 
   @media (max-width: 390px) {
@@ -559,30 +505,20 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
     .trade-terminal-swap #swap-currency-output [class*='InputContainer'] {
       right: 88px !important;
-      bottom: 38px !important;
+      bottom: 12px !important;
     }
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
       padding: 12px !important;
-      min-height: 108px !important;
-      height: 108px !important;
-      max-height: 108px !important;
+      min-height: 76px !important;
+      height: 76px !important;
+      max-height: 76px !important;
     }
 
     .trade-terminal-swap [class*='OpenCurrencySelectButton'] {
       max-width: 92px !important;
       font-size: 12px !important;
-    }
-
-    .trade-terminal-swap .compact-wallet-balance {
-      max-width: 116px !important;
-      font-size: 10px !important;
-    }
-
-    .trade-terminal-swap .compact-wallet-percentages button {
-      min-width: 34px !important;
-      padding: 0 5px !important;
     }
   }
 `

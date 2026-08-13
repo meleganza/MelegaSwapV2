@@ -13,15 +13,7 @@ export const ChainLogo = memo(
       return (
         <Image
           alt={`chain-${chainId}`}
-          style={{
-            width: `${width}px`,
-            height: `${height}px`,
-            maxWidth: `${width}px`,
-            maxHeight: `${height}px`,
-            objectFit: 'contain',
-            borderRadius: '50%',
-            flexShrink: 0,
-          }}
+          style={{ maxHeight: `${height}px` }}
           src={`/images/chains/${[42161, 8453, 324, 10].includes(logoChainId) ? `${logoChainId}-1` : logoChainId}.png`}
           width={width}
           height={height}
