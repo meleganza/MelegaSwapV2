@@ -161,7 +161,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     padding: 14px 14px 28px !important;
     position: relative !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     margin: 0 !important;
   }
 
@@ -174,17 +174,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 108px !important;
-    height: 108px !important;
-    max-height: 108px !important;
-    margin-top: 0 !important;
+    min-height: 96px !important;
+    height: 96px !important;
+    max-height: 96px !important;
+    margin-top: 20px !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 108px !important;
-    height: 108px !important;
-    max-height: 108px !important;
-    margin-top: 0 !important;
+    min-height: 96px !important;
+    height: 96px !important;
+    max-height: 96px !important;
   }
 
   .trade-terminal-swap #swap-currency-input::before,
@@ -209,7 +208,6 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     right: 112px !important;
     top: 30px !important;
     bottom: auto !important;
-    top: auto !important;
     height: 32px !important;
     min-height: 32px !important;
     max-height: 32px !important;
@@ -253,9 +251,10 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap [data-compact-wallet-controls] {
     position: absolute !important;
-    left: 14px !important;
-    right: 14px !important;
-    bottom: 7px !important;
+    left: 2px !important;
+    right: 2px !important;
+    top: -20px !important;
+    bottom: auto !important;
     height: 18px !important;
     z-index: 4 !important;
     white-space: nowrap !important;
@@ -365,11 +364,11 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-cockpit .trade-terminal-swap #swap-currency-input {
-    margin-top: 0 !important;
+    margin-top: 20px !important;
   }
 
   .trade-cockpit .trade-terminal-swap #swap-currency-output {
-    margin-top: ${tradeLayout.executionInputGap} !important;
+    margin-top: calc(${tradeLayout.executionInputGap} + 20px) !important;
   }
 
   .trade-swap-cockpit [data-trade-route-line] {
@@ -515,9 +514,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 96px !important;
-      height: 96px !important;
-      max-height: 96px !important;
+      min-height: 88px !important;
+      height: 88px !important;
+      max-height: 88px !important;
     }
 
     .trade-terminal-swap button[class*='SwapButton'],
@@ -555,9 +554,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
       padding: 12px !important;
-      min-height: 76px !important;
-      height: 76px !important;
-      max-height: 76px !important;
+      min-height: 72px !important;
+      height: 72px !important;
+      max-height: 72px !important;
     }
 
     .trade-terminal-swap [class*='OpenCurrencySelectButton'] {

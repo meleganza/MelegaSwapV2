@@ -11,6 +11,7 @@ import {
   formatFeaturedChange,
   formatFeaturedPrice,
   formatFeaturedMarketCap,
+  formatFeaturedVolume,
 } from 'views/HomeTrade/useFeaturedProjectMarkets'
 import { resolveTrendingItemsForDisplay } from 'lib/trending/durableTrendingSnapshot'
 import { LIST_HERO_BNB_IMG_PX, LIST_HERO_BNB_LOGO, LIST_HERO_BNB_ORBIT_PX } from 'views/ListStudio/ListPageHero'
@@ -40,6 +41,10 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(formatFeaturedChange({ changePct: null } as never).text).not.toContain('Insufficient')
     expect(formatFeaturedPrice(undefined)).toBe('Price updating')
     expect(formatFeaturedMarketCap(undefined)).toBe('—')
+    expect(formatFeaturedChange({ status: 'NO_RECENT_TRADES', changePct: null } as never).text).toBe('')
+    expect(formatFeaturedVolume({ status: 'NO_RECENT_TRADES' } as never)).toBe('$0.00')
+    expect(formatFeaturedVolume({ status: 'STALE' } as never)).toBe('—')
+    expect(formatUsdPrice(0.000000259849)).toBe('$0.000000259849')
   })
 
   it('durable trending snapshot prefers live and falls back to last-good', () => {

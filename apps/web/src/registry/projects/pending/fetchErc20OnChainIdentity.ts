@@ -9,6 +9,7 @@ const ERC20_ABI = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
   'function decimals() view returns (uint8)',
+  'function totalSupply() view returns (uint256)',
 ]
 
 const RPC_BY_CHAIN: Record<number, string[]> = {
@@ -29,6 +30,8 @@ export interface Erc20OnChainIdentity {
   name: string | null
   symbol: string | null
   decimals: number | null
+  totalSupplyRaw: string | null
+  totalSupplyFormatted: string | null
   verifiedDeployment: boolean
   explorerUrl: string | null
   reasonUnavailable: string | null
@@ -75,6 +78,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: 'Contract address is not a valid EVM address.',
@@ -86,6 +91,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: `No RPC endpoints configured for chain ${chainId}.`,
@@ -100,6 +107,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
           name: null,
           symbol: null,
           decimals: null,
+          totalSupplyRaw: null,
+          totalSupplyFormatted: null,
           verifiedDeployment: false,
           explorerUrl,
           reasonUnavailable: 'No contract bytecode at this address on the selected chain (not deployed).',
@@ -110,6 +119,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
       let name: string | null = null
       let symbol: string | null = null
       let decimals: number | null = null
+      let totalSupplyRaw: string | null = null
+      let totalSupplyFormatted: string | null = null
       const failures: string[] = []
 
       try {
@@ -129,12 +140,21 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
       } catch {
         failures.push('decimals()')
       }
+      try {
+        const supply = await token.totalSupply()
+        totalSupplyRaw = supply.toString()
+        if (decimals != null) totalSupplyFormatted = ethers.utils.formatUnits(supply, decimals)
+      } catch {
+        failures.push('totalSupply()')
+      }
 
       if (!name && !symbol) {
         return {
           name: null,
           symbol: null,
           decimals,
+          totalSupplyRaw,
+          totalSupplyFormatted,
           verifiedDeployment: true,
           explorerUrl,
           reasonUnavailable: `Contract is deployed but ERC-20 metadata is unreadable (${
@@ -147,6 +167,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
         name,
         symbol,
         decimals,
+        totalSupplyRaw,
+        totalSupplyFormatted,
         verifiedDeployment: true,
         explorerUrl,
         reasonUnavailable: null,
@@ -157,6 +179,8 @@ export async function fetchErc20OnChainIdentity(chainId: number, contract: strin
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: `RPC read failed for chain ${chainId}. Retry or verify the contract on the explorer.`,

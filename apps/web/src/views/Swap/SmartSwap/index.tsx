@@ -103,6 +103,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
   const {
     trade: tradeWithStableSwap,
     currencyBalances,
+    currencyBalanceLoading,
     parsedAmount,
     inputError: stableSwapInputError,
   } = useDerivedSwapInfoWithStableSwap(independentField, typedValue, inputCurrency, outputCurrency, recipient)
@@ -254,6 +255,8 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             value={formattedAmounts[Field.INPUT]}
             showMaxButton
             maxAmount={maxAmountInput}
+            balanceOverride={currencyBalances[Field.INPUT]}
+            balanceLoading={currencyBalanceLoading[Field.INPUT]}
             showQuickInputButton
             compactWalletControls
             currency={currencies[Field.INPUT]}
@@ -297,6 +300,8 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             label={independentField === Field.INPUT && !showWrap && tradeInfo ? t('To (estimated)') : t('To')}
             showMaxButton={false}
             currency={currencies[Field.OUTPUT]}
+            balanceOverride={currencyBalances[Field.OUTPUT]}
+            balanceLoading={currencyBalanceLoading[Field.OUTPUT]}
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}
             id="swap-currency-output"

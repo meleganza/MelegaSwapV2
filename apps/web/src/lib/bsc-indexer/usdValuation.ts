@@ -42,7 +42,12 @@ export function formatUsdCompact(value?: number | null): string {
 
 export function formatUsdPrice(value?: number | null): string {
   if (value == null || !Number.isFinite(value) || !(value > 0)) return 'Price updating'
-  if (value < 0.000001) return '<$0.000001'
+  // Preserve enough verified reserve-price precision for micro-priced assets.
+  // Fixed-point output avoids both a vague "<$0.000001" label and scientific notation.
+  if (value < 0.000001) {
+    const fixed = value.toFixed(12).replace(/0+$/, '').replace(/\.$/, '')
+    return fixed && fixed !== '0' ? `$${fixed}` : '<$0.000000000001'
+  }
   if (value < 0.01) return `$${value.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
   if (value < 1) return `$${value.toFixed(4)}`
   return `$${value.toFixed(2)}`

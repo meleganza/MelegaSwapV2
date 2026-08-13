@@ -437,13 +437,11 @@ export const FeaturedProjectsRail: React.FC = () => {
                 >
                   {formatFeaturedPrice(market)}
                 </Price>
-                <Change
-                  $empty={change.empty}
-                  $positive={change.positive}
-                  title={change.empty ? change.text : `Melega DEX · ${market?.periodLabel ?? '24H'}`}
-                >
-                  {change.text}
-                </Change>
+                {!change.empty ? (
+                  <Change $positive={change.positive} title={`Melega DEX · ${market?.periodLabel ?? '24H'}`}>
+                    {change.text}
+                  </Change>
+                ) : null}
               </Metrics>
               <SparkRow data-testid={`featured-spark-${p.slug}`}>
                 <FeaturedMiniSpark pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]} />

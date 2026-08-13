@@ -114,6 +114,8 @@ interface CurrencyInputPanelProps {
   showBUSD?: boolean
   tokensToShow?: Token[]
   compactWalletControls?: boolean
+  balanceOverride?: CurrencyAmount<Currency>
+  balanceLoading?: boolean
 }
 export default function CurrencyInputPanel({
   value,
@@ -143,9 +145,15 @@ export default function CurrencyInputPanel({
   showBUSD,
   tokensToShow,
   compactWalletControls = false,
+  balanceOverride,
+  balanceLoading = false,
 }: CurrencyInputPanelProps) {
   const { address: account } = useAccount()
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const legacyCurrencyBalance = useCurrencyBalance(
+    account ?? undefined,
+    balanceOverride ? undefined : currency ?? undefined,
+  )
+  const selectedCurrencyBalance = balanceOverride ?? legacyCurrencyBalance
   const { t } = useTranslation()
 
   const token = pair ? pair.liquidityToken : currency?.isToken ? currency : null
@@ -358,7 +366,9 @@ export default function CurrencyInputPanel({
         >
           <Text color="textSubtle" fontSize="11px" data-wallet-balance>
             {!hideBalance && currency
-              ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
+              ? t('Balance: %balance%', {
+                  balance: selectedCurrencyBalance?.toSignificant(6) ?? (balanceLoading ? t('Loading') : '—'),
+                })
               : '—'}
           </Text>
           {showQuickInputButton && maxAmount?.greaterThan(0) && onPercentInput ? (

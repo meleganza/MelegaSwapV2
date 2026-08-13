@@ -294,7 +294,9 @@ export async function buildFeaturedProjectMarkets(): Promise<{
       marketCapUsd,
       marketCapLabel,
       bnbUsd,
-      tradeCount24h: recentSwaps.length || undefined,
+      // Zero is factual information: keep it so every consumer can distinguish
+      // a confirmed empty 24H window from an unavailable observation.
+      tradeCount24h: recentSwaps.length,
       lastTradeTimestamp: lastTradeTimestamp || undefined,
       quoteSymbol: 'WBNB',
       source,

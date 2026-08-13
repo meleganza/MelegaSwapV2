@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
 import { MarcoPay } from 'components/MarcoWidgets'
 import {
   MelegaModal,
@@ -28,6 +28,7 @@ import {
   type PlacementPackage,
 } from 'lib/monetization/packages'
 import { VISIBILITY_RUNTIME, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
+import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
@@ -463,7 +464,7 @@ function parseDetectedProject(
     totalSupply: json.onChain.totalSupplyFormatted ?? null,
     logoUrl: project?.logoUrl ?? dex?.logo ?? null,
     slug: project?.slug ?? dex?.registrySlug ?? null,
-    projectPageExists: Boolean(canonical && project?.slug),
+    projectPageExists: Boolean((canonical && project?.slug) || (dex?.projectClaimed && dex?.registrySlug)),
     explorerUrl: json.onChain.explorerUrl ?? null,
     dexListed: Boolean(dex?.listed),
     website: dex?.website ?? null,
@@ -497,6 +498,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   visibilityOnly: _visibilityOnly = false,
 }) => {
   const { address } = useAccount()
+  const { data: signer } = useSigner()
   const buyerWallet = address ?? null
   const [step, setStep] = useState<CommercialCheckoutStep>('project')
   const [service, setService] = useState<CommercialServiceId | null>(initialService)
@@ -619,7 +621,91 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     done: index < stepIndex,
   }))
 
-  const goNext = () => {
+  const publishDetectedProject = useCallback(async (): Promise<boolean> => {
+    if (!detected) return false
+    if (!address || !signer) {
+      setError('Connect the project owner/deployer wallet to verify and publish the Project Page.')
+      return false
+    }
+    if (!draft.description.trim()) {
+      setError('Add a short project description before continuing.')
+      return false
+    }
+    const metadata = normalizeClaimMetadata({
+      name: detected.name,
+      symbol: detected.symbol,
+      handle: draft.handle || detected.symbol,
+      description: draft.description,
+      logo: draft.logoUrl || null,
+      website: draft.website || null,
+      x: draft.x || null,
+      telegram: draft.telegram || null,
+      discord: null,
+    })
+    if (!metadata.handle) {
+      setError('Choose a valid Project Page handle before continuing.')
+      return false
+    }
+
+    setBusy(true)
+    try {
+      const preflightResponse = await fetch('/api/registry/projects/claim', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'preflight',
+          chainId: detected.chainId,
+          contract: detected.contract,
+          claimant: address,
+        }),
+      })
+      const preflight = await preflightResponse.json()
+      if (!preflightResponse.ok || !preflight.ok) {
+        throw new Error(preflight.reason || 'Project ownership verification failed.')
+      }
+
+      const issuedAt = new Date().toISOString()
+      const message = buildProjectClaimMessage({
+        chainId: detected.chainId,
+        contract: detected.contract,
+        claimant: address,
+        metadata,
+        issuedAt,
+      })
+      const signature = await signer.signMessage(message)
+      const publishResponse = await fetch('/api/registry/projects/claim', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'publish',
+          chainId: detected.chainId,
+          contract: detected.contract,
+          claimant: address,
+          metadata,
+          issuedAt,
+          signature,
+        }),
+      })
+      const published = await publishResponse.json()
+      if (!publishResponse.ok || !published.ok) {
+        throw new Error(published.reason || 'Project Page publication failed.')
+      }
+      const slug = published.claim?.slug ?? metadata.handle
+      setDetected((current) =>
+        current
+          ? { ...current, tier: 'canonical', slug, projectPageExists: true, logoUrl: metadata.logo }
+          : current,
+      )
+      return true
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Project Page publication failed.')
+      return false
+    } finally {
+      setBusy(false)
+    }
+  }, [address, detected, draft, signer])
+
+  const goNext = async () => {
     setError(null)
     if (step === 'project') {
       if (!detected) {
@@ -627,8 +713,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         return
       }
       if (!detected.projectPageExists) {
-        setError(VISIBILITY_RUNTIME.projectPublisher.reason)
-        return
+        const published = await publishDetectedProject()
+        if (!published) return
       }
       setStep('service')
       return
@@ -807,29 +893,26 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       }
 
       setStatus('awaiting_wallet')
-      const eth = (
-        window as unknown as {
-          ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> }
-        }
-      ).ethereum
-      if (!eth) {
+      if (!signer) {
         setWalletStage('error')
         throw new Error(RC_COPY.walletUnavailable)
       }
-      const chainIdHex = (await eth.request({ method: 'eth_chainId' })) as string
-      if (Number.parseInt(chainIdHex, 16) !== 56) {
+      const connectedChainId = await signer.getChainId()
+      if (connectedChainId !== 56) {
         setWalletStage('switch_network')
         throw new Error(RC_COPY.wrongNetwork)
       }
 
       let txHash: string
+      let receipt: Awaited<ReturnType<Awaited<ReturnType<typeof signer.sendTransaction>>['wait']>>
       try {
-        txHash = (await eth.request({
-          method: 'eth_sendTransaction',
-          params: [
-            { from: buyerWallet, to: prepared.to, value: prepared.valueHex, data: prepared.data, chainId: '0x38' },
-          ],
-        })) as string
+        const transaction = await signer.sendTransaction({
+          to: prepared.to,
+          value: prepared.valueHex,
+          data: prepared.data,
+        })
+        txHash = transaction.hash
+        receipt = await transaction.wait(1)
       } catch (cause) {
         const message = cause instanceof Error ? cause.message : String(cause)
         if (/reject|denied|cancel/i.test(message)) {
@@ -856,17 +939,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         ),
       })
       setStatus('submitted')
-      let receipt: Record<string, unknown> | null = null
-      for (let index = 0; index < 20; index += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        receipt = (await eth.request({ method: 'eth_getTransactionReceipt', params: [txHash] })) as Record<
-          string,
-          unknown
-        > | null
-        if (receipt) break
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-      }
       if (!receipt) {
         setError('Payment submitted — receipt not yet available.')
         setStatus('submitted_pending_receipt')
@@ -882,7 +954,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           transactionHash: txHash,
           receipt: {
             to: receipt.to,
-            value: (receipt as { value?: string }).value ?? null,
+            value: null,
             status: receipt.status,
             logs: receipt.logs,
           },
@@ -929,6 +1001,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     projectSlug,
     selectedPackage,
     service,
+    signer,
   ])
 
   const preview = useMemo(
@@ -998,8 +1071,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             {busy ? 'Processing…' : pay === 'MARCO_PAY' ? 'Complete in MARCO PAY' : 'Pay & activate'}
           </PrimaryBtn>
         ) : (
-          <PrimaryBtn type="button" onClick={goNext} data-testid="commercial-checkout-next">
-            Continue
+          <PrimaryBtn
+            type="button"
+            onClick={() => void goNext()}
+            disabled={busy || detecting}
+            data-testid="commercial-checkout-next"
+          >
+            {busy && step === 'project' ? 'Verifying & publishing…' : 'Continue'}
           </PrimaryBtn>
         )}
       </MelegaModalFooterActions>
@@ -1085,8 +1163,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   {!detected.projectPageExists ? (
                     <>
                       <Alert>
-                        Complete the missing Project Page details here. Checkout stays blocked until wallet ownership
-                        proof and server-side publishing are available; the popup never sends you to another page.
+                        Complete the missing Project Page details here. Continue verifies the connected owner/deployer
+                        wallet, requests a safe signature and publishes the Project Page without leaving this popup.
                       </Alert>
                       <FieldGrid>
                         <Input

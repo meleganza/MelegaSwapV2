@@ -163,6 +163,7 @@ function mapFeatured(
       priceWbnb: r.latestPriceQuote,
       volume24hUsd: r.volume24hUsd,
       volume24hWbnb: r.volume24hQuote,
+      tradeCount24h: r.tradeCount24h,
       liquidityUsd: r.liquidityUsd,
       fdvUsd: r.marketCapUsd,
       marketCapLabel: (r.marketCapLabel as CanonicalFeaturedObservation['marketCapLabel']) || 'Unavailable',

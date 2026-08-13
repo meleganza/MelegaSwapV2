@@ -23,6 +23,7 @@ function featuredFromCanonical(row: CanonicalFeaturedObservation): FeaturedMarke
     periodLabel: '24H',
     volume24hQuote: row.volume24hWbnb,
     volume24hUsd: row.volume24hUsd,
+    tradeCount24h: row.tradeCount24h,
     liquidityUsd: row.liquidityUsd,
     marketCapUsd: row.fdvUsd,
     marketCapLabel: row.marketCapLabel,
@@ -145,11 +146,7 @@ export function formatFeaturedChange(row?: FeaturedMarketRow): {
   empty: boolean
 } {
   if (row?.changePct == null || !Number.isFinite(row.changePct)) {
-    if (row?.status === 'NO_RECENT_TRADES') return { text: 'No recent swaps', empty: true }
-    if (row?.tradeCount24h === 0 || row?.tradeCount24h == null) {
-      return { text: 'No 24H baseline', empty: true }
-    }
-    return { text: 'New', empty: true }
+    return { text: '', empty: true }
   }
   const positive = row.changePct >= 0
   const arrow = positive ? '↑' : '↓'
@@ -170,7 +167,7 @@ export function formatFeaturedVolume(row?: FeaturedMarketRow): string {
     if (row.volume24hUsd === 0) return '$0.00'
     return formatUsdCompact(row.volume24hUsd)
   }
-  if (row?.tradeCount24h === 0 || row?.status === 'NO_RECENT_TRADES') return 'No recent swaps'
+  if (row?.tradeCount24h === 0 || row?.status === 'NO_RECENT_TRADES') return '$0.00'
   return '—'
 }
 

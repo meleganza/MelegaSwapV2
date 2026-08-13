@@ -35,6 +35,7 @@ export type CanonicalFeaturedObservation = {
   priceWbnb?: number
   volume24hUsd?: number
   volume24hWbnb?: number
+  tradeCount24h?: number
   liquidityUsd?: number
   fdvUsd?: number
   marketCapLabel: 'Fully Diluted Value' | 'Unavailable' | 'Market Cap'
