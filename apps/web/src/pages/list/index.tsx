@@ -1,10 +1,9 @@
-import dynamic from 'next/dynamic'
 import { NextPage } from 'next'
+import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
+import ListContractFirstScreen from 'views/ListStudio/ListContractFirstScreen'
 
-const ListScreen = dynamic(() => import('views/ListStudio/ListStudioScreen'), { ssr: false })
+const ListPage: NextPage = () => <ListContractFirstScreen />
 
-const ListPage: NextPage = () => <ListScreen />
-
-ListPage.chains = []
+ListPage.chains = SUPPORT_MULTI_CHAINS
 
 export default ListPage

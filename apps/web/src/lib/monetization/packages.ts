@@ -11,16 +11,25 @@ export const MONETIZATION_ASSETS = ['BNB', 'USDT', 'USDC', 'MARCO'] as const
 export type MonetizationAsset = (typeof MONETIZATION_ASSETS)[number]
 
 export type FeaturedPackageId = 'featured_24h' | 'featured_72h' | 'featured_1w' | 'featured_1m'
-export type TrendBoostPackageId =
-  | 'trend_1h'
-  | 'trend_3h'
-  | 'trend_6h'
-  | 'trend_12h'
-  | 'trend_24h'
+export type TrendBoostPackageId = 'trend_1h' | 'trend_3h' | 'trend_6h' | 'trend_12h' | 'trend_24h'
+export type SponsoredResearchPackageId =
+  | 'research_6h'
+  | 'research_12h'
+  | 'research_24h'
+  | 'research_72h'
+  | 'research_1w'
+  | 'research_1m'
+export type FeaturedFarmPackageId = `featured_farm_${'24h' | '72h' | '1w' | '1m'}`
+export type FeaturedPoolPackageId = `featured_pool_${'24h' | '72h' | '1w' | '1m'}`
 
 export type PlacementPackage = {
-  id: FeaturedPackageId | TrendBoostPackageId
-  product: 'featured_project' | 'trend_boost'
+  id:
+    | FeaturedPackageId
+    | TrendBoostPackageId
+    | SponsoredResearchPackageId
+    | FeaturedFarmPackageId
+    | FeaturedPoolPackageId
+  product: 'featured_project' | 'trend_boost' | 'sponsored_research' | 'featured_farm' | 'featured_pool'
   label: string
   shortLabel: string
   durationLabel: string
@@ -131,6 +140,40 @@ export const TREND_BOOST_PACKAGES: readonly PlacementPackage[] = [
   },
 ] as const
 
+/** Featured Research packages — pricing approved by the founder. */
+export const SPONSORED_RESEARCH_PACKAGES: readonly PlacementPackage[] = [
+  ['research_6h', '6h', '6 hours', 6, 19],
+  ['research_12h', '12h', '12 hours', 12, 29],
+  ['research_24h', '24h', '24 hours', 24, 49],
+  ['research_72h', '72h', '72 hours', 72, 99],
+  ['research_1w', '1 week', '7 days', 168, 199],
+  ['research_1m', '1 month', '30 days', 720, 599],
+].map(([id, shortLabel, durationLabel, hours, usdPrice]) => ({
+  id: id as SponsoredResearchPackageId,
+  product: 'sponsored_research' as const,
+  label: `Featured Research · ${durationLabel}`,
+  shortLabel: String(shortLabel),
+  durationLabel: String(durationLabel),
+  durationMs: Number(hours) * 60 * 60 * 1000,
+  usdPrice: Number(usdPrice),
+  isDefault: id === 'research_24h',
+  acceptedAssets: MONETIZATION_ASSETS,
+}))
+
+function cloneFeaturedCatalog(product: 'featured_farm' | 'featured_pool'): readonly PlacementPackage[] {
+  const noun = product === 'featured_farm' ? 'Farm' : 'Pool'
+  return FEATURED_PACKAGES.map((pkg) => ({
+    ...pkg,
+    id: `${product}_${String(pkg.id).replace('featured_', '')}` as FeaturedFarmPackageId | FeaturedPoolPackageId,
+    product,
+    label: `Featured ${noun} · ${pkg.durationLabel}`,
+  }))
+}
+
+/** Same base price catalog as Featured Project; bundle discounts are calculated at checkout. */
+export const FEATURED_FARM_PACKAGES = cloneFeaturedCatalog('featured_farm')
+export const FEATURED_POOL_PACKAGES = cloneFeaturedCatalog('featured_pool')
+
 export function getFeaturedPackage(id?: string | null): PlacementPackage {
   const found = FEATURED_PACKAGES.find((p) => p.id === id)
   return found ?? FEATURED_PACKAGES.find((p) => p.isDefault)!
@@ -149,10 +192,7 @@ export function listTrendBoostPackageIds(): TrendBoostPackageId[] {
   return TREND_BOOST_PACKAGES.map((p) => p.id as TrendBoostPackageId)
 }
 
-export function schedulePlacementWindow(
-  durationMs: number,
-  from = new Date(),
-): { start: string; end: string } {
+export function schedulePlacementWindow(durationMs: number, from = new Date()): { start: string; end: string } {
   const start = new Date(from)
   const end = new Date(from.getTime() + durationMs)
   return { start: start.toISOString(), end: end.toISOString() }

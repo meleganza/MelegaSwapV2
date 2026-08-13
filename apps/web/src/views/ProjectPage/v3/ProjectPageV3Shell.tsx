@@ -531,6 +531,9 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
     const map: Record<CommercialServiceId, string> = {
       featured: 'project-v3-grow-featured',
       'trend-boost': 'project-v3-grow-trend',
+      'sponsored-research': 'project-v3-grow-research',
+      'featured-farm': 'project-v3-grow-featured-farm',
+      'featured-pool': 'project-v3-grow-featured-pool',
       liquidity: 'project-v3-grow-liquidity',
       'create-farm': 'project-v3-grow-farm',
       'create-pool': 'project-v3-grow-pool',

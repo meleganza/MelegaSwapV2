@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { MarcoConnect } from 'components/MarcoWidgets'
 import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
@@ -494,9 +495,16 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           {address ? (
             <UserMenu />
           ) : (
-            <ConnectWalletButton className="melega-shell-connect" data-testid="melega-header-connect">
-              Connect Wallet
-            </ConnectWalletButton>
+            <MarcoConnect
+              id="marco-connect-desktop"
+              size="navbar"
+              mediaQuery="(min-width: 1024px)"
+              fallback={
+                <ConnectWalletButton className="melega-shell-connect" data-testid="melega-header-connect">
+                  MARCO CONNECT
+                </ConnectWalletButton>
+              }
+            />
           )}
           <MyMelegaTrigger
             type="button"

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ds001Layout } from 'design-system/melega/tokens/ds001'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import SafeTrendingRibbon from 'views/CommandCenter/components/SafeTrendingRibbon'
+import CommercialCheckoutModal from 'views/shared/monetization/CommercialCheckoutModal'
 
 const TRENDING_BAR_DESKTOP_H = '44px'
 const TRENDING_BAR_MOBILE_H = '36px'
@@ -54,10 +55,10 @@ const Inner = styled.div`
   }
 
   /* Lock ticker inside viewport — never expand page horizontal scroll */
-  > * {
+  > [data-global-ticker-slot] {
+    flex: 1 1 auto;
     min-width: 0;
-    width: 100%;
-    max-width: 100%;
+    width: auto;
     overflow: hidden;
   }
 
@@ -84,15 +85,81 @@ const Inner = styled.div`
   }
 `
 
+const TickerSlot = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+`
+
+const BoostSlot = styled.div`
+  flex: 0 0 auto;
+  display: none;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-left: 14px;
+  margin-left: 14px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    display: flex;
+  }
+`
+
+const BoostCta = styled.button`
+  appearance: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid rgba(244, 196, 48, 0.58);
+  border-radius: 999px;
+  background: rgba(244, 196, 48, 0.08);
+  color: #f4c430;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+
+  &:hover {
+    color: #fff1ae;
+    border-color: #f4c430;
+    background: rgba(244, 196, 48, 0.14);
+  }
+`
+
 export const MELEGA_TRENDING_BAR_DESKTOP_HEIGHT = TRENDING_BAR_DESKTOP_H
 export const MELEGA_TRENDING_BAR_MOBILE_HEIGHT = TRENDING_BAR_MOBILE_H
 
-export const GlobalTrendingBar: React.FC = () => (
-  <Bar data-melega-global-trending-bar data-testid="melega-global-trending-bar">
-    <Inner>
-      <SafeTrendingRibbon />
-    </Inner>
-  </Bar>
-)
+export const GlobalTrendingBar: React.FC = () => {
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+  return (
+    <>
+      <Bar data-melega-global-trending-bar data-testid="melega-global-trending-bar">
+        <Inner>
+          <TickerSlot data-global-ticker-slot>
+            <SafeTrendingRibbon />
+          </TickerSlot>
+          <BoostSlot data-global-boost-slot>
+            <BoostCta type="button" onClick={() => setCheckoutOpen(true)} data-testid="global-boost-project">
+              BOOST YOUR PROJECT
+            </BoostCta>
+          </BoostSlot>
+        </Inner>
+      </Bar>
+      <CommercialCheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        projectId="boost-project"
+        projectSlug=""
+        identityReady={false}
+      />
+    </>
+  )
+}
 
 export default GlobalTrendingBar

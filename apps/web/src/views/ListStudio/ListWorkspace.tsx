@@ -692,6 +692,9 @@ export const ListWorkspace: React.FC = () => {
     if (restored?.values) {
       setValues({
         ...restored.values,
+        ...(listIntent === 'import-token' && typeof router.query.contract === 'string'
+          ? { contract: router.query.contract, chain: 'bsc' }
+          : {}),
         ...(listIntent === 'claim-project' && querySlug && !restored.values.slug
           ? { slug: querySlug }
           : {}),
@@ -699,13 +702,17 @@ export const ListWorkspace: React.FC = () => {
       setSavedAt(Date.parse(restored.updatedAt) || Date.now())
       return
     }
-    if (listIntent === 'import-token') setValues({ chain: 'bsc' })
+    if (listIntent === 'import-token')
+      setValues({
+        chain: 'bsc',
+        ...(typeof router.query.contract === 'string' ? { contract: router.query.contract } : {}),
+      })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
     else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
     else if (listIntent === 'claim-project')
       setValues({ verification: 'pending', ...(querySlug ? { slug: querySlug } : {}) })
     else setValues({})
-  }, [listIntent, querySlug])
+  }, [listIntent, querySlug, router.query.contract])
 
   /** Featured / Trend Boost deep links from Project Page Grow CTAs. */
   useEffect(() => {
