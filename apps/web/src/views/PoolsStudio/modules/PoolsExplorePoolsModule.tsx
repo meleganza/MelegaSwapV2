@@ -3,9 +3,10 @@
  * Compact toolbar: Search | Filters ▼ | Cards|List
  */
 
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
@@ -15,6 +16,8 @@ import { PoolsExplorePoolCard } from './PoolsExplorePoolCard'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import type { PoolsExploreFilter, PoolsExplorePoolCardModel, PoolsExploreSort } from './poolsExplorePoolsTypes'
 import { truthDash } from 'lib/data-truth'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 
 const pulse = keyframes`
   0% { opacity: 0.45; }
@@ -25,7 +28,7 @@ const pulse = keyframes`
 const Module = styled.section`
   width: 100%;
   max-width: ${poolsExplore.contentMax};
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -72,6 +75,25 @@ const Count = styled.span`
   color: ${poolsExplore.gold};
   font-size: 11px;
   font-weight: 700;
+`
+
+const LoadMore = styled.button`
+  appearance: none;
+  cursor: pointer;
+  align-self: center;
+  min-height: ${poolsExplore.touchMin};
+  padding: 0 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 700;
+
+  &:focus-visible {
+    outline: ${poolsExplore.focusRing};
+    outline-offset: ${poolsExplore.focusOffset};
+  }
 `
 
 const TitleRow = styled.div`
@@ -271,19 +293,19 @@ const Grid = styled.ul`
   min-width: 0;
 
   @media (min-width: ${poolsExplore.smallTabletBreak}) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media (min-width: ${poolsExplore.tabletPortraitBreak}) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: ${poolsExplore.desktopBreak}) {
+  @media (min-width: ${poolsExplore.tabletPortraitBreak}) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1500px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   @media (min-width: ${poolsExplore.ultraWideBreak}) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 
@@ -330,12 +352,6 @@ const EmptyDesc = styled.p`
   color: rgba(255, 255, 255, 0.55);
 `
 
-const Disclosure = styled.p`
-  margin: 0;
-  font-size: 11px;
-  color: rgba(224, 184, 90, 0.95);
-`
-
 const VisuallyHidden = styled.span`
   position: absolute;
   width: 1px;
@@ -359,7 +375,10 @@ const List = styled.div`
 
 const ListHeader = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
+  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
+      72px,
+      0.7fr
+    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
   gap: 8px;
   padding: 0 14px 6px;
   font-size: 10px;
@@ -376,7 +395,10 @@ const ListHeader = styled.div`
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
+  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
+      72px,
+      0.7fr
+    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
   gap: 8px;
   align-items: center;
   padding: 12px 14px;
@@ -455,92 +477,144 @@ const ActionBtn = styled.button`
   }
 `
 
+const ConnectActionBtn = styled(ConnectWalletButton)`
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 196, 48, 0.4);
+  background: rgba(244, 196, 48, 0.12);
+  color: ${poolsExplore.gold};
+  box-shadow: none;
+  font-family: ${typography.fontFamily.body};
+  font-size: 11px;
+  font-weight: 650;
+`
+
 const TYPE_FILTERS: PoolsExploreFilter[] = ['All', 'Single Asset', 'LP', 'Flexible', 'Locked']
 
 function ExploreListRow({ pool }: { pool: PoolsExplorePoolCardModel }) {
   const { requestModal } = usePoolsRuntime()
+  const { switchNetworkAsync } = useSwitchNetwork()
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
   const explorer = pool.contractExplorerUrl
 
+  const onPrimary = () => {
+    if (pool.primaryAction === 'Switch Network') {
+      setSwitchOpen(true)
+      return
+    }
+    if (pool.primaryAction === 'Stake') requestModal(pool.sourceCard, 'stake')
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    try {
+      await switchNetworkAsync?.(pool.chainId)
+      setSwitchOpen(false)
+      window.setTimeout(() => requestModal(pool.sourceCard, 'stake'), 400)
+    } catch {
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
+    }
+  }
+
   return (
-    <ListRow data-testid="pools-explore-list-row">
-      <ListCell>
-        <ListLabel>Pool</ListLabel>
-        <PoolIdentity>
-          <LogoStack aria-hidden>
-            <PoolTokenIcon
-              symbol={pool.stakeToken.symbol}
-              address={pool.stakeToken.address ?? undefined}
-              chainId={pool.stakeToken.chainId ?? undefined}
-              size={28}
-            />
-            <RewardWrap>
+    <>
+      <ListRow data-testid="pools-explore-list-row">
+        <ListCell>
+          <ListLabel>Pool</ListLabel>
+          <PoolIdentity>
+            <LogoStack aria-hidden>
               <PoolTokenIcon
-                symbol={pool.rewardToken.symbol}
-                address={pool.rewardToken.address ?? undefined}
-                chainId={pool.rewardToken.chainId ?? undefined}
-                size={22}
+                symbol={pool.stakeToken.symbol}
+                address={pool.stakeToken.address ?? undefined}
+                chainId={pool.stakeToken.chainId ?? undefined}
+                size={28}
               />
-            </RewardWrap>
-          </LogoStack>
-          <strong title={pool.title}>{pool.title}</strong>
-        </PoolIdentity>
-      </ListCell>
-      <ListCell>
-        <ListLabel>Chain</ListLabel>
-        <MelegaExploreChainBadge chainId={pool.chainId} />
-      </ListCell>
-      <ListCell>
-        <ListLabel>TVL</ListLabel>
-        {truthDash(pool.tvlDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>APR</ListLabel>
-        {truthDash(pool.aprDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>Rewards</ListLabel>
-        {truthDash(pool.emissionDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>Participants</ListLabel>
-        {truthDash(pool.participantsDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>Remaining</ListLabel>
-        {truthDash(pool.remainingDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>Duration</ListLabel>
-        {truthDash(pool.durationDisplay)}
-      </ListCell>
-      <ListCell>
-        <ListLabel>Status</ListLabel>
-        {pool.statusLabel}
-      </ListCell>
-      <ListCell>
-        <Actions>
-          <ActionBtn
-            type="button"
-            data-action="stake"
-            disabled={!pool.stakeEnabled || pool.primaryAction === 'Unavailable'}
-            onClick={() => requestModal(pool.sourceCard, 'stake')}
-          >
-            Stake
-          </ActionBtn>
-          <ActionBtn
-            type="button"
-            data-action="view-pool"
-            disabled={!explorer && !pool.detailsHref}
-            onClick={() => {
-              if (explorer) window.open(explorer, '_blank', 'noopener,noreferrer')
-              else if (pool.detailsHref) window.location.href = pool.detailsHref
-            }}
-          >
-            View Pool
-          </ActionBtn>
-        </Actions>
-      </ListCell>
-    </ListRow>
+              <RewardWrap>
+                <PoolTokenIcon
+                  symbol={pool.rewardToken.symbol}
+                  address={pool.rewardToken.address ?? undefined}
+                  chainId={pool.rewardToken.chainId ?? undefined}
+                  size={22}
+                />
+              </RewardWrap>
+            </LogoStack>
+            <strong title={pool.title}>{pool.title}</strong>
+          </PoolIdentity>
+        </ListCell>
+        <ListCell>
+          <ListLabel>Chain</ListLabel>
+          <MelegaExploreChainBadge chainId={pool.chainId} />
+        </ListCell>
+        <ListCell>
+          <ListLabel>TVL</ListLabel>
+          {truthDash(pool.tvlDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>APR</ListLabel>
+          {truthDash(pool.aprDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>Rewards</ListLabel>
+          {truthDash(pool.emissionDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>Participants</ListLabel>
+          {truthDash(pool.participantsDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>Remaining</ListLabel>
+          {truthDash(pool.remainingDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>Duration</ListLabel>
+          {truthDash(pool.durationDisplay)}
+        </ListCell>
+        <ListCell>
+          <ListLabel>Status</ListLabel>
+          {pool.statusLabel}
+        </ListCell>
+        <ListCell>
+          <Actions>
+            {pool.primaryAction === 'Connect Wallet' ? (
+              <ConnectActionBtn data-action="connect-wallet">Connect Wallet</ConnectActionBtn>
+            ) : (
+              <ActionBtn
+                type="button"
+                data-action="stake"
+                disabled={!pool.stakeEnabled || pool.primaryAction === 'Unavailable'}
+                onClick={onPrimary}
+              >
+                {pool.primaryAction === 'Switch Network' ? 'Switch Network' : 'Stake'}
+              </ActionBtn>
+            )}
+            <ActionBtn
+              type="button"
+              data-action="view-pool"
+              disabled={!explorer && !pool.detailsHref}
+              onClick={() => {
+                if (explorer) window.open(explorer, '_blank', 'noopener,noreferrer')
+                else if (pool.detailsHref) window.location.href = pool.detailsHref
+              }}
+            >
+              View Pool
+            </ActionBtn>
+          </Actions>
+        </ListCell>
+      </ListRow>
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={pool.chainId}
+        productLabel={`This pool is on ${chainDisplayName(pool.chainId)}. Switch network to continue?`}
+        busy={switching}
+        onCancel={() => setSwitchOpen(false)}
+        onConfirm={onConfirmSwitch}
+      />
+    </>
   )
 }
 
@@ -548,7 +622,14 @@ export const PoolsExplorePoolsModule: React.FC = () => {
   const vm = usePoolsExplorePools()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [visibleLimit, setVisibleLimit] = useState(8)
   const filtersRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setVisibleLimit(8)
+  }, [vm.filter, vm.sort, vm.search, vm.chainFilter])
+
+  const visiblePools = useMemo(() => vm.pools.slice(0, visibleLimit), [vm.pools, visibleLimit])
 
   React.useEffect(() => {
     if (!filtersOpen) return
@@ -740,8 +821,6 @@ export const PoolsExplorePoolsModule: React.FC = () => {
         </ActiveChips>
       ) : null}
 
-      {vm.disclosure ? <Disclosure>{vm.disclosure}</Disclosure> : null}
-
       {vm.state === 'loading' ? (
         <Grid aria-busy="true" aria-label="Loading active pools" data-testid="pools-explore-loading">
           {[0, 1, 2].map((i) => (
@@ -786,19 +865,29 @@ export const PoolsExplorePoolsModule: React.FC = () => {
               <span>Status</span>
               <span>Actions</span>
             </ListHeader>
-            {vm.pools.map((pool) => (
+            {visiblePools.map((pool) => (
               <ExploreListRow key={pool.poolId} pool={pool} />
             ))}
           </List>
         ) : (
           <Grid data-testid="pools-explore-grid">
-            {vm.pools.map((pool) => (
+            {visiblePools.map((pool) => (
               <Item key={pool.poolId}>
                 <PoolsExplorePoolCard pool={pool} />
               </Item>
             ))}
           </Grid>
         )
+      ) : null}
+
+      {(vm.state === 'ready' || vm.state === 'partial') && visiblePools.length < vm.pools.length ? (
+        <LoadMore
+          type="button"
+          onClick={() => setVisibleLimit((limit) => limit + 8)}
+          data-testid="pools-explore-load-more"
+        >
+          Show more · {visiblePools.length} of {vm.pools.length}
+        </LoadMore>
       ) : null}
 
       <VisuallyHidden aria-live="polite">{vm.liveRegion}</VisuallyHidden>

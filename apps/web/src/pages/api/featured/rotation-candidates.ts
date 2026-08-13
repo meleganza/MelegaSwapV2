@@ -11,10 +11,10 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
   const candidates = listRotationCandidates()
+  res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=30')
   return res.status(200).json({
     schema: 'melega.featured-rotation-candidates.v1',
-    integration:
-      'Home FeaturedProjectsRail may consume this list as optional paid candidates. It must not force a project into all four slots. Founder catalog slugs remain authoritative until Home runtime is updated in a later mission.',
+    integration: 'Home FeaturedProjectsRail consumes verified active candidates and rotates them through four slots.',
     cardSlots: FEATURED_OFFER.cardSlots,
     durationDays: FEATURED_OFFER.durationDays,
     count: candidates.length,

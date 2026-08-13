@@ -1,7 +1,0 @@
-{
-  "localNextBuild": "PASS",
-  "walletModalCompiled": "Boolean(isFetched && data && weiLte(data.value, LOW_NATIVE_BALANCE))",
-  "valueLteInNextChunks": 0,
-  "productionStillHasValueLte": true,
-  "productionChunkSample": "8651-42dffd460b2acaf9.js contains Z.value.lte(nd)"
-}

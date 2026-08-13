@@ -1,0 +1,9 @@
+{
+  "http_status": 200,
+  "result_pk": null,
+  "digest_sha256": "66a40985816dd4bd426c26c13772aa184f7fcaf7b7d6605ba90e91931c68e430",
+  "timestamp": "2026-07-14T12:23:41.102Z",
+  "acknowledgement": {
+    "ok": true
+  }
+}

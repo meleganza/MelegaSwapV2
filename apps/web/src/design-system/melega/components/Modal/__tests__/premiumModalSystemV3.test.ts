@@ -49,7 +49,8 @@ describe('MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3', () => {
   it('Create Farm: one title path, accordion steps, no duplicate liquidity CTA', () => {
     expect(farm).toContain('title="Step 1"')
     expect(farm).toContain('title="Step 2"')
-    expect(farm).toContain('title="Step 3"')
+    expect(farm).toContain('create-farm-acc-liquidity')
+    expect(farm).toContain("showInlineLiquidity ? 'Step 4' : 'Step 3'")
     expect(farm).toContain('title="Advanced"')
     expect(farm).toContain('create-farm-acc-advanced')
     expect(farm).toContain('public-farm-low-liquidity-remediation')

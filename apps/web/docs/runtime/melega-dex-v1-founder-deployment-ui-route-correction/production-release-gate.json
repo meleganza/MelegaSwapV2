@@ -1,8 +1,0 @@
-{
-  "wwwMelegaFinanceServingFounderShell": false,
-  "wwwMelegaFinanceServingObsoleteOrchestrator": true,
-  "requiredAction": "Deploy branch melega-dex-v1-founder-deployment-ui-route-correction (or merge per production policy) to Vercel production",
-  "contractsDeployed": false,
-  "webReleaseStatus": "WEB_RELEASE_PENDING",
-  "capturedAt": "2026-08-01T07:58:11Z"
-}

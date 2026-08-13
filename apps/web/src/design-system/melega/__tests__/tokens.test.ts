@@ -11,9 +11,10 @@ describe('Melega design system tokens (DS001.1)', () => {
     expect(ds001Colors.background).toBe('#080808')
   })
 
-  it('uses Sora (Inter fallback) for body typography', () => {
-    expect(melegaTokens.typography.fontFamily.body).toContain('Sora')
+  it('uses local Inter for product UI and Melega Relative for display typography', () => {
     expect(melegaTokens.typography.fontFamily.body).toContain('Inter')
+    expect(melegaTokens.typography.fontFamily.body).not.toContain('Sora')
+    expect(melegaTokens.typography.fontFamily.display).toContain('Melega Relative')
   })
 
   it('defines spacing on DS001.1 allow-list', () => {

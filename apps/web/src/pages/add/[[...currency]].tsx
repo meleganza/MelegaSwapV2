@@ -1,53 +1,23 @@
-import { ChainId } from '@pancakeswap/sdk'
-import { USDC, USDT, shimmer2Tokens } from '@pancakeswap/tokens'
-import { useCurrency } from 'hooks/Tokens'
-import useNativeCurrency from 'hooks/useNativeCurrency'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { useAppDispatch } from 'state'
-import { resetMintState } from 'state/mint/actions'
-import AddLiquidity from 'views/AddLiquidity'
 import { CHAIN_IDS } from 'utils/wagmi'
-import AddStableLiquidity from 'views/AddLiquidity/AddStableLiquidity/index'
-import useStableConfig, { StableConfigContext } from 'views/Swap/StableSwap/hooks/useStableConfig'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 import { buildLiquidityCanonicalOwnership, LIQUIDITY_ALIAS_ROUTES } from 'lib/liquidity-runtime/canonicalOwnership'
 
 const AddLiquidityPage = () => {
   const router = useRouter()
-  const { chainId } = useActiveChainId()
-  const dispatch = useAppDispatch()
-
-  const native = useNativeCurrency()
-
-  const [currencyIdA, currencyIdB] = router.query.currency || [
-    // shimmer2Tokens.smr.address,
-    native.symbol,
-    USDT[chainId]?.address,
-  ]
-
-  const currencyA = useCurrency(currencyIdA)
-  const currencyB = useCurrency(currencyIdB)
-
-  const stableConfig = useStableConfig({
-    tokenA: currencyA,
-    tokenB: currencyB,
-  })
 
   useEffect(() => {
-    if (!currencyIdA && !currencyIdB) {
-      dispatch(resetMintState())
-    }
-  }, [dispatch, currencyIdA, currencyIdB])
+    if (!router.isReady) return
+    const [token0, token1] = Array.isArray(router.query.currency) ? router.query.currency : []
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+    params.set('view', 'add')
+    if (token0) params.set('token0', token0)
+    if (token1) params.set('token1', token1)
+    void router.replace(`/liquidity?${params.toString()}`)
+  }, [router])
 
-  return stableConfig.stableSwapConfig ? (
-    <StableConfigContext.Provider value={stableConfig}>
-      <AddStableLiquidity currencyA={currencyA} currencyB={currencyB} />
-    </StableConfigContext.Provider>
-  ) : (
-    <AddLiquidity currencyA={currencyA} currencyB={currencyB} />
-  )
+  return null
 }
 
 AddLiquidityPage.chains = CHAIN_IDS

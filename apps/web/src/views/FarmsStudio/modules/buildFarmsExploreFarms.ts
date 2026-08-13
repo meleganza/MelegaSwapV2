@@ -388,8 +388,14 @@ export function cardToExploreFarmModel(
 }
 
 /** Participants = unique wallet census only. Never LP supply / emissions / token amounts. */
-function resolveFarmParticipants(_card: FarmPreviewCard): string {
-  return '—'
+function resolveFarmParticipants(card: FarmPreviewCard): string {
+  if (card.participantsSource === 'participant_index_pending') return 'Indexing…'
+  if (card.participantsSource !== 'masterchef_event_index' && card.participantsSource !== 'indexed_wallet_census') {
+    return 'Indexing…'
+  }
+  const value = String(card.participants ?? '').replace(/,/g, '').trim()
+  const count = Number(value)
+  return Number.isInteger(count) && count >= 0 ? Number(count).toLocaleString('en-US') : 'Indexing…'
 }
 
 /**
@@ -691,14 +697,12 @@ export function buildFarmsExploreFarmsViewModel(input: {
 
   const anyPartial = list.some((f) => f.status === 'PARTIAL')
   const disclosures: string[] = []
-  if (anyPartial) disclosures.push('Some farm metrics are temporarily unavailable.')
   if (walletFilterPending) disclosures.push('Wallet filters apply after LP balance reads complete.')
 
-  // P0: All filter shows the complete inventory — no hard cap.
-  // Other filters keep Load More pagination (pageStep).
-  const showAllInventory = input.filter === 'All' && !input.search.trim()
-  const effectiveLimit = showAllInventory ? list.length : visibleLimit
-  const visibleFarms = list.slice(0, Math.max(effectiveLimit, 0))
+  // Keep the complete inventory queryable, but never mount every farm card at
+  // once. Rendering a large multichain inventory was blocking route changes on
+  // lower-power browsers. Search, filters and Load More still expose all rows.
+  const visibleFarms = list.slice(0, Math.max(visibleLimit, 0))
 
   return {
     state: anyPartial ? 'partial' : 'ready',
@@ -710,8 +714,8 @@ export function buildFarmsExploreFarmsViewModel(input: {
     sort: input.sort,
     search: input.search,
     pageSize,
-    visibleLimit: showAllInventory ? list.length : visibleLimit,
-    hasMore: showAllInventory ? false : list.length > visibleLimit,
+    visibleLimit,
+    hasMore: list.length > visibleLimit,
     disclosure: disclosures.length ? disclosures.join(' ') : null,
     liveRegion: `${list.length} active farm${list.length === 1 ? '' : 's'} across LIVE chains`,
     source: 'globalYieldInventory + portfolioFarms',

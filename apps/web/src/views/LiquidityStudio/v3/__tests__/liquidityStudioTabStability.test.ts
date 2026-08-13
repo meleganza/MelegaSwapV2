@@ -21,7 +21,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_RESTORE tab stability', (
   })
 
   it('default mode is My Positions (not Add Liquidity)', () => {
-    expect(runtime).toContain("|| 'My Positions'")
+    expect(runtime).toContain("useState<LiquidityStudioMode>('My Positions')")
     expect(runtime).not.toMatch(/\|\| 'Add Liquidity'/)
   })
 
@@ -33,16 +33,17 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_RESTORE tab stability', (
     expect(runtime).toContain('no continuous URL→mode sync')
   })
 
-  it('shell owns instant local tab state with mounted panels', () => {
+  it('shell owns instant jump state with mounted one-page sections', () => {
     expect(shell).toContain('hydratedRef')
     expect(shell).toContain("useState<LiquidityV3Tab>('positions')")
     expect(shell).toContain('data-liquidity-panels="mounted"')
     expect(shell).toContain('selectTab')
     expect(shell).toContain('liquidity-v3-hero-nav')
-    expect(shell).toContain('forceExpanded={tab === \'building\'}')
+    expect(shell).toContain("<ProgressiveSurface force={tab === 'building'}")
+    expect(shell).toContain('<LiquidityBuildingCard forceExpanded studioOwnedUrl />')
     expect(shell).toContain('aiMounted')
     expect(shell).toContain('Do NOT mirror mode→tab on every mode change')
-    expect(shell).toContain("setMode(tabToMode(next), { syncUrl: false })")
+    expect(shell).toContain('setMode(tabToMode(next), { syncUrl: false })')
     expect(shell).toContain('Debounced shareable ?view= mirror')
     expect(shell).toContain('data-liquidity-tabs-ready')
   })
@@ -68,9 +69,9 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_RESTORE tab stability', (
     expect(shell).toContain('goPositions')
     expect(shell).toContain('goAdd')
     expect(shell).toContain('goAi')
-    expect(shell).toContain('$primary={tab === \'positions\'}')
-    expect(shell).toContain('$primary={tab === \'add\'}')
-    expect(shell).toContain('$primary={tab === \'building\'}')
+    expect(shell).toContain("$primary={tab === 'positions'}")
+    expect(shell).toContain("$primary={tab === 'add'}")
+    expect(shell).toContain("$primary={tab === 'building'}")
     expect(shell).not.toContain('router.push')
     expect(shell).not.toContain('href="/liquidity?view=')
   })

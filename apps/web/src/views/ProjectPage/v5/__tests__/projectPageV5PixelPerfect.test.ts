@@ -18,9 +18,9 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT', () => {
   const perf = load('views/ProjectPage/v5/projectPagePerf.ts')
   const market = load('views/ProjectPage/v1/useProjectLiveMarket.ts')
 
-  it('project V5 shell retained; public mount is V6', () => {
-    expect(page).toContain('ProjectPageV6Shell')
-    expect(page).toContain("from 'views/ProjectPage/v6/ProjectPageV6Shell'")
+  it('project V5 shell retained; public mount is V7', () => {
+    expect(page).toContain('ProjectPageV7Shell')
+    expect(page).toContain("from 'views/ProjectPage/v7/ProjectPageV7Shell'")
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v5/index.ts'))).toBe(true)
     expect(existsSync(path.join(WEB, 'views/ProjectPage/v6/index.ts'))).toBe(true)
     expect(shell).toContain('data-testid="project-page-v5"')
@@ -49,7 +49,7 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT', () => {
     expect(shell).toContain('project-v5-swap')
     expect(shell).toContain('ProjectTradingEmbed')
     expect(shell).toContain('ProjectCharts')
-    expect(shell).toContain("variant=\"hero\"")
+    expect(shell).toContain('variant="hero"')
     expect(shell).toContain('dynamic(() => import(')
     // Chart not a separate giant band below hero
     expect(shell).not.toContain('data-project-section="charts"')
@@ -154,16 +154,17 @@ describe('MELEGASWAP_V2_PROJECT_PAGE_V5_PIXEL_PERFECT', () => {
     expect(shell).toContain('display: none')
   })
 
-  it('View Project client navigation uses /@slug + prefetch false + perf mark', () => {
-    expect(rail).toContain('href={`/@${p.slug}`}')
-    expect(rail).toContain('prefetch={false}')
+  it('View Project client navigation uses the prefetchable canonical catalog href + perf mark', () => {
+    expect(rail).toContain('href={p.href}')
+    expect(rail).not.toContain('prefetch={false}')
     expect(rail).toContain('markProjectNavClick')
     expect(rail).toContain('/swap?')
   })
 
   it('Trade client navigation remains real Swap shell', () => {
     expect(rail).toContain("source: 'featured-home'")
-    expect(rail).toContain('router.push(href)')
+    expect(rail).toContain('href={tradeHref}')
+    expect(rail).not.toContain('useRouter')
   })
 
   it('navigation performance guard helpers', () => {

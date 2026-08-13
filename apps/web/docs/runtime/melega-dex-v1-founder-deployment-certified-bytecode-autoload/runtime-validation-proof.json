@@ -1,4 +1,0 @@
-{
-  "validatePostDeployment": true,
-  "quarantinePreventsBind": true
-}

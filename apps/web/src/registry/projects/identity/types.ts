@@ -67,6 +67,9 @@ export interface CanonicalProjectEvidence {
   observedAt: string | null
   updatedAt: string | null
   freshness: 'current' | 'stale' | 'unknown'
+  provider?: string
+  sourceUrl?: string
+  sourceScope?: 'melega-space' | 'external'
 }
 
 export interface CanonicalDeclaredCapability {

@@ -54,7 +54,11 @@ export function useLiquidityPoolDiscovery(options: {
   const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
 
   const pairAddresses = useMemo(
-    () => factory.pools.map((p) => p.pairAddress).filter(Boolean).slice(0, 80),
+    () =>
+      factory.pools
+        .map((p) => p.pairAddress)
+        .filter(Boolean)
+        .slice(0, 80),
     [factory.pools],
   )
   const poolDatas = usePoolDatasSWR(pairAddresses)
@@ -114,6 +118,8 @@ export function useLiquidityPoolDiscovery(options: {
         state: 'loading',
         cards: [],
         visibleCards: [],
+        matchedCount: 0,
+        hasMore: false,
         availableFilters: ['all'],
         availableSorts: [],
         myTokensReady,
@@ -128,6 +134,8 @@ export function useLiquidityPoolDiscovery(options: {
         state: 'unavailable',
         cards: [],
         visibleCards: [],
+        matchedCount: 0,
+        hasMore: false,
         availableFilters: ['all'],
         availableSorts: [],
         myTokensReady,
@@ -139,9 +147,7 @@ export function useLiquidityPoolDiscovery(options: {
 
     const searched = searchDiscoveryPairs(factory.pools, query)
     const cards = searched
-      .map((pair) =>
-        toDiscoveryCard(pair, metricsByPair.get(pair.pairAddress.toLowerCase()), bnbUsd),
-      )
+      .map((pair) => toDiscoveryCard(pair, metricsByPair.get(pair.pairAddress.toLowerCase()), bnbUsd))
       .filter((c): c is DiscoveryPoolCardModel => Boolean(c))
 
     if (cards.length === 0 && !query.trim()) {
@@ -149,6 +155,8 @@ export function useLiquidityPoolDiscovery(options: {
         state: 'empty',
         cards: [],
         visibleCards: [],
+        matchedCount: 0,
+        hasMore: false,
         availableFilters: ['all'],
         availableSorts: [],
         myTokensReady,
@@ -164,10 +172,10 @@ export function useLiquidityPoolDiscovery(options: {
     const activeSort = availableSorts.includes(sort)
       ? sort
       : availableSorts.includes('tvl')
-        ? 'tvl'
-        : availableSorts.includes('market')
-          ? 'market'
-          : availableSorts[0] ?? 'tvl'
+      ? 'tvl'
+      : availableSorts.includes('market')
+      ? 'market'
+      : availableSorts[0] ?? 'tvl'
 
     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
     const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered

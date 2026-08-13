@@ -12,14 +12,17 @@ const ERC20_ABI = [
 ]
 
 const RPC_BY_CHAIN: Record<number, string[]> = {
-  56: [
-    process.env.BSC_RPC_URL,
-    process.env.BSC_RPC_FALLBACK_URL,
-    ...BSC_RPC_URLS,
-  ].filter((u): u is string => Boolean(u && u.trim())),
+  56: [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL, ...BSC_RPC_URLS].filter((u): u is string =>
+    Boolean(u && u.trim()),
+  ),
   1: [process.env.ETH_RPC_URL, 'https://ethereum.publicnode.com'].filter((u): u is string => Boolean(u && u.trim())),
   137: [process.env.POLYGON_RPC_URL, 'https://polygon-rpc.com'].filter((u): u is string => Boolean(u && u.trim())),
   8453: [process.env.BASE_RPC_URL, 'https://mainnet.base.org'].filter((u): u is string => Boolean(u && u.trim())),
+}
+
+/** Canonical read-only RPC resolution shared by project identity and ownership proof. */
+export function getProjectRpcUrls(chainId: number): string[] {
+  return RPC_BY_CHAIN[chainId] ?? []
 }
 
 export interface Erc20OnChainIdentity {
@@ -45,7 +48,10 @@ function sanitizeMeta(raw: unknown, max = 64): string | null {
   return cleaned.slice(0, max)
 }
 
-async function withProvider<T>(urls: string[], fn: (provider: ethers.providers.JsonRpcProvider) => Promise<T>): Promise<T> {
+async function withProvider<T>(
+  urls: string[],
+  fn: (provider: ethers.providers.JsonRpcProvider) => Promise<T>,
+): Promise<T> {
   let lastError: unknown
   for (const url of urls) {
     try {
@@ -58,10 +64,7 @@ async function withProvider<T>(urls: string[], fn: (provider: ethers.providers.J
   throw lastError instanceof Error ? lastError : new Error('RPC unavailable')
 }
 
-export async function fetchErc20OnChainIdentity(
-  chainId: number,
-  contract: string,
-): Promise<Erc20OnChainIdentity> {
+export async function fetchErc20OnChainIdentity(chainId: number, contract: string): Promise<Erc20OnChainIdentity> {
   const address = contract.trim()
   const explorerBase = EXPLORER_BY_CHAIN[chainId]
   const explorerUrl = explorerBase ? `${explorerBase}${address}` : null
@@ -134,7 +137,9 @@ export async function fetchErc20OnChainIdentity(
           decimals,
           verifiedDeployment: true,
           explorerUrl,
-          reasonUnavailable: `Contract is deployed but ERC-20 metadata is unreadable (${failures.join(', ') || 'name/symbol failed'}).`,
+          reasonUnavailable: `Contract is deployed but ERC-20 metadata is unreadable (${
+            failures.join(', ') || 'name/symbol failed'
+          }).`,
         }
       }
 

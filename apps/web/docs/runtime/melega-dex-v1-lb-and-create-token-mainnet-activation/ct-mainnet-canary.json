@@ -1,7 +1,0 @@
-{
-  "schemaVersion": "melega.lb-and-ct.ct-mainnet-canary.v1",
-  "assessedAt": "2026-07-30T04:46:06.691854Z",
-  "status": "NOT_RUN",
-  "classification": "DEPLOYMENT_BLOCKED_CHILD_CANARY_NOT_APPLICABLE",
-  "reason": "Factory not deployed; no approved child-token identity for canary"
-}

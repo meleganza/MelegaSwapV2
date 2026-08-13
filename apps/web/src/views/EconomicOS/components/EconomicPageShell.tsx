@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import Head from 'next/head'
 import { MelegaBrandLockup } from 'design-system/melega/components/BrandLockup/MelegaBrandLockup'
 
 const Root = styled.div`
@@ -37,23 +36,15 @@ const PageTag = styled.span`
 `
 
 export const EconomicPageShell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <>
-    <Head>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-    </Head>
-    <Root data-economic-page-shell>
-      <Shell>
-        <BrandRow>
-          <MelegaBrandLockup size="desktop" iconOnly />
-          <PageTag>Portfolio · My Economy</PageTag>
-        </BrandRow>
-        {children}
-      </Shell>
-    </Root>
-  </>
+  <Root data-economic-page-shell>
+    <Shell>
+      <BrandRow>
+        <MelegaBrandLockup size="desktop" iconOnly />
+        <PageTag>Portfolio · My Economy</PageTag>
+      </BrandRow>
+      {children}
+    </Shell>
+  </Root>
 )
 
 export default EconomicPageShell

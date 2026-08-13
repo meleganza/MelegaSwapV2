@@ -1,7 +1,0 @@
-{
-  "mission": "MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR",
-  "generatedAt": "2026-08-06T14:33:14.673Z",
-  "command": "yarn next build",
-  "pass": true,
-  "note": "next build completed successfully (re-run after Unavailable featured fix also passed)"
-}

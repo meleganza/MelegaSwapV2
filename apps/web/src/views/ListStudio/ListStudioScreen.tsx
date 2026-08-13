@@ -1,17 +1,11 @@
-/**
- * List Studio — Final Founder Acceptance composition.
- * Hero → Action cards → Why → Workspace (left) + How vertical guide (right).
- */
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { ListPageHero } from './ListPageHero'
-import { ListActionCards } from './ListActionCards'
-import { ListWhyBuildRail } from './ListWhyBuildRail'
-import { ListHowItWorks } from './ListHowItWorks'
 import { ListWorkspace } from './ListWorkspace'
 import { listOne } from './listTokens'
+import { useListIntent } from './useListIntent'
+import { ListContractFirstFunnel } from './ListContractFirstFunnel'
 
 const Root = styled.div`
   color: ${uxRebuildColors.text};
@@ -29,30 +23,7 @@ const Content = styled.div`
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
-  padding-bottom: 48px;
-  display: flex;
-  flex-direction: column;
-
-  & > [data-testid='list-one-page-header'] {
-    order: 1;
-  }
-
-  & > [data-testid='list-action-cards'] {
-    order: 2;
-  }
-
-  & > [data-testid='list-why-build'] {
-    order: 3;
-  }
-
-  & > [data-testid='list-workflow-bridge'] {
-    order: 4;
-  }
-
-  & > [data-testid='list-intent-placeholder'] {
-    order: 5;
-    display: none !important;
-  }
+  padding: 24px 0 52px;
 
   @media (max-width: 767px) {
     width: 100%;
@@ -60,58 +31,47 @@ const Content = styled.div`
   }
 `
 
-const WorkflowBridge = styled.div`
-  order: 4;
-  margin-top: 16px;
+const ModalBackdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
   display: grid;
-  /* Workspace larger left; How guide compact right */
-  grid-template-columns: minmax(0, 1.55fr) minmax(220px, 0.45fr);
-  gap: 14px;
-  align-items: start;
-  min-width: 0;
-
-  @media (max-width: 1023px) {
-    grid-template-columns: 1fr;
-  }
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.76);
+  backdrop-filter: blur(12px);
 `
 
-const WorkspaceCol = styled.div`
-  min-width: 0;
-  order: 1;
+const ModalSurface = styled.div`
+  width: min(1120px, 100%);
+  max-height: min(860px, calc(100vh - 36px));
+  overflow: auto;
+  border-radius: 18px;
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.7);
 
   & [data-testid='list-workspace'] {
-    margin-top: 0;
-    max-width: none;
     width: 100%;
-  }
-`
-
-const HowCol = styled.div`
-  min-width: 0;
-  order: 2;
-
-  @media (max-width: 1023px) {
-    order: 0;
+    max-width: none;
+    min-height: min(720px, calc(100vh - 36px));
+    margin: 0;
   }
 `
 
 export const ListStudioScreen: React.FC = () => {
+  const { listIntent } = useListIntent()
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="005" data-list-wave="founder-final">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-concept="list-your-project">
       <PageMeta />
       <Content data-testid="list-one-content">
-        <ListPageHero />
-        <ListActionCards />
-        <ListWhyBuildRail />
-        <WorkflowBridge data-testid="list-workflow-bridge" data-list-connect="actions-to-workspace">
-          <WorkspaceCol>
-            <ListWorkspace />
-          </WorkspaceCol>
-          <HowCol>
-            <ListHowItWorks />
-          </HowCol>
-        </WorkflowBridge>
+        <ListContractFirstFunnel />
       </Content>
+      {listIntent ? (
+        <ModalBackdrop data-testid="list-adaptive-modal" role="presentation">
+          <ModalSurface role="dialog" aria-modal="true" aria-label="Melega DEX listing flow">
+            <ListWorkspace />
+          </ModalSurface>
+        </ModalBackdrop>
+      ) : null}
     </Root>
   )
 }

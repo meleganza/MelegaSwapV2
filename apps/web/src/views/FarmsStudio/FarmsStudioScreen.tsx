@@ -146,7 +146,7 @@ export const FarmsStudioScreen: React.FC = () => {
             onClose={closeCreate}
             title="Create Farm"
             subtitle="Configure pair, rewards, budget and duration."
-            size="md"
+            size="lg"
             testId="create-farm-modal"
             closeTestId="create-farm-modal-close"
             ariaLabel="Create Farm"

@@ -293,7 +293,7 @@ export function cardToPoolsWalletPosition(
     claimNum != null && rewardPrice && rewardPrice > 0 ? claimNum * rewardPrice : null
 
   const poolStatus = resolvePoolStatus(card)
-  let { status, label } = resolvePositionStatus(card, poolStatus)
+  const { status, label } = resolvePositionStatus(card, poolStatus)
 
   const partialReasons: string[] = []
   if (!claimReadOk) partialReasons.push('Reward unavailable')
@@ -304,10 +304,8 @@ export function cardToPoolsWalletPosition(
     // unlock optional — do not force partial
   }
 
-  if (partialReasons.length > 0 && status === 'ACTIVE') {
-    status = 'PARTIAL'
-    label = 'Partial'
-  }
+  // Missing valuation/reward enrichment must never downgrade a confirmed
+  // wallet position or hide its available on-chain actions.
 
   const { unlockLine, lockType } = resolveUnlockLine(card, status)
   const sousKey = card.sousId != null ? String(card.sousId) : card.id

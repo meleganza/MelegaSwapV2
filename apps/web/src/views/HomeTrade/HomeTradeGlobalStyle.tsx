@@ -213,6 +213,22 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     box-sizing: border-box !important;
   }
 
+  /* Approval flows can expose Approve + Swap together. Keep both contained instead of
+   * letting the second full-width button escape the cockpit. */
+  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child {
+    display: flex !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child > button,
+  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child > a {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
   /* Intel stack MUST follow Swap button (order 3). Default order:0 previously floated Route/Details above From/To. */
   .home-trade-swap [data-smart-transparency-stack] {
     order: 5 !important;

@@ -1,6 +1,0 @@
-{
-  "native": "eth_sendTransaction value to MELEGA TREASURY WALLET",
-  "erc20": "ERC-20 transfer(treasury, amount) for USDT/USDC/MARCO",
-  "confirmRequiresReceipt": true,
-  "chainId": 56
-}

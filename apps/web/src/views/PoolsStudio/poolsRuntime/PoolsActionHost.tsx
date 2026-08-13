@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { useModal } from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
-import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
+import { getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { useTokenBalance } from 'state/wallet/hooks'
 import StakeModal from 'views/Pools/components/Modals/StakeModal'
 import VaultStakeModal from 'views/Pools/components/CakeVaultCard/VaultStakeModal'
@@ -27,8 +27,20 @@ export const PoolsActionHost: React.FC = () => {
     pool && action ? `${pool.sousId}:${action}:${pool.vaultKey ? 'vault' : 'std'}` : null
 
   const walletBalance = useTokenBalance(account ?? undefined, pool?.stakingToken)
-  const stakingTokenBalance = walletBalance ? getBalanceNumber(walletBalance, pool?.stakingToken?.decimals) : 0
+  // StakeModal expects the raw token-unit BigNumber and applies decimals itself.
+  // Converting to a JS number here caused the balance to be scaled twice and could
+  // surface as NaN for large balances.
+  const stakingTokenBalance = walletBalance?.quotient
+    ? new BigNumber(walletBalance.quotient.toString())
+    : BIG_ZERO
   const isBnbPool = pool?.stakingToken?.symbol === 'BNB'
+  const pendingReward = pool?.userData?.pendingReward ?? BIG_ZERO
+  const pendingRewardDisplay = pool
+    ? getFullDisplayBalance(pendingReward, pool.earningToken.decimals, Math.min(pool.earningToken.decimals, 8))
+    : '0'
+  const pendingRewardUsd = pool
+    ? new BigNumber(pendingRewardDisplay).times(pool.earningTokenPrice || 0).toNumber()
+    : 0
 
   const handlePoolTxSuccess = useCallback((payload: PoolTxSuccessPayload) => {
     if (payload.action === 'stake') {
@@ -47,7 +59,7 @@ export const PoolsActionHost: React.FC = () => {
       <StakeModal
         isBnbPool={isBnbPool}
         pool={pool}
-        stakingTokenBalance={new BigNumber(stakingTokenBalance)}
+        stakingTokenBalance={stakingTokenBalance}
         stakingTokenPrice={pool.stakingTokenPrice}
         onTxSuccess={handlePoolTxSuccess}
       />
@@ -55,7 +67,7 @@ export const PoolsActionHost: React.FC = () => {
 
   const vaultStakeNode =
     pool && action === 'stake' && pool.vaultKey ? (
-      <VaultStakeModal stakingMax={walletBalance ?? BIG_ZERO} pool={pool} onTxSuccess={handlePoolTxSuccess} />
+      <VaultStakeModal stakingMax={stakingTokenBalance} pool={pool} onTxSuccess={handlePoolTxSuccess} />
     ) : null
 
   const unstakeNode =
@@ -63,7 +75,7 @@ export const PoolsActionHost: React.FC = () => {
       <StakeModal
         isBnbPool={isBnbPool}
         pool={pool}
-        stakingTokenBalance={new BigNumber(stakingTokenBalance)}
+        stakingTokenBalance={stakingTokenBalance}
         stakingTokenPrice={pool.stakingTokenPrice}
         isRemovingStake
         onTxSuccess={handlePoolTxSuccess}
@@ -84,6 +96,9 @@ export const PoolsActionHost: React.FC = () => {
     pool && action === 'claim' ? (
       <CollectModalContainer
         earningTokenSymbol={pool.earningToken.symbol}
+        fullBalance={pendingRewardDisplay}
+        formattedBalance={pendingRewardDisplay}
+        earningsDollarValue={Number.isFinite(pendingRewardUsd) ? pendingRewardUsd : 0}
         sousId={pool.sousId}
         isBnbPool={isBnbPool}
         onTxSuccess={handlePoolTxSuccess}

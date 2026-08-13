@@ -1,9 +1,0 @@
-{
-  "mission": "MELEGASWAP_V2_FARMS_PRODUCT_UX_REDESIGN",
-  "requiredOnEveryCard": true,
-  "placement": "top-right",
-  "style": "compact icon + tooltip full chain name",
-  "component": "MelegaExploreChainBadge / explore card chain badge",
-  "browserBadgeCountObserved": 171,
-  "pass": true
-}

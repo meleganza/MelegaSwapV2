@@ -1,5 +1,0 @@
-{
-  "turboCommand": "cd ../.. && turbo run build --filter={apps/web}",
-  "appsWebCommand": "node scripts/generate-lb-certified-manifest.mjs --check",
-  "error": "FAIL: certified LB manifest generation — missing Forge artifacts for six Liquidity Builder contracts"
-}

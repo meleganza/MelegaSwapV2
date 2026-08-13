@@ -6,19 +6,14 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
-import {
-  uxRebuildColors,
-  uxRebuildFont,
-  uxRebuildLayout,
-  uxRebuildRadius,
-} from 'design-system/melega/tokens/uxRebuild'
+import { uxRebuildColors, uxRebuildFont, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { MELEGA_FOOTER_SOCIALS } from 'views/HomeTrade/melegaDexFooterLinks'
 
 const Page = styled.main`
   max-width: ${uxRebuildLayout.contentMax};
   margin: 0 auto;
   padding: 32px 20px 64px;
-  font-family: ${uxRebuildFont.body};
+  font-family: ${uxRebuildFont};
   color: ${uxRebuildColors.text};
 `
 
@@ -91,8 +86,8 @@ const SupportPage: React.FC = () => {
       <Page data-testid="melega-support-page">
         <Title>Support</Title>
         <Lead>
-          Melega DEX community support. There is no automated ticketing portal in this product surface —
-          use the community channels below for help, and Docs / LIVE AI-AUDIT for operational truth.
+          Melega DEX community support. There is no automated ticketing portal in this product surface — use the
+          community channels below for help, and Docs / LIVE AI-AUDIT for operational truth.
         </Lead>
 
         <Card>

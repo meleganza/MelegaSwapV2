@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
+import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 
 export interface MelegaBottomNavItem {
   id: string
@@ -115,7 +116,13 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
           $active={active}
           aria-current={active ? 'page' : undefined}
           prefetch
-          onClick={disabled ? (e) => e.preventDefault() : undefined}
+          onClick={(event) => {
+            if (disabled) {
+              event.preventDefault()
+              return
+            }
+            preserveEarlyNavigation(event, item.href)
+          }}
         >
           {active && <Indicator />}
           <Icon $active={active}>{item.icon}</Icon>

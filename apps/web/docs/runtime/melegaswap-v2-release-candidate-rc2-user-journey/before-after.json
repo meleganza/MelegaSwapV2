@@ -1,9 +1,0 @@
-{
-  "schema": "melegaswap.v2.rc2.before-after.v1",
-  "capturedAt": "2026-08-04T04:16:24.493Z",
-  "protocolChanges": false,
-  "paymentRouterTouched": false,
-  "smartSwapEconomicsTouched": false,
-  "treasuryTouched": false,
-  "uxOnly": true
-}

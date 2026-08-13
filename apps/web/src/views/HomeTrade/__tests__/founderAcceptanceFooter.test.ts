@@ -72,7 +72,7 @@ describe('Founder acceptance — ecosystem destinations', () => {
     expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'radar')).toBeUndefined()
     expect(live.find((d) => d.id === 'passport')?.href).toBe('https://marco.melega.ai')
     expect(live.find((d) => d.id === 'smartdrop')?.href).toBe('https://smartdrop.melega.ai/dashboard')
-    expect(live.find((d) => d.id === 'blackpump')?.href).toBe('https://blackpump.fun/')
+    expect(live.find((d) => d.id === 'blackpump')?.href).toBe('https://black.mn')
     expect(live.find((d) => d.id === 'space')?.href).toBe('https://melega.space/')
 
     for (const d of live) {
@@ -85,12 +85,12 @@ describe('Founder acceptance — ecosystem destinations', () => {
     const maiora = ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'maiora')
     expect(maiora?.disabled).toBe(true)
     expect(maiora?.href).toBeUndefined()
+    expect(maiora?.disabledLabel).toBe('Coming soon')
   })
 
-  it('ExploreMelegaEcosystem does not mark live products Coming soon', () => {
+  it('marks only disabled Maiora as Coming soon', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
     expect(eco).not.toMatch(/comingSoon:\s*true/)
-    expect(eco).not.toContain('Coming soon')
     expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
   })
 })

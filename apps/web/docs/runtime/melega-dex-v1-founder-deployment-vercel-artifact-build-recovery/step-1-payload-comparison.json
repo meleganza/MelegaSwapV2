@@ -1,9 +1,0 @@
-{
-  "contract": "LiquidityBuildingExecutionMathV1",
-  "creationHashUnchanged": true,
-  "runtimeHashUnchanged": true,
-  "to": null,
-  "value": "0x0",
-  "dataLength": 7556,
-  "creationBytecodeSha256": "0x9d581fc4181526b847967aed40defb0117f66f8942ecedc666d8aba65ef4d9e2"
-}

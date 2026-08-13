@@ -1,7 +1,0 @@
-{
-  "phaseNow": "Freeze LEGACY_IMPLEMENTATION; critical bugfixes only",
-  "phaseModules": "Implement 001\u2013008 without default route cutover",
-  "phaseIntegration": "MODULE 009 switches /pools; retire history/mp debt",
-  "phaseCertification": "MODULE 010 end-to-end certify",
-  "rollback": "Keep legacy mount until 009; do not delete write path early"
-}

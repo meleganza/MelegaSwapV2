@@ -1,14 +1,17 @@
 import type { NextApiHandler } from 'next'
+import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/constants/recoveryCapabilities'
 import { FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement'
 import {
   buildTrendBoostQuote,
   createTrendBoostOrder,
   getTrendBoostOrder,
   prepareTrendBoostPayment,
-  activateTrendBoostWindow,
+  activateVerifiedTrendBoostWindow,
   updateTrendBoostOrder,
 } from 'lib/monetization/trendBoostOrders'
 import { TREND_BOOST_PACKAGES } from 'lib/monetization/packages'
+import { isQuoteExpired } from 'lib/featured-placement/quote'
+import { verifyBscPaymentReceipt } from 'lib/monetization/verifyPaymentReceipt'
 
 const ASSETS = new Set(FEATURED_OFFER.acceptedAssets)
 
@@ -36,6 +39,7 @@ const handler: NextApiHandler = async (req, res) => {
   if (req.method === 'GET') {
     return res.status(200).json({
       schema: 'melega.trend-boost.offer.v1',
+      paymentActivationEnabled: RECOVERY_CAPABILITIES.commercialPaymentActivation,
       packages: TREND_BOOST_PACKAGES.map((p) => ({
         id: p.id,
         label: p.shortLabel,
@@ -51,6 +55,16 @@ const handler: NextApiHandler = async (req, res) => {
   if (req.method === 'POST') {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
     const action = String(body.action || 'create')
+
+    if (
+      !RECOVERY_CAPABILITIES.commercialPaymentActivation &&
+      ['create', 'quote', 'confirm', 'confirm-receipt'].includes(action)
+    ) {
+      return res.status(503).json({
+        error: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+        message: RECOVERY_PAYMENT_UNAVAILABLE,
+      })
+    }
 
     if (action === 'create') {
       const projectId = String(body.projectId || '').trim()
@@ -112,8 +126,46 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     if (action === 'confirm') {
-      const activated = activateTrendBoostWindow(orderId)
-      return res.status(200).json({ order: activated })
+      return res.status(400).json({ error: 'RECEIPT_VERIFICATION_REQUIRED' })
+    }
+
+    if (action === 'confirm-receipt') {
+      const txHash = String(body.transactionHash || '')
+      if (
+        order.state !== 'SUBMITTED' ||
+        !order.transactionHash ||
+        order.transactionHash.toLowerCase() !== txHash.toLowerCase()
+      ) {
+        return res.status(400).json({ error: 'ORDER_NOT_SUBMITTED_OR_TX_MISMATCH' })
+      }
+      if (!order.tokenAmountRaw || isQuoteExpired(order.quoteExpiration)) {
+        return res.status(400).json({ error: 'QUOTE_EXPIRED_OR_MISSING' })
+      }
+      const validation = await verifyBscPaymentReceipt({
+        transactionHash: txHash,
+        buyerWallet: order.buyerWallet,
+        paymentAsset: order.paymentAsset,
+        tokenAmountRaw: order.tokenAmountRaw,
+        treasuryWallet: order.treasuryWallet,
+      })
+      if (!validation.ok) {
+        const failed = updateTrendBoostOrder(orderId, {
+          state: 'PAYMENT_FAILED',
+          paymentStatus: 'failed',
+          receiptVerified: false,
+          lastError: validation.reason || 'RECEIPT_INVALID',
+        })
+        return res.status(400).json({ error: validation.reason, validation, order: failed })
+      }
+      updateTrendBoostOrder(orderId, {
+        state: 'PAYMENT_CONFIRMED',
+        paymentStatus: 'confirmed',
+        receiptVerified: true,
+        lastError: null,
+      })
+      const activated = activateVerifiedTrendBoostWindow(orderId)
+      if (!activated) return res.status(409).json({ error: 'ACTIVATION_PRECONDITION_FAILED' })
+      return res.status(200).json({ order: activated, validation })
     }
 
     if (action === 'cancel') {

@@ -13,7 +13,7 @@ function load(rel: string) {
 }
 
 describe('Founder amendment P0-9 — Explore Pools density grid', () => {
-  it('locks the same mobile-first column cascade as Explore Farms: 1 / 3 / 2 / 4 / 5', () => {
+  it('keeps readable mobile-first density: 1 / 2 / 3 / 4', () => {
     const tokens = load('modules/poolsExplorePoolsTokens.ts')
     expect(tokens).toContain("smallTabletBreak: '768px'")
     expect(tokens).toContain("tabletPortraitBreak: '1025px'")
@@ -22,10 +22,10 @@ describe('Founder amendment P0-9 — Explore Pools density grid', () => {
 
     const grid = load('modules/PoolsExplorePoolsModule.tsx')
     expect(grid).toContain('grid-template-columns: repeat(1, minmax(0, 1fr));')
-    expect(grid).toMatch(/min-width: \$\{poolsExplore\.smallTabletBreak\}\)\s*\{\s*grid-template-columns: repeat\(3/)
-    expect(grid).toMatch(/min-width: \$\{poolsExplore\.tabletPortraitBreak\}\)\s*\{\s*grid-template-columns: repeat\(2/)
-    expect(grid).toMatch(/min-width: \$\{poolsExplore\.desktopBreak\}\)\s*\{\s*grid-template-columns: repeat\(4/)
-    expect(grid).toMatch(/min-width: \$\{poolsExplore\.ultraWideBreak\}\)\s*\{\s*grid-template-columns: repeat\(5/)
+    expect(grid).toMatch(/min-width: \$\{poolsExplore\.smallTabletBreak\}\)\s*\{\s*grid-template-columns: repeat\(2/)
+    expect(grid).toMatch(/min-width: \$\{poolsExplore\.tabletPortraitBreak\}\)\s*\{\s*grid-template-columns: repeat\(3/)
+    expect(grid).toMatch(/min-width: 1500px\)\s*\{\s*grid-template-columns: repeat\(4/)
+    expect(grid).toMatch(/min-width: \$\{poolsExplore\.ultraWideBreak\}\)\s*\{\s*grid-template-columns: repeat\(4/)
   })
 
   it('removes the redundant description subtitle and keeps Stake + View Pool actions', () => {

@@ -1,6 +1,0 @@
-{
-  "mission": "MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH",
-  "result": "pass",
-  "command": "yarn next build",
-  "pass": true
-}

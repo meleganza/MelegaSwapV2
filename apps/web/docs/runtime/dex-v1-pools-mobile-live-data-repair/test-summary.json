@@ -1,9 +1,0 @@
-{
-  "ok": true,
-  "focused": 21,
-  "suites": [
-    "poolsMobileLiveDataRepair",
-    "dexUxRebuild.nav",
-    "passportV1.finalIntegration"
-  ]
-}

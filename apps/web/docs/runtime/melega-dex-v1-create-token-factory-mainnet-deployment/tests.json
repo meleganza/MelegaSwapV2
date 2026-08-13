@@ -1,6 +1,0 @@
-{
-  "passed": true,
-  "testsPassed": 147,
-  "command": "yarn vitest run src/lib/deployment-orchestrator + ListStudio CT tests",
-  "failed": 0
-}

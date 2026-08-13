@@ -6,9 +6,9 @@ const FIXTURE_CONTRACTS = {
   rfx: '0xB794F5eA0ba39494a0A8365EAB2451B0E0e3d0d6',
 } as const
 
-/** Enabled only when NEXT_PUBLIC_POOLS_UX_FIXTURE is exactly "1". */
+/** Explicit local/test visual fixture. It can never replace factual cards in production. */
 export function isPoolsUxFixtureEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_POOLS_UX_FIXTURE === '1'
+  return process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_POOLS_UX_FIXTURE === '1'
 }
 
 function shortContract(address: string): string {

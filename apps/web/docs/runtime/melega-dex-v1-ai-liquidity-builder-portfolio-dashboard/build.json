@@ -1,6 +1,0 @@
-{
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "passed",
-  "notes": "Pre-existing ESLint next/babel warning; compile succeeded"
-}

@@ -24,6 +24,7 @@ import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import { getChainId } from 'config/chains'
 
 const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;
@@ -41,15 +42,10 @@ const Shell = styled.section<{ $embedded?: boolean }>`
 const Layout = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   display: grid;
-  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)')};
-  column-gap: ${({ $embedded }) => ($embedded ? '0' : liquidityAdd.columnGap)};
-  row-gap: ${({ $embedded }) => ($embedded ? '12px' : '14px')};
+  grid-template-columns: 1fr;
+  gap: ${({ $embedded }) => ($embedded ? '12px' : '14px')};
   align-items: start;
   min-width: 0;
-
-  @media (max-width: ${liquidityAdd.tabletBreak}) {
-    grid-template-columns: 1fr;
-  }
 `
 
 const Panel = styled.div<{ $embedded?: boolean }>`
@@ -60,6 +56,48 @@ const Panel = styled.div<{ $embedded?: boolean }>`
   background: ${({ $embedded }) => ($embedded ? 'rgba(8,8,8,0.55)' : liquidityAdd.cardBg)};
   padding: ${({ $embedded }) => ($embedded ? '14px' : liquidityAdd.cardPad)};
   min-width: 0;
+`
+
+const HorizontalWorkspace = styled.div<{ $embedded?: boolean }>`
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: ${({ $embedded }) => ($embedded ? '1fr' : 'minmax(0, 1.55fr) minmax(280px, 0.72fr)')};
+  gap: ${({ $embedded }) => ($embedded ? '12px' : liquidityAdd.columnGap)};
+  align-items: stretch;
+  min-width: 0;
+
+  @media (max-width: ${liquidityAdd.tabletBreak}) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const FormColumn = styled.div`
+  min-width: 0;
+`
+
+const PreviewRail = styled.aside<{ $embedded?: boolean }>`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: ${({ $embedded }) => ($embedded ? '0' : '1px solid rgba(255,255,255,0.08)')};
+  padding-left: ${({ $embedded }) => ($embedded ? '0' : '16px')};
+
+  @media (max-width: ${liquidityAdd.tabletBreak}) {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 14px 0 0;
+  }
+`
+
+const TokenGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const Title = styled.h2`
@@ -79,7 +117,7 @@ const Desc = styled.p`
 `
 
 const PairRow = styled.div`
-  margin-top: 18px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -298,17 +336,27 @@ const SlippageBtn = styled.button`
 `
 
 const PreviewList = styled.dl`
-  margin: 16px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin: 10px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: ${liquidityAdd.mobileBreak}) {
+    grid-template-columns: 1fr;
+  }
 `
 
-const PreviewRow = styled.div`
+const PreviewRow = styled.div<{ $wide?: boolean }>`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px;
   min-width: 0;
+  grid-column: ${({ $wide }) => ($wide ? '1 / -1' : 'auto')};
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
 `
 
 const PreviewDt = styled.dt`
@@ -322,10 +370,11 @@ const PreviewDd = styled.dd`
   font-size: 13px;
   font-weight: 700;
   color: ${liquidityAdd.text};
-  text-align: right;
+  text-align: left;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const ErrorBanner = styled.div`
@@ -460,6 +509,10 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
 
   const token0Q = queryTokenId(router.query.token0)
   const token1Q = queryTokenId(router.query.token1)
+  const requestedChainId = useMemo(() => {
+    const queryChain = Array.isArray(router.query.chain) ? router.query.chain[0] : router.query.chain
+    return getChainId(queryChain ?? '') ?? chainId ?? MELEGA_CHAIN_ID
+  }, [router.query.chain, chainId])
   const seedA = useCurrency(token0Q)
   const seedB = useCurrency(token1Q)
 
@@ -486,7 +539,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
       showCommonBases
     />,
     true,
-    true,
+    false,
     'liquidity-module-004-select-a',
   )
 
@@ -498,13 +551,21 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
       showCommonBases
     />,
     true,
-    true,
+    false,
     'liquidity-module-004-select-b',
   )
 
-  const [onPresentSettings] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />, true, true, 'liquidity-module-004-settings')
+  const [onPresentSettings] = useModal(
+    <SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />,
+    true,
+    false,
+    'liquidity-module-004-settings',
+  )
 
-  const wrongChain = Boolean(account && chainId != null && chainId !== MELEGA_CHAIN_ID)
+  // The liquidity workspace is multichain. Compare the wallet with the chain
+  // requested by this page, not with BNB unconditionally. The previous BNB
+  // constant made a correctly connected Ethereum wallet appear mismatched.
+  const wrongChain = Boolean(account && chainId != null && chainId !== requestedChainId)
 
   const cta = useMemo(
     () =>
@@ -564,7 +625,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     <Layout
       $embedded={embedded}
       data-testid="liquidity-add-layout"
-      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '50-50-workspace'}
+      data-liquidity-add-geometry={embedded ? 'single-card-compact' : 'single-card-horizontal'}
       data-liquidity-add-embedded={embedded ? '1' : '0'}
     >
       <Panel $embedded={embedded} data-testid="liquidity-add-form-panel">
@@ -588,7 +649,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               symbol={currencyA?.symbol}
               name={currencyA?.name}
               address={currencyA?.wrapped?.address}
-              chainId={liquidityAdd.chainId}
+              chainId={requestedChainId}
               size={32}
               radius="circle"
             />
@@ -596,7 +657,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               symbol={currencyB?.symbol}
               name={currencyB?.name}
               address={currencyB?.wrapped?.address}
-              chainId={liquidityAdd.chainId}
+              chainId={requestedChainId}
               size={32}
               radius="circle"
             />
@@ -604,172 +665,174 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           <PairName>{pairLabel || 'Select pair'}</PairName>
         </PairRow>
 
-        <TokenBox data-testid="liquidity-add-token-a">
-          <TokenHead>
-            <TokenLabel>{LIQUIDITY_ADD_COPY.tokenA}</TokenLabel>
-            <TokenSelect type="button" onClick={onPresentSelectA} data-testid="liquidity-add-token-a-select">
-              <MelegaTokenAvatar
-                symbol={currencyA?.symbol}
-                name={currencyA?.name}
-                address={currencyA?.wrapped?.address}
-                chainId={liquidityAdd.chainId}
-                size={20}
-                radius="circle"
-              />
-              {currencyA?.symbol ?? 'Select'}
-            </TokenSelect>
-          </TokenHead>
-          <AmountInput
-            type="text"
-            value={typedValueA}
-            onChange={(e) => onFieldAInput(sanitizeDecimalInput(e.target.value))}
-            placeholder="0.0"
-            inputMode="decimal"
-            aria-label={LIQUIDITY_ADD_COPY.amount}
-            data-testid="liquidity-add-amount-a"
-          />
-          <BalanceRow>
-            <Balance>
-              {LIQUIDITY_ADD_COPY.balance} {balA ? balA.toSignificant(6) : '—'}
-            </Balance>
-            <MaxBtn
-              type="button"
-              disabled={!maxA}
-              onClick={() => maxA && onFieldAInput(maxA.toExact())}
-              data-testid="liquidity-add-max-a"
-            >
-              MAX
-            </MaxBtn>
-          </BalanceRow>
-        </TokenBox>
+        <HorizontalWorkspace $embedded={embedded} data-testid="liquidity-add-horizontal-workspace">
+          <FormColumn>
+            <TokenGrid data-testid="liquidity-add-token-grid">
+              <TokenBox data-testid="liquidity-add-token-a">
+                <TokenHead>
+                  <TokenLabel>{LIQUIDITY_ADD_COPY.tokenA}</TokenLabel>
+                  <TokenSelect type="button" onClick={onPresentSelectA} data-testid="liquidity-add-token-a-select">
+                    <MelegaTokenAvatar
+                      symbol={currencyA?.symbol}
+                      name={currencyA?.name}
+                      address={currencyA?.wrapped?.address}
+                      chainId={requestedChainId}
+                      size={20}
+                      radius="circle"
+                    />
+                    {currencyA?.symbol ?? 'Select'}
+                  </TokenSelect>
+                </TokenHead>
+                <AmountInput
+                  type="text"
+                  value={typedValueA}
+                  onChange={(e) => onFieldAInput(sanitizeDecimalInput(e.target.value))}
+                  placeholder="0.0"
+                  inputMode="decimal"
+                  aria-label={LIQUIDITY_ADD_COPY.amount}
+                  data-testid="liquidity-add-amount-a"
+                />
+                <BalanceRow>
+                  <Balance>
+                    {LIQUIDITY_ADD_COPY.balance} {balA ? balA.toSignificant(6) : '—'}
+                  </Balance>
+                  <MaxBtn
+                    type="button"
+                    disabled={!maxA}
+                    onClick={() => maxA && onFieldAInput(maxA.toExact())}
+                    data-testid="liquidity-add-max-a"
+                  >
+                    MAX
+                  </MaxBtn>
+                </BalanceRow>
+              </TokenBox>
 
-        <TokenBox data-testid="liquidity-add-token-b">
-          <TokenHead>
-            <TokenLabel>{LIQUIDITY_ADD_COPY.tokenB}</TokenLabel>
-            <TokenSelect type="button" onClick={onPresentSelectB} data-testid="liquidity-add-token-b-select">
-              <MelegaTokenAvatar
-                symbol={currencyB?.symbol}
-                name={currencyB?.name}
-                address={currencyB?.wrapped?.address}
-                chainId={liquidityAdd.chainId}
-                size={20}
-                radius="circle"
-              />
-              {currencyB?.symbol ?? 'Select'}
-            </TokenSelect>
-          </TokenHead>
-          <AmountInput
-            type="text"
-            value={typedValueB}
-            onChange={(e) => onFieldBInput(sanitizeDecimalInput(e.target.value))}
-            placeholder="0.0"
-            inputMode="decimal"
-            aria-label={LIQUIDITY_ADD_COPY.amount}
-            data-testid="liquidity-add-amount-b"
-          />
-          <BalanceRow>
-            <Balance>
-              {LIQUIDITY_ADD_COPY.balance} {balB ? balB.toSignificant(6) : '—'}
-            </Balance>
-            <MaxBtn
-              type="button"
-              disabled={!maxB}
-              onClick={() => maxB && onFieldBInput(maxB.toExact())}
-              data-testid="liquidity-add-max-b"
-            >
-              MAX
-            </MaxBtn>
-          </BalanceRow>
-        </TokenBox>
+              <TokenBox data-testid="liquidity-add-token-b">
+                <TokenHead>
+                  <TokenLabel>{LIQUIDITY_ADD_COPY.tokenB}</TokenLabel>
+                  <TokenSelect type="button" onClick={onPresentSelectB} data-testid="liquidity-add-token-b-select">
+                    <MelegaTokenAvatar
+                      symbol={currencyB?.symbol}
+                      name={currencyB?.name}
+                      address={currencyB?.wrapped?.address}
+                      chainId={requestedChainId}
+                      size={20}
+                      radius="circle"
+                    />
+                    {currencyB?.symbol ?? 'Select'}
+                  </TokenSelect>
+                </TokenHead>
+                <AmountInput
+                  type="text"
+                  value={typedValueB}
+                  onChange={(e) => onFieldBInput(sanitizeDecimalInput(e.target.value))}
+                  placeholder="0.0"
+                  inputMode="decimal"
+                  aria-label={LIQUIDITY_ADD_COPY.amount}
+                  data-testid="liquidity-add-amount-b"
+                />
+                <BalanceRow>
+                  <Balance>
+                    {LIQUIDITY_ADD_COPY.balance} {balB ? balB.toSignificant(6) : '—'}
+                  </Balance>
+                  <MaxBtn
+                    type="button"
+                    disabled={!maxB}
+                    onClick={() => maxB && onFieldBInput(maxB.toExact())}
+                    data-testid="liquidity-add-max-b"
+                  >
+                    MAX
+                  </MaxBtn>
+                </BalanceRow>
+              </TokenBox>
+            </TokenGrid>
 
-        <Metrics data-testid="liquidity-add-metrics">
-          <Metric>
-            <MetricLabel>{LIQUIDITY_ADD_COPY.poolRatio}</MetricLabel>
-            <MetricValue title={ratioLabel}>{ratioLabel}</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>{LIQUIDITY_ADD_COPY.estimatedLp}</MetricLabel>
-            <MetricValue>{dash(preview.expectedLp)}</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>{LIQUIDITY_ADD_COPY.poolShare}</MetricLabel>
-            <MetricValue>{dash(preview.poolShare)}</MetricValue>
-          </Metric>
-        </Metrics>
+            <Metrics data-testid="liquidity-add-metrics">
+              <Metric>
+                <MetricLabel>{LIQUIDITY_ADD_COPY.poolRatio}</MetricLabel>
+                <MetricValue title={ratioLabel}>{ratioLabel}</MetricValue>
+              </Metric>
+              <Metric>
+                <MetricLabel>{LIQUIDITY_ADD_COPY.estimatedLp}</MetricLabel>
+                <MetricValue>{dash(preview.expectedLp)}</MetricValue>
+              </Metric>
+              <Metric>
+                <MetricLabel>{LIQUIDITY_ADD_COPY.poolShare}</MetricLabel>
+                <MetricValue>{dash(preview.poolShare)}</MetricValue>
+              </Metric>
+            </Metrics>
 
-        <Advanced data-testid="liquidity-add-advanced">
-          <summary>Advanced</summary>
-          <SlippageRow>
-            <MetricLabel>
-              {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
-            </MetricLabel>
-            <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
-              Edit
-            </SlippageBtn>
-          </SlippageRow>
-        </Advanced>
+            <Advanced data-testid="liquidity-add-advanced">
+              <summary>Advanced</summary>
+              <SlippageRow>
+                <MetricLabel>
+                  {LIQUIDITY_ADD_COPY.slippage}: {slippageLabel}
+                </MetricLabel>
+                <SlippageBtn type="button" onClick={onPresentSettings} data-testid="liquidity-add-slippage">
+                  Edit
+                </SlippageBtn>
+              </SlippageRow>
+            </Advanced>
+          </FormColumn>
 
-        {errorLabel ? <ErrorBanner data-testid="liquidity-add-error">{errorLabel}</ErrorBanner> : null}
-        {loadingLabel && !errorLabel ? (
-          <InfoBanner data-testid="liquidity-add-loading">{loadingLabel}</InfoBanner>
-        ) : null}
-
-        {!account ? (
-          <ConnectWrap data-testid="liquidity-add-connect">
-            <ConnectWalletButton>{cta.label}</ConnectWalletButton>
-          </ConnectWrap>
-        ) : (
-          <Primary
-            type="button"
-            onClick={handlePrimary}
-            disabled={wrongChain ? false : cta.disabled}
-            data-testid="liquidity-add-cta"
-            data-cta-state={wrongChain ? 'wrong-chain' : cta.state}
+          <PreviewRail
+            $embedded={embedded}
+            data-testid="liquidity-add-preview-panel"
+            data-liquidity-preview="integrated"
           >
-            {wrongChain
-              ? 'Switch Network'
-              : noLiquidity
-                ? 'Create Pool & Add Liquidity'
-                : cta.label}
-          </Primary>
-        )}
-        <Security>{LIQUIDITY_ADD_COPY.securityNote}</Security>
-      </Panel>
+            <Title as="h3" style={{ fontSize: embedded ? 16 : 18, lineHeight: embedded ? '22px' : '24px' }}>
+              {LIQUIDITY_ADD_COPY.previewTitle}
+            </Title>
+            <PreviewList>
+              <PreviewRow>
+                <PreviewDt>{LIQUIDITY_ADD_COPY.previewPair}</PreviewDt>
+                <PreviewDd>{pairLabel || LIQUIDITY_ADD_COPY.emptyMetric}</PreviewDd>
+              </PreviewRow>
+              <PreviewRow>
+                <PreviewDt>Pool state</PreviewDt>
+                <PreviewDd data-testid="liquidity-add-pool-state">{noLiquidity ? 'New Pair' : 'Existing'}</PreviewDd>
+              </PreviewRow>
+              <PreviewRow $wide>
+                <PreviewDt>{LIQUIDITY_ADD_COPY.previewDeposited}</PreviewDt>
+                <PreviewDd title={depositedLabel}>{depositedLabel}</PreviewDd>
+              </PreviewRow>
+              <PreviewRow $wide>
+                <PreviewDt>{LIQUIDITY_ADD_COPY.previewShare}</PreviewDt>
+                <PreviewDd>{dash(preview.poolShare)}</PreviewDd>
+              </PreviewRow>
+            </PreviewList>
 
-      <Panel $embedded={embedded} data-testid="liquidity-add-preview-panel">
-        <Title as="h3" style={{ fontSize: embedded ? 16 : 20, lineHeight: embedded ? '22px' : '26px' }}>
-          {LIQUIDITY_ADD_COPY.previewTitle}
-        </Title>
-        <PreviewList>
-          <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewPair}</PreviewDt>
-            <PreviewDd>{pairLabel || LIQUIDITY_ADD_COPY.emptyMetric}</PreviewDd>
-          </PreviewRow>
-          <PreviewRow>
-            <PreviewDt>Pool state</PreviewDt>
-            <PreviewDd data-testid="liquidity-add-pool-state">{noLiquidity ? 'New Pair' : 'Existing'}</PreviewDd>
-          </PreviewRow>
-          <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewDeposited}</PreviewDt>
-            <PreviewDd title={depositedLabel}>{depositedLabel}</PreviewDd>
-          </PreviewRow>
-          <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewShare}</PreviewDt>
-            <PreviewDd>{dash(preview.poolShare)}</PreviewDd>
-          </PreviewRow>
-          <PreviewRow>
-            <PreviewDt>{LIQUIDITY_ADD_COPY.previewFee}</PreviewDt>
-            <PreviewDd>{dash(preview.feeTier)}</PreviewDd>
-          </PreviewRow>
-        </PreviewList>
+            {errorLabel ? <ErrorBanner data-testid="liquidity-add-error">{errorLabel}</ErrorBanner> : null}
+            {loadingLabel && !errorLabel ? (
+              <InfoBanner data-testid="liquidity-add-loading">{loadingLabel}</InfoBanner>
+            ) : null}
+
+            {!account ? (
+              <ConnectWrap data-testid="liquidity-add-connect">
+                <ConnectWalletButton>{cta.label}</ConnectWalletButton>
+              </ConnectWrap>
+            ) : (
+              <Primary
+                type="button"
+                onClick={handlePrimary}
+                disabled={wrongChain ? false : cta.disabled}
+                data-testid="liquidity-add-cta"
+                data-cta-state={wrongChain ? 'wrong-chain' : cta.state}
+              >
+                {wrongChain ? 'Switch Network' : noLiquidity ? 'Create Pool & Add Liquidity' : cta.label}
+              </Primary>
+            )}
+            <Security>{LIQUIDITY_ADD_COPY.securityNote}</Security>
+          </PreviewRail>
+        </HorizontalWorkspace>
       </Panel>
       <ChainSwitchConfirmDialog
         open={switchOpen}
-        targetChainId={MELEGA_CHAIN_ID}
-        productLabel={`This liquidity action is on BNB. Switch network to continue?`}
+        targetChainId={requestedChainId}
+        productLabel="Switch to the network selected for this liquidity action?"
         onCancel={() => setSwitchOpen(false)}
         onConfirm={() => {
-          void switchNetworkAsync(MELEGA_CHAIN_ID).finally(() => setSwitchOpen(false))
+          void switchNetworkAsync(requestedChainId).finally(() => setSwitchOpen(false))
         }}
         busy={switching}
       />
@@ -791,7 +854,11 @@ export const LiquidityAddModule: React.FC<{ embedded?: boolean }> = ({ embedded 
     data-liquidity-module-004="mounted"
     aria-labelledby="liquidity-add-title"
   >
-    <span id="liquidity-add-title" className="sr-only" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>
+    <span
+      id="liquidity-add-title"
+      className="sr-only"
+      style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}
+    >
       {LIQUIDITY_ADD_COPY.title}
     </span>
     <LiquidityAddForm embedded={embedded} />

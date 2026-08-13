@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import {
-  CREATE_FARM_FORBIDDEN_PUBLIC_TERMS,
-  CREATE_FARM_UX,
-} from '../modules/createFarmUxCopy'
+import { CREATE_FARM_FORBIDDEN_PUBLIC_TERMS, CREATE_FARM_UX } from '../modules/createFarmUxCopy'
 
 const ROOT = path.resolve(__dirname, '..')
 
@@ -18,8 +15,8 @@ describe('Create Farm UX simplification', () => {
     const copy = load('modules/createFarmUxCopy.ts')
     expect(ui).toContain('CREATE_FARM_UX.useExisting')
     expect(ui).toContain('CREATE_FARM_UX.createNew')
-    expect(ui).toContain('CREATE_FARM_UX.increaseLiquidity')
-    expect(ui).toContain('CREATE_FARM_UX.addLiquidityManually')
+    expect(ui).toContain('create-farm-acc-liquidity')
+    expect(ui).toContain('public-farm-inline-liquidity-open')
     expect(ui).toContain('CREATE_FARM_UX.marcoRewardFriendly')
     expect(ui).toContain('CREATE_FARM_UX.feeTreasuryNote')
     expect(ui).toContain('create-farm-acc-advanced')
@@ -63,7 +60,10 @@ describe('Create Farm UX simplification', () => {
   it('primary CTA follows guided states — liquidity increase only in remediation (no duplicate)', () => {
     const ui = load('modules/PublicFarmFactoryWorkspace.tsx')
     expect(ui).toContain('public-farm-low-liquidity-remediation')
-    expect(ui).toContain('CREATE_FARM_UX.increaseLiquidity')
+    expect(ui).toContain('create-farm-acc-liquidity')
+    expect(ui).toContain('FarmInlineLiquidityStep')
+    expect(ui).not.toContain('public-farm-manual-liquidity-handoff')
+    expect(ui).not.toContain('public-farm-builder-handoff')
     expect(ui).toContain('create-farm-next-continue')
     expect(ui).toContain('create-farm-submit')
     expect(ui).toContain('CREATE_FARM_UX.createFarm')
@@ -72,4 +72,3 @@ describe('Create Farm UX simplification', () => {
     expect(ui).not.toContain('data-testid="create-farm-next-increase"')
   })
 })
-

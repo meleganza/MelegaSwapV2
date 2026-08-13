@@ -1,7 +1,0 @@
-{
-  "schemaVersion": "melega.lb-and-ct.lb-verified-contracts.v1",
-  "assessedAt": "2026-07-30T04:46:06.691854Z",
-  "status": "NOT_APPLICABLE_NO_DEPLOYMENT",
-  "contracts": [],
-  "blocker": "No mainnet addresses to verify; BSCSCAN_API_KEY also UNSET"
-}

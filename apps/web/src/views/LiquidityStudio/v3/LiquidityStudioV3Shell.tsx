@@ -6,19 +6,38 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { GLOBAL_DATA_TRUTH_PIPELINE, truthDash } from 'lib/data-truth'
 import { LiquidityRuntimeProvider, useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import type { LiquidityStudioMode } from '../liquidityRuntime/useLiquidityMintRuntime'
-import { LiquidityAddModule } from '../modules/LiquidityAddModule'
 import { LiquidityMyPositionsModule } from '../modules/LiquidityMyPositionsModule'
-import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
 import { useLiquidityMarketSnapshot } from '../modules/useLiquidityMarketSnapshot'
-import { LiquidityHeroArtwork } from '../modules/LiquidityHeroArtwork'
-import { LiquidityHeroTrustPanel } from '../modules/LiquidityHeroTrustPanel'
 import { LiquidityRemovePanel } from './LiquidityRemovePanel'
-import { LIQ_V3_COPY, LIQ_V3_LIVE_CHAINS, liqV3, type LiquidityV3Tab } from './liquidityV3Tokens'
+import { LIQ_V3_COPY, LIQ_V3_LIVE_CHAINS, liqV3 } from './liquidityV3Tokens'
+import LiquidityHeroArtwork from './LiquidityHeroArtwork'
+
+const LiquidityBuildingCard = dynamic(() => import('../onePage/LiquidityBuildingCard'), {
+  ssr: false,
+  loading: () => <div role="status">Loading AI Liquidity Builder…</div>,
+})
+
+const LiquidityAddModule = dynamic(
+  () => import('../modules/LiquidityAddModule').then((module) => module.LiquidityAddModule),
+  {
+    ssr: false,
+    loading: () => <div role="status">Loading Add Liquidity…</div>,
+  },
+)
+
+const LiquidityPoolDiscoveryModule = dynamic(
+  () => import('../modules/LiquidityPoolDiscoveryModule').then((module) => module.LiquidityPoolDiscoveryModule),
+  {
+    ssr: false,
+    loading: () => <div role="status">Loading pool explorer…</div>,
+  },
+)
 
 const Page = styled.div`
   width: 100%;
@@ -38,17 +57,16 @@ const Page = styled.div`
   }
 `
 
-const Hero = styled.section`
-  min-height: ${liqV3.heroMaxH};
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background:
-    radial-gradient(ellipse 42% 80% at 52% 55%, rgba(244, 196, 48, 0.07) 0%, rgba(8, 8, 8, 0) 70%),
+const Hero = styled.section<{ $builder?: boolean }>`
+  min-height: 176px;
+  padding: 18px 22px;
+  border: 1px solid rgba(244, 196, 48, 0.14);
+  border-radius: 18px;
+  background: radial-gradient(ellipse 42% 80% at 52% 55%, rgba(244, 196, 48, 0.07) 0%, rgba(8, 8, 8, 0) 70%),
     radial-gradient(ellipse 36% 70% at 18% 40%, rgba(34, 197, 94, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
-    transparent;
+    linear-gradient(145deg, rgba(14, 14, 14, 0.98), rgba(10, 10, 10, 0.96));
   display: grid;
-  grid-template-columns: ${liqV3.leftW} ${liqV3.artworkW} ${liqV3.trustW};
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
   column-gap: ${liqV3.columnGap};
   align-items: center;
   min-width: 0;
@@ -63,7 +81,8 @@ const Hero = styled.section`
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: 8px;
+    padding: 18px 16px 12px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -86,10 +105,10 @@ const HeroCopy = styled.div`
   }
 `
 
-const HeroTitle = styled.h1`
+const HeroTitle = styled.h1<{ $builder?: boolean }>`
   margin: 0;
-  font-size: ${liqV3.titleSize};
-  line-height: ${liqV3.titleLine};
+  font-size: ${({ $builder }) => ($builder ? '32px' : liqV3.titleSize)};
+  line-height: ${({ $builder }) => ($builder ? '38px' : liqV3.titleLine)};
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #f7f7f7;
@@ -116,32 +135,6 @@ const HeroActions = styled.div`
   margin-top: 14px;
 `
 
-const HeroVisual = styled.div`
-  min-width: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: ${liqV3.tabletBreak}) {
-    grid-column: 2;
-    grid-row: 1;
-  }
-`
-
-const HeroTrust = styled.div`
-  min-width: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  @media (max-width: ${liqV3.tabletBreak}) {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
-`
-
 const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
   appearance: none;
   cursor: pointer;
@@ -152,8 +145,7 @@ const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
   font-weight: 750;
   border: 1px solid
     ${({ $primary, $ghost }) => ($primary ? 'transparent' : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
-  background: ${({ $primary, $ghost }) =>
-    $primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
+  background: ${({ $primary, $ghost }) => ($primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
 
   &:hover:not(:disabled) {
@@ -174,15 +166,14 @@ const LinkBtn = styled(Link)<{ $primary?: boolean; $ghost?: boolean }>`
   text-decoration: none;
   border: 1px solid
     ${({ $primary, $ghost }) => ($primary ? liqV3.goldLine : $ghost ? liqV3.line : 'rgba(255,255,255,0.14)')};
-  background: ${({ $primary, $ghost }) =>
-    $primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)'};
+  background: ${({ $primary, $ghost }) => ($primary ? liqV3.gold : $ghost ? 'transparent' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? '#111' : liqV3.text)};
 `
 
-const Snapshot = styled.section`
+const Snapshot = styled.section<{ $hidden?: boolean }>`
   margin-top: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: ${({ $hidden }) => ($hidden ? 'none' : 'grid')};
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   min-width: 0;
 
@@ -239,43 +230,134 @@ const SnapValue = styled.div`
   white-space: nowrap;
 `
 
-const Tabs = styled.div`
-  margin-top: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid ${liqV3.line};
-  background: rgba(0, 0, 0, 0.28);
-`
-
-const TabBtn = styled.button<{ $on?: boolean }>`
-  appearance: none;
-  cursor: pointer;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 9px;
-  border: 1px solid ${({ $on }) => ($on ? liqV3.goldLine : 'transparent')};
-  background: ${({ $on }) => ($on ? 'rgba(221, 185, 47, 0.12)' : 'transparent')};
-  color: ${({ $on }) => ($on ? '#fff' : liqV3.mute)};
-  font-size: 12px;
-  font-weight: 750;
-`
-
 const Workspace = styled.section`
   margin-top: 4px;
   min-width: 0;
   position: relative;
 `
 
-/** Keep all tab panels mounted — hide inactive to prevent black flash / remount races. */
-const Panel = styled.div<{ $active: boolean }>`
-  display: ${({ $active }) => ($active ? 'block' : 'none')};
+/** One-page Liquidity: every journey is visible and addressable by an anchor. */
+const Panel = styled.section`
+  display: block;
+  min-width: 0;
+  scroll-margin-top: 132px;
+
+  & + & {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid ${liqV3.line};
+  }
+`
+
+const SectionHeader = styled.header`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 14px;
+  min-width: 0;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+`
+
+const SectionTitleRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
   min-width: 0;
 `
 
-/** Add ↔ Remove stay mounted inside the Add tab (no form remount flash). */
+const SectionIndex = styled.span`
+  color: ${liqV3.gold};
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+`
+
+const SectionTitle = styled.h2`
+  margin: 0;
+  color: #fff;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 820;
+  letter-spacing: -0.025em;
+
+  [data-liquidity-builder-exclusive] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    margin-left: 8px;
+    padding: 0 8px;
+    transform: translateY(-2px);
+    border: 1px solid rgba(244, 196, 48, 0.44);
+    border-radius: 999px;
+    background: rgba(244, 196, 48, 0.1);
+    color: ${liqV3.gold};
+    font-size: 9px;
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+`
+
+const ExclusiveBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 7px;
+  margin-left: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 196, 48, 0.42);
+  background: rgba(244, 196, 48, 0.1);
+  color: ${liqV3.gold};
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+`
+
+const SectionMeta = styled.span`
+  color: ${liqV3.mute};
+  font-size: 12px;
+  line-height: 18px;
+  text-align: right;
+`
+
+const ModeSwitch = styled.div`
+  display: inline-flex;
+  width: min(560px, 100%);
+  padding: 4px;
+  margin: 0 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${liqV3.line};
+  background: rgba(5, 5, 5, 0.72);
+`
+
+const ModeButton = styled.button<{ $active?: boolean }>`
+  appearance: none;
+  width: 50%;
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  color: ${({ $active }) => ($active ? '#111' : liqV3.mute)};
+  background: ${({ $active }) => ($active ? liqV3.gold : 'transparent')};
+  font-size: 13px;
+  font-weight: 800;
+  transition: background 140ms ease, color 140ms ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
+`
+
+/** Add ↔ Remove stay mounted inside the same workspace section (no form remount flash). */
 const SubPanel = styled.div<{ $active: boolean }>`
   display: ${({ $active }) => ($active ? 'block' : 'none')};
   min-width: 0;
@@ -293,72 +375,6 @@ const AiWide = styled.div`
   }
 `
 
-const AiEntry = styled.div`
-  padding: 12px 14px;
-  border-radius: ${liqV3.radius};
-  border: 1px solid ${liqV3.goldLine};
-  background:
-    radial-gradient(ellipse 80% 60% at 8% 0%, rgba(242, 200, 76, 0.1), transparent 55%),
-    linear-gradient(165deg, rgba(22, 20, 12, 0.98), rgba(12, 12, 12, 0.98));
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) auto;
-  gap: 10px 14px;
-  align-items: center;
-  margin-bottom: 8px;
-  min-width: 0;
-
-  @media (max-width: ${liqV3.mobileBreak}) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const AiSteps = styled.ol`
-  list-style: none;
-  margin: 6px 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-
-  @media (max-width: ${liqV3.mobileBreak}) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const AiStep = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 30px;
-  padding: 4px 8px;
-  border-radius: 9px;
-  border: 1px solid ${liqV3.line};
-  background: rgba(255, 255, 255, 0.02);
-  font-size: 12px;
-  font-weight: 700;
-  color: ${liqV3.mute};
-`
-
-const AiStepNum = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: rgba(244, 196, 48, 0.16);
-  color: ${liqV3.gold};
-  font-size: 11px;
-  font-weight: 800;
-`
-
-const AiTitle = styled.h2`
-  margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  color: #fff;
-`
-
 const AiSub = styled.p`
   margin: 4px 0 0;
   font-size: 12px;
@@ -366,16 +382,21 @@ const AiSub = styled.p`
   color: ${liqV3.mute};
 `
 
-const Badge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  height: 18px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 750;
-  background: rgba(124, 58, 237, 0.25);
-  color: #c4b5fd;
+const AvailabilityPanel = styled.div`
+  min-height: 108px;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid ${liqV3.line};
+  background: ${liqV3.panel};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+`
+
+const AvailabilityTitle = styled.strong`
+  color: #fff;
+  font-size: 15px;
 `
 
 const ChainLegend = styled.div`
@@ -412,26 +433,64 @@ const FarmNudge = styled.div`
   color: ${liqV3.mute};
 `
 
-function modeToTab(mode: LiquidityStudioMode): LiquidityV3Tab {
-  if (mode === 'Liquidity Building') return 'building'
-  if (mode === 'Add Liquidity' || mode === 'Remove Liquidity' || mode === 'Simulation') return 'add'
-  return 'positions'
+const DeferredSurface = styled.div`
+  min-height: 116px;
+`
+
+const DeferredPlaceholder = styled.div`
+  min-height: 116px;
+  padding: 18px;
+  border: 1px solid ${liqV3.line};
+  border-radius: 12px;
+  background: ${liqV3.panel};
+  color: ${liqV3.mute};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+`
+
+const ProgressiveSurface: React.FC<React.PropsWithChildren<{ force?: boolean; label: string }>> = ({
+  force = false,
+  label,
+  children,
+}) => {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(force)
+
+  useEffect(() => {
+    if (force) {
+      setMounted(true)
+      return undefined
+    }
+    if (mounted || !ref.current || typeof IntersectionObserver === 'undefined') {
+      if (!mounted) setMounted(true)
+      return undefined
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return
+        setMounted(true)
+        observer.disconnect()
+      },
+      { rootMargin: '600px 0px', threshold: 0.01 },
+    )
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [force, mounted])
+
+  return (
+    <DeferredSurface ref={ref} data-progressive-liquidity-surface={label}>
+      {mounted ? children : <DeferredPlaceholder>Preparing {label}…</DeferredPlaceholder>}
+    </DeferredSurface>
+  )
 }
 
 function isRemoveMode(mode: LiquidityStudioMode): boolean {
   return mode === 'Remove Liquidity'
 }
 
-function tabToMode(tab: LiquidityV3Tab): LiquidityStudioMode {
-  if (tab === 'building') return 'Liquidity Building'
-  if (tab === 'add') return 'Add Liquidity'
-  return 'My Positions'
-}
-
-function cardValue(
-  cards: ReturnType<typeof useLiquidityMarketSnapshot>['cards'],
-  id: string,
-): string {
+function cardValue(cards: ReturnType<typeof useLiquidityMarketSnapshot>['cards'], id: string): string {
   const c = cards.find((x) => x.id === id)
   return truthDash(c?.value)
 }
@@ -439,202 +498,151 @@ function cardValue(
 const LiquidityV3Body: React.FC = () => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
-  const { mode, setMode, positions } = useLiquidityRuntime()
+  const { mode, setMode, positions, positionsPhase } = useLiquidityRuntime()
   const snapshot = useLiquidityMarketSnapshot()
-  /**
-   * Tab chrome is local and authoritative for UI.
-   * Do NOT mirror mode→tab on every mode change — that races shallow URL updates and snaps the wrong tab.
-   */
-  const [tab, setTab] = useState<LiquidityV3Tab>('positions')
-  const [aiMounted, setAiMounted] = useState(false)
-  const [tabsReady, setTabsReady] = useState(false)
   const hydratedRef = React.useRef(false)
-  const prevModeRef = React.useRef(mode)
-  const tabRef = React.useRef<LiquidityV3Tab>(tab)
-  tabRef.current = tab
-  const showFarmNudge = tab === 'positions' && positions.length > 0
+  const deferredDeepLinkScrollRef = React.useRef<string | null>(null)
   const removing = isRemoveMode(mode)
+  const showFarmNudge = positions.length > 0
 
-  // One-shot deep-link hydrate from ?view= (wait for query parse when asPath has view=)
+  const scrollToSection = useCallback((id: string) => {
+    window.requestAnimationFrame(() => {
+      window.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [])
+
+  /**
+   * One-shot compatibility for existing shared links. The approved workspace is
+   * no longer driven by tabs or a continuously mirrored query string: every
+   * product surface stays on this document and the URL cannot oscillate.
+   */
   useEffect(() => {
     if (!router.isReady || hydratedRef.current) return
     const raw = router.query.view
     const view = Array.isArray(raw) ? raw[0] : typeof raw === 'string' ? raw : undefined
     if (router.asPath.includes('view=') && view === undefined) return
     hydratedRef.current = true
+
+    let target = positions.length > 0 ? 'liquidity-positions' : 'liquidity-add'
     if (view === 'building') {
-      setTab('building')
-      setAiMounted(true)
       setMode('Liquidity Building', { syncUrl: false })
+      target = 'liquidity-builder'
     } else if (view === 'add' || view === 'remove') {
-      setTab('add')
       setMode(view === 'remove' ? 'Remove Liquidity' : 'Add Liquidity', { syncUrl: false })
+      target = 'liquidity-add'
+    } else if (view === 'explore') {
+      setMode(positions.length > 0 ? 'My Positions' : 'Add Liquidity', { syncUrl: false })
+      target = 'liquidity-explore'
     } else {
-      setTab('positions')
-      setMode('My Positions', { syncUrl: false })
+      setMode(positions.length > 0 ? 'My Positions' : 'Add Liquidity', { syncUrl: false })
     }
-    setTabsReady(true)
-  }, [router.isReady, router.query.view, router.asPath, setMode])
-
-  // External execution paths only: Remove Liquidity, or Manage → Add from My Liquidity.
-  useEffect(() => {
-    const prev = prevModeRef.current
-    prevModeRef.current = mode
-    if (mode === 'Remove Liquidity') {
-      setTab('add')
-      return
+    if (
+      (view === 'add' || view === 'remove') &&
+      (positionsPhase === 'connecting' || positionsPhase === 'fetching')
+    ) {
+      deferredDeepLinkScrollRef.current = target
     }
-    if (mode === 'Add Liquidity' && prev === 'My Positions') {
-      setTab('add')
-    }
-  }, [mode])
+    scrollToSection(target)
+  }, [
+    router.isReady,
+    router.query.view,
+    router.asPath,
+    setMode,
+    positions.length,
+    positionsPhase,
+    scrollToSection,
+  ])
 
+  // Wallet positions arrive after the first paint and insert My Liquidity
+  // above the editor. Re-anchor once that asynchronous layout shift settles.
   useEffect(() => {
-    if (tab === 'building') setAiMounted(true)
-  }, [tab])
-
-  // Prefetch AI module after first paint so first AI tab visit does not remount a blank shell.
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined
-    const t = window.setTimeout(() => setAiMounted(true), 500)
-    return () => window.clearTimeout(t)
-  }, [])
-
-  // Debounced shareable ?view= mirror (never drives tab chrome).
-  // Depend on primitive query fields — not the whole `router` object — so shallow
-  // replaces cannot cancel the debounce timer before it commits.
-  const queryView = typeof router.query.view === 'string' ? router.query.view : undefined
-  const queryStep = Array.isArray(router.query.step) ? router.query.step[0] : router.query.step
-  const queryProgram = Array.isArray(router.query.program)
-    ? router.query.program[0]
-    : router.query.program
-
-  const flushViewMirror = useCallback(
-    (next: LiquidityV3Tab) => {
-      if (!router.isReady || !hydratedRef.current) return
-      const liveView = next === 'building' ? 'building' : next === 'add' ? (removing ? 'remove' : 'add') : 'positions'
-      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view: liveView }
-      if (next !== 'building') {
-        delete nextQuery.step
-        delete nextQuery.program
-      }
-      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, {
-        shallow: true,
-        scroll: false,
-      })
-    },
-    [removing, router],
-  )
-
-  const selectTab = useCallback(
-    (next: LiquidityV3Tab) => {
-      setTab(next)
-      if (next === 'building') setAiMounted(true)
-      // Mode for execution only — URL is mirrored below (debounced). Avoids replace races.
-      setMode(tabToMode(next), { syncUrl: false })
-      // Leaving AI must clear view=building immediately — stale building URLs cause hard remounts.
-      if (next !== 'building' && queryView === 'building') {
-        flushViewMirror(next)
-      }
-    },
-    [setMode, queryView, flushViewMirror],
-  )
-
-  useEffect(() => {
-    if (!router.isReady || !hydratedRef.current) return
-    const desired = (t: LiquidityV3Tab) =>
-      t === 'building' ? 'building' : t === 'add' ? (removing ? 'remove' : 'add') : 'positions'
-    const view = desired(tab)
-    const stray = tab !== 'building' && (Boolean(queryStep) || Boolean(queryProgram))
-    if (view === queryView && !stray) return undefined
-    const pathname = router.pathname
-    const timer = window.setTimeout(() => {
-      // Always mirror the live tab — never flush a stale scheduled view after a later click.
-      const liveTab = tabRef.current
-      const liveView = desired(liveTab)
-      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view: liveView }
-      if (liveTab !== 'building') {
-        delete nextQuery.step
-        delete nextQuery.program
-      }
-      void router.replace({ pathname, query: nextQuery }, undefined, { shallow: true, scroll: false })
-    }, 120)
-    return () => window.clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitives only; avoid router identity churn
-  }, [tab, removing, router.isReady, router.pathname, queryView, queryStep, queryProgram])
+    const target = deferredDeepLinkScrollRef.current
+    if (!target || positionsPhase === 'connecting' || positionsPhase === 'fetching') return
+    deferredDeepLinkScrollRef.current = null
+    scrollToSection(target)
+  }, [positionsPhase, positions.length, scrollToSection])
 
   const goAdd = useCallback(() => {
-    selectTab('add')
-  }, [selectTab])
+    setMode('Add Liquidity', { syncUrl: false })
+    scrollToSection('liquidity-add')
+  }, [setMode, scrollToSection])
 
-  const goPositions = useCallback(() => selectTab('positions'), [selectTab])
-  const goAi = useCallback(() => selectTab('building'), [selectTab])
+  const goRemove = useCallback(() => {
+    if (positions.length === 0) return
+    setMode('Remove Liquidity', { syncUrl: false })
+    scrollToSection('liquidity-add')
+  }, [positions.length, setMode, scrollToSection])
+
+  const goPositions = useCallback(() => {
+    setMode('My Positions', { syncUrl: false })
+    scrollToSection('liquidity-positions')
+  }, [setMode, scrollToSection])
+
+  const goAi = useCallback(() => {
+    setMode('Liquidity Building', { syncUrl: false })
+    scrollToSection('liquidity-builder')
+  }, [setMode, scrollToSection])
+
+  const goExplore = useCallback(() => scrollToSection('liquidity-explore'), [scrollToSection])
 
   const snapCells = useMemo(
     () => [
       { label: LIQ_V3_COPY.snapshot.total, value: cardValue(snapshot.cards, 'tvl') },
       { label: LIQ_V3_COPY.snapshot.volume, value: cardValue(snapshot.cards, 'volume24h') },
-      { label: LIQ_V3_COPY.snapshot.fees, value: '—' },
-      {
-        label: LIQ_V3_COPY.snapshot.positions,
-        value: positions.length > 0 ? String(positions.length) : '—',
-      },
       { label: LIQ_V3_COPY.snapshot.chains, value: String(LIQ_V3_LIVE_CHAINS.length) },
     ],
-    [snapshot.cards, positions.length],
+    [snapshot.cards],
   )
 
   const lbSupported = (chainId ?? 56) === 56
+  const addIndex = positions.length > 0 ? 2 : 1
+  const builderIndex = addIndex + 1
+  const exploreIndex = builderIndex + 1
+  const sectionNumber = (value: number) => String(value).padStart(2, '0')
 
   return (
     <>
-      <Hero data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="farms-pools-parity">
+      <Hero $builder={false} data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="one-page-compact">
         <HeroCopy>
-          <HeroTitle>{LIQ_V3_COPY.title}</HeroTitle>
+          <HeroTitle $builder={false}>{LIQ_V3_COPY.title}</HeroTitle>
           <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
-          <HeroActions role="tablist" aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
+          <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
+            {positions.length > 0 ? (
+              <Btn
+                $ghost
+                type="button"
+                onClick={goPositions}
+                data-testid="liquidity-v3-hero-positions"
+              >
+                {LIQ_V3_COPY.positionsCta}
+              </Btn>
+            ) : null}
             <Btn
-              $primary={tab === 'positions'}
-              type="button"
-              onClick={goPositions}
-              data-testid="liquidity-v3-hero-positions"
-              aria-selected={tab === 'positions'}
-            >
-              {LIQ_V3_COPY.positionsCta}
-            </Btn>
-            <Btn
-              $primary={tab === 'add'}
+              $primary
               type="button"
               onClick={goAdd}
               data-testid="liquidity-v3-hero-add"
-              aria-selected={tab === 'add'}
             >
               {LIQ_V3_COPY.addCta}
             </Btn>
             <Btn
-              $primary={tab === 'building'}
-              $ghost={tab !== 'building'}
+              $ghost
               type="button"
               onClick={goAi}
               data-testid="liquidity-v3-hero-ai"
-              aria-selected={tab === 'building'}
             >
               {LIQ_V3_COPY.aiEntry}
+              <ExclusiveBadge>EXCLUSIVE</ExclusiveBadge>
+            </Btn>
+            <Btn $ghost type="button" onClick={goExplore} data-testid="liquidity-v3-explore-pools">
+              Explore pools ↓
             </Btn>
           </HeroActions>
         </HeroCopy>
-        <HeroVisual data-testid="liquidity-v3-hero-visual">
-          <LiquidityHeroArtwork />
-        </HeroVisual>
-        <HeroTrust data-testid="liquidity-v3-hero-trust">
-          <LiquidityHeroTrustPanel />
-        </HeroTrust>
+        <LiquidityHeroArtwork />
       </Hero>
 
-      <Snapshot
-        data-testid="liquidity-v3-snapshot"
-        data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}
-      >
+      <Snapshot $hidden={false} data-testid="liquidity-v3-snapshot" data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
         {snapCells.map((c) => (
           <SnapCell key={c.label}>
             <SnapLabel>{c.label}</SnapLabel>
@@ -643,131 +651,110 @@ const LiquidityV3Body: React.FC = () => {
         ))}
       </Snapshot>
 
-      <Tabs role="tablist" aria-label="Liquidity Studio" data-testid="liquidity-v3-tabs">
-        <TabBtn
-          type="button"
-          role="tab"
-          aria-selected={tab === 'positions'}
-          $on={tab === 'positions'}
-          onClick={() => selectTab('positions')}
-          data-testid="liquidity-v3-tab-positions"
-        >
-          {LIQ_V3_COPY.tabPositions}
-        </TabBtn>
-        <TabBtn
-          type="button"
-          role="tab"
-          aria-selected={tab === 'add'}
-          $on={tab === 'add'}
-          onClick={() => selectTab('add')}
-          data-testid="liquidity-v3-tab-add"
-        >
-          {LIQ_V3_COPY.tabAdd}
-        </TabBtn>
-        <TabBtn
-          type="button"
-          role="tab"
-          aria-selected={tab === 'building'}
-          $on={tab === 'building'}
-          onClick={() => selectTab('building')}
-          data-testid="liquidity-v3-tab-ai"
-        >
-          {LIQ_V3_COPY.tabAi}
-        </TabBtn>
-      </Tabs>
-
       <Workspace
         data-testid="liquidity-v3-workspace"
-        data-liquidity-tab={tab}
         data-liquidity-panels="mounted"
-        data-liquidity-tabs-ready={tabsReady ? '1' : '0'}
+        data-liquidity-navigation="anchors"
       >
-        <Panel
-          $active={tab === 'positions'}
-          data-testid="liquidity-v3-panel-positions"
-          aria-hidden={tab !== 'positions'}
-        >
-          <ChainLegend data-testid="liquidity-v3-chain-legend" aria-label="LIVE chains">
-            {LIQ_V3_LIVE_CHAINS.map((c) => (
-              <ChainChip key={c.id} $on={chainId === c.id}>
-                {c.label}
-              </ChainChip>
-            ))}
-          </ChainLegend>
-          <LiquidityMyPositionsModule />
-          {showFarmNudge ? (
-            <FarmNudge data-testid="liquidity-v3-farm-nudge">
-              <span>{LIQ_V3_COPY.createFarmNudge}</span>
-              <LinkBtn
-                $ghost
-                href={`/farms?create=1&chain=${chainId ?? 56}`}
-                data-testid="liquidity-v3-create-farm"
-              >
-                {LIQ_V3_COPY.createFarmCta}
-              </LinkBtn>
-            </FarmNudge>
-          ) : null}
-        </Panel>
+        {positions.length > 0 ? (
+          <Panel
+            id="liquidity-positions"
+            data-testid="liquidity-v3-panel-positions"
+          >
+            <SectionHeader>
+              <SectionTitleRow>
+                <SectionIndex>01</SectionIndex>
+                <SectionTitle>My Liquidity</SectionTitle>
+              </SectionTitleRow>
+              <SectionMeta>Positions found in your connected wallet</SectionMeta>
+            </SectionHeader>
+            <ChainLegend data-testid="liquidity-v3-chain-legend" aria-label="LIVE chains">
+              {LIQ_V3_LIVE_CHAINS.map((c) => (
+                <ChainChip key={c.id} $on={chainId === c.id}>
+                  {c.label}
+                </ChainChip>
+              ))}
+            </ChainLegend>
+            <LiquidityMyPositionsModule />
+            {showFarmNudge ? (
+              <FarmNudge data-testid="liquidity-v3-farm-nudge">
+                <span>{LIQ_V3_COPY.createFarmNudge}</span>
+                <LinkBtn $ghost href={`/farms?create=1&chain=${chainId ?? 56}`} data-testid="liquidity-v3-create-farm">
+                  {LIQ_V3_COPY.createFarmCta}
+                </LinkBtn>
+              </FarmNudge>
+            ) : null}
+          </Panel>
+        ) : null}
 
-        <Panel $active={tab === 'add'} data-testid="liquidity-v3-panel-add" aria-hidden={tab !== 'add'}>
-          <SubPanel $active={!removing} data-add-surface="mint" aria-hidden={removing}>
-            <LiquidityAddModule />
-          </SubPanel>
-          <SubPanel $active={removing} data-add-surface="burn" aria-hidden={!removing}>
-            <LiquidityRemovePanel />
-          </SubPanel>
-        </Panel>
-
-        <Panel
-          $active={tab === 'building'}
-          data-testid="liquidity-v3-panel-ai"
-          aria-hidden={tab !== 'building'}
-        >
-          <AiEntry data-testid="liquidity-v3-ai-entry" data-ai-layout="horizontal">
-            <div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <AiTitle>{LIQ_V3_COPY.aiEntry}</AiTitle>
-                <Badge data-testid="liquidity-v3-ai-beta">{LIQ_V3_COPY.aiBeta}</Badge>
-              </div>
-              <AiSub>{LIQ_V3_COPY.aiSub}</AiSub>
-              <AiSteps aria-label="Builder steps" data-testid="liquidity-v3-ai-steps">
-                <AiStep>
-                  <AiStepNum>1</AiStepNum>
-                  {LIQ_V3_COPY.aiStep1}
-                </AiStep>
-                <AiStep>
-                  <AiStepNum>2</AiStepNum>
-                  {LIQ_V3_COPY.aiStep2}
-                </AiStep>
-                <AiStep>
-                  <AiStepNum>3</AiStepNum>
-                  {LIQ_V3_COPY.aiStep3}
-                </AiStep>
-              </AiSteps>
-            </div>
-            <Btn
-              $primary
+        <Panel id="liquidity-add" data-testid="liquidity-v3-panel-add">
+          <SectionHeader>
+            <SectionTitleRow>
+              <SectionIndex>{sectionNumber(addIndex)}</SectionIndex>
+              <SectionTitle>Add / Remove Liquidity</SectionTitle>
+            </SectionTitleRow>
+            <SectionMeta>Choose a pair · Enter amounts · Confirm once</SectionMeta>
+          </SectionHeader>
+          <ModeSwitch role="group" aria-label="Liquidity action">
+            <ModeButton type="button" $active={!removing} onClick={goAdd} aria-pressed={!removing}>
+              Add
+            </ModeButton>
+            <ModeButton
               type="button"
-              data-testid="liquidity-v3-ai-start"
-              onClick={() => {
-                selectTab('building')
-                setAiMounted(true)
-              }}
+              $active={removing}
+              onClick={goRemove}
+              disabled={positions.length === 0}
+              aria-pressed={removing}
+              title={positions.length === 0 ? 'No liquidity position available to remove' : undefined}
             >
-              {LIQ_V3_COPY.aiOpen}
-            </Btn>
-          </AiEntry>
-          {lbSupported ? (
-            <AiWide data-testid="liquidity-v3-ai-builder">
-              {aiMounted ? (
-                <LiquidityBuildingCard forceExpanded={tab === 'building'} studioOwnedUrl />
-              ) : null}
-            </AiWide>
-          ) : (
-            <AiSub data-testid="liquidity-v3-ai-wrong-chain">
-              AI Liquidity Builder is available on BNB Chain only.
-            </AiSub>
-          )}
+              Remove
+            </ModeButton>
+          </ModeSwitch>
+          <ProgressiveSurface force label={removing ? 'Remove Liquidity' : 'Add Liquidity'}>
+            <SubPanel $active={!removing} data-add-surface="mint" aria-hidden={removing}>
+              <LiquidityAddModule />
+            </SubPanel>
+            <SubPanel $active={removing} data-add-surface="burn" aria-hidden={!removing}>
+              <LiquidityRemovePanel />
+            </SubPanel>
+          </ProgressiveSurface>
+        </Panel>
+
+        <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
+          <SectionHeader>
+            <SectionTitleRow>
+              <SectionIndex>{sectionNumber(builderIndex)}</SectionIndex>
+              <SectionTitle>
+                AI Liquidity Builder <span data-liquidity-builder-exclusive>EXCLUSIVE FEATURE</span>
+              </SectionTitle>
+            </SectionTitleRow>
+            <SectionMeta>Configure · Review · Activate</SectionMeta>
+          </SectionHeader>
+          <ProgressiveSurface force={mode === 'Liquidity Building'} label="AI Liquidity Builder">
+            {lbSupported ? (
+              <AiWide data-testid="liquidity-v3-ai-builder">
+                <LiquidityBuildingCard forceExpanded studioOwnedUrl />
+              </AiWide>
+            ) : (
+              <AvailabilityPanel data-testid="liquidity-v3-ai-wrong-chain">
+                <AvailabilityTitle>Available on BNB Chain</AvailabilityTitle>
+                <AiSub>Switch to BNB when you want to configure an automated liquidity program.</AiSub>
+              </AvailabilityPanel>
+            )}
+          </ProgressiveSurface>
+        </Panel>
+
+        <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
+          <SectionHeader>
+            <SectionTitleRow>
+              <SectionIndex>{sectionNumber(exploreIndex)}</SectionIndex>
+              <SectionTitle>Explore Pools</SectionTitle>
+            </SectionTitleRow>
+            <SectionMeta>Search · Compare · BNB Chain indexed pools</SectionMeta>
+          </SectionHeader>
+          <ProgressiveSurface label="Pool Explorer">
+            <LiquidityPoolDiscoveryModule embedded />
+          </ProgressiveSurface>
         </Panel>
       </Workspace>
     </>
@@ -789,9 +776,9 @@ export const LiquidityStudioV3Shell: React.FC = () => (
     data-liquidity-module-007="mounted"
     data-liquidity-module-008="mounted"
     data-liquidity-architecture="000"
-    data-liquidity-ia="v3-tabs"
+    data-liquidity-ia="one-page-workspace"
   >
-    <LiquidityRuntimeProvider>
+    <LiquidityRuntimeProvider terminalEnabled={false}>
       <LiquidityV3Body />
     </LiquidityRuntimeProvider>
   </Page>

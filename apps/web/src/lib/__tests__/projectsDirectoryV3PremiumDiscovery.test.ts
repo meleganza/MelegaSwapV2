@@ -49,19 +49,19 @@ function stubCard(partial: Partial<ProjectPreviewCard> & Pick<ProjectPreviewCard
 }
 
 describe('MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY', () => {
-  it('compact hero + Featured rail reuse + dropdown filters', () => {
+  it('compact hero + factual market list + dropdown filters', () => {
     const header = load('views/ProjectsStudio/components/ProjectsStudioPageHeader.tsx')
     const screen = load('views/ProjectsStudio/ProjectsStudioScreen.tsx')
-    const featured = load('views/ProjectsStudio/components/FeaturedProjectsSection.tsx')
+    const directory = load('views/ProjectsStudio/components/ProjectsGrid.tsx')
     const filters = load('views/ProjectsStudio/components/ProjectsFilterRow.tsx')
     expect(header).toContain('Discover Projects')
     expect(header).toContain('Explore tokens and projects across Melega DEX.')
     expect(header).toContain('data-projects-hero="compact-v3"')
     expect(header).toMatch(/max-height:\s*170px/)
     expect(screen).toContain('data-projects-directory="v3"')
-    expect(screen).toContain('FeaturedProjectsSection')
-    expect(featured).toContain('FeaturedProjectsRail')
-    expect(featured).toContain('data-featured-max="4"')
+    expect(screen).not.toContain('FeaturedProjectsSection')
+    expect(directory).toContain('data-projects-directory-view="market-list"')
+    expect(directory).toContain('isMarketDiscoverableProject')
     expect(filters).toContain('data-projects-filters="dropdowns"')
     expect(filters).toContain('projects-filters-mobile')
     expect(filters).toContain('projects-filter-reset')
@@ -154,7 +154,7 @@ describe('MELEGASWAP_V2_PROJECTS_DIRECTORY_V3_PREMIUM_DISCOVERY', () => {
     const grid = load('views/ProjectsStudio/components/ProjectsGrid.tsx')
     expect(grid).toContain('projects-load-more')
     expect(grid).toContain('PROJECTS_SCROLL_KEY')
-    expect(grid).toContain('Reset Filters')
+    expect(grid).toContain('data-projects-directory-view="market-list"')
   })
 
   it('mobile filter drawer present', () => {

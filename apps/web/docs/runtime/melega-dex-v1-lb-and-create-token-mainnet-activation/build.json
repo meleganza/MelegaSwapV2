@@ -1,8 +1,0 @@
-{
-  "schemaVersion": "melega.lb-and-ct.build.v1",
-  "assessedAt": "2026-07-30T04:46:06.691854Z",
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "exitCode": 0
-}

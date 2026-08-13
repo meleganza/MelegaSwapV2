@@ -24,6 +24,9 @@ import { buildFarmsWalletPortfolio, type FarmsPortfolioViewMode } from './buildF
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
 import { useFarmsTerminalData } from './useFarmsTerminalData'
 import { useMasterChefEmission, type MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
+import { getMasterChefAddress } from 'utils/addressHelpers'
+import { enrichFarmParticipantCounts } from 'lib/yield-participants/enrichYieldParticipantCards'
+import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
 
 export type FarmsRuntimePhase =
   | 'idle'
@@ -235,6 +238,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   const canonicalPerBlock = masterChefEmission.perBlock > 0 ? masterChefEmission.perBlock : regularCakePerBlock
   const cakePrice = usePriceCakeBusd()
   const terminal = useFarmsTerminalData()
+  const { snapshot: participantSnapshot } = useYieldParticipants()
 
   const enrichedFarms = useMemo(() => {
     if (!farmsLP?.length || !chainId) return []
@@ -244,8 +248,14 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const previewCards = useMemo(() => {
     if (!enrichedFarms.length) return []
-    return enrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
-  }, [enrichedFarms, masterChefEmission])
+    const cards = enrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
+    return enrichFarmParticipantCounts(
+      cards,
+      participantSnapshot,
+      chainId ?? 56,
+      getMasterChefAddress(chainId),
+    )
+  }, [enrichedFarms, masterChefEmission, participantSnapshot, chainId])
 
   const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
   const positionsLoading = Boolean(account) && !userDataLoaded

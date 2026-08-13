@@ -1,5 +1,5 @@
-import { TradeType } from '@pancakeswap/sdk'
-import { RouteType } from '@pancakeswap/smart-router/evm'
+import type { TradeType } from '@pancakeswap/sdk'
+import type { RouteType } from '@pancakeswap/smart-router/evm'
 
 export interface RequestBody {
   networkId: number

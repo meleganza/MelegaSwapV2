@@ -1,6 +1,0 @@
-{
-  "factoryAddress": null,
-  "ssotBound": false,
-  "sessionBindAllowedAfterValidation": true,
-  "note": "Do not bind SSOT before validation. No fabricated address."
-}

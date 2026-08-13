@@ -3,6 +3,11 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
 import BundleAnalyzer from '@next/bundle-analyzer'
 import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const webRoot = path.dirname(fileURLToPath(import.meta.url))
+const localTokensPackage = path.resolve(webRoot, '../../packages/tokens')
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -116,6 +121,55 @@ const config = {
   },
   async redirects() {
     return [
+      // Performance cleanup: retire obsolete consumer surfaces instead of
+      // mounting the legacy React Router compatibility runtime in every app.
+      {
+        source: '/ilo/:path*',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/nft/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/nftmarket/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/viewNFTs/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      // The approved contract-first List workspace replaces the old import
+      // console, launch interstitial and generic Build Studio consumer pages.
+      {
+        source: '/import-existing-token',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/launch',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/build-studio',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/farms/history/:path*',
+        destination: '/farms?view=my',
+        permanent: true,
+      },
+      {
+        source: '/pools/history/:path*',
+        destination: '/pools?view=my',
+        permanent: true,
+      },
       // Founder P0: /trade is the Swap shell (preserve query string).
       {
         source: '/trade',
@@ -171,7 +225,7 @@ const config = {
       },
       {
         source: '/farms/archived',
-        destination: '/farms/history',
+        destination: '/farms?view=my',
         permanent: true,
       },
       {
@@ -191,7 +245,7 @@ const config = {
       },
       {
         source: '/nfts',
-        destination: '/collectibles',
+        destination: '/projects',
         permanent: true,
       },
       {
@@ -225,6 +279,16 @@ const config = {
         permanent: false,
       },
     ]
+  },
+  webpack(webpackConfig) {
+    // Recovery Wave 2: never bundle a workspace package through a stale
+    // worktree symlink. A foreign @pancakeswap/tokens copy duplicated SDK,
+    // JSBI, decimal and BN modules in every canonical route.
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      '@pancakeswap/tokens': localTokensPackage,
+    }
+    return webpackConfig
   },
   // webpack: (webpackConfig, { webpack }) => {
   //   // tree shake sentry tracing

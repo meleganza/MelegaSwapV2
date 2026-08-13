@@ -1,9 +1,0 @@
-{
-  "keyPattern": "melega.list.draft.v1:{chainId}:{wallet|guest}:{intent}",
-  "isolation": [
-    "intent",
-    "wallet",
-    "chainId"
-  ],
-  "autosaveRequiresPersistenceSuccess": true
-}

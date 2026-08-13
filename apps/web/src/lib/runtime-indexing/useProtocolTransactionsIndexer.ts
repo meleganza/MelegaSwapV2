@@ -38,12 +38,14 @@ export interface IndexerActivityState {
   indexingLag?: number
 }
 
-export function useProtocolTransactionsIndexer(pairAddress?: string) {
+export function useProtocolTransactionsIndexer(pairAddress?: string, enabled = true) {
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const type = checkIsStableSwap() ? 'stableSwap' : 'swap'
-  const useSubgraph = Boolean(chainName && subgraphReport.melegaNativeConfigured)
-  const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured && !checkIsStableSwap())
+  const useSubgraph = Boolean(enabled && chainName && subgraphReport.melegaNativeConfigured)
+  const useDurableIndexer = Boolean(
+    enabled && chainName === 'BSC' && !subgraphReport.melegaNativeConfigured && !checkIsStableSwap(),
+  )
 
   const swrKey = useSubgraph ? [`info/protocol/updateProtocolTransactionsData/${type}`, chainName] : null
 
@@ -71,6 +73,16 @@ export function useProtocolTransactionsIndexer(pairAddress?: string) {
 
   const indexerState = useMemo((): IndexerActivityState => {
     const lastAttempt = new Date().toISOString()
+
+    if (!enabled) {
+      return {
+        source: 'disabled',
+        status: 'unavailable',
+        indexer: 'disabled',
+        lastAttempt,
+        reason: 'Indexer disabled for this embedded workflow',
+      }
+    }
 
     if (useDurableIndexer) {
       const meta = indexerPayload?.meta
@@ -210,6 +222,7 @@ export function useProtocolTransactionsIndexer(pairAddress?: string) {
       reason: 'Subgraph transactions loading',
     }
   }, [
+    enabled,
     chainName,
     data,
     error,

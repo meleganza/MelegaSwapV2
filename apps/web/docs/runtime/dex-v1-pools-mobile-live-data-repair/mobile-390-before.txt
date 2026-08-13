@@ -1,1 +1,0 @@
-Pre-fix sticky demotion — see founder-defect-reproduction.md

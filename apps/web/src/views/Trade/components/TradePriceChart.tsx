@@ -26,7 +26,7 @@ const Shell = styled.div`
   height: 100%;
   min-height: 0;
   width: 100%;
-  max-width: 520px;
+  max-width: none;
   box-sizing: border-box;
   padding: 16px;
 `

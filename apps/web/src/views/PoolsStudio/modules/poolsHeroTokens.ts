@@ -48,25 +48,19 @@ export const poolsHero = {
   secondaryCtaH: '44px',
   ctaRadius: '10px',
   ctaGap: '12px',
-  /** Contextual MARCO-holder CTA under primary Create Pool (not a giant banner). */
+  /** @deprecated Retained for contract compatibility; no secondary CTA is rendered. */
   communityCtaMaxW: '340px',
-
   gold: '#F4C430',
   goldHover: '#FFD34D',
   pageBg: '#080808',
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
 
-  /** Factual Create Pool destination (on-page builder). */
+  /** Create Pool is intercepted by the page and opens the self-contained modal. */
   createPoolHref: '#create-pool',
+  /** @deprecated The Pools UI never navigates to Build Studio. */
   createPoolFallback: '/build-studio?intent=staking-pool#create-pool',
-
-  /**
-   * How it Works — Architecture 000 reserves the Hero CTA.
-   * No dedicated explanatory section exists yet; CTA scrolls to the on-page
-   * Create Pool builder (`#create-pool`) as the factual guided entry.
-   */
-  howItWorksHref: '#create-pool',
+  /** @deprecated The non-functional How it Works control is no longer rendered. */
   howItWorksReserved: true,
 
   mobileTitleSize: '42px',
@@ -86,8 +80,9 @@ export const POOLS_HERO_COPY = {
   title: 'Pools',
   description: 'Stake tokens. Earn rewards. On your terms.',
   primaryCta: 'Create Pool',
-  secondaryCta: 'How it Works',
+  /** @deprecated Kept for downstream copy consumers; not rendered in the hero. */
   communityCtaTitle: 'Create a staking pool for your community',
+  /** @deprecated Kept for downstream copy consumers; not rendered in the hero. */
   communityCtaBody: 'Reward your holders and increase token engagement.',
   trustTitle: 'Why Stake on Melega DEX?',
   trustItems: [

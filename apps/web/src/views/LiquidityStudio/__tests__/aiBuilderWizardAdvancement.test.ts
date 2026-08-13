@@ -1,5 +1,5 @@
 /**
- * Founder acceptance — AI Builder Set up → Review → Activate.
+ * Founder acceptance — AI Builder Configure → Review & activate.
  * Source-level + programStatus unit tests (no wallet / chain writes).
  */
 import { readFileSync } from 'fs'
@@ -23,7 +23,7 @@ function draft(partial: Partial<SetupDraft>): SetupDraft {
   return { ...EMPTY_SETUP_DRAFT, ...partial }
 }
 
-describe('AI Builder founder 3-step advancement', () => {
+describe('AI Builder founder two-step advancement', () => {
   it('blocks Configure without resolved token', () => {
     expect(setupTokenResolved(EMPTY_SETUP_DRAFT)).toBe(false)
     expect(
@@ -71,20 +71,23 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(hook).toContain('return true')
   })
 
-  it('exposes Setup → Review → Activate only (no Setup/Strategy/Review wizard)', () => {
+  it('exposes Configure plan → Review & activate without a redundant intermediate click', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('data-lb-single-surface')
     expect(card).toContain('liq-lb-single-surface')
     expect(card).toContain('BUILDER_STEPS')
-    expect(card).toContain("label: 'Setup'")
-    expect(card).toContain("label: 'Review'")
-    expect(card).toContain("label: 'Activate'")
+    expect(card).toContain("label: 'Configure plan'")
+    expect(card).toContain("label: 'Review & activate'")
+    expect(card).toContain('type BuilderStep = 1 | 2')
     expect(card).toContain('liq-lb-step-configure')
     expect(card).toContain('liq-lb-step-review')
     expect(card).toContain('liq-lb-step-activate')
     expect(card).toContain('LbDeployReadinessPanel')
+    expect(card).toContain('Two required inputs')
+    expect(card).toContain('Customize recommended plan')
     expect(card).not.toContain('WIZARD_STEPS')
     expect(card).not.toContain("['Setup', 'Strategy', 'Review']")
+    expect(card).not.toContain("'Continue to Activate'")
   })
 
   it('CTA state machine covers step advance / Connect / Pair / Activate', () => {
@@ -92,15 +95,14 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(card).toContain("'Connect Wallet'")
     expect(card).toContain("'Choose Token to Grow'")
     expect(card).toContain("'Enter Token Reserve'")
-    expect(card).toContain("'Continue to Review'")
-    expect(card).toContain("'Continue to Activate'")
+    expect(card).toContain("'Review & Activate'")
     expect(card).toContain("'Pair Required'")
     expect(card).toContain("'Approve Tokens'")
     expect(card).toContain("'Activate Liquidity Program'")
     expect(card).toContain('LB_UX.activationInProgress')
     expect(card).toContain('LB_UX.programActiveLabel')
     expect(card).toContain('Liquidity Building contracts not deployed on BNB Smart Chain')
-    expect(card).toContain('eth_requestAccounts')
+    expect(card).toContain('useWagmiSwitchNetwork')
     expect(card).toContain('requestDepositAndActivate')
     expect(card).toContain('setupTokenResolved')
     expect(card).toContain('setupBudgetPositive')
@@ -108,6 +110,23 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(card).toContain('primaryDisabled')
     expect(card).toContain('liq-lb-activation-guide')
     expect(card).toContain('liq-lb-activation-live')
+    expect(card).toContain("builderStep === 2 && !card.walletConnected")
+    expect(card).toContain('switchNetworkAsync(56)')
+    expect(card).not.toContain("method: 'wallet_switchEthereumChain'")
+  })
+
+  it('treats wallet and network as guided CTA states, not product availability failures', () => {
+    const card = load('onePage/LiquidityBuildingCard.tsx')
+    expect(card).toContain('Wallet and network are guided CTA states')
+    expect(card).toContain("if (!card.walletConnected) return 'Connect Wallet'")
+    expect(card).toContain('if (!card.correctChain) return LB_UX.switchNetwork')
+  })
+
+  it('keeps the first SSR and client render deterministic before applying the deep link', () => {
+    const runtime = load('liquidityRuntime/useLiquidityMintRuntime.tsx')
+    expect(runtime).toContain("useState<LiquidityStudioMode>('My Positions')")
+    expect(runtime).not.toContain('LIQUIDITY_VIEW_TO_MODE')
+    expect(runtime).not.toContain('useState(initialView)')
   })
 
   it('keeps fail-closed requestDepositAndActivate path (no fake activation)', () => {

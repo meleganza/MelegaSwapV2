@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { typography } from 'design-system/melega'
 import { LiquidityPoolDiscoveryCard } from './LiquidityPoolDiscoveryCard'
 import {
   LIQUIDITY_POOL_DISCOVERY_COPY,
@@ -12,16 +13,17 @@ import {
 } from './liquidityPoolDiscoveryTokens'
 import { useLiquidityPoolDiscovery } from './useLiquidityPoolDiscovery'
 
-const Shell = styled.section`
+const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;
   max-width: ${liquidityPoolDiscovery.contentMax};
-  margin: ${liquidityPoolDiscovery.gapAfterActions} auto 0;
+  margin: ${({ $embedded }) => ($embedded ? '0 auto' : `${liquidityPoolDiscovery.gapAfterActions} auto 0`)};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
+  font-family: ${typography.fontFamily.body};
 
   @media (max-width: ${liquidityPoolDiscovery.tabletBreak}) {
-    padding: 0 16px;
+    padding: ${({ $embedded }) => ($embedded ? '0' : '0 16px')};
   }
 `
 
@@ -30,7 +32,7 @@ const Header = styled.div`
   min-height: ${liquidityPoolDiscovery.headerH};
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
@@ -62,17 +64,19 @@ const Controls = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: stretch;
   min-width: 0;
+  width: 100%;
 `
 
 const Search = styled.input`
-  width: min(280px, 100%);
-  height: 40px;
+  flex: 1 1 240px;
+  min-width: 0;
+  height: 44px;
   box-sizing: border-box;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(8, 8, 8, 0.9);
+  background: rgba(255, 255, 255, 0.04);
   color: ${liquidityPoolDiscovery.text};
   padding: 0 12px;
   font-size: 13px;
@@ -85,6 +89,66 @@ const Search = styled.input`
     outline: ${liquidityPoolDiscovery.focusRing};
     outline-offset: ${liquidityPoolDiscovery.focusOffset};
   }
+`
+
+const ToolbarSide = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+
+  @media (max-width: ${liquidityPoolDiscovery.mobileBreak}) {
+    width: 100%;
+  }
+`
+
+const FiltersWrap = styled.div`
+  position: relative;
+`
+
+const FiltersButton = styled.button<{ $open?: boolean }>`
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid ${({ $open }) => ($open ? 'rgba(244,196,48,0.5)' : 'rgba(255,255,255,0.12)')};
+  background: ${({ $open }) => ($open ? 'rgba(244,196,48,0.12)' : 'rgba(255,255,255,0.04)')};
+  color: ${({ $open }) => ($open ? liquidityPoolDiscovery.gold : liquidityPoolDiscovery.text)};
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+`
+
+const FiltersPanel = styled.div`
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  width: 230px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 18, 18, 0.98);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+`
+
+const ViewToggle = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(60px, 1fr));
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+`
+
+const ViewButton = styled.button<{ $active?: boolean }>`
+  border: 0;
+  background: ${({ $active }) => ($active ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.03)')};
+  color: ${({ $active }) => ($active ? liquidityPoolDiscovery.gold : liquidityPoolDiscovery.text)};
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 `
 
 const ChipRow = styled.div`
@@ -121,24 +185,24 @@ const SortSelect = styled.select`
   padding: 0 10px;
 `
 
-const Grid = styled.div`
+const Grid = styled.div<{ $view?: 'cards' | 'list' }>`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: ${({ $view }) => ($view === 'list' ? '1fr' : 'repeat(5, minmax(0, 1fr))')};
   column-gap: ${liquidityPoolDiscovery.columnGap};
   row-gap: ${liquidityPoolDiscovery.rowGap};
   min-width: 0;
 
   @media (min-width: 1920px) {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: ${({ $view }) => ($view === 'list' ? '1fr' : 'repeat(6, minmax(0, 1fr))')};
   }
 
   @media (max-width: ${liquidityPoolDiscovery.threeColMax}) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: ${({ $view }) => ($view === 'list' ? '1fr' : 'repeat(3, minmax(0, 1fr))')};
   }
 
   @media (max-width: ${liquidityPoolDiscovery.mobileBreak}) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: ${({ $view }) => ($view === 'list' ? '1fr' : 'repeat(2, minmax(0, 1fr))')};
   }
 
   @media (max-width: 430px) {
@@ -197,36 +261,40 @@ const LoadMoreBtn = styled.button`
   }
 `
 
-export const LiquidityPoolDiscoveryModule: React.FC = () => {
+export const LiquidityPoolDiscoveryModule: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [query, setQuery] = useState('')
   const filter: LiquidityDiscoveryFilter = 'all'
   const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
-  const [pageSize, setPageSize] = useState(liquidityPoolDiscovery.pageSize)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [view, setView] = useState<'cards' | 'list'>('cards')
+  const pageIncrement = 8
+  const [pageSize, setPageSize] = useState(pageIncrement)
 
   useEffect(() => {
-    setPageSize(liquidityPoolDiscovery.pageSize)
-  }, [query, sort])
+    setPageSize(pageIncrement)
+  }, [query, sort, pageIncrement])
 
   const discovery = useLiquidityPoolDiscovery({ query, filter, sort, pageSize })
 
-  const skeletons = useMemo(
-    () => Array.from({ length: liquidityPoolDiscovery.skeletonCount }, (_, i) => i),
-    [],
-  )
+  const skeletons = useMemo(() => Array.from({ length: liquidityPoolDiscovery.skeletonCount }, (_, i) => i), [])
 
   return (
     <Shell
+      $embedded={embedded}
       data-testid="liquidity-pool-discovery-module"
       data-liquidity-module="003-pool-discovery"
       data-liquidity-module-003="mounted"
-      aria-labelledby="liquidity-pool-discovery-title"
+      aria-labelledby={embedded ? undefined : 'liquidity-pool-discovery-title'}
+      aria-label={embedded ? LIQUIDITY_POOL_DISCOVERY_COPY.title : undefined}
     >
       <Header data-testid="liquidity-pool-discovery-header" data-liquidity-discovery-header="64">
-        <Titles>
-          <Title id="liquidity-pool-discovery-title">{LIQUIDITY_POOL_DISCOVERY_COPY.title}</Title>
-          <Description>{LIQUIDITY_POOL_DISCOVERY_COPY.description}</Description>
-        </Titles>
-        <Controls>
+        {embedded ? null : (
+          <Titles>
+            <Title id="liquidity-pool-discovery-title">{LIQUIDITY_POOL_DISCOVERY_COPY.title}</Title>
+            <Description>{LIQUIDITY_POOL_DISCOVERY_COPY.description}</Description>
+          </Titles>
+        )}
+        <Controls data-testid="liquidity-pool-discovery-toolbar">
           <Search
             data-testid="liquidity-pool-discovery-search"
             type="search"
@@ -235,15 +303,39 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
             placeholder={LIQUIDITY_POOL_DISCOVERY_COPY.searchPlaceholder}
             aria-label={LIQUIDITY_POOL_DISCOVERY_COPY.searchPlaceholder}
           />
-          {/* Wave 03: search-only explorer — no My Tokens / Popular / Newest / Market Quality chips. */}
-          <SortSelect
-            data-testid="liquidity-pool-discovery-sort"
-            value="tvl"
-            onChange={(e) => setSort(e.target.value as LiquidityDiscoverySort)}
-            aria-label="Sort pools"
-          >
-            <option value="tvl">Sort by liquidity</option>
-          </SortSelect>
+          <ToolbarSide>
+            <FiltersWrap>
+              <FiltersButton type="button" $open={filtersOpen} onClick={() => setFiltersOpen((open) => !open)}>
+                Filters ▾
+              </FiltersButton>
+              {filtersOpen ? (
+                <FiltersPanel>
+                  <SortSelect
+                    data-testid="liquidity-pool-discovery-sort"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as LiquidityDiscoverySort)}
+                    aria-label="Sort pools"
+                  >
+                    <option value="tvl">Sort by liquidity</option>
+                    {discovery.availableSorts.includes('volume') ? (
+                      <option value="volume">Sort by volume</option>
+                    ) : null}
+                    {discovery.availableSorts.includes('newest') ? (
+                      <option value="newest">Sort by newest</option>
+                    ) : null}
+                  </SortSelect>
+                </FiltersPanel>
+              ) : null}
+            </FiltersWrap>
+            <ViewToggle aria-label="Pool display">
+              <ViewButton type="button" $active={view === 'cards'} onClick={() => setView('cards')}>
+                Cards
+              </ViewButton>
+              <ViewButton type="button" $active={view === 'list'} onClick={() => setView('list')}>
+                List
+              </ViewButton>
+            </ViewToggle>
+          </ToolbarSide>
         </Controls>
       </Header>
 
@@ -265,9 +357,9 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
 
       {discovery.state === 'ready' ? (
         <>
-          <Grid data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-geometry="1376-12-5col">
+          <Grid $view={view} data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-view={view}>
             {discovery.visibleCards.map((card) => (
-              <LiquidityPoolDiscoveryCard key={card.id} card={card} />
+              <LiquidityPoolDiscoveryCard key={card.id} card={card} listView={view === 'list'} />
             ))}
           </Grid>
           {discovery.hasMore ? (
@@ -275,7 +367,7 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
               <LoadMoreBtn
                 type="button"
                 data-testid="liquidity-pool-discovery-load-more"
-                onClick={() => setPageSize((n) => n + liquidityPoolDiscovery.pageSize)}
+                onClick={() => setPageSize((n) => n + pageIncrement)}
               >
                 Show more pools ({discovery.visibleCards.length} of {discovery.matchedCount})
               </LoadMoreBtn>

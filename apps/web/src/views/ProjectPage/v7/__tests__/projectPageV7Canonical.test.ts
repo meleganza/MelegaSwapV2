@@ -35,14 +35,14 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
 
   it('canonical hierarchy markers in order', () => {
     const order = [
-      'project-v7-hero',
-      'project-v7-market',
-      'project-v7-economy',
-      'project-v7-intel',
-      'project-v7-boost',
-      'project-v7-community-react',
-      'project-v7-about',
-      'project-v7-related',
+      'data-testid="project-v7-hero"',
+      'data-testid="project-v7-about"',
+      'data-testid="project-v7-community-react"',
+      'data-testid="project-v7-market"',
+      'data-testid="project-v7-economy"',
+      'data-testid="project-v7-intel"',
+      'data-testid="project-v7-boost"',
+      'data-testid="project-v7-related"',
     ]
     let last = -1
     for (const id of order) {
@@ -52,20 +52,39 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     }
   })
 
-  it('hero is 40/60 with Smart Swap CTA and no Buy Token', () => {
-    expect(shell).toContain('0.4fr')
-    expect(shell).toContain('0.6fr')
-    expect(shell).not.toContain('0.34fr')
-    expect(shell).toContain('project-v7-smart-swap-cta')
+  it('uses a dense verified hero followed immediately by chart and canonical Smart Swap', () => {
+    expect(shell).toContain('1.28fr')
+    expect(shell).toContain('0.72fr')
+    expect(shell).toContain('project-v7-market-first-workspace')
+    expect(shell).not.toContain('project-v7-smart-swap-cta')
     expect(shell).toContain('project-v7-claim-cta')
+    expect(shell).toContain('project-v7-verified')
+    expect(shell).toContain('project-v7-handle')
+    expect(shell).not.toContain('project-v7-nav')
+    expect(shell).not.toContain('Official project')
     expect(shell).not.toContain('Buy Token')
     expect(shell).not.toContain('Technical Transparency')
     expect(shell).not.toContain('Machine Interface')
+    expect(shell).not.toContain('Trust & Verification')
+    expect(shell).not.toContain('Due Diligence')
+    expect(shell).not.toContain('Trade {symbol')
+    expect(shell).toContain('project-v7-attestation-${item.id}')
   })
 
-  it('related projects reuse ProjectCard V3', () => {
-    expect(shell).toContain('ProjectCard')
-    expect(shell).toContain("from 'views/ProjectsStudio/components/ProjectGridCard'")
+  it('keeps indexed analytics inside the chart workspace without a duplicate market band', () => {
+    expect(shell).toContain('<MarketStrip data-testid="project-v7-market"')
+    expect(shell).toContain('project-v7-multi-dex')
+    expect(shell).toContain('dexMarket?.liquidityUsd')
+    expect(shell).not.toContain('All DEX Markets')
+    expect(shell).not.toContain('Loading multi-DEX markets')
+    expect(shell).not.toContain('<strong>⚡ Smart Swap</strong>')
+  })
+
+  it('related projects remain compact and do not render unavailable market metrics', () => {
+    expect(shell).toContain('RelatedCard')
+    expect(shell).toContain('Indexed project')
+    expect(shell).not.toContain('ProjectCard project={card}')
+    expect(shell).not.toContain("from 'views/ProjectsStudio/components/ProjectGridCard'")
     expect(shell).toContain('project-v7-related-grid')
   })
 
@@ -94,9 +113,7 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     const sample = farms[0]
     const addr = normalizeEvmAddress(sample.token0Address)
     expect(addr).toBeTruthy()
-    const matched = farms.filter(
-      (f) => f.token0Address === addr || f.token1Address === addr || f.lpAddress === addr,
-    )
+    const matched = farms.filter((f) => f.token0Address === addr || f.token1Address === addr || f.lpAddress === addr)
     expect(matched.length).toBeGreaterThan(0)
     const matchSrc = load('views/ProjectPage/v7/matchProjectYieldByToken.ts')
     expect(matchSrc).toContain('normalizeEvmAddress')

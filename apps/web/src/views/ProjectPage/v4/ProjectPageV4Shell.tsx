@@ -565,6 +565,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
     const map: Record<CommercialServiceId, string> = {
       featured: 'project-v4-grow-featured',
       'trend-boost': 'project-v4-grow-trend',
+      'sponsored-research': 'project-v4-grow-research',
       liquidity: 'project-v4-grow-liquidity',
       'create-farm': 'project-v4-grow-farm',
       'create-pool': 'project-v4-grow-pool',

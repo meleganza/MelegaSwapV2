@@ -20,8 +20,8 @@ describe('AI Liquidity Builder product UX redesign V2', () => {
     expect(LB_UX.entrySupport).toMatch(/token reserve/i)
     expect(LB_UX.noActiveProgramTitle).toBe('Create your first AI Liquidity Program')
     expect(LB_UX.noActiveProgramCta).toBe('Create Liquidity Program')
-    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
-    expect(LB_UX.quoteAssetSupport).toBe('The asset paired with your token to create market liquidity.')
+    expect(LB_UX.quoteAssetLabel).toBe('Pair with')
+    expect(LB_UX.quoteAssetSupport).toMatch(/BNB is recommended/i)
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
     expect(LB_UX.technicalTitle).toBe('Technical Details')
   })
@@ -44,8 +44,9 @@ describe('AI Liquidity Builder product UX redesign V2', () => {
     expect(card).not.toContain('Transaction readiness')
   })
 
-  it('quote selection exposes WBNB USDT USDC as Create Market Against', () => {
+  it('quote selection exposes BNB/WBNB, USDT and USDC using founder language', () => {
     expect(QUOTE_ASSET_OPTIONS.map((q) => q.key)).toEqual(['WBNB', 'USDT', 'USDC'])
+    expect(QUOTE_ASSET_OPTIONS[0].label).toBe('BNB (WBNB)')
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('lb-quote-${q.key.toLowerCase()}')
     expect(card).toContain('setQuoteAssetKey')

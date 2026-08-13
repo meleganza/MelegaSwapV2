@@ -224,13 +224,6 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   }
 `
 
-const PartialNote = styled.p`
-  margin: 0;
-  font-size: 10px;
-  line-height: 14px;
-  color: rgba(224, 184, 90, 0.9);
-`
-
 function actionBusyLabel(kind: PoolsPositionAction['kind'], base: PoolsPositionAction['label']): string {
   if (kind === 'claim') return 'Claiming…'
   if (kind === 'withdraw' || kind === 'emergency_withdraw') return 'Withdrawing…'
@@ -377,9 +370,6 @@ export const PoolsMyPositionCard: React.FC<{
           ) : null}
         </Metric>
         {position.unlockLine ? <Unlock>{position.unlockLine}</Unlock> : null}
-        {position.partialReasons.map((r) => (
-          <PartialNote key={r}>{r}</PartialNote>
-        ))}
       </Metrics>
 
       <Actions>

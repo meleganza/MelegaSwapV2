@@ -1,7 +1,7 @@
 /**
  * Explore Melega Ecosystem destinations — public LIVE URLs only.
  * Radar and Labs removed from Founder-facing Home (RC2 emergency repair).
- * BlackPump canonical public URL: https://blackpump.fun/ (Melega launchpad).
+ * BLACK canonical public URL: https://black.mn (Melega fair-launch infrastructure).
  */
 export type EcosystemDestination = {
   id: string
@@ -33,7 +33,7 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     id: 'blackpump',
     title: 'BLACK',
     subtitle: 'Fair-launch infrastructure.',
-    href: 'https://blackpump.fun/',
+    href: 'https://black.mn',
     external: true,
   },
   {
@@ -48,6 +48,6 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     title: 'MAIORA',
     subtitle: 'Melega strategic layer.',
     disabled: true,
-    disabledLabel: '—',
+    disabledLabel: 'Coming soon',
   },
 ]

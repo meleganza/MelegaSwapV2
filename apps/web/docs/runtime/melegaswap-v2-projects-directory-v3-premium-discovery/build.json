@@ -1,6 +1,0 @@
-{
-  "command": "yarn next build",
-  "result": "PASS",
-  "crashedSessionAt": "2026-08-07T15:13:07Z",
-  "recoveryReconfirmAt": "2026-08-07T15:31:30Z"
-}

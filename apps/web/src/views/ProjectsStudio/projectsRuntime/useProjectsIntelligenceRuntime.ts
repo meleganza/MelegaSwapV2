@@ -19,7 +19,7 @@ import { truthDash } from 'lib/data-truth'
 import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
-import type { ProjectFilterChip, ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
+import type { ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
   buildFeaturedProject,
@@ -28,6 +28,7 @@ import {
   mapIndexedAssetToPreviewCard,
   mapPendingToPreviewCard,
   mapProjectToPreviewCard,
+  type ProjectFilterChip,
 } from './formatProjectsRuntime'
 import {
   applyProjectsDirectoryQuery,
@@ -46,6 +47,7 @@ import { buildProjectRating } from './buildProjectRating'
 import { buildMarketSources } from './marketSources'
 import type { ProjectsRuntimeError } from './projectsRuntimeErrors'
 import useProjectsTerminalData from './useProjectsTerminalData'
+import type { PublicProjectClaim } from 'lib/project-claims/types'
 
 export type ProjectsRuntimePhase = 'idle' | 'loading' | 'ready' | 'error'
 
@@ -186,8 +188,7 @@ function enrichCardMetrics(
     change24hPct,
     change24hDisplay,
     rankingLayer,
-    pairAddress:
-      opts.featured?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[base.slug] ?? base.pairAddress,
+    pairAddress: opts.featured?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[base.slug] ?? base.pairAddress,
   }
 }
 
@@ -198,9 +199,23 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const [sort, setSort] = useState<DirectorySort>(DEFAULT_DIRECTORY_QUERY.sort)
   const [searchQuery, setSearchQuery] = useState('')
   const [visibleCount, setVisibleCount] = useState(PROJECTS_INITIAL_PAGE_SIZE)
+  const [publishedClaims, setPublishedClaims] = useState<PublicProjectClaim[]>([])
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { rankedAssets } = useTopMoversSnapshot()
   const { rowsBySlug: featuredBySlug } = useFeaturedProjectMarkets()
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/registry/projects/claims')
+      .then(async (response) => (response.ok ? response.json() : null))
+      .then((payload) => {
+        if (active && payload?.ok && Array.isArray(payload.claims)) setPublishedClaims(payload.claims)
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
 
   const enriched = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
 
@@ -276,18 +291,61 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
         if (!card) return null
         const mover = trendingByAddress.get(asset.address.toLowerCase())
         const featured =
-          (asset.registrySlug && featuredBySlug[asset.registrySlug]) ||
-          featuredBySlug[card.slug] ||
-          undefined
+          (asset.registrySlug && featuredBySlug[asset.registrySlug]) || featuredBySlug[card.slug] || undefined
         return enrichCardMetrics(card, { mover, featured })
       })
       .filter((c): c is ProjectPreviewCard => Boolean(c))
 
+    const claimed = publishedClaims
+      .filter((claim) => !registryAddresses.has(claim.contract.toLowerCase()))
+      .map((claim, index): ProjectPreviewCard => {
+        const chainLabel: Record<number, string> = {
+          1: 'Ethereum',
+          56: 'BSC',
+          137: 'Polygon',
+          8453: 'Base',
+          42161: 'Arbitrum',
+          43114: 'Avalanche',
+        }
+        return {
+          id: `claimed-${claim.chainId}-${claim.contract.toLowerCase()}`,
+          rank: canonical.length + indexedExtras.length + index + 1,
+          name: claim.metadata.name,
+          slug: claim.slug,
+          symbol: claim.metadata.symbol,
+          category: 'Uncategorized',
+          chains: [chainLabel[claim.chainId] || `Chain ${claim.chainId}`],
+          chainId: claim.chainId,
+          status: 'verified',
+          verified: true,
+          featured: false,
+          boosted: false,
+          rankingLayer: null,
+          logoURI: claim.metadata.logo,
+          listedAtMs: Date.parse(claim.publishedAt),
+          rating: 0,
+          ratingTier: 'unknown',
+          aiSummary: claim.metadata.description,
+          metrics: [],
+          aiConfidence: 'Not evaluated',
+          melegaRating: '—',
+          risk: '—',
+          riskTone: 'gray',
+          website: claim.metadata.website || '',
+          contract: claim.contract,
+          contractAddress: claim.contract,
+          tradeHref: `/swap?outputCurrency=${claim.contract}`,
+          projectHref: `/@${claim.slug}/`,
+          registryTier: 'canonical',
+          reviewStatus: 'owner-verified',
+        }
+      })
+
     const pending = pendingRecords.map((pending, index) =>
       mapPendingToPreviewCard(pending, canonical.length + indexedExtras.length + index + 1),
     )
-    return [...canonical, ...indexedExtras, ...pending]
-  }, [sorted, pendingRecords, enriched, liveMetrics, trendingByAddress, featuredBySlug])
+    return [...canonical, ...indexedExtras, ...claimed, ...pending]
+  }, [sorted, pendingRecords, publishedClaims, enriched, liveMetrics, trendingByAddress, featuredBySlug])
 
   const filtered = useMemo(() => {
     return applyProjectsDirectoryQuery(cards, {
@@ -303,10 +361,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     setVisibleCount(PROJECTS_INITIAL_PAGE_SIZE)
   }, [status, chain, category, sort, searchQuery])
 
-  const visibleProjects = useMemo(
-    () => filtered.slice(0, visibleCount),
-    [filtered, visibleCount],
-  )
+  const visibleProjects = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount])
   const hasMore = visibleCount < filtered.length
   const loadMore = useCallback(() => {
     setVisibleCount((n) => n + PROJECTS_PAGE_INCREMENT)
@@ -351,10 +406,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     [featuredProject],
   )
 
-  const health = useMemo(
-    () => (featuredProject ? buildProjectHealth(featuredProject) : []),
-    [featuredProject],
-  )
+  const health = useMemo(() => (featuredProject ? buildProjectHealth(featuredProject) : []), [featuredProject])
 
   const sources = useMemo(
     () => (featuredProject ? buildMarketSources(featuredProject, featuredProject.asOf) : []),
@@ -376,10 +428,10 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
         ? 'New Listings'
         : (status as ProjectFilterChip)
       : chain !== 'All Chains'
-        ? ((chain === 'BSC' ? 'BNB' : chain) as ProjectFilterChip)
-        : category !== 'All'
-          ? (category as ProjectFilterChip)
-          : (sort as ProjectFilterChip)
+      ? ((chain === 'BSC' ? 'BNB' : chain) as ProjectFilterChip)
+      : category !== 'All'
+      ? (category as ProjectFilterChip)
+      : (sort as ProjectFilterChip)
 
   const setFilterCb = useCallback((chip: ProjectFilterChip) => {
     if (chip === 'All') {
@@ -406,13 +458,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       setChain('BSC')
       return
     }
-    if (
-      chip === 'Base' ||
-      chip === 'Polygon' ||
-      chip === 'Ethereum' ||
-      chip === 'Arbitrum' ||
-      chip === 'Avalanche'
-    ) {
+    if (chip === 'Base' || chip === 'Polygon' || chip === 'Ethereum' || chip === 'Arbitrum' || chip === 'Avalanche') {
       setChain(chip)
       return
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
@@ -7,16 +7,16 @@ import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
 import TradePageHeader from './components/TradePageHeader'
-import TradeTabBar from './components/TradeTabBar'
 import TradeCockpit from './TradeCockpit'
 import TradeCenterPanel from './TradeCenterPanel'
-import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
+import TradeRouterPanel from './components/TradeRouterPanel'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import useTradeTerminalData from './useTradeTerminalData'
+import useTradeVisibilityStatus from './useTradeVisibilityStatus'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
-import { TradeUiProvider } from './TradeUiContext'
-import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
+import { tradeColors, tradeLayout } from './tradeTokens'
+import { resolveProjectByContractAddress, resolveProjectByTokenSymbol } from 'registry/projects/identity'
 
 const Root = styled.div`
   color: ${tradeColors.text};
@@ -39,41 +39,43 @@ const Content = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: ${tradeLayout.sectionGap};
+  gap: ${tradeLayout.verticalRhythm};
 
   @media (max-width: 767px) {
     padding: 16px 16px ${tradeLayout.mobileBottomPad};
   }
 `
 
-const PageGrid = styled.div`
+const TopGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
   align-items: stretch;
   min-width: 0;
 
-  @media (min-width: 1100px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, ${tradeLayout.centerWidth}) ${tradeLayout.rightRailWidth};
-    grid-template-areas:
-      'cockpit center right'
-      'swaps swaps right';
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, ${tradeLayout.cockpitWidth});
+    grid-template-areas: 'center cockpit';
   }
 
-  @media (max-width: 1099px) and (min-width: 768px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, 1fr);
-    grid-template-areas:
-      'cockpit center'
-      'right right'
-      'swaps swaps';
-  }
-
-  @media (max-width: 767px) {
+  @media (max-width: 899px) {
     grid-template-columns: 1fr;
     grid-template-areas:
       'cockpit'
-      'center'
-      'right'
-      'swaps';
+      'center';
+  }
+`
+
+const BottomGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
+  grid-auto-rows: ${tradeLayout.tradeTerminalRecentSwapsHeight};
+  gap: ${tradeLayout.columnGap};
+  min-width: 0;
+  align-items: stretch;
+
+  @media (max-width: 899px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
   }
 `
 
@@ -99,19 +101,15 @@ const AreaCenter = styled.div`
   ${stretchColumn}
 `
 
-const AreaRight = styled.div`
-  grid-area: right;
+const AreaSwaps = styled.div`
   ${stretchColumn}
-  align-self: stretch;
 `
 
-const AreaSwaps = styled.div`
-  grid-area: swaps;
-  min-width: 0;
+const AreaRoutes = styled.div`
+  ${stretchColumn}
 `
 
 export const TradeTerminalScreen: React.FC = () => {
-  const [mode, setMode] = useState<TradeMode>('smartswap')
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -121,35 +119,62 @@ export const TradeTerminalScreen: React.FC = () => {
 
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
+  const outputProject = React.useMemo(() => {
+    const byAddress = outputCurrencyId ? resolveProjectByContractAddress(outputCurrencyId) : undefined
+    return byAddress ?? resolveProjectByTokenSymbol(outputSymbol)
+  }, [outputCurrencyId, outputSymbol])
+  const projectPageActive = Boolean(
+    outputProject &&
+      outputProject.registryStatus === 'listed' &&
+      outputProject.capabilities.tradable.status === 'live' &&
+      outputProject.lifecycleStatus !== 'inactive',
+  )
+  const projectAddress =
+    outputCurrencyId ?? outputProject?.resources.tokens.find((token) => token.symbol === outputSymbol)?.address
+  const visibility = useTradeVisibilityStatus({
+    projectSlug: outputProject?.slug,
+    projectAddress,
+  })
 
-  const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } =
-    useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  // Market/indexer reads are intentionally created once for the whole terminal.
+  // TradeCenterPanel used to create a second identical runtime (SWR, multicall,
+  // holder and candle subscriptions), which made route entry especially heavy in Firefox.
+  const tradeData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } = tradeData
 
   return (
-    <Root data-trade-terminal-screen="true" data-r200-premium="true">
+    <Root data-trade-terminal-screen="true" data-trade-one-page-workspace="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
-      <TradeUiProvider value={{ mode, setMode, helpOpen: false, setHelpOpen: () => undefined }}>
       <Content>
-        <TradePageHeader />
-        <TradeTabBar active={mode} onChange={setMode} />
+        <TradePageHeader
+          inputSymbol={inputSymbol}
+          outputSymbol={outputSymbol}
+          projectName={outputProject?.displayName}
+          projectHref={projectPageActive ? `/@${outputProject?.slug}/` : undefined}
+          bridgeHref={outputSymbol.toUpperCase() === 'MARCO' ? '/bridge' : undefined}
+          featured={visibility.featured}
+          featuredRemaining={visibility.featuredRemaining}
+          boosted={visibility.boosted}
+          boostedRemaining={visibility.boostedRemaining}
+        />
         <TradeRuntimeProvider>
-          <PageGrid>
+          <TopGrid>
             <AreaCockpit>
-              <TradeCockpit mode={mode} />
+              <TradeCockpit />
             </AreaCockpit>
             <AreaCenter>
               <TradeCenterPanel
+                data={tradeData}
                 inputSymbol={inputSymbol}
                 outputSymbol={outputSymbol}
                 inputCurrencyId={inputCurrencyId}
                 outputCurrencyId={outputCurrencyId}
               />
             </AreaCenter>
-            <AreaRight>
-              <TradeRightRail />
-            </AreaRight>
+          </TopGrid>
+          <BottomGrid>
             <AreaSwaps>
               <TradeRecentSwaps
                 rows={recentSwaps}
@@ -160,10 +185,12 @@ export const TradeTerminalScreen: React.FC = () => {
                 swapDiagnostic={swapDiagnostic}
               />
             </AreaSwaps>
-          </PageGrid>
+            <AreaRoutes>
+              <TradeRouterPanel />
+            </AreaRoutes>
+          </BottomGrid>
         </TradeRuntimeProvider>
       </Content>
-      </TradeUiProvider>
     </Root>
   )
 }

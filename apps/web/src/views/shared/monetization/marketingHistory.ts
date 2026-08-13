@@ -57,6 +57,7 @@ export function resolveMarketingStatus(
 export const MARKETING_KIND_LABEL: Record<MarketingHistoryKind, string> = {
   featured: 'Featured',
   'trend-boost': 'Trend Boost',
+  'sponsored-research': 'Sponsored Research',
   claim: 'Claim',
   farm: 'Farm',
   pool: 'Pool',

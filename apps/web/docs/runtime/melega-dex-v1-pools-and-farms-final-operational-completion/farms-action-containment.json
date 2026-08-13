@@ -1,9 +1,0 @@
-{
-  "labels": [
-    "Harvest",
-    "Stake More",
-    "Withdraw",
-    "BscScan ↗"
-  ],
-  "layout": "flex-wrap, auto height, actions inside card"
-}

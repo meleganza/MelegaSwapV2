@@ -1,9 +1,0 @@
-{
-  "status": "NOT_VERIFIED",
-  "reason": "No mainnet deployment yet",
-  "factory": null,
-  "tokenTemplate": "MelegaFixedSupplyToken (per-create)",
-  "commandsWhenDeployed": [
-    "forge verify-contract <FACTORY> contracts/create-token/MelegaTokenFactory.sol:MelegaTokenFactory --chain-id 56 --constructor-args $(cast abi-encode 'constructor(address,uint256)' 0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b <FEE_WEI>)"
-  ]
-}

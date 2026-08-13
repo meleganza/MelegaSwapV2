@@ -9,6 +9,54 @@ import {
 } from 'registry/projects/pending'
 import { enrichProject } from 'registry/projects/discovery'
 import { serializeProjectManifest } from 'registry/projects/intelligence'
+import { buildDexAssetIndex } from 'lib/dex-asset-index/buildDexAssetIndex'
+import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { getProjectClaimByContract, toPublicProjectClaim } from 'lib/project-claims'
+
+type ListedTokenEntry = {
+  chainId: number
+  address: string
+  name?: string
+  symbol?: string
+  logoURI?: string
+}
+
+function resolveDexListing(contract: string, chainId: number) {
+  const normalized = contract.toLowerCase()
+  const tokenListEntry = (defaultTokenList.tokens as ListedTokenEntry[]).find(
+    (token) => token.chainId === chainId && token.address.toLowerCase() === normalized,
+  )
+  const asset = buildDexAssetIndex().find(
+    (candidate) =>
+      candidate.chainId === chainId &&
+      Boolean(candidate.address) &&
+      candidate.address?.toLowerCase() === normalized &&
+      candidate.surfaces.trade,
+  )
+
+  if (!asset) {
+    return {
+      listed: false,
+      projectClaimed: false,
+      registrySlug: null,
+      name: null,
+      symbol: null,
+      logo: null,
+      surfaces: null,
+    }
+  }
+
+  return {
+    listed: true,
+    projectClaimed: Boolean(asset.registrySlug),
+    registrySlug: asset.registrySlug ?? null,
+    name: tokenListEntry?.name ?? asset.name ?? null,
+    symbol: tokenListEntry?.symbol ?? asset.symbol,
+    // Prefer the normalized local asset path; legacy token-list URLs may omit the chain segment.
+    logo: asset.logo ?? tokenListEntry?.logoURI ?? null,
+    surfaces: asset.surfaces,
+  }
+}
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === 'GET') {
@@ -47,6 +95,17 @@ const handler: NextApiHandler = async (req, res) => {
     name: bodyOnChain?.name ?? onChainIdentity.name,
     symbol: bodyOnChain?.symbol ?? onChainIdentity.symbol,
   }
+  const detectedDex = resolveDexListing(contract, chainId)
+  const publishedClaim = await getProjectClaimByContract(chainId, contract)
+  const publicClaim = publishedClaim ? toPublicProjectClaim(publishedClaim) : null
+  const dex = {
+    ...detectedDex,
+    projectClaimed: Boolean(publishedClaim) || detectedDex.projectClaimed,
+    registrySlug: publishedClaim?.slug ?? detectedDex.registrySlug,
+    name: publishedClaim?.metadata.name ?? detectedDex.name,
+    symbol: publishedClaim?.metadata.symbol ?? detectedDex.symbol,
+    logo: publishedClaim?.metadata.logo ?? detectedDex.logo,
+  }
 
   const lookup = resolveProjectRegistryLookup(contract, chainId, onChain)
 
@@ -64,6 +123,8 @@ const handler: NextApiHandler = async (req, res) => {
         name: onChain.name,
         symbol: onChain.symbol,
       },
+      dex,
+      claim: publicClaim,
       promotion: getCanonicalPromotionRule(),
     })
   }
@@ -84,9 +145,11 @@ const handler: NextApiHandler = async (req, res) => {
       summary: lookup.summary,
       onChain: {
         ...onChainIdentity,
-        name: onChain.name,
-        symbol: onChain.symbol,
+        name: onChain.name ?? dex.name,
+        symbol: onChain.symbol ?? dex.symbol,
       },
+      dex,
+      claim: publicClaim,
       discoveryReason: reason,
       promotion: getCanonicalPromotionRule(),
     })

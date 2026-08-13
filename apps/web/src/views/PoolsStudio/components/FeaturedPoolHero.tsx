@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { displayStudioMetric } from 'design-system/melega'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
@@ -23,9 +23,7 @@ const LiveCard = styled.section`
   transition: box-shadow 180ms ease-out;
 
   &:hover {
-    box-shadow:
-      0 0 0 1px rgba(244, 196, 48, 0.35),
-      0 12px 28px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.35), 0 12px 28px rgba(0, 0, 0, 0.28);
   }
 `
 
@@ -166,10 +164,7 @@ const KpiBox = styled.div`
   gap: 4px;
   min-width: 0;
   cursor: default;
-  transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 
   &:hover {
     background: #1a1a1a;
@@ -213,7 +208,7 @@ const LiveStakeBtn = styled.button`
   height: 46px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f6d44a 0%, #F4C430 100%);
+  background: linear-gradient(180deg, #f6d44a 0%, #f4c430 100%);
   color: #080808;
   font-family: Inter, sans-serif;
   font-size: 14px;
@@ -231,10 +226,10 @@ const LiveAnalyzeBtn = styled.button`
   width: 156px;
   min-width: 156px;
   height: 46px;
-  border: 1px solid #F4C430;
+  border: 1px solid #f4c430;
   border-radius: 12px;
   background: transparent;
-  color: #F4C430;
+  color: #f4c430;
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 800;
@@ -303,31 +298,8 @@ const EmptyPrimaryBtn = styled(Link)`
   height: 44px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f6d44a 0%, #F4C430 100%);
+  background: linear-gradient(180deg, #f6d44a 0%, #f4c430 100%);
   color: #080808;
-  font-family: Inter, sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-
-  @media (max-width: 767px) {
-    width: 100%;
-    min-width: 0;
-  }
-`
-
-const EmptyGhostBtn = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 168px;
-  min-width: 168px;
-  height: 44px;
-  border-radius: 12px;
-  border: 1px solid #F4C430;
-  background: transparent;
-  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 800;
@@ -370,33 +342,32 @@ export const FeaturedPoolHero: React.FC = () => {
     isRewarding && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)
       ? card.sustainableAprDisplay
       : isRewarding
-        ? 'Rewards Active'
-        : null
+      ? 'Rewards Active'
+      : null
   const hiddenReason = hiddenPoolReasons.length ? hiddenPoolReasons.join(' · ') : null
 
   if (!card || !isRewarding || rewardingCount === 0) {
-    const emptyTitle =
-      !classificationReady
-        ? 'No active rewarding pools'
-        : discoveredCount === 0
-        ? 'No pools discovered'
-        : rewardingCount === 0 && endedCount > 0
-          ? 'No active rewarding pools'
-          : rewardingCount === 0
-            ? 'No rewarding pools yet'
-            : 'Historical Pools'
+    const emptyTitle = !classificationReady
+      ? 'No active rewarding pools'
+      : discoveredCount === 0
+      ? 'No pools discovered'
+      : rewardingCount === 0 && endedCount > 0
+      ? 'No active rewarding pools'
+      : rewardingCount === 0
+      ? 'No rewarding pools yet'
+      : 'Historical Pools'
     const emptySubtitle =
       poolClassificationSummary.status === 'loading'
         ? 'Loading on-chain pool classification…'
         : poolClassificationSummary.status === 'unavailable'
-          ? 'Pool lifecycle totals are temporarily unavailable.'
-          : discoveredCount === 0
-            ? 'Verified SmartChef contracts will appear when indexed from chain.'
-            : rewardingCount === 0 && (discoveredCount ?? 0) > 0
-              ? `${discoveredCount} pools discovered on-chain — none are currently emitting rewards. Ended pools appear under Finished.`
-              : endedCount > 0
-                ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
-                : 'Create or fund a reward pool to activate staking opportunities.'
+        ? 'Pool lifecycle totals are temporarily unavailable.'
+        : discoveredCount === 0
+        ? 'Verified SmartChef contracts will appear when indexed from chain.'
+        : rewardingCount === 0 && (discoveredCount ?? 0) > 0
+        ? `${discoveredCount} pools discovered on-chain — none are currently emitting rewards. Ended pools appear under Finished.`
+        : endedCount > 0
+        ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
+        : 'Create or fund a reward pool to activate staking opportunities.'
     const showCreateCta = classificationReady && discoveredCount === 0
 
     return (
@@ -413,12 +384,9 @@ export const FeaturedPoolHero: React.FC = () => {
         <EmptySubtitle data-ps-empty-subtitle>{emptySubtitle}</EmptySubtitle>
         {showCreateCta ? (
           <EmptyCtaRow data-ps-empty-cta>
-            <EmptyPrimaryBtn to="/build-studio?intent=staking-pool#create-pool" data-ps-empty-create>
+            <EmptyPrimaryBtn href="/pools?create=1" data-ps-empty-create>
               Create Pool
             </EmptyPrimaryBtn>
-            <EmptyGhostBtn to="/build-studio" data-ps-empty-studio>
-              Open Build Studio
-            </EmptyGhostBtn>
           </EmptyCtaRow>
         ) : null}
         {hiddenReason ? <HiddenReason data-ps-empty-hidden-reason>{hiddenReason}</HiddenReason> : null}

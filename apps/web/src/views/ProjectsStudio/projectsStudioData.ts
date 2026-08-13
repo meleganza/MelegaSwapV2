@@ -7,6 +7,7 @@ export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Mem
  */
 export const FILTER_STATUS = ['Featured', 'Boosted', 'Verified', 'New', 'New Listings'] as const
 export const FILTER_SORT = [
+  'Market Cap',
   'Trending',
   'Newest',
   'Price Change',

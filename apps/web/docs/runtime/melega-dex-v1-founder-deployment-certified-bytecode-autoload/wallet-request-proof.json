@@ -1,9 +1,0 @@
-{
-  "method": "eth_sendTransaction",
-  "toAbsent": true,
-  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
-  "value": "0x0",
-  "providerResolution": "connector.getProvider() → window.ethereum fallback",
-  "serverSigner": false,
-  "test": "bytecodeAutoload.test.ts · wallet request is contract creation with no to"
-}

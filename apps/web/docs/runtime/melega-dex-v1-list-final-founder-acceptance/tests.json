@@ -1,7 +1,0 @@
-{
-  "suites": [
-    "ListStudio/__tests__",
-    "featured-placement/__tests__"
-  ],
-  "result": "34 passed"
-}

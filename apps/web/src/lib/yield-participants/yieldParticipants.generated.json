@@ -1,0 +1,8 @@
+{
+  "schema": "melega.yield-participants.v1",
+  "status": "indexing",
+  "updatedAt": null,
+  "source": "masterchef-smartchef-event-index",
+  "farms": {},
+  "pools": {}
+}

@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { resolvePublicFarmFactoryFee, PUBLIC_FARM_FACTORY_FEE_POLICY } from '../modules/publicFarmFactoryFee'
 import { MELEGA_TREASURY_FEE_DESTINATION } from 'config/constants/feeSchedule'
-import {
-  buildAiBuilderHandoffUrl,
-  buildCreatePairHandoffUrl,
-  buildManualLiquidityHandoffUrl,
-  createDefaultPublicFarmFactoryDraft,
-  parseReturnToCreateFarm,
-} from '../modules/publicFarmFactoryDraft'
+import { createDefaultPublicFarmFactoryDraft, parseReturnToCreateFarm } from '../modules/publicFarmFactoryDraft'
 import { MARCO_REWARD_REJECTION_MESSAGE } from '../modules/publicFarmEligibility'
 import { PUBLIC_FARM_FACTORY_CAPABILITY } from '../modules/publicFarmFactoryCapability'
 import { dedupeCanonicalFarms, PUBLIC_FARM_CREATED_TOPIC0 } from 'lib/bsc-indexer/indexer/publicFarmFactoryTopics'
@@ -54,63 +48,22 @@ describe('publicFarmFactory fees', () => {
   })
 })
 
-describe('publicFarmFactory handoffs + draft', () => {
-  it('create pair handoff preserves draftId and return destination', () => {
-    const draft = createDefaultPublicFarmFactoryDraft()
-    const href = buildCreatePairHandoffUrl(draft)
-    expect(href.startsWith('/add?')).toBe(true)
-    expect(href).toContain(`draftId=${draft.draftId}`)
-    expect(href).toContain('return=create-farm')
+describe('publicFarmFactory inline liquidity + draft', () => {
+  it('keeps pair creation and liquidity inside the Create Farm accordion', () => {
+    const root = path.resolve(__dirname, '..')
+    const workspace = readFileSync(path.join(root, 'modules/PublicFarmFactoryWorkspace.tsx'), 'utf8')
+    const inline = readFileSync(path.join(root, 'modules/FarmInlineLiquidityStep.tsx'), 'utf8')
+    expect(workspace).toContain('create-farm-acc-liquidity')
+    expect(workspace).toContain('public-farm-inline-liquidity-open')
+    expect(workspace).not.toContain('buildManualLiquidityHandoffUrl')
+    expect(workspace).not.toContain('buildCreatePairHandoffUrl')
+    expect(inline).toContain('LiquidityRuntimeProvider')
+    expect(inline).toContain('<LiquidityAddModule embedded />')
   })
 
-  it('manual liquidity handoff preloads pair + missing TVL', () => {
+  it('creates a durable draft before any wallet action', () => {
     const draft = createDefaultPublicFarmFactoryDraft()
-    draft.selectedPair = {
-      pairAddress: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      lpTokenAddress: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      token0: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      token1: '0x55d398326f99059ff775485246999027b3197955',
-      symbol0: 'BNB',
-      symbol1: 'USDT',
-      classification: 'tradeable',
-      reserve0: '1',
-      reserve1: '1',
-      sourceBlock: 1,
-    }
-    const href = buildManualLiquidityHandoffUrl(draft, 0.15)
-    expect(href).toContain('/add/')
-    expect(href).toContain('missingTvlBnb=0.15')
-    expect(href).toContain(`draftId=${draft.draftId}`)
-    expect(href).toContain('return=create-farm')
-  })
-
-  it('Builder blocked when undeployed — manual liquidity handoff remains', () => {
-    const draft = createDefaultPublicFarmFactoryDraft()
-    const blocked = buildAiBuilderHandoffUrl(draft, 0.15, false)
-    expect(blocked.blocked).toBe(true)
-    expect(buildManualLiquidityHandoffUrl(draft, 0.15)).toContain('/add')
-    // UI surfaces Increase Liquidity / Add Liquidity Manually — no protocol wording.
-  })
-
-  it('Builder preload when available includes recommended budget', () => {
-    const draft = createDefaultPublicFarmFactoryDraft()
-    draft.selectedPair = {
-      pairAddress: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      lpTokenAddress: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      token0: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-      token1: '0x55d398326f99059ff775485246999027b3197955',
-      symbol0: 'BNB',
-      symbol1: 'USDT',
-      classification: 'tradeable',
-      reserve0: '1',
-      reserve1: '1',
-      sourceBlock: 1,
-    }
-    const open = buildAiBuilderHandoffUrl(draft, 0.15, true)
-    expect(open.blocked).toBe(false)
-    expect(open.href).toContain('/liquidity-studio?')
-    expect(open.href).toContain('recommendedBudgetBnb=')
-    expect(open.href).toContain('return=create-farm')
+    expect(draft.draftId).toMatch(/^pff-/)
   })
 
   it('parses return-to-Create-Farm query', () => {
@@ -187,10 +140,7 @@ describe('publicFarmFactory capability + indexer', () => {
 
   it('factory package rejects MARCO and does not mention MasterBuilder exposure', () => {
     const root = path.resolve(__dirname, '../../../../../..')
-    const factory = readFileSync(
-      path.join(root, 'contracts/public-farm-factory/PublicFarmFactoryV1.sol'),
-      'utf8',
-    )
+    const factory = readFileSync(path.join(root, 'contracts/public-farm-factory/PublicFarmFactoryV1.sol'), 'utf8')
     expect(factory).toContain('MarcoRewardForbidden')
     expect(factory).toContain('0.25 ether')
     expect(factory).toContain('emit FarmCreated')

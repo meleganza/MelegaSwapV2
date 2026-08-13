@@ -1,0 +1,1 @@
+{"id":"f5e64bfa37efa7e2","source_id_to_path":{"0":"contracts/liquidity-building/LiquidityBuildingExecutionAuthorizerV1.sol","1":"contracts/liquidity-building/interfaces/ILiquidityBuildingExecutionAuthorizerV1.sol","2":"lib/openzeppelin-contracts/contracts/interfaces/IERC1271.sol","3":"lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol"},"language":"Solidity"}

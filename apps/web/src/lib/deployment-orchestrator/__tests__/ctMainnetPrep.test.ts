@@ -138,8 +138,6 @@ describe('Create Token Factory mainnet deployment preparation', () => {
     expect(existsSync(path.join(root, 'contracts/create-token/MelegaTokenFactory.sol'))).toBe(true)
     expect(existsSync(path.join(root, 'contracts/create-token/MelegaFixedSupplyToken.sol'))).toBe(true)
     expect(existsSync(path.join(root, 'script/create-token/DeployMelegaTokenFactoryMainnet.s.sol'))).toBe(true)
-    expect(
-      existsSync(path.join(WEB, 'src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json')),
-    ).toBe(true)
+    expect(existsSync(path.join(WEB, 'src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json'))).toBe(true)
   })
 })

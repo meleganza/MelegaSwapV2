@@ -1,7 +1,0 @@
-{
-  "command": "yarn next build",
-  "passed": true,
-  "at": "2026-08-08T05:40:28.067Z",
-  "liquidityRoute": "/liquidity + /liquidity-studio → LiquidityStudioV3Shell",
-  "notes": "next build exit 0"
-}

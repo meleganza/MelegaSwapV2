@@ -1,6 +1,0 @@
-{
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "durationNote": "Done in 17.47s"
-}

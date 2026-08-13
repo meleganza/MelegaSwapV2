@@ -18,15 +18,16 @@ function load(rel: string) {
 }
 
 describe('Founder Review P0 — Featured Trade → /swap', () => {
-  it('FeaturedProjectsRail Trade pushes to /swap with currencies', () => {
+  it('FeaturedProjectsRail Trade links to /swap with currencies and production prefetch', () => {
     const src = load('FeaturedProjectsRail.tsx')
     expect(src).toContain("inputCurrency: 'BNB'")
     expect(src).toContain('outputCurrency: p.address')
-    expect(src).toContain('`/swap?${q.toString()}`')
+    expect(src).toContain('href={tradeHref}')
+    expect(src).not.toContain('useRouter')
     expect(src).not.toContain('/project-hq/${p.slug}?${q}')
     expect(src).not.toContain('/?focus=swap')
     expect(src).toContain('href={p.href}')
-    expect(src).toContain('prefetch={false}')
+    expect(src).not.toContain('prefetch={false}')
   })
 
   it('featuredProjectsCatalog marks entries without a canonical project identity ineligible for rotation', () => {

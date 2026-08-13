@@ -1,24 +1,21 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import styled, { css, keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
-import { poolsStudioColors } from '../poolsStudioTokens'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { WBNB } from '@pancakeswap/sdk'
 import {
-  WIZARD_STEP_LABELS,
   TOKEN_OPTIONS,
-  buildMachinePreviewJson,
   computeEstimatedApr,
   computeHealthScore,
   computeRewardConsumptionPct,
   createDefaultWizardState,
+  deriveDailyRewards,
   describePoolSchedule,
   describeWizardCreatePoolFee,
   type CreatePoolWizardState,
@@ -70,20 +67,18 @@ const ReviewNowBtn = styled.button`
   border-radius: 10px;
   border: 1px solid rgba(244, 196, 48, 0.45);
   background: rgba(244, 196, 48, 0.1);
-  color: #F4C430;
+  color: #f4c430;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
+  transition: background 150ms ease, border-color 150ms ease;
 
   &:hover {
     background: rgba(244, 196, 48, 0.18);
-    border-color: #F4C430;
+    border-color: #f4c430;
   }
 
   @media (max-width: 767px) {
@@ -307,10 +302,7 @@ const StepCircle = styled.div<{ $active?: boolean; $completed?: boolean }>`
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
-  transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 
   ${({ $completed, $active }) =>
     $completed
@@ -320,16 +312,16 @@ const StepCircle = styled.div<{ $active?: boolean; $completed?: boolean }>`
           color: #18f089;
         `
       : $active
-        ? css`
-            background: rgba(244, 196, 48, 0.14);
-            border: 1px solid #F4C430;
-            color: #F4C430;
-          `
-        : css`
-            background: #1d1d1d;
-            border: 1px solid #333333;
-            color: #707070;
-          `}
+      ? css`
+          background: rgba(244, 196, 48, 0.14);
+          border: 1px solid #f4c430;
+          color: #f4c430;
+        `
+      : css`
+          background: #1d1d1d;
+          border: 1px solid #333333;
+          color: #707070;
+        `}
 `
 
 const StepLabel = styled.span<{ $active?: boolean; $completed?: boolean }>`
@@ -540,17 +532,6 @@ const ReadOnlyValue = styled.div<{ $compact?: boolean }>`
   color: #18f089;
 `
 
-const PreviewBtn = styled.button`
-  ${inputSurfaceStyles}
-  font-family: Inter, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: ${poolsStudioColors.explorerGold};
-  text-align: left;
-  cursor: pointer;
-`
-
 const SelectWrap = styled.div`
   position: relative;
   margin-top: 8px;
@@ -584,7 +565,7 @@ const TokenLogo = styled.span`
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F4C430 0%, #8a7020 100%);
+  background: linear-gradient(135deg, #f4c430 0%, #8a7020 100%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -703,6 +684,12 @@ const GoldBtn = styled.button<{ $wide?: boolean }>`
     box-shadow: 0 0 24px rgba(232, 196, 58, 0.22);
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+  }
+
   @media (max-width: 767px) {
     width: 100%;
     max-width: none;
@@ -802,22 +789,6 @@ const ReviewRow = styled.div`
     font-weight: 700;
     text-align: right;
   }
-`
-
-const JsonBlock = styled.pre`
-  margin: 8px 0 0;
-  padding: 12px;
-  border-radius: 10px;
-  background: #141414;
-  border: 1px solid #2a2a2a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 16px;
-  color: #c8c8c8;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 140px;
-  overflow-y: auto;
 `
 
 const Footer = styled.div`
@@ -995,31 +966,26 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
 export const CreatePoolCta: React.FC = () => {
   const { address } = useAccount()
   const [step, setStep] = useState<WizardStep>(1)
-  const [step3Page, setStep3Page] = useState<0 | 1>(0)
-  const [showStep4Json, setShowStep4Json] = useState(false)
   const [animDir, setAnimDir] = useState<'next' | 'prev' | 'none'>('none')
   const [state, setState] = useState<CreatePoolWizardState>(createDefaultWizardState)
 
   const patch = useCallback((partial: Partial<CreatePoolWizardState>) => {
-    setState((prev) => ({ ...prev, ...partial }))
+    setState((prev) => {
+      const next = { ...prev, ...partial }
+      if ('rewardBudget' in partial || 'emissionDuration' in partial) {
+        next.dailyRewards = deriveDailyRewards(next)
+      }
+      return next
+    })
   }, [])
 
   const goNext = () => {
     setAnimDir('next')
-    if (step === 3 && step3Page === 0) {
-      setStep3Page(1)
-      return
-    }
-    setStep((s) => Math.min(5, s + 1) as WizardStep)
+    setStep((s) => Math.min(4, s + 1) as WizardStep)
   }
 
   const goPrev = () => {
     setAnimDir('prev')
-    if (step === 3 && step3Page === 1) {
-      setStep3Page(0)
-      return
-    }
-    if (step === 4) setStep3Page(1)
     setStep((s) => Math.max(1, s - 1) as WizardStep)
   }
 
@@ -1027,13 +993,11 @@ export const CreatePoolCta: React.FC = () => {
     setState(createDefaultWizardState())
     setAnimDir('none')
     setStep(1)
-    setStep3Page(0)
-    setShowStep4Json(false)
   }, [])
 
   const jumpToReview = useCallback(() => {
     setAnimDir('next')
-    setStep(5)
+    setStep(4)
   }, [])
 
   const estimatedApr = useMemo(() => computeEstimatedApr(state), [state])
@@ -1041,27 +1005,20 @@ export const CreatePoolCta: React.FC = () => {
   const rewardConsumptionPct = useMemo(() => computeRewardConsumptionPct(state), [state])
   const schedule = useMemo(() => describePoolSchedule(state), [state])
   const feeInfo = useMemo(() => describeWizardCreatePoolFee(state), [state])
-  const machineJson = useMemo(() => buildMachinePreviewJson(state), [state])
-
-  const machineStatus = state.rewardToken && state.stakeToken ? 'Ready' : 'Draft'
 
   const reviewRows = useMemo(
     () => [
       ['Reward Token', state.rewardToken],
       ['Stake Token', state.stakeToken],
-      ['APR', estimatedApr],
       ['Budget', state.rewardBudget],
+      ['Daily emission', state.dailyRewards ? `${state.dailyRewards} / day` : 'Not set'],
       ['Duration', `${state.emissionDuration} days`],
-      ['Lock', `${state.lockType} · ${state.lockPeriod}`],
-      ['Cooldown', state.cooldown],
-      ['Auto Compound', state.autoCompound],
-      ['Pool Type', state.poolType],
-      ['Health Score', healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`],
-      ['Machine Status', machineStatus],
+      ['Lock', state.lockPeriod ? `${state.lockType} · ${state.lockPeriod}` : state.lockType],
+      ['APR', estimatedApr],
       ['Creation Fee', feeInfo.display],
       ['Fee destination', feeInfo.recipientLabel || 'Melega Treasury'],
     ],
-    [state, estimatedApr, healthScore, machineStatus, feeInfo],
+    [state, estimatedApr, feeInfo],
   )
 
   return (
@@ -1198,9 +1155,9 @@ export const CreatePoolCta: React.FC = () => {
             {(
               [
                 [1, 'Step 1', 'Tokens', (s: number) => s === 1],
-                [2, 'Step 2', 'Rewards', (s: number) => s === 2 || s === 3],
-                [3, 'Step 3', 'Safety', (s: number) => s === 4],
-                [4, 'Step 4', 'Review', (s: number) => s === 5],
+                [2, 'Step 2', 'Rewards', (s: number) => s === 2],
+                [3, 'Step 3', 'Rules', (s: number) => s === 3],
+                [4, 'Step 4', 'Review', (s: number) => s === 4],
               ] as const
             ).map(([idx, title, summary, isOpen]) => (
               <MelegaAccordionSection
@@ -1210,280 +1167,208 @@ export const CreatePoolCta: React.FC = () => {
                 summary={summary}
                 open={isOpen(step)}
                 onToggle={() => {
-                  const targetStep = (idx === 1 ? 1 : idx === 2 ? 2 : idx === 3 ? 4 : 5) as WizardStep
+                  const targetStep = idx as WizardStep
                   setAnimDir(targetStep >= step ? 'next' : 'prev')
                   setStep(targetStep)
-                  if (idx === 2) setStep3Page(0)
                 }}
                 testId={`create-pool-acc-${idx}`}
               >
                 {isOpen(step) ? (
-          <StepPanel
-            key={`active-${step}-${step === 3 ? step3Page : 0}`}
-            $dir={animDir}
-            data-ps-wizard-step-panel={step}
-            data-create-pool-active-step={step}
-          >
-            {step === 1 ? (
-              <>
-                <FieldsGrid $cols={2} data-ps-create-pool-grid>
-                  <TokenSelector
-                    label="Reward Token"
-                    value={state.rewardToken}
-                    onChange={(rewardToken) => patch({ rewardToken })}
-                  />
-                  <TokenSelector
-                    label="Stake Token"
-                    value={state.stakeToken}
-                    onChange={(stakeToken) => patch({ stakeToken })}
-                  />
-                </FieldsGrid>
-                <StepActions data-ps-wizard-actions>
-                  <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
-                    Next →
-                  </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-cancel onClick={resetWizard}>
-                    Reset
-                  </GhostBtn>
-                </StepActions>
-              </>
-            ) : null}
-
-            {step === 2 ? (
-              <>
-                <FieldsGrid $cols={2} data-ps-create-pool-grid>
-                  <Field data-ps-create-field>
-                    <Label>Reward Budget</Label>
-                    <InputBox
-                      value={state.rewardBudget}
-                      onChange={(e) => patch({ rewardBudget: e.target.value })}
-                      aria-label="Reward Budget"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label title="How many calendar days rewards are emitted. SmartChef schedules use day-length emission windows on BNB Chain.">
-                      Reward Duration (Days)
-                    </Label>
-                    <InputBox
-                      value={state.emissionDuration}
-                      onChange={(e) => patch({ emissionDuration: e.target.value })}
-                      aria-label="Reward Duration in Days"
-                      placeholder="e.g. 30"
-                      $compact
-                      inputMode="decimal"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label title="Total reward tokens emitted each day. Converted to per-block emission using ~28,800 BNB Chain blocks/day.">
-                      Daily Reward Emission
-                    </Label>
-                    <InputBox
-                      value={state.dailyRewards}
-                      onChange={(e) => patch({ dailyRewards: e.target.value })}
-                      aria-label="Daily Reward Emission in reward tokens per day"
-                      placeholder="tokens / day"
-                      inputMode="decimal"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Estimated APR</Label>
-                    <ReadOnlyValue aria-label="Estimated APR" data-ps-wizard-est-apr>
-                      {estimatedApr}
-                    </ReadOnlyValue>
-                  </Field>
-                </FieldsGrid>
-                <StepActions>
-                  <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
-                    Next →
-                  </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
-                    ← Back
-                  </GhostBtn>
-                </StepActions>
-              </>
-            ) : null}
-
-            {step === 3 && step3Page === 0 ? (
-              <>
-                <FieldsGrid $cols={2} data-ps-create-pool-grid>
-                  <Field data-ps-create-field>
-                    <Label>Lock Type</Label>
-                    <InputBox
-                      value={state.lockType}
-                      onChange={(e) => patch({ lockType: e.target.value })}
-                      aria-label="Lock Type"
-                      $compact
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Lock Period</Label>
-                    <InputBox
-                      value={state.lockPeriod}
-                      onChange={(e) => patch({ lockPeriod: e.target.value })}
-                      aria-label="Lock Period"
-                      $compact
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Cooldown</Label>
-                    <InputBox
-                      value={state.cooldown}
-                      onChange={(e) => patch({ cooldown: e.target.value })}
-                      aria-label="Cooldown"
-                      $compact
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Withdrawal Fee</Label>
-                    <InputBox
-                      value={state.withdrawalFee}
-                      onChange={(e) => patch({ withdrawalFee: e.target.value })}
-                      aria-label="Withdrawal Fee"
-                    />
-                  </Field>
-                </FieldsGrid>
-                <StepActions>
-                  <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
-                    Next →
-                  </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
-                    ← Back
-                  </GhostBtn>
-                </StepActions>
-              </>
-            ) : null}
-
-            {step === 3 && step3Page === 1 ? (
-              <>
-                <FieldsGrid $cols={2} data-ps-create-pool-grid>
-                  <Field data-ps-create-field>
-                    <Label>Deposit Fee</Label>
-                    <InputBox
-                      value={state.depositFee}
-                      onChange={(e) => patch({ depositFee: e.target.value })}
-                      aria-label="Deposit Fee"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Auto Compound</Label>
-                    <InputBox
-                      value={state.autoCompound}
-                      onChange={(e) => patch({ autoCompound: e.target.value })}
-                      aria-label="Auto Compound"
-                    />
-                  </Field>
-                </FieldsGrid>
-                <StepActions>
-                  <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
-                    Next →
-                  </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
-                    ← Back
-                  </GhostBtn>
-                </StepActions>
-              </>
-            ) : null}
-
-            {step === 4 ? (
-              <>
-                <FieldsGrid $cols={2} data-ps-create-pool-grid>
-                  <Field data-ps-create-field>
-                    <Label>Pool Type</Label>
-                    <InputBox
-                      value={state.poolType}
-                      onChange={(e) => patch({ poolType: e.target.value })}
-                      aria-label="Pool Type"
-                      $compact
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Minimum Stake</Label>
-                    <InputBox
-                      value={state.minStake}
-                      onChange={(e) => patch({ minStake: e.target.value })}
-                      aria-label="Minimum Stake"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Maximum Stake</Label>
-                    <InputBox
-                      value={state.maxStake}
-                      onChange={(e) => patch({ maxStake: e.target.value })}
-                      aria-label="Maximum Stake"
-                    />
-                  </Field>
-                  <Field data-ps-create-field>
-                    <Label>Visibility</Label>
-                    <InputBox
-                      value={state.visibility}
-                      onChange={(e) => patch({ visibility: e.target.value })}
-                      aria-label="Visibility"
-                      $compact
-                    />
-                  </Field>
-                </FieldsGrid>
-                <Field
-                  data-ps-create-machine-preview-field
-                  style={{ marginTop: 18, height: 'auto', minHeight: 42, maxWidth: 'calc(50% - 9px)' }}
-                >
-                  <Label>Machine Preview</Label>
-                  <PreviewBtn
-                    type="button"
-                    data-ps-create-machine-preview
-                    onClick={() => setShowStep4Json((v) => !v)}
+                  <StepPanel
+                    key={`active-${step}`}
+                    $dir={animDir}
+                    data-ps-wizard-step-panel={step}
+                    data-create-pool-active-step={step}
                   >
-                    {showStep4Json ? 'Hide JSON' : 'View JSON'}
-                  </PreviewBtn>
-                  {showStep4Json ? <JsonBlock style={{ maxHeight: 96, marginTop: 8 }}>{machineJson}</JsonBlock> : null}
-                </Field>
-                <StepActions>
-                  <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
-                    Next →
-                  </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
-                    ← Back
-                  </GhostBtn>
-                </StepActions>
-              </>
-            ) : null}
+                    {step === 1 ? (
+                      <>
+                        <FieldsGrid $cols={2} data-ps-create-pool-grid>
+                          <TokenSelector
+                            label="Reward Token"
+                            value={state.rewardToken}
+                            onChange={(rewardToken) => patch({ rewardToken })}
+                          />
+                          <TokenSelector
+                            label="Stake Token"
+                            value={state.stakeToken}
+                            onChange={(stakeToken) => patch({ stakeToken })}
+                          />
+                        </FieldsGrid>
+                        <StepActions data-ps-wizard-actions>
+                          <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
+                            Next →
+                          </GoldBtn>
+                          <GhostBtn type="button" data-ps-wizard-cancel onClick={resetWizard}>
+                            Reset
+                          </GhostBtn>
+                        </StepActions>
+                      </>
+                    ) : null}
 
-            {step === 5 ? (
-              <>
-                <ReviewStepHeader data-ps-wizard-pool-ready>
-                  <ReviewStepTitle>Review Pool Creation</ReviewStepTitle>
-                  <ReviewStepSubtitle>Review configuration and fee before continuing.</ReviewStepSubtitle>
-                </ReviewStepHeader>
-                <ReviewScroll data-ps-wizard-review>
-                  <ReviewGrid>
-                    {reviewRows.map(([k, v]) => (
-                      <ReviewRow key={k}>
-                        <span>{k}</span>
-                        <strong>{v}</strong>
-                      </ReviewRow>
-                    ))}
-                  </ReviewGrid>
-                </ReviewScroll>
-                <StepActions data-ps-create-pool-footer>
-                  <GoldBtn
-                    as={Link}
-                    to="/build-studio?intent=staking-pool#create-pool"
-                    $wide
-                    data-ps-create-pool-btn
-                  >
-                    Continue in Build Studio →
-                  </GoldBtn>
-                  <GhostBtn type="button" $review data-ps-wizard-back onClick={goPrev}>
-                    ← Back
-                  </GhostBtn>
-                </StepActions>
-                <ReadinessNote data-ps-create-pool-readiness-note>
-                  Honest readiness note — on-chain pool creation is not yet executable from this wizard. This
-                  review captures your configuration and fee; continue in Build Studio to finalize deployment
-                  once the staking pool factory is on-chain.
-                </ReadinessNote>
-              </>
-            ) : null}
-          </StepPanel>
+                    {step === 2 ? (
+                      <>
+                        <FieldsGrid $cols={2} data-ps-create-pool-grid>
+                          <Field data-ps-create-field>
+                            <Label>Reward Budget</Label>
+                            <InputBox
+                              value={state.rewardBudget}
+                              onChange={(e) => patch({ rewardBudget: e.target.value })}
+                              aria-label="Reward Budget"
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label title="How many calendar days rewards are emitted. SmartChef schedules use day-length emission windows on BNB Chain.">
+                              Reward Duration (Days)
+                            </Label>
+                            <InputBox
+                              value={state.emissionDuration}
+                              onChange={(e) => patch({ emissionDuration: e.target.value })}
+                              aria-label="Reward Duration in Days"
+                              placeholder="e.g. 30"
+                              $compact
+                              inputMode="decimal"
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label title="Total reward tokens emitted each day. Converted to per-block emission using ~28,800 BNB Chain blocks/day.">
+                              Daily Reward Emission
+                            </Label>
+                            <ReadOnlyValue aria-label="Daily Reward Emission in reward tokens per day">
+                              {state.dailyRewards ? `${state.dailyRewards} ${state.rewardToken} / day` : 'Budget ÷ duration'}
+                            </ReadOnlyValue>
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Estimated APR</Label>
+                            <ReadOnlyValue aria-label="Estimated APR" data-ps-wizard-est-apr>
+                              {estimatedApr}
+                            </ReadOnlyValue>
+                          </Field>
+                        </FieldsGrid>
+                        <StepActions>
+                          <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
+                            Next →
+                          </GoldBtn>
+                          <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
+                            ← Back
+                          </GhostBtn>
+                        </StepActions>
+                      </>
+                    ) : null}
+
+                    {step === 3 ? (
+                      <>
+                        <FieldsGrid $cols={2} data-ps-create-pool-grid>
+                          <Field data-ps-create-field>
+                            <Label>Lock Type</Label>
+                            <InputBox
+                              value={state.lockType}
+                              onChange={(e) => patch({ lockType: e.target.value })}
+                              aria-label="Lock Type"
+                              $compact
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Lock Period</Label>
+                            <InputBox
+                              value={state.lockPeriod}
+                              onChange={(e) => patch({ lockPeriod: e.target.value })}
+                              aria-label="Lock Period"
+                              $compact
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Cooldown</Label>
+                            <InputBox
+                              value={state.cooldown}
+                              onChange={(e) => patch({ cooldown: e.target.value })}
+                              aria-label="Cooldown"
+                              $compact
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Withdrawal Fee</Label>
+                            <InputBox
+                              value={state.withdrawalFee}
+                              onChange={(e) => patch({ withdrawalFee: e.target.value })}
+                              aria-label="Withdrawal Fee"
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Auto Compound</Label>
+                            <InputBox
+                              value={state.autoCompound}
+                              onChange={(e) => patch({ autoCompound: e.target.value })}
+                              aria-label="Auto Compound"
+                              $compact
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Minimum Stake</Label>
+                            <InputBox
+                              value={state.minStake}
+                              onChange={(e) => patch({ minStake: e.target.value })}
+                              aria-label="Minimum Stake"
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Maximum Stake</Label>
+                            <InputBox
+                              value={state.maxStake}
+                              onChange={(e) => patch({ maxStake: e.target.value })}
+                              aria-label="Maximum Stake"
+                            />
+                          </Field>
+                          <Field data-ps-create-field>
+                            <Label>Visibility</Label>
+                            <InputBox
+                              value={state.visibility}
+                              onChange={(e) => patch({ visibility: e.target.value })}
+                              aria-label="Visibility"
+                              $compact
+                            />
+                          </Field>
+                        </FieldsGrid>
+                        <StepActions>
+                          <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
+                            Next →
+                          </GoldBtn>
+                          <GhostBtn type="button" data-ps-wizard-back onClick={goPrev}>
+                            ← Back
+                          </GhostBtn>
+                        </StepActions>
+                      </>
+                    ) : null}
+
+                    {step === 4 ? (
+                      <>
+                        <ReviewStepHeader data-ps-wizard-pool-ready>
+                          <ReviewStepTitle>Review Pool Creation</ReviewStepTitle>
+                          <ReviewStepSubtitle>Confirm the essentials.</ReviewStepSubtitle>
+                        </ReviewStepHeader>
+                        <ReviewScroll data-ps-wizard-review>
+                          <ReviewGrid>
+                            {reviewRows.map(([k, v]) => (
+                              <ReviewRow key={k}>
+                                <span>{k}</span>
+                                <strong>{v}</strong>
+                              </ReviewRow>
+                            ))}
+                          </ReviewGrid>
+                        </ReviewScroll>
+                        <StepActions data-ps-create-pool-footer>
+                          <GoldBtn type="button" $wide data-ps-create-pool-btn disabled>
+                            Create Pool
+                          </GoldBtn>
+                          <GhostBtn type="button" $review data-ps-wizard-back onClick={goPrev}>
+                            ← Back
+                          </GhostBtn>
+                        </StepActions>
+                        <ReadinessNote data-ps-create-pool-readiness-note>
+                          Final deployment requires the Melega deployer. No Build Studio handoff.
+                        </ReadinessNote>
+                      </>
+                    ) : null}
+                  </StepPanel>
                 ) : null}
               </MelegaAccordionSection>
             ))}

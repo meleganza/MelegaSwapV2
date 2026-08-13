@@ -24,7 +24,7 @@ const pulse = keyframes`
 const Row = styled.section<{ $solo?: boolean }>`
   width: 100%;
   max-width: ${poolsMyPositions.contentMax};
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   display: block;
   min-width: 0;
@@ -226,13 +226,6 @@ const StateDesc = styled.p`
   font-size: 13px;
   line-height: 18px;
   color: rgba(255, 255, 255, 0.55);
-`
-
-const Disclosure = styled.p`
-  margin: 0 0 8px;
-  font-size: 11px;
-  line-height: 15px;
-  color: rgba(224, 184, 90, 0.95);
 `
 
 const VisuallyHidden = styled.span`
@@ -570,8 +563,6 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
         </Header>
 
         <Body>
-          {vm.moduleDisclosure ? <Disclosure>{vm.moduleDisclosure}</Disclosure> : null}
-
           {vm.state === 'loading' ? (
             <CardGrid aria-busy="true" aria-label="Loading pool positions" data-testid="pools-my-positions-loading">
               {[0, 1, 2, 3].map((i) => (

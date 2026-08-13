@@ -1,7 +1,0 @@
-{
-  "detection": "isUserRejectedError (code 4001 / rejected message)",
-  "recoveryState": "READY_TO_DEPLOY",
-  "notMarkedFailed": true,
-  "retryAllowed": true,
-  "test": "wallet rejection returns recoverable state"
-}

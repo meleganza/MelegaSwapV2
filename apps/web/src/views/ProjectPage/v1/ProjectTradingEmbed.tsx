@@ -2,29 +2,20 @@
  * Section 3 — Trading embed. Reuses SmartSwapForm (do not modify Swap/Smart Swap sources).
  * Chain is forced from the Project Page deployment — no manual chain picker.
  */
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { Currency } from '@pancakeswap/sdk'
-import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
-import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import useNativeCurrency from 'hooks/useNativeCurrency'
-import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { Field, replaceSwapState } from 'state/swap/actions'
-import { useSwapState } from 'state/swap/hooks'
-import { useCurrency } from 'hooks/Tokens'
 import { useAppDispatch } from 'state'
-import { currencyId } from 'utils/currencyId'
-import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
-import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
-import { HomeSwapIconButton, HomeSwapPanelShell } from 'views/HomeTrade/HomeSwapPanelShell'
+import TradeCockpit from 'views/Trade/TradeCockpit'
+import TradeTerminalGlobalStyle from 'views/Trade/TradeTerminalGlobalStyle'
+import { TradeRuntimeProvider } from 'views/Trade/tradeRuntime/TradeRuntimeContext'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import {
   getMelegaChain,
@@ -41,11 +32,18 @@ const MARCO_BASE_ADDRESS = '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7'
 const QuietSwapShell = styled.div`
   border-radius: 10px;
   overflow: hidden;
-  background: rgba(8, 8, 8, 0.7);
-  border: 1px solid ${pp.line};
+  background: #0d0d0d;
+  border: 0;
 
-  .home-trade-swap {
-    padding: 0;
+  [data-trade-cockpit] {
+    width: 100%;
+    max-width: none;
+  }
+
+  [data-trade-cockpit-shell] {
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
   }
 `
 
@@ -88,12 +86,6 @@ const ComingSoonBox = styled.div`
   background: rgba(255, 255, 255, 0.02);
 `
 
-/** Real code-split — Smart Swap stays out of the initial Project Page chunk. */
-const ProjectSwapFormIsland = dynamic(() => import('./ProjectSwapFormIsland'), {
-  ssr: false,
-  loading: () => <SwapSkeleton $hero aria-label="Loading trade form" />,
-})
-
 interface Props {
   slug: string
   marketsDocument: ProjectMarketsDocument
@@ -125,14 +117,8 @@ function resolveDefaultPair(
   }
   const onChainBuy =
     marketsDocument.swapDestinations.find(
-      (d) =>
-        d.status === 'READY' &&
-        d.chainId === projectChainId &&
-        d.label.includes('buy'),
-    ) ||
-    marketsDocument.swapDestinations.find(
-      (d) => d.status === 'READY' && d.chainId === projectChainId,
-    )
+      (d) => d.status === 'READY' && d.chainId === projectChainId && d.label.includes('buy'),
+    ) || marketsDocument.swapDestinations.find((d) => d.status === 'READY' && d.chainId === projectChainId)
   if (onChainBuy) {
     return {
       inputCurrencyId: onChainBuy.inputCurrencyParam,
@@ -174,17 +160,7 @@ function ProjectSwapInner({
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
   const native = useNativeCurrency()
-  const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
-  const warningSwapHandler = useWarningImport()
-  const { onCurrencySelection } = useSwapActionHandlers()
-  const {
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-  } = useSwapState()
-  const inputCurrency = useCurrency(inputCurrencyId)
-  const outputCurrency = useCurrency(outputCurrencyId)
-  const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
   // Defer wallet chain align — never block hero paint on MetaMask prompts.
   useEffect(() => {
@@ -192,17 +168,17 @@ function ProjectSwapInner({
     if (!isMelegaChainLive(projectChainId)) return
     if (chainId === projectChainId) return
     if (!canSwitch) return
-    const timer = window.setTimeout(() => {
-      void switchNetworkAsync(projectChainId)
-    }, nonBlockingChainAlign ? 800 : 0)
+    const timer = window.setTimeout(
+      () => {
+        void switchNetworkAsync(projectChainId)
+      },
+      nonBlockingChainAlign ? 800 : 0,
+    )
     return () => window.clearTimeout(timer)
   }, [account, projectChainId, chainId, canSwitch, switchNetworkAsync, nonBlockingChainAlign])
 
-  const queryInputCurrency =
-    typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
-  const queryOutputCurrency =
-    typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
-  const focusSwap = router.query.focus === 'swap'
+  const queryInputCurrency = typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
+  const queryOutputCurrency = typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
   const tradeSource = typeof router.query.source === 'string' ? router.query.source : undefined
 
   const queryPair = useMemo(() => {
@@ -229,50 +205,7 @@ function ProjectSwapInner({
       }),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    chainId,
-    projectChainId,
-    effectivePair?.inputCurrencyId,
-    effectivePair?.outputCurrencyId,
-    dispatch,
-    native,
-  ])
-
-  useEffect(() => {
-    if (!focusSwap) return
-    const timer = window.setTimeout(() => {
-      const root = swapBodyRef.current
-      root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      const input =
-        root?.querySelector<HTMLElement>('input.token-amount-input') ||
-        root?.querySelector<HTMLElement>('input')
-      input?.focus({ preventScroll: true })
-    }, 280)
-    return () => window.clearTimeout(timer)
-  }, [focusSwap])
-
-  const handleOutputSelect = useCallback(
-    (newCurrencyOutput: Currency) => {
-      onCurrencySelection(Field.OUTPUT, newCurrencyOutput)
-      warningSwapHandler(newCurrencyOutput)
-      const newCurrencyOutputId = currencyId(newCurrencyOutput)
-      if (newCurrencyOutputId === inputCurrencyId) {
-        replaceBrowserHistory('inputCurrency', outputCurrencyId)
-      }
-      replaceBrowserHistory('outputCurrency', newCurrencyOutputId)
-    },
-    [inputCurrencyId, outputCurrencyId, onCurrencySelection, warningSwapHandler],
-  )
-
-  const handleRefresh = useCallback(() => {
-    const root = swapBodyRef.current
-    if (!root) return
-    const btn =
-      root.querySelector('[class*="RefreshIcon"]') ||
-      root.querySelector('button[aria-label*="Refresh"]') ||
-      root.querySelector('[class*="CurrencyInputHeader"] button')
-    if (btn instanceof HTMLElement) btn.click()
-  }, [])
+  }, [chainId, projectChainId, effectivePair?.inputCurrencyId, effectivePair?.outputCurrencyId, dispatch, native])
 
   if (!effectivePair) {
     return <Muted>Buying is not available for this project on Melega DEX yet.</Muted>
@@ -287,36 +220,17 @@ function ProjectSwapInner({
     )
   }
 
-  const pairIndicator = (
-    <span style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a' }}>
-      {inputCurrency?.symbol ?? '—'} / {outputCurrency?.symbol ?? '—'}
-    </span>
-  )
-
   return (
-    <QuietSwapShell data-testid="project-v1-trading-embed" data-trade-source={tradeSource}>
+    <QuietSwapShell data-testid="project-v1-trading-embed" data-trade-source={tradeSource} data-trade-terminal-screen>
+      <TradeTerminalGlobalStyle />
       {chainMisaligned && nonBlockingChainAlign ? (
         <Muted data-testid="project-v1-swap-chain-aligning" style={{ marginBottom: 6, fontSize: 11 }}>
           Aligning wallet to {getMelegaChain(projectChainId)?.shortLabel ?? 'project chain'}…
         </Muted>
       ) : null}
-      <HomeSwapPanelShell
-        pairIndicator={pairIndicator}
-        toolbar={
-          <>
-            <HomeSwapIconButton type="button" aria-label="Trade settings" onClick={onPresentSettingsModal}>
-              ⚙
-            </HomeSwapIconButton>
-            <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
-              ↻
-            </HomeSwapIconButton>
-          </>
-        }
-      >
-        <div ref={swapBodyRef} className={`home-trade-swap${account ? '' : ' is-disconnected'}`}>
-          <ProjectSwapFormIsland handleOutputSelect={handleOutputSelect} />
-        </div>
-      </HomeSwapPanelShell>
+      <TradeRuntimeProvider>
+        <TradeCockpit />
+      </TradeRuntimeProvider>
     </QuietSwapShell>
   )
 }
@@ -367,11 +281,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       )}
       {!hero ? (
         <Grid $cols={4} style={{ marginBottom: 10 }}>
-          <Metric
-            label="Chain"
-            value={chainName}
-            provenance={indexed('melega-chain-registry')}
-          />
+          <Metric label="Chain" value={chainName} provenance={indexed('melega-chain-registry')} />
           <Metric
             label="Router"
             value={routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}
@@ -379,11 +289,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
           />
           <Metric
             label="Swap target"
-            value={
-              contractAddress
-                ? `${chain?.nativeCurrency.symbol ?? '—'} → Token`
-                : 'Unavailable'
-            }
+            value={contractAddress ? `${chain?.nativeCurrency.symbol ?? '—'} → Token` : 'Unavailable'}
             provenance={contractAddress ? indexed('project-registry') : UNAVAILABLE}
           />
           <Metric
@@ -403,10 +309,7 @@ const ProjectTradingEmbed: React.FC<Props> = ({
       {!live || !swapReady ? (
         <ComingSoonBox data-testid="project-v1-trading-coming-soon">
           <Muted style={{ marginBottom: 6, color: pp.gold }}>Coming soon on {chainName}</Muted>
-          <Muted>
-            Smart Swap for this network is preparing. Switch to a LIVE deployment (BNB or Base) to buy
-            now.
-          </Muted>
+          <Muted>Smart Swap for this network is preparing. Switch to a LIVE deployment (BNB or Base) to buy now.</Muted>
         </ComingSoonBox>
       ) : (
         <SwapFeaturesProvider>

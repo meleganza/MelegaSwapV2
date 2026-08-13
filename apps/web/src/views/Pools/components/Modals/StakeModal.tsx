@@ -16,6 +16,7 @@ import { usePool } from 'state/pools/hooks'
 import useStakePool from '../../hooks/useStakePool'
 import useUnstakePool from '../../hooks/useUnstakePool'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 
 export type PoolTxSuccessPayload = {
   action: 'stake' | 'unstake' | 'claim'
@@ -45,7 +46,8 @@ const StakeModalContainer = ({
     enableEmergencyWithdraw,
   } = pool
   const { address: account } = useAccount()
-  const { toastSuccess } = useToast()
+  const walletChainId = useWalletChainId()
+  const { toastSuccess, toastError } = useToast()
   const { pool: singlePool } = usePool(sousId)
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const [amount, setAmount] = useState('')
@@ -69,6 +71,14 @@ const StakeModalContainer = ({
 
   const handleConfirmClick = useCallback(
     async (stakeAmount: string) => {
+      if (!account) {
+        toastError(t('Wallet disconnected'), t('Connect your wallet before confirming the staking transaction.'))
+        return
+      }
+      if (walletChainId != null && chainId != null && walletChainId !== chainId) {
+        toastError(t('Wrong network'), t('Switch your wallet to the selected pool network before confirming.'))
+        return
+      }
       const receipt = await fetchWithCatchTxError(() => {
         if (isRemovingStake) {
           return onUnstake(stakeAmount, stakingToken.decimals)
@@ -107,6 +117,10 @@ const StakeModalContainer = ({
     },
     [
       fetchWithCatchTxError,
+      account,
+      walletChainId,
+      chainId,
+      toastError,
       isRemovingStake,
       onStake,
       stakingToken.decimals,

@@ -1,7 +1,0 @@
-{
-  "subsystem": "liquidity_builder",
-  "successFeeBps": 1000,
-  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-  "package": "contracts/liquidity-building/",
-  "userOpsIndependent": true
-}

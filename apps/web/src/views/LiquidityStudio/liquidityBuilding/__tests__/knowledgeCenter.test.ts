@@ -102,17 +102,16 @@ describe('LB knowledge center', () => {
     expect(LB_UX.docsExamples).toBe('/docs/liquidity-builder/examples')
   })
 
-  it('wizard exposes contextual docs for reserve, goal, strategy, fees', () => {
+  it('builder keeps one overview link plus contextual docs inside customization', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('lb-docs-link-reserve')
     expect(card).toContain('lb-docs-link-goal')
     expect(card).toContain('lb-docs-link-strategy')
-    expect(card).toContain('lb-docs-link-fees')
     expect(card).toContain('LB_UX.docsTokenReserve')
     expect(card).toContain('LB_UX.docsLiquidityGoals')
     expect(card).toContain('LB_UX.docsStrategies')
-    expect(card).toContain('LB_UX.docsFees')
-    expect(card).toContain('LB_UX.docsHub')
+    expect(card).toContain('LB_UX.docsHowItWorks')
+    expect(card).toContain('How it works')
   })
 
   it('portfolio exposes View Documentation to the hub', () => {
@@ -128,5 +127,22 @@ describe('LB knowledge center', () => {
     expect(shell).toContain('@media (min-width: 768px)')
     expect(shell).toContain('lb-docs-expandable')
     expect(shell).toContain('Details')
+  })
+
+  it('gives every docs route a lightweight, page-specific visual', () => {
+    const shell = load('liquidityBuilding/LbDocsPage.tsx')
+    const visual = readFileSync(path.join(WEB, 'src/views/Docs/DocsVisual.tsx'), 'utf8')
+    const docsLanding = readFileSync(path.join(WEB, 'src/pages/docs/index.tsx'), 'utf8')
+
+    expect(shell).toContain("from 'views/Docs/DocsVisual'")
+    expect(shell).toContain('VISUAL_BY_PATH')
+    for (const route of DOC_ROUTES) {
+      expect(shell).toContain(`'${route}'`)
+    }
+    expect(visual).toContain('prefers-reduced-motion: reduce')
+    expect(visual).toContain('role="img"')
+    expect(visual).toContain('aria-hidden="true"')
+    expect(shell).toContain('MobileGuideNav')
+    expect(docsLanding).toContain('<DocsVisual variant="ecosystem" />')
   })
 })

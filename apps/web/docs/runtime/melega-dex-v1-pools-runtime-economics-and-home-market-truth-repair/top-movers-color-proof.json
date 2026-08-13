@@ -1,7 +1,0 @@
-{
-  "positive": "#00e676 + \u25b2",
-  "negative": "#ff5252 + \u25bc",
-  "zeroNeutral": true,
-  "tokenNameUncolored": true,
-  "ariaLabel": true
-}

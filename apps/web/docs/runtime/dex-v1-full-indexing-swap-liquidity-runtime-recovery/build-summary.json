@@ -1,6 +1,0 @@
-{
-  "nextBuild": "passed",
-  "typecheck": "failed_preexisting",
-  "typecheckNote": "yarn tsc --noEmit reports pre-existing errors in Trade/Trending/Venues/packages/tokens; next build skips type validation (info - Skipping validation of types)",
-  "eslintConfigNote": "next/babel config warning during build lint phase"
-}

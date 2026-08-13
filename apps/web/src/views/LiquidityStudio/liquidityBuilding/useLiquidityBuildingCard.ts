@@ -481,7 +481,7 @@ export function useLiquidityBuildingCard(
         onProgress: opts?.onProgress,
       })
 
-      if (!result.ok) {
+      if ('reason' in result) {
         setPhase('status')
         return { ok: false as const, reason: result.reason }
       }

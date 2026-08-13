@@ -12,9 +12,13 @@ const shimmer = keyframes`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   width: 100%;
+
+  @media (max-width: 1199px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
   @media (max-width: 767px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -25,13 +29,15 @@ const Card = styled.div`
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: ${tradeLayout.cardRadius};
-  padding: 14px 16px;
-  min-height: ${tradeLayout.statCardMinHeight};
+  padding: 11px 12px;
+  min-height: 82px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   transition: border-color 180ms ease;
   font-variant-numeric: ${tradeTypography.fontVariantNumeric};
+  min-width: 0;
+  overflow: hidden;
 
   &:hover {
     border-color: ${tradeColors.cardBorderHover};
@@ -46,32 +52,29 @@ const Label = styled.div`
 `
 
 const ValueSlot = styled.div`
-  margin-top: 8px;
+  margin-top: 6px;
   min-height: ${tradeLayout.statValueMinHeight};
   display: flex;
   align-items: center;
+  min-width: 0;
 `
 
 const Value = styled.div<{ $muted?: boolean; $loading?: boolean }>`
   font-size: ${tradeTypography.statValue.size};
   font-weight: ${tradeTypography.statValue.weight};
   line-height: ${tradeTypography.statValue.lineHeight};
-  color: ${({ $muted, $loading }) =>
-    $loading ? tradeColors.gold : $muted ? tradeColors.muted : tradeColors.text};
+  color: ${({ $muted, $loading }) => ($loading ? tradeColors.gold : $muted ? tradeColors.muted : tradeColors.text)};
   font-variant-numeric: ${tradeTypography.fontVariantNumeric};
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   ${({ $loading }) =>
     $loading &&
     css`
       animation: ${shimmer} 1.8s ease-in-out infinite;
     `}
-`
-
-const Subline = styled.div`
-  margin-top: 6px;
-  font-size: ${tradeTypography.statSubline.size};
-  font-weight: ${tradeTypography.statSubline.weight};
-  line-height: ${tradeTypography.statSubline.lineHeight};
-  color: ${tradeColors.muted};
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
@@ -84,9 +87,7 @@ const Change = styled.div<{ $positive?: boolean }>`
 
 const reasonSubline = (stat: TradePairStat): string | undefined => {
   if (stat.reasonCode === 'SUBGRAPH_LOADING') {
-    return stat.id === 'holders'
-      ? 'BscScan holder count request in progress'
-      : 'Subgraph request in progress'
+    return stat.id === 'holders' ? 'BNB Chain holder index request in progress' : 'On-chain reserve request in progress'
   }
   return tradeUiReasonLabel(stat.reasonCode)
 }
@@ -117,21 +118,16 @@ export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
       const unavailable = isUnavailableStat(stat)
       const muted = loading || unavailable
       const subline = muted ? reasonSubline(stat) : undefined
-      const displayValue = loading
-        ? RUNTIME_LOADING_LABEL
-        : unavailable
-          ? RUNTIME_UNAVAILABLE_LABEL
-          : stat.value
+      const displayValue = loading ? RUNTIME_LOADING_LABEL : unavailable ? '—' : stat.value
 
       return (
-        <Card key={stat.id}>
+        <Card key={stat.id} title={subline}>
           <Label>{stat.label}</Label>
           <ValueSlot>
             <Value $muted={unavailable} $loading={loading}>
               {displayValue}
             </Value>
           </ValueSlot>
-          {subline ? <Subline>{subline}</Subline> : null}
           {stat.change && !muted && Math.abs(parseFloat(stat.change.replace(/[^0-9.-]/g, '') || '0')) > 0.0001 ? (
             <Change $positive={stat.changePositive}>{stat.change}</Change>
           ) : null}

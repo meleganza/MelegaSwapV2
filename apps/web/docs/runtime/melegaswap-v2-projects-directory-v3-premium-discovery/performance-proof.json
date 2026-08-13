@@ -1,8 +1,0 @@
-{
-  "initialCards": 28,
-  "totalObserved": 274,
-  "loadMore": true,
-  "viewProject": "Next Link + markProjectNavClick (V5 shell fast path)",
-  "scrollRestore": "sessionStorage melega-projects-directory-scroll",
-  "tradeHrefSample": "/swap?outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b&chain=56&source=projects-directory"
-}

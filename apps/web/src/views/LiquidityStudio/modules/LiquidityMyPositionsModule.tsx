@@ -61,7 +61,7 @@ const Desc = styled.p`
 const Grid = styled.div`
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: ${liquidityMyPositions.columnGap};
   min-width: 0;
 
@@ -126,7 +126,7 @@ const Status = styled.span<{ $tone: string }>`
 const Metrics = styled.dl`
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 `
 
@@ -299,7 +299,7 @@ const ListTable = styled.div`
 
 const ListHead = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  grid-template-columns: minmax(180px, 1.6fr) 100px 100px 90px minmax(220px, 1.2fr);
   gap: 8px;
   padding: 10px 14px;
   font-size: 11px;
@@ -308,16 +308,16 @@ const ListHead = styled.div`
   text-transform: uppercase;
   color: ${liquidityMyPositions.dim};
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  min-width: 720px;
+  min-width: 700px;
 `
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.4fr) 100px 100px 90px 90px minmax(160px, 1.1fr);
+  grid-template-columns: minmax(180px, 1.6fr) 100px 100px 90px minmax(220px, 1.2fr);
   gap: 8px;
   padding: 12px 14px;
   align-items: center;
-  min-width: 720px;
+  min-width: 700px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 
   &:last-child {
@@ -333,6 +333,23 @@ const ListCell = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const ListPair = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+`
+
+const ListLogos = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+
+  > *:last-child {
+    margin-left: -7px;
+  }
 `
 
 const MoreBtn = styled.button`
@@ -417,10 +434,6 @@ function PositionCard({
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.poolShare}</MetricLabel>
           <MetricValue>{shareLabel}</MetricValue>
         </Metric>
-        <Metric>
-          <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.feesEarned}</MetricLabel>
-          <MetricValue>{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</MetricValue>
-        </Metric>
         <Metric data-testid="liquidity-my-positions-apr">
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.apr}</MetricLabel>
           <MetricValue>{aprLabel}</MetricValue>
@@ -460,17 +473,25 @@ function PositionListRow({
   const valueLabel = formatPositionUsd(details.usdValue)
   const shareLabel = formatPoolShare(details.poolShare)
   const token0 = row.pair.token0
+  const token1 = row.pair.token1
   const positionChainId = row.chainId ?? token0.chainId ?? liquidityMyPositions.chainId
 
   return (
     <ListRow data-testid="liquidity-my-positions-list-row" data-position-id={row.id}>
-      <ListCell data-testid="liquidity-my-positions-list-pair">{row.pairLabel}</ListCell>
+      <ListCell data-testid="liquidity-my-positions-list-pair">
+        <ListPair>
+          <ListLogos aria-hidden="true">
+            <MelegaTokenAvatar symbol={token0.symbol} name={token0.name} address={token0.address} chainId={positionChainId} size={24} radius="circle" />
+            <MelegaTokenAvatar symbol={token1.symbol} name={token1.name} address={token1.address} chainId={positionChainId} size={24} radius="circle" />
+          </ListLogos>
+          <span>{row.pairLabel}</span>
+        </ListPair>
+      </ListCell>
       <ListCell data-testid="liquidity-my-positions-list-chain">
         <MelegaExploreChainBadge chainId={positionChainId} />
       </ListCell>
       <ListCell data-testid="liquidity-my-positions-list-value">{valueLabel}</ListCell>
       <ListCell data-testid="liquidity-my-positions-list-share">{shareLabel}</ListCell>
-      <ListCell data-testid="liquidity-my-positions-list-fees">{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</ListCell>
       <ListCell>
         <Actions style={{ marginTop: 0 }}>
           <PrimaryBtn type="button" data-testid="liquidity-my-positions-manage" onClick={() => onManage(row)}>
@@ -489,6 +510,19 @@ function PositionListRow({
 }
 
 type PendingSwitch = { row: LiquidityPositionRow; intent: 'manage' | 'remove' }
+
+/**
+ * The editor is permanently mounted below My Liquidity in the approved
+ * one-page workspace. Wait for React to expose the selected Add/Remove panel,
+ * then move focus to it without triggering a route transition.
+ */
+function focusLiquidityEditor() {
+  if (typeof window === 'undefined') return
+  const focus = () => {
+    document.getElementById('liquidity-add')?.scrollIntoView({ behavior: 'auto', block: 'start' })
+  }
+  window.requestAnimationFrame(() => window.requestAnimationFrame(focus))
+}
 
 const LiquidityMyPositionsBody: React.FC = () => {
   const {
@@ -517,10 +551,8 @@ const LiquidityMyPositionsBody: React.FC = () => {
       setSelectedPositionId(row.id)
       setCurrencyA(row.pair.token0)
       setCurrencyB(row.pair.token1)
-      setMode('Add Liquidity')
-      if (typeof document !== 'undefined') {
-        document.getElementById('add-liquidity')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
+      setMode('Add Liquidity', { syncUrl: false })
+      focusLiquidityEditor()
     },
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
@@ -530,7 +562,8 @@ const LiquidityMyPositionsBody: React.FC = () => {
       setSelectedPositionId(row.id)
       setCurrencyA(row.pair.token0)
       setCurrencyB(row.pair.token1)
-      setMode('Remove Liquidity')
+      setMode('Remove Liquidity', { syncUrl: false })
+      focusLiquidityEditor()
     },
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],
   )
@@ -682,7 +715,6 @@ const LiquidityMyPositionsBody: React.FC = () => {
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colChain}</span>
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colValue}</span>
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colShare}</span>
-                <span>{LIQUIDITY_MY_POSITIONS_COPY.colFees}</span>
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colActions}</span>
               </ListHead>
               {visiblePositions.map((row) => (

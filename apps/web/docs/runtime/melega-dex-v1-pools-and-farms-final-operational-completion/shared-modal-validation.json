@@ -1,7 +1,0 @@
-{
-  "portal": "ModalProvider",
-  "overlay": "z-index 0 neutral dim",
-  "content": "theme.zIndices.modal",
-  "updateOnPropsChange": false,
-  "cleanup": "clearModal after present-once; route unmount via ModalProvider AnimatePresence"
-}

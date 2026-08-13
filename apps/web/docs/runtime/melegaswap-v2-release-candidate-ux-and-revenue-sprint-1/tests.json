@@ -1,8 +1,0 @@
-{
-  "schema": "melegaswap.v2.rc-sprint-1.tests.v1",
-  "status": "PASS",
-  "passed": true,
-  "command": "yarn vitest run src/lib/__tests__/releaseCandidateUxRevenueSprint1.test.ts src/lib/featured-placement/__tests__/featuredPlacement.test.ts src/views/ListStudio/__tests__/listFounderAcceptance.test.ts",
-  "results": { "testFiles": 3, "tests": 22, "failed": 0 },
-  "capturedAt": "2026-08-03T21:55:13Z"
-}

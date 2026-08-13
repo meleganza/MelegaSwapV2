@@ -1,5 +1,0 @@
-{
-  "command": "yarn next build",
-  "result": "PASS",
-  "protocolArchitectureChanged": false
-}

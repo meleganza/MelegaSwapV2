@@ -45,29 +45,18 @@ describe('RC2 emergency — journey UI removed', () => {
 
 describe('RC2 emergency — header / bottom nav', () => {
   it('header remains product destinations', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'List',
-    ])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
   it('bottom nav restored away from RC2 journey set', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'Portfolio',
-    ])
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools'])
   })
 
-  it('app remounts page Component on route change and recovers chunk errors', () => {
+  it('app preserves the page tree across soft navigation and recovers stale chunks', () => {
     const app = load('pages/_app-full.tsx')
-    expect(app).toMatch(/key=\{routeKey\}/)
+    expect(app).not.toMatch(/key=\{routeKey\}/)
+    expect(app).not.toContain('const routeKey')
     expect(app).toMatch(/useRouteTransitionRecovery/)
     expect(app).toMatch(/SuspenseWithChunkError/)
   })
@@ -122,10 +111,7 @@ describe('RC2 emergency — Avalanche chain guards', () => {
     const topFarms = load('views/Home/hooks/useGetTopFarmsByApr.tsx')
     expect(topFarms).toMatch(/getFarmConfig\(chainId\)/)
     expect(topFarms).not.toMatch(/ChainId\.BASE/)
-    const tokens = readFileSync(
-      path.resolve(ROOT, '../../../packages/tokens/src/common.ts'),
-      'utf8',
-    )
+    const tokens = readFileSync(path.resolve(ROOT, '../../../packages/tokens/src/common.ts'), 'utf8')
     expect(tokens).toMatch(/ChainId\.AVAX/)
     expect(tokens).toMatch(/0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E/)
   })

@@ -4,6 +4,7 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsHero } from './poolsHeroTokens'
@@ -94,15 +95,30 @@ const Btn = styled.button<{ $primary?: boolean }>`
   gap: 4px;
 `
 
+const ConnectBtn = styled(ConnectWalletButton)`
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.16);
+  color: #f4c430;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none;
+`
+
 export const PoolsHeroFeaturedCompact: React.FC = () => {
-  const { featured, requestModal } = usePoolsRuntime()
+  const { account, featured, requestModal } = usePoolsRuntime()
   const card = featured?.card
   // No factual featured pool → collapse entirely (no Active / Stake / — → — shell).
   if (!card?.rawPool) return null
 
   const stakeToken = featured.stakeToken && featured.stakeToken !== '—' ? featured.stakeToken : card.stakeToken
-  const rewardToken =
-    featured.rewardToken && featured.rewardToken !== '—' ? featured.rewardToken : card.rewardToken
+  const rewardToken = featured.rewardToken && featured.rewardToken !== '—' ? featured.rewardToken : card.rewardToken
   const title =
     [stakeToken, rewardToken].filter((t) => t && t !== '—').join(' → ') ||
     card.tokens?.join(' / ') ||
@@ -138,15 +154,19 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
         {rewardToken && rewardToken !== '—' ? <span>Earn {rewardToken}</span> : null}
       </Meta>
       <Actions>
-        <Btn
-          type="button"
-          $primary
-          data-testid="pools-hero-featured-stake"
-          disabled={!active}
-          onClick={() => requestModal(card, 'stake')}
-        >
-          Stake
-        </Btn>
+        {account ? (
+          <Btn
+            type="button"
+            $primary
+            data-testid="pools-hero-featured-stake"
+            disabled={!active}
+            onClick={() => requestModal(card, 'stake')}
+          >
+            Stake
+          </Btn>
+        ) : (
+          <ConnectBtn data-testid="pools-hero-featured-connect">Connect Wallet</ConnectBtn>
+        )}
         {contractUrl ? (
           <Btn
             type="button"

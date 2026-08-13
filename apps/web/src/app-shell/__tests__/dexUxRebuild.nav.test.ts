@@ -10,14 +10,8 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header is Home · Liquidity · Farms · Pools · List (Portfolio via My Melega)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'List',
-    ])
+  it('primary header exposes Swap and the other core funnels directly (Portfolio via My Melega)', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Trade')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Projects')).toBe(false)
@@ -29,14 +23,9 @@ describe('DEX UX Rebuild navigation', () => {
     }
   })
 
-  it('mobile bottom nav is Home · Liquidity · Farms · Pools · Portfolio', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'Portfolio',
-    ])
+  it('mobile bottom nav exposes the five core DEX funnels in one tap', () => {
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools'])
+    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/swap')
   })
 
   it('Home nav active state is only Discover (/) — not Swap or Project Pages', () => {
@@ -88,12 +77,8 @@ describe('DEX UX Rebuild navigation', () => {
 
   it('List and Passport routes exist', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
-    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(
-      /\/portfolio|PassportRedirect/,
-    )
-    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(
-      /ListPageHero/,
-    )
+    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/\/portfolio|PassportRedirect/)
+    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(/ListPageHero/)
     expect(readFileSync(path.join(ROOT, 'pages/portfolio/index.tsx'), 'utf8')).toMatch(
       /PortfolioStudio|PassportV1Shell|Portfolio/,
     )
@@ -108,14 +93,8 @@ describe('DEX UX Rebuild navigation', () => {
   })
 
   it('Farms and Pools drop Open Project Page chrome clutter', () => {
-    const farms = readFileSync(
-      path.join(ROOT, 'views/FarmsStudio/components/FarmsStudioPageHeader.tsx'),
-      'utf8',
-    )
-    const pools = readFileSync(
-      path.join(ROOT, 'views/PoolsStudio/components/PoolsStudioPageHeader.tsx'),
-      'utf8',
-    )
+    const farms = readFileSync(path.join(ROOT, 'views/FarmsStudio/components/FarmsStudioPageHeader.tsx'), 'utf8')
+    const pools = readFileSync(path.join(ROOT, 'views/PoolsStudio/components/PoolsStudioPageHeader.tsx'), 'utf8')
     expect(farms).not.toMatch(/Open Project Page/)
     expect(pools).not.toMatch(/Open Project Page/)
     expect(farms).toMatch(/Earn rewards from active Melega DEX farms/)

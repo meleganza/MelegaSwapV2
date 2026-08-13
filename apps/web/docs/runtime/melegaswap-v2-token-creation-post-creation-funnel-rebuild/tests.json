@@ -1,9 +1,0 @@
-{
-  "mission": "MELEGASWAP_V2_TOKEN_CREATION_POST_CREATION_FUNNEL_REBUILD",
-  "result": "PASS",
-  "testFiles": 4,
-  "tests": 28,
-  "passed": 28,
-  "failed": 0,
-  "command": "yarn vitest --run ListStudio create-token / founder / workspace suites"
-}

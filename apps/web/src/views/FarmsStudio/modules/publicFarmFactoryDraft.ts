@@ -1,7 +1,11 @@
 /**
  * Public Farm Factory draft persistence + return-flow query contract.
  */
-import { evaluatePublicFarmEligibility, type EligibilityPairInput, type PublicFarmEligibilityResult } from './publicFarmEligibility'
+import {
+  evaluatePublicFarmEligibility,
+  type EligibilityPairInput,
+  type PublicFarmEligibilityResult,
+} from './publicFarmEligibility'
 
 export const PUBLIC_FARM_DRAFT_STORAGE_KEY = 'melega.public-farm-factory.draft.v1'
 
@@ -121,75 +125,6 @@ export function clearDraftStorage(): void {
 }
 
 export const CREATE_FARM_RETURN_PATH = '/farms?create=1'
-
-export type FarmFactoryHandoffKind = 'create_pair' | 'ai_builder' | 'manual_liquidity'
-
-export function buildCreatePairHandoffUrl(draft: PublicFarmFactoryDraft): string {
-  const params = new URLSearchParams({
-    return: 'create-farm',
-    draftId: draft.draftId,
-    destination: CREATE_FARM_RETURN_PATH,
-  })
-  return `/add?${params.toString()}`
-}
-
-export function buildManualLiquidityHandoffUrl(
-  draft: PublicFarmFactoryDraft,
-  missingTvlBnb: number | null,
-): string {
-  const pair = draft.selectedPair
-  const params = new URLSearchParams({
-    return: 'create-farm',
-    draftId: draft.draftId,
-    destination: CREATE_FARM_RETURN_PATH,
-  })
-  if (missingTvlBnb != null && missingTvlBnb > 0) {
-    params.set('missingTvlBnb', String(missingTvlBnb))
-    params.set('targetTvlBnb', '0.25')
-  }
-  if (!pair) return `/add?${params.toString()}`
-  params.set('token0', pair.token0)
-  params.set('token1', pair.token1)
-  params.set('pair', pair.pairAddress)
-  return `/add/${pair.token0}/${pair.token1}?${params.toString()}`
-}
-
-export function buildAiBuilderHandoffUrl(
-  draft: PublicFarmFactoryDraft,
-  missingTvlBnb: number | null,
-  builderAvailable: boolean,
-): { href: string; blocked: boolean; blockerLabel: string | null } {
-  if (!builderAvailable) {
-    return {
-      href: '',
-      blocked: true,
-      blockerLabel:
-        'AI Liquidity Builder contracts remain undeployed. Use Add Liquidity Manually to continue the Create Farm flow.',
-    }
-  }
-  const params = new URLSearchParams({
-    view: 'building',
-    step: 'setup',
-    return: 'create-farm',
-    draftId: draft.draftId,
-    destination: CREATE_FARM_RETURN_PATH,
-  })
-  if (draft.selectedPair) {
-    params.set('pair', draft.selectedPair.pairAddress)
-    params.set('token0', draft.selectedPair.token0)
-    params.set('token1', draft.selectedPair.token1)
-  }
-  if (missingTvlBnb != null && missingTvlBnb > 0) {
-    params.set('missingTvlBnb', String(missingTvlBnb))
-    // Recommended minimum budget: missing TVL + small buffer (not a fabricated live quote).
-    params.set('recommendedBudgetBnb', String(+(missingTvlBnb * 1.1).toFixed(6)))
-  }
-  return {
-    href: `/liquidity-studio?${params.toString()}`,
-    blocked: false,
-    blockerLabel: null,
-  }
-}
 
 export function parseReturnToCreateFarm(search: string): {
   returning: boolean

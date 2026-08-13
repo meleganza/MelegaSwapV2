@@ -1,4 +1,0 @@
-## melega-dex-v1-founder-signed-permanent-contract-deployment
- M apps/web/docs/runtime/melega-dex-v1-liquidity-builder-mainnet-activation/deployment-summary.json
- M apps/web/docs/runtime/melega-dex-v1-liquidity-builder-mainnet-activation/runtime-state.json
-?? apps/web/docs/runtime/melega-dex-v1-founder-signed-permanent-contract-deployment/

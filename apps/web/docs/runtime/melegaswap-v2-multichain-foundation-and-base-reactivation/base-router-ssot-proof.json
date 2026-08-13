@@ -1,9 +1,0 @@
-{
-  "conflictResolved": true,
-  "webRouter": "0x1B30D21354a082EeBC66c4C5E56320759f7994e5",
-  "smartRouterPackageRouter": "0x1B30D21354a082EeBC66c4C5E56320759f7994e5",
-  "registryRouter": "0x1B30D21354a082EeBC66c4C5E56320759f7994e5",
-  "factory": "0x78fA7Fa39CF6544DD9768A75d8Ad8C45854aE530",
-  "priorPackageValue": "",
-  "note": "packages/smart-router ROUTER_ADDRESS[BASE] was blank; aligned to web + on-chain Melega Router."
-}

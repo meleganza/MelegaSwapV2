@@ -1,8 +1,0 @@
-{
-  "missionId": "MELEGA_DEX_V1_DURABLE_MARKET_INDEX_AND_FOUNDER_ACCEPTANCE_RELEASE",
-  "founderAcceptanceBranch": "melega-dex-v1-home-liquidity-founder-acceptance-repair",
-  "founderAcceptanceCommit": "946460b1",
-  "missionBranch": "melega-dex-v1-durable-market-index-and-founder-acceptance-release",
-  "base": "01ccd880",
-  "includesFounderAcceptance": true
-}

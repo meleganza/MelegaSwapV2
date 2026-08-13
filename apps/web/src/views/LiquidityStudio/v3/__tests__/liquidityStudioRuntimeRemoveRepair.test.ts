@@ -27,13 +27,17 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(factory).toContain('isBnbFactoryChain')
     expect(factory).toContain('chainId === 56')
     expect(factory).toContain('FACTORY_FETCH_TIMEOUT_MS')
+    expect(factory).toContain('MAX_FACTORY_PAIR_SCAN')
+    expect(factory).toContain('const MAX_PAGES = 2')
     expect(positions).toContain('useFactoryLiquidityTokenPairs(Boolean(account), chainId)')
   })
 
   it('positions expose CONNECTING → FETCHING → READY → EMPTY lifecycle', () => {
-    expect(positions).toContain("type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'")
+    expect(positions).toContain(
+      "type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'",
+    )
     expect(positions).toContain('POSITIONS_FETCH_TIMEOUT_MS')
-    expect(positions).toContain("positionsPhase")
+    expect(positions).toContain('positionsPhase')
     expect(positions).toContain('retryPositions')
     expect(myPos).toContain('data-positions-phase')
     expect(myPos).toContain('emptyTimedOut')
@@ -67,6 +71,13 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(myPos).toContain('proceedRemove')
   })
 
+  it('position actions stay in the one-page workspace and reveal the editor', () => {
+    expect(myPos).toContain("setMode('Add Liquidity', { syncUrl: false })")
+    expect(myPos).toContain("setMode('Remove Liquidity', { syncUrl: false })")
+    expect(myPos).toContain('focusLiquidityEditor()')
+    expect(myPos).toContain("getElementById('liquidity-add')")
+  })
+
   it('confirm withdrawal calls wallet remove path with lifecycle', () => {
     expect(runtime).toContain("setRemoveTxLifecycle('waiting_wallet')")
     expect(runtime).toContain('confirmRemoveWithdrawal')
@@ -78,5 +89,12 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     const shell = load('views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx')
     expect(shell).toContain("router.asPath.includes('view=') && view === undefined")
     expect(shell).toContain("view === 'remove' ? 'Remove Liquidity'")
+    expect(shell).toContain('deferredDeepLinkScrollRef')
+    expect(shell).toContain("positionsPhase === 'fetching'")
+  })
+
+  it('transaction workspace does not wait for terminal analytics', () => {
+    const shell = load('views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx')
+    expect(shell).toContain('<LiquidityRuntimeProvider terminalEnabled={false}>')
   })
 })

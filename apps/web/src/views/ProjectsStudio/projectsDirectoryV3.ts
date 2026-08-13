@@ -10,25 +10,10 @@ export const PROJECTS_PAGE_INCREMENT = 28
 export const PROJECTS_SCROLL_KEY = 'melega-projects-directory-scroll'
 
 export const DIRECTORY_STATUS = ['All', 'Featured', 'Boosted', 'Verified', 'New'] as const
-export const DIRECTORY_CHAINS = [
-  'All Chains',
-  'BSC',
-  'Base',
-  'Polygon',
-  'Ethereum',
-  'Arbitrum',
-  'Avalanche',
-] as const
-export const DIRECTORY_CATEGORIES = [
-  'All',
-  'AI',
-  'DeFi',
-  'Gaming',
-  'Infrastructure',
-  'Meme',
-  'RWA',
-] as const
+export const DIRECTORY_CHAINS = ['All Chains', 'BSC', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche'] as const
+export const DIRECTORY_CATEGORIES = ['All', 'AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
 export const DIRECTORY_SORT = [
+  'Market Cap',
   'Trending',
   'Newest',
   'Price Change',
@@ -54,22 +39,17 @@ export const DEFAULT_DIRECTORY_QUERY: ProjectsDirectoryQuery = {
   status: 'All',
   chain: 'All Chains',
   category: 'All',
-  sort: 'Trending',
+  sort: 'Market Cap',
   search: '',
 }
 
 const CHAIN_MATCH: Record<string, (c: ProjectPreviewCard) => boolean> = {
-  BSC: (c) =>
-    c.chainId === 56 ||
-    c.chains.some((x) => /^(BNB|BSC)$/i.test(x)),
+  BSC: (c) => c.chainId === 56 || c.chains.some((x) => /^(BNB|BSC)$/i.test(x)),
   Base: (c) => c.chainId === 8453 || c.chains.some((x) => /^Base$/i.test(x)),
   Polygon: (c) => c.chainId === 137 || c.chains.some((x) => /^Polygon$/i.test(x)),
-  Ethereum: (c) =>
-    c.chainId === 1 || c.chains.some((x) => /^(ETH|Ethereum)$/i.test(x)),
-  Arbitrum: (c) =>
-    c.chainId === 42161 || c.chains.some((x) => /^(ARB|Arbitrum)$/i.test(x)),
-  Avalanche: (c) =>
-    c.chainId === 43114 || c.chains.some((x) => /^(AVAX|Avalanche)$/i.test(x)),
+  Ethereum: (c) => c.chainId === 1 || c.chains.some((x) => /^(ETH|Ethereum)$/i.test(x)),
+  Arbitrum: (c) => c.chainId === 42161 || c.chains.some((x) => /^(ARB|Arbitrum)$/i.test(x)),
+  Avalanche: (c) => c.chainId === 43114 || c.chains.some((x) => /^(AVAX|Avalanche)$/i.test(x)),
 }
 
 function metricNumber(card: ProjectPreviewCard, label: string): number {
@@ -84,6 +64,8 @@ function metricNumber(card: ProjectPreviewCard, label: string): number {
 function sortCards(cards: ProjectPreviewCard[], sort: DirectorySort): ProjectPreviewCard[] {
   const next = [...cards]
   switch (sort) {
+    case 'Market Cap':
+      return next.sort((a, b) => metricNumber(b, 'Market Cap') - metricNumber(a, 'Market Cap'))
     case 'Newest':
       return next.sort((a, b) => (b.listedAtMs ?? 0) - (a.listedAtMs ?? 0))
     case 'Price Change':
@@ -145,16 +127,16 @@ export function applyProjectsDirectoryQuery(
   if (query.category !== 'All') {
     const cat = query.category.toLowerCase()
     next = next.filter(
-      (c) =>
-        c.category.toLowerCase().includes(cat) ||
-        (c.sectorTags ?? []).some((t) => t.toLowerCase().includes(cat)),
+      (c) => c.category.toLowerCase().includes(cat) || (c.sectorTags ?? []).some((t) => t.toLowerCase().includes(cat)),
     )
   }
 
   const q = query.search.trim().toLowerCase()
   if (q) {
     next = next.filter((c) => {
-      const hay = `${c.name} ${c.symbol ?? ''} ${c.slug} ${c.contractAddress ?? ''} ${c.category} ${c.chains.join(' ')}`.toLowerCase()
+      const hay = `${c.name} ${c.symbol ?? ''} ${c.slug} ${c.contractAddress ?? ''} ${c.category} ${c.chains.join(
+        ' ',
+      )}`.toLowerCase()
       return hay.includes(q)
     })
   }
@@ -173,11 +155,7 @@ export function formatListedAgo(listedAtMs?: number | null, nowMs = Date.now()):
   return `Listed ${days}d ago`
 }
 
-export function buildSwapHref(opts: {
-  address?: string | null
-  chainId?: number | null
-  source?: string
-}): string {
+export function buildSwapHref(opts: { address?: string | null; chainId?: number | null; source?: string }): string {
   if (!opts.address) return '/swap'
   const q = new URLSearchParams({
     outputCurrency: opts.address,

@@ -10,9 +10,10 @@ describe('R759 tradeTypography', () => {
   })
 
   it('keeps chart and swaps at fixed institutional heights', () => {
-    expect(tradeLayout.chartAreaHeight).toBe('300px')
-    expect(tradeLayout.recentSwapsHeight).toBe('320px')
-    expect(tradeLayout.swapRowHeight).toBe('52px')
+    expect(tradeLayout.chartAreaHeight).toBe('255px')
+    expect(tradeLayout.tradeTerminalRecentSwapsHeight).toBe('304px')
+    expect(tradeLayout.swapRowHeight).toBe('42px')
+    expect(tradeLayout.swapTableHeadHeight).toBe('32px')
     expect(tradeLayout.statCardMinHeight).toBe('108px')
   })
 })

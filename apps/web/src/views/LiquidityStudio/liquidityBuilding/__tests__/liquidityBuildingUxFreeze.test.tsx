@@ -23,7 +23,8 @@ describe('LB016 Liquidity Building UX freeze', () => {
     expect(LB_UX.startCta).toBe('Create Liquidity Program')
     expect(LB_UX.aiBadge).toBe('AI Powered')
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
-    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
+    expect(LB_UX.quoteAssetLabel).toBe('Pair with')
+    expect(LB_UX.tokenToGrowLabel).toBe('Project token')
     expect(LB_UX.entryLead).not.toMatch(/KMS|Treasury|BC003S/i)
   })
 

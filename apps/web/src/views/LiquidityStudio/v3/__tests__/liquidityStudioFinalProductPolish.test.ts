@@ -35,10 +35,12 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_POLISH', () => {
     expect(shell).toContain('min-height: 60px')
   })
 
-  it('AI entry is compact horizontal module', () => {
-    expect(shell).toContain('data-ai-layout="horizontal"')
-    expect(shell).toContain('padding: 12px 14px')
-    expect(tokens).toContain("aiOpen: 'Start Builder'")
+  it('AI route uses compact chrome and mounts the Builder on intent', () => {
+    expect(shell).toContain("$builder={tab === 'building'}")
+    expect(shell).toContain("$hidden={tab === 'building'}")
+    expect(shell).toContain('Build an automated liquidity plan in two inputs.')
+    expect(shell).not.toContain('data-ai-layout="horizontal"')
+    expect(shell).not.toContain('setTimeout(() => setAiMounted(true)')
   })
 
   it('positions expose connecting→fetching→ready→empty→error + retry', () => {
@@ -56,9 +58,11 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_FINAL_PRODUCT_POLISH', () => {
     expect(myPos).toContain('liquidity-my-positions-remove')
   })
 
-  it('Add Liquidity is 50/50 desktop workspace', () => {
-    expect(add).toContain('50-50-workspace')
-    expect(add).toContain('minmax(0, 1fr) minmax(0, 1fr)')
+  it('Add Liquidity is a single horizontal workspace', () => {
+    expect(add).toContain('single-card-horizontal')
+    expect(add).toContain('liquidity-add-horizontal-workspace')
+    expect(add).toContain('data-liquidity-preview="integrated"')
+    expect(add).not.toContain('50-50-workspace')
   })
 
   it('Add + Remove confirms share flat MelegaModal gold CTA', () => {

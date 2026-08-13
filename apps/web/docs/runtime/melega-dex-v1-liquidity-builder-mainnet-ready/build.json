@@ -1,7 +1,0 @@
-{
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "passed": true,
-  "exitCode": 0,
-  "note": "Production Next.js build completed successfully for Factory validation / MAINNET READY mission."
-}

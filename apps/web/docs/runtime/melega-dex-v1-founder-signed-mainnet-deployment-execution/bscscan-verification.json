@@ -1,8 +1,0 @@
-{
-  "liquidity_builder": "NULL",
-  "create_token": "NULL",
-  "public_farm_factory": "NULL",
-  "note": "No explorer verification claimed. VERIFICATION_PENDING allowed after factual deploy when credentials absent.",
-  "manualVerification": "After deploy: BscScan Verify & Publish with exact compiler settings and constructor args from review panels.",
-  "capturedAt": "2026-08-01T07:06:00Z"
-}

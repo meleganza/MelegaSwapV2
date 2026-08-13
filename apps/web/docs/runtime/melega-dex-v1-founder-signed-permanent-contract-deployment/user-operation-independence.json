@@ -1,6 +1,0 @@
-{
-  "createTokenRequiresMelegaDeployer": false,
-  "publicFarmRequiresMelegaDeployer": false,
-  "liquidityBuilderOpsRequireMelegaDeployer": false,
-  "deployerIsNotRuntimeDependency": true
-}

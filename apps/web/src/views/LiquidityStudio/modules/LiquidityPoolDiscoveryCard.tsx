@@ -1,6 +1,6 @@
 /**
  * LIQUIDITY_MODULE_003 — dense pool discovery card (Founder final).
- * Pair · TVL · 24H Volume · Fees · Add Liquidity — no APR / Liquidity duplicate.
+ * Pair · TVL · 24H Volume · Add Liquidity — no unavailable fee placeholder.
  */
 import React from 'react'
 import NextLink from 'next/link'
@@ -9,10 +9,10 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import type { DiscoveryPoolCardModel } from './liquidityPoolDiscoveryModel'
 import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
 
-const Card = styled.article`
+const Card = styled.article<{ $list?: boolean }>`
   width: 100%;
   max-width: ${liquidityPoolDiscovery.cardW};
-  min-height: ${liquidityPoolDiscovery.cardMinH};
+  min-height: ${({ $list }) => ($list ? '82px' : liquidityPoolDiscovery.cardMinH)};
   height: 100%;
   box-sizing: border-box;
   margin: 0;
@@ -20,10 +20,17 @@ const Card = styled.article`
   border: ${liquidityPoolDiscovery.cardBorder};
   background: ${liquidityPoolDiscovery.cardBg};
   padding: ${liquidityPoolDiscovery.cardPad};
-  display: flex;
+  display: ${({ $list }) => ($list ? 'grid' : 'flex')};
+  grid-template-columns: ${({ $list }) => ($list ? 'minmax(220px, 1.6fr) minmax(280px, 1fr) 150px' : 'none')};
+  align-items: ${({ $list }) => ($list ? 'center' : 'stretch')};
   flex-direction: column;
   gap: 10px;
   min-width: 0;
+
+  @media (max-width: ${liquidityPoolDiscovery.mobileBreak}) {
+    display: flex;
+    min-height: ${liquidityPoolDiscovery.cardMinH};
+  }
 `
 
 const PairRow = styled.div`
@@ -128,8 +135,16 @@ const Cta = styled(NextLink)`
   }
 `
 
-export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel }> = ({ card }) => (
-  <Card data-testid="liquidity-pool-discovery-card" data-pair={card.pairAddress} data-discovery-density="compact">
+export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel; listView?: boolean }> = ({
+  card,
+  listView = false,
+}) => (
+  <Card
+    $list={listView}
+    data-testid="liquidity-pool-discovery-card"
+    data-pair={card.pairAddress}
+    data-discovery-density={listView ? 'list' : 'compact'}
+  >
     <PairRow>
       <Logos aria-hidden="true">
         <MelegaTokenAvatar
@@ -165,10 +180,6 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       <Metric>
         <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricVolume}</MetricLabel>
         <MetricValue>{card.volumeLabel}</MetricValue>
-      </Metric>
-      <Metric>
-        <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricFees}</MetricLabel>
-        <MetricValue>{card.feesLabel}</MetricValue>
       </Metric>
     </Metrics>
 

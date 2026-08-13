@@ -16,6 +16,11 @@ export const multiQuery = async (
   endpoint: string,
   skipCount = 1000,
 ) => {
+  // A missing endpoint means that this data source has not been deployed.
+  // Never let GraphQLClient resolve an empty URL against the current route:
+  // that creates repeated network failures and can POST to arbitrary pages.
+  if (!endpoint?.trim() || subqueries.length === 0) return {}
+
   let fetchedData = {}
   let allFound = false
   let skip = 0

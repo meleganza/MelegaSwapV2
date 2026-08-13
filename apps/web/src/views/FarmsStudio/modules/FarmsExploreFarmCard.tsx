@@ -17,6 +17,14 @@ import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge
 import { getBlockExploreLink } from 'utils'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type { ExploreFarmViewModel } from './farmsExploreFarmsTypes'
+import { useFarmPairAnalytics } from './useFarmPairAnalytics'
+
+function formatCompactUsd(value: number | null): string | null {
+  if (value == null || !Number.isFinite(value) || value < 0) return null
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
+  return `$${value.toFixed(2)}`
+}
 
 const Card = styled.article`
   position: relative;
@@ -337,6 +345,10 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
   const [switchOpen, setSwitchOpen] = useState(false)
   const [switching, setSwitching] = useState(false)
   const pendingActionRef = useRef<'approve' | 'stake' | null>(null)
+  const pairAnalytics = useFarmPairAnalytics(farm.chainId, farm.lpToken.address)
+  const indexedVolume = formatCompactUsd(pairAnalytics.volume24hUsd)
+  const farmVolume = indexedVolume ?? truthDash(farm.volume24h)
+  const farmParticipants = truthDash(farm.participants)
 
   const accessibleName = `Stake ${farm.token0.symbol} ${farm.token1.symbol} LP in farm earning ${farm.rewardToken.symbol}`
   const logoDesc = `${farm.token0.symbol} and ${farm.token1.symbol} LP earning ${farm.rewardToken.symbol}`
@@ -457,25 +469,25 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           <MetricLabel>Multiplier</MetricLabel>
           <MetricValue>{farm.multiplier || '—'}</MetricValue>
         </Metric>
-        <Metric>
-          <MetricLabel>24H Vol</MetricLabel>
-          <MetricValue>{truthDash(farm.volume24h)}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>24H Fees</MetricLabel>
-          <MetricValue>{truthDash(farm.fees24h)}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Participants</MetricLabel>
-          <MetricValue>{truthDash(farm.participants)}</MetricValue>
-        </Metric>
+        {farmVolume !== '—' ? (
+          <Metric>
+            <MetricLabel>24H Vol</MetricLabel>
+            <MetricValue>{farmVolume}</MetricValue>
+          </Metric>
+        ) : null}
+        {farmParticipants !== '—' ? (
+          <Metric>
+            <MetricLabel>Participants</MetricLabel>
+            <MetricValue>{farmParticipants}</MetricValue>
+          </Metric>
+        ) : null}
         <Metric>
           <MetricLabel>Duration</MetricLabel>
           <MetricValue>{truthDash(farm.rewardDuration)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Remaining</MetricLabel>
-          <MetricValue>{truthDash(farm.rewardsRemaining)}</MetricValue>
+          <MetricLabel>Rewards / day</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardRate)}</MetricValue>
         </Metric>
       </Metrics>
 
@@ -487,7 +499,8 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       </WalletLine>
 
       <YieldActivitySparkline
-        pairAddress={farm.lpToken.address}
+        series={pairAnalytics.closes}
+        loading={pairAnalytics.status === 'loading'}
         testId="farms-explore-activity-spark"
       />
 

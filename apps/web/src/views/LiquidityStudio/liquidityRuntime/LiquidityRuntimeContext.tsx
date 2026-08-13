@@ -1,10 +1,16 @@
 import React, { createContext, useContext } from 'react'
-import { useLiquidityMintRuntime, type LiquidityMintRuntime } from './useLiquidityMintRuntime'
+import {
+  useLiquidityMintRuntime,
+  type LiquidityMintRuntime,
+  type LiquidityMintRuntimeOptions,
+} from './useLiquidityMintRuntime'
 
 const LiquidityRuntimeContext = createContext<LiquidityMintRuntime | null>(null)
 
-export const LiquidityRuntimeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const runtime = useLiquidityMintRuntime()
+type LiquidityRuntimeProviderProps = LiquidityMintRuntimeOptions & { children: React.ReactNode }
+
+export const LiquidityRuntimeProvider: React.FC<LiquidityRuntimeProviderProps> = ({ children, ...options }) => {
+  const runtime = useLiquidityMintRuntime(options)
   return <LiquidityRuntimeContext.Provider value={runtime}>{children}</LiquidityRuntimeContext.Provider>
 }
 

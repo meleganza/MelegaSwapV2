@@ -1,8 +1,0 @@
-{
-  "status": "NOT_YET_BROADCAST",
-  "transactionHash": null,
-  "nonce": null,
-  "contractAddress": null,
-  "blockNumber": null,
-  "note": "No fabricated receipt. Populated only after Founder signature + mined tx."
-}

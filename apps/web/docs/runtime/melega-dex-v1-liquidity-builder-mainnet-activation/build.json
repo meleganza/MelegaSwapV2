@@ -1,7 +1,0 @@
-{
-  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MAINNET_ACTIVATION",
-  "assessedAt": "2026-07-29T21:16:00.000Z",
-  "command": "yarn next build",
-  "result": "PASS",
-  "cwd": "apps/web"
-}

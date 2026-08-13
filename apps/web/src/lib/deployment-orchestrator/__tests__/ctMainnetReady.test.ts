@@ -69,9 +69,7 @@ describe('Create Token Factory mainnet validation · bind · READY', () => {
     expect(existsSync(runtimePath)).toBe(true)
     const runtime = JSON.parse(readFileSync(runtimePath, 'utf8'))
     const certified = loadCertifiedCtArtifacts().artifacts.MelegaTokenFactory
-    expect(runtime.maskedRuntimeSha256.toLowerCase()).toBe(
-      certified.expectedRuntimeBytecodeSha256.toLowerCase(),
-    )
+    expect(runtime.maskedRuntimeSha256.toLowerCase()).toBe(certified.expectedRuntimeBytecodeSha256.toLowerCase())
     expect(runtime.hashMatch).toBe(true)
     expect(runtime.codeBytes).toBe(4448)
     // Mask helper stays deterministic
@@ -99,11 +97,7 @@ describe('Create Token Factory mainnet validation · bind · READY', () => {
 
   it('Part C — fee path user → factory → treasury (no TR / KMS / server signer)', () => {
     const fee = JSON.parse(readFileSync(path.join(EVIDENCE, 'fee-validation.json'), 'utf8'))
-    expect(fee.path).toEqual([
-      'user_pay_0.10_BNB',
-      'CreateTokenFactoryV1',
-      'MELEGA_TREASURY_WALLET',
-    ])
+    expect(fee.path).toEqual(['user_pay_0.10_BNB', 'CreateTokenFactoryV1', 'MELEGA_TREASURY_WALLET'])
     expect(fee.treasuryRuntime).toBe(false)
     expect(fee.managedWallet).toBe(false)
     expect(fee.serverSigner).toBe(false)
@@ -116,17 +110,14 @@ describe('Create Token Factory mainnet validation · bind · READY', () => {
   it('Part D — factory binding only; LB untouched', () => {
     expect(assessSubsystemBinding('create_token').bound).toBe(true)
     expect(assessSubsystemBinding('liquidity_builder').bound).toBe(true)
-    const lb = readFileSync(
-      path.join(WEB, 'src/config/constants/liquidityBuildingDeployment.ts'),
-      'utf8',
-    )
+    const lb = readFileSync(path.join(WEB, 'src/config/constants/liquidityBuildingDeployment.ts'), 'utf8')
     expect(lb).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
     const bind = JSON.parse(readFileSync(path.join(EVIDENCE, 'binding-proof.json'), 'utf8'))
     expect(bind.factoryAddress.toLowerCase()).toBe(FACTORY.toLowerCase())
     expect(bind.onlyFieldUpdated).toBe('createTokenFactoryAddress')
   })
 
-  it('Part E — frontend READY + user create unlocked', () => {
+  it('Part E — frontend enables verified user execution on the factual factory', () => {
     expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(true)
     expect(CREATE_TOKEN_READINESS.status).toBe('READY')
     expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(true)
@@ -170,17 +161,14 @@ describe('Create Token Factory mainnet validation · bind · READY', () => {
     expect(nextFounderDeployTarget()).toBeNull()
   })
 
-  it('UI surfaces fee + treasury + READY without misleading KMS copy', () => {
+  it('UI surfaces the factual fee and receipt-verified execution', () => {
     const ws = readFileSync(path.join(WEB, 'src/views/ListStudio/ListWorkspace.tsx'), 'utf8')
     expect(ws).toContain('list-create-token-ready')
-    expect(ws).toContain('list-create-token-cta-ready')
+    expect(ws).toContain('parseTokenCreatedReceipt')
+    expect(ws).toContain('verifyDeployedToken')
     expect(ws).toContain('0.10 BNB')
-    expect(ws).toContain('MELEGA TREASURY WALLET')
     expect(ws).not.toMatch(/Missing: production deployment authority \(KMS/)
-    const shell = readFileSync(
-      path.join(WEB, 'src/views/DeploymentOrchestrator/FounderDeploymentShell.tsx'),
-      'utf8',
-    )
+    const shell = readFileSync(path.join(WEB, 'src/views/DeploymentOrchestrator/FounderDeploymentShell.tsx'), 'utf8')
     expect(shell).toContain('founder-create-token-mainnet-ready')
     expect(shell).toContain('CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress')
     expect(shell).toContain('DEPLOYED · VALIDATED · BOUND · READY')

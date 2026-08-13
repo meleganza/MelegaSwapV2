@@ -1,6 +1,0 @@
-{
-  "note": "exact count measured at runtime via measureListedProjectsCount(); not hardcoded",
-  "tokenlist56ProjectApprox": 267,
-  "before": 5,
-  "runtimeRule": "measureListedProjectsCount().finalCount \u2014 greater than 50; not hardcoded"
-}

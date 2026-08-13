@@ -1,8 +1,0 @@
-{
-  "schema": "melegaswap.v2.rc-sprint-1.build.v1",
-  "status": "PASS",
-  "passed": true,
-  "command": "yarn next build",
-  "capturedAt": "2026-08-03T21:55:40Z",
-  "note": "Exit 0. Pre-existing civilization-router / LiquidityStudio warnings unchanged."
-}

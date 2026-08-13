@@ -11,8 +11,8 @@ export const liquidityAdd = {
   contentMax: '1376px',
   gapAfterDiscovery: '16px',
   columnGap: '16px',
-  mainW: '50%',
-  sideW: '50%',
+  mainW: '68%',
+  sideW: '32%',
 
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
@@ -57,7 +57,6 @@ export const LIQUIDITY_ADD_COPY = {
   previewDeposited: 'Deposited assets',
   previewLp: 'LP tokens received',
   previewShare: 'Share after deposit',
-  previewFee: 'Fee tier',
   emptyMetric: '—',
   skeletonLabel: 'Loading add liquidity…',
   securityNote: 'Non-custodial. You confirm every transaction in your wallet.',
@@ -79,5 +78,5 @@ export type LiquidityAddCtaState =
 export const LIQUIDITY_MODULE_001_003_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
-  LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
+  LiquidityPoolDiscoveryModule: '895dd9e14a4ca47a4685014ebe8a5b61a08f0faf633fad081778806054335c5c',
 } as const

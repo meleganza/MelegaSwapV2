@@ -4,7 +4,7 @@ import { WalletFilledIcon } from '@pancakeswap/uikit'
 // import { isFirefox } from 'react-device-detect'
 // import WalletConnectProvider from '@walletconnect/ethereum-provider'
 import { getTrustWalletProvider } from '@pancakeswap/wagmi/connectors/trustWallet'
-import { metaMaskConnector, walletConnectNoQrCodeConnector } from '../utils/wagmi'
+import { metaMaskConnector } from '../utils/wagmi'
 
 export enum ConnectorNames {
   MetaMask = 'metaMask',
@@ -52,6 +52,9 @@ const walletsConfig = ({
   chainId: number
   connect: (connectorID: ConnectorNames) => void
 }): WalletConfigV2<ConnectorNames>[] => {
+  const currentDappUrl =
+    typeof window !== 'undefined' ? `${window.location.host}${window.location.pathname}` : 'melega.finance'
+  const currentAbsoluteUrl = typeof window !== 'undefined' ? window.location.href : 'https://melega.finance/'
   // const qrCode = createQrCode(chainId, connect)
   return [
     {
@@ -60,9 +63,9 @@ const walletsConfig = ({
       icon: '/images/wallets/metamask.png',
       installed: isMetamaskInstalled() && metaMaskConnector.ready,
       connectorId: ConnectorNames.MetaMask,
-      deepLink: 'https://metamask.app.link/dapp/pancakeswap.finance/',
+      deepLink: `https://metamask.app.link/dapp/${currentDappUrl}`,
       // qrCode,
-      downloadLink: 'https://metamask.app.link/dapp/pancakeswap.finance/',
+      downloadLink: `https://metamask.app.link/dapp/${currentDappUrl}`,
     },
     // {
     //   id: 'binance',
@@ -91,7 +94,7 @@ const walletsConfig = ({
       icon: '/images/wallets/trust.png',
       connectorId: ConnectorNames.TrustWallet,
       installed: !!getTrustWalletProvider(),
-      deepLink: 'https://link.trustwallet.com/open_url?coin_id=20000714&url=https://melega.finance/',
+      deepLink: `https://link.trustwallet.com/open_url?coin_id=20000714&url=${encodeURIComponent(currentAbsoluteUrl)}`,
       downloadLink: 'https://chrome.google.com/webstore/detail/trust-wallet/egjidjbpglichdcondbcbdnbeeppgdph',
       guide: {
         desktop: 'https://trustwallet.com/browser-extension',
@@ -99,12 +102,12 @@ const walletsConfig = ({
       },
       // qrCode,
     },
-    // {
-    //   id: 'walletconnect',
-    //   title: 'WalletConnect',
-    //   icon: '/images/wallets/walletconnect.png',
-    //   connectorId: ConnectorNames.WalletConnect,
-    // },
+    {
+      id: 'walletconnect',
+      title: 'WalletConnect',
+      icon: '/images/wallets/walletconnect.png',
+      connectorId: ConnectorNames.WalletConnect,
+    },
     // {
     //   id: 'opera',
     //   title: 'Opera Wallet',
@@ -178,20 +181,22 @@ const walletsConfig = ({
 }
 
 export const createWallets = (chainId: number, connect: any) => {
-  const hasInjected = typeof window !== 'undefined' && !window.ethereum
   const config = walletsConfig({ chainId, connect })
-  return hasInjected && config.some((c) => c.installed && c.connectorId === ConnectorNames.Injected)
-    ? config // add injected icon if none of injected type wallets installed
-    : [
-        ...config,
-        {
-          id: 'injected',
-          title: 'Injected',
-          icon: WalletFilledIcon,
-          connectorId: ConnectorNames.Injected,
-          installed: typeof window !== 'undefined' && Boolean(window.ethereum),
-        },
-      ]
+  const hasInjected = typeof window !== 'undefined' && Boolean(window.ethereum)
+  const injectedAlreadyNamed = config.some(
+    (wallet) => wallet.installed && [ConnectorNames.MetaMask, ConnectorNames.TrustWallet].includes(wallet.connectorId),
+  )
+  if (!hasInjected || injectedAlreadyNamed) return config
+  return [
+    ...config,
+    {
+      id: 'injected',
+      title: 'Browser Wallet',
+      icon: WalletFilledIcon,
+      connectorId: ConnectorNames.Injected,
+      installed: true,
+    },
+  ]
 }
 
 const docLangCodeMapping: Record<string, string> = {
@@ -207,6 +212,5 @@ const docLangCodeMapping: Record<string, string> = {
 
 export const getDocLink = (code: string) =>
   docLangCodeMapping[code]
-    // ? `https://docs.pancakeswap.finance/v/${docLangCodeMapping[code]}/get-started/wallet-guide`
     ? `https://docs.cyberglow.finance/setup-wallet`
     : `https://docs.cyberglow.finance/setup-wallet`

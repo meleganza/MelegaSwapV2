@@ -1,7 +1,0 @@
-{
-  "subsystemId": "liquidity_builder",
-  "bound": false,
-  "addresses": null,
-  "note": "Bind only after bytecode + constructor validation.",
-  "capturedAt": "2026-08-01T07:06:00Z"
-}

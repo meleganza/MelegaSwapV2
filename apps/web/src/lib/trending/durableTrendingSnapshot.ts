@@ -6,8 +6,9 @@
 import type { MelegaTickerItem } from 'design-system/melega'
 
 const STORAGE_KEY = 'melega.trending.durable-snapshot.v1'
-// Movers lose meaning quickly: retain a last-good result only as a short outage bridge.
-const MAX_AGE_MS = 15 * 60 * 1000
+// Market percentages are time-sensitive. Never present an hours-old ranking as
+// current merely because a browser kept it in localStorage.
+const MAX_AGE_MS = 10 * 60 * 1000
 /** Minimum display tenure before a non-material identity churn can replace the snapshot. */
 export const MIN_TRENDING_TENURE_MS = 12_000
 /** A live candidate must be at least this fraction of the last-good size to replace it. */
@@ -75,17 +76,14 @@ export function evaluateTrendingCandidateReplacement(
     return { accept: false, reason: 'PARTIAL_SPARSE' }
   }
 
-  const tenureOk =
-    lastGoodUpdatedAt == null || now - lastGoodUpdatedAt >= MIN_TRENDING_TENURE_MS
+  const tenureOk = lastGoodUpdatedAt == null || now - lastGoodUpdatedAt >= MIN_TRENDING_TENURE_MS
   if (!tenureOk) {
     const sameIds =
       candidate.length === lastGood.length &&
       candidate.every((item, i) => item.id === lastGood[i]?.id || item.primary === lastGood[i]?.primary)
     if (sameIds) return { accept: true, reason: 'COMPLETE_REPLACEMENT' }
     // Allow material rank changes only when the candidate is complete.
-    const overlap = candidate.filter((c) =>
-      lastGood.some((g) => g.id === c.id || g.primary === c.primary),
-    ).length
+    const overlap = candidate.filter((c) => lastGood.some((g) => g.id === c.id || g.primary === c.primary)).length
     const material = overlap / Math.max(lastGood.length, 1) < 0.5
     if (material && candidate.length >= minRequired) {
       return { accept: true, reason: 'MATERIAL_UPDATE' }

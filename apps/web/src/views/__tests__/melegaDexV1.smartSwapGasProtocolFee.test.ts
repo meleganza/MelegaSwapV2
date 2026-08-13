@@ -4,10 +4,7 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
-import {
-  calculateSmartRouterGasProtocolFee,
-  isCanonicalTreasuryRecipient,
-} from 'lib/smart-swap-gas-protocol-fee'
+import { calculateSmartRouterGasProtocolFee, isCanonicalTreasuryRecipient } from 'lib/smart-swap-gas-protocol-fee'
 
 const WEB = path.resolve(__dirname, '../../..')
 
@@ -16,37 +13,27 @@ function load(rel: string) {
 }
 
 describe('MELEGA_DEX_V1_SMART_SWAP_PROTOCOL_FEE_SETTLEMENT wiring', () => {
-  it('Smart Swap callback settles gas protocol fee before router call', () => {
+  it('does not charge a separate non-atomic protocol fee before the router call', () => {
     const cb = load('src/views/Swap/SmartSwap/hooks/useSwapCallback.ts')
-    expect(cb).toContain('buildGasProtocolFeeSettlementPlan')
-    expect(cb).toContain('settleGasProtocolFeeOnChain')
-    expect(cb).toContain('25% of estimated DEX gas')
-    // Failure safety: fee settle awaits before router method invocation.
-    expect(cb.indexOf('await settleGasProtocolFeeOnChain')).toBeGreaterThan(-1)
-    expect(cb.indexOf('await settleGasProtocolFeeOnChain')).toBeLessThan(cb.indexOf('return contract[methodName]'))
+    expect(cb).not.toContain('buildGasProtocolFeeSettlementPlan')
+    expect(cb).not.toContain('settleGasProtocolFeeOnChain')
+    expect(cb).toContain('return contract[methodName]')
     expect(cb).not.toMatch(/treasury\.melega\.ai/i)
     expect(cb).not.toMatch(/isKerlRoutingAuthorityEnforced/)
-    expect(cb).not.toMatch(/refund/i)
   })
 
-  it('preview exposes estimated gas, protocol fee, and Melega Treasury', () => {
-    const mod = load(
-      'src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx',
-    )
+  it('preview exposes estimated gas without claiming a collected protocol fee', () => {
+    const mod = load('src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx')
     expect(mod).toContain('Estimated gas')
     expect(mod).toContain('Protocol fee')
-    expect(mod).toContain('25% of estimated gas → Melega Treasury')
+    expect(mod).toContain('Not collected')
     expect(mod).not.toMatch(/free swap/i)
   })
 
-  it('fee transparency surfaces Founder gas fee destination', () => {
-    const fee = load(
-      'src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/useSmartSwapFeeTransparency.ts',
-    )
-    expect(fee).toContain('25% of estimated gas')
-    expect(fee).toContain('MELEGA_TREASURY_WALLET_ADDRESS')
-    expect(fee).toContain('no intermediary settlement authority')
-    expect(fee).not.toContain('feeCollectionProven: false')
+  it('fee transparency marks collection as unproven', () => {
+    const fee = load('src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/useSmartSwapFeeTransparency.ts')
+    expect(fee).toContain('Separate protocol fee is not collected')
+    expect(fee).toContain('feeCollectionProven: false')
   })
 
   it('recipient lock', () => {

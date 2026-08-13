@@ -1,5 +1,0 @@
-{
-  "missionId": "LIQUIDITY_MODULE_006_MY_POSITIONS",
-  "command": "yarn next build",
-  "status": "passed"
-}

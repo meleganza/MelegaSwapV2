@@ -1,6 +1,0 @@
-{
-  "canonicalModule": "views/PoolsStudio/poolsRuntime/poolsAprRules.ts",
-  "homeUsesSameEligibility": true,
-  "exploreUsesSameNormalize": true,
-  "note": "Home Top Pools filters via evaluateTopPoolsAprEligibility; Explore displays factual normalizeAprForDisplay without 50% cap"
-}

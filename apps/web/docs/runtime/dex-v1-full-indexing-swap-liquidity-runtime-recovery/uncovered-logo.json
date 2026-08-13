@@ -1,9 +1,0 @@
-{
-  "previouslyUncovered": {
-    "symbol": "AETX",
-    "address": "0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b",
-    "reason": "logo only under images/8453/tokens"
-  },
-  "fix": "Copied existing repo logo to images/56/tokens (defect RECERT-LOGO-001)",
-  "postFixCoverage": "273/273 BSC list addresses have local 56 logo file"
-}

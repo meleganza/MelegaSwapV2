@@ -1,8 +1,0 @@
-{
-  "procedure": "mv out out.__vercel_recovery_bak__ → check → next build → turbo run build --filter=web → restore",
-  "lbManifestCheck": "PASS",
-  "lbManifestGenerate": "FAIL (intentional)",
-  "nextBuild": "PASS",
-  "turboFilterWeb": "PASS (8/8 tasks)",
-  "buildId": "ncMRu8nieukYE2cAYR-GE"
-}

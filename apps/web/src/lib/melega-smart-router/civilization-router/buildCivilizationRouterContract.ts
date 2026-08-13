@@ -1,5 +1,6 @@
 import wrapperAbi from '../wrapper/MelegaSmartRouterWrapper.abi.json'
-import { MELEGA_SMART_ROUTER_ADAPTER_VERSION, MELEGA_SMART_ROUTER_ARCHITECTURE, MELEGA_SMART_ROUTER_PHASE } from '../types'
+import { MELEGA_SMART_ROUTER_ADAPTER_VERSION } from '../execution-manifest/types'
+import { MELEGA_SMART_ROUTER_ARCHITECTURE, MELEGA_SMART_ROUTER_PHASE } from '../types'
 import { WRAPPER_SPEC_VERSION } from '../wrapper/spec'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
 import { getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'

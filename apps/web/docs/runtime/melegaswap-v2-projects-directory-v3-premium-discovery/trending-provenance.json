@@ -1,7 +1,0 @@
-{
-  "organic": "rankingLayer === 'organic' requires factual mover change24h",
-  "paid": "Boosted badge when boosted === true or rankingLayer === 'boosted'",
-  "disguisePaidAsOrganic": false,
-  "route": { "from": "/trending", "to": "/projects?sort=trending" },
-  "singleControl": "DIRECTORY_SORT Trending (Status excludes Trending)"
-}

@@ -200,21 +200,12 @@ export const NetworkSwitcher = () => {
     )
   }
 
-  const isBnbOnlyStatus =
-    isBnbOnlyProduction &&
-    chainId === ChainId.BSC &&
-    !isWrongNetwork &&
-    !isNotMatched
+  const isBnbOnlyStatus = isBnbOnlyProduction && chainId === ChainId.BSC && !isWrongNetwork && !isNotMatched
 
   if (isBnbOnlyStatus) {
     return (
       <Box height="100%" data-network-status-pill>
-        <Flex
-          alignItems="center"
-          height="44px"
-          px="16px"
-          style={{ cursor: 'default', userSelect: 'none' }}
-        >
+        <Flex alignItems="center" height="44px" px="16px" style={{ cursor: 'default', userSelect: 'none' }}>
           <ChainLogo chainId={ChainId.BSC} width={20} height={20} />
           <Text
             ml="6px"
@@ -238,6 +229,7 @@ export const NetworkSwitcher = () => {
         placement="bottom"
         variant={isLoading ? 'pending' : isWrongNetwork ? 'danger' : 'default'}
         avatarSrc={`/images/chains/${[8453, 42161, 10, 324].includes(chainId) ? `${chainId}-1` : chainId}.png`}
+        avatarClassName="melega-chain-avatar"
         disabled={cannotChangeNetwork}
         text={
           !isMobile &&

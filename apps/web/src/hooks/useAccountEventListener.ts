@@ -20,13 +20,19 @@ export const useAccountEventListener = () => {
   useEffect(() => {
     if (account && connector) {
       const handleUpdateEvent = (e: ConnectorData<any>) => {
+        const nextChainId = e?.chain?.id
+        const accountChanged = Boolean(e?.account && e.account.toLowerCase() !== account.toLowerCase())
+        const chainChanged = Boolean(nextChainId && nextChainId !== chainId)
         if (e?.chain?.id && !(e?.chain?.unsupported ?? false)) {
           replaceBrowserHistory('chain', CHAIN_QUERY_NAME[e.chain.id])
           setSessionChainId(e.chain.id)
         }
         // Blocto in-app browser throws change event when no account change which causes user state reset therefore
         // this event should not be handled to avoid unexpected behaviour.
-        if (!isBloctoMobileApp) {
+        // Some injected wallets emit generic `change` events while restoring a
+        // session. Clearing every user slice for those events caused visible
+        // disconnect/reconnect flashes and avoidable RPC reloads.
+        if (!isBloctoMobileApp && (accountChanged || chainChanged)) {
           clearUserStates(dispatch, { chainId, newChainId: e?.chain?.id })
         }
       }

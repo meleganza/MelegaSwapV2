@@ -5,19 +5,15 @@ import React, { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useNetwork } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import {
-  MY_MELEGA_CHAIN_FILTERS,
-  MY_MELEGA_ROUTES,
-} from 'lib/data-truth/myMelegaPositions'
+import { MY_MELEGA_ROUTES } from 'lib/data-truth/myMelegaPositions'
 import { explorerAddressUrl, shortenAddress } from 'views/PortfolioStudio/helpers'
 import { useMyMelegaDrawer } from './MyMelegaProvider'
-import { useMyMelegaPositions } from './useMyMelegaPositions'
 
 const gold = uxRebuildColors.gold
 const line = 'rgba(255,255,255,0.1)'
@@ -198,49 +194,6 @@ const CountRow = styled(Link)`
   }
 `
 
-const Count = styled.span`
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: ${gold};
-`
-
-const ChainFilters = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-`
-
-const Chip = styled.button<{ $on?: boolean }>`
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid ${({ $on }) => ($on ? 'rgba(244,196,48,0.45)' : line)};
-  background: ${({ $on }) => ($on ? 'rgba(244,196,48,0.12)' : 'transparent')};
-  color: ${({ $on }) => ($on ? gold : 'rgba(255,255,255,0.75)')};
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-`
-
-const PreviewRow = styled(Link)`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid ${line};
-  background: rgba(255, 255, 255, 0.02);
-  text-decoration: none;
-  color: inherit;
-  margin-bottom: 8px;
-  min-width: 0;
-  &:hover {
-    border-color: rgba(244, 196, 48, 0.35);
-  }
-`
-
 const Muted = styled.p`
   margin: 0;
   font-size: 12px;
@@ -307,11 +260,11 @@ function getFocusable(root: HTMLElement): HTMLElement[] {
 export const MyMelegaDrawer: React.FC = () => {
   const { open, closeDrawer } = useMyMelegaDrawer()
   const { address } = useAccount()
+  const { chain } = useNetwork()
   const { disconnect } = useDisconnect()
   const titleId = useId()
   const panelRef = useRef<HTMLElement | null>(null)
   const previouslyFocused = useRef<HTMLElement | null>(null)
-  const data = useMyMelegaPositions(open)
   const [copied, setCopied] = React.useState(false)
 
   useEffect(() => {
@@ -352,8 +305,9 @@ export const MyMelegaDrawer: React.FC = () => {
 
   if (!open || typeof document === 'undefined') return null
 
-  const snap = data.snapshot
-  const explorer = address ? explorerAddressUrl(address, data.chainId) : null
+  const connected = Boolean(address)
+  const chainId = chain?.id ?? null
+  const explorer = address ? explorerAddressUrl(address, chainId) : null
 
   const tree = (
     <Overlay
@@ -377,14 +331,11 @@ export const MyMelegaDrawer: React.FC = () => {
               <BrandLogo src={MELEGA_LOGO_URI} alt="" width={28} height={28} data-testid="my-melega-logo" />
               <Title id={titleId}>MY MELEGA</Title>
             </BrandRow>
-            {data.connected && address ? (
+            {connected && address ? (
               <>
                 <WalletLine>
                   <span data-testid="my-melega-wallet">{shortenAddress(address)}</span>
-                  {data.chainId ? <MelegaExploreChainBadge chainId={data.chainId} /> : null}
-                  {snap.totalPortfolioDisplay ? (
-                    <span style={{ color: gold, fontWeight: 750 }}>{snap.totalPortfolioDisplay}</span>
-                  ) : null}
+                  {chainId ? <MelegaExploreChainBadge chainId={chainId} /> : null}
                 </WalletLine>
                 <HeadActions>
                   <TinyBtn
@@ -424,7 +375,7 @@ export const MyMelegaDrawer: React.FC = () => {
         </Head>
 
         <Body>
-          {!data.connected ? (
+          {!connected ? (
             <ConnectWrap data-testid="my-melega-disconnected">
               <Muted>Connect your wallet to see your positions across Melega DEX.</Muted>
               <ConnectWalletButton data-testid="my-melega-connect">Connect Wallet</ConnectWalletButton>
@@ -432,90 +383,22 @@ export const MyMelegaDrawer: React.FC = () => {
           ) : (
             <>
               <Section data-testid="my-melega-positions">
-                <SectionLabel>Your Positions</SectionLabel>
-                <ChainFilters data-testid="my-melega-chain-filter">
-                  {MY_MELEGA_CHAIN_FILTERS.map((c) => (
-                    <Chip
-                      key={String(c.id)}
-                      type="button"
-                      $on={data.chainFilter === c.id}
-                      onClick={() => data.setChainFilter(c.id)}
-                    >
-                      {c.label}
-                    </Chip>
-                  ))}
-                </ChainFilters>
+                <SectionLabel>Your Melega</SectionLabel>
+                <Muted>
+                  Live positions are loaded inside their workspace, so opening this menu never starts three indexers at once.
+                </Muted>
                 <CountRow href={MY_MELEGA_ROUTES.liquidity} onClick={closeDrawer} data-testid="my-melega-count-liquidity">
-                  <span>Liquidity</span>
-                  <Count>{snap.counts.liquidity}</Count>
+                  <span>Liquidity positions</span><span aria-hidden>→</span>
                 </CountRow>
                 <CountRow href={MY_MELEGA_ROUTES.farms} onClick={closeDrawer} data-testid="my-melega-count-farms">
-                  <span>Farms</span>
-                  <Count>{snap.counts.farms}</Count>
+                  <span>Farm positions</span><span aria-hidden>→</span>
                 </CountRow>
                 <CountRow href={MY_MELEGA_ROUTES.pools} onClick={closeDrawer} data-testid="my-melega-count-pools">
-                  <span>Pools</span>
-                  <Count>{snap.counts.pools}</Count>
+                  <span>Staking positions</span><span aria-hidden>→</span>
                 </CountRow>
-                <CountRow
-                  href={MY_MELEGA_ROUTES.liquidityBuilder}
-                  onClick={closeDrawer}
-                  data-testid="my-melega-count-builder"
-                >
-                  <span>Liquidity Builder</span>
-                  <Count>{snap.counts.builder}</Count>
+                <CountRow href={MY_MELEGA_ROUTES.liquidityBuilder} onClick={closeDrawer} data-testid="my-melega-count-builder">
+                  <span>Liquidity Builder</span><span aria-hidden>→</span>
                 </CountRow>
-              </Section>
-
-              <Section data-testid="my-melega-previews">
-                <SectionLabel>Recent / Top Positions</SectionLabel>
-                {snap.previews.length === 0 ? (
-                  <Muted data-testid="my-melega-zero">No active positions yet.</Muted>
-                ) : (
-                  snap.previews.map((row) => (
-                    <PreviewRow key={row.id} href={row.href} onClick={closeDrawer} data-testid="my-melega-preview-row">
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: 750, fontSize: 13 }}>{row.title}</div>
-                        <Muted style={{ marginTop: 2 }}>{row.subtitle}</Muted>
-                      </div>
-                      <div style={{ textAlign: 'right', fontSize: 12 }}>
-                        <div style={{ fontWeight: 750 }}>{row.valueDisplay}</div>
-                        {row.aprDisplay !== '—' ? <Muted>APR {row.aprDisplay}</Muted> : null}
-                      </div>
-                    </PreviewRow>
-                  ))
-                )}
-              </Section>
-
-              <Section data-testid="my-melega-rewards">
-                <SectionLabel>Claimable Rewards</SectionLabel>
-                {snap.claimables.length === 0 ? (
-                  <Muted>No claimable rewards</Muted>
-                ) : (
-                  <>
-                    <div style={{ fontSize: 20, fontWeight: 850, marginBottom: 4 }}>
-                      {snap.claimableAggregateDisplay}
-                    </div>
-                    {snap.claimableFarmCount > 0 ? (
-                      <Muted style={{ marginBottom: 8 }}>{snap.claimableFarmCount} farms</Muted>
-                    ) : null}
-                    {snap.claimables.slice(0, 2).map((c) => (
-                      <PreviewRow key={c.id} href={c.actionHref} onClick={closeDrawer}>
-                        <div>
-                          <div style={{ fontWeight: 750, fontSize: 13 }}>{c.source}</div>
-                          <Muted>
-                            {c.amount} {c.token}
-                          </Muted>
-                        </div>
-                        <div style={{ fontWeight: 750 }}>{c.estimatedUsd || '—'}</div>
-                      </PreviewRow>
-                    ))}
-                    <CountRow href={MY_MELEGA_ROUTES.farms} onClick={closeDrawer} data-testid="my-melega-view-rewards">
-                      <span>View Rewards</span>
-                      <span aria-hidden>→</span>
-                    </CountRow>
-                  </>
-                )}
               </Section>
 
               <Section data-testid="my-melega-quick">

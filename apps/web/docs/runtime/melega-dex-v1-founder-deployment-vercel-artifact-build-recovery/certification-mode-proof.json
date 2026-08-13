@@ -1,5 +1,0 @@
-{
-  "command": "yarn lb:manifest:certify",
-  "result": "PASS",
-  "note": "Requires Forge out/; not used in Vercel prebuild"
-}

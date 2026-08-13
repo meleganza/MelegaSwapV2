@@ -20,18 +20,13 @@ import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/b
 import { useGasPrice, useUserSlippageTolerance } from 'state/user/hooks'
 import { useLPApr } from 'state/swap/useLPApr'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { calculateGasMargin, calculateSlippageAmount, useRouterContract } from 'utils/exchange'
+import { calculateGasMargin } from 'utils'
+import { calculateSlippageAmount, useRouterContract } from 'utils/exchange'
 import currencyId from 'utils/currencyId'
 import { logError } from 'utils/sentry'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
-import {
-  LiquidityAddConfirmModal,
-  type AddTxLifecycle,
-} from '../v3/LiquidityAddConfirmModal'
-import {
-  LiquidityRemoveConfirmModal,
-  type RemoveTxLifecycle,
-} from '../v3/LiquidityRemoveConfirmModal'
+import { LiquidityAddConfirmModal, type AddTxLifecycle } from '../v3/LiquidityAddConfirmModal'
+import { LiquidityRemoveConfirmModal, type RemoveTxLifecycle } from '../v3/LiquidityRemoveConfirmModal'
 import {
   formatAmount,
   formatPct,
@@ -48,9 +43,7 @@ import {
   type LiquidityPositionRow,
   type LiquidityPositionsPhase,
 } from './useLiquidityPositions'
-import {
-  buildLiquidityWalletPortfolio,
-} from './buildLiquidityWalletPortfolio'
+import { buildLiquidityWalletPortfolio } from './buildLiquidityWalletPortfolio'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import useLiquidityTerminalData from './useLiquidityTerminalData'
 import { buildMelegaLiquidityV1 } from 'lib/dex-gravity/buildLiquidityMachineV1'
@@ -58,6 +51,7 @@ import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gra
 import { buildLiquidityCanonicalOwnership } from 'lib/liquidity-runtime/canonicalOwnership'
 import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
 import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
+import { resolveReceiptOutcome } from 'lib/transactions/resolveReceiptOutcome'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -66,14 +60,6 @@ export type LiquidityStudioMode =
   | 'Simulation'
   /** Discovery destination for `/liquidity-studio?view=building` — content redesign deferred (DS001.3+). */
   | 'Liquidity Building'
-
-const LIQUIDITY_VIEW_TO_MODE: Record<string, LiquidityStudioMode> = {
-  add: 'Add Liquidity',
-  building: 'Liquidity Building',
-  positions: 'My Positions',
-  remove: 'Remove Liquidity',
-  simulation: 'Simulation',
-}
 
 const LIQUIDITY_MODE_TO_VIEW: Partial<Record<LiquidityStudioMode, string>> = {
   'Add Liquidity': 'add',
@@ -187,7 +173,17 @@ export interface LiquidityMintRuntime {
   addConfirmModal: React.ReactNode
 }
 
-export function useLiquidityMintRuntime(): LiquidityMintRuntime {
+export type LiquidityMintRuntimeOptions = {
+  initialMode?: LiquidityStudioMode
+  positionsEnabled?: boolean
+  terminalEnabled?: boolean
+}
+
+export function useLiquidityMintRuntime({
+  initialMode = 'My Positions',
+  positionsEnabled = true,
+  terminalEnabled = true,
+}: LiquidityMintRuntimeOptions = {}): LiquidityMintRuntime {
   const { t } = useTranslation()
   const router = useRouter()
   const { address: account } = useAccount()
@@ -199,22 +195,19 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const initialViewRaw = router.query.view
-  const initialView = Array.isArray(initialViewRaw)
-    ? initialViewRaw[0]
-    : typeof initialViewRaw === 'string'
-      ? initialViewRaw
-      : undefined
-  /** V3 product restore — default landing is My Liquidity (positions). Deep links still win via ?view=. */
-  const [mode, setModeState] = useState<LiquidityStudioMode>(
-    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',
-  )
+  /**
+   * Keep the server and first client render identical. Query parameters are
+   * not available during static generation, so deriving this initial state
+   * from router.query caused a production-only hydration mismatch. The shell
+   * applies deep links after router.isReady without adding a user click.
+   */
+  const [mode, setModeState] = useState<LiquidityStudioMode>(initialMode)
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
 
-  // Intentionally no continuous URL→mode sync. Initial mode comes from useState(initialView).
-  // Continuous sync raced V3 local tabs (shallow replace / AI step query) and snapped wrong panels.
+  // Intentionally no continuous URL→mode sync. The shell consumes the initial
+  // query once; continuous sync raced local tabs and snapped wrong panels.
 
   const defaultB = useMemo(() => {
     if (!chainId) return undefined
@@ -251,8 +244,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         delete nextQuery.step
         delete nextQuery.program
       }
-      const strayBuilderParams =
-        view !== 'building' && (Boolean(router.query.step) || Boolean(router.query.program))
+      const strayBuilderParams = view !== 'building' && (Boolean(router.query.step) || Boolean(router.query.program))
       // Avoid redundant shallow replaces — they race tab chrome and cause flash / wrong selection.
       if (view === current && !strayBuilderParams) return
       if (!view && current === undefined && !strayBuilderParams) return
@@ -284,24 +276,24 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     positionsPhase,
     positionsTimedOut,
     retryPositions,
-  } = useLiquidityPositions()
+  } = useLiquidityPositions(positionsEnabled)
 
   const chainName =
     chainId === 56
       ? 'BNB Chain'
       : chainId === 97
-        ? 'BNB Testnet'
-        : chainId === 8453
-          ? 'Base'
-          : chainId === 137
-            ? 'Polygon'
-            : chainId === 1
-              ? 'Ethereum'
-              : chainId === 42161
-                ? 'Arbitrum'
-                : chainId === 43114
-                  ? 'Avalanche'
-                  : 'Unknown'
+      ? 'BNB Testnet'
+      : chainId === 8453
+      ? 'Base'
+      : chainId === 137
+      ? 'Polygon'
+      : chainId === 1
+      ? 'Ethereum'
+      : chainId === 42161
+      ? 'Arbitrum'
+      : chainId === 43114
+      ? 'Avalanche'
+      : 'Unknown'
   const liquidityWalletPortfolio = useMemo(
     () =>
       buildLiquidityWalletPortfolio({
@@ -315,7 +307,9 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     [account, chainId, chainName, positions, positionsLoading],
   )
   const selectedPosition = useMemo(
-    () => positions.find((p) => p.id === selectedPositionId) ?? (isRemoveMode || isPositionsMode ? positions[0] : undefined),
+    () =>
+      positions.find((p) => p.id === selectedPositionId) ??
+      (isRemoveMode || isPositionsMode ? positions[0] : undefined),
     [positions, selectedPositionId, isRemoveMode, isPositionsMode],
   )
   const positionDetails = useLiquidityPositionDetails(selectedPosition)
@@ -343,11 +337,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     if (currencyIdB !== nextB) setCurrencyIdB(nextB)
   }, [selectedPosition, isRemoveMode, isPositionsMode, currencyIdA, currencyIdB])
 
-  const terminal = useLiquidityTerminalData(
-    poolAddress,
-    currencyA?.symbol,
-    currencyB?.symbol,
-  )
+  const terminal = useLiquidityTerminalData(poolAddress, currencyA?.symbol, currencyB?.symbol, terminalEnabled)
 
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
@@ -382,10 +372,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     if (calculating) return 'calculating'
     if (!account && (typedValue || burnTypedValue)) return 'wallet_required'
     if (!isRemove) {
-      if (
-        approvalA === ApprovalState.NOT_APPROVED ||
-        approvalB === ApprovalState.NOT_APPROVED
-      ) {
+      if (approvalA === ApprovalState.NOT_APPROVED || approvalB === ApprovalState.NOT_APPROVED) {
         if (account && parsedAmounts[Field.CURRENCY_A] && parsedAmounts[Field.CURRENCY_B]) {
           return 'approval_required'
         }
@@ -432,9 +419,13 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   )
 
   const typedValueA =
-    independentField === Field.CURRENCY_A ? typedValue : otherTypedValue || parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) || '0.0'
+    independentField === Field.CURRENCY_A
+      ? typedValue
+      : otherTypedValue || parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) || '0.0'
   const typedValueB =
-    independentField === Field.CURRENCY_B ? typedValue : otherTypedValue || parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) || '0.0'
+    independentField === Field.CURRENCY_B
+      ? typedValue
+      : otherTypedValue || parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) || '0.0'
 
   const preview = useMemo((): LiquidityPreviewMetrics => {
     const feeTier = '0.25%'
@@ -620,16 +611,23 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       setAddTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
       addTransaction(response, {
-        summary: `Add ${parsedAmountA.toSignificant(3)} ${currencyA.symbol} and ${parsedAmountB.toSignificant(3)} ${currencyB.symbol}`,
+        summary: `Add ${parsedAmountA.toSignificant(3)} ${currencyA.symbol} and ${parsedAmountB.toSignificant(3)} ${
+          currencyB.symbol
+        }`,
         type: 'add-liquidity',
       })
-      try {
-        await response.wait?.(1)
-        setAddTxLifecycle('confirmed')
-      } catch {
-        setAddTxLifecycle('confirmed')
+      const receiptOutcome = await resolveReceiptOutcome(response)
+      setAddTxLifecycle(receiptOutcome.status)
+      if (receiptOutcome.reason) {
+        setLiquidityState({
+          attemptingTxn: false,
+          liquidityErrorMessage: receiptOutcome.reason,
+          txHash: response.hash,
+        })
       }
-      onFieldAInput('')
+      if (receiptOutcome.status === 'confirmed') {
+        onFieldAInput('')
+      }
     } catch (err: unknown) {
       const code = (err as { code?: number })?.code
       if (code !== 4001) logError(err)
@@ -746,14 +744,18 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         summary: `Remove ${currencyA?.symbol}/${currencyB?.symbol} liquidity`,
         type: 'remove-liquidity',
       })
-      try {
-        await response.wait?.(1)
-        setRemoveTxLifecycle('confirmed')
-      } catch {
-        // Submitted is still a success for wallet acceptance; receipt wait is best-effort.
-        setRemoveTxLifecycle('confirmed')
+      const receiptOutcome = await resolveReceiptOutcome(response)
+      setRemoveTxLifecycle(receiptOutcome.status)
+      if (receiptOutcome.reason) {
+        setLiquidityState({
+          attemptingTxn: false,
+          liquidityErrorMessage: receiptOutcome.reason,
+          txHash: response.hash,
+        })
       }
-      onBurnInput(BurnField.LIQUIDITY_PERCENT, '0')
+      if (receiptOutcome.status === 'confirmed') {
+        onBurnInput(BurnField.LIQUIDITY_PERCENT, '0')
+      }
     } catch (err: unknown) {
       const code = (err as { code?: number })?.code
       if (code !== 4001) logError(err)
@@ -761,9 +763,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       setLiquidityState({
         attemptingTxn: false,
         liquidityErrorMessage:
-          code === 4001
-            ? 'Wallet rejected the transaction.'
-            : transactionErrorToUserReadableMessage(err, t),
+          code === 4001 ? 'Wallet rejected the transaction.' : transactionErrorToUserReadableMessage(err, t),
         txHash: undefined,
       })
     }
@@ -804,14 +804,8 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     const amountB = burnInfo.parsedAmounts[BurnField.CURRENCY_B]
     if (!amountA || !amountB) return '—'
     try {
-      const minA = CurrencyAmount.fromRawAmount(
-        amountA.currency,
-        calculateSlippageAmount(amountA, allowedSlippage)[0],
-      )
-      const minB = CurrencyAmount.fromRawAmount(
-        amountB.currency,
-        calculateSlippageAmount(amountB, allowedSlippage)[0],
-      )
+      const minA = CurrencyAmount.fromRawAmount(amountA.currency, calculateSlippageAmount(amountA, allowedSlippage)[0])
+      const minB = CurrencyAmount.fromRawAmount(amountB.currency, calculateSlippageAmount(amountB, allowedSlippage)[0])
       return `${minA.toSignificant(6)} ${currencyA?.symbol ?? ''} + ${minB.toSignificant(6)} ${
         currencyB?.symbol ?? ''
       }`.trim()
@@ -883,18 +877,18 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
         approvalA === ApprovalState.APPROVED
           ? 'APPROVED'
           : approvalA === ApprovalState.PENDING
-            ? 'PENDING'
-            : approvalA === ApprovalState.NOT_APPROVED
-              ? 'NOT_APPROVED'
-              : 'UNKNOWN',
+          ? 'PENDING'
+          : approvalA === ApprovalState.NOT_APPROVED
+          ? 'NOT_APPROVED'
+          : 'UNKNOWN',
       approvalB:
         approvalB === ApprovalState.APPROVED
           ? 'APPROVED'
           : approvalB === ApprovalState.PENDING
-            ? 'PENDING'
-            : approvalB === ApprovalState.NOT_APPROVED
-              ? 'NOT_APPROVED'
-              : 'UNKNOWN',
+          ? 'PENDING'
+          : approvalB === ApprovalState.NOT_APPROVED
+          ? 'NOT_APPROVED'
+          : 'UNKNOWN',
       expectedLp: preview.expectedLp,
       poolShare: preview.poolShare,
       apr: preview.apr,
@@ -939,15 +933,20 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     phase === 'calculating'
       ? 'Calculating…'
       : phase === 'reading_lp'
-        ? 'Scanning wallet liquidity positions…'
-        : phase === 'approval_required'
-          ? 'Waiting Wallet…'
-          : attemptingTxn
-            ? 'Broadcasting…'
-            : undefined
+      ? 'Scanning wallet liquidity positions…'
+      : phase === 'approval_required'
+      ? 'Waiting Wallet…'
+      : attemptingTxn
+      ? 'Broadcasting…'
+      : undefined
 
-  const resolvedPairLabel = selectedPosition?.pairLabel
-    || (currencyA && currencyB ? pairLabel(currencyA, currencyB) : isRemove ? 'Select a liquidity position' : pairLabel(currencyA, currencyB))
+  const resolvedPairLabel =
+    selectedPosition?.pairLabel ||
+    (currencyA && currencyB
+      ? pairLabel(currencyA, currencyB)
+      : isRemove
+      ? 'Select a liquidity position'
+      : pairLabel(currencyA, currencyB))
 
   return {
     mode,

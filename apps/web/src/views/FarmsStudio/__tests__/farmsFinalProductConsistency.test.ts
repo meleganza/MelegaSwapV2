@@ -144,7 +144,7 @@ describe('Farms final product consistency', () => {
       }),
       { chainId: 56, account: null, userDataLoaded: false, chainSupported: true },
     )!
-    expect(model.participants).toBe('—')
+    expect(model.participants).toBe('Indexing…')
     const builder = load('modules/buildFarmsExploreFarms.ts')
     expect(builder).toContain('resolveFarmParticipants')
     expect(builder).toMatch(/unique wallet census|Never LP supply/i)

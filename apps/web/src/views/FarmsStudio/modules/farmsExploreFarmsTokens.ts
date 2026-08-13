@@ -60,8 +60,8 @@ export const farmsExplore = {
   focusOffset: '2px',
   touchMin: '44px',
 
-  initialLimit: 9,
-  pageStep: 9,
+  initialLimit: 8,
+  pageStep: 8,
 
   mobileBreak: '767px',
   tabletBreak: '1199px',
@@ -91,11 +91,7 @@ export const FARMS_EXPLORE_FILTERS = [
   'Stakeable Now',
 ] as const
 
-export const FARMS_EXPLORE_SORTS = [
-  'Highest TVL',
-  'Highest Sustainable APR',
-  'Newest',
-] as const
+export const FARMS_EXPLORE_SORTS = ['Highest TVL', 'Highest Sustainable APR', 'Newest'] as const
 
 /** Frozen Module 001 source SHAs (byte-identical guards). */
 export const FARMS_MODULE_001_FREEZE_SHA256 = {

@@ -52,22 +52,12 @@ describe('DS001.2 global header shell contracts', () => {
 
   it('Farms and Pools deep-link destinations remain live', () => {
     expect(FARMS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual(['/farms', '/farms?view=my', '/farms?view=explore'])
-    expect(POOLS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual([
-      '/pools',
-      '/pools?view=positions',
-      '/pools?view=explore',
-    ])
+    expect(POOLS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual(['/pools', '/pools?view=positions', '/pools?view=explore'])
     expect(POOLS_DROPDOWN_ITEMS.some((i) => /My Pools/i.test(i.label))).toBe(false)
   })
 
-  it('primary navigation is Home · Liquidity · Farms · Pools · List (Portfolio secondary)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'List',
-    ])
+  it('primary navigation exposes every core DEX funnel in one click (Portfolio secondary)', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 

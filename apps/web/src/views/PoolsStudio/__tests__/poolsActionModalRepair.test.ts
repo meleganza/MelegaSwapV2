@@ -5,7 +5,12 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
 import { activeBlocksInWindow, buildPools24hRewards } from '../modules/buildPools24hRewards'
-import { describeCreatePoolFee, describeCreateFarmFee, MELEGA_TREASURY_FEE_DESTINATION } from 'config/constants/feeSchedule'
+import {
+  describeCreatePoolFee,
+  describeCreateFarmFee,
+  MELEGA_TREASURY_FEE_DESTINATION,
+} from 'config/constants/feeSchedule'
+import { createDefaultWizardState, deriveDailyRewards } from '../components/createPoolWizardState'
 import BigNumber from 'bignumber.js'
 
 const WEB = path.resolve(__dirname, '../../../../')
@@ -23,25 +28,46 @@ describe('Pools/Farms action modal repair', () => {
 
   it('FarmsActionHost opens Harvest confirmation dialog instead of auto-executing', () => {
     const host = readFileSync(path.join(STUDIO, '../FarmsStudio/farmsRuntime/FarmsActionHost.tsx'), 'utf8')
-    const harvest = readFileSync(
-      path.join(STUDIO, '../FarmsStudio/farmsRuntime/FarmHarvestConfirmModal.tsx'),
-      'utf8',
-    )
+    const harvest = readFileSync(path.join(STUDIO, '../FarmsStudio/farmsRuntime/FarmHarvestConfirmModal.tsx'), 'utf8')
     expect(host).toContain('FarmHarvestConfirmModal')
     expect(host).toMatch(/useModal\([^)]+,\s*true,\s*false/)
-    expect(host).not.toContain("handleHarvest().finally(clearModal)")
+    expect(host).not.toContain('handleHarvest().finally(clearModal)')
     expect(harvest).toContain('Confirm Harvest')
     expect(harvest).toContain('data-farms-harvest-modal')
   })
 
-  it('shared Overlay uses neutral dim and z-index 0 under modal content', () => {
-    const overlay = readFileSync(
-      path.join(WEB, '../../packages/uikit/src/components/Overlay/Overlay.tsx'),
-      'utf8',
-    )
-    expect(overlay).toContain('rgba(0, 0, 0, 0.55)')
+  it('shared Overlay uses premium neutral dim and z-index 0 under modal content', () => {
+    const overlay = readFileSync(path.join(WEB, '../../packages/uikit/src/components/Overlay/Overlay.tsx'), 'utf8')
+    expect(overlay).toContain('rgba(2, 3, 4, 0.74)')
+    expect(overlay).toContain('backdrop-filter: blur(8px)')
     expect(overlay).toContain('z-index: 0')
     expect(overlay).not.toContain('theme.colors.text99')
+  })
+
+  it('uses the canonical MelegaDEX lockup and a continuous slider in pool dialogs', () => {
+    const modal = readFileSync(path.join(WEB, '../../packages/uikit/src/widgets/Modal/Modal.tsx'), 'utf8')
+    const slider = readFileSync(path.join(WEB, '../../packages/uikit/src/components/Slider/styles.ts'), 'utf8')
+    const stake = readFileSync(path.join(WEB, '../../packages/uikit/src/widgets/Pool/StakeModal.tsx'), 'utf8')
+
+    expect(modal).toContain('<ModalBrandText>')
+    expect(modal).toContain('<strong>DEX</strong>')
+    expect(modal).not.toContain('ModalBrandProduct')
+    expect(slider).toContain('BarProgress')
+    expect(slider).toContain('::-webkit-slider-thumb')
+    expect(slider).not.toContain('background-image: url(${bunnyHead})')
+    expect(stake).toContain('aria-hidden="true"')
+  })
+
+  it('opens wallet connect instead of an empty stake dialog when no account is connected', () => {
+    const card = readFileSync(path.join(STUDIO, 'modules/PoolsExplorePoolCard.tsx'), 'utf8')
+    const list = readFileSync(path.join(STUDIO, 'modules/PoolsExplorePoolsModule.tsx'), 'utf8')
+    const featured = readFileSync(path.join(STUDIO, 'modules/PoolsHeroFeaturedCompact.tsx'), 'utf8')
+
+    expect(card).toContain("pool.primaryAction === 'Connect Wallet'")
+    expect(card).toContain('<ConnectBtn')
+    expect(list).toContain('<ConnectActionBtn')
+    expect(featured).toContain('account ? (')
+    expect(featured).toContain('<ConnectBtn')
   })
 
   it('Create Pool is permanently expanded with canonical fee display', () => {
@@ -51,6 +77,14 @@ describe('Pools/Farms action modal repair', () => {
     expect(cta).toContain('Review Pool Creation')
     expect(cta).not.toContain('data-ps-create-pool-compact')
     expect(cta).not.toMatch(/setExpanded\(false\)/)
+    expect(cta).not.toContain('Continue in Build Studio')
+    expect(cta).not.toContain('<Label>Deposit Fee</Label>')
+  })
+
+  it('derives daily emission from budget and duration', () => {
+    expect(deriveDailyRewards({ ...createDefaultWizardState(), rewardBudget: '1000', emissionDuration: '30' })).toBe(
+      '33.33333333',
+    )
   })
 
   it('Create Pool fee free for MARCO staking and 0.25 otherwise', () => {

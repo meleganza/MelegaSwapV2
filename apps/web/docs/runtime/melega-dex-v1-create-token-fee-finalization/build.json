@@ -1,8 +1,0 @@
-{
-  "schemaVersion": "melega.create-token.fee-finalization.build.v1",
-  "assessedAt": "2026-07-30T13:00:00.000Z",
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "exitCode": 0
-}

@@ -96,6 +96,8 @@ export interface PoolPreviewCard {
   rewardBudgetUsd?: string
   estimatedDuration?: string
   participants: string
+  /** Only a wallet-census index may certify the participant count. */
+  participantsSource?: 'smartchef_event_index' | 'indexed_wallet_census' | 'participant_index_pending'
   lockPeriod?: string
   cooldown?: string
   poolSafetyRisk?: 'Very Low' | 'Low' | 'Medium' | 'High'

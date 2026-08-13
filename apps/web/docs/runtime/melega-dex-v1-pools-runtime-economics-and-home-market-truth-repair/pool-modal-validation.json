@@ -1,6 +1,0 @@
-{
-  "claimDialogVisibleAboveOverlay": true,
-  "stakeMoreDialogVisibleAboveOverlay": true,
-  "closeRestoresInteraction": true,
-  "validation": "unit + CSS z-index/position repair; Overlay no longer z-index 20"
-}

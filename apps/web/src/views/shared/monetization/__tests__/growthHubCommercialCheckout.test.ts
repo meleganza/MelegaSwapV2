@@ -31,14 +31,17 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(COMMERCIAL_SERVICE_COUNT(types)).toBe(6)
   })
 
-  it('CommercialCheckoutModal is MelegaModal V3 with 6 steps', () => {
+  it('CommercialCheckoutModal is MelegaModal V3 with a two-step checkout', () => {
     expect(checkout).toContain('MelegaModal')
     expect(checkout).toContain('MelegaModalPreview')
     expect(checkout).toContain('MelegaModalFooter')
     expect(checkout).toContain("title=\"Boost Your Project\"")
     expect(checkout).toContain('commercial-checkout-modal')
-    for (const step of ['service', 'package', 'chain', 'payment', 'review', 'checkout']) {
+    for (const step of ['configure', 'confirm']) {
       expect(checkout).toContain(`commercial-step-${step}`)
+    }
+    for (const removedStep of ['review', 'checkout']) {
+      expect(checkout).not.toContain(`commercial-step-${removedStep}`)
     }
     expect(checkout).toContain('BNB')
     expect(checkout).toContain('USDT')

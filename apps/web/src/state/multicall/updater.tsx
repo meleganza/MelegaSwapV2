@@ -31,7 +31,9 @@ async function fetchChunk(
   chunk: Call[],
   minBlockNumber: number,
 ): Promise<{ results: ResultStructOutput[]; blockNumber: number }> {
-  console.debug('Fetching chunk', multicallContract, chunk, minBlockNumber)
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('Fetching multicall chunk', chunk.length, minBlockNumber)
+  }
   let resultsBlockNumber
   let returnData
   try {
@@ -70,11 +72,15 @@ async function fetchChunk(
         }
       }
     }
-    console.debug('Failed to fetch chunk inside retry', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('Failed to fetch chunk inside retry', error)
+    }
     throw error
   }
   if (resultsBlockNumber?.toNumber() < minBlockNumber) {
-    console.debug(`Fetched results for old block number: ${resultsBlockNumber.toString()} vs. ${minBlockNumber}`)
+    if (process.env.NODE_ENV === 'development') {
+      console.debug(`Fetched results for old block number: ${resultsBlockNumber.toString()} vs. ${minBlockNumber}`)
+    }
   }
   return { results: returnData, blockNumber: resultsBlockNumber?.toNumber() }
 }
@@ -187,73 +193,85 @@ export default function Updater(): null {
       }),
     )
 
+    const effectCancellations: (() => void)[] = []
     cancellations.current = {
       blockNumber: currentBlock,
-      cancellations: chunkedCalls.map((chunk, index) => {
-        const { cancel, promise } = retry(() => fetchChunk(multicallContract, chunk, currentBlock), {
-          n: Infinity,
-          minWait: 2500,
-          maxWait: 3500,
-        })
-        promise
-          .then(({ results: returnData, blockNumber: fetchBlockNumber }) => {
-            cancellations.current = { cancellations: [], blockNumber: currentBlock }
+      cancellations: effectCancellations,
+    }
 
-            // accumulates the length of all previous indices
-            const firstCallKeyIndex = chunkedCalls.slice(0, index).reduce<number>((memo, curr) => memo + curr.length, 0)
-            const lastCallKeyIndex = firstCallKeyIndex + returnData.length
+    chunkedCalls.forEach((chunk, index) => {
+      const { cancel, promise } = retry(() => fetchChunk(multicallContract, chunk, currentBlock), {
+        // An unavailable RPC must fail closed instead of keeping old page
+        // work alive forever while the user navigates elsewhere.
+        n: 3,
+        minWait: 800,
+        maxWait: 2000,
+      })
+      effectCancellations.push(cancel)
+      promise
+        .then(({ results: returnData, blockNumber: fetchBlockNumber }) => {
+          // accumulates the length of all previous indices
+          const firstCallKeyIndex = chunkedCalls.slice(0, index).reduce<number>((memo, curr) => memo + curr.length, 0)
+          const lastCallKeyIndex = firstCallKeyIndex + returnData.length
 
-            const { erroredCalls, results } = outdatedCallKeys.slice(firstCallKeyIndex, lastCallKeyIndex).reduce<{
-              erroredCalls: Call[]
-              results: { [callKey: string]: string | null }
-            }>(
-              (memo, callKey, i) => {
-                if (returnData[i].success) {
-                  memo.results[callKey] = returnData[i].returnData ?? null
-                } else {
-                  memo.erroredCalls.push(parseCallKey(callKey))
-                }
-                return memo
-              },
-              { erroredCalls: [], results: {} },
-            )
+          const { erroredCalls, results } = outdatedCallKeys.slice(firstCallKeyIndex, lastCallKeyIndex).reduce<{
+            erroredCalls: Call[]
+            results: { [callKey: string]: string | null }
+          }>(
+            (memo, callKey, i) => {
+              if (returnData[i].success) {
+                memo.results[callKey] = returnData[i].returnData ?? null
+              } else {
+                memo.erroredCalls.push(parseCallKey(callKey))
+              }
+              return memo
+            },
+            { erroredCalls: [], results: {} },
+          )
 
-            if (Object.keys(results).length > 0) {
-              dispatch(
-                updateMulticallResults({
-                  chainId,
-                  results,
-                  blockNumber: fetchBlockNumber,
-                }),
-              )
-            }
-
-            if (erroredCalls.length > 0) {
-              dispatch(
-                errorFetchingMulticallResults({
-                  calls: erroredCalls,
-                  chainId,
-                  fetchingBlockNumber: fetchBlockNumber,
-                }),
-              )
-            }
-          })
-          .catch((error: any) => {
-            if (error instanceof CancelledError) {
-              console.debug('Cancelled fetch for blockNumber', currentBlock)
-              return
-            }
-            console.error('Failed to fetch multicall chunk', chunk, chainId, error, currentBlock)
+          if (Object.keys(results).length > 0) {
             dispatch(
-              errorFetchingMulticallResults({
-                calls: chunk,
+              updateMulticallResults({
                 chainId,
-                fetchingBlockNumber: currentBlock,
+                results,
+                blockNumber: fetchBlockNumber,
               }),
             )
-          })
-        return cancel
-      }),
+          }
+
+          if (erroredCalls.length > 0) {
+            dispatch(
+              errorFetchingMulticallResults({
+                calls: erroredCalls,
+                chainId,
+                fetchingBlockNumber: fetchBlockNumber,
+              }),
+            )
+          }
+        })
+        .catch((error: any) => {
+          if (error instanceof CancelledError) {
+            if (process.env.NODE_ENV === 'development') {
+              console.debug('Cancelled fetch for blockNumber', currentBlock)
+            }
+            return
+          }
+          console.error('Failed to fetch multicall chunk', chunk, chainId, error, currentBlock)
+          dispatch(
+            errorFetchingMulticallResults({
+              calls: chunk,
+              chainId,
+              fetchingBlockNumber: currentBlock,
+            }),
+          )
+        })
+    })
+
+    return () => {
+      effectCancellations.forEach((cancel) => cancel())
+      if (cancellations.current?.cancellations === effectCancellations) {
+        cancellations.current = undefined
+      }
     }
   }, [chainId, multicallContract, dispatch, serializedOutdatedCallKeys, currentBlock])
 

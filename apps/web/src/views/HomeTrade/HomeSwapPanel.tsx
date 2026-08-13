@@ -16,15 +16,18 @@ import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
+import { SmartSwapProductTabs, type SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import type { SwapExperienceMode } from 'views/Trade/swapExperience'
 import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
-import SmartSwapBridgeTabs, { TradeWorkspaceTab } from 'views/MarcoBridge/SmartSwapBridgeTabs'
 import { HomeSwapIconButton, HomeSwapPanelShell } from './HomeSwapPanelShell'
 
-const MarcoBridgeWorkspace = dynamic(() => import('views/MarcoBridge/MarcoBridgeWorkspace'), {
-  ssr: false,
-  loading: () => null,
-})
+const MarcoBridgePanel = dynamic(
+  () => import('views/MarcoBridge/MarcoBridgeWorkspace').then((module) => module.MarcoBridgePanel),
+  {
+    ssr: false,
+    loading: () => <ProductLoading>Preparing bridge…</ProductLoading>,
+  },
+)
 
 const HomeSwapStack = styled.div`
   display: flex;
@@ -32,6 +35,14 @@ const HomeSwapStack = styled.div`
   gap: 10px;
   width: 100%;
   min-width: 0;
+`
+
+const ProductLoading = styled.div`
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
 `
 
 const SettingsIcon = () => (
@@ -60,8 +71,8 @@ const PencilIcon = () => (
 )
 
 const HomeSwapInner: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TradeWorkspaceTab>('swap')
   const swapBodyRef = useRef<HTMLDivElement>(null)
+  const [productAction, setProductAction] = useState<SmartSwapProductAction>('swap')
   const { account } = useWeb3React()
   const { address: wagmiAddress } = useAccount()
   const walletConnected = Boolean(account || wagmiAddress)
@@ -79,7 +90,10 @@ const HomeSwapInner: React.FC = () => {
     publishSwapExperienceMode(experience)
   }, [experience])
 
-  const headerCenter = useMemo(() => <SmartSwapBridgeTabs active={activeTab} onChange={setActiveTab} />, [activeTab])
+  const headerLeading = useMemo(
+    () => <SmartSwapProductTabs value={productAction} onChange={setProductAction} />,
+    [productAction],
+  )
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
@@ -107,9 +121,9 @@ const HomeSwapInner: React.FC = () => {
   return (
     <HomeSwapStack data-home-swap-stack data-swap-experience={experience} data-final-pixel="true">
       <HomeSwapPanelShell
-        headerCenter={headerCenter}
+        headerLeading={headerLeading}
         toolbar={
-          activeTab === 'swap' ? (
+          productAction === 'swap' ? (
             <>
               <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
                 <SettingsIcon />
@@ -121,9 +135,7 @@ const HomeSwapInner: React.FC = () => {
           ) : null
         }
       >
-        {activeTab === 'bridge' ? (
-          <MarcoBridgeWorkspace />
-        ) : (
+        {productAction === 'swap' ? (
           <div
             ref={swapBodyRef}
             className={`home-trade-swap${walletConnected ? '' : ' is-disconnected'}`}
@@ -148,8 +160,10 @@ const HomeSwapInner: React.FC = () => {
                 <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
               </div>
             )}
-            <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency />
+            <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency compact />
           </div>
+        ) : (
+          <MarcoBridgePanel embedded />
         )}
       </HomeSwapPanelShell>
     </HomeSwapStack>

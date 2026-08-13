@@ -1,15 +1,30 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { MelegaSearchBar, colors, typography } from 'design-system/melega'
+import { MelegaSearchBar } from 'design-system/melega/components/SearchBar'
+import { colors } from 'design-system/melega/tokens/colors'
+import { typography } from 'design-system/melega/tokens/typography'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import {
-  buildGlobalSearchIndex,
-  globalSearchCategoryLabel,
-  searchGlobal,
-  type GlobalSearchResult,
-} from 'lib/global-search'
+import type { GlobalSearchCategory, GlobalSearchEntry, GlobalSearchResult } from 'lib/global-search/types'
+
+type GlobalSearchRuntime = {
+  index: GlobalSearchEntry[]
+  search: (index: GlobalSearchEntry[], query: string) => GlobalSearchResult[]
+  categoryLabel: (category: GlobalSearchCategory) => string
+}
+
+let globalSearchRuntimePromise: Promise<GlobalSearchRuntime> | null = null
+
+function loadGlobalSearchRuntime(): Promise<GlobalSearchRuntime> {
+  if (!globalSearchRuntimePromise) {
+    globalSearchRuntimePromise = import('lib/global-search').then((runtime) => ({
+      index: runtime.buildGlobalSearchIndex(),
+      search: runtime.searchGlobal,
+      categoryLabel: runtime.globalSearchCategoryLabel,
+    }))
+  }
+  return globalSearchRuntimePromise
+}
 
 const Root = styled.div`
   position: relative;
@@ -55,7 +70,7 @@ const ResultRow = styled.div<{ $active?: boolean }>`
   }
 `
 
-const ResultMain = styled.button`
+const ResultMain = styled.a`
   appearance: none;
   border: none;
   background: transparent;
@@ -68,6 +83,7 @@ const ResultMain = styled.button`
   text-align: left;
   cursor: pointer;
   color: inherit;
+  text-decoration: none;
 `
 
 const LogoWrap = styled.span`
@@ -139,7 +155,7 @@ const Actions = styled.div`
   padding-left: 38px;
 `
 
-const ActionBtn = styled.button`
+const ActionBtn = styled.a`
   appearance: none;
   cursor: pointer;
   height: 26px;
@@ -150,6 +166,7 @@ const ActionBtn = styled.button`
   color: #f5f5f5;
   font-size: 11px;
   font-weight: 650;
+  text-decoration: none;
 
   &:hover {
     border-color: rgba(244, 196, 48, 0.4);
@@ -165,23 +182,32 @@ const EmptyState = styled.div`
 `
 
 const GlobalSearch: React.FC = () => {
-  const router = useRouter()
   const rootRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [searchRuntime, setSearchRuntime] = useState<GlobalSearchRuntime | null>(null)
+  const [isSearchLoading, setIsSearchLoading] = useState(false)
 
-  const index = useMemo(() => buildGlobalSearchIndex(), [])
-  const results = useMemo(() => searchGlobal(index, query), [index, query])
+  const ensureSearchRuntime = useCallback(() => {
+    if (searchRuntime) return Promise.resolve(searchRuntime)
+    setIsSearchLoading(true)
+    return loadGlobalSearchRuntime().then((runtime) => {
+      setSearchRuntime(runtime)
+      setIsSearchLoading(false)
+      return runtime
+    })
+  }, [searchRuntime])
 
-  const navigateTo = useCallback(
-    (href: string) => {
-      setOpen(false)
-      setQuery('')
-      void router.push(href)
-    },
-    [router],
+  const results = useMemo(
+    () => (searchRuntime ? searchRuntime.search(searchRuntime.index, query) : []),
+    [query, searchRuntime],
   )
+
+  const closeSearch = useCallback(() => {
+    setOpen(false)
+    setQuery('')
+  }, [])
 
   const showDropdown = open && query.trim().length > 0
 
@@ -196,11 +222,12 @@ const GlobalSearch: React.FC = () => {
         const input = rootRef.current?.querySelector('input')
         input?.focus()
         setOpen(true)
+        void ensureSearchRuntime()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [ensureSearchRuntime])
 
   useEffect(() => {
     if (!showDropdown) return undefined
@@ -233,7 +260,10 @@ const GlobalSearch: React.FC = () => {
     if (event.key === 'Enter') {
       event.preventDefault()
       const target = results[activeIndex] ?? results[0]
-      if (target) navigateTo(target.href)
+      if (target) {
+        closeSearch()
+        window.location.assign(target.href)
+      }
     }
   }
 
@@ -245,13 +275,19 @@ const GlobalSearch: React.FC = () => {
         onChange={(value) => {
           setQuery(value)
           setOpen(true)
+          void ensureSearchRuntime()
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true)
+          void ensureSearchRuntime()
+        }}
         onKeyDown={handleKeyDown}
       />
       {showDropdown && (
         <Dropdown data-global-search-dropdown role="listbox" aria-label="Search results">
-          {results.length === 0 ? (
+          {isSearchLoading ? (
+            <EmptyState data-global-search-loading>Preparing search…</EmptyState>
+          ) : results.length === 0 ? (
             <EmptyState data-global-search-empty>No results found</EmptyState>
           ) : (
             results.map((result: GlobalSearchResult, index) => (
@@ -264,7 +300,7 @@ const GlobalSearch: React.FC = () => {
                 $active={index === activeIndex}
                 onMouseEnter={() => setActiveIndex(index)}
               >
-                <ResultMain type="button" onClick={() => navigateTo(result.href)}>
+                <ResultMain href={result.href} onClick={closeSearch}>
                   <LogoWrap aria-hidden>
                     <MelegaTokenAvatar
                       name={result.label}
@@ -283,7 +319,7 @@ const GlobalSearch: React.FC = () => {
                       {result.verified ? <Verified>Verified</Verified> : null}
                     </TitleRow>
                     {result.subtitle ? <ResultMeta>{result.subtitle}</ResultMeta> : null}
-                    <CategoryTag>{globalSearchCategoryLabel(result.category)}</CategoryTag>
+                    <CategoryTag>{searchRuntime?.categoryLabel(result.category) ?? result.category}</CategoryTag>
                   </TextCol>
                 </ResultMain>
                 {result.actions && result.actions.length > 0 ? (
@@ -291,10 +327,10 @@ const GlobalSearch: React.FC = () => {
                     {result.actions.map((action) => (
                       <ActionBtn
                         key={`${result.id}-${action.label}`}
-                        type="button"
+                        href={action.href}
                         onClick={(e) => {
                           e.stopPropagation()
-                          navigateTo(action.href)
+                          closeSearch()
                         }}
                       >
                         {action.label}

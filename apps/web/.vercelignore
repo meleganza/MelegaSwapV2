@@ -1,0 +1,8 @@
+# Keep local build caches, documentation sources and reports out of the
+# production upload when apps/web is configured as the Vercel root directory.
+.next/
+node_modules/
+coverage/
+docs/
+*.log
+

@@ -12,22 +12,26 @@ describe('resolveHolderMachinePayload', () => {
     expect(payload).toEqual({ holder_source: 'bscscan', holder_status: 'configured' })
   })
 
-  it('returns not_configured with deployment instruction when API key is missing', () => {
-    const prev = process.env.NEXT_PUBLIC_BSCSCAN_API_KEY
-    delete process.env.NEXT_PUBLIC_BSCSCAN_API_KEY
-    try {
-      const payload = resolveHolderMachinePayload({
-        status: 'unavailable',
-        reason: 'Unavailable',
-        source: 'unavailable',
-        diagnostic: 'Set NEXT_PUBLIC_BSCSCAN_API_KEY',
-        checkedAt: '2026-06-26T00:00:00.000Z',
-      })
-      expect(payload.holder_source).toBe('bscscan')
-      expect(payload.holder_status).toBe('not_configured')
-      expect(payload.holder_reason).toContain('NEXT_PUBLIC_BSCSCAN_API_KEY')
-    } finally {
-      if (prev !== undefined) process.env.NEXT_PUBLIC_BSCSCAN_API_KEY = prev
-    }
+  it('reports the keyless BNB holder index as the active source', () => {
+    const payload = resolveHolderMachinePayload({
+      status: 'ready',
+      count: 3_991_907,
+      source: 'binplorer',
+      checkedAt: '2026-08-11T00:00:00.000Z',
+    })
+    expect(payload).toEqual({ holder_source: 'binplorer', holder_status: 'configured' })
+  })
+
+  it('keeps provider diagnostics when the holder index fails', () => {
+    const payload = resolveHolderMachinePayload({
+      status: 'unavailable',
+      reason: 'Holder index request failed',
+      source: 'unavailable',
+      diagnostic: 'request timeout',
+      checkedAt: '2026-08-11T00:00:00.000Z',
+    })
+    expect(payload.holder_source).toBe('binplorer')
+    expect(payload.holder_status).toBe('error')
+    expect(payload.holder_reason).toBe('request timeout')
   })
 })

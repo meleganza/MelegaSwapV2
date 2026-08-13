@@ -11,10 +11,6 @@ import { useMemo } from 'react'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { buildSwapHandoffContext } from 'lib/treasury-handoff'
 import { prepareMelegaSmartRouterSwap } from 'lib/melega-smart-router'
-import {
-  buildGasProtocolFeeSettlementPlan,
-  settleGasProtocolFeeOnChain,
-} from 'lib/smart-swap-gas-protocol-fee'
 import { useGasPrice } from 'state/user/hooks'
 import { calculateGasMargin, isAddress } from 'utils'
 import { basisPointsToPercent } from 'utils/exchange'
@@ -138,26 +134,6 @@ export function useSwapCallback(
         })
         if (!handoffPlan.ok) {
           throw new Error(handoffPlan.message)
-        }
-
-        // Founder Smart Router fee: 25% of estimated DEX gas → MELEGA TREASURY WALLET.
-        // Finalized at confirmation from estimateGas; wallet-signed native transfer (BNB on 56, ETH on Base).
-        // No Treasury Runtime. No KERL. No server signer.
-        const feePlan = buildGasProtocolFeeSettlementPlan({
-          gasEstimateUnits: gasEstimate,
-          gasPriceWei: gasPrice,
-          chainId,
-        })
-        if (feePlan.fee.feeWei !== '0') {
-          const signer = contract.signer
-          if (!signer) {
-            throw new Error(t('Wallet signer unavailable for protocol fee settlement.'))
-          }
-          await settleGasProtocolFeeOnChain({
-            signer,
-            plan: feePlan,
-            gasPriceWei: gasPrice,
-          })
         }
 
         return contract[methodName](...args, {

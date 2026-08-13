@@ -1,8 +1,0 @@
-{
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "exitCode": 0,
-  "durationSec": 51.05,
-  "capturedAt": "2026-08-01T07:06:00Z"
-}

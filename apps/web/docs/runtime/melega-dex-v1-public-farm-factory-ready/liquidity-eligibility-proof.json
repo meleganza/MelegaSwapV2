@@ -1,6 +1,0 @@
-{
-  "minimumTvlBnb": "0.25",
-  "belowMinimumAction": "REQUIRE_LIQUIDITY_INCREASE",
-  "hardBlockPairCreation": false,
-  "eligibleAtOrAbove": "0.25 BNB TVL"
-}

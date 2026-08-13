@@ -75,6 +75,15 @@ export interface StaticProjectRecord {
   docsUrl?: string
   spaceProfileUrl?: string
   socialLinks?: { type: string; url: string }[]
+  /** Optional public trust attestations. UI renders only these registry-backed records. */
+  attestations?: Array<{
+    type: 'audit' | 'kyc' | 'due_diligence'
+    provider: string
+    source: 'melega-space' | 'external'
+    status: 'verified' | 'observed' | 'expired'
+    reference?: string
+    observedAt?: string
+  }>
   resources: {
     tokens: TokenRef[]
     liquidityPools: string[]

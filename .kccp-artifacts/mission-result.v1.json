@@ -1,0 +1,55 @@
+{
+  "schema": "kiri:kccp/v1/mission-result.v1",
+  "protocol_version": "kiri:kccp/v1",
+  "result_id": "78804e3d-a189-4f6b-817c-a1f728e68483",
+  "mission_code": "ACT-CONNECT-MelegaSwapV2",
+  "mission_title": "Connect melega-dex to Melega Build via KCCP",
+  "destination_tool": "cursor",
+  "destination_chat": "MELEGA_DEX",
+  "repository_code": "MelegaSwapV2",
+  "branch": "main",
+  "starting_commit": "c444e8b7654f271cf5328027a9b073d733c22380",
+  "ending_commit": "c444e8b7654f271cf5328027a9b073d733c22380",
+  "working_tree_state": "dirty",
+  "objective": "Complete first authenticated KCCP producer registration by submitting repository-state and mission-result to Melega Build",
+  "status": "COMPLETED",
+  "completed_steps": [
+    "local KCCP producer installed for repository-state-contract.v1",
+    "repository-state-contract.v1 submitted to Build",
+    "state_contract_id a7c8fb50-4b94-4563-a7b6-6956355fcee3 referenced by mission-result",
+    "HEAD commit verified from live git evidence"
+  ],
+  "incomplete_steps": [],
+  "files_changed": [
+    "scripts/kccp/lib.ts",
+    "scripts/kccp/generate-state-contract.ts",
+    "scripts/kccp/submit-mission-result.ts",
+    "scripts/kccp/run.ts",
+    "scripts/kccp/schema/digest-contract.v1.json",
+    "scripts/kccp/schema/repository-state-contract.v1.json"
+  ],
+  "evidence_refs": [
+    "build:state_contract_id:a7c8fb50-4b94-4563-a7b6-6956355fcee3",
+    "build:digest_sha256:92ce85e91dd8c3290f13eb9402af3f701eff3646fcb367133c99c6c0d26cbcfe",
+    "git:commit:c444e8b7654f271cf5328027a9b073d733c22380",
+    "git:branch:main",
+    "git:dirty_count:85"
+  ],
+  "known_limitations": [
+    "Founder connection approval remains manual",
+    "No deployment or runtime probes reported — repository-state submission only"
+  ],
+  "final_verdict": "KCCP_MELEGASWAPV2_CONNECTION_SUBMITTED_FOR_FOUNDER_REVIEW",
+  "producer": "MelegaSwapV2",
+  "producer_type": "repository",
+  "idempotency_key": "516df342c8a1baed1c07b2d4b6961367",
+  "causation_id": "a7c8fb50-4b94-4563-a7b6-6956355fcee3",
+  "generated_at": "2026-07-14T12:23:40.516Z",
+  "extensions": {
+    "referenced_state_contract_id": "a7c8fb50-4b94-4563-a7b6-6956355fcee3",
+    "repository_state_outcome": "submitted_successfully",
+    "credential_rotated": false,
+    "repository_state_regenerated": false
+  },
+  "digest_sha256": "66a40985816dd4bd426c26c13772aa184f7fcaf7b7d6605ba90e91931c68e430"
+}

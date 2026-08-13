@@ -170,12 +170,10 @@ describe('Create Token Factory mainnet deployment execution', () => {
     expect(ui).not.toMatch(/Missing KMS|KMS signer|use KMS/i)
   })
 
-  it('frontend readiness is MAINNET READY — user create enabled', () => {
+  it('frontend preserves mainnet evidence while user execution is receipt-verified', () => {
     expect(CREATE_TOKEN_READINESS.status).toBe('READY')
     expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(true)
-    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe(
-      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
-    )
+    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe('0x6dbb5d7162842da94ef9172aedc8d148d203d311')
     expect(CREATE_TOKEN_READINESS.blockerCode).toBeNull()
     expect(CREATE_TOKEN_READINESS.noTreasuryRuntime).toBe(true)
   })

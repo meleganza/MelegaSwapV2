@@ -140,7 +140,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(vm.pools[0].stakeEnabled).toBe(true)
   })
 
-  it('wires Remaining duration / Rewards left / Emission and keeps Participants as —', () => {
+  it('wires Remaining duration / Rewards left / Emission and marks Participants as indexing', () => {
     const model = cardToExploreModel(
       makeCard({
         id: 'econ-1',
@@ -154,7 +154,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(model.remainingDisplay).toBe('12d 4h')
     expect(model.rewardsLeftDisplay).toBe('12.5K ASTER')
     expect(model.emissionDisplay).toBe('240 ASTER')
-    expect(model.participantsDisplay).toBe('—')
+    expect(model.participantsDisplay).toBe('Indexing…')
   })
 
   it('shows unavailable APR / TVL honestly without $0 fallback', () => {

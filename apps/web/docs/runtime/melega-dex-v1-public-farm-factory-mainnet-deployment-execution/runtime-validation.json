@@ -1,5 +1,0 @@
-{
-  "status": "AWAITING_LIVE_RECEIPT",
-  "certifiedExpectedRuntimeSha256": "0x02aab35245724fc9c8e756a0643c8dbbb1aef28a20d4e3ff111b5a183a36cee9",
-  "note": "Masked runtime compare runs after Founder-mined receipt."
-}

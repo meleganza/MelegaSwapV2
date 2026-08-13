@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import ProjectsStudioGlobalStyle from './ProjectsStudioGlobalStyle'
-import FeaturedProjectsSection from './components/FeaturedProjectsSection'
 import ProjectsFilterRow from './components/ProjectsFilterRow'
 import ProjectsGrid from './components/ProjectsGrid'
 import ProjectsStudioPageHeader from './components/ProjectsStudioPageHeader'
@@ -53,7 +52,6 @@ export const ProjectsStudioScreen: React.FC = () => (
       <ProjectsStudioGlobalStyle />
       <Content>
         <ProjectsStudioPageHeader />
-        <FeaturedProjectsSection />
         <ProjectsFilterRow />
         <ProjectsGrid />
       </Content>

@@ -7,22 +7,23 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import styled from 'styled-components'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+import { WBNB } from '@pancakeswap/sdk'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import { getCanonicalIndexedAssets } from 'lib/canonical-token-registry'
+import { useToken } from 'hooks/Tokens'
+import useBUSDPrice from 'hooks/useBUSDPrice'
 import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
-import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from 'views/LiquidityStudio/liquidityBuilding/addresses'
 import { farmsHero } from './farmsHeroTokens'
 import { PUBLIC_FARM_FACTORY_CAPABILITY } from './publicFarmFactoryCapability'
 import { CREATE_FARM_UX } from './createFarmUxCopy'
 import {
   CREATE_FARM_RETURN_PATH,
-  buildAiBuilderHandoffUrl,
-  buildCreatePairHandoffUrl,
-  buildManualLiquidityHandoffUrl,
   createDefaultPublicFarmFactoryDraft,
   loadDraftFromStorage,
   pairContainsMarcoAddress,
@@ -41,6 +42,13 @@ import {
   type PublicFarmEligibilityResult,
 } from './publicFarmEligibility'
 import { filterPairsForFarmFactory, formatFarmPairLabel, toSelectedPair } from './publicFarmPairSearch'
+import { computeFarmAprPercent } from './publicFarmEconomics'
+import type { FarmLiquidityResolution } from './FarmInlineLiquidityStep'
+
+const FarmInlineLiquidityStep = dynamic(() => import('./FarmInlineLiquidityStep'), {
+  ssr: false,
+  loading: () => <InlineLoading data-testid="create-farm-liquidity-loading">Loading liquidity tools…</InlineLoading>,
+})
 
 const Section = styled.section`
   width: 100%;
@@ -92,14 +100,44 @@ const StepLabel = styled.p`
 
 const ModeRow = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  gap: 8px;
+
+  > * {
+    flex: 1 1 0;
+  }
+`
+
+const PairStepLayout = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
   gap: 10px;
+  align-items: stretch;
+
+  > [data-testid='public-farm-pair-mode'],
+  > [data-testid='public-farm-low-liquidity-remediation'] {
+    grid-column: 1 / -1;
+  }
+
+  > [data-testid='public-farm-pair-search'],
+  > [data-testid='public-farm-eligibility'] {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+
+    > * {
+      grid-column: 1 !important;
+    }
+  }
 `
 
 const ModeBtn = styled.button<{ $active?: boolean }>`
-  min-height: 44px;
-  padding: 10px 16px;
-  border-radius: 12px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 10px;
   border: 1px solid ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.55)' : 'rgba(255, 255, 255, 0.12)')};
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.14)' : 'rgba(255, 255, 255, 0.03)')};
   color: ${({ $active }) => ($active ? '#F4C430' : '#f2f2f2')};
@@ -198,13 +236,13 @@ const FeeNote = styled.span`
 `
 
 const Panel = styled.div`
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 15, 15, 0.75);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 `
 
 const PanelTitle = styled.h3`
@@ -370,40 +408,52 @@ const RemediationTitle = styled.p`
   color: #f4c430;
 `
 
-const ActionRow = styled.div`
+const InlineLoading = styled.div`
+  min-height: 132px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+`
+
+const RefreshRow = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 240, 137, 0.25);
+  background: rgba(24, 240, 137, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  line-height: 18px;
+
+  @media (max-width: 599px) {
+    align-items: stretch;
+    flex-direction: column;
+  }
 `
 
-const PrimaryLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(24, 240, 137, 0.45);
-  background: rgba(24, 240, 137, 0.14);
+const RefreshButton = styled.button`
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(24, 240, 137, 0.38);
+  background: rgba(24, 240, 137, 0.1);
   color: #18f089;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 750;
-  text-decoration: none;
-`
+  cursor: pointer;
 
-const SecondaryLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
+  &:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
 `
 
 const PrimaryButton = styled.button<{ $ready?: boolean }>`
@@ -412,8 +462,7 @@ const PrimaryButton = styled.button<{ $ready?: boolean }>`
   min-width: 180px;
   padding: 0 22px;
   border-radius: 12px;
-  border: 1px solid
-    ${({ $ready }) => ($ready ? 'rgba(24, 240, 137, 0.45)' : 'rgba(255, 255, 255, 0.12)')};
+  border: 1px solid ${({ $ready }) => ($ready ? 'rgba(24, 240, 137, 0.45)' : 'rgba(255, 255, 255, 0.12)')};
   background: ${({ $ready }) => ($ready ? 'rgba(24, 240, 137, 0.16)' : 'rgba(255, 255, 255, 0.04)')};
   color: ${({ $ready }) => ($ready ? '#18f089' : 'rgba(255, 255, 255, 0.55)')};
   font-size: 15px;
@@ -496,17 +545,52 @@ const ReviewRow = styled.div`
   }
 `
 
+const FundingFlow = styled.ol`
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+`
+
+const FundingStep = styled.li<{ $active?: boolean }>`
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  color: ${({ $active }) => ($active ? '#f2f2f2' : 'rgba(255,255,255,0.5)')};
+  font-size: 11px;
+  line-height: 15px;
+
+  span:first-child {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 1px solid ${({ $active }) => ($active ? 'rgba(244,196,48,.55)' : 'rgba(255,255,255,.14)')};
+    color: ${({ $active }) => ($active ? '#f4c430' : 'rgba(255,255,255,.45)')};
+    font-size: 9px;
+    font-weight: 800;
+  }
+`
+
 function parseNum(raw: string): number {
   const n = Number(String(raw).replace(/[^0-9.]/g, ''))
   return Number.isFinite(n) ? n : 0
 }
 
-function computeEstimatedFarmApr(draft: PublicFarmFactoryDraft): string {
-  const budget = parseNum(draft.rewardBudget)
+export function computeEstimatedFarmApr(
+  draft: PublicFarmFactoryDraft,
+  pairTvlBnb?: number | null,
+  rewardTokenUsd?: number,
+  bnbUsd?: number,
+): string {
   const daily = parseNum(draft.emissionRate)
-  if (budget <= 0 || daily <= 0) return '—'
-  const apr = (daily * 365 * 100) / budget
-  if (!Number.isFinite(apr)) return '—'
+  const apr = computeFarmAprPercent({ dailyRewardTokens: daily, pairTvlBnb, rewardTokenUsd, bnbUsd })
+  if (apr == null) return '—'
   return `${apr.toFixed(1)}%`
 }
 
@@ -515,20 +599,22 @@ function formatBnb(n: number | null | undefined): string {
   return `${n.toFixed(2)} BNB`
 }
 
-function isBuilderDeployed(): boolean {
-  return (
-    isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory) &&
-    isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbAuthorizer) &&
-    isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFeeSink)
-  )
-}
-
 type NextAction = 'select_pair' | 'increase_liquidity' | 'continue_config' | 'create_farm'
+
+type LiquidityResolutionState = 'idle' | 'refreshing' | 'indexing' | 'ready'
+type FarmAccordionId = 'pair' | 'liquidity' | 'reward' | 'budget' | 'advanced'
 
 export const PublicFarmFactoryWorkspace: React.FC = () => {
   const router = useRouter()
   const [draft, setDraft] = useState<PublicFarmFactoryDraft>(() => createDefaultPublicFarmFactoryDraft())
   const [pairQuery, setPairQuery] = useState('')
+  const rewardTokenOptions = useMemo(
+    () =>
+      getCanonicalIndexedAssets()
+        .filter((asset) => asset.chainId === MELEGA_CHAIN_ID && asset.address && asset.symbol)
+        .sort((a, b) => a.symbol.localeCompare(b.symbol)),
+    [],
+  )
   const [pairDropdownOpen, setPairDropdownOpen] = useState(false)
   const pairSearchRef = useRef<HTMLInputElement>(null)
   const pairDropdownRef = useRef<HTMLDivElement>(null)
@@ -537,13 +623,25 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   )
   const [hydrated, setHydrated] = useState(false)
   const [createSoftNote, setCreateSoftNote] = useState<string | null>(null)
-  const [openAcc, setOpenAcc] = useState<'pair' | 'reward' | 'budget' | 'advanced'>('pair')
+  const [openAcc, setOpenAcc] = useState<FarmAccordionId | null>('pair')
+  const [liquidityResolution, setLiquidityResolution] = useState<LiquidityResolutionState>('idle')
+  const rewardTokenCurrency = useToken(
+    /^0x[a-fA-F0-9]{40}$/.test(draft.rewardTokenAddress) ? draft.rewardTokenAddress : undefined,
+  )
+  const rewardTokenPrice = useBUSDPrice(rewardTokenCurrency ?? undefined)
+  const bnbPrice = useBUSDPrice(WBNB[MELEGA_CHAIN_ID])
+  const [lastLiquidityResolution, setLastLiquidityResolution] = useState<FarmLiquidityResolution | null>(null)
 
-  const toggleAcc = (id: typeof openAcc) => {
-    setOpenAcc((prev) => (prev === id ? prev : id))
-  }
+  const toggleAcc = useCallback((id: FarmAccordionId) => {
+    setOpenAcc((prev) => (prev === id ? null : id))
+  }, [])
 
-  const { pairs } = useAmmPairRegistry({
+  useEffect(() => {
+    if (openAcc === 'pair') return
+    setPairDropdownOpen(false)
+  }, [openAcc])
+
+  const { pairs, mutate: refreshPairs } = useAmmPairRegistry({
     q: pairQuery || undefined,
     page: 1,
     pageSize: 40,
@@ -607,6 +705,13 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    const budget = parseNum(draft.rewardBudget)
+    const duration = parseNum(draft.durationDays)
+    const nextEmission = budget > 0 && duration > 0 ? (budget / duration).toFixed(8).replace(/\.?0+$/, '') : ''
+    if (draft.emissionRate !== nextEmission) patch({ emissionRate: nextEmission })
+  }, [draft.rewardBudget, draft.durationDays, draft.emissionRate, patch])
+
+  useEffect(() => {
     if (!router.isReady || hydrated) return
     const search = typeof window !== 'undefined' ? window.location.search : ''
     const { returning, draftId } = parseReturnToCreateFarm(search)
@@ -648,20 +753,10 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
     [draft.rewardToken, draft.rewardTokenAddress, containsMarco],
   )
 
-  const builderDeployed = isBuilderDeployed()
-  const builderHandoff = useMemo(
-    () => buildAiBuilderHandoffUrl(draft, eligibility.missingTvlBnb, builderDeployed),
-    [draft, eligibility.missingTvlBnb, builderDeployed],
-  )
-  const manualHref = useMemo(
-    () => buildManualLiquidityHandoffUrl(draft, eligibility.missingTvlBnb),
-    [draft, eligibility.missingTvlBnb],
-  )
-  const createPairHref = useMemo(() => buildCreatePairHandoffUrl(draft), [draft])
-
-  const estimatedApr = computeEstimatedFarmApr(draft)
-  const needsLiquidity =
-    Boolean(draft.selectedPair) && !eligibility.eligible && eligibility.status !== 'missing_pair'
+  const rewardTokenUsd = rewardTokenPrice ? Number(rewardTokenPrice.toSignificant(8)) : undefined
+  const bnbUsd = bnbPrice ? Number(bnbPrice.toSignificant(8)) : undefined
+  const estimatedApr = computeEstimatedFarmApr(draft, eligibility.currentTvlBnb, rewardTokenUsd, bnbUsd)
+  const needsLiquidity = Boolean(draft.selectedPair) && !eligibility.eligible && eligibility.status !== 'missing_pair'
   const configReady =
     eligibility.eligible &&
     !marcoReject.rejected &&
@@ -672,18 +767,64 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
     feeResult.ok
 
   const nextAction: NextAction = !draft.selectedPair
-    ? 'select_pair'
-    : needsLiquidity
+    ? draft.selectionMode === 'create_new'
       ? 'increase_liquidity'
-      : !configReady
-        ? 'continue_config'
-        : 'create_farm'
+      : 'select_pair'
+    : needsLiquidity
+    ? 'increase_liquidity'
+    : !configReady
+    ? 'continue_config'
+    : 'create_farm'
 
   const selectPair = (pair: PublicFarmSelectedPair) => {
     setCreateSoftNote(null)
     setPairDropdownOpen(false)
     patch({ selectedPair: pair, selectionMode: 'search_existing' })
   }
+
+  const resolvePairAfterLiquidity = useCallback(
+    async (resolution?: FarmLiquidityResolution | null) => {
+      const target = resolution ?? lastLiquidityResolution
+      if (!target) return
+      setLiquidityResolution('refreshing')
+      setCreateSoftNote(null)
+      try {
+        const fresh = await refreshPairs()
+        const rows = fresh?.rows ?? pairs
+        const address = target.pairAddress?.toLowerCase()
+        const tokens = [target.token0.toLowerCase(), target.token1.toLowerCase()].sort().join(':')
+        const match = rows.find((row) => {
+          if (address && row.pairAddress.toLowerCase() === address) return true
+          return [row.token0.toLowerCase(), row.token1.toLowerCase()].sort().join(':') === tokens
+        })
+        if (!match) {
+          setLiquidityResolution('indexing')
+          return
+        }
+        const selected = toSelectedPair(match)
+        const nextEligibility = evaluatePublicFarmEligibility({ ...selected, indexed: true })
+        patch({ selectedPair: selected, selectionMode: 'search_existing' })
+        if (nextEligibility.eligible) {
+          setLiquidityResolution('ready')
+          setOpenAcc('reward')
+          setCreateSoftNote('Liquidity confirmed. Pair ready — continue with farm rewards.')
+        } else {
+          setLiquidityResolution('indexing')
+        }
+      } catch {
+        setLiquidityResolution('indexing')
+      }
+    },
+    [lastLiquidityResolution, pairs, patch, refreshPairs],
+  )
+
+  const handleLiquidityConfirmed = useCallback(
+    (resolution: FarmLiquidityResolution) => {
+      setLastLiquidityResolution(resolution)
+      void resolvePairAfterLiquidity(resolution)
+    },
+    [resolvePairAfterLiquidity],
+  )
 
   const reviewRows = [
     ['Pair', draft.selectedPair ? `${draft.selectedPair.symbol0}/${draft.selectedPair.symbol1}` : '—'],
@@ -697,15 +838,19 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
   const onPrimary = () => {
     if (nextAction === 'create_farm') {
-      // Protocol execution remains gated; surface a soft human note only.
       if (!PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute) {
         setCreateSoftNote(CREATE_FARM_UX.createUnavailable)
         return
       }
+      // The factory is bound, but a valid, short-lived eligibility proof is still
+      // mandatory. Never open a wallet request with missing or fabricated proof data.
+      setCreateSoftNote(
+        'Configuration ready. Farm submission remains locked until the verified creation service is connected.',
+      )
     }
   }
 
-  const increaseHref = !builderHandoff.blocked ? builderHandoff.href : manualHref
+  const showInlineLiquidity = draft.selectionMode === 'create_new' || needsLiquidity
 
   return (
     <Section
@@ -730,7 +875,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
             onToggle={() => toggleAcc('pair')}
             testId="create-farm-acc-pair"
           >
-            <div data-testid="create-farm-step-pair">
+            <PairStepLayout data-testid="create-farm-step-pair">
               <ModeRow data-testid="public-farm-pair-mode" style={{ marginTop: 4 }}>
                 <ModeBtn
                   type="button"
@@ -745,20 +890,15 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                   $active={draft.selectionMode === 'create_new'}
                   data-testid="public-farm-create-new-pair"
                   onClick={() => {
-                    const next = {
-                      ...draft,
-                      selectionMode: 'create_new' as const,
-                      updatedAt: new Date().toISOString(),
-                    }
-                    patch({ selectionMode: 'create_new' })
-                    saveDraftToStorage(next)
-                    void router.push(createPairHref)
+                    setCreateSoftNote(null)
+                    setLiquidityResolution('idle')
+                    patch({ selectionMode: 'create_new', selectedPair: null })
+                    setOpenAcc('liquidity')
                   }}
                 >
                   ○ {CREATE_FARM_UX.createNew}
                 </ModeBtn>
               </ModeRow>
-            </div>
 
             {draft.selectionMode === 'search_existing' && (
               <Panel data-testid="public-farm-pair-search">
@@ -876,9 +1016,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 </MetricBlock>
                 <StatusLine data-testid="public-farm-pair-status-label">
                   Status{' '}
-                  <strong>
-                    {eligibility.eligible ? CREATE_FARM_UX.statusReady : CREATE_FARM_UX.statusNotReady}
-                  </strong>
+                  <strong>{eligibility.eligible ? CREATE_FARM_UX.statusReady : CREATE_FARM_UX.statusNotReady}</strong>
                 </StatusLine>
                 {!eligibility.eligible && eligibility.missingTvlBnb != null && eligibility.missingTvlBnb > 0 && (
                   <Hint data-testid="public-farm-missing-tvl">
@@ -899,26 +1037,53 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 <Hint>
                   {CREATE_FARM_UX.youNeed} {formatBnb(eligibility.missingTvlBnb)} {CREATE_FARM_UX.moreLiquidity}
                 </Hint>
-                <ActionRow>
-                  <PrimaryLink
-                    href={increaseHref}
-                    data-testid={
-                      builderHandoff.blocked ? 'public-farm-builder-blocked' : 'public-farm-builder-handoff'
-                    }
-                  >
-                    {CREATE_FARM_UX.increaseLiquidity}
-                  </PrimaryLink>
-                  <SecondaryLink href={manualHref} data-testid="public-farm-manual-liquidity-handoff">
-                    {CREATE_FARM_UX.addLiquidityManually}
-                  </SecondaryLink>
-                </ActionRow>
+                <PrimaryButton
+                  type="button"
+                  $ready
+                  data-testid="public-farm-inline-liquidity-open"
+                  onClick={() => setOpenAcc('liquidity')}
+                >
+                  Add liquidity here
+                </PrimaryButton>
               </Remediation>
             )}
+            </PairStepLayout>
           </MelegaAccordionSection>
+
+          {showInlineLiquidity && (
+            <MelegaAccordionSection
+              id="liquidity"
+              title="Step 2"
+              summary={draft.selectedPair ? 'Add liquidity' : 'Create pair & add liquidity'}
+              open={openAcc === 'liquidity'}
+              onToggle={() => toggleAcc('liquidity')}
+              testId="create-farm-acc-liquidity"
+            >
+              {liquidityResolution === 'indexing' && (
+                <RefreshRow data-testid="create-farm-liquidity-indexing" role="status">
+                  <span>
+                    Transaction confirmed. Pair data is being indexed; refresh here without closing the wizard.
+                  </span>
+                  <RefreshButton type="button" onClick={() => void resolvePairAfterLiquidity()}>
+                    Refresh pair status
+                  </RefreshButton>
+                </RefreshRow>
+              )}
+              {liquidityResolution === 'refreshing' && (
+                <RefreshRow data-testid="create-farm-liquidity-refreshing" role="status">
+                  <span>Checking the updated pair and liquidity…</span>
+                  <RefreshButton type="button" disabled>
+                    Checking…
+                  </RefreshButton>
+                </RefreshRow>
+              )}
+              <FarmInlineLiquidityStep pair={draft.selectedPair} onConfirmed={handleLiquidityConfirmed} />
+            </MelegaAccordionSection>
+          )}
 
           <MelegaAccordionSection
             id="reward"
-            title="Step 2"
+            title={showInlineLiquidity ? 'Step 3' : 'Step 2'}
             summary={draft.rewardToken || 'Reward'}
             open={openAcc === 'reward'}
             onToggle={() => toggleAcc('reward')}
@@ -928,14 +1093,31 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
               <Label>{CREATE_FARM_UX.rewardToken}</Label>
               <InputBox
                 value={draft.rewardToken}
+                list="melega-farm-reward-token-options"
                 onChange={(e) => {
                   setCreateSoftNote(null)
-                  patch({ rewardToken: e.target.value, rewardTokenAddress: e.target.value })
+                  const typed = e.target.value.trim()
+                  const selected = rewardTokenOptions.find(
+                    (asset) =>
+                      asset.address.toLowerCase() === typed.toLowerCase() ||
+                      asset.symbol.toLowerCase() === typed.toLowerCase(),
+                  )
+                  patch({
+                    rewardToken: selected?.symbol ?? typed,
+                    rewardTokenAddress: selected?.address ?? typed,
+                  })
                 }}
-                placeholder="e.g. USDT"
+                placeholder="Search ticker or paste token address"
                 aria-label="Reward Token"
-                disabled={!eligibility.eligible}
               />
+              <datalist id="melega-farm-reward-token-options">
+                {rewardTokenOptions.map((asset) => (
+                  <option key={`${asset.chainId}:${asset.address}`} value={asset.address}>
+                    {asset.symbol}
+                    {asset.name ? ` — ${asset.name}` : ''}
+                  </option>
+                ))}
+              </datalist>
             </Field>
             {marcoReject.rejected && (
               <RejectBanner data-testid="public-farm-marco-reward-rejection" role="status">
@@ -946,12 +1128,10 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
           <MelegaAccordionSection
             id="budget"
-            title="Step 3"
+            title={showInlineLiquidity ? 'Step 4' : 'Step 3'}
             summary={
               draft.rewardBudget || draft.durationDays
-                ? [draft.rewardBudget, draft.durationDays ? `${draft.durationDays}d` : null]
-                    .filter(Boolean)
-                    .join(' · ')
+                ? [draft.rewardBudget, draft.durationDays ? `${draft.durationDays}d` : null].filter(Boolean).join(' · ')
                 : 'Budget & duration'
             }
             open={openAcc === 'budget'}
@@ -998,11 +1178,10 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 <Label>{CREATE_FARM_UX.emission}</Label>
                 <InputBox
                   value={draft.emissionRate}
-                  onChange={(e) => patch({ emissionRate: e.target.value })}
                   placeholder="Tokens / day"
                   inputMode="decimal"
                   aria-label="Emission"
-                  disabled={!eligibility.eligible}
+                  readOnly
                 />
               </Field>
               <Field>
@@ -1022,9 +1201,7 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
             <FieldsGrid data-testid="create-farm-advanced-fields">
               <Field>
                 <Label>Start</Label>
-                <ReadOnlyValue>
-                  {draft.startMode === 'immediate' ? 'Starts when created' : 'Scheduled'}
-                </ReadOnlyValue>
+                <ReadOnlyValue>{draft.startMode === 'immediate' ? 'Starts when created' : 'Scheduled'}</ReadOnlyValue>
               </Field>
               <Field>
                 <Label>Creator wallet</Label>
@@ -1078,6 +1255,34 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 <strong>{v}</strong>
               </ReviewRow>
             ))}
+          </div>
+          <div data-testid="create-farm-funding-flow">
+            <PreviewTitle>Activation flow</PreviewTitle>
+            <FundingFlow>
+              <FundingStep $active={Boolean(draft.selectedPair)}>
+                <span>1</span>
+                <span>Create or select the LP pair</span>
+              </FundingStep>
+              <FundingStep $active={parseNum(draft.rewardBudget) > 0}>
+                <span>2</span>
+                <span>Set reward token, budget and duration</span>
+              </FundingStep>
+              <FundingStep $active={nextAction === 'create_farm'}>
+                <span>3</span>
+                <span>Approve the exact reward budget</span>
+              </FundingStep>
+              <FundingStep>
+                <span>4</span>
+                <span>Confirm creation and the displayed fee in your wallet</span>
+              </FundingStep>
+              <FundingStep>
+                <span>5</span>
+                <span>The factory moves the budget into the new farm and activates it</span>
+              </FundingStep>
+            </FundingFlow>
+            <SoftNote data-testid="create-farm-funding-safety" style={{ marginTop: 10 }}>
+              One flow, two wallet confirmations. The factory never keeps your reward tokens.
+            </SoftNote>
           </div>
         </PreviewCol>
       </Body>

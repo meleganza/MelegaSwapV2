@@ -60,8 +60,9 @@ function usePositionUsdValue(
   return token0USD ?? token1USD ?? undefined
 }
 
-export function useLiquidityPositions() {
+export function useLiquidityPositions(enabled = true) {
   const { address: account } = useAccount()
+  const effectiveAccount = enabled ? account : undefined
   const { chainId } = useActiveChainId()
   const trackedTokenPairs = useTrackedTokenPairs()
   const {
@@ -69,12 +70,13 @@ export function useLiquidityPositions() {
     factoryPairCount,
     isLoading: factoryLoading,
     factoryEnabled,
-  } = useFactoryLiquidityTokenPairs(Boolean(account), chainId)
+  } = useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId)
 
   /** Tracked + factory-enumerated pairs (deduped). Balance gate hides empty LPs. */
   const discoveryTokenPairs = useMemo(() => {
     const seen = new Set<string>()
     const out: [ERC20Token, ERC20Token][] = []
+    if (!enabled) return out
     for (const tokens of [...trackedTokenPairs, ...factoryTokenPairs]) {
       const key = pairKey(tokens)
       if (seen.has(key)) continue
@@ -82,7 +84,7 @@ export function useLiquidityPositions() {
       out.push(tokens)
     }
     return out
-  }, [trackedTokenPairs, factoryTokenPairs])
+  }, [enabled, trackedTokenPairs, factoryTokenPairs])
 
   const tokenPairsWithLiquidityTokens = useMemo(
     () => discoveryTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
@@ -95,11 +97,11 @@ export function useLiquidityPositions() {
   )
 
   const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
+    effectiveAccount,
     liquidityTokens,
   )
 
-  const stablePairs = useLPTokensWithBalanceByAccount(account)
+  const stablePairs = useLPTokensWithBalanceByAccount(effectiveAccount)
 
   const liquidityTokensWithBalances = useMemo(
     () =>
@@ -168,7 +170,7 @@ export function useLiquidityPositions() {
   }, [stablePairs, v2PairsBalances])
 
   const positions = useMemo(() => [...v2Positions, ...stablePositions], [v2Positions, stablePositions])
-  const rawLoading = Boolean(account) && v2IsLoading
+  const rawLoading = enabled && Boolean(effectiveAccount) && v2IsLoading
 
   const [timedOut, setTimedOut] = useState(false)
   const [retryNonce, setRetryNonce] = useState(0)
@@ -189,7 +191,9 @@ export function useLiquidityPositions() {
 
   const isLoading = rawLoading && !timedOut
 
-  const positionsPhase: LiquidityPositionsPhase = !account
+  const positionsPhase: LiquidityPositionsPhase = !enabled
+    ? 'empty'
+    : !account
     ? 'connecting'
     : timedOut && positions.length === 0
       ? 'error'
@@ -202,6 +206,7 @@ export function useLiquidityPositions() {
   const retryPositions = () => setRetryNonce((n) => n + 1)
 
   useEffect(() => {
+    if (!enabled) return
     emitCivilizationEvent('liquidity_position_changed', 'liquidity', {
       positionCount: positions.length,
       account: account ?? null,
@@ -210,7 +215,7 @@ export function useLiquidityPositions() {
       factoryEnabled,
       chainId: chainId ?? null,
     })
-  }, [positions.length, account, positionsPhase, timedOut, factoryEnabled, chainId])
+  }, [enabled, positions.length, account, positionsPhase, timedOut, factoryEnabled, chainId])
 
   return {
     positions,

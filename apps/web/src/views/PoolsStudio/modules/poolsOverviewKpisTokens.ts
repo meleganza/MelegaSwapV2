@@ -15,10 +15,10 @@ export const poolsOverviewKpis = {
   contentMax: '1376px',
   topGapAfterHero: '16px',
   moduleW: '1376px',
-  moduleH: '96px',
+  moduleH: '82px',
 
   cardW: '216px',
-  cardH: '96px',
+  cardH: '82px',
   cardGap: '12px',
   cardPad: '12px 14px',
   cardRadius: '12px',

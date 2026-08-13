@@ -143,7 +143,7 @@ describe('Pools final product consistency', () => {
       }),
       56,
     )!
-    expect(model.participantsDisplay).toBe('—')
+    expect(model.participantsDisplay).toBe('Indexing…')
     expect(model.remainingDisplay).toBe('30 days')
     expect(model.rewardsLeftDisplay).toBe('9K MARCO')
     expect(model.durationDisplay).toBeTruthy()

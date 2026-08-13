@@ -4,7 +4,6 @@ import {
   Modal,
   Text,
   Flex,
-  Image,
   Button,
   Slider,
   BalanceInput,
@@ -34,6 +33,8 @@ import FeeSummary from './FeeSummary'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import type { PoolTxSuccessPayload } from '../Modals/CollectModal'
+import CurrencyLogo from 'components/Logo/CurrencyLogo'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 
 interface VaultStakeModalProps {
   pool: Pool.DeserializedPool<Token>
@@ -76,12 +77,13 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   const { stakingToken, earningToken, apr, stakingTokenPrice, earningTokenPrice } = pool
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
+  const walletChainId = useWalletChainId()
   const cakeVaultContract = useCakeVaultContract(undefined, chainId)
   const {
     userData: { lastDepositedTime, userShares },
     pricePerFullShare,
   } = useCakeVault1()
-  
+
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { toastSuccess, toastError } = useToast()
@@ -157,7 +159,10 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
       // .toString() being called to fix a BigNumber error in prod
       // as suggested here https://github.com/ChainSafe/web3.js/issues/2077
       try {
-        const tx = await cakeVaultContract.withdraw(Math.round(Number(shareStakeToWithdraw.sharesAsBigNumber.toString())), callOptions)
+        const tx = await cakeVaultContract.withdraw(
+          Math.round(Number(shareStakeToWithdraw.sharesAsBigNumber.toString())),
+          callOptions,
+        )
         const receipt = await tx.wait()
         if (receipt.status) {
           toastSuccess(t('Unstaked!'), t('Your earnings have also been harvested to your wallet'))
@@ -195,8 +200,16 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   }
 
   const handleConfirmClick = async () => {
+    if (!account) {
+      toastError(t('Wallet disconnected'), t('Connect your wallet before confirming the staking transaction.'))
+      return
+    }
+    if (walletChainId != null && chainId != null && walletChainId !== chainId) {
+      toastError(t('Wrong network'), t('Switch your wallet to the selected pool network before confirming.'))
+      return
+    }
     const convertedStakeAmount = getDecimalAmount(new BigNumber(stakeAmount), stakingToken.decimals)
-    
+
     if (isRemovingStake) {
       // unstaking
       handleWithdrawal(convertedStakeAmount)
@@ -233,12 +246,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
       <Flex alignItems="center" justifyContent="space-between" mb="8px">
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
-          <Image
-            src={`/images/${chainId}/tokens/${stakingToken.address}.png`}
-            width={24}
-            height={24}
-            alt={stakingToken.symbol}
-          />
+          <CurrencyLogo currency={stakingToken} size="24px" />
           <Text ml="4px" bold>
             {stakingToken.symbol}
           </Text>
@@ -296,7 +304,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
         isLoading={pendingTx}
         endIcon={pendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
         onClick={handleConfirmClick}
-        disabled={!stakeAmount || parseFloat(stakeAmount) === 0}
+        disabled={!account || !stakeAmount || parseFloat(stakeAmount) === 0}
         mt="24px"
       >
         {pendingTx ? t('Confirming') : t('Confirm')}

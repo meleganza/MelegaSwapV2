@@ -1,8 +1,0 @@
-{
-  "status": "READY_FOR_SIGNATURE_WHEN_DEPLOYER_CONNECTED",
-  "estimate": "Founder UI runs eth_estimateGas + eth_gasPrice on certified creation payload",
-  "balanceCheck": "wagmi useBalance on MELEGA DEPLOYER + assessFounderGasReadiness",
-  "cta": "Deploy Create Token Factory",
-  "autoBroadcast": false,
-  "note": "Live gas numbers require Founder wallet connection on /runtime/deployment/ \u2014 not fabricated here"
-}

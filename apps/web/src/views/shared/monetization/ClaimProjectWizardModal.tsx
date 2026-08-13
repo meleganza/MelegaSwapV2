@@ -3,7 +3,8 @@
  */
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
+import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import {
   MelegaModal,
   MelegaModalFooter,
@@ -126,6 +127,7 @@ const PreviewLine = styled.div`
 `
 
 export type ClaimCustomizeDraft = {
+  handle: string
   logo: string
   description: string
   website: string
@@ -141,11 +143,14 @@ type Props = {
   projectSlug: string
   projectName?: string
   projectContract?: string | null
+  projectChainId?: number
+  projectSymbol?: string | null
   initialDraft?: Partial<ClaimCustomizeDraft>
   onPublished?: () => void
 }
 
 const emptyDraft: ClaimCustomizeDraft = {
+  handle: '',
   logo: '',
   description: '',
   website: '',
@@ -161,12 +166,16 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
   projectSlug,
   projectName,
   projectContract = null,
+  projectChainId = 56,
+  projectSymbol = null,
   initialDraft,
   onPublished,
 }) => {
   const { address, isConnected } = useAccount()
+  const { data: signer } = useSigner()
   const [step, setStep] = useState<ClaimStep>('wallet')
   const [ownershipOk, setOwnershipOk] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [draft, setDraft] = useState<ClaimCustomizeDraft>({ ...emptyDraft, ...initialDraft })
   const [error, setError] = useState<string | null>(null)
   const [published, setPublished] = useState(false)
@@ -175,10 +184,10 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
     if (!open) return
     setStep('wallet')
     setOwnershipOk(false)
-    setDraft({ ...emptyDraft, ...initialDraft })
+    setDraft({ ...emptyDraft, handle: projectSlug, ...initialDraft })
     setError(null)
     setPublished(false)
-  }, [open, initialDraft])
+  }, [open, initialDraft, projectSlug])
 
   const stepIndex = STEPS.indexOf(step)
   const modalSteps = STEPS.map((id, i) => ({
@@ -188,11 +197,12 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
     done: i < stepIndex || (id === 'publish' && published),
   }))
 
-  const setField = (key: keyof ClaimCustomizeDraft) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setDraft((d) => ({ ...d, [key]: e.target.value }))
-  }
+  const setField =
+    (key: keyof ClaimCustomizeDraft) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setDraft((d) => ({ ...d, [key]: e.target.value }))
+    }
 
-  const goNext = () => {
+  const goNext = async () => {
     setError(null)
     if (step === 'wallet') {
       if (!isConnected || !address) {
@@ -203,11 +213,31 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
       return
     }
     if (step === 'ownership') {
-      if (!ownershipOk) {
-        setError('Confirm you control the project wallet / deployer.')
+      if (!address || !projectContract) {
+        setError('A connected wallet and project contract are required.')
         return
       }
-      setStep('customize')
+      setBusy(true)
+      try {
+        const response = await fetch('/api/registry/projects/claim', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            action: 'preflight',
+            chainId: projectChainId,
+            contract: projectContract,
+            claimant: address,
+          }),
+        })
+        const payload = await response.json()
+        if (!response.ok || !payload.ok) throw new Error(payload.reason || 'Ownership proof failed.')
+        setOwnershipOk(true)
+        setStep('customize')
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Ownership proof failed.')
+      } finally {
+        setBusy(false)
+      }
       return
     }
     if (step === 'customize') {
@@ -229,36 +259,66 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
     if (i > 0) setStep(STEPS[i - 1])
   }
 
-  const publish = () => {
+  const publish = async () => {
     setError(null)
+    if (!address || !signer || !projectContract || !ownershipOk) {
+      setError('Reconnect the verified owner/deployer wallet.')
+      return
+    }
+    setBusy(true)
     try {
-      const payload = {
-        slug: projectSlug,
+      const issuedAt = new Date().toISOString()
+      const metadata = normalizeClaimMetadata({
+        name: projectName || projectSlug,
+        symbol: projectSymbol || projectName || projectSlug,
+        handle: draft.handle,
+        description: draft.description,
+        logo: draft.logo || null,
+        website: draft.website || null,
+        x: draft.x || null,
+        telegram: draft.telegram || null,
+        discord: draft.discord || null,
+      })
+      const message = buildProjectClaimMessage({
+        chainId: projectChainId,
         contract: projectContract,
-        wallet: address,
-        ...draft,
-        publishedAt: new Date().toISOString(),
-      }
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(`melega.claimDraft.v1.${projectSlug}`, JSON.stringify(payload))
-      }
+        claimant: address,
+        metadata,
+        issuedAt,
+      })
+      const signature = await signer.signMessage(message)
+      const response = await fetch('/api/registry/projects/claim', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'publish',
+          chainId: projectChainId,
+          contract: projectContract,
+          claimant: address,
+          metadata,
+          issuedAt,
+          signature,
+        }),
+      })
+      const payload = await response.json()
+      if (!response.ok || !payload.ok) throw new Error(payload.reason || 'Project publication failed.')
       appendMarketingHistory(projectSlug, {
         kind: 'claim',
-        label: 'Claim Project published',
+        label: `Project Page @${metadata.handle} published`,
         status: 'Completed',
       })
       setPublished(true)
       onPublished?.()
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(false)
     }
   }
 
   const footer = (
     <MelegaModalFooter>
-      <MelegaModalFooterMeta>
-        {projectName || projectSlug} · Claim wizard
-      </MelegaModalFooterMeta>
+      <MelegaModalFooterMeta>{projectName || projectSlug} · Claim wizard</MelegaModalFooterMeta>
       <MelegaModalFooterActions>
         {step !== 'wallet' && !published ? (
           <GhostBtn type="button" onClick={goBack} data-testid="claim-wizard-back">
@@ -271,13 +331,13 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
         )}
         {step === 'publish' ? (
           published ? null : (
-            <PrimaryBtn type="button" onClick={publish} data-testid="claim-wizard-publish">
-              Publish
+            <PrimaryBtn type="button" onClick={() => void publish()} disabled={busy} data-testid="claim-wizard-publish">
+              {busy ? 'Signing…' : 'Sign & publish'}
             </PrimaryBtn>
           )
         ) : (
-          <PrimaryBtn type="button" onClick={goNext} data-testid="claim-wizard-next">
-            Continue
+          <PrimaryBtn type="button" onClick={() => void goNext()} disabled={busy} data-testid="claim-wizard-next">
+            {busy ? 'Checking…' : 'Continue'}
           </PrimaryBtn>
         )}
       </MelegaModalFooterActions>
@@ -313,18 +373,9 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
             <div data-testid="claim-step-ownership">
               <Label>Ownership verification</Label>
               <Meta style={{ marginTop: 6 }}>
-                Confirm you control the deployer or project treasury wallet for{' '}
+                Melega will verify that the connected wallet is the contract owner or original deployer for{' '}
                 {projectContract ? `${projectContract.slice(0, 6)}…${projectContract.slice(-4)}` : projectSlug}.
               </Meta>
-              <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginTop: 10, fontSize: 12 }}>
-                <input
-                  type="checkbox"
-                  checked={ownershipOk}
-                  onChange={(e) => setOwnershipOk(e.target.checked)}
-                  data-testid="claim-ownership-confirm"
-                />
-                <span>I control this project and authorize Melega to list my claim.</span>
-              </label>
             </div>
           ) : null}
 
@@ -332,6 +383,13 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
             <div data-testid="claim-step-customize">
               <Label>Customize</Label>
               <Stack style={{ marginTop: 6 }}>
+                <Field
+                  placeholder="Permanent @handle"
+                  value={draft.handle}
+                  onChange={setField('handle')}
+                  data-testid="claim-handle"
+                />
+                <Meta>Public URL · melega.finance/@{draft.handle.replace(/^@/, '') || 'project'}</Meta>
                 <Field placeholder="Logo URL" value={draft.logo} onChange={setField('logo')} data-testid="claim-logo" />
                 <TextArea
                   placeholder="Description"
@@ -339,11 +397,31 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
                   onChange={setField('description')}
                   data-testid="claim-description"
                 />
-                <Field placeholder="Website" value={draft.website} onChange={setField('website')} data-testid="claim-website" />
+                <Field
+                  placeholder="Website"
+                  value={draft.website}
+                  onChange={setField('website')}
+                  data-testid="claim-website"
+                />
                 <Field placeholder="X / Twitter" value={draft.x} onChange={setField('x')} data-testid="claim-x" />
-                <Field placeholder="Telegram" value={draft.telegram} onChange={setField('telegram')} data-testid="claim-telegram" />
-                <Field placeholder="Discord" value={draft.discord} onChange={setField('discord')} data-testid="claim-discord" />
-                <Field placeholder="GitHub" value={draft.github} onChange={setField('github')} data-testid="claim-github" />
+                <Field
+                  placeholder="Telegram"
+                  value={draft.telegram}
+                  onChange={setField('telegram')}
+                  data-testid="claim-telegram"
+                />
+                <Field
+                  placeholder="Discord"
+                  value={draft.discord}
+                  onChange={setField('discord')}
+                  data-testid="claim-discord"
+                />
+                <Field
+                  placeholder="GitHub"
+                  value={draft.github}
+                  onChange={setField('github')}
+                  data-testid="claim-github"
+                />
               </Stack>
             </div>
           ) : null}
@@ -351,10 +429,15 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
           {step === 'review' ? (
             <div data-testid="claim-step-review">
               <Label>Review</Label>
-              <Meta style={{ marginTop: 6 }}>{draft.description}</Meta>
+              <Meta style={{ marginTop: 6 }}>Project Page · /@{draft.handle.replace(/^@/, '')}</Meta>
+              <Meta>{draft.description}</Meta>
               <Meta>Website · {draft.website || '—'}</Meta>
-              <Meta>X · {draft.x || '—'} · TG · {draft.telegram || '—'}</Meta>
-              <Meta>Discord · {draft.discord || '—'} · GitHub · {draft.github || '—'}</Meta>
+              <Meta>
+                X · {draft.x || '—'} · TG · {draft.telegram || '—'}
+              </Meta>
+              <Meta>
+                Discord · {draft.discord || '—'} · GitHub · {draft.github || '—'}
+              </Meta>
             </div>
           ) : null}
 
@@ -363,8 +446,8 @@ export const ClaimProjectWizardModal: React.FC<Props> = ({
               <Label>Publish</Label>
               <Meta style={{ marginTop: 6 }}>
                 {published
-                  ? 'Claim draft published locally. Marketing History updated.'
-                  : 'Publish stores your claim draft and marks Claim as Completed in Marketing History.'}
+                  ? `Project Page @${draft.handle.replace(/^@/, '')} is live. No manual review is pending.`
+                  : 'One wallet signature publishes the Project Page immediately after the owner/deployer check.'}
               </Meta>
             </div>
           ) : null}

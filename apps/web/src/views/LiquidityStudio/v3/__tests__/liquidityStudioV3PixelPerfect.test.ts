@@ -28,20 +28,20 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(lbHook).toContain("if (currentView !== 'building') return")
   })
 
-  it('tabs: My Liquidity | Add | AI Liquidity Builder', () => {
-    expect(shell).toContain('liquidity-v3-tab-positions')
-    expect(shell).toContain('liquidity-v3-tab-add')
-    expect(shell).toContain('liquidity-v3-tab-ai')
+  it('jump actions: My Liquidity | Add | AI Liquidity Builder | Explore pools', () => {
+    expect(shell).toContain('liquidity-v3-hero-positions')
+    expect(shell).toContain('liquidity-v3-hero-add')
+    expect(shell).toContain('liquidity-v3-hero-ai')
+    expect(shell).toContain('liquidity-v3-explore-pools')
     expect(tokens).toContain("tabPositions: 'My Liquidity'")
     expect(tokens).toContain("tabAi: 'AI Liquidity Builder · BETA'")
   })
 
-  it('Farms/Pools-parity hero + snapshot truth source on single page', () => {
+  it('compact hero + snapshot truth source on single page', () => {
     expect(shell).toContain('liquidity-v3-hero')
-    expect(shell).toContain('min-height: ${liqV3.heroMaxH}')
-    expect(shell).toContain('LiquidityHeroArtwork')
-    expect(shell).toContain('LiquidityHeroTrustPanel')
-    expect(shell).toContain('liquidity-v3-tabs')
+    expect(shell).toContain('data-liquidity-hero-geometry="one-page-compact"')
+    expect(shell).not.toContain('LiquidityHeroArtwork')
+    expect(shell).not.toContain('LiquidityHeroTrustPanel')
     expect(shell).toContain('liquidity-v3-snapshot')
     expect(shell).toContain('GLOBAL_DATA_TRUTH_PIPELINE')
     expect(shell).toContain('useLiquidityMarketSnapshot')
@@ -64,13 +64,14 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(add).toContain('ChainSwitchConfirmDialog')
   })
 
-  it('new pair state + advanced collapsed + preview workspace', () => {
+  it('new pair state + advanced collapsed + integrated preview rail', () => {
     expect(add).toContain('liquidity-add-new-pair')
     expect(add).toContain('New liquidity pool')
     expect(add).toContain('Create Pool & Add Liquidity')
     expect(add).toContain('liquidity-add-advanced')
     expect(add).toContain('<summary>Advanced</summary>')
-    expect(add).toContain('50-50-workspace')
+    expect(add).toContain('single-card-horizontal')
+    expect(add).toContain('data-liquidity-preview="integrated"')
     expect(add).toContain('liquidity-add-pool-state')
   })
 
@@ -81,20 +82,23 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
     expect(remove).toContain("PERCENTS = ['25', '50', '75', '100']")
     expect(remove).toContain('data-primary-metric="deposited-value"')
     expect(remove).toContain('data-secondary-metric="lp-amount"')
+    expect(remove).toContain('data-liquidity-remove-geometry="single-card-horizontal"')
+    expect(remove).toContain('data-liquidity-preview="integrated"')
     expect(shell).toContain('LiquidityRemovePanel')
   })
 
-  it('AI LB BNB-only badge + separate from Add', () => {
-    expect(shell).toContain('liquidity-v3-ai-beta')
+  it('AI LB BNB-only tab stays separate from Add', () => {
     expect(tokens).toContain("aiBeta: 'BETA · BNB only'")
-    expect(shell).toContain('liquidity-v3-ai-entry')
+    expect(tokens).toContain("tabAi: 'AI Liquidity Builder · BETA'")
+    expect(shell).not.toContain('liquidity-v3-ai-entry')
     expect(shell).toContain('LiquidityBuildingCard')
   })
 
-  it('single-page tabs: panels stay mounted; no conditional unmount flash', () => {
+  it('single-page sections: panels stay visible; heavy forms mount progressively', () => {
     expect(shell).toContain('data-liquidity-panels="mounted"')
     expect(shell).toContain('hydratedRef')
-    expect(shell).toContain("display: ${({ $active }) => ($active ? 'block' : 'none')}")
+    expect(shell).toContain('const ProgressiveSurface')
+    expect(shell).toContain('display: block')
     expect(shell).toContain('liquidity-v3-panel-positions')
     expect(shell).toContain('liquidity-v3-panel-add')
     expect(shell).toContain('liquidity-v3-panel-ai')
@@ -106,10 +110,11 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_V3_PIXEL_PERFECT', () => {
   it('AI builder wide dashboard in V3', () => {
     const lb = load('views/LiquidityStudio/onePage/LiquidityBuildingCard.tsx')
     expect(shell).toContain('liquidity-v3-ai-builder')
-    expect(shell).toContain("forceExpanded={tab === 'building'}")
+    expect(shell).toContain('<LiquidityBuildingCard forceExpanded studioOwnedUrl />')
     expect(lb).toContain('$wide={forceExpanded}')
     expect(lb).toContain('liq-lb-studio-dash')
-    expect(lb).toContain("label: 'Setup'")
+    expect(lb).toContain("label: 'Configure plan'")
+    expect(lb).toContain("label: 'Review & activate'")
   })
 
   it('My Liquidity Cards/List + preview floor', () => {

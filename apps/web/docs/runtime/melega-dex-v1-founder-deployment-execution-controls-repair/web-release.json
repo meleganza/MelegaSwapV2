@@ -1,9 +1,0 @@
-{
-  "status": "WEB_RELEASE_PENDING",
-  "branch": "melega-dex-v1-founder-deployment-execution-controls-repair",
-  "baseline": "ac58ec87",
-  "productionUrl": "https://www.melega.finance/runtime/deployment/",
-  "vercelReleasePerformed": false,
-  "reason": "No Vercel production promotion authority exercised in this mission; repaired build verified locally only.",
-  "requiredAction": "Promote this branch commit to production Vercel deployment serving www.melega.finance, then confirm Estimate Deployment Gas + human-readable LB review + Deploy CTA on the public URL."
-}

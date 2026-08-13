@@ -1,6 +1,0 @@
-{
-  "before": 5,
-  "sourceBefore": "static getAllProjects listed minus melega-dex",
-  "afterSource": "measureListedProjectsCount union tokenlist+dex-asset-index",
-  "approxTokenlistProjectTokens": 267
-}

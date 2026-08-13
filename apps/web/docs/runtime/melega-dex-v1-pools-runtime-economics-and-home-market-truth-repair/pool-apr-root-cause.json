@@ -1,9 +1,0 @@
-{
-  "rootCause": "MAX_DISPLAY_APR = 50 in poolsAprRules.normalizeAprForDisplay clamped factual APR values (e.g. 85, 174, 9474) to identical 50.00% on Explore/Featured",
-  "notCause": [
-    "Create Pool estimatedApr",
-    "literal mock apr=50",
-    "0.5 ratio mis-render"
-  ],
-  "repair": "Remove display cap; show factual APR or APR unavailable / Pricing pending when inputs missing; eligibility gate for Top Pools ranking"
-}

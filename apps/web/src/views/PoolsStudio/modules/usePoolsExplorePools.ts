@@ -7,6 +7,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { mergePoolPreviewCards } from 'lib/data-truth/poolConfigPreviewCards'
+import { enrichPoolParticipantCounts } from 'lib/yield-participants/enrichYieldParticipantCards'
+import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
 import type { LiveYieldChainId } from 'lib/data-truth/globalYieldInventory'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolsExplorePoolsViewModel } from './buildPoolsExplorePools'
@@ -33,6 +35,7 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   chainFilter: 'all' | LiveYieldChainId
 } {
   const runtime = usePoolsRuntime()
+  const { snapshot: participantSnapshot } = useYieldParticipants()
   const { address: account } = useAccount()
   const { chainId: activeChainId } = useActiveChainId()
   const chainId = activeChainId ?? 56
@@ -42,10 +45,10 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   const [chainFilter, setChainFilter] = useState<'all' | LiveYieldChainId>('all')
   const lastGoodRef = useRef<ExploreSnapshot | null>(lastGoodExploreByChain.get(chainId) ?? null)
 
-  const portfolioPools = useMemo(
-    () => mergePoolPreviewCards(runtime.portfolioPools ?? [], chainId),
-    [runtime.portfolioPools, chainId],
-  )
+  const portfolioPools = useMemo(() => {
+    const merged = mergePoolPreviewCards(runtime.portfolioPools ?? [], chainId)
+    return enrichPoolParticipantCounts(merged, participantSnapshot, chainId)
+  }, [runtime.portfolioPools, chainId, participantSnapshot])
 
   // Unfiltered inventory snapshot — never let a filter/search empty overwrite last-good.
   const inventoryVm = useMemo(() => {

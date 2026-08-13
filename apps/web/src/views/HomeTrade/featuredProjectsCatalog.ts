@@ -42,6 +42,15 @@ const TOKEN_BY_SYMBOL = (() => {
   return map
 })()
 
+const TOKEN_BY_ADDRESS = (() => {
+  const map = new Map<string, TokenListEntry>()
+  for (const raw of (defaultTokenList.tokens ?? []) as TokenListEntry[]) {
+    if (!raw.chainId || !raw.address) continue
+    map.set(`${raw.chainId}:${raw.address.toLowerCase()}`, raw)
+  }
+  return map
+})()
+
 const SLUG_TO_SYMBOL: Record<(typeof FOUNDER_FEATURED_SLUGS)[number], string> = {
   mm72: 'MM72',
   eyed: 'EYED',
@@ -85,9 +94,7 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
       logoUrl,
       description,
       category,
-      href: project
-        ? resolveCanonicalProjectHref({ slug: project.slug, chainId: 56 })
-        : '/projects',
+      href: project ? resolveCanonicalProjectHref({ slug: project.slug, chainId: 56 }) : '/projects',
       resolved: false,
       resolutionFailure: `Missing BSC token address for ${slug}`,
       eligibleForRotation: Boolean(project),
@@ -113,6 +120,49 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
   }
 }
 
+/** Resolve any paid Featured identity. A canonical registry project is mandatory for Home placement. */
+export function resolveFeaturedProjectIdentity(input: {
+  slug?: string | null
+  address?: string | null
+  chainId?: number | null
+}): FeaturedProjectResolved | null {
+  const chainId = input.chainId && Number.isFinite(input.chainId) ? Number(input.chainId) : 56
+  const slug = input.slug?.trim().toLowerCase() || null
+  const addressKey = input.address?.trim().toLowerCase() || null
+  const projects = getAllProjects()
+  const project = projects.find(
+    (candidate) =>
+      candidate.slug === slug ||
+      candidate.aliases?.includes(slug || '') ||
+      candidate.resources.tokens.some(
+        (token) => token.chainId === chainId && token.address.toLowerCase() === addressKey,
+      ),
+  )
+  if (!project) return null
+
+  const tokenFromProject =
+    project.resources.tokens.find((token) => token.chainId === chainId && token.address.toLowerCase() === addressKey) ??
+    project.resources.tokens.find((token) => token.chainId === chainId)
+  const tokenFromList = addressKey ? TOKEN_BY_ADDRESS.get(`${chainId}:${addressKey}`) : undefined
+  const address = tokenFromProject?.address ?? tokenFromList?.address
+  const symbol = tokenFromProject?.symbol ?? tokenFromList?.symbol
+  if (!address || !symbol) return null
+
+  return {
+    slug: project.slug,
+    displayName: project.displayName,
+    symbol,
+    address,
+    chainId,
+    logoUrl: project.logoUrl ?? tokenFromList?.logoURI,
+    description: project.tagline ?? project.description?.slice(0, 120),
+    category: project.sectorTags?.[0] ?? project.projectType,
+    href: resolveCanonicalProjectHref({ slug: project.slug, chainId, address }),
+    resolved: true,
+    eligibleForRotation: true,
+  }
+}
+
 /** All founder slugs, resolved — including entries ineligible for rotation (diagnostic use only). */
 export function resolveFounderFeaturedProjectsUnfiltered(): FeaturedProjectResolved[] {
   return FOUNDER_FEATURED_SLUGS.map(resolveFeaturedProject)
@@ -131,4 +181,10 @@ export function featuredRotationOffset(catalogLength: number, nowMs = Date.now()
   if (catalogLength <= 4) return 0
   const slot = Math.floor(nowMs / slotMs)
   return (slot * 4) % catalogLength
+}
+
+export function selectFeaturedRotationWindow<T>(catalog: T[], nowMs = Date.now(), slots = 4, slotMs = 8 * 60_000): T[] {
+  if (catalog.length <= slots) return catalog.slice()
+  const offset = featuredRotationOffset(catalog.length, nowMs, slotMs)
+  return Array.from({ length: slots }, (_, index) => catalog[(offset + index) % catalog.length])
 }

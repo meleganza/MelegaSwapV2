@@ -102,7 +102,7 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
     expect(shell).toContain('LiquidityRuntimeProvider')
     expect(shell).toContain('LiquidityMyPositionsModule')
     expect(shell).toContain('LiquidityAddModule')
-    expect((shell.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
+    expect((shell.match(/<LiquidityRuntimeProvider(?:\s[^>]*)?>/g) || []).length).toBe(1)
     expect((shell.match(/<\/LiquidityRuntimeProvider>/g) || []).length).toBe(1)
     const add = load('modules/LiquidityAddModule.tsx')
     expect(add).not.toContain('LiquidityRuntimeProvider')

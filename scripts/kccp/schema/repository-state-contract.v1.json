@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kiri:kccp/v1/repository-state-contract.v1",
+  "title": "repository-state-contract.v1",
+  "description": "Cached from Build 422 evidence (2026-07-13) + Founder integration package. Live GET schema endpoint unavailable.",
+  "type": "object",
+  "required": [
+    "schema",
+    "protocol_version",
+    "state_contract_id",
+    "producer",
+    "producer_type",
+    "product_code",
+    "organ_code",
+    "repository_code",
+    "repository_name",
+    "repository_url",
+    "default_branch",
+    "reported_branch",
+    "commit_sha",
+    "commit_message",
+    "commit_timestamp",
+    "working_tree_state",
+    "dirty_entry_count",
+    "current_mission",
+    "generated_at",
+    "valid_from",
+    "confidence",
+    "verification_mode",
+    "idempotency_key",
+    "digest_sha256"
+  ],
+  "properties": {
+    "correlation_id": { "type": "string" },
+    "digest_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signature": { "type": "string" },
+    "expires_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true,
+  "$comment": "Build rejects null for correlation_id, digest_sha256, signature, expires_at. Optional fields must be omitted, not null. Request HMAC uses x-kccp-signature header; body signature omitted when absent."
+}

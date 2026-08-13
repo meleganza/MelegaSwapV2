@@ -10,8 +10,8 @@ const Box = styled.div`
   margin-bottom: 14px;
   padding: 8px 10px;
   box-sizing: border-box;
-  background: #171512;
-  border: 1px solid rgba(244, 196, 48, 0.18);
+  background: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -81,10 +81,10 @@ export const TradeSmartRouteBox: React.FC = () => {
     phase === 'routing'
       ? loadingLabel ?? 'Routing…'
       : phase === 'error' && error
-        ? error.message
-        : executionSummary.executionRoute
-          ? 'Best Route Found'
-          : 'Awaiting quote'
+      ? error.message
+      : executionSummary.executionRoute
+      ? 'Best Route Found'
+      : 'Awaiting quote'
 
   const savingsNode =
     phase === 'routing' ? (

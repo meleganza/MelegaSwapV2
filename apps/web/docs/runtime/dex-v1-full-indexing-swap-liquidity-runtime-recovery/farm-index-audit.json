@@ -1,7 +1,0 @@
-{
-  "configuredUniquePids": 385,
-  "registryMasterChefFarms": 387,
-  "registryActiveFarms": 66,
-  "displayedHomeCountNote": "Home KPI uses farms with multiplier !== 0X from runtime hydrate",
-  "decimalFormattingFix": "commandCenterPortfolioCutover formatStakeAmount via getBalanceNumber"
-}

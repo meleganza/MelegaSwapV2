@@ -14,8 +14,8 @@ function load(rel: string) {
 describe('Liquidity Builder founder UX redesign', () => {
   it('uses founder terminology in primary copy', () => {
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
-    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
-    expect(LB_UX.tokenToGrowLabel).toBe('Token to Grow')
+    expect(LB_UX.quoteAssetLabel).toBe('Pair with')
+    expect(LB_UX.tokenToGrowLabel).toBe('Project token')
     expect(LB_UX.noActiveProgramTitle).toBe('Create your first AI Liquidity Program')
     expect(LB_UX.noActiveProgramCta).toBe('Create Liquidity Program')
     expect(LB_UX.entrySupport).toMatch(/token reserve/i)

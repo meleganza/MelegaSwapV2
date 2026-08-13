@@ -1,5 +1,0 @@
-{
-  "note": "last-good Explore protection preserved (usePoolsExplorePools lastGoodExploreByChain); layout changes do not alter wallet-independent Explore source",
-  "pass": true,
-  "populatedToEmptyProtection": "retained"
-}

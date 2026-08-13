@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
-import { MelegaModal } from 'design-system/melega'
+// Direct import avoids the design-system barrel loading GlobalHeader again
+// while GlobalHeader is still evaluating the wallet/network menu.
+import { MelegaModal } from 'design-system/melega/components/Modal'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
@@ -64,14 +66,10 @@ const ChainCard = styled.button<{ $active: boolean }>`
   margin: 0;
   padding: 10px 10px;
   border-radius: 12px;
-  border: 1px solid
-    ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.55)' : theme.colors.cardBorder)};
-  background: ${({ theme, $active }) =>
-    $active ? 'rgba(221, 185, 47, 0.12)' : 'rgba(255,255,255,0.03)'};
+  border: 1px solid ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.55)' : theme.colors.cardBorder)};
+  background: ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.12)' : 'rgba(255,255,255,0.03)')};
   box-shadow: ${({ $active }) =>
-    $active
-      ? 'inset 0 0 0 1px rgba(221, 185, 47, 0.22), 0 8px 18px rgba(0,0,0,0.32)'
-      : '0 4px 12px rgba(0,0,0,0.22)'};
+    $active ? 'inset 0 0 0 1px rgba(221, 185, 47, 0.22), 0 8px 18px rgba(0,0,0,0.32)' : '0 4px 12px rgba(0,0,0,0.22)'};
   cursor: pointer;
   text-align: left;
   min-height: 48px;
@@ -115,14 +113,13 @@ const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${({ $tone }) =>
-    $tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : '#8a6a1a'};
+  color: ${({ $tone }) => ($tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : '#8a6a1a')};
   background: ${({ $tone }) =>
     $tone === 'live'
       ? 'rgba(34, 160, 80, 0.14)'
       : $tone === 'active'
-        ? 'rgba(221, 185, 47, 0.16)'
-        : 'rgba(200, 150, 40, 0.16)'};
+      ? 'rgba(221, 185, 47, 0.16)'
+      : 'rgba(200, 150, 40, 0.16)'};
 `
 
 const SwitchError = styled.div`
@@ -193,9 +190,7 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
                   <ChainLogo chainId={chain.id} width={22} height={22} />
                   <ChainMeta>
                     <ChainName $active={active}>{headerChainLabel(chain.id)}</ChainName>
-                    <StatusPill $tone={active ? 'active' : 'live'}>
-                      {active ? t('Active') : t('LIVE')}
-                    </StatusPill>
+                    <StatusPill $tone={active ? 'active' : 'live'}>{active ? t('Active') : t('LIVE')}</StatusPill>
                   </ChainMeta>
                 </ChainCard>
               )

@@ -1,9 +1,0 @@
-{
-  "ssot": "apps/web/src/config/constants/createTokenFactoryDeployment.ts",
-  "readiness": "apps/web/src/views/ListStudio/createTokenReadiness.ts",
-  "api": "/api/create-token/readiness",
-  "listFlag": "LIST_CREATE_TOKEN_AVAILABLE=false",
-  "factoryAddress": null,
-  "uiState": "FACTORY_NOT_DEPLOYED",
-  "readyWhileNull": false
-}

@@ -1,6 +1,0 @@
-{
-  "method": "new production deployment alias cutover",
-  "buildIdObserved": "v2ZpovhDtot7Y08TK431O",
-  "hardRefreshRecommended": true,
-  "indexerCron": "/api/indexer/run every 5m"
-}

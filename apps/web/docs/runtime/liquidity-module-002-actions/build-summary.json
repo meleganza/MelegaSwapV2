@@ -1,6 +1,0 @@
-{
-  "missionId": "LIQUIDITY_MODULE_002_ACTIONS",
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "status": "passed"
-}

@@ -2,13 +2,17 @@
  * Home Featured Projects — four compact equal premium cards on ONE desktop row.
  * Soft ambient gold glow only (no yellow border). Human-formatted prices.
  */
-import React, { useCallback, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
-import { resolveFounderFeaturedProjects } from './featuredProjectsCatalog'
+import {
+  resolveFeaturedProjectIdentity,
+  resolveFounderFeaturedProjects,
+  selectFeaturedRotationWindow,
+  type FeaturedProjectResolved,
+} from './featuredProjectsCatalog'
 import { markProjectNavClick } from 'views/ProjectPage/v5/projectPagePerf'
 import {
   formatFeaturedChange,
@@ -23,6 +27,45 @@ import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
 import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
+import type { RotationCandidate } from 'lib/featured-placement'
+import { formatPaidPlacementRemaining } from 'lib/trending/paidTickerPlacements'
+
+type FeaturedCardEntry = {
+  project: FeaturedProjectResolved
+  placement?: RotationCandidate
+}
+
+type RotationResponse = { candidates?: RotationCandidate[] }
+
+export function selectFeaturedCardRotation(
+  paidCandidates: RotationCandidate[],
+  fallbackProjects: FeaturedProjectResolved[],
+  nowMs: number,
+): FeaturedCardEntry[] {
+  const seen = new Set<string>()
+  const paid = paidCandidates
+    .slice()
+    .sort((a, b) => Date.parse(a.scheduledEnd) - Date.parse(b.scheduledEnd))
+    .flatMap((placement) => {
+      const project = resolveFeaturedProjectIdentity({
+        slug: placement.projectSlug,
+        address: placement.projectContract,
+        chainId: 56,
+      })
+      if (!project || seen.has(project.slug)) return []
+      seen.add(project.slug)
+      return [{ project, placement }]
+    })
+
+  if (paid.length > 4) {
+    return selectFeaturedRotationWindow(paid, nowMs)
+  }
+
+  const fallback = fallbackProjects
+    .filter((project) => !seen.has(project.slug))
+    .map((project) => ({ project }))
+  return [...paid, ...fallback].slice(0, 4)
+}
 
 const FOUNDER_PAIR_BY_SLUG: Record<string, string> = {
   mm72: FOUNDER_WBNB_PAIR_ADDRESSES[0],
@@ -132,6 +175,13 @@ const Verified = styled.span`
   color: #6ddc8c;
 `
 
+const PlacementCountdown = styled.span`
+  font-size: 9px;
+  font-weight: 750;
+  color: #f4c430;
+  font-variant-numeric: tabular-nums;
+`
+
 const Names = styled.div`
   min-width: 0;
   flex: 1;
@@ -219,7 +269,7 @@ const Actions = styled.div`
   margin-top: 2px;
 `
 
-const TradeBtn = styled.button`
+const TradeBtn = styled(Link)<{ $disabled?: boolean }>`
   height: 32px;
   min-height: 32px;
   border: none;
@@ -228,12 +278,15 @@ const TradeBtn = styled.button`
   color: #111;
   font-size: 11px;
   font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
   cursor: pointer;
 
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
+  opacity: ${({ $disabled }) => ($disabled ? 0.45 : 1)};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 
   &:focus-visible {
     outline: 2px solid ${uxRebuildColors.gold};
@@ -282,48 +335,68 @@ const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) 
     '1H',
   )
   const points = useMemo(
-    () => chartEntries.slice(-24).map((c) => c.close).filter((n) => Number.isFinite(n) && n > 0),
+    () =>
+      chartEntries
+        .slice(-24)
+        .map((c) => c.close)
+        .filter((n) => Number.isFinite(n) && n > 0),
     [chartEntries],
   )
   if (!pairAddress) return <SparkUnavailable>—</SparkUnavailable>
   if (points.length < 2) {
     return (
-      <SparkUnavailable data-testid="featured-spark-unavailable">
-        {status === 'loading' ? '…' : '—'}
-      </SparkUnavailable>
+      <SparkUnavailable data-testid="featured-spark-unavailable">{status === 'loading' ? '…' : '—'}</SparkUnavailable>
     )
   }
   return <AnimatedSparkline points={points} width={64} height={16} />
 }
 
 export const FeaturedProjectsRail: React.FC = () => {
-  const router = useRouter()
-  const cards = useMemo(() => resolveFounderFeaturedProjects(), [])
-  const { rowsBySlug } = useFeaturedProjectMarkets()
+  const fallbackCards = useMemo(() => resolveFounderFeaturedProjects(), [])
+  const [paidCandidates, setPaidCandidates] = useState<RotationCandidate[]>([])
+  const [rotationNow, setRotationNow] = useState(0)
 
-  // Founder P0: Featured Trade opens the real Swap shell (not Home, not project embed).
-  const onTrade = useCallback(
-    (p: (typeof cards)[number]) => {
-      if (!p.address) return
-      const q = new URLSearchParams({
-        inputCurrency: 'BNB',
-        outputCurrency: p.address,
-        source: 'featured-home',
-      })
-      const href = `/swap?${q.toString()}`
-      void router.push(href).catch(() => {
-        window.location.assign(href)
-      })
-    },
-    [router],
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        const response = await fetch('/api/featured/rotation-candidates')
+        if (!response.ok) return
+        const body = (await response.json()) as RotationResponse
+        if (!cancelled) {
+          setPaidCandidates(body.candidates ?? [])
+          setRotationNow(Date.now())
+        }
+      } catch {
+        // Founder fallback remains visible when the paid placement feed is unavailable.
+      }
+    }
+    void load()
+    const id = window.setInterval(load, 60_000)
+    return () => {
+      cancelled = true
+      window.clearInterval(id)
+    }
+  }, [])
+
+  const cards = useMemo(
+    () => selectFeaturedCardRotation(paidCandidates, fallbackCards, rotationNow || 0),
+    [paidCandidates, fallbackCards, rotationNow],
   )
+  const { rowsBySlug } = useFeaturedProjectMarkets()
 
   return (
     <Shell data-testid="dex-home-featured-projects" data-home-section="featured-projects">
       <Grid>
-        {cards.map((p) => {
+        {cards.map(({ project: p, placement }) => {
           const market = rowsBySlug[p.slug]
           const change = formatFeaturedChange(market)
+          const q = new URLSearchParams({
+            inputCurrency: 'BNB',
+            outputCurrency: p.address || '',
+            source: 'featured-home',
+          })
+          const tradeHref = p.address ? `/swap?${q.toString()}` : '/swap'
           return (
             <Card
               key={p.slug}
@@ -343,8 +416,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   />
                   <Names>
                     <Name>
-                      {p.displayName}{' '}
-                      <PlacementLabel kind="featured" />
+                      {p.displayName} <PlacementLabel kind="featured" />
                     </Name>
                     <Meta>{p.symbol}</Meta>
                   </Names>
@@ -352,34 +424,29 @@ export const FeaturedProjectsRail: React.FC = () => {
                 <CardBadges>
                   <MelegaExploreChainBadge chainId={p.chainId} />
                   {p.resolved ? <Verified title="Canonical identity resolved">Verified</Verified> : null}
+                  {placement ? (
+                    <PlacementCountdown title="Paid Featured time remaining" data-testid={`featured-time-${p.slug}`}>
+                      {formatPaidPlacementRemaining(placement.scheduledEnd, rotationNow || Date.now())}
+                    </PlacementCountdown>
+                  ) : null}
                 </CardBadges>
               </Identity>
               <Metrics>
                 <Price
-                  title={
-                    market?.source === 'melega-factory-reserves'
-                      ? 'Reserve price · Melega Factory'
-                      : 'Melega DEX'
-                  }
+                  title={market?.source === 'melega-factory-reserves' ? 'Reserve price · Melega Factory' : 'Melega DEX'}
                 >
                   {formatFeaturedPrice(market)}
                 </Price>
                 <Change
                   $empty={change.empty}
                   $positive={change.positive}
-                  title={
-                    change.empty
-                      ? change.text
-                      : `Melega DEX · ${market?.periodLabel ?? '24H'}`
-                  }
+                  title={change.empty ? change.text : `Melega DEX · ${market?.periodLabel ?? '24H'}`}
                 >
                   {change.text}
                 </Change>
               </Metrics>
               <SparkRow data-testid={`featured-spark-${p.slug}`}>
-                <FeaturedMiniSpark
-                  pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]}
-                />
+                <FeaturedMiniSpark pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]} />
               </SparkRow>
               <StatGrid>
                 <Stat>
@@ -392,26 +459,23 @@ export const FeaturedProjectsRail: React.FC = () => {
                 </Stat>
                 <Stat>
                   <StatLabel>{market?.marketCapLabel === 'Fully Diluted Value' ? 'FDV' : 'Mkt Cap'}</StatLabel>
-                  <StatValue title={market?.marketCapLabel ?? undefined}>
-                    {formatFeaturedMarketCap(market)}
-                  </StatValue>
+                  <StatValue title={market?.marketCapLabel ?? undefined}>{formatFeaturedMarketCap(market)}</StatValue>
                 </Stat>
               </StatGrid>
               <Actions>
                 <TradeBtn
-                  type="button"
-                  disabled={!p.address || !p.slug}
-                  onClick={() => onTrade(p)}
+                  href={tradeHref}
+                  $disabled={!p.address || !p.slug}
+                  aria-disabled={!p.address || !p.slug}
+                  tabIndex={!p.address || !p.slug ? -1 : undefined}
+                  onClick={(event) => {
+                    if (!p.address || !p.slug) event.preventDefault()
+                  }}
                   data-testid={`featured-trade-${p.slug}`}
                 >
                   Trade
                 </TradeBtn>
-                <ViewLink
-                  href={p.href}
-                  prefetch={false}
-                  data-testid={`featured-view-${p.slug}`}
-                  onClick={() => markProjectNavClick()}
-                >
+                <ViewLink href={p.href} data-testid={`featured-view-${p.slug}`} onClick={() => markProjectNavClick()}>
                   View Project
                 </ViewLink>
               </Actions>

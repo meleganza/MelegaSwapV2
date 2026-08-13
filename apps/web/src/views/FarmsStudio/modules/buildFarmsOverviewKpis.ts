@@ -342,7 +342,10 @@ export function buildFarmsOverviewKpisFromParts(input: {
       provenance: {
         tvl: 'farm.liquidity (LP farms only; pid 0 excluded; Pools excluded)',
         activeFarms: 'live/indexing LP farms with non-zero multiplier',
-        activeFarmers: 'none — unique wallet index unavailable',
+        activeFarmers:
+          input.uniqueFarmersCount != null
+            ? 'MasterChef Deposit/Withdraw/EmergencyWithdraw participant index'
+            : 'none — unique wallet index unavailable',
         rewards24h: 'none — indexed 24H distribution not available; emission not used',
         sustainableApr: 'listRewardingFarms + positive liquidity + live status',
         harvestable: 'userData.earnings × cakePriceBusd',

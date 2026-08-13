@@ -1,7 +1,0 @@
-{
-  "status": "WEB_RELEASE_PENDING",
-  "branch": "melega-dex-v1-founder-deployment-certified-bytecode-autoload",
-  "baseline": "047bffeb",
-  "vercelReleasePerformed": false,
-  "requiredAction": "Deploy this branch to Vercel production serving www.melega.finance, then verify Certified artifact loaded + Deploy <Contract> opens MetaMask"
-}

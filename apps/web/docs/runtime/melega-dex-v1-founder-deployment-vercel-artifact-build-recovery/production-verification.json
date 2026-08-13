@@ -1,7 +1,0 @@
-{
-  "status": "WEB_RELEASE_PENDING",
-  "reason": "Preview deployment succeeded; production promotion not performed by this mission.",
-  "promoteBranch": "melega-dex-v1-founder-deployment-vercel-artifact-build-recovery",
-  "promoteCommit": "ab022fa58e485c054206235b7a0f6c67217662bd",
-  "previewUrl": "https://melega-swap-v2-7rf498bsr-melegazas-projects.vercel.app"
-}

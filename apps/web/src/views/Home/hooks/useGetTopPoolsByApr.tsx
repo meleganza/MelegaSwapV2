@@ -123,10 +123,10 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
         return { pool, apr, tvlUsd, life }
       })
       // Certified economics only — never surface inventory/skeleton names with empty TVL/APR.
-      .filter((row) => row.life.rewarding && row.apr > 0)
+      .filter((row) => row.tvlUsd > 0 || row.apr > 0)
       .sort((a, b) => {
-        if (b.apr !== a.apr) return b.apr - a.apr
         if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd
+        if (b.apr !== a.apr) return b.apr - a.apr
         const idA = String(a.pool.contractAddress || a.pool.sousId).toLowerCase()
         const idB = String(b.pool.contractAddress || b.pool.sousId).toLowerCase()
         return idA.localeCompare(idB)

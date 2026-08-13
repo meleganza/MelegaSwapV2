@@ -115,7 +115,7 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(farmsExplore.cardH).toBe('268px')
     expect(farmsExplore.cardGapX).toBe('12px')
     expect(farmsExplore.cardGapY).toBe('12px')
-    expect(farmsExplore.initialLimit).toBe(9)
+    expect(farmsExplore.initialLimit).toBe(8)
   })
 
   it('mounts Module 004 after My Farms, supersedes legacy grid, omits 009–010', () => {
@@ -284,12 +284,11 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       filter: 'All',
       sort: 'Highest Sustainable APR',
       search: '',
-      visibleLimit: 9,
+      visibleLimit: 8,
     })
     expect(vm.totalActive).toBe(12)
-    // P0: All means all — hard limit removed for the All filter.
-    expect(vm.visibleFarms).toHaveLength(12)
-    expect(vm.hasMore).toBe(false)
+    expect(vm.visibleFarms).toHaveLength(8)
+    expect(vm.hasMore).toBe(true)
 
     const filtered = buildFarmsExploreFarmsViewModel({
       portfolioFarms: cards,
@@ -299,10 +298,10 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       filter: 'High APR',
       sort: 'Highest Sustainable APR',
       search: '',
-      visibleLimit: 9,
+      visibleLimit: 8,
     })
-    expect(filtered.visibleFarms.length).toBeLessThanOrEqual(9)
-    expect(filtered.hasMore).toBe(filtered.farms.length > 9)
+    expect(filtered.visibleFarms.length).toBeLessThanOrEqual(8)
+    expect(filtered.hasMore).toBe(filtered.farms.length > 8)
 
     const dupPid = makeCard({ pid: 1, id: 'farm-1-dup' })
     const dupLp = makeCard({

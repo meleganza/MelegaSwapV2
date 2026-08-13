@@ -1,7 +1,0 @@
-{
-  "schema": "melega.lb.canary-activate-build.v1",
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "exitCode": 0
-}

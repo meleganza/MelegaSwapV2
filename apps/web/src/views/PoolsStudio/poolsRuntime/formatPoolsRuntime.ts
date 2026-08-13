@@ -317,7 +317,9 @@ export function mapPoolToPreviewCard(
     explorerUrl: contract.explorerUrl,
     stakeExplorerUrl: getTokenExplorerUrl(stakeAddr),
     rewardExplorerUrl: getTokenExplorerUrl(rewardAddr),
-    participants: staked > 0 ? formatTokenAmount(pool.totalStaked, pool.stakingToken.decimals) : '—',
+    // totalStaked is a token amount, never a wallet census. Keep unavailable until
+    // a per-pool participant index exists so Featured and Explore cards cannot mislabel it.
+    participants: '—',
     cta: status === 'ended' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawPool: pool,

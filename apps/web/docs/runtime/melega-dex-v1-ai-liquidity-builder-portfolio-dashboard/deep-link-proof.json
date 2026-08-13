@@ -1,7 +1,0 @@
-{
-  "query": "?view=building&program=0x…&step=dashboard",
-  "openFromPortfolio": "openProgramDetail(programAddress)",
-  "backToPortfolio": "returnToPortfolio() clears program query + card.reset()",
-  "readModel": "useProgramReadModel({ programAddress: deepLinkProgram })",
-  "indexedEnrichment": "useLbProgramDetail(deepLinkProgram)"
-}

@@ -3,18 +3,18 @@
  * Applied across Home, Liquidity, Farms, Pools, List, Passport, Project Page.
  */
 export const uxRebuildColors = {
-  pageBg: '#050505',
-  headerBg: 'rgba(5,5,5,0.96)',
-  card: '#101010',
-  cardElevated: '#151515',
-  input: '#121212',
-  hover: '#181818',
-  borderStrong: '#2A2A2A',
-  border: '#1F1F1F',
-  divider: 'rgba(255,255,255,0.06)',
+  pageBg: '#050607',
+  headerBg: 'rgba(5,6,7,0.92)',
+  card: '#0D0F11',
+  cardElevated: '#14171A',
+  input: '#121518',
+  hover: '#191D21',
+  borderStrong: 'rgba(255,255,255,0.13)',
+  border: 'rgba(255,255,255,0.08)',
+  divider: 'rgba(255,255,255,0.07)',
   text: '#F5F5F5',
-  secondary: '#A8A8A8',
-  muted: '#747474',
+  secondary: '#A7ADB4',
+  muted: '#737B84',
   gold: '#DDB92F',
   goldHover: '#E8C83B',
   goldDarkSurface: '#1A170A',
@@ -48,10 +48,17 @@ export const uxRebuildRadius = {
 } as const
 
 export const uxRebuildShadow = {
-  card: '0 10px 32px rgba(0,0,0,0.26)',
-  elevated: '0 18px 48px rgba(0,0,0,0.36)',
-  goldCta: '0 8px 28px rgba(221,185,47,0.14)',
+  card: '0 18px 52px rgba(0,0,0,0.28)',
+  elevated: '0 28px 80px rgba(0,0,0,0.48)',
+  goldCta: '0 10px 30px rgba(221,185,47,0.16)',
 } as const
 
-export const uxRebuildFont =
-  "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+export const uxRebuildFont = "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+
+export const uxRebuildDisplayFont = "'Melega Relative', 'Inter', system-ui, sans-serif"
+
+export const uxRebuildMotion = {
+  fast: '140ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+  standard: '180ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+  reveal: '420ms cubic-bezier(0.16, 1, 0.3, 1)',
+} as const

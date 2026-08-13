@@ -63,7 +63,7 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     expect(shell).toContain('data-liquidity-studio-screen')
     expect(shell).toContain('data-liquidity-architecture="000"')
     expect(shell).toContain('LiquidityRuntimeProvider')
-    expect((shell.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
+    expect((shell.match(/<LiquidityRuntimeProvider(?:\s[^>]*)?>/g) || []).length).toBe(1)
     expect(shell).toContain('data-liquidity-ia="v3-tabs"')
     expect(page).not.toContain('data-liquidity-module-009')
   })

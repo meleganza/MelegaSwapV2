@@ -18,8 +18,9 @@ import {
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
 import HeaderNavDropdown from './HeaderNavDropdown'
-import { useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
+import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { IconChevronDown, IconUser } from './HeaderIcons'
+import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 
 const Bar = styled.header`
   display: none;
@@ -145,9 +146,7 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
     $active ? uxRebuildColors.gold : $open ? uxRebuildColors.text : uxRebuildColors.secondary};
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    background-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 160ms cubic-bezier(0.4, 0, 0.2, 1), color 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     background: ${uxRebuildColors.hover};
@@ -185,9 +184,7 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   color: ${({ $active }) => ($active ? uxRebuildColors.gold : uxRebuildColors.secondary)};
   white-space: nowrap;
   text-decoration: none;
-  transition:
-    background-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 160ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: background-color 160ms cubic-bezier(0.4, 0, 0.2, 1), color 160ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
@@ -281,6 +278,26 @@ const RightCluster = styled.div`
   [data-testid='melega-header-chain'] [role='button'] {
     max-width: 78px;
   }
+
+  .melega-chain-avatar {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    flex: 0 0 24px !important;
+    aspect-ratio: 1 / 1;
+  }
+
+  [data-testid='melega-header-chain'] .melega-chain-avatar.melega-chain-avatar > img {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    max-width: 24px !important;
+    max-height: 24px !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: contain !important;
+  }
 `
 
 const MyMelegaTrigger = styled.button`
@@ -352,54 +369,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
 
   const closeMenus = useCallback(() => setOpenMenu(null), [])
 
-  /**
-   * Primary nav must always remount the destination page.
-   * Soft Next transitions can leave Home mounted behind a new URL when chunk/abort races fire.
-   * Prefer router.push; hard-assign if the transition fails or stalls.
-   */
-  const navigatePrimary = useCallback(
-    (href: string, event: React.MouseEvent<HTMLAnchorElement>) => {
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return
-      event.preventDefault()
-      closeMenus()
-      const targetPath = href.split('?')[0].split('#')[0] || '/'
-      const currentPath = (router.asPath || '/').split('?')[0].split('#')[0] || '/'
-      if (targetPath === currentPath && !href.includes('?')) return
-
-      let settled = false
-      const hardNav = () => {
-        if (settled) return
-        settled = true
-        window.location.assign(href)
-      }
-      const stallTimer = window.setTimeout(hardNav, 1600)
-
-      void router
-        .push(href)
-        .then((ok) => {
-          window.clearTimeout(stallTimer)
-          if (ok === false) {
-            hardNav()
-            return
-          }
-          settled = true
-          // Soft success can still leave a stale tree — verify pathname shortly after.
-          window.setTimeout(() => {
-            const now = window.location.pathname.replace(/\/$/, '') || '/'
-            const want = targetPath.replace(/\/$/, '') || '/'
-            if (now !== want && !now.startsWith(`${want}/`)) {
-              window.location.assign(href)
-            }
-          }, 250)
-        })
-        .catch(() => {
-          window.clearTimeout(stallTimer)
-          hardNav()
-        })
-    },
-    [closeMenus, router],
-  )
-
   useEffect(() => {
     closeMenus()
   }, [pathname, router.asPath, closeMenus])
@@ -416,7 +385,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   return (
     <Bar ref={rootRef} data-melega-app-header data-melega-global-header data-testid="melega-global-header">
       <Inner>
-        <Brand href="/" aria-label="Melega DEX home" data-testid="melega-header-brand" onClick={(e) => navigatePrimary('/', e)}>
+        <Brand href="/" aria-label="Melega DEX home" data-testid="melega-header-brand" onClick={closeMenus}>
           <Logo src={MELEGA_LOGO_URI} alt="" width={36} height={36} />
           <Wordmark>
             <MelegaWord>Melega</MelegaWord>
@@ -436,8 +405,12 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                     data-compact-hide={item.compactHide ? 'true' : undefined}
                     aria-current={active ? 'page' : undefined}
                     data-testid={`melega-header-nav-${item.id}`}
-                    prefetch={false}
-                    onClick={(e) => navigatePrimary(item.href, e)}
+                    onPointerEnter={() => void router.prefetch(item.href)}
+                    onFocus={() => void router.prefetch(item.href)}
+                    onClick={(event) => {
+                      closeMenus()
+                      preserveEarlyNavigation(event, item.href)
+                    }}
                   >
                     {item.label}
                     {item.badge === 'NEW' ? <NewBadge aria-label="New">NEW</NewBadge> : null}
@@ -505,6 +478,8 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             aria-haspopup="dialog"
             aria-expanded={myMelegaOpen}
             data-testid="melega-header-my-melega"
+            onPointerEnter={preloadMyMelegaDrawer}
+            onFocus={preloadMyMelegaDrawer}
             onClick={() => {
               closeMenus()
               toggleMyMelega()

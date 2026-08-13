@@ -9,16 +9,20 @@ const WEB = path.resolve(__dirname, '../..')
 const load = (rel: string) => readFileSync(path.join(WEB, rel), 'utf8')
 
 describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
-  it('P0 header nav uses navigatePrimary with hard-fallback', () => {
+  it('P0 header nav uses Next Link without hard reload fallback', () => {
     const header = load('design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx')
-    expect(header).toContain('navigatePrimary')
-    expect(header).toContain('window.location.assign')
-    expect(header).toContain('event.preventDefault()')
+    expect(header).not.toContain('navigatePrimary')
+    expect(header).not.toContain('window.location.assign')
+    expect(header).not.toContain('event.preventDefault()')
+    expect(header).toContain('onClick={closeMenus}')
   })
 
-  it('P0 root: MemoryRouter (not BrowserRouter) so Next soft-nav can complete', () => {
+  it('P0 root: Next Router owns canonical history; MemoryRouter is legacy-only', () => {
     const app = load('pages/_app-full.tsx')
-    expect(app).toContain('MemoryRouter as Router')
+    const legacy = load('app-shell/LegacyReactRouterBoundary.tsx')
+    expect(app).not.toContain("from 'react-router-dom'")
+    expect(app).toContain('LegacyReactRouterBoundary')
+    expect(legacy).toContain('MemoryRouter')
     expect(app).not.toContain('BrowserRouter')
   })
 
@@ -36,11 +40,12 @@ describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
     expect(load('views/PoolsStudio/PoolsStudioScreen.tsx')).toContain('size="md"')
   })
 
-  it('Home Top Farms/Pools prefer active-chain runtime then inventory pad', () => {
+  it('Home Top Farms/Pools prefer active-chain runtime and expose certified pool economics only', () => {
     const data = load('views/HomeTrade/useHomeTradeData.ts')
     expect(data).toContain('farmRewards')
     expect(data).toContain('listLiveFarmInventoryPreview')
-    expect(data).toContain('listLivePoolInventoryPreview')
+    expect(data).toContain('usePoolsWithVault(chainId)')
+    expect(data).toContain('Never pad with inventory-only names')
     expect(data).toContain('Prefer active-chain farms')
   })
 
@@ -73,9 +78,7 @@ describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
 
   it('ships mission evidence report', () => {
     expect(
-      existsSync(
-        path.resolve(__dirname, '../../../docs/runtime/product-consistency-runtime-repair/REPORT.md'),
-      ),
+      existsSync(path.resolve(__dirname, '../../../docs/runtime/product-consistency-runtime-repair/REPORT.md')),
     ).toBe(true)
   })
 })

@@ -4,19 +4,21 @@
  */
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
+import { useNetwork, useSigner } from 'wagmi'
+import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/constants/recoveryCapabilities'
 import { FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
 import { cashbackUserMessage } from 'lib/featured-placement/cashback'
 import { RC_COPY, type WalletFlowStage } from 'lib/monetization/copy'
 import { FEATURED_PACKAGES, type FeaturedPackageId } from 'lib/monetization/packages'
 import { PaymentRouterPicker } from 'views/shared/monetization/PaymentRouterPicker'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 
 const Card = styled.section`
   box-sizing: border-box;
   border-radius: 14px;
   border: 1px solid rgba(244, 196, 48, 0.28);
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(244, 196, 48, 0.12), transparent 55%),
+  background: radial-gradient(ellipse 80% 60% at 10% 0%, rgba(244, 196, 48, 0.12), transparent 55%),
     linear-gradient(165deg, rgba(22, 20, 12, 0.98) 0%, rgba(12, 12, 12, 0.98) 100%);
   padding: 14px 16px;
   display: flex;
@@ -51,8 +53,7 @@ const Btn = styled.button<{ $primary?: boolean }>`
   min-height: 36px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid
-    ${({ $primary }) => ($primary ? 'rgba(244, 196, 48, 0.65)' : 'rgba(255,255,255,0.14)')};
+  border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244, 196, 48, 0.65)' : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244, 196, 48, 0.18)' : 'transparent')};
   color: ${({ $primary }) => ($primary ? '#f2c84c' : '#ddd')};
   font-size: 12px;
@@ -99,6 +100,9 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
   onOrderId,
   onDeclined,
 }) => {
+  const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+  const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
   const [wantFeatured, setWantFeatured] = useState<boolean | null>(null)
   const [pay, setPay] = useState<FeaturedPayAsset>('BNB')
   const [packageId, setPackageId] = useState<FeaturedPackageId>(FEATURED_OFFER.defaultPackageId)
@@ -122,6 +126,11 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
 
   const runCheckout = useCallback(async () => {
     setError(null)
+    if (!RECOVERY_CAPABILITIES.commercialPaymentActivation) {
+      setWalletStage('error')
+      setError(RECOVERY_PAYMENT_UNAVAILABLE)
+      return
+    }
     if (!identityReady) {
       setError('Finish project identity before buying Featured placement.')
       return
@@ -167,37 +176,34 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       if (!quoteRes.ok) throw new Error(quoted.error || 'QUOTE_FAILED')
       const { quote, prepared } = quoted
       setQuoteSummary(
-        `${quote.tokenAmount} ${pay} → ${FEATURED_OFFER.treasuryWallet.slice(0, 6)}…${FEATURED_OFFER.treasuryWallet.slice(-4)} · expires ${new Date(quote.quoteExpiration).toLocaleTimeString()}`,
+        `${quote.tokenAmount} ${pay} → ${FEATURED_OFFER.treasuryWallet.slice(
+          0,
+          6,
+        )}…${FEATURED_OFFER.treasuryWallet.slice(-4)} · expires ${new Date(
+          quote.quoteExpiration,
+        ).toLocaleTimeString()}`,
       )
       setStatus('awaiting_wallet')
 
-      const eth = (window as unknown as { ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> } })
-        .ethereum
-      if (!eth) {
+      if (!signer) {
         setWalletStage('error')
         throw new Error(RC_COPY.walletUnavailable)
       }
 
-      const chainIdHex = (await eth.request({ method: 'eth_chainId' })) as string
-      if (Number.parseInt(chainIdHex, 16) !== 56) {
+      if (chain?.id !== 56) {
         setWalletStage('switch_network')
-        throw new Error(RC_COPY.wrongNetwork)
+        if (!canSwitch) throw new Error(RC_COPY.wrongNetwork)
+        await switchNetworkAsync(56)
       }
 
       let txHash: string
       try {
-        txHash = (await eth.request({
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: buyerWallet,
-              to: prepared.to,
-              value: prepared.valueHex,
-              data: prepared.data,
-              chainId: '0x38',
-            },
-          ],
-        })) as string
+        const transaction = await signer.sendTransaction({
+          to: prepared.to,
+          value: prepared.valueHex,
+          data: prepared.data,
+        })
+        txHash = transaction.hash
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
         if (/reject|denied|cancel/i.test(msg)) {
@@ -221,17 +227,7 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       })
       setStatus('submitted')
 
-      let receipt: Record<string, unknown> | null = null
-      for (let i = 0; i < 20; i += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        receipt = (await eth.request({
-          method: 'eth_getTransactionReceipt',
-          params: [txHash],
-        })) as Record<string, unknown> | null
-        if (receipt) break
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((r) => setTimeout(r, 1500))
-      }
+      const receipt = await signer.provider?.waitForTransaction(txHash, 1, 30_000)
       if (!receipt) {
         setError('Payment submitted — receipt not yet available. Featured stays pending.')
         setStatus('submitted_pending_receipt')
@@ -244,12 +240,6 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
         body: JSON.stringify({
           action: 'confirm-receipt',
           transactionHash: txHash,
-          receipt: {
-            to: receipt.to,
-            value: (receipt as { value?: string }).value ?? null,
-            status: receipt.status,
-            logs: receipt.logs,
-          },
         }),
       })
       const confirmed = await confirmRes.json()
@@ -275,6 +265,8 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
     }
   }, [
     buyerWallet,
+    canSwitch,
+    chain?.id,
     identityReady,
     onOrderId,
     packageId,
@@ -282,7 +274,9 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
     projectContract,
     projectId,
     projectSlug,
+    signer,
     sourceFlow,
+    switchNetworkAsync,
   ])
 
   return (
@@ -306,8 +300,7 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       />
       {pay === 'MARCO' ? (
         <Note data-testid={`${testId}-marco-cashback`}>
-          {FEATURED_OFFER.marcoCashbackPct}% M-Credits promotional cashback on MARCO payments (pending
-          fulfillment).
+          {FEATURED_OFFER.marcoCashbackPct}% M-Credits promotional cashback on MARCO payments (pending fulfillment).
         </Note>
       ) : (
         <Note>{RC_COPY.treasuryNote}</Note>
@@ -322,9 +315,13 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
           $primary
           onClick={() => void runCheckout()}
           data-testid={`${testId}-purchase`}
-          disabled={busy || !identityReady}
+          disabled={busy || !identityReady || !RECOVERY_CAPABILITIES.commercialPaymentActivation}
         >
-          {busy ? RC_COPY.loading : `Get Featured · $${selectedPkg.usdPrice}`}
+          {busy
+            ? RC_COPY.loading
+            : RECOVERY_CAPABILITIES.commercialPaymentActivation
+            ? `Get Featured · $${selectedPkg.usdPrice}`
+            : 'Payments temporarily unavailable'}
         </Btn>
       </Row>
       {wantFeatured === false ? (
@@ -333,6 +330,7 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       {quoteSummary ? <Note data-testid={`${testId}-quote`}>{quoteSummary}</Note> : null}
       {error ? <Err data-testid={`${testId}-error`}>{error}</Err> : null}
       {!identityReady ? <Note>Complete project identity before Featured purchase.</Note> : null}
+      {!RECOVERY_CAPABILITIES.commercialPaymentActivation ? <Note>{RECOVERY_PAYMENT_UNAVAILABLE}</Note> : null}
     </Card>
   )
 }

@@ -1,3 +1,5 @@
+import { RECOVERY_CAPABILITIES } from 'config/constants/recoveryCapabilities'
+
 /** LIST_MODULE_001 — List page hero geometry + color tokens. */
 export const listOne = {
   pageBg: '#050505',
@@ -162,12 +164,7 @@ export const listOne = {
 export const LIST_HERO_BG = '/images/list/list-hero-background.png'
 export const LIST_HERO_ART = '/images/list/list-hero-artwork.png'
 
-export type ListIntent =
-  | 'import-token'
-  | 'create-token'
-  | 'claim-project'
-  | 'create-project'
-  | 'ai-assistant'
+export type ListIntent = 'import-token' | 'create-token' | 'claim-project' | 'create-project' | 'ai-assistant'
 
 export const LIST_INTENTS: readonly ListIntent[] = [
   'import-token',
@@ -177,6 +174,5 @@ export const LIST_INTENTS: readonly ListIntent[] = [
   'ai-assistant',
 ] as const
 
-/** Create Token factory is not certified-operational on List — honest Coming Soon. */
-/** Unlocked after CreateTokenFactoryV1 mainnet validation + SSOT bind. */
-export const LIST_CREATE_TOKEN_AVAILABLE = true
+/** Create Token is unlocked only through the canonical, receipt-verified BNB factory path. */
+export const LIST_CREATE_TOKEN_AVAILABLE = RECOVERY_CAPABILITIES.createTokenExecution

@@ -1,6 +1,6 @@
 /**
  * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Liquidity · Farms · Pools · List
+ * Home · Swap · Liquidity · Farms · Pools · List
  * Portfolio is secondary via My Melega → View Full Portfolio (/portfolio kept).
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
@@ -123,7 +123,12 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 
 /** Secondary surfaces — available via search / deep links, not primary nav. */
 export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
-  { id: 'trending', label: 'Trending Projects', href: '/projects?sort=trending', match: (p) => p === '/projects' || p.startsWith('/projects') },
+  {
+    id: 'trending',
+    label: 'Trending Projects',
+    href: '/projects?sort=trending',
+    match: (p) => p === '/projects' || p.startsWith('/projects'),
+  },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',

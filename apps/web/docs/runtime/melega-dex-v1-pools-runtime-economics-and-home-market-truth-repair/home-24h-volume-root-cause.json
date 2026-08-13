@@ -1,7 +1,0 @@
-{
-  "displayedBefore": "~$73,164.28M",
-  "rootCause": "Home summed candle quoteVolume (token1) \u00d7 BNB/USD for every pair \u2014 non-WBNB token1 amounts inflated USD notional by orders of magnitude",
-  "formulaBefore": "\u03a3 volume24hQuote \u00d7 bnbUsd",
-  "formulaAfter": "\u03a3 volume24hWbnb \u00d7 bnbUsd where WBNB side only",
-  "anomalyGuardUsd": 10000000000
-}

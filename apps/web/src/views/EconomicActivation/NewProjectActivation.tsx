@@ -1,14 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import Head from 'next/head'
 import Link from 'next/link'
 import { melegaOperational as tokens } from 'ui/tokens'
 import { ActivationStageStatus, resolveActivationReadModel } from 'lib/economic-activation'
-import {
-  resolveActivationSession,
-  ActivationEvidenceKind,
-  ActivationJournalKind,
-} from 'lib/economic-runtime'
+import { resolveActivationSession, ActivationEvidenceKind, ActivationJournalKind } from 'lib/economic-runtime'
 import translations from 'config/localization/translations.json'
 
 const t = (key: string) => (translations as Record<string, string>)[key] ?? key
@@ -160,15 +155,8 @@ const TimelineDot = styled.div<{ $active: boolean; $complete: boolean; $status: 
   border-radius: 50%;
   border: 1px solid
     ${({ $status, $complete, $active }) =>
-      $active
-        ? tokens.goldHighlight
-        : $complete
-          ? tokens.success
-          : $status === 'BLOCKED'
-            ? '#f87171'
-            : tokens.border};
-  background: ${({ $complete, $active }) =>
-    $complete ? tokens.success : $active ? tokens.gold : 'transparent'};
+      $active ? tokens.goldHighlight : $complete ? tokens.success : $status === 'BLOCKED' ? '#f87171' : tokens.border};
+  background: ${({ $complete, $active }) => ($complete ? tokens.success : $active ? tokens.gold : 'transparent')};
   box-shadow: ${({ $active }) => ($active ? `0 0 8px ${tokens.gold}` : 'none')};
 `
 
@@ -202,12 +190,12 @@ const StageRow = styled.div<{ $status: ActivationStageStatus; $focused: boolean 
       $focused
         ? tokens.goldHighlight
         : $status === 'READY'
-          ? tokens.success
-          : $status === 'WAITING'
-            ? tokens.gold
-            : $status === 'BLOCKED'
-              ? '#ef4444'
-              : tokens.textSecondary};
+        ? tokens.success
+        : $status === 'WAITING'
+        ? tokens.gold
+        : $status === 'BLOCKED'
+        ? '#ef4444'
+        : tokens.textSecondary};
     opacity: ${({ $focused }) => ($focused ? 1 : 0.7)};
   }
 
@@ -265,19 +253,19 @@ const StatusBadge = styled.span<{ $status: ActivationStageStatus }>`
     $status === 'READY'
       ? tokens.success
       : $status === 'WAITING'
-        ? tokens.goldHighlight
-        : $status === 'BLOCKED'
-          ? '#f87171'
-          : tokens.textSecondary};
+      ? tokens.goldHighlight
+      : $status === 'BLOCKED'
+      ? '#f87171'
+      : tokens.textSecondary};
   border: 1px solid
     ${({ $status }) =>
       $status === 'READY'
         ? tokens.success
         : $status === 'WAITING'
-          ? tokens.gold
-          : $status === 'BLOCKED'
-            ? '#f87171'
-            : tokens.border};
+        ? tokens.gold
+        : $status === 'BLOCKED'
+        ? '#f87171'
+        : tokens.border};
 `
 
 const EvidenceKind = styled.span<{ $kind: ActivationEvidenceKind }>`
@@ -288,10 +276,10 @@ const EvidenceKind = styled.span<{ $kind: ActivationEvidenceKind }>`
     $kind === 'constitutional'
       ? tokens.goldHighlight
       : $kind === 'labs'
-        ? tokens.gold
-        : $kind === 'execution'
-          ? '#f87171'
-          : tokens.textSecondary};
+      ? tokens.gold
+      : $kind === 'execution'
+      ? '#f87171'
+      : tokens.textSecondary};
 `
 
 const JournalList = styled.div`
@@ -320,10 +308,10 @@ const JournalEntry = styled.div<{ $kind: ActivationJournalKind }>`
       $kind === 'gate'
         ? '#f87171'
         : $kind === 'requirement'
-          ? tokens.gold
-          : $kind === 'constitutional'
-            ? tokens.goldHighlight
-            : tokens.textSecondary};
+        ? tokens.gold
+        : $kind === 'constitutional'
+        ? tokens.goldHighlight
+        : tokens.textSecondary};
     margin-bottom: 4px;
     font-family: ${tokens.fontDisplay};
   }
@@ -391,12 +379,6 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
 
   return (
     <>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
       <Root>
         <Shell>
           <header>
@@ -468,7 +450,11 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
             <PanelTitle>{t('Activation runtime pipeline title')}</PanelTitle>
             <Pipeline>
               {session.stages.map((stage) => (
-                <StageRow key={stage.id} $status={stage.state} $focused={stage.id === session.progress.currentFocusStageId}>
+                <StageRow
+                  key={stage.id}
+                  $status={stage.state}
+                  $focused={stage.id === session.progress.currentFocusStageId}
+                >
                   <div>
                     <StageLabel>
                       {stage.ordinal}. {stage.label}
@@ -490,11 +476,7 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
                         {stage.evidence.map((item) => (
                           <li key={item.id}>
                             <EvidenceKind $kind={item.kind}>{item.kind}</EvidenceKind>{' '}
-                            {item.href ? (
-                              <Link href={item.href}>{item.summary}</Link>
-                            ) : (
-                              item.summary
-                            )}
+                            {item.href ? <Link href={item.href}>{item.summary}</Link> : item.summary}
                             <div style={{ opacity: 0.7, fontSize: 10 }}>{item.source}</div>
                           </li>
                         ))}
@@ -555,7 +537,10 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
             <Link href="/new-project?reference=melega-dex" style={{ color: tokens.gold }}>
               melega-dex
             </Link>{' '}
-            · <Link href="/projects/melega-dex" style={{ color: tokens.gold }}>/projects/melega-dex</Link>
+            ·{' '}
+            <Link href="/projects/melega-dex" style={{ color: tokens.gold }}>
+              /projects/melega-dex
+            </Link>
           </Meta>
         </Shell>
       </Root>

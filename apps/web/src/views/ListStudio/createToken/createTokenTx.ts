@@ -1,17 +1,21 @@
 /**
  * Create Token transaction construction + receipt verification helpers.
- * Execution remains blocked while factoryAddress is null.
+ * Success is derived only from the canonical factory receipt and post-deploy reads.
  */
+
+import { ethers } from 'ethers'
 
 import {
   CREATE_TOKEN_CANONICAL_DEPLOYMENT,
   CREATE_TOKEN_FACTORY_CHAIN_ID,
   CREATE_TOKEN_FEE_RECIPIENT,
 } from 'config/constants/createTokenFactoryDeployment'
+import { MELEGA_FIXED_SUPPLY_TOKEN_ABI, MELEGA_TOKEN_FACTORY_ABI } from './createTokenAbi'
 
 export type CreateTokenUiState =
   | 'FACTORY_NOT_DEPLOYED'
   | 'FACTORY_CONFIGURATION_INVALID'
+  | 'EXECUTION_UNAVAILABLE'
   | 'WRONG_CHAIN'
   | 'WALLET_DISCONNECTED'
   | 'INSUFFICIENT_CREATION_FEE'
@@ -222,8 +226,103 @@ export function buildHandoffPayload(input: {
 }
 
 /** TokenCreated(address,address,string,string,uint256,uint8,address,uint256,uint256) */
-export const TOKEN_CREATED_TOPIC0 =
-  '0x916d6c0a2cf2249386bfca0950c2f07d7ea93b1371a949ca4ca7a9a3607a131c'
+export const TOKEN_CREATED_TOPIC0 = '0x916d6c0a2cf2249386bfca0950c2f07d7ea93b1371a949ca4ca7a9a3607a131c'
+
+export function encodeCreateTokenCalldata(draft: CreateTokenDraft): string {
+  const errors = validateCreateTokenDraft(draft)
+  if (errors.length) throw new Error(errors.join('; '))
+  const iface = new ethers.utils.Interface(MELEGA_TOKEN_FACTORY_ABI as any)
+  return iface.encodeFunctionData('createToken', [
+    draft.name.trim(),
+    draft.symbol.trim(),
+    humanSupplyToRaw(draft.supplyHuman, draft.decimals).toString(),
+    draft.decimals,
+    draft.owner,
+  ])
+}
+
+export function parseTokenCreatedReceipt(
+  receipt: ethers.providers.TransactionReceipt,
+  expectedFactoryAddress: string,
+): TokenCreatedEventParsed {
+  if (receipt.status !== 1) throw new Error('Source transaction failed')
+  if (!receipt.to || receipt.to.toLowerCase() !== expectedFactoryAddress.toLowerCase()) {
+    throw new Error('Receipt does not target the canonical factory')
+  }
+  const iface = new ethers.utils.Interface(MELEGA_TOKEN_FACTORY_ABI as any)
+  const log = receipt.logs.find(
+    (candidate) =>
+      candidate.address.toLowerCase() === expectedFactoryAddress.toLowerCase() &&
+      candidate.topics[0]?.toLowerCase() === TOKEN_CREATED_TOPIC0,
+  )
+  if (!log) throw new Error('Canonical TokenCreated event not found')
+  const parsed = iface.parseLog(log)
+  return {
+    creator: ethers.utils.getAddress(parsed.args.creator),
+    token: ethers.utils.getAddress(parsed.args.token),
+    name: String(parsed.args.name),
+    symbol: String(parsed.args.symbol),
+    totalSupply: parsed.args.totalSupply.toString(),
+    decimals: Number(parsed.args.decimals),
+    owner: ethers.utils.getAddress(parsed.args.owner),
+    creationFee: parsed.args.creationFee.toString(),
+    timestamp: parsed.args.timestamp.toString(),
+  }
+}
+
+export function assertTokenCreatedEvent(input: {
+  event: TokenCreatedEventParsed
+  draft: CreateTokenDraft
+  creator: string
+  creationFeeWei: string
+}): string[] {
+  const { event, draft } = input
+  const issues: string[] = []
+  const expectedSupply = humanSupplyToRaw(draft.supplyHuman, draft.decimals).toString()
+  if (event.creator.toLowerCase() !== input.creator.toLowerCase()) issues.push('Creator wallet mismatch')
+  if (event.owner.toLowerCase() !== draft.owner.toLowerCase()) issues.push('Owner wallet mismatch')
+  if (event.name !== draft.name.trim()) issues.push('Token name mismatch')
+  if (event.symbol !== draft.symbol.trim()) issues.push('Token symbol mismatch')
+  if (event.totalSupply !== expectedSupply) issues.push('Total supply mismatch')
+  if (event.decimals !== draft.decimals) issues.push('Token decimals mismatch')
+  if (event.creationFee !== input.creationFeeWei) issues.push('Creation fee mismatch')
+  if (!ethers.utils.isAddress(event.token) || event.token === ethers.constants.AddressZero) {
+    issues.push('Invalid deployed token address')
+  }
+  return issues
+}
+
+export async function verifyDeployedToken(input: {
+  provider: ethers.providers.Provider
+  event: TokenCreatedEventParsed
+  factoryAddress: string
+  draft: CreateTokenDraft
+}): Promise<string[]> {
+  const code = await input.provider.getCode(input.event.token)
+  if (!code || code === '0x') return ['Created token has no deployed bytecode']
+  const token = new ethers.Contract(input.event.token, MELEGA_FIXED_SUPPLY_TOKEN_ABI as any, input.provider)
+  const [name, symbol, decimals, totalSupply, ownerBalance, factoryTokenBalance] = await Promise.all([
+    token.name(),
+    token.symbol(),
+    token.decimals(),
+    token.totalSupply(),
+    token.balanceOf(input.event.owner),
+    token.balanceOf(input.factoryAddress),
+  ])
+  const issues = assertPostCreateInvariants({
+    name: String(name),
+    symbol: String(symbol),
+    decimals: Number(decimals),
+    totalSupply: totalSupply.toString(),
+    ownerBalance: ownerBalance.toString(),
+    factoryTokenBalance: factoryTokenBalance.toString(),
+  })
+  if (String(name) !== input.draft.name.trim()) issues.push('On-chain token name mismatch')
+  if (String(symbol) !== input.draft.symbol.trim()) issues.push('On-chain token symbol mismatch')
+  if (Number(decimals) !== input.draft.decimals) issues.push('On-chain token decimals mismatch')
+  if (totalSupply.toString() !== input.event.totalSupply) issues.push('On-chain total supply mismatch')
+  return issues
+}
 
 export function assertPostCreateInvariants(input: {
   name: string

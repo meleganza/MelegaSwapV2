@@ -1,7 +1,0 @@
-{
-  "mission": "MELEGASWAP_V2_POST_RELEASE_P0_ROUTING_AND_RUNTIME_REPAIR",
-  "command": "yarn next build",
-  "result": "pass",
-  "pass": true,
-  "verifiedAt": "2026-08-05T04:50:43.603Z"
-}

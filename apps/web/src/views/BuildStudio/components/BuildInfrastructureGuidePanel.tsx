@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { FLOW_STEPS } from '../buildStudioData'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { BsOutlineBtn } from './buildStudioPrimitives'
@@ -105,11 +105,11 @@ export const BuildInfrastructureGuidePanel: React.FC<Props> = ({ open, onClose }
           ))}
         </Steps>
         <LinkRow>
-          <GuideLink to="/import-existing-token">Import existing token</GuideLink>
-          <GuideLink to="/projects">Projects registry</GuideLink>
-          <GuideLink to="/radar">Radar intelligence</GuideLink>
-          <GuideLink to="/pools">Pools runtime</GuideLink>
-          <GuideLink to="/farms">Farms runtime</GuideLink>
+          <GuideLink href="/import-existing-token">Import existing token</GuideLink>
+          <GuideLink href="/projects">Projects registry</GuideLink>
+          <GuideLink href="/radar">Radar intelligence</GuideLink>
+          <GuideLink href="/pools">Pools runtime</GuideLink>
+          <GuideLink href="/farms">Farms runtime</GuideLink>
         </LinkRow>
         <BsOutlineBtn type="button" $width="100%" $height="42px" onClick={onClose}>
           Close guide

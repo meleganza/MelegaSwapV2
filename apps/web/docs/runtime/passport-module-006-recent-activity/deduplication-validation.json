@@ -1,5 +1,0 @@
-{
-  "key": "provenance || id",
-  "never": "title+timestamp alone",
-  "unitTested": true
-}

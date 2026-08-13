@@ -4,7 +4,6 @@ import {
   Modal,
   Text,
   Flex,
-  Image,
   Button,
   Slider,
   BalanceInput,
@@ -27,6 +26,9 @@ import useStakePool from '../../../hooks/useStakePool'
 import useUnstakePool from '../../../hooks/useUnstakePool'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import CurrencyLogo from 'components/Logo/CurrencyLogo'
+import { useAccount } from 'wagmi'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 
 interface StakeModalProps {
   isBnbPool: boolean
@@ -65,6 +67,8 @@ const StakeModal: React.FC<StakeModalProps> = ({
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { chainId } = useActiveChainId()
+  const { address: account } = useAccount()
+  const walletChainId = useWalletChainId()
   const { onStake } = useStakePool(sousId, isBnbPool)
   const { onUnstake } = useUnstakePool(sousId, pool.enableEmergencyWithdraw, chainId)
   const { toastSuccess, toastError } = useToast()
@@ -123,6 +127,15 @@ const StakeModal: React.FC<StakeModalProps> = ({
   }
 
   const handleConfirmClick = async () => {
+    if (!account) {
+      toastError(t('Wallet disconnected'), t('Connect your wallet before confirming the staking transaction.'))
+      return
+    }
+    if (walletChainId != null && chainId != null && walletChainId !== chainId) {
+      toastError(t('Wrong network'), t('Switch your wallet to the selected pool network before confirming.'))
+      return
+    }
+
     setPendingTx(true)
 
     if (isRemovingStake) {
@@ -195,12 +208,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
       <Flex alignItems="center" justifyContent="space-between" mb="8px">
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
-          <Image
-            src={`/images/${chainId}/tokens/${stakingToken.address}.png`}
-            width={24}
-            height={24}
-            alt={stakingToken.symbol}
-          />
+          <CurrencyLogo currency={stakingToken} size="24px" />
           <Text ml="4px" bold>
             {stakingToken.symbol}
           </Text>
@@ -258,7 +266,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
         isLoading={pendingTx}
         endIcon={pendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
         onClick={handleConfirmClick}
-        disabled={!stakeAmount || parseFloat(stakeAmount) === 0 || hasReachedStakeLimit}
+        disabled={!account || !stakeAmount || parseFloat(stakeAmount) === 0 || hasReachedStakeLimit}
         mt="24px"
       >
         {pendingTx ? t('Confirming') : t('Confirm')}

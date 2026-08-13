@@ -31,7 +31,11 @@ const uiState = resolveCreateTokenUiState({
 export const CREATE_TOKEN_READINESS = {
   schema: 'melega.create-token-readiness.v2',
   capability: 'create_token',
-  status: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE ? 'READY' : factoryBound ? 'FACTORY_BOUND' : 'READY_FOR_FOUNDER_SIGNATURE') as CreateTokenReadinessStatus,
+  status: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+    ? 'READY'
+    : factoryBound
+    ? 'FACTORY_BOUND'
+    : 'READY_FOR_FOUNDER_SIGNATURE') as CreateTokenReadinessStatus,
   listFlag: 'LIST_CREATE_TOKEN_AVAILABLE',
   listFlagValue: LIST_CREATE_TOKEN_AVAILABLE,
   chainId: CREATE_TOKEN_FACTORY_CHAIN_ID,
@@ -40,13 +44,16 @@ export const CREATE_TOKEN_READINESS = {
   bytecodePresent: true,
   creationFeeConfigured: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei != null,
   feeRecipientConfigured:
-    CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient.toLowerCase() ===
-    '0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b',
+    CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient.toLowerCase() === '0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b',
   deploymentAuthorityReady: true,
   verificationReady: true,
   executionEnabled: factoryBound && LIST_CREATE_TOKEN_AVAILABLE,
   uiMode: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE ? 'user_create_token' : 'readiness_explanation') as const,
-  uiState: (factoryBound ? 'READY' : uiState) as CreateTokenUiState,
+  uiState: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+    ? 'READY'
+    : factoryBound
+    ? 'EXECUTION_UNAVAILABLE'
+    : uiState) as CreateTokenUiState,
   requiredModel: {
     supply: 'fixed',
     hiddenMint: false,
@@ -64,28 +71,50 @@ export const CREATE_TOKEN_READINESS = {
   creationFeeWei: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei,
   creationFeeBnb: CREATE_TOKEN_CREATION_FEE_BNB,
   creationFeeDecision: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision,
-  blockerCode: factoryBound && LIST_CREATE_TOKEN_AVAILABLE ? null : 'CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE',
-  blockerSummary: factoryBound && LIST_CREATE_TOKEN_AVAILABLE
-    ? 'Create Token Factory is DEPLOYED · VALIDATED · BOUND · READY. Users create tokens by paying 0.10 BNB to MELEGA TREASURY WALLET via CreateTokenFactoryV1. Founder is not involved in user creation.'
-    : 'Create Token Factory package awaits Founder-signed mainnet deployment, validation, and bind.',
-  blockers: factoryBound && LIST_CREATE_TOKEN_AVAILABLE
-    ? ([] as string[])
-    : [
-        'factoryAddress is null in createTokenFactoryDeployment (not fabricated)',
-        'Awaiting Founder browser-wallet signature by MELEGA DEPLOYER (no KMS / no server signer)',
-        'LIST_CREATE_TOKEN_AVAILABLE remains false until certified bind',
-      ],
-  nextActions: factoryBound && LIST_CREATE_TOKEN_AVAILABLE
-    ? [
-        'Connect wallet on BNB Smart Chain (56)',
-        'Configure fixed-supply token in List → Create Token',
-        'Pay 0.10 BNB creation fee to MELEGA TREASURY WALLET via factory',
-        'Factory deploys MelegaFixedSupplyToken — no Founder involvement',
-      ]
-    : [
-        'Open /runtime/deployment/ as MELEGA DEPLOYER on BNB Smart Chain (56)',
-        'Deploy / validate / bind CreateTokenFactoryV1',
-      ],
+  blockerCode:
+    factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+      ? null
+      : factoryBound
+      ? 'CREATE_TOKEN_EXECUTION_UNCERTIFIED'
+      : 'CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE',
+  blockerSummary:
+    factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+      ? 'Create Token Factory is DEPLOYED · VALIDATED · BOUND · READY. Users create tokens by paying 0.10 BNB to MELEGA TREASURY WALLET via CreateTokenFactoryV1. Founder is not involved in user creation.'
+      : factoryBound
+      ? 'Create Token Factory is bound, but user execution is paused until wallet submission and receipt verification are wired into the List funnel.'
+      : 'Create Token Factory package awaits Founder-signed mainnet deployment, validation, and bind.',
+  blockers:
+    factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+      ? ([] as string[])
+      : factoryBound
+      ? [
+          'List Create Token does not yet submit the factory transaction',
+          'Success must be derived from a verified TokenCreated receipt',
+          'LIST_CREATE_TOKEN_AVAILABLE remains false until behavioral certification',
+        ]
+      : [
+          'factoryAddress is null in createTokenFactoryDeployment (not fabricated)',
+          'Awaiting Founder browser-wallet signature by MELEGA DEPLOYER (no KMS / no server signer)',
+          'LIST_CREATE_TOKEN_AVAILABLE remains false until certified bind',
+        ],
+  nextActions:
+    factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+      ? [
+          'Connect wallet on BNB Smart Chain (56)',
+          'Configure fixed-supply token in List → Create Token',
+          'Pay 0.10 BNB creation fee to MELEGA TREASURY WALLET via factory',
+          'Factory deploys MelegaFixedSupplyToken — no Founder involvement',
+        ]
+      : factoryBound
+      ? [
+          'Wire the List review step to the factory transaction',
+          'Verify chain, destination, fee, receipt status and TokenCreated event',
+          'Pass behavioral browser and on-chain simulation gates',
+        ]
+      : [
+          'Open /runtime/deployment/ as MELEGA DEPLOYER on BNB Smart Chain (56)',
+          'Deploy / validate / bind CreateTokenFactoryV1',
+        ],
   contracts: {
     factory: 'contracts/create-token/MelegaTokenFactory.sol',
     token: 'contracts/create-token/MelegaFixedSupplyToken.sol',
@@ -99,7 +128,7 @@ export const CREATE_TOKEN_READINESS = {
   noKms: true,
   noServerSigner: true,
   noTreasuryRuntime: true,
-  updatedAt: '2026-08-02T04:00:00.000Z',
+  updatedAt: '2026-08-11T20:00:00.000Z',
 } as const
 
 export type CreateTokenReadiness = typeof CREATE_TOKEN_READINESS
@@ -129,7 +158,12 @@ export function getCreateTokenMachineReadableReadiness() {
     deploymentAuthorityReady: true,
     verificationReady: CREATE_TOKEN_READINESS.verificationReady,
     blockers: [...CREATE_TOKEN_READINESS.blockers],
-    uiState: factoryBound ? ('READY' as CreateTokenUiState) : resolvedUi,
+    uiState:
+      factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+        ? ('READY' as CreateTokenUiState)
+        : factoryBound
+        ? ('EXECUTION_UNAVAILABLE' as CreateTokenUiState)
+        : resolvedUi,
     updatedAt: CREATE_TOKEN_READINESS.updatedAt,
   }
 }

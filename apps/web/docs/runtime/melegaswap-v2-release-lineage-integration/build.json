@@ -1,8 +1,0 @@
-{
-  "at": "2026-08-10T14:46:01Z",
-  "command": "yarn next build",
-  "cwd": "apps/web",
-  "result": "PASS",
-  "exit_code": 0,
-  "notes": "Includes /token/[chain]/[address], /project-hq/[slug], /liquidity, /pools"
-}

@@ -288,7 +288,9 @@ export const injectedConnector = new InjectedConnector({
   chains,
   options: {
     shimDisconnect: false,
-    shimChainChangedDisconnect: true,
+    // A supported chain change is a session update, not a disconnect.
+    // Disconnecting here made the header lose the wallet while navigating.
+    shimChainChangedDisconnect: false,
   },
 })
 
@@ -318,7 +320,7 @@ export const metaMaskConnector = new MetaMaskConnector({
   chains,
   options: {
     shimDisconnect: false,
-    shimChainChangedDisconnect: true,
+    shimChainChangedDisconnect: false,
   },
 })
 
@@ -340,7 +342,7 @@ export const trustWalletConnector = new TrustWalletConnector({
   chains,
   options: {
     shimDisconnect: false,
-    shimChainChangedDisconnect: true,
+    shimChainChangedDisconnect: false,
   },
 })
 
@@ -352,7 +354,7 @@ export const client = createClient({
     metaMaskConnector,
     injectedConnector,
     coinbaseConnector,
-    // walletConnectConnector,
+    walletConnectConnector,
     bscConnector,
     bloctoConnector,
     ledgerConnector,

@@ -5,25 +5,45 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import styled, { css, keyframes } from 'styled-components'
+import { ethers } from 'ethers'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
+import { useSwitchNetwork as useMelegaSwitchNetwork } from 'hooks/useSwitchNetwork'
+import ConnectWalletButton from 'components/ConnectWalletButton'
+import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
+import type { ProjectClaimRecord, PublicProjectClaim } from 'lib/project-claims/types'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
 import { ListFeaturedCheckout } from './ListFeaturedCheckout'
 import { ListTrendBoostCheckout } from './ListTrendBoostCheckout'
+import { ListInlineLiquidityStep } from './ListInlineLiquidityStep'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
-import { buildReviewFacts } from './createToken/createTokenTx'
-import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
 import {
-  buildCreateTokenSuccessModel,
-  type CreateTokenSuccessModel,
-} from './createToken/createTokenPostCreationTypes'
+  assertTokenCreatedEvent,
+  buildReviewFacts,
+  encodeCreateTokenCalldata,
+  humanSupplyToRaw,
+  parseTokenCreatedReceipt,
+  validateCreateTokenDraft,
+  verifyDeployedToken,
+  type CreateTokenDraft,
+} from './createToken/createTokenTx'
+import { MELEGA_TOKEN_FACTORY_ABI } from './createToken/createTokenAbi'
+import {
+  CREATE_TOKEN_CANONICAL_DEPLOYMENT,
+  CREATE_TOKEN_FACTORY_CHAIN_ID,
+  CREATE_TOKEN_FEE_RECIPIENT,
+} from 'config/constants/createTokenFactoryDeployment'
+import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
+import { buildCreateTokenSuccessModel, type CreateTokenSuccessModel } from './createToken/createTokenPostCreationTypes'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
 
 const FLOW_TITLE: Record<ListIntent, string> = {
-  'import-token': 'Import Token',
+  'import-token': 'List Your Token',
   'create-token': 'Create Token',
   'claim-project': 'Claim Project',
   'create-project': 'Create Project',
@@ -45,6 +65,10 @@ const REQUIRED: Record<ListIntent, FieldDef[]> = {
   'claim-project': [
     { key: 'contract', label: 'Contract', required: true },
     { key: 'wallet', label: 'Wallet', required: true },
+    { key: 'name', label: 'Project name', required: true },
+    { key: 'symbol', label: 'Ticker', required: true },
+    { key: 'handle', label: 'Project handle', required: true },
+    { key: 'description', label: 'Description', required: true },
   ],
   'create-project': [
     { key: 'name', label: 'Project Name', required: true },
@@ -127,11 +151,80 @@ const FlowTitle = styled.h2`
   justify-self: start;
 `
 
+const FlowBrand = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+`
+
+const SingleStep = styled.div`
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(221, 185, 47, 0.24);
+  background: rgba(221, 185, 47, 0.07);
+  color: #d8c16e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+`
+
 const ProgressTrack = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${listOne.workspaceProgressGap};
+`
+
+const JourneyProgress = styled.ol`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(72px, 1fr));
+  gap: 6px;
+  width: min(470px, 44vw);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const JourneyStage = styled.li<{ $state: 'current' | 'done' | 'future' }>`
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 9px;
+  border: 1px solid
+    ${({ $state }) =>
+      $state === 'done'
+        ? 'rgba(42, 190, 125, 0.28)'
+        : $state === 'current'
+        ? 'rgba(221, 185, 47, 0.4)'
+        : 'rgba(255,255,255,0.08)'};
+  background: ${({ $state }) =>
+    $state === 'done'
+      ? 'rgba(42, 190, 125, 0.08)'
+      : $state === 'current'
+      ? 'rgba(221, 185, 47, 0.09)'
+      : 'rgba(255,255,255,0.025)'};
+  color: ${({ $state }) => ($state === 'done' ? '#62d9a0' : $state === 'current' ? '#e5c453' : '#686868')};
+  font-size: 9px;
+  line-height: 13px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
 `
 
 const Dot = styled.span<{ $state: 'current' | 'done' | 'future' }>`
@@ -144,8 +237,8 @@ const Dot = styled.span<{ $state: 'current' | 'done' | 'future' }>`
       $state === 'current'
         ? 'rgba(221, 185, 47, 0.85)'
         : $state === 'done'
-          ? 'rgba(255, 255, 255, 0.55)'
-          : 'rgba(255, 255, 255, 0.16)'};
+        ? 'rgba(255, 255, 255, 0.55)'
+        : 'rgba(255, 255, 255, 0.16)'};
   background: ${({ $state }) =>
     $state === 'current' ? 'rgba(221, 185, 47, 0.22)' : $state === 'done' ? 'rgba(255,255,255,0.18)' : '#161616'};
 `
@@ -306,6 +399,179 @@ const FormStack = styled.div`
   padding: 8px 0 12px;
 `
 
+const ClaimIntro = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  strong {
+    display: block;
+    color: #f3f3f3;
+    font-size: 15px;
+  }
+
+  span {
+    display: block;
+    margin-top: 3px;
+    color: #858585;
+    font-size: 11px;
+  }
+`
+
+const ListedPill = styled.span`
+  && {
+    margin: 0;
+    min-height: 26px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(42, 190, 125, 0.1);
+    color: #62d9a0;
+    border: 1px solid rgba(42, 190, 125, 0.25);
+    white-space: nowrap;
+    font-size: 10px;
+    font-weight: 800;
+  }
+`
+
+const ClaimGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const ClaimWide = styled.div`
+  grid-column: 1 / -1;
+`
+
+const LogoIdentity = styled.div`
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 12px;
+  align-items: end;
+`
+
+const LogoPreview = styled.div<{ $src?: string }>`
+  width: 58px;
+  height: 58px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: ${({ $src }) =>
+    $src
+      ? `#0d0d0d url("${$src.replace(/"/g, '%22')}") center / cover no-repeat`
+      : 'linear-gradient(145deg, rgba(221,185,47,.18), rgba(255,255,255,.03))'};
+  display: grid;
+  place-items: center;
+  color: #d9b936;
+  font-weight: 850;
+  font-size: 16px;
+  overflow: hidden;
+`
+
+const ClaimReview = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const ReviewItem = styled.div`
+  min-width: 0;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #858585;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  strong {
+    display: block;
+    margin-top: 4px;
+    color: #ededed;
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0;
+    text-transform: none;
+    word-break: break-word;
+  }
+`
+
+const SuccessState = styled.div`
+  min-height: 330px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 30px;
+
+  > div {
+    max-width: 520px;
+  }
+
+  strong {
+    display: block;
+    color: #fff;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 10px auto 0;
+    color: #969696;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+`
+
+const CompactCompletion = styled.div`
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+`
+
+const CompletionLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #8b8b8b;
+  font-size: 11px;
+
+  strong {
+    color: #ececec;
+  }
+`
+
+const CompletionRail = styled.div<{ $pct: number }>`
+  height: 4px;
+  margin-top: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    display: block;
+    width: ${({ $pct }) => `${$pct}%`};
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #cda51f, #f2c84c);
+  }
+`
+
 const FieldRow = styled.label`
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
@@ -443,10 +709,7 @@ const Ring = styled.div<{ $pct: number }>`
   height: ${listOne.workspaceCompleteRing};
   border-radius: 50%;
   flex-shrink: 0;
-  background: conic-gradient(
-    rgba(221, 185, 47, 0.75) ${({ $pct }) => $pct * 3.6}deg,
-    rgba(255, 255, 255, 0.08) 0deg
-  );
+  background: conic-gradient(rgba(221, 185, 47, 0.75) ${({ $pct }) => $pct * 3.6}deg, rgba(255, 255, 255, 0.08) 0deg);
   display: grid;
   place-items: center;
 
@@ -658,6 +921,10 @@ function ContextEmpty({ label }: { label: string }) {
 
 export const ListWorkspace: React.FC = () => {
   const router = useRouter()
+  const { address, isConnected } = useAccount()
+  const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+  const { switchNetworkAsync } = useMelegaSwitchNetwork()
   const { listIntent, clearListIntent } = useListIntent()
   const [step, setStep] = useState(0)
   const [values, setValues] = useState<Record<string, string>>({})
@@ -667,11 +934,31 @@ export const ListWorkspace: React.FC = () => {
   const [pendingDescription, setPendingDescription] = useState<string | null>(null)
   const [createTokenPhase, setCreateTokenPhase] = useState<'form' | 'success'>('form')
   const [createdToken, setCreatedToken] = useState<CreateTokenSuccessModel | null>(null)
+  const [createTokenBusy, setCreateTokenBusy] = useState(false)
+  const [createTokenStage, setCreateTokenStage] = useState<
+    'idle' | 'switching' | 'awaiting-signature' | 'confirming' | 'verifying'
+  >('idle')
+  const [createTokenError, setCreateTokenError] = useState<string | null>(null)
+  const [claimSubmitted, setClaimSubmitted] = useState(false)
+  const [claimRecord, setClaimRecord] = useState<PublicProjectClaim | null>(null)
+  const [claimBusy, setClaimBusy] = useState(false)
+  const [claimError, setClaimError] = useState<string | null>(null)
+  const [claimAuthorityType, setClaimAuthorityType] = useState<ProjectClaimRecord['authorityType'] | null>(null)
+  const [liquidityConfirmed, setLiquidityConfirmed] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const querySlug =
-    typeof router.query.slug === 'string' && router.query.slug.trim()
-      ? router.query.slug.trim().toLowerCase()
-      : null
+    typeof router.query.slug === 'string' && router.query.slug.trim() ? router.query.slug.trim().toLowerCase() : null
+  const queryContract =
+    typeof router.query.contract === 'string' && router.query.contract.trim() ? router.query.contract.trim() : null
+  const queryChain =
+    typeof router.query.chain === 'string' && router.query.chain.trim() ? router.query.chain.trim() : null
+  const queryName = typeof router.query.name === 'string' && router.query.name.trim() ? router.query.name.trim() : null
+  const querySymbol =
+    typeof router.query.symbol === 'string' && router.query.symbol.trim() ? router.query.symbol.trim() : null
+  const queryLogo = typeof router.query.logo === 'string' && router.query.logo.trim() ? router.query.logo.trim() : null
+  const queryListed = router.query.listed === '1'
+  const queryJourney = router.query.journey === 'listing'
+  const queryLiquidityConfirmed = router.query.liquidity === 'confirmed'
 
   useEffect(() => {
     setStep(0)
@@ -680,6 +967,15 @@ export const ListWorkspace: React.FC = () => {
     setPendingDescription(null)
     setCreateTokenPhase('form')
     setCreatedToken(null)
+    setCreateTokenBusy(false)
+    setCreateTokenStage('idle')
+    setCreateTokenError(null)
+    setClaimSubmitted(false)
+    setClaimRecord(null)
+    setClaimBusy(false)
+    setClaimError(null)
+    setClaimAuthorityType(null)
+    setLiquidityConfirmed(queryLiquidityConfirmed)
     if (!listIntent) {
       setValues({})
       return
@@ -690,22 +986,76 @@ export const ListWorkspace: React.FC = () => {
       chainId: 56,
     })
     if (restored?.values) {
+      const detectedHandle = querySymbol ? `@${querySymbol.toLowerCase().replace(/[^a-z0-9_]/g, '')}` : ''
       setValues({
         ...restored.values,
-        ...(listIntent === 'claim-project' && querySlug && !restored.values.slug
-          ? { slug: querySlug }
+        ...(listIntent === 'import-token' && queryContract ? { contract: queryContract } : {}),
+        ...(listIntent === 'import-token' && queryChain ? { chain: queryChain } : {}),
+        ...(listIntent === 'import-token' && querySymbol ? { auto: querySymbol } : {}),
+        ...(listIntent === 'import-token' && queryName ? { name: queryName } : {}),
+        ...(listIntent === 'import-token' && queryLogo ? { logo: queryLogo } : {}),
+        ...(listIntent === 'claim-project' && querySlug ? { slug: querySlug } : {}),
+        ...(listIntent === 'claim-project' && queryContract ? { contract: queryContract } : {}),
+        ...(listIntent === 'claim-project' && queryChain ? { chain: queryChain } : {}),
+        ...(listIntent === 'claim-project' && queryName ? { name: queryName } : {}),
+        ...(listIntent === 'claim-project' && querySymbol ? { symbol: querySymbol } : {}),
+        ...(listIntent === 'claim-project' && queryLogo ? { logo: queryLogo } : {}),
+        ...(listIntent === 'claim-project' && queryListed ? { listed: '1' } : {}),
+        ...(listIntent === 'claim-project' && detectedHandle && !restored.values.handle
+          ? { handle: detectedHandle }
           : {}),
       })
       setSavedAt(Date.parse(restored.updatedAt) || Date.now())
       return
     }
-    if (listIntent === 'import-token') setValues({ chain: 'bsc' })
+    if (listIntent === 'import-token')
+      setValues({
+        contract: queryContract || '',
+        chain: queryChain || '56',
+        auto: querySymbol || '',
+        name: queryName || '',
+        logo: queryLogo || '',
+      })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
     else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
     else if (listIntent === 'claim-project')
-      setValues({ verification: 'pending', ...(querySlug ? { slug: querySlug } : {}) })
+      setValues({
+        verification: 'pending',
+        chain: queryChain || '56',
+        listed: queryListed ? '1' : '',
+        ...(querySlug ? { slug: querySlug } : {}),
+        ...(queryContract ? { contract: queryContract } : {}),
+        ...(queryName ? { name: queryName } : {}),
+        ...(querySymbol ? { symbol: querySymbol } : {}),
+        ...(queryLogo ? { logo: queryLogo } : {}),
+        ...(querySymbol ? { handle: `@${querySymbol.toLowerCase().replace(/[^a-z0-9_]/g, '')}` } : {}),
+      })
     else setValues({})
-  }, [listIntent, querySlug])
+  }, [
+    listIntent,
+    querySlug,
+    queryContract,
+    queryChain,
+    queryName,
+    querySymbol,
+    queryLogo,
+    queryListed,
+    queryLiquidityConfirmed,
+  ])
+
+  useEffect(() => {
+    if (listIntent !== 'claim-project' || !isConnected || !address) return
+    setValues((current) =>
+      current.wallet === address && current.verification === 'wallet-connected'
+        ? current
+        : { ...current, wallet: address, verification: 'wallet-connected' },
+    )
+  }, [listIntent, isConnected, address])
+
+  useEffect(() => {
+    if (listIntent !== 'create-token' || !isConnected || !address) return
+    setValues((current) => (current.owner ? current : { ...current, owner: address }))
+  }, [listIntent, isConnected, address])
 
   /** Featured / Trend Boost deep links from Project Page Grow CTAs. */
   useEffect(() => {
@@ -746,53 +1096,72 @@ export const ListWorkspace: React.FC = () => {
     }
   }, [values, listIntent])
 
-  // Deep-link / handoff into post-create success (never invent address).
-  useEffect(() => {
-    if (listIntent !== 'create-token' || !router.isReady) return
-    const createdFlag = router.query.created === '1' || router.query.phase === 'success'
-    const qToken =
-      (typeof router.query.token === 'string' && router.query.token) ||
-      (typeof router.query.address === 'string' && router.query.address) ||
-      values.tokenAddress ||
-      values.contract ||
-      null
-    if (!createdFlag && values.postCreate !== '1') return
-    const model = buildCreateTokenSuccessModel({
-      name: (typeof router.query.name === 'string' && router.query.name) || values.name,
-      symbol: (typeof router.query.symbol === 'string' && router.query.symbol) || values.ticker,
-      logoUrl: values.logo || null,
-      contractAddress: qToken,
-      chainId: 56,
-    })
-    setCreatedToken(model)
-    setCreateTokenPhase('success')
-  }, [listIntent, router.isReady, router.query, values.name, values.ticker, values.logo, values.tokenAddress, values.contract, values.postCreate])
-
   const pct = completionPct(listIntent, values)
+  const listingJourney = queryJourney && (listIntent === 'import-token' || listIntent === 'claim-project')
+  const journeyStage = listIntent === 'import-token' ? 1 : claimSubmitted ? 3 : 2
+  const flowStepCount =
+    listingJourney
+      ? 4
+      : listIntent === 'claim-project'
+      ? 2
+      : listIntent === 'import-token' || listIntent === 'create-token'
+      ? 1
+      : TOTAL_DOTS
   const status: StatusKind = useMemo(() => {
     if (!listIntent) return 'Draft'
     if (listIntent === 'create-token' && createTokenPhase === 'success') return 'Ready'
-    if (pct >= 100 && step >= 3) return 'Review Required'
+    if (claimSubmitted) return 'Ready'
+    if (listingJourney && pct >= 100) return 'Ready'
+    if (pct >= 100 && step >= flowStepCount - 1) return 'Ready'
     if (pct >= 100) return 'Ready'
     if (savedAt) return 'Autosaved'
     return 'Draft'
-  }, [listIntent, pct, savedAt, step, createTokenPhase])
+  }, [listIntent, pct, savedAt, step, createTokenPhase, claimSubmitted, flowStepCount, listingJourney])
 
   const savedLabel = relativeSaved(savedAt, now)
   const createTokenSuccess = listIntent === 'create-token' && createTokenPhase === 'success' && createdToken
+  const createTokenFinalStep = listIntent === 'create-token'
+  const createTokenActionLabel = !isConnected
+    ? 'Connect wallet'
+    : chain?.id !== CREATE_TOKEN_FACTORY_CHAIN_ID
+    ? 'Switch to BNB'
+    : createTokenStage === 'switching'
+    ? 'Switching…'
+    : createTokenStage === 'awaiting-signature'
+    ? 'Confirm in wallet'
+    : createTokenStage === 'confirming'
+    ? 'Creating token…'
+    : createTokenStage === 'verifying'
+    ? 'Verifying token…'
+    : 'Create Token'
   const primaryLabel = createTokenSuccess
     ? 'Done'
+    : listIntent === 'claim-project' && claimSubmitted
+    ? `Open @${claimRecord?.slug || values.handle?.replace(/^@/, '') || 'project'}`
+    : listIntent === 'claim-project' && step === 0
+    ? 'Verify ownership'
+    : listIntent === 'claim-project'
+    ? 'Sign & publish'
+    : listIntent === 'import-token'
+    ? liquidityConfirmed
+      ? 'Continue to Project Page'
+      : 'Complete liquidity above'
+    : createTokenFinalStep
+    ? createTokenActionLabel
     : step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75)
-      ? 'Publish'
-      : 'Continue'
-  const canPublishish = listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue' || primaryLabel === 'Done'
+    ? 'Publish'
+    : 'Continue'
+  const canPublishish =
+    listIntent !== 'create-token' ||
+    LIST_CREATE_TOKEN_AVAILABLE ||
+    primaryLabel === 'Continue' ||
+    primaryLabel === 'Done'
   const usesCopilot = listIntent === 'create-project' || listIntent === 'ai-assistant'
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setValues((v) => ({ ...v, [key]: e.target.value }))
 
-  const invalid = (key: string, required = true) =>
-    attempted && required && !filled(values[key])
+  const invalid = (key: string, required = true) => attempted && required && !filled(values[key])
 
   const applySuggestion = (s: CopilotSuggestion) => {
     if (s.kind === 'category') setValues((v) => ({ ...v, category: 'wallet' }))
@@ -802,7 +1171,10 @@ export const ListWorkspace: React.FC = () => {
       setValues((v) => ({ ...v, website: url }))
     }
     if (s.kind === 'social') {
-      const handle = `@${(values.name || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 14)}`
+      const handle = `@${(values.name || 'project')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '')
+        .slice(0, 14)}`
       setValues((v) => ({ ...v, twitter: handle, social: handle }))
     }
     if (s.kind === 'logo') setValues((v) => ({ ...v, logo: 'pending://logo-preview' }))
@@ -815,21 +1187,240 @@ export const ListWorkspace: React.FC = () => {
     )
   }
 
-  const enterCreateTokenSuccess = () => {
+  const enterCreateTokenSuccess = (tokenAddress: string, creationTx: string) => {
     const model = buildCreateTokenSuccessModel({
       name: values.name,
       symbol: values.ticker,
       logoUrl: values.logo || null,
-      contractAddress: values.tokenAddress || values.contract || null,
+      contractAddress: tokenAddress,
       chainId: 56,
     })
     setCreatedToken(model)
     setCreateTokenPhase('success')
-    setValues((v) => ({ ...v, postCreate: '1' }))
+    setValues((v) => ({ ...v, tokenAddress, contract: tokenAddress, creationTx, postCreate: '1' }))
+  }
+
+  const publishCreateToken = async () => {
+    if (!LIST_CREATE_TOKEN_AVAILABLE) return
+    if (!address || !isConnected || !signer) {
+      setCreateTokenError('Connect your wallet to create the token.')
+      return
+    }
+    const decimals = Number.parseInt(values.decimals || '18', 10)
+    const draft: CreateTokenDraft = {
+      name: values.name || '',
+      symbol: values.ticker || '',
+      supplyHuman: values.supply || '',
+      decimals,
+      owner: values.owner || address,
+      logoUrl: values.logo || undefined,
+      description: values.description || undefined,
+      website: values.website || undefined,
+      social: values.social || undefined,
+    }
+    const errors = validateCreateTokenDraft(draft)
+    if (errors.length) {
+      setAttempted(true)
+      setCreateTokenError(errors[0])
+      return
+    }
+    const deployment = CREATE_TOKEN_CANONICAL_DEPLOYMENT
+    if (!deployment.factoryAddress || !deployment.creationFeeWei) {
+      setCreateTokenError('Canonical Create Token factory is not configured.')
+      return
+    }
+
+    setCreateTokenBusy(true)
+    setCreateTokenError(null)
+    try {
+      if (chain?.id !== CREATE_TOKEN_FACTORY_CHAIN_ID) {
+        setCreateTokenStage('switching')
+        await switchNetworkAsync(CREATE_TOKEN_FACTORY_CHAIN_ID)
+      }
+      const activeChainId = await signer.getChainId()
+      if (activeChainId !== CREATE_TOKEN_FACTORY_CHAIN_ID) {
+        throw new Error('Switch your wallet to BNB Smart Chain and try again.')
+      }
+
+      const provider = signer.provider
+      if (!provider) throw new Error('Wallet provider is unavailable.')
+      const code = await provider.getCode(deployment.factoryAddress)
+      if (!code || code === '0x') throw new Error('Canonical Create Token factory is unavailable.')
+      const factory = new ethers.Contract(deployment.factoryAddress, MELEGA_TOKEN_FACTORY_ABI as any, signer)
+      const [onChainFee, onChainRecipient] = await Promise.all([factory.creationFee(), factory.feeRecipient()])
+      if (onChainFee.toString() !== deployment.creationFeeWei) {
+        throw new Error('Create Token fee changed. Transaction blocked for your protection.')
+      }
+      if (String(onChainRecipient).toLowerCase() !== CREATE_TOKEN_FEE_RECIPIENT.toLowerCase()) {
+        throw new Error('Create Token treasury mismatch. Transaction blocked for your protection.')
+      }
+
+      // Encoding validation runs before any wallet prompt.
+      encodeCreateTokenCalldata(draft)
+      const totalSupplyRaw = humanSupplyToRaw(draft.supplyHuman, draft.decimals).toString()
+      const args = [draft.name.trim(), draft.symbol.trim(), totalSupplyRaw, draft.decimals, draft.owner]
+      const estimatedGas = await factory.estimateGas.createToken(...args, { value: onChainFee })
+      const gasPrice = await provider.getGasPrice()
+      const requiredNative = onChainFee.add(estimatedGas.mul(gasPrice))
+      const walletBalance = await provider.getBalance(address)
+      if (walletBalance.lt(requiredNative)) {
+        throw new Error('Insufficient BNB for the 0.10 BNB creation fee and network gas.')
+      }
+
+      setCreateTokenStage('awaiting-signature')
+      const transaction = await factory.createToken(...args, {
+        value: onChainFee,
+        gasLimit: estimatedGas.mul(120).div(100),
+      })
+      setCreateTokenStage('confirming')
+      const receipt = await transaction.wait(1)
+      const event = parseTokenCreatedReceipt(receipt, deployment.factoryAddress)
+      const eventIssues = assertTokenCreatedEvent({
+        event,
+        draft,
+        creator: address,
+        creationFeeWei: deployment.creationFeeWei,
+      })
+      if (eventIssues.length) throw new Error(eventIssues[0])
+
+      setCreateTokenStage('verifying')
+      const tokenIssues = await verifyDeployedToken({
+        provider,
+        event,
+        factoryAddress: deployment.factoryAddress,
+        draft,
+      })
+      if (tokenIssues.length) throw new Error(tokenIssues[0])
+      enterCreateTokenSuccess(event.token, receipt.transactionHash)
+      setCreateTokenStage('idle')
+    } catch (error: any) {
+      const rejected = error?.code === 4001 || error?.code === 'ACTION_REJECTED'
+      setCreateTokenError(
+        rejected
+          ? 'Wallet signature rejected. No token was created and no fee was charged.'
+          : error instanceof Error
+          ? error.message
+          : 'Create Token transaction failed.',
+      )
+      setCreateTokenStage('idle')
+    } finally {
+      setCreateTokenBusy(false)
+    }
+  }
+
+  const claimMetadata = () =>
+    normalizeClaimMetadata({
+      name: values.name || '',
+      symbol: values.symbol || '',
+      handle: values.handle || '',
+      description: values.description || '',
+      logo: values.logo || null,
+      website: values.website || null,
+      x: values.x || null,
+      telegram: values.telegram || null,
+      discord: values.discord || null,
+    })
+
+  const verifyClaimAuthority = async () => {
+    if (!address || !isConnected) {
+      setClaimError('Connect the owner or deployer wallet before continuing.')
+      return
+    }
+    setClaimBusy(true)
+    setClaimError(null)
+    try {
+      const response = await fetch('/api/registry/projects/claim', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'preflight',
+          chainId: Number(values.chain || queryChain || 56),
+          contract: values.contract,
+          claimant: address,
+        }),
+      })
+      const payload = await response.json()
+      if (!response.ok || !payload.ok) throw new Error(payload.reason || 'Ownership proof failed.')
+      setClaimAuthorityType(payload.authorityType)
+      setValues((current) => ({ ...current, wallet: address, verification: 'owner-verified' }))
+      setAttempted(false)
+      setStep(1)
+    } catch (error) {
+      setClaimError(error instanceof Error ? error.message : 'Ownership proof failed.')
+    } finally {
+      setClaimBusy(false)
+    }
+  }
+
+  const publishClaim = async () => {
+    if (!address || !signer || !claimAuthorityType) {
+      setClaimError('Reconnect the verified owner or deployer wallet and try again.')
+      return
+    }
+    setClaimBusy(true)
+    setClaimError(null)
+    try {
+      const metadata = claimMetadata()
+      const issuedAt = new Date().toISOString()
+      const message = buildProjectClaimMessage({
+        chainId: Number(values.chain || queryChain || 56),
+        contract: values.contract,
+        claimant: address,
+        metadata,
+        issuedAt,
+      })
+      const signature = await signer.signMessage(message)
+      const response = await fetch('/api/registry/projects/claim', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'publish',
+          chainId: Number(values.chain || queryChain || 56),
+          contract: values.contract,
+          claimant: address,
+          metadata,
+          issuedAt,
+          signature,
+        }),
+      })
+      const payload = await response.json()
+      if (!response.ok || !payload.ok) throw new Error(payload.reason || 'Project publication failed.')
+      const published = payload.claim as PublicProjectClaim
+      setClaimRecord(published)
+      setClaimSubmitted(true)
+      setValues((current) => ({
+        ...current,
+        handle: `@${published.slug}`,
+        slug: published.slug,
+        verification: 'published',
+        submittedAt: published.publishedAt,
+      }))
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('melega:project-claim-published', {
+            detail: { chainId: published.chainId, contract: published.contract, slug: published.slug },
+          }),
+        )
+      }
+      deleteListDraft({
+        intent: 'claim-project',
+        wallet: address,
+        chainId: Number(values.chain || queryChain || 56),
+        projectKey: values.contract,
+      })
+    } catch (error) {
+      setClaimError(error instanceof Error ? error.message : 'Project publication failed.')
+    } finally {
+      setClaimBusy(false)
+    }
   }
 
   const onContinue = () => {
     if (!listIntent) return
+    if (listIntent === 'claim-project' && claimSubmitted) {
+      void router.push(`/@${claimRecord?.slug || values.handle?.replace(/^@/, '')}/`)
+      return
+    }
     if (listIntent === 'create-token' && createTokenPhase === 'success') {
       clearListIntent()
       setCreateTokenPhase('form')
@@ -838,25 +1429,51 @@ export const ListWorkspace: React.FC = () => {
     }
     const req = REQUIRED[listIntent].filter((f) => f.required)
     const missing = req.some((f) => !filled(values[f.key]))
-    if (missing && step === 0) {
+    if (missing && (step === 0 || listIntent === 'claim-project')) {
       setAttempted(true)
       return
     }
-    if (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE && step >= TOTAL_DOTS - 2) {
+    if (listIntent === 'claim-project') {
+      if (step === 0) {
+        void verifyClaimAuthority()
+        return
+      }
+      void publishClaim()
       return
     }
-    // Final Publish on Create Token → post-creation funnel (no Featured / Trend Boost).
-    if (
-      listIntent === 'create-token' &&
-      LIST_CREATE_TOKEN_AVAILABLE &&
-      (step >= TOTAL_DOTS - 1 || primaryLabel === 'Publish')
-    ) {
+    if (listIntent === 'import-token') {
+      if (!liquidityConfirmed) return
+      void router.replace(
+        {
+          pathname: '/list',
+          query: {
+            intent: 'claim-project',
+            journey: 'listing',
+            contract: values.contract,
+            chain: values.chain,
+            name: values.name || values.auto,
+            symbol: values.auto,
+            ...(values.logo ? { logo: values.logo } : {}),
+            listed: '1',
+            liquidity: 'confirmed',
+          },
+        },
+        undefined,
+        { shallow: true, scroll: false },
+      )
+      return
+    }
+    if (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE) {
+      return
+    }
+    // Final Create Token action: canonical factory + verified receipt only.
+    if (listIntent === 'create-token' && LIST_CREATE_TOKEN_AVAILABLE && createTokenFinalStep) {
       const stillMissing = req.some((f) => !filled(values[f.key]))
       if (stillMissing) {
         setAttempted(true)
         return
       }
-      enterCreateTokenSuccess()
+      void publishCreateToken()
       return
     }
     setStep((s) => Math.min(TOTAL_DOTS - 1, s + 1))
@@ -874,28 +1491,37 @@ export const ListWorkspace: React.FC = () => {
     if (listIntent === 'import-token') {
       return (
         <FormStack data-testid="list-workspace-form">
+          <ClaimIntro>
+            <div>
+              <strong>{values.name || values.auto || 'Deployed token'}</strong>
+              <span>{values.auto ? `$${values.auto}` : 'Reading on-chain ticker…'} · Token detected</span>
+            </div>
+            <ListedPill>IMPORTED</ListedPill>
+          </ClaimIntro>
           <Field label="Contract Address" ok={filled(values.contract)} invalid={invalid('contract')}>
-            <Input value={values.contract || ''} onChange={set('contract')} placeholder="0x…" autoComplete="off" />
+            <Input value={values.contract || ''} readOnly aria-readonly="true" placeholder="0x…" autoComplete="off" />
           </Field>
           <Field label="Chain" ok={filled(values.chain)} invalid={invalid('chain')}>
-            <Select value={values.chain || 'bsc'} onChange={set('chain')}>
-              <option value="bsc">BNB Smart Chain</option>
-              <option value="eth">Ethereum</option>
-              <option value="polygon">Polygon</option>
+            <Select value={values.chain || '56'} onChange={set('chain')}>
+              <option value="56">BNB Smart Chain</option>
+              <option value="8453">Base</option>
+              <option value="1">Ethereum</option>
+              <option value="137">Polygon</option>
             </Select>
           </Field>
           <Field
-            label="Auto Detection"
+            label="Ticker · auto-detected"
             ok={filled(values.auto)}
             invalid={false}
-            optional
-            hint="Assists setup only. Does not prove ownership."
+            hint="Read directly from the detected token metadata."
           >
-            <Input value={values.auto || ''} onChange={set('auto')} placeholder="Symbol / decimals when available" />
+            <Input value={values.auto || ''} readOnly aria-readonly="true" placeholder="Detecting…" />
           </Field>
-          <Field label="Project Preview notes" ok={filled(values.preview)} invalid={false} optional>
-            <TextArea value={values.preview || ''} onChange={set('preview')} placeholder="Optional local notes" />
-          </Field>
+          <ListInlineLiquidityStep
+            tokenAddress={values.contract || ''}
+            chainId={Number(values.chain || 56)}
+            onConfirmed={() => setLiquidityConfirmed(true)}
+          />
         </FormStack>
       )
     }
@@ -933,6 +1559,7 @@ export const ListWorkspace: React.FC = () => {
               Create Token is temporarily unavailable. Creation fee: 0.10 BNB. Network: BNB Smart Chain.
             </Banner>
           )}
+          {createTokenError ? <Banner data-testid="list-create-token-error">{createTokenError}</Banner> : null}
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
             <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
           </Field>
@@ -945,14 +1572,29 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')} hint="Default 18">
             <Input value={values.decimals || '18'} onChange={set('decimals')} />
           </Field>
-          <Field label="Owner Wallet" ok={filled(values.owner)} invalid={invalid('owner')} hint="Defaults to your connected wallet when available">
+          <Field
+            label="Owner Wallet"
+            ok={filled(values.owner)}
+            invalid={invalid('owner')}
+            hint="Defaults to your connected wallet when available"
+          >
             <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… receives full fixed supply" />
           </Field>
-          <Field label="Logo (optional)" ok={filled(values.logo)} invalid={false} optional hint="Does not affect on-chain deployment">
+          <Field
+            label="Logo (optional)"
+            ok={filled(values.logo)}
+            invalid={false}
+            optional
+            hint="Does not affect on-chain deployment"
+          >
             <Input value={values.logo || ''} onChange={set('logo')} placeholder="Optional URL — metadata only" />
           </Field>
           <Field label="Project description (optional)" ok={filled(values.description)} invalid={false} optional>
-            <TextArea value={values.description || ''} onChange={set('description')} placeholder="Optional — off-chain metadata" />
+            <TextArea
+              value={values.description || ''}
+              onChange={set('description')}
+              placeholder="Optional — off-chain metadata"
+            />
           </Field>
           <Field label="Website (optional)" ok={filled(values.website)} invalid={false} optional>
             <Input value={values.website || ''} onChange={set('website')} placeholder="https://" />
@@ -980,64 +1622,174 @@ export const ListWorkspace: React.FC = () => {
     }
 
     if (listIntent === 'claim-project') {
-      const claimSlug = values.slug || querySlug
-      const claimProjectId = filled(values.contract)
-        ? `claim:${values.contract.toLowerCase()}`
-        : claimSlug
-          ? `claim:${claimSlug}`
-          : ''
-      return (
-        <FormStack data-testid="list-workspace-form">
-          <Field label="Contract" ok={filled(values.contract)} invalid={invalid('contract')}>
-            <Input value={values.contract || ''} onChange={set('contract')} placeholder="0x…" />
-          </Field>
-          <Field label="Wallet" ok={filled(values.wallet)} invalid={invalid('wallet')}>
-            <Input value={values.wallet || ''} onChange={set('wallet')} placeholder="Claiming wallet" />
-          </Field>
-          <Field
-            label="Verification"
-            ok={filled(values.verification)}
-            invalid={false}
-            hint="Workflow state only — not completed verification."
-          >
-            <Select value={values.verification || 'pending'} onChange={set('verification')}>
-              <option value="pending">Pending evidence</option>
-              <option value="signature">Signature challenge</option>
-              <option value="manual">Manual review</option>
-            </Select>
-          </Field>
-          <Field label="Project Preview notes" ok={filled(values.preview)} invalid={false} optional>
-            <TextArea value={values.preview || ''} onChange={set('preview')} placeholder="Local claim notes" />
-          </Field>
-          <div id="featured" data-testid="list-claim-featured-anchor">
+      if (claimSubmitted) {
+        const publishedSlug = claimRecord?.slug || values.handle?.replace(/^@/, '') || values.slug || ''
+        return (
+          <FormStack data-testid="list-claim-published">
+            <SuccessState>
+              <div>
+                <strong>Project page published.</strong>
+                <p>
+                  The owner/deployer proof is complete. Your page is live immediately at <b>@{publishedSlug}</b>; no
+                  manual review is pending.
+                </p>
+              </div>
+            </SuccessState>
+            <Banner data-testid="list-claim-live-handle">
+              Permanent Melega Project Page: <strong>/@{publishedSlug}</strong>
+            </Banner>
             <ListFeaturedCheckout
               testId="list-claim-featured-home-promotion"
               sourceFlow="claim-project"
-              projectId={claimProjectId}
+              projectId={`claim:${values.contract}`}
+              projectSlug={publishedSlug}
               projectContract={values.contract || null}
-              projectSlug={claimSlug}
-              buyerWallet={values.wallet || null}
-              identityReady={
-                (filled(values.contract) || Boolean(claimSlug)) && filled(values.wallet)
-              }
-              onOrderId={(id) =>
-                setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))
-              }
-              onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
+              buyerWallet={values.wallet || address || null}
+              identityReady
+              onOrderId={(id) => setValues((current) => ({ ...current, featuredOrderId: id || '' }))}
+              onDeclined={() => setValues((current) => ({ ...current, featuredOrderId: '' }))}
             />
-          </div>
-          <div id="trend-boost" data-testid="list-claim-trend-boost-anchor">
             <ListTrendBoostCheckout
               testId="list-claim-trend-boost"
-              projectId={claimProjectId}
+              projectId={`claim:${values.contract}`}
+              projectSlug={publishedSlug}
               projectContract={values.contract || null}
-              projectSlug={claimSlug}
-              buyerWallet={values.wallet || null}
-              identityReady={
-                (filled(values.contract) || Boolean(claimSlug)) && filled(values.wallet)
-              }
+              buyerWallet={values.wallet || address || null}
+              identityReady
             />
-          </div>
+          </FormStack>
+        )
+      }
+
+      if (step === 1) {
+        return (
+          <FormStack data-testid="list-claim-review">
+            <ClaimIntro>
+              <div>
+                <strong>{values.name || values.symbol || 'Detected project'}</strong>
+                <span>{values.symbol ? `$${values.symbol}` : 'Ticker pending'} · Owner/deployer verified</span>
+              </div>
+              {values.listed === '1' ? <ListedPill>LISTED ON MELEGA DEX</ListedPill> : null}
+            </ClaimIntro>
+            <ClaimReview>
+              <ReviewItem>
+                Project handle<strong>{values.handle || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Owner wallet<strong>{values.wallet || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Website<strong>{values.website || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Logo<strong>{values.logo ? 'Ready' : 'Not provided'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                X<strong>{values.x || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Telegram<strong>{values.telegram || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Discord<strong>{values.discord || '—'}</strong>
+              </ReviewItem>
+              <ReviewItem>
+                Contract<strong>{values.contract || '—'}</strong>
+              </ReviewItem>
+            </ClaimReview>
+            <ReviewItem>
+              About<strong>{values.description || '—'}</strong>
+            </ReviewItem>
+            <Banner>
+              Publishing is immediate after your wallet signature. There is no manual review: the signature proves
+              control of the contract owner or original deployer wallet.
+            </Banner>
+            {claimError ? <Banner role="alert">{claimError}</Banner> : null}
+          </FormStack>
+        )
+      }
+
+      return (
+        <FormStack data-testid="list-workspace-form" data-claim-flow="one-page-identity">
+          <ClaimIntro>
+            <div>
+              <strong>{values.name || values.symbol || 'Token detected'}</strong>
+              <span>
+                {values.symbol ? `$${values.symbol}` : 'Ticker detected on-chain'} · Contract and network locked
+              </span>
+            </div>
+            {values.listed === '1' ? <ListedPill>LISTED ON MELEGA DEX</ListedPill> : null}
+          </ClaimIntro>
+
+          <ClaimGrid>
+            <Field label="Project name" ok={filled(values.name)} invalid={invalid('name')}>
+              <Input value={values.name || ''} onChange={set('name')} placeholder="Project display name" />
+            </Field>
+            <Field label="Ticker · auto-detected" ok={filled(values.symbol)} invalid={false}>
+              <Input value={values.symbol || ''} readOnly aria-readonly="true" placeholder="Detecting ticker…" />
+            </Field>
+            <ClaimWide>
+              <Field
+                label="Your permanent Melega Project Page"
+                ok={filled(values.handle)}
+                invalid={invalid('handle')}
+                hint={`Public URL: melega.finance/@${(values.handle || 'your-project').replace(/^@/, '')}`}
+              >
+                <Input value={values.handle || ''} onChange={set('handle')} placeholder="@project" />
+              </Field>
+            </ClaimWide>
+            <Field label="Connected owner/deployer wallet" ok={filled(values.wallet)} invalid={invalid('wallet')}>
+              <Input
+                value={values.wallet || ''}
+                readOnly
+                aria-readonly="true"
+                placeholder="Connect the owner or deployer wallet"
+              />
+            </Field>
+            <ClaimWide>
+              <Field
+                label="Logo"
+                ok={filled(values.logo)}
+                invalid={false}
+                optional
+                hint="Detected logo can be replaced."
+              >
+                <LogoIdentity>
+                  <LogoPreview $src={values.logo || undefined}>
+                    {values.logo ? '' : (values.symbol || 'M').slice(0, 2)}
+                  </LogoPreview>
+                  <Input value={values.logo || ''} onChange={set('logo')} placeholder="https://… logo URL" />
+                </LogoIdentity>
+              </Field>
+            </ClaimWide>
+            <ClaimWide>
+              <Field label="About the project" ok={filled(values.description)} invalid={invalid('description')}>
+                <TextArea
+                  value={values.description || ''}
+                  onChange={set('description')}
+                  placeholder="A concise description displayed on the Project Page"
+                />
+              </Field>
+            </ClaimWide>
+            <Field label="Website" ok={filled(values.website)} invalid={false} optional>
+              <Input value={values.website || ''} onChange={set('website')} placeholder="https://" />
+            </Field>
+            <Field label="X" ok={filled(values.x)} invalid={false} optional>
+              <Input value={values.x || ''} onChange={set('x')} placeholder="https://x.com/…" />
+            </Field>
+            <Field label="Telegram" ok={filled(values.telegram)} invalid={false} optional>
+              <Input value={values.telegram || ''} onChange={set('telegram')} placeholder="https://t.me/…" />
+            </Field>
+            <Field label="Discord" ok={filled(values.discord)} invalid={false} optional>
+              <Input value={values.discord || ''} onChange={set('discord')} placeholder="https://discord.gg/…" />
+            </Field>
+          </ClaimGrid>
+          <Banner>
+            {isConnected
+              ? 'Next: Melega checks this wallet against the contract owner/original deployer, then asks for one signature.'
+              : 'Connect the contract owner or original deployer wallet. Claims fail closed without verifiable authority.'}
+          </Banner>
+          {claimError ? <Banner role="alert">{claimError}</Banner> : null}
         </FormStack>
       )
     }
@@ -1089,21 +1841,13 @@ export const ListWorkspace: React.FC = () => {
               </Chip>
             ) : null}
             {pendingDescription ? (
-              <Banner>
-                Preview ready in AI Copilot — Apply or Discard. Your field is unchanged until you Apply.
-              </Banner>
+              <Banner>Preview ready in AI Copilot — Apply or Discard. Your field is unchanged until you Apply.</Banner>
             ) : null}
           </Field>
           <Field label="Logo" ok={filled(values.logo)} invalid={false} optional>
             <Input value={values.logo || ''} onChange={set('logo')} placeholder="https://… or pending preview" />
           </Field>
-          <Field
-            label="Token"
-            ok={filled(values.token)}
-            invalid={false}
-            optional
-            hint="optional — never mandatory"
-          >
+          <Field label="Token" ok={filled(values.token)} invalid={false} optional hint="optional — never mandatory">
             <Input value={values.token || ''} onChange={set('token')} placeholder="Token contract if you have one" />
           </Field>
           {listIntent === 'create-project' ? (
@@ -1111,14 +1855,13 @@ export const ListWorkspace: React.FC = () => {
               <ListFeaturedCheckout
                 testId="list-create-featured-home-promotion"
                 sourceFlow="create-project"
-                projectId={
-                  filled(values.name)
-                    ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-                    : ''
-                }
+                projectId={filled(values.name) ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` : ''}
                 projectSlug={
                   filled(values.name)
-                    ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                    ? values.name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-|-$/g, '')
                     : null
                 }
                 projectContract={values.token || null}
@@ -1129,14 +1872,13 @@ export const ListWorkspace: React.FC = () => {
               />
               <ListTrendBoostCheckout
                 testId="list-create-trend-boost"
-                projectId={
-                  filled(values.name)
-                    ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-                    : ''
-                }
+                projectId={filled(values.name) ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` : ''}
                 projectSlug={
                   filled(values.name)
-                    ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                    ? values.name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-|-$/g, '')
                     : null
                 }
                 projectContract={values.token || null}
@@ -1172,23 +1914,39 @@ export const ListWorkspace: React.FC = () => {
 
     if (listIntent === 'import-token') {
       const hasAny = filled(values.contract) || filled(values.auto)
+      const listingPct = liquidityConfirmed ? 50 : 25
       return (
         <>
-          {ring}
+          <CompactCompletion data-testid="list-workspace-completeness">
+            <CompletionLine>
+              Listing progress <strong>{listingPct}%</strong>
+            </CompletionLine>
+            <CompletionRail $pct={listingPct} />
+          </CompactCompletion>
           {hasAny ? (
             <ContextCard data-testid="list-workspace-context">
-              <ContextTitle>Detected Token</ContextTitle>
+              <ContextTitle>{values.name || values.auto || 'Detected token'}</ContextTitle>
               <ContextRow>
-                Network <strong>{values.chain || '—'}</strong>
+                Ticker <strong>{values.auto || 'Detecting…'}</strong>
               </ContextRow>
               <ContextRow>
-                Contract <strong>{values.contract || '—'}</strong>
+                Network <strong>{values.chain === '56' ? 'BNB Chain' : values.chain || '—'}</strong>
               </ContextRow>
               <ContextRow>
-                Verification <strong>Not verified</strong>
+                Contract{' '}
+                <strong>{values.contract ? `${values.contract.slice(0, 8)}…${values.contract.slice(-6)}` : '—'}</strong>
               </ContextRow>
               <ContextRow>
-                Current Status <strong>{filled(values.contract) ? 'Awaiting review' : 'Incomplete'}</strong>
+                Token <strong>Imported</strong>
+              </ContextRow>
+              <ContextRow>
+                Liquidity <strong>{liquidityConfirmed ? 'Confirmed' : 'In progress'}</strong>
+              </ContextRow>
+              <ContextRow>
+                Project page <strong>Next</strong>
+              </ContextRow>
+              <ContextRow>
+                Visibility <strong>After publishing</strong>
               </ContextRow>
             </ContextCard>
           ) : (
@@ -1258,25 +2016,56 @@ export const ListWorkspace: React.FC = () => {
       const hasAny = filled(values.contract) || filled(values.wallet)
       return (
         <>
-          {ring}
+          <CompactCompletion data-testid="list-workspace-completeness">
+            <CompletionLine>
+              Identity completion <strong>{pct}%</strong>
+            </CompletionLine>
+            <CompletionRail $pct={pct} />
+          </CompactCompletion>
           {hasAny ? (
             <ContextCard data-testid="list-workspace-context">
-              <ContextTitle>Detected Project</ContextTitle>
+              <LogoIdentity style={{ alignItems: 'center', marginBottom: 12 }}>
+                <LogoPreview $src={values.logo || undefined}>
+                  {values.logo ? '' : (values.symbol || 'M').slice(0, 2)}
+                </LogoPreview>
+                <div>
+                  <ContextTitle style={{ margin: 0 }}>
+                    {values.name || values.symbol || 'Detected project'}
+                  </ContextTitle>
+                  <Hint>{values.handle || 'Handle required'}</Hint>
+                </div>
+              </LogoIdentity>
               <ContextRow>
-                Detected Website <strong>—</strong>
+                DEX status <strong>{values.listed === '1' ? 'Already listed' : 'Detected'}</strong>
               </ContextRow>
               <ContextRow>
-                Detected Social <strong>—</strong>
+                Ticker <strong>{values.symbol || 'Detecting…'}</strong>
               </ContextRow>
               <ContextRow>
-                Verification State <strong>{values.verification || 'pending'}</strong>
+                Contract{' '}
+                <strong>{values.contract ? `${values.contract.slice(0, 8)}…${values.contract.slice(-6)}` : '—'}</strong>
               </ContextRow>
               <ContextRow>
-                Ownership checklist <strong>{filled(values.wallet) ? 'Wallet noted' : 'Wallet missing'}</strong>
+                Ownership{' '}
+                <strong>
+                  {claimSubmitted
+                    ? 'Published'
+                    : claimAuthorityType
+                    ? `${claimAuthorityType} verified`
+                    : isConnected
+                    ? 'Ready to verify'
+                    : 'Owner/deployer wallet required'}
+                </strong>
+              </ContextRow>
+              <ContextRow>
+                Next action{' '}
+                <strong>
+                  {claimSubmitted ? 'Boost visibility' : step === 0 ? 'Prove ownership' : 'Sign & publish'}
+                </strong>
               </ContextRow>
             </ContextCard>
           ) : (
-            <ContextEmpty label="Add contract and wallet to build claim context." />
+            <ContextEmpty label="The detected project summary will appear here." />
           )}
         </>
       )
@@ -1315,13 +2104,39 @@ export const ListWorkspace: React.FC = () => {
       aria-labelledby="list-workspace-title"
     >
       <Header data-testid="list-workspace-header" data-pixel-workspace-header="64">
-        <FlowTitle id="list-workspace-title">{listIntent ? FLOW_TITLE[listIntent] : 'List Workspace'}</FlowTitle>
-        <ProgressTrack data-testid="list-workspace-progress" aria-label={`Step ${step + 1} of ${TOTAL_DOTS}`}>
-          {Array.from({ length: TOTAL_DOTS }, (_, i) => {
-            const state = i < step ? 'done' : i === step ? 'current' : 'future'
-            return <Dot key={i} $state={state as 'current' | 'done' | 'future'} data-state={state} />
-          })}
-        </ProgressTrack>
+        <FlowBrand>
+          <img src={MELEGA_LOGO_URI} alt="" aria-hidden />
+          <FlowTitle id="list-workspace-title">
+            {listingJourney ? 'List Your Token' : listIntent ? FLOW_TITLE[listIntent] : 'List Workspace'}
+          </FlowTitle>
+        </FlowBrand>
+        {listingJourney ? (
+          <JourneyProgress data-testid="list-workspace-progress" aria-label={`Listing step ${journeyStage + 1} of 4`}>
+            {['Token', 'Liquidity', 'Project page', 'Visibility'].map((label, index) => {
+              const state = index < journeyStage ? 'done' : index === journeyStage ? 'current' : 'future'
+              return (
+                <JourneyStage key={label} $state={state} data-state={state}>
+                  {index + 1} · {label}
+                </JourneyStage>
+              )
+            })}
+          </JourneyProgress>
+        ) : listIntent === 'claim-project' ? (
+          <SingleStep data-testid="list-workspace-progress">
+            {claimSubmitted ? 'Project page live' : step === 0 ? '1 · Identity & ownership' : '2 · Sign & publish'}
+          </SingleStep>
+        ) : listIntent === 'import-token' ? (
+          <SingleStep data-testid="list-workspace-progress">Token setup · one step</SingleStep>
+        ) : listIntent === 'create-token' ? (
+          <SingleStep data-testid="list-workspace-progress">Configure · review · create</SingleStep>
+        ) : (
+          <ProgressTrack data-testid="list-workspace-progress" aria-label={`Step ${step + 1} of ${flowStepCount}`}>
+            {Array.from({ length: flowStepCount }, (_, i) => {
+              const state = i < step ? 'done' : i === step ? 'current' : 'future'
+              return <Dot key={i} $state={state as 'current' | 'done' | 'future'} data-state={state} />
+            })}
+          </ProgressTrack>
+        )}
         <HeaderRight>
           <StatusPill data-testid="list-workspace-status">{status}</StatusPill>
           <AutosaveLine data-testid="list-workspace-autosave">
@@ -1346,7 +2161,17 @@ export const ListWorkspace: React.FC = () => {
 
       <Footer data-testid="list-workspace-footer" data-pixel-workspace-footer="72">
         <FooterLeft>
-          {listIntent ? (
+          {listIntent === 'claim-project' && step === 1 && !claimSubmitted ? (
+            <Btn
+              type="button"
+              onClick={() => {
+                setAttempted(false)
+                setStep(0)
+              }}
+            >
+              Back
+            </Btn>
+          ) : listIntent ? (
             <Btn
               type="button"
               onClick={() => {
@@ -1361,23 +2186,30 @@ export const ListWorkspace: React.FC = () => {
                 clearListIntent()
               }}
             >
-              Cancel
+              {claimSubmitted ? 'Stay here' : 'Cancel'}
             </Btn>
           ) : null}
         </FooterLeft>
         <div aria-hidden />
         <FooterRight>
-          {listIntent ? (
+          {listIntent === 'create-token' && !isConnected ? (
+            <ConnectWalletButton scale="md" data-testid="list-create-token-connect-wallet">
+              Connect wallet
+            </ConnectWalletButton>
+          ) : listIntent ? (
             <Btn
               type="button"
               $primary
               disabled={
+                claimBusy ||
+                createTokenBusy ||
                 !canPublishish ||
+                (listIntent === 'import-token' && !liquidityConfirmed) ||
                 (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE && primaryLabel === 'Publish')
               }
               onClick={onContinue}
             >
-              {primaryLabel}
+              {claimBusy ? 'Checking…' : primaryLabel}
             </Btn>
           ) : null}
         </FooterRight>

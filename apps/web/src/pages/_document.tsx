@@ -2,6 +2,48 @@
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 
+const StaticAppBootShell = () => (
+  <div
+    data-melega-app-boot-shell="true"
+    role="status"
+    aria-label="Loading Melega DEX"
+    style={{
+      position: 'fixed',
+      inset: 0,
+      zIndex: 2147480000,
+      display: 'grid',
+      placeItems: 'center',
+      background: '#050607',
+      color: '#f4c430',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      transition: 'opacity 160ms ease, visibility 160ms ease',
+    }}
+  >
+    <style>{`
+      html[data-melega-hydrated=true] [data-melega-app-boot-shell=true] {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        [data-melega-app-boot-shell=true] { transition: none !important; }
+      }
+    `}</style>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 18, fontWeight: 700 }}>
+      <img
+        src="/images/melega.png"
+        alt=""
+        width="38"
+        height="38"
+        style={{ width: 38, height: 38, objectFit: 'contain', borderRadius: '50%' }}
+      />
+      <span>
+        Melega <span style={{ color: '#f4c430' }}>DEX</span>
+      </span>
+    </div>
+  </div>
+)
+
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet()
@@ -63,12 +105,20 @@ class MyDocument extends Document {
           <meta name="twitter:image" content="https://melega.finance/main.jpg" />
           <meta name="twitter:url" content="https://melega.finance" />
 
-          <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&amp;display=swap" rel="stylesheet" />
-          {/* DS001.1 — Sora primary, Inter fallback */}
+          {/* Typography is served locally from /public/fonts to avoid render-blocking third-party requests. */}
           <link
-            href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
-            rel="stylesheet"
+            rel="preload"
+            href="/fonts/inter/inter-v12-latin-regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            href="/fonts/relative/relative-book-pro.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
           />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" href="/main.jpg" />
@@ -84,6 +134,7 @@ class MyDocument extends Document {
             />
           </noscript>
           <Main />
+          <StaticAppBootShell />
           <NextScript />
           <div id="portal-root" />
         </body>

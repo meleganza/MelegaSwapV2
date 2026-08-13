@@ -1,9 +1,0 @@
-{
-  "mission": "DEX_V1_RUNTIME_RECOVERY_RELEASE_AND_DEPLOY_CRASH_RECOVERY",
-  "crashedMission": "DEX_V1_RUNTIME_RECOVERY_RELEASE_AND_DEPLOY",
-  "crashPoint": "During pre-production Playwright smoke Await interruption / Cursor crash after pixel-test commit and next start on :4320",
-  "recoveredAt": "2026-07-24T22:53:24.077323Z",
-  "safetyTag": "crash-recovery-dex-v1-runtime-release-5d9cd6d0",
-  "safetyTagPushed": false,
-  "partialWorkDiscarded": false
-}

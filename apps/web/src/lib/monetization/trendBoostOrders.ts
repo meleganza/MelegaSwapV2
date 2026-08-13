@@ -91,6 +91,34 @@ export function getTrendBoostOrder(orderId: string): TrendBoostOrder | null {
   }
 }
 
+export function listTrendBoostOrders(): TrendBoostOrder[] {
+  ensureDir()
+  const ids = new Set<string>([...MEMORY.keys()])
+  try {
+    for (const name of fs.readdirSync(dataDir())) {
+      if (name.endsWith('.json')) ids.add(name.replace(/\.json$/, ''))
+    }
+  } catch {
+    /* empty */
+  }
+  return [...ids]
+    .map((id) => getTrendBoostOrder(id))
+    .filter((order): order is TrendBoostOrder => Boolean(order))
+}
+
+/** Public placement eligibility. Payment proof and the purchased time window are both mandatory. */
+export function listActiveTrendBoostOrders(now = new Date()): TrendBoostOrder[] {
+  const nowMs = now.getTime()
+  return listTrendBoostOrders()
+    .filter((order) => {
+      if (order.state !== 'ACTIVE' || !order.receiptVerified || order.paymentStatus !== 'confirmed') return false
+      const start = order.scheduledStart ? Date.parse(order.scheduledStart) : Number.NaN
+      const end = order.scheduledEnd ? Date.parse(order.scheduledEnd) : Number.NaN
+      return Number.isFinite(start) && Number.isFinite(end) && start <= nowMs && nowMs < end
+    })
+    .sort((a, b) => Date.parse(a.scheduledEnd || '') - Date.parse(b.scheduledEnd || ''))
+}
+
 export function createTrendBoostOrder(input: {
   projectId: string
   projectSlug?: string | null
@@ -244,14 +272,13 @@ export function prepareTrendBoostPayment(input: {
   }
 }
 
-export function activateTrendBoostWindow(orderId: string) {
+export function activateVerifiedTrendBoostWindow(orderId: string) {
   const order = getTrendBoostOrder(orderId)
   if (!order) return null
+  if (!order.receiptVerified || order.paymentStatus !== 'confirmed') return null
   const window = schedulePlacementWindow(order.durationMs)
   return updateTrendBoostOrder(orderId, {
     state: 'ACTIVE',
-    paymentStatus: 'confirmed',
-    receiptVerified: true,
     scheduledStart: window.start,
     scheduledEnd: window.end,
   })
@@ -259,4 +286,11 @@ export function activateTrendBoostWindow(orderId: string) {
 
 export function clearTrendBoostOrdersForTests() {
   MEMORY.clear()
+  try {
+    for (const name of fs.readdirSync(dataDir())) {
+      if (name.endsWith('.json')) fs.unlinkSync(path.join(dataDir(), name))
+    }
+  } catch {
+    /* ignore */
+  }
 }

@@ -72,7 +72,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(liquidityPoolDiscovery.wideColumns).toBe(6)
 
     const mod = load('modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(mod).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+    expect(mod).toContain("'repeat(5, minmax(0, 1fr))'")
     expect(mod).toContain('min-width: 1920px')
     expect(mod).toContain('repeat(3, minmax(0, 1fr))')
     expect(mod).toContain('repeat(2, minmax(0, 1fr))')

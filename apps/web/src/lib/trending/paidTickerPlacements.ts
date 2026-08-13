@@ -15,31 +15,42 @@ export type PaidTickerPlacement = {
   endsAt?: string | null
 }
 
-export function isPaidPlacementActive(
-  placement: PaidTickerPlacement,
-  nowMs = Date.now(),
-): boolean {
+export function isPaidPlacementActive(placement: PaidTickerPlacement, nowMs = Date.now()): boolean {
   if (placement.startsAt) {
     const s = Date.parse(placement.startsAt)
     if (Number.isFinite(s) && nowMs < s) return false
   }
   if (placement.endsAt) {
     const e = Date.parse(placement.endsAt)
-    if (Number.isFinite(e) && nowMs > e) return false
+    if (Number.isFinite(e) && nowMs >= e) return false
   }
   return Boolean(placement.symbol)
 }
 
-export function paidPlacementToTickerItem(placement: PaidTickerPlacement): MelegaTickerItem {
+export function formatPaidPlacementRemaining(endsAt?: string | null, nowMs = Date.now()): string | null {
+  if (!endsAt) return null
+  const end = Date.parse(endsAt)
+  if (!Number.isFinite(end) || end <= nowMs) return null
+  const minutes = Math.max(1, Math.ceil((end - nowMs) / 60_000))
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.ceil(minutes / 60)
+  if (hours < 24) return `${hours}h`
+  return `${Math.ceil(hours / 24)}d`
+}
+
+export function paidPlacementToTickerItem(placement: PaidTickerPlacement, nowMs = Date.now()): MelegaTickerItem {
   const label = placement.kind === 'boosted' ? 'Boosted' : 'Featured'
+  const remaining = formatPaidPlacementRemaining(placement.endsAt, nowMs)
   return {
     id: `paid-${placement.kind}-${placement.chainId}-${placement.id}`,
-    primary: `${placement.symbol} · ${label}`,
+    primary: placement.kind === 'boosted' ? `🚀 ${placement.symbol}` : `${placement.symbol} · ${label}`,
     secondary: label,
     href:
       placement.href ||
       (placement.address ? `/swap?outputCurrency=${placement.address}&chain=${placement.chainId}` : undefined),
-    accentUnavailable: true,
+    accent: remaining ?? undefined,
+    accentPositive: placement.kind === 'boosted' ? true : undefined,
+    accentUnavailable: !remaining,
   }
 }
 
@@ -56,17 +67,20 @@ export function mergeTickerWithPaidPlacements(input: {
   const now = input.nowMs ?? Date.now()
   const boosted = (input.boosted ?? [])
     .filter((p) => isPaidPlacementActive(p, now))
-    .map(paidPlacementToTickerItem)
+    .map((p) => paidPlacementToTickerItem(p, now))
   const featured = (input.featured ?? [])
     .filter((p) => isPaidPlacementActive(p, now))
-    .map(paidPlacementToTickerItem)
+    .map((p) => paidPlacementToTickerItem(p, now))
   return [...boosted, ...input.organic, ...featured]
 }
 
 /** Eligibility gate: every ticker row must have measured move OR disclosed paid label. */
 export function tickerItemIsEligible(item: MelegaTickerItem): boolean {
   const primary = item.primary || ''
-  const paid = /·\s*(Boosted|Featured)\b/i.test(primary) || /^(Boosted|Featured)$/i.test(item.secondary || '')
+  const paid =
+    /·\s*(Boosted|Featured)\b/i.test(primary) ||
+    /^🚀\s+/.test(primary) ||
+    /^(Boosted|Featured)$/i.test(item.secondary || '')
   if (paid) return true
   if (item.accentUnavailable) return false
   const accent = item.accent || ''

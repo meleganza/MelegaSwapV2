@@ -1,7 +1,0 @@
-{
-  "outDir": "out/",
-  "gitignored": true,
-  "gitignoreLine": ".gitignore:51:out/",
-  "vercelRunsForgeBuild": false,
-  "foundryInstalledOnVercelWebBuild": false
-}

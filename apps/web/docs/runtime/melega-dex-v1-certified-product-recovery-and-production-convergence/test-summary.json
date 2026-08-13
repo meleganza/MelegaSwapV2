@@ -1,9 +1,0 @@
-{
-  "missionId": "MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_AND_PRODUCTION_CONVERGENCE",
-  "focusedSuite": "melegaDexV1.productRecovery + homeSingleSwapCta + liquidityV1 + farmsV1 + poolsV1",
-  "focusedPassed": 35,
-  "recoverySuitePassed": 6,
-  "playwrightCertifyPass": true,
-  "pass": true,
-  "generatedAt": "2026-07-28T01:29:51.545212Z"
-}

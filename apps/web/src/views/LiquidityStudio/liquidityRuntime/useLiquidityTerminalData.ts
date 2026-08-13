@@ -62,18 +62,19 @@ export const useLiquidityTerminalData = (
   poolAddress?: string,
   symbolA?: string,
   symbolB?: string,
+  enabled = true,
 ) => {
-  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
-  const topAddresses = useTopPoolAddresses()
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer(undefined, enabled)
+  const topAddresses = useTopPoolAddresses(enabled)
   const poolAddresses = useMemo(() => {
     const addrs = [...topAddresses]
     if (poolAddress && !addrs.includes(poolAddress)) addrs.unshift(poolAddress)
     return addrs.slice(0, 8)
   }, [topAddresses, poolAddress])
 
-  const poolDatas = usePoolDatasSWR(poolAddresses)
+  const poolDatas = usePoolDatasSWR(poolAddresses, enabled)
   const { data: registryPairs } = useSWR(
-    'liquidity-top-amm-pairs',
+    enabled ? 'liquidity-top-amm-pairs' : null,
     () => fetchAmmPairsPage({ page: 1, pageSize: 8, classification: 'tradeable' }),
     { revalidateOnFocus: false },
   )

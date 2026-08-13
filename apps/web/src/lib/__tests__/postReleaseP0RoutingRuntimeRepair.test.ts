@@ -12,34 +12,42 @@ function load(rel: string) {
 }
 
 describe('Post-release P0 routing & runtime repair', () => {
-  it('header primary nav uses navigatePrimary with hard-fallback (no stale Home)', () => {
+  it('header primary nav delegates to Next Link with production prefetch', () => {
     const header = load('design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx')
-    expect(header).toContain('navigatePrimary')
-    expect(header).toContain('event.preventDefault()')
-    expect(header).toContain('window.location.assign')
-    expect(header).toContain('prefetch={false}')
+    expect(header).not.toContain('navigatePrimary')
+    expect(header).not.toContain('event.preventDefault()')
+    expect(header).not.toContain('window.location.assign')
+    expect(header).not.toContain('prefetch={false}')
+    expect(header).toContain('onClick={closeMenus}')
     expect(header).toContain('melega-header-nav-')
   })
 
-  it('route recovery hard-navigates on Abort/chunk failures and soft-nav stalls', () => {
+  it('route recovery reloads stale chunks only, never normal slow or cancelled navigation', () => {
     const recovery = load('hooks/useRouteTransitionRecovery.ts')
-    expect(recovery).toContain('Abort fetching component for route')
+    expect(recovery).not.toContain('Abort fetching component for route')
     expect(recovery).toContain('window.location.assign')
-    expect(recovery).toContain('routeChangeStart')
-    expect(recovery).toContain('stall')
+    expect(recovery).not.toContain('routeChangeStart')
+    expect(recovery).not.toContain('stallTimer')
+    expect(recovery).toContain("router.events.on('routeChangeError'")
   })
 
-  it('app does not nest BrowserRouter over Next history', () => {
+  it('canonical app uses Next Router and isolates React Router to a lazy legacy boundary', () => {
     const app = load('pages/_app-full.tsx')
-    expect(app).toContain('MemoryRouter as Router')
+    const legacy = load('app-shell/LegacyReactRouterBoundary.tsx')
+    expect(app).not.toContain("from 'react-router-dom'")
+    expect(app).toContain("dynamic(() => import('app-shell/LegacyReactRouterBoundary')")
+    expect(app).toContain('needsLegacyReactRouter')
+    expect(legacy).toContain('MemoryRouter')
     expect(app).not.toContain('BrowserRouter')
   })
 
-  it('Featured View Project uses /@slug with prefetch off; Trade uses /swap', () => {
+  it('Featured View Project and Trade use prefetchable canonical routes', () => {
     const rail = load('views/HomeTrade/FeaturedProjectsRail.tsx')
-    expect(rail).toContain('/@${p.slug}')
-    expect(rail).toContain('prefetch={false}')
-    expect(rail).toContain('router.push(href)')
+    expect(rail).toContain('href={p.href}')
+    expect(rail).not.toContain('prefetch={false}')
+    expect(rail).toContain('href={tradeHref}')
+    expect(rail).not.toContain('useRouter')
+    expect(rail).not.toContain('window.location.assign')
     expect(rail).toContain('/swap?')
     expect(rail).not.toContain('router.push(`${p.href}?${q}`)')
   })

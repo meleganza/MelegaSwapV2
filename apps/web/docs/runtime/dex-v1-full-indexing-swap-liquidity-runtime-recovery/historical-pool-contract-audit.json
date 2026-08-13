@@ -1,8 +1,0 @@
-{
-  "address": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
-  "role": "SmartChef factory (staking pools), NOT AMM Factory",
-  "ammFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
-  "configuredSousIds": 241,
-  "registrySmartChefPools": 241,
-  "activeSmartChefPools": 1
-}

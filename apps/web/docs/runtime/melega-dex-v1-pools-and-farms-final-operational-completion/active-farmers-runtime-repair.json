@@ -1,8 +1,0 @@
-{
-  "endpoint": "/api/farms/unique-farmers",
-  "seed": "apps/web/src/lib/bsc-indexer/seeds/farmer-participants/",
-  "hydration": "hydrateRuntimeFromSeedIfMissing on cold start",
-  "priorCertifiedCount": 318,
-  "hardcoded": false,
-  "display": "factual uniqueFarmers from seed/runtime; never permanent skeleton when count exists"
-}

@@ -24,6 +24,8 @@ import { buildProjectRoadmapDocument } from 'registry/projects/identity/roadmap/
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import ProjectPageV7Shell from 'views/ProjectPage/v7/ProjectPageV7Shell'
+import { buildUnclaimedMarketsDocument, type UnclaimedTokenIdentity } from 'views/ProjectPage/v7/unclaimedIdentity'
+import { getProjectClaimBySlug, toPublicProjectClaim, type PublicProjectClaim } from 'lib/project-claims'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
@@ -35,10 +37,30 @@ interface ProjectHqPageProps {
   roadmapDocument: ProjectRoadmapDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
+  runtimeClaim: PublicProjectClaim | null
 }
 
 /** Rendered by `_app-full` via `Component.Meta` so tags enter the static HTML head. */
-const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) => {
+const ProjectHqMeta = ({ document, jsonLd, requestedSlug, runtimeClaim }: ProjectHqPageProps) => {
+  if (runtimeClaim) {
+    const canonicalAbs = `https://www.melega.finance/@${runtimeClaim.slug}/`
+    const title = `${runtimeClaim.metadata.name} | Melega DEX Project`
+    return (
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={runtimeClaim.metadata.description} />
+        <link rel="canonical" href={canonicalAbs} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={runtimeClaim.metadata.description} />
+        <meta property="og:url" content={canonicalAbs} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Melega DEX" />
+        {runtimeClaim.metadata.logo ? <meta property="og:image" content={runtimeClaim.metadata.logo} /> : null}
+        <meta name="twitter:card" content="summary" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </Head>
+    )
+  }
   if (!document || !jsonLd) return null
 
   const canonicalAbs = canonicalProjectAbsoluteUrl(document.slug)
@@ -118,7 +140,27 @@ const ProjectHqPage = ({
   tokenomicsDocument,
   roadmapDocument,
   jsonLd,
+  runtimeClaim,
 }: ProjectHqPageProps) => {
+  if (runtimeClaim) {
+    const identity: UnclaimedTokenIdentity = {
+      chainId: runtimeClaim.chainId,
+      address: runtimeClaim.contract,
+      symbol: runtimeClaim.metadata.symbol,
+      name: runtimeClaim.metadata.name,
+      logoUrl: runtimeClaim.metadata.logo || undefined,
+      decimals: 18,
+      syntheticSlug: runtimeClaim.slug,
+    }
+    return (
+      <ProjectPageV7Shell
+        mode="unclaimed"
+        unclaimed={identity}
+        claimedProfile={runtimeClaim.metadata}
+        marketsDocument={buildUnclaimedMarketsDocument(identity)}
+      />
+    )
+  }
   // Shell-critical docs only — technical packs deferred / optional for V7 public flow.
   if (!document || !jsonLd || !marketsDocument || !participationDocument) {
     return <NotFound />
@@ -164,7 +206,31 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
   const generatedAt = new Date().toISOString()
   const resolved = resolveProjectBySlug(requestedSlug)
   if (!resolved.ok) {
-    return { notFound: true }
+    const storedClaim = await getProjectClaimBySlug(requestedSlug)
+    const runtimeClaim = storedClaim ? toPublicProjectClaim(storedClaim) : null
+    if (!runtimeClaim) return { notFound: true }
+    return {
+      props: {
+        document: null,
+        evidencePack: null,
+        readinessDocument: null,
+        marketsDocument: null,
+        participationDocument: null,
+        tokenomicsDocument: null,
+        roadmapDocument: null,
+        runtimeClaim,
+        requestedSlug,
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: runtimeClaim.metadata.name,
+          description: runtimeClaim.metadata.description,
+          url: `https://www.melega.finance/@${runtimeClaim.slug}/`,
+          identifier: runtimeClaim.contract,
+        },
+      },
+      revalidate: 30,
+    }
   }
   const loaded = loadProjectEvidencePack(requestedSlug, { generatedAt })
   if (!loaded) {
@@ -207,6 +273,7 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       roadmapDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
+      runtimeClaim: null,
     },
     // ISR keeps cold blocking fallbacks from rebuilding the full graph on every miss forever.
     revalidate: 120,

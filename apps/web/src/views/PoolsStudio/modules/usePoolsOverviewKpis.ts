@@ -115,9 +115,11 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
       tvlCard = card('tvl', '—', 'Valuation unavailable', 'unavailable', 'unavailable')
     }
 
+    const stakingCards = previewCards.filter((p) => p.rawPool && !p.id.startsWith('amm-'))
+
     // —— Discovered (classification SmartChef — never Factory pairs) ——
     let discoveredCard: PoolsOverviewKpiCardModel
-    if (classification.status === 'loading') {
+    if (classification.status === 'loading' && stakingCards.length === 0) {
       discoveredCard = card('discovered', '—', 'Loading pool index…', 'loading', 'loading')
     } else if (classification.status === 'ready' && counts) {
       const inactive = Math.max(0, counts.discovered - counts.active - counts.ended - counts.invalid)
@@ -129,12 +131,20 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
         'live',
         `Total = Active + Finished + Inactive + Unavailable · SmartChef classification · ${classification.generatedAt ?? fetchedAt}`,
       )
+    } else if (stakingCards.length > 0) {
+      discoveredCard = card(
+        'discovered',
+        String(stakingCards.length),
+        'Live indexed inventory',
+        'partial',
+        'partial',
+        `Live SmartChef inventory fallback while classification is unavailable · ${fetchedAt}`,
+      )
     } else {
       discoveredCard = card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
     }
 
     // —— Rewarding (prefer max of classification + live SmartChef card lifecycle; never invent) ——
-    const stakingCards = previewCards.filter((p) => p.rawPool && !p.id.startsWith('amm-'))
     const liveRewardingCards = listRewardingPools(stakingCards)
     const liveActiveCount = stakingCards.filter(
       (p) =>

@@ -122,7 +122,12 @@ export function useProjectEconomyByToken(input: {
           })
         : []
 
-    const aprs = matchedRuntime.map((p) => resolvePoolAprPercent(p))
+    const aprs = matchedRuntime.map((p) => {
+      const tvlUsd = resolvePoolTvlUsd(p)
+      const hasCertifiedPricing = (p.stakingTokenPrice || 0) > 0 && (p.earningTokenPrice || 0) > 0
+      if (p.isFinished || tvlUsd < 10 || !hasCertifiedPricing) return undefined
+      return resolvePoolAprPercent(p)
+    })
     const tvls = matchedRuntime.map((p) => resolvePoolTvlUsd(p)).filter((n) => n > 0)
     const reward = matchedRuntime[0]?.earningToken?.symbol || configPools[0]?.earningToken?.symbol || null
     const topLabel = matchedRuntime[0]

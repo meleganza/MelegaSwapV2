@@ -2,7 +2,7 @@ import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { STAKING_TEMPLATES } from 'views/BuildStudio/buildStudioData'
 import { describeCreatePoolFee, type CreateFeeDisplay } from 'config/constants/feeSchedule'
 
-export type WizardStep = 1 | 2 | 3 | 4 | 5
+export type WizardStep = 1 | 2 | 3 | 4
 
 export type CreatePoolWizardState = {
   rewardToken: string
@@ -14,7 +14,6 @@ export type CreatePoolWizardState = {
   lockPeriod: string
   cooldown: string
   withdrawalFee: string
-  depositFee: string
   autoCompound: string
   poolType: string
   minStake: string
@@ -52,7 +51,6 @@ export function createDefaultWizardState(): CreatePoolWizardState {
     lockPeriod: '',
     cooldown: 'None',
     withdrawalFee: '0%',
-    depositFee: '0%',
     autoCompound: 'Optional',
     poolType: 'Official',
     minStake: '',
@@ -66,23 +64,32 @@ export function parseNum(raw: string): number {
   return Number.isFinite(n) ? n : 0
 }
 
+/** Daily emission is a derived value: budget ÷ duration. */
+export function deriveDailyRewards(state: Pick<CreatePoolWizardState, 'rewardBudget' | 'emissionDuration'>): string {
+  const budget = parseNum(state.rewardBudget)
+  const days = parseNum(state.emissionDuration)
+  if (budget <= 0 || days <= 0) return ''
+  const daily = budget / days
+  return daily.toLocaleString('en-US', {
+    useGrouping: false,
+    maximumFractionDigits: 8,
+  })
+}
+
 export function hasCompletePoolEstimateParams(state: CreatePoolWizardState): boolean {
   return Boolean(
     state.rewardToken &&
       state.stakeToken &&
       parseNum(state.rewardBudget) > 0 &&
-      parseNum(state.dailyRewards) > 0 &&
       parseNum(state.emissionDuration) > 0,
   )
 }
 
 export function computeEstimatedApr(state: CreatePoolWizardState): string {
   if (!hasCompletePoolEstimateParams(state)) return 'Calculated after reward configuration.'
-  const budget = parseNum(state.rewardBudget)
-  const daily = parseNum(state.dailyRewards)
-  const apr = (daily * 365 * 100) / budget
-  if (!Number.isFinite(apr)) return 'Complete pool parameters to estimate APR'
-  return `${apr.toFixed(1)}%`
+  // A genuine staking APR needs current TVL and both token USD prices. Budget ÷
+  // duration only determines emission and must never be presented as APR.
+  return 'Live after first stake'
 }
 
 /** Returns null until configuration is complete — never a fabricated default score. */
@@ -100,7 +107,7 @@ export function computeHealthScore(state: CreatePoolWizardState): number | null 
 export function computeRewardConsumptionPct(state: CreatePoolWizardState): number | null {
   if (!hasCompletePoolEstimateParams(state)) return null
   const budget = parseNum(state.rewardBudget)
-  const daily = parseNum(state.dailyRewards)
+  const daily = parseNum(state.dailyRewards) || parseNum(deriveDailyRewards(state))
   const days = parseNum(state.emissionDuration)
   if (budget <= 0) return null
   const projected = daily * (days || 30)
@@ -137,7 +144,6 @@ export function buildMachinePreviewJson(state: CreatePoolWizardState): string {
         period: state.lockPeriod,
         cooldown: state.cooldown,
         withdrawalFee: state.withdrawalFee,
-        depositFee: state.depositFee,
         autoCompound: state.autoCompound,
       },
       pool: {

@@ -97,7 +97,7 @@ export const StakeModal: React.FC<React.PropsWithChildren<StakeModalProps>> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const [stakeAmount, setStakeAmount] = useState("");
-  const { chainId } = useWeb3React()
+  const { chainId } = useWeb3React();
   const [hasReachedStakeLimit, setHasReachedStakedLimit] = useState(false);
   const [percent, setPercent] = useState(0);
   const [showRoiCalculator, setShowRoiCalculator] = useState(false);
@@ -213,8 +213,14 @@ export const StakeModal: React.FC<React.PropsWithChildren<StakeModalProps>> = ({
       <Flex alignItems="center" justifyContent="space-between" mb="8px">
         <Text bold>{isRemovingStake ? t("Unstake") : t("Stake")}:</Text>
         <Flex alignItems="center" minWidth="70px">
-          <Image src={`/images/${chainId}/tokens/${stakingTokenAddress}.png`} width={24} height={24} alt={stakingTokenSymbol} />
-          
+          <Image
+            src={`/images/${chainId}/tokens/${stakingTokenAddress}.png`}
+            width={24}
+            height={24}
+            alt=""
+            aria-hidden
+          />
+
           <Text ml="4px" bold>
             {stakingTokenSymbol}
           </Text>
@@ -315,7 +321,9 @@ export const StakeModal: React.FC<React.PropsWithChildren<StakeModalProps>> = ({
           isLoading={pendingTx}
           endIcon={pendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
           onClick={() => handleConfirmClick(stakeAmount)}
-          disabled={!stakeAmount || parseFloat(stakeAmount) === 0 || hasReachedStakeLimit || userNotEnoughToken}
+          disabled={
+            !account || !stakeAmount || parseFloat(stakeAmount) === 0 || hasReachedStakeLimit || userNotEnoughToken
+          }
           mt="24px"
         >
           {pendingTx ? t("Confirming") : t("Confirm")}

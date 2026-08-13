@@ -1,10 +1,6 @@
 import type { NextApiHandler } from 'next'
-import {
-  FEATURED_OFFER,
-  createFeaturedOrder,
-  listFeaturedOrders,
-  type FeaturedPayAsset,
-} from 'lib/featured-placement'
+import { FEATURED_OFFER, createFeaturedOrder, listFeaturedOrders, type FeaturedPayAsset } from 'lib/featured-placement'
+import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/constants/recoveryCapabilities'
 
 const ASSETS = new Set(FEATURED_OFFER.acceptedAssets)
 
@@ -23,6 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
     }))
     return res.status(200).json({
       schema: 'melega.featured-orders.list.v1',
+      paymentActivationEnabled: RECOVERY_CAPABILITIES.commercialPaymentActivation,
       offer: {
         usdPrice: FEATURED_OFFER.usdPrice,
         durationDays: FEATURED_OFFER.durationDays,
@@ -41,6 +38,12 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === 'POST') {
+    if (!RECOVERY_CAPABILITIES.commercialPaymentActivation) {
+      return res.status(503).json({
+        error: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+        message: RECOVERY_PAYMENT_UNAVAILABLE,
+      })
+    }
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
     const projectId = String(body.projectId || '').trim()
     const buyerWallet = String(body.buyerWallet || '').trim()

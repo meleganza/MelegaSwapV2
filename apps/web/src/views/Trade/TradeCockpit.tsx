@@ -1,4 +1,5 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -8,23 +9,24 @@ import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
-import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useTradeWarningImport from './hooks/useTradeWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
+import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule'
+import { SmartSwapProductTabs, type SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import { tradeColors, tradeLayout } from './tradeTokens'
-import TradeRouteLine from './components/TradeRouteLine'
-import TradeSmartRouteBox from './components/TradeSmartRouteBox'
-import TradeHistoryPanel from './components/TradeHistoryPanel'
-import TradeRouterPanel from './components/TradeRouterPanel'
-import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
-import type { TradeMode } from './tradeTokens'
+
+const SettingsModal = dynamic(() => import('components/Menu/GlobalSettings/SettingsModal'), { ssr: false })
+const MarcoBridgePanel = dynamic(
+  () => import('views/MarcoBridge/MarcoBridgeWorkspace').then((module) => module.MarcoBridgePanel),
+  { ssr: false, loading: () => <ProductLoading>Preparing bridge…</ProductLoading> },
+)
 
 const Shell = styled.div`
   width: 100%;
   max-width: ${tradeLayout.cockpitWidth};
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -41,39 +43,25 @@ const Panel = styled.div`
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
-  contain: layout paint;
+  overflow: visible;
+  contain: style;
 `
 
 const CockpitHeader = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 `
 
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-`
-
-const Title = styled.h2`
-  margin: 0;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 38px;
-  color: #ffffff;
-`
-
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16px;
-  color: #a8a8a8;
+const ProductLoading = styled.div`
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
 `
 
 const Toolbar = styled.div`
@@ -85,9 +73,7 @@ const Toolbar = styled.div`
 `
 
 const Divider = styled.div`
-  height: 1px;
-  background: rgba(255, 255, 255, 0.06);
-  margin: 10px 0 12px;
+  height: 12px;
   flex-shrink: 0;
 `
 
@@ -123,19 +109,13 @@ const IconBtn = styled.button`
 const SwapFormWrap = styled.div`
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
-  contain: layout paint;
+  overflow: visible;
+  contain: style;
   box-sizing: border-box;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-`
-
-const Placeholder = styled.div`
-  padding: 18px;
-  color: ${tradeColors.muted};
-  font-size: 14px;
 `
 
 const SettingsIcon = () => (
@@ -156,12 +136,9 @@ const RefreshIcon = () => (
   </svg>
 )
 
-export interface TradeCockpitProps {
-  mode: TradeMode
-}
-
-export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
+export const TradeCockpit: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
+  const [productAction, setProductAction] = useState<SmartSwapProductAction>('swap')
   const { account } = useWeb3React()
   const warningSwapHandler = useTradeWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
@@ -194,68 +171,36 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
     if (btn instanceof HTMLElement) btn.click()
   }, [])
 
-  if (mode === 'history') {
-    return (
-      <Shell data-trade-cockpit>
-        <TradeHistoryPanel />
-      </Shell>
-    )
-  }
-
-  if (mode === 'router') {
-    return (
-      <Shell data-trade-cockpit>
-        <TradeRouterPanel />
-      </Shell>
-    )
-  }
-
-  if (mode === 'limit') {
-    return (
-      <Shell data-trade-cockpit>
-        <TradeLimitOrdersPanel />
-      </Shell>
-    )
-  }
-
-  if (mode !== 'smartswap') {
-    return (
-      <Shell data-trade-cockpit>
-        <Panel data-trade-cockpit-shell>
-          <Placeholder>Mode coming soon</Placeholder>
-        </Panel>
-      </Shell>
-    )
-  }
-
   return (
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
-          <TitleBlock>
-            <Title>Swap</Title>
-            <Subtitle>Swap through the best available multichain route.</Subtitle>
-          </TitleBlock>
-          <Toolbar data-trade-cockpit-toolbar>
-            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-              <SettingsIcon />
-            </IconBtn>
-            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
-              <RefreshIcon />
-            </IconBtn>
-          </Toolbar>
+          <SmartSwapProductTabs value={productAction} onChange={setProductAction} />
+          {productAction === 'swap' ? (
+            <Toolbar data-trade-cockpit-toolbar>
+              <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+                <SettingsIcon />
+              </IconBtn>
+              <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+                <RefreshIcon />
+              </IconBtn>
+            </Toolbar>
+          ) : null}
         </CockpitHeader>
         <Divider />
-        <TradeSmartRouteBox />
-        <SwapFormWrap
-          ref={swapBodyRef}
-          className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
-          data-wallet-connected={account ? 'true' : 'false'}
-          data-trade-swap-form
-        >
-          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-          <TradeRouteLine />
-        </SwapFormWrap>
+        {productAction === 'swap' ? (
+          <SwapFormWrap
+            ref={swapBodyRef}
+            className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
+            data-wallet-connected={account ? 'true' : 'false'}
+            data-trade-swap-form
+          >
+            <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+            <SmartSwapExecutionPreviewModule mode="smart" showSmartTransparency compact />
+          </SwapFormWrap>
+        ) : (
+          <MarcoBridgePanel embedded />
+        )}
       </Panel>
     </Shell>
   )

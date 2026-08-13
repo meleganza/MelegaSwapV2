@@ -3,7 +3,7 @@ import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { createSelector } from '@reduxjs/toolkit'
 import { State, VaultKey } from '../types'
 import { transformPool, transformVault } from './helpers'
-import { initialPoolVaultState } from './index'
+import { initialPoolVaultState } from './reducer'
 import { getVaultPosition, VaultPosition } from '../../utils/cakePool'
 
 const selectPoolsData = (state: State) => state.pools?.data
@@ -12,11 +12,11 @@ const selectUserDataLoaded = (state: State) => state.pools?.userDataLoaded
 // const selectVault = (key: VaultKey) => (state: State) => key ? state.pools[key] : initialPoolVaultState
 const selectVault = (key: VaultKey) => (state: State) => {
   if (state.pools && key && state.pools[key]) {
-      return state.pools[key];
+    return state.pools[key]
   } else {
-      return initialPoolVaultState;
+    return initialPoolVaultState
   }
-};
+}
 const selectIfo = (state: State) => state.pools.ifo
 const selectIfoUserCredit = (state: State) => state.pools.ifo.credit ?? BIG_ZERO
 
@@ -42,7 +42,7 @@ export const poolsWithVaultSelector = createSelector(
   ],
   (poolsWithUserDataLoading, deserializedLockedCakeVault, deserializedFlexibleSideCakeVault) => {
     const { pools, userDataLoaded } = poolsWithUserDataLoading
-    
+
     const cakePool = pools?.find((pool) => !pool.isFinished && pool.sousId === 0)
     const withoutCakePool = pools?.filter((pool) => pool)
 
@@ -68,7 +68,7 @@ export const poolsWithVaultSelector = createSelector(
         : []
 
     // return { pools: [cakeAutoVault, ...cakeAutoFlexibleSideVault, ...withoutCakePool], userDataLoaded }
-    return { pools: [cakeAutoVault, ...cakeAutoFlexibleSideVault, ...(withoutCakePool || [])], userDataLoaded };
+    return { pools: [cakeAutoVault, ...cakeAutoFlexibleSideVault, ...(withoutCakePool || [])], userDataLoaded }
   },
 )
 

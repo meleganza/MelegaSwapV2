@@ -52,7 +52,7 @@ const Inner = styled.div`
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: ${poolsHero.leftW} ${poolsHero.artworkW} ${poolsHero.trustW};
+  grid-template-columns: minmax(280px, 1.2fr) minmax(260px, 1.3fr) minmax(280px, 1fr);
   column-gap: ${poolsHero.columnGap};
   align-items: center;
   min-width: 0;
@@ -74,8 +74,8 @@ const Inner = styled.div`
 `
 
 const Left = styled.div`
-  width: ${poolsHero.leftW};
-  max-width: 100%;
+  width: 100%;
+  max-width: ${poolsHero.leftW};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -124,42 +124,9 @@ const Actions = styled.div`
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
   }
-`
-
-const CommunityHint = styled.button`
-  appearance: none;
-  margin-top: 12px;
-  max-width: ${poolsHero.communityCtaMaxW};
-  padding: 0;
-  border: none;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  &:focus-visible {
-    outline: ${poolsHero.focusRing};
-    outline-offset: ${poolsHero.focusOffset};
-  }
-`
-
-const CommunityTitle = styled.span`
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 700;
-  color: rgba(244, 196, 48, 0.92);
-`
-
-const CommunityBody = styled.span`
-  font-size: 11px;
-  line-height: 15px;
-  font-weight: 450;
-  color: rgba(255, 255, 255, 0.52);
 `
 
 const PrimaryCta = styled.a`
@@ -194,41 +161,9 @@ const PrimaryCta = styled.a`
   }
 `
 
-const SecondaryCta = styled.a`
-  box-sizing: border-box;
-  width: ${poolsHero.secondaryCtaW};
-  height: ${poolsHero.secondaryCtaH};
-  min-height: 44px;
-  border-radius: ${poolsHero.ctaRadius};
-  background: transparent;
-  color: #f7f7f7;
-  font-size: 14px;
-  font-weight: 650;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  cursor: pointer;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.32);
-  }
-
-  &:focus-visible {
-    outline: ${poolsHero.focusRing};
-    outline-offset: ${poolsHero.focusOffset};
-  }
-
-  @media (max-width: ${poolsHero.mobileBreak}) {
-    width: 100%;
-    min-width: 0;
-  }
-`
-
 const ArtCol = styled.div`
-  width: ${poolsHero.artworkW};
+  width: 100%;
+  max-width: ${poolsHero.artworkW};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,7 +181,8 @@ const ArtCol = styled.div`
 `
 
 const TrustCol = styled.div`
-  width: ${poolsHero.trustW};
+  width: 100%;
+  max-width: ${poolsHero.trustW};
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -295,13 +231,6 @@ export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = (
     [onRequestCreatePool],
   )
 
-  const onHowItWorks = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    // How it works → docs; Create Pool uses dedicated modal.
-    if (!onRequestCreatePool && scrollToCreatePool()) {
-      e.preventDefault()
-    }
-  }, [onRequestCreatePool])
-
   return (
     <Module
       data-testid="pools-hero-module"
@@ -322,32 +251,7 @@ export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = (
             >
               {POOLS_HERO_COPY.primaryCta}
             </PrimaryCta>
-            {poolsHero.howItWorksReserved ? (
-              <SecondaryCta
-                href={poolsHero.howItWorksHref}
-                onClick={onHowItWorks}
-                data-testid="pools-hero-how-it-works"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
-                  <circle cx="7" cy="7" r="6.25" stroke="currentColor" strokeWidth="1.2" fill="none" />
-                  <path d="M5.6 4.6v4.8L9.6 7 5.6 4.6z" fill="currentColor" />
-                </svg>
-                {POOLS_HERO_COPY.secondaryCta}
-              </SecondaryCta>
-            ) : null}
           </Actions>
-          <CommunityHint
-            type="button"
-            data-testid="pools-hero-community-cta"
-            onClick={(e) => {
-              e.preventDefault()
-              if (onRequestCreatePool) onRequestCreatePool()
-              else scrollToCreatePool()
-            }}
-          >
-            <CommunityTitle>{POOLS_HERO_COPY.communityCtaTitle}</CommunityTitle>
-            <CommunityBody>{POOLS_HERO_COPY.communityCtaBody}</CommunityBody>
-          </CommunityHint>
         </Left>
         <ArtCol>
           <PoolsHeroArtwork />

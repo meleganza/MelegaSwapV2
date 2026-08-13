@@ -1,6 +1,0 @@
-{
-  "missionId": "LIQUIDITY_MODULE_006_MY_POSITIONS",
-  "status": "passed",
-  "vitest": { "testFiles": 6, "tests": 53, "failed": 0 },
-  "nextBuild": "passed"
-}

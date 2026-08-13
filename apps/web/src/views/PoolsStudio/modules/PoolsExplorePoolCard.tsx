@@ -5,6 +5,7 @@
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
@@ -20,8 +21,9 @@ import { resolvePoolContractAddress } from './poolContractLink'
 const Card = styled.article`
   position: relative;
   width: 100%;
-  max-width: ${poolsExplore.cardW};
-  height: ${poolsExplore.cardH};
+  max-width: none;
+  height: auto;
+  min-height: 304px;
   box-sizing: border-box;
   padding: ${poolsExplore.cardPad};
   border-radius: ${poolsExplore.cardRadius};
@@ -35,14 +37,11 @@ const Card = styled.article`
   font-family: ${typography.fontFamily.body};
 
   @media (max-width: ${poolsExplore.tabletBreak}) {
-    max-width: none;
-    height: auto;
-    min-height: ${poolsExplore.cardH};
+    min-height: 294px;
   }
 
   @media (max-width: ${poolsExplore.mobileBreak}) {
-    max-width: none;
-    min-height: 220px;
+    min-height: 286px;
   }
 `
 
@@ -101,9 +100,14 @@ const Status = styled.span<{ $tone: string }>`
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
-  color: ${({ $tone }) => ($tone === 'Active' ? '#6DDC8C' : $tone === 'Partial' ? '#E0B85A' : 'rgba(255,255,255,0.55)')};
+  color: ${({ $tone }) =>
+    $tone === 'Active' ? '#6DDC8C' : $tone === 'Partial' ? '#E0B85A' : 'rgba(255,255,255,0.55)'};
   background: ${({ $tone }) =>
-    $tone === 'Active' ? 'rgba(109,220,140,0.12)' : $tone === 'Partial' ? 'rgba(224,184,90,0.12)' : 'rgba(255,255,255,0.06)'};
+    $tone === 'Active'
+      ? 'rgba(109,220,140,0.12)'
+      : $tone === 'Partial'
+      ? 'rgba(224,184,90,0.12)'
+      : 'rgba(255,255,255,0.06)'};
 `
 
 const Badges = styled.div`
@@ -124,10 +128,9 @@ const Metrics = styled.div`
 
 const Metric = styled.div`
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 `
 
 const MetricLabel = styled.span`
@@ -144,18 +147,7 @@ const MetricValue = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: right;
-`
-
-const MetricSupport = styled.span`
-  display: none;
-`
-
-const LockLine = styled.p`
-  margin: 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: rgba(255, 255, 255, 0.55);
+  text-align: left;
 `
 
 const Actions = styled.div`
@@ -200,6 +192,27 @@ const Btn = styled.button<{ $primary?: boolean }>`
   }
 `
 
+const ConnectBtn = styled(ConnectWalletButton)`
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: ${poolsExplore.touchMin};
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.16);
+  color: ${poolsExplore.gold};
+  font-family: ${typography.fontFamily.body};
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none;
+
+  &:hover:not(:disabled) {
+    background: rgba(244, 196, 48, 0.22);
+  }
+`
+
 export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
   const { switchNetworkAsync } = useSwitchNetwork()
@@ -232,7 +245,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
       setSwitchOpen(true)
       return
     }
-    if (pool.primaryAction === 'Connect Wallet' || pool.primaryAction === 'Stake') {
+    if (pool.primaryAction === 'Stake') {
       setBusy(true)
       try {
         requestModal(pool.sourceCard, 'stake')
@@ -296,9 +309,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         </Badges>
       </Header>
 
-      <span
-        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}
-      >
+      <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>
         {pool.stakeToken.symbol} stake token and {pool.rewardToken.symbol} reward token
       </span>
 
@@ -312,14 +323,6 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
           <MetricValue>{truthDash(pool.tvlDisplay)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Stake</MetricLabel>
-          <MetricValue>{truthDash(pool.stakeToken.symbol)}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Reward</MetricLabel>
-          <MetricValue>{truthDash(pool.rewardToken.symbol)}</MetricValue>
-        </Metric>
-        <Metric>
           <MetricLabel>Remaining</MetricLabel>
           <MetricValue>{truthDash(pool.remainingDisplay)}</MetricValue>
         </Metric>
@@ -330,10 +333,6 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
           </Metric>
         ) : null}
         <Metric>
-          <MetricLabel>Duration</MetricLabel>
-          <MetricValue>{truthDash(pool.durationDisplay)}</MetricValue>
-        </Metric>
-        <Metric>
           <MetricLabel>Participants</MetricLabel>
           <MetricValue>{truthDash(pool.participantsDisplay)}</MetricValue>
         </Metric>
@@ -343,38 +342,34 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         </Metric>
       </Metrics>
 
-      <LockLine>
-        Status · {pool.statusLabel} · Lock · {pool.lockType}
-      </LockLine>
-
       <YieldActivitySparkline
         pairAddress={pool.isLp ? pool.stakeToken.address : null}
         testId="pools-explore-activity-spark"
       />
 
       <Actions>
-        <Btn
-          type="button"
-          $primary
-          data-testid="pools-explore-stake"
-          disabled={!pool.stakeEnabled || busy || pool.primaryAction === 'Unavailable'}
-          aria-label={
-            pool.primaryAction === 'Switch Network'
-              ? `Switch network to stake in ${pool.title}`
-              : pool.stakeEnabled
+        {pool.primaryAction === 'Connect Wallet' ? (
+          <ConnectBtn data-testid="pools-explore-connect" aria-label={`Connect wallet to stake in ${pool.title}`}>
+            Connect Wallet
+          </ConnectBtn>
+        ) : (
+          <Btn
+            type="button"
+            $primary
+            data-testid="pools-explore-stake"
+            disabled={!pool.stakeEnabled || busy || pool.primaryAction === 'Unavailable'}
+            aria-label={
+              pool.primaryAction === 'Switch Network'
+                ? `Switch network to stake in ${pool.title}`
+                : pool.stakeEnabled
                 ? `Stake in ${pool.title}`
                 : `Stake unavailable for ${pool.title}`
-          }
-          onClick={onPrimary}
-        >
-          {busy
-            ? 'Staking…'
-            : pool.primaryAction === 'Switch Network'
-              ? 'Switch Network'
-              : pool.primaryAction === 'Connect Wallet'
-                ? 'Connect Wallet'
-                : 'Stake'}
-        </Btn>
+            }
+            onClick={onPrimary}
+          >
+            {busy ? 'Staking…' : pool.primaryAction === 'Switch Network' ? 'Switch Network' : 'Stake'}
+          </Btn>
+        )}
         {contractUrl && contractAddress ? (
           <Btn
             type="button"

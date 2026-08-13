@@ -43,6 +43,8 @@ export interface FarmPreviewCard {
   lpLabel?: string
   rewardToken?: string
   participants?: string
+  /** Only an event/wallet census index may certify participant counts. */
+  participantsSource?: 'masterchef_event_index' | 'indexed_wallet_census' | 'participant_index_pending'
   explorerUrl?: string
   masterChefExplorerUrl?: string
   emissionState?: 'active' | 'zero' | 'no_allocation' | 'paused' | 'unavailable'

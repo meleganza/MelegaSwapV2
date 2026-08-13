@@ -1,4 +1,5 @@
 import type { NextApiHandler } from 'next'
+import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/constants/recoveryCapabilities'
 import {
   FEATURED_OFFER,
   buildFeaturedQuote,
@@ -7,9 +8,9 @@ import {
   prepareFeaturedPayment,
   scheduleFeaturedWindow,
   updateFeaturedOrder,
-  validateFeaturedReceipt,
   type FeaturedPayAsset,
 } from 'lib/featured-placement'
+import { verifyBscPaymentReceipt } from 'lib/monetization/verifyPaymentReceipt'
 
 async function fetchUnitPriceUsd(asset: FeaturedPayAsset): Promise<{ price: number | null; source: string }> {
   if (asset === 'USDT' || asset === 'USDC') return { price: 1, source: 'stablecoin-1usd' }
@@ -39,6 +40,21 @@ async function fetchUnitPriceUsd(asset: FeaturedPayAsset): Promise<{ price: numb
 }
 
 const handler: NextApiHandler = async (req, res) => {
+  const body =
+    req.method === 'POST' ? (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}) : {}
+  const action = String(body.action || '')
+
+  if (
+    req.method === 'POST' &&
+    !RECOVERY_CAPABILITIES.commercialPaymentActivation &&
+    ['quote', 'confirm-receipt'].includes(action)
+  ) {
+    return res.status(503).json({
+      error: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+      message: RECOVERY_PAYMENT_UNAVAILABLE,
+    })
+  }
+
   const orderId = String(req.query.orderId || '')
   const order = getFeaturedOrder(orderId)
   if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
@@ -51,14 +67,12 @@ const handler: NextApiHandler = async (req, res) => {
         durationDays: FEATURED_OFFER.durationDays,
         treasuryWallet: FEATURED_OFFER.treasuryWallet,
       },
+      paymentActivationEnabled: RECOVERY_CAPABILITIES.commercialPaymentActivation,
       quoteExpired: isQuoteExpired(order.quoteExpiration),
     })
   }
 
   if (req.method === 'POST') {
-    const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
-    const action = String(body.action || '')
-
     if (action === 'quote') {
       const asset = (body.paymentAsset || order.paymentAsset) as FeaturedPayAsset
       const { price, source } = await fetchUnitPriceUsd(asset)
@@ -100,18 +114,24 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     if (action === 'confirm-receipt') {
-      const receipt = body.receipt || {}
       const current = getFeaturedOrder(orderId)!
+      const txHash = String(body.transactionHash || '')
+      if (
+        current.state !== 'SUBMITTED' ||
+        !current.transactionHash ||
+        current.transactionHash.toLowerCase() !== txHash.toLowerCase()
+      ) {
+        return res.status(400).json({ error: 'ORDER_NOT_SUBMITTED_OR_TX_MISMATCH' })
+      }
       if (!current.tokenAmountRaw || isQuoteExpired(current.quoteExpiration)) {
         return res.status(400).json({ error: 'QUOTE_EXPIRED_OR_MISSING' })
       }
-      const validation = validateFeaturedReceipt({
+      const validation = await verifyBscPaymentReceipt({
+        transactionHash: txHash,
+        buyerWallet: current.buyerWallet,
         paymentAsset: current.paymentAsset,
         tokenAmountRaw: current.tokenAmountRaw,
-        txTo: receipt.to ?? null,
-        txValueHex: receipt.value ?? null,
-        txStatus: receipt.status ?? null,
-        logs: receipt.logs,
+        treasuryWallet: current.treasuryWallet,
       })
       if (!validation.ok) {
         const failed = updateFeaturedOrder(orderId, {

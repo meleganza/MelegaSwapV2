@@ -4,6 +4,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
@@ -114,8 +115,7 @@ const Btn = styled.button<{ $primary?: boolean }>`
   height: 34px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid
-    ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
+  border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? '#F4C430' : '#F5F5F5')};
   font-size: 12px;
@@ -130,6 +130,19 @@ const Btn = styled.button<{ $primary?: boolean }>`
   }
 `
 
+const ConnectBtn = styled(ConnectWalletButton)`
+  min-height: 34px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.16);
+  color: #f4c430;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: none;
+`
+
 const Empty = styled.p`
   grid-column: 1 / -1;
   margin: 0;
@@ -138,7 +151,7 @@ const Empty = styled.p`
 `
 
 export const PoolsFeaturedPoolBand: React.FC = () => {
-  const { featured, requestModal } = usePoolsRuntime()
+  const { account, featured, requestModal } = usePoolsRuntime()
   const card = featured?.card
 
   // No factual featured pool → do not reserve layout (Founder P0).
@@ -158,17 +171,9 @@ export const PoolsFeaturedPoolBand: React.FC = () => {
     <Band data-testid="pools-featured-band" data-featured="ready" data-pool-id={card.id}>
       <Eyebrow>Featured Pool · Highest TVL active</Eyebrow>
       <Logos aria-hidden="true">
-        <PoolTokenIcon
-          symbol={featured.stakeToken}
-          address={card.stakeContractAddress ?? undefined}
-          size={36}
-        />
+        <PoolTokenIcon symbol={featured.stakeToken} address={card.stakeContractAddress ?? undefined} size={36} />
         <RewardWrap>
-          <PoolTokenIcon
-            symbol={featured.rewardToken}
-            address={card.rewardContractAddress ?? undefined}
-            size={28}
-          />
+          <PoolTokenIcon symbol={featured.rewardToken} address={card.rewardContractAddress ?? undefined} size={28} />
         </RewardWrap>
       </Logos>
       <div>
@@ -194,18 +199,24 @@ export const PoolsFeaturedPoolBand: React.FC = () => {
         <Value>{featured.rewardToken || '—'}</Value>
       </Metric>
       <Actions>
-        <Btn
-          type="button"
-          $primary
-          disabled={!stakeEnabled}
-          aria-label={`Stake in featured pool ${featured.name}`}
-          onClick={() => {
-            if (!stakeEnabled) return
-            requestModal(card, 'stake')
-          }}
-        >
-          Stake
-        </Btn>
+        {account ? (
+          <Btn
+            type="button"
+            $primary
+            disabled={!stakeEnabled}
+            aria-label={`Stake in featured pool ${featured.name}`}
+            onClick={() => {
+              if (!stakeEnabled) return
+              requestModal(card, 'stake')
+            }}
+          >
+            Stake
+          </Btn>
+        ) : (
+          <ConnectBtn aria-label={`Connect wallet to stake in featured pool ${featured.name}`}>
+            Connect Wallet
+          </ConnectBtn>
+        )}
         {contractUrl ? (
           <Btn
             type="button"

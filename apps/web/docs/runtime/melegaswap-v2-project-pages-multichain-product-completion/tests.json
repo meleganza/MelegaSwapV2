@@ -1,7 +1,0 @@
-{
-  "suite": "projectPagesMultichain.productCompletion + projectPageZeroRebuild + melegaChainRegistry.baseReactivation",
-  "result": "PASS",
-  "testFiles": 3,
-  "tests": 23,
-  "failed": 0
-}

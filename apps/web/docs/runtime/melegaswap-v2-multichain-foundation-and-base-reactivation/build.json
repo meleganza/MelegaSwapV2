@@ -1,5 +1,0 @@
-{
-  "result": "PASS",
-  "command": "yarn workspace web build",
-  "at": "2026-08-03T14:23:44.275162+00:00"
-}

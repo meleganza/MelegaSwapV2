@@ -17,13 +17,13 @@ import type { ProjectParticipationDocument } from 'registry/projects/identity/pa
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import { getFeaturedPackage, getTrendBoostPackage } from 'lib/monetization/packages'
+import type { ProjectClaimMetadata } from 'lib/project-claims/types'
 import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
 import { ClaimProjectWizardModal } from 'views/shared/monetization/ClaimProjectWizardModal'
 import { COMMERCIAL_SERVICES, type CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import { truthDash, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { resolveFounderFeaturedProjects } from 'views/HomeTrade/featuredProjectsCatalog'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
-import { ProjectCard } from 'views/ProjectsStudio/components/ProjectGridCard'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { readinessStateFromScore } from 'registry/projects/identity/readiness/schema'
 import { humanEnumLabel } from '../presentation/humanLabels'
@@ -39,6 +39,7 @@ import {
 } from '../v1/helpers'
 import { useProjectLiveMarket } from '../v1/useProjectLiveMarket'
 import { useProjectEconomyByToken } from './useProjectEconomyByToken'
+import { useProjectDexAnalytics } from './useProjectDexAnalytics'
 import {
   afterFirstPaint,
   markProjectChartReady,
@@ -56,6 +57,32 @@ import {
 
 const dash = (v?: string | null) => truthDash(v)
 
+function compactUsd(value?: number | null): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function preciseUsd(value?: number | null): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  if (value >= 0.01) return `$${value.toLocaleString('en-US', { maximumFractionDigits: 4 })}`
+  return `$${value.toLocaleString('en-US', { maximumSignificantDigits: 6 })}`
+}
+
+function percent24h(value?: number | null): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+}
+
+const TRUST_ATTESTATIONS = [
+  { id: 'audit', label: 'Audit' },
+  { id: 'kyc', label: 'KYC' },
+] as const
+
 const ChartSkeleton = styled.div`
   min-height: 160px;
   border-radius: 10px;
@@ -65,6 +92,54 @@ const SwapSkeleton = styled.div`
   min-height: 200px;
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(20, 20, 20, 0.55), rgba(10, 10, 10, 0.8));
+`
+
+const ProjectNav = styled.nav`
+  position: sticky;
+  /* The app shell already offsets this transformed page below header + ticker.
+     A second pixel offset displaced the sticky nav over the project identity. */
+  top: 0;
+  z-index: 12;
+  min-height: 44px;
+  margin-bottom: 8px;
+  padding: 5px 8px;
+  border: 1px solid ${pp.line};
+  border-radius: 12px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  a {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.68);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+  a:first-child {
+    color: ${pp.gold};
+    background: rgba(244, 196, 48, 0.1);
+    margin-right: auto;
+  }
+  a:hover,
+  a:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  @media (max-width: 767px) {
+    top: 0;
+  }
 `
 
 const ProjectCharts = dynamic(() => import('../v1/ProjectCharts'), {
@@ -77,25 +152,147 @@ const ProjectTradingEmbed = dynamic(() => import('../v1/ProjectTradingEmbed'), {
 })
 
 const Hero = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   min-width: 0;
-  @media (min-width: 960px) {
-    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
-    gap: 18px;
-    align-items: stretch;
-    max-height: min(72vh, 520px);
+`
+const IdentityHeader = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(300px, 0.72fr);
+  gap: 20px;
+  align-items: stretch;
+  padding: 16px 18px;
+  border-radius: ${pp.radius};
+  border: 1px solid ${pp.line};
+  background: radial-gradient(circle at 84% 18%, rgba(244, 196, 48, 0.07), transparent 34%),
+    linear-gradient(145deg, rgba(17, 17, 17, 0.98), rgba(10, 10, 10, 0.98));
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+`
+const HeroContext = styled.aside`
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  min-width: 0;
+  padding-left: 18px;
+  border-left: 1px solid ${pp.line};
+
+  @media (max-width: 860px) {
+    padding: 12px 0 0;
+    border-left: 0;
+    border-top: 1px solid ${pp.line};
+  }
+`
+const HeroContextBlock = styled.div`
+  min-width: 0;
+  h2 {
+    margin: 0 0 5px;
+    color: ${pp.gold};
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 12px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+`
+const VerifiedMark = styled.span`
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  color: #fff;
+  background: #1d9bf0;
+  box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.14);
+  font-size: 11px;
+  font-weight: 900;
+`
+const Handle = styled.span`
+  color: ${pp.mute};
+  font-size: 13px;
+  font-weight: 700;
+`
+const MarketWorkspace = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.58fr) minmax(360px, 0.72fr);
+  gap: 12px;
+  min-width: 0;
+
+  @media (max-width: 1050px) {
+    grid-template-columns: minmax(0, 1fr) minmax(330px, 0.82fr);
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+`
+const WorkspacePanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: ${pp.radius};
+  border: 1px solid ${pp.line};
+  background: linear-gradient(180deg, rgba(15, 15, 15, 0.99), rgba(8, 8, 8, 0.99));
+`
+const WorkspaceHead = styled.div`
+  min-height: 42px;
+  padding: 8px 12px;
+  border-bottom: 1px solid ${pp.line};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #fff;
+
+  strong {
+    font-size: 13px;
+  }
+  span {
+    color: ${pp.mute2};
+    font-size: 11px;
   }
 `
 const LogoWrap = styled.div`
+  position: relative;
   width: 56px;
   height: 56px;
   flex-shrink: 0;
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid ${pp.line};
   background: #111;
+`
+const ChainOverlay = styled.span`
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #101010;
+  background: #171717;
+  overflow: hidden;
+  > * {
+    transform: scale(0.76);
+  }
 `
 const HeroName = styled.h1`
   margin: 0;
@@ -110,27 +307,33 @@ const Ticker = styled.span`
   font-weight: 750;
   color: ${pp.gold};
 `
-const Desc = styled.p`
-  margin: 8px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.72);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+const HeroTrustBadge = styled.span<{ $verified?: boolean }>`
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${({ $verified }) => ($verified ? 'rgba(61,220,151,.4)' : 'rgba(255,255,255,.12)')};
+  background: ${({ $verified }) => ($verified ? 'rgba(61,220,151,.1)' : 'rgba(255,255,255,.025)')};
+  color: ${({ $verified }) => ($verified ? pp.ok : 'rgba(255,255,255,.42)')};
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
 `
 const IconRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 9px;
+  align-items: center;
 `
 const IconBtn = styled.a`
-  width: 36px;
-  height: 36px;
-  min-height: 40px;
-  min-width: 40px;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  min-width: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -147,10 +350,10 @@ const IconBtn = styled.a`
   }
 `
 const IconAction = styled.button`
-  width: 36px;
-  height: 36px;
-  min-height: 40px;
-  min-width: 40px;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  min-width: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -163,55 +366,48 @@ const IconAction = styled.button`
   font-weight: 750;
 `
 const ContractRow = styled.div`
-  display: flex;
+  display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid ${pp.line};
-  background: rgba(255, 255, 255, 0.02);
-  font-size: 12px;
+  gap: 5px;
+  margin: 0;
+  padding-left: 7px;
+  border-left: 1px solid ${pp.line};
+  font-size: 10px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #c8c8c8;
+  color: ${pp.mute};
   min-width: 0;
 `
 const ContractAddr = styled.span`
-  flex: 1;
+  flex: 0 1 auto;
+  max-width: 154px;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   @media (min-width: 960px) {
-    text-overflow: clip;
-    overflow: visible;
-    white-space: nowrap;
+    max-width: 188px;
   }
 `
-const Terminal = styled.div<{ $chartless?: boolean }>`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  border-radius: ${pp.radius};
-  border: 1px solid rgba(244, 196, 48, 0.18);
-  background: linear-gradient(180deg, rgba(16, 16, 16, 0.98), rgba(10, 10, 10, 0.98));
-  overflow: hidden;
-  min-height: ${({ $chartless }) => ($chartless ? '280px' : '360px')};
-`
 const ChartSlot = styled.div<{ $collapsed?: boolean }>`
-  flex: ${({ $collapsed }) => ($collapsed ? '0 0 auto' : '1.35 1 0')};
+  flex: 0 0 auto;
   min-height: ${({ $collapsed }) => ($collapsed ? '0' : '180px')};
   padding: ${({ $collapsed }) => ($collapsed ? '6px 10px 0' : '8px 10px 4px')};
   border-bottom: ${({ $collapsed }) => ($collapsed ? '0' : `1px solid ${pp.line}`)};
   @media (min-width: 960px) {
-    min-height: ${({ $collapsed }) => ($collapsed ? '0' : '220px')};
+    min-height: ${({ $collapsed }) => ($collapsed ? '0' : '255px')};
+
+    [data-trade-chart-area] {
+      height: 165px !important;
+      min-height: 165px !important;
+      max-height: 180px !important;
+    }
   }
 `
 const SwapSlot = styled.div<{ $expand?: boolean }>`
-  flex: ${({ $expand }) => ($expand ? '1.6 1 0' : '1 1 0')};
+  flex: 1 1 auto;
   min-height: 0;
-  padding: 4px 8px 8px;
+  padding: 0;
   #pp-v1-trading,
   [data-trading-variant='hero'] {
     border: 0;
@@ -222,27 +418,17 @@ const SwapSlot = styled.div<{ $expand?: boolean }>`
 `
 const MarketStrip = styled.div`
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(96px, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  @media (min-width: 768px) and (max-width: 959px) {
-    grid-auto-flow: unset;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: repeat(2, auto);
-    overflow: visible;
-  }
   @media (min-width: 960px) {
-    grid-auto-flow: unset;
     grid-template-columns: repeat(8, minmax(0, 1fr));
-    overflow: visible;
   }
 `
 const StripCell = styled.div`
-  min-width: 88px;
-  padding: 10px 12px;
+  min-width: 0;
+  padding: 9px 10px;
   border-right: 1px solid ${pp.line};
+  border-top: 1px solid ${pp.line};
   &:last-child {
     border-right: 0;
   }
@@ -256,12 +442,37 @@ const StripLabel = styled.div`
   margin-bottom: 3px;
 `
 const StripValue = styled.div<{ $tone?: 'up' | 'down' | 'mute' }>`
-  font-size: 15px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: ${({ $tone }) =>
-    $tone === 'up' ? pp.ok : $tone === 'down' ? pp.bad : $tone === 'mute' ? pp.mute : '#fff'};
+  color: ${({ $tone }) => ($tone === 'up' ? pp.ok : $tone === 'down' ? pp.bad : $tone === 'mute' ? pp.mute : '#fff')};
   white-space: nowrap;
+`
+const DexCompactRow = styled.div`
+  min-height: 34px;
+  padding: 6px 10px;
+  border-top: 1px solid ${pp.line};
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  overflow-x: auto;
+  color: ${pp.mute};
+  font-size: 10px;
+  white-space: nowrap;
+  strong {
+    margin-left: 4px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 11px;
+  }
+`
+const DexSourceLink = styled.a`
+  margin-left: auto;
+  color: ${pp.gold};
+  text-decoration: none;
+  font-weight: 800;
 `
 const EconomyGrid = styled.div`
   display: grid;
@@ -274,12 +485,13 @@ const EconomyGrid = styled.div`
 const EconomyCard = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: ${pp.radius};
+  gap: 10px;
+  min-height: 132px;
+  padding: 13px 14px;
+  border-radius: 12px;
   border: 1px solid ${pp.line};
-  background: rgba(255, 255, 255, 0.02);
-  min-height: 0;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
 `
 const EconomyTitle = styled.div`
   font-size: 13px;
@@ -287,8 +499,9 @@ const EconomyTitle = styled.div`
   color: #fff;
 `
 const EconomyMeta = styled.div`
-  display: grid;
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.72);
   flex: 1;
@@ -296,17 +509,21 @@ const EconomyMeta = styled.div`
 const IntelGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 0;
   @media (min-width: 900px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `
 const IntelCard = styled.div`
   padding: 12px;
-  border-radius: ${pp.radius};
-  border: 1px solid ${pp.line};
-  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0;
+  border: 0;
+  border-right: 1px solid ${pp.line};
+  background: transparent;
   min-height: 140px;
+  &:last-child {
+    border-right: 0;
+  }
 `
 const ActivityRow = styled.div`
   display: grid;
@@ -327,8 +544,7 @@ const ScoreGauge = styled.div`
   margin: 8px auto 10px;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(244, 196, 48, 0.18), transparent 62%),
+  background: radial-gradient(circle at 50% 45%, rgba(244, 196, 48, 0.18), transparent 62%),
     conic-gradient(${pp.gold} var(--score-deg, 0deg), rgba(255, 255, 255, 0.08) 0);
   position: relative;
   &::after {
@@ -345,6 +561,39 @@ const ScoreValue = styled.div`
   font-size: 22px;
   font-weight: 850;
   color: #fff;
+`
+const HolderDonutWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+`
+const HolderDonut = styled.div`
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border: 8px solid rgba(244, 196, 48, 0.2);
+  background: radial-gradient(circle at 50% 45%, rgba(244, 196, 48, 0.12), transparent 65%);
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #0e0e0e;
+  }
+  strong {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-size: 15px;
+    max-width: 68px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `
 const BoostConsole = styled.div`
   border-radius: ${pp.radius};
@@ -425,13 +674,6 @@ const RelatedCard = styled(Link)`
     border-color: ${pp.goldLine};
   }
 `
-const HeroActions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-  align-items: center;
-`
 const HeroCta = styled.button<{ $ghost?: boolean }>`
   display: inline-flex;
   align-items: center;
@@ -447,6 +689,41 @@ const HeroCta = styled.button<{ $ghost?: boolean }>`
   cursor: pointer;
   &:hover {
     border-color: ${pp.goldLine};
+  }
+`
+const MarcoActions = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+`
+const MarcoActionLink = styled(Link)<{ $primary?: boolean }>`
+  min-height: 34px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 1px solid ${({ $primary }) => ($primary ? pp.goldLine : pp.line)};
+  background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,.14)' : 'rgba(255,255,255,.025)')};
+  color: ${({ $primary }) => ($primary ? pp.gold : '#f4f4f4')};
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+`
+const MarcoAvailability = styled.div`
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  > span:first-child {
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 `
 const RelatedGrid = styled.div`
@@ -485,12 +762,14 @@ const WalletIconWrap = styled.span`
   display: inline-flex;
   align-items: center;
   button {
-    min-width: 40px !important;
-    min-height: 40px !important;
-    width: 40px !important;
-    height: 40px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
     padding: 0 !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    border-color: ${pp.line} !important;
   }
 `
 
@@ -521,6 +800,8 @@ export type ProjectPageV7ClaimedProps = {
 export type ProjectPageV7UnclaimedProps = {
   mode: 'unclaimed'
   unclaimed: UnclaimedTokenIdentity
+  /** Runtime owner/deployer-authenticated profile for an instantly published /@handle page. */
+  claimedProfile?: ProjectClaimMetadata | null
   marketsDocument?: ProjectMarketsDocument | null
   participationDocument?: ProjectParticipationDocument | null
 }
@@ -531,15 +812,12 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const isUnclaimed = props.mode === 'unclaimed'
   const document = isUnclaimed ? null : props.document
   const unclaimed = isUnclaimed ? props.unclaimed : null
+  const claimedProfile = isUnclaimed ? props.claimedProfile ?? null : null
+  const hasPublishedProfile = Boolean(claimedProfile)
   const evidencePack = !isUnclaimed ? props.evidencePack ?? null : null
   const readinessDocument = !isUnclaimed ? props.readinessDocument ?? null : null
-  const tokenomicsDocument = !isUnclaimed ? props.tokenomicsDocument ?? null : null
-  const roadmapDocument = !isUnclaimed ? props.roadmapDocument ?? null : null
 
-  const deployments = useMemo(
-    () => (document ? buildProjectChainDeployments(document) : []),
-    [document],
-  )
+  const deployments = useMemo(() => (document ? buildProjectChainDeployments(document) : []), [document])
   const [selectedChainId, setSelectedChainId] = useState(() =>
     unclaimed ? unclaimed.chainId : defaultSelectedChainId(deployments),
   )
@@ -558,25 +836,32 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
     deployments.find((d) => d.status === 'LIVE') ??
     deployments[0]
   const primary = document && selected ? getPrimaryAssetForChain(document, selected.chainId) : null
-  const displayName = unclaimed?.name ?? document!.identity.displayName
-  const symbol = unclaimed?.symbol ?? primary?.symbol?.value ?? null
+  const displayName = claimedProfile?.name ?? unclaimed?.name ?? document!.identity.displayName
+  const symbol = claimedProfile?.symbol ?? unclaimed?.symbol ?? primary?.symbol?.value ?? null
   const chainId = unclaimed?.chainId ?? selected?.chainId ?? 56
   const contract = unclaimed?.address ?? selected?.contractAddress ?? null
-  const pageSlug = unclaimed?.syntheticSlug ?? document!.slug
+  const pageSlug = claimedProfile?.handle ?? unclaimed?.syntheticSlug ?? document!.slug
+  const isMarcoProject = !isUnclaimed && (pageSlug.toLowerCase() === 'marco' || symbol?.toUpperCase() === 'MARCO')
   const verified =
     !isUnclaimed && document?.identity.verificationState?.meta?.availability === 'AVAILABLE'
       ? humanEnumLabel(document.identity.verificationState.value)
       : null
-  const logoUrl = unclaimed?.logoUrl
+  const logoUrl = claimedProfile?.logo
+    ? claimedProfile.logo
+    : unclaimed?.logoUrl
     ? unclaimed.logoUrl
     : document?.identity.logoUrl?.meta?.availability === 'AVAILABLE'
-      ? document.identity.logoUrl.value
-      : undefined
+    ? document.identity.logoUrl.value
+    : undefined
   const socials = document ? getSocialResources(document) : []
   const website = document?.resources.find((r) => r.resourceType === 'website')
   const xLink = socials.find((s) => /twitter|x\.com/i.test(s.url) || /\bx\b/i.test(s.label))
   const tgLink = socials.find((s) => /t\.me|telegram/i.test(s.url) || /telegram/i.test(s.label))
   const discordLink = socials.find((s) => /discord/i.test(s.url) || /discord/i.test(s.label))
+  const websiteUrl = claimedProfile?.website ?? website?.url ?? null
+  const xUrl = claimedProfile?.x ?? xLink?.url ?? null
+  const telegramUrl = claimedProfile?.telegram ?? tgLink?.url ?? null
+  const discordUrl = claimedProfile?.discord ?? discordLink?.url ?? null
 
   const marketsDocument = useMemo(() => {
     if (isUnclaimed && unclaimed) {
@@ -594,10 +879,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   })
 
   const chainLiquidity = useMemo(
-    () =>
-      participationDocument
-        ? filterParticipationByChain(participationDocument.pools, chainId)
-        : [],
+    () => (participationDocument ? filterParticipationByChain(participationDocument.pools, chainId) : []),
     [participationDocument, chainId],
   )
   const economy = useProjectEconomyByToken({
@@ -606,6 +888,28 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
     liquidityPairCount: chainLiquidity.length,
     largestPairLabel: chainLiquidity[0]?.displayLabel || (symbol ? `${symbol} / WBNB` : null),
   })
+  const dexAnalytics = useProjectDexAnalytics(chainId, contract)
+
+  const trustAttestations = useMemo(
+    () =>
+      TRUST_ATTESTATIONS.map((definition) => {
+        const attestation = document?.evidence.find((record) => record.evidenceType === `${definition.id}_attestation`)
+        const verified = Boolean(
+          attestation &&
+            /verified|observed|available|complete/i.test(attestation.status) &&
+            attestation.freshness !== 'stale',
+        )
+        return {
+          ...definition,
+          verified,
+          provider: attestation?.provider ?? attestation?.reference ?? null,
+          sourceUrl: attestation?.sourceUrl ?? null,
+          source: attestation?.sourceType ?? null,
+          status: attestation?.status ?? 'not_provided',
+        }
+      }),
+    [document],
+  )
 
   const activityFeed = useProtocolActivityFeed()
   const projectActivity = useMemo(() => {
@@ -621,19 +925,22 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
 
   const featuredPkg = getFeaturedPackage('featured_1w')
   const trendPkg = getTrendBoostPackage('trend_6h')
-  const openBoost = useCallback((service: CommercialServiceId) => {
-    if (service === 'claim-project') {
-      setClaimOpen(true)
-      return
-    }
-    const svc = COMMERCIAL_SERVICES.find((s) => s.id === service)
-    if (svc?.externalHref) {
-      window.location.href = svc.externalHref(chainId)
-      return
-    }
-    setCheckoutService(service)
-    setCheckoutOpen(true)
-  }, [chainId])
+  const openBoost = useCallback(
+    (service: CommercialServiceId) => {
+      if (service === 'claim-project') {
+        setClaimOpen(true)
+        return
+      }
+      const svc = COMMERCIAL_SERVICES.find((s) => s.id === service)
+      if (svc?.externalHref) {
+        window.location.href = svc.externalHref(chainId)
+        return
+      }
+      setCheckoutService(service)
+      setCheckoutOpen(true)
+    },
+    [chainId],
+  )
 
   const tokenDecimals =
     unclaimed?.decimals ??
@@ -641,35 +948,26 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
       ? primary.decimals.value
       : 18)
 
-  const focusSmartSwap = useCallback(() => {
-    if (typeof window === 'undefined') return
-    window.document.getElementById('project-v7-swap')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [])
-
   const description = isUnclaimed
-    ? null
+    ? claimedProfile?.description ?? null
     : document?.identity.shortPurpose?.meta?.availability === 'AVAILABLE'
-      ? document.identity.shortPurpose.value
-      : document?.identity.description?.meta?.availability === 'AVAILABLE'
-        ? document.identity.description.value
-        : null
+    ? document.identity.shortPurpose.value
+    : document?.identity.description?.meta?.availability === 'AVAILABLE'
+    ? document.identity.description.value
+    : null
 
   const aboutFull = isUnclaimed
-    ? null
+    ? claimedProfile?.description ?? null
     : document?.identity.description?.meta?.availability === 'AVAILABLE'
-      ? document.identity.description.value
-      : null
+    ? document.identity.description.value
+    : null
 
   const isFeaturedPlacement = Boolean(
     document && ['mm72', 'eyed', 'young-degens', 'blion', 'marco'].includes(document.slug),
   )
-  /** Product claim state: unclaimed route is always unclaimed; registry pages may show Official chip. */
-  const isOfficialClaimed = Boolean(
-    !isUnclaimed &&
-      evidencePack?.claims?.some((c) => /accepted|verified|owned|claimed/i.test(String(c.status ?? c.id ?? ''))),
+  const isVerified = Boolean(
+    verified && document?.identity.verificationState.meta.source === 'MELEGA_VERIFIED' && !/unverified/i.test(verified),
   )
-  const isVerified = Boolean(verified && /verif/i.test(verified))
-  const showClaimHeroCta = isUnclaimed
 
   const related = useMemo(() => {
     const exclude = document?.slug
@@ -694,10 +992,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   }, [document?.slug])
 
   const score = readinessDocument?.readiness?.score
-  const scoreBand =
-    typeof score === 'number'
-      ? humanEnumLabel(String(readinessStateFromScore(score)))
-      : '—'
+  const scoreBand = typeof score === 'number' ? humanEnumLabel(String(readinessStateFromScore(score))) : '—'
   const scoreMeasured = readinessDocument?.generatedAt
     ? timeAgo(Math.floor(new Date(readinessDocument.generatedAt).getTime() / 1000))
     : '—'
@@ -747,8 +1042,38 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
     return () => window.clearTimeout(t)
   }, [tradeReady])
 
-  const chartCollapsed = chartHistory === false
   const pairLabel = economy.liquidity.largestPair || (symbol ? `${symbol} / WBNB` : '—')
+  const dexMarket = dexAnalytics.data?.analytics ?? null
+  const livePrice = market.priceUsd !== '—' ? market.priceUsd : preciseUsd(dexMarket?.priceUsd)
+  const liveTrend = market.trend !== '—' ? market.trend : percent24h(dexMarket?.priceChange24h)
+  const liveLiquidity = dexMarket?.liquidityUsd != null ? compactUsd(dexMarket.liquidityUsd) : market.liquidity
+  const liveVolume = dexMarket?.volume24hUsd != null ? compactUsd(dexMarket.volume24hUsd) : market.volume24h
+  const liveTransactions =
+    dexMarket?.transactions24h != null ? dexMarket.transactions24h.toLocaleString() : market.swaps24h
+  const liveMarketCap = market.marketCap !== '—' ? market.marketCap : compactUsd(dexMarket?.marketCapUsd)
+  const liveFdv = market.fdv !== '—' ? market.fdv : compactUsd(dexMarket?.fdvUsd)
+  const marketMetrics = (
+    [
+      ['Price', livePrice],
+      [
+        '24H',
+        liveTrend,
+        (market.trendPositive ?? (dexMarket?.priceChange24h != null ? dexMarket.priceChange24h >= 0 : undefined)) ===
+        true
+          ? 'up'
+          : (market.trendPositive ??
+              (dexMarket?.priceChange24h != null ? dexMarket.priceChange24h >= 0 : undefined)) === false
+          ? 'down'
+          : 'mute',
+      ],
+      ['Liquidity', liveLiquidity],
+      ['24H Volume', liveVolume],
+      ['Market Cap', liveMarketCap],
+      ['FDV', liveFdv],
+      ['Holders', market.holders],
+      ['Transactions', liveTransactions],
+    ] as [string, string, ('up' | 'down' | 'mute')?][]
+  ).filter(([, value]) => value !== '—')
 
   return (
     <Page
@@ -757,197 +1082,316 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
       data-project-page="v7"
       data-project-slug={pageSlug}
       data-project-mode={isUnclaimed ? 'unclaimed' : 'claimed'}
+      data-project-runtime-claim={hasPublishedProfile ? 'published' : undefined}
       data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}
       data-pp-shell="1"
     >
-      <DenseBand data-testid="project-v7-hero" data-project-section="hero">
+      <DenseBand id="overview" data-testid="project-v7-hero" data-project-section="hero">
         <Hero>
-          <div data-testid="project-v7-hero-left">
-            <Row style={{ gap: 12, alignItems: 'center' }}>
-              <LogoWrap data-testid="project-v7-logo">
-                <MelegaTokenAvatar
-                  symbol={symbol ?? displayName}
-                  name={displayName}
-                  address={contract ?? undefined}
-                  chainId={chainId}
-                  logoURI={logoUrl}
-                  size={56}
-                />
-              </LogoWrap>
-              <div style={{ minWidth: 0 }}>
-                <HeroName data-testid="project-v7-name">{displayName}</HeroName>
-                <Row style={{ gap: 8, marginTop: 4, alignItems: 'center', flexWrap: 'wrap' }}>
-                  {symbol ? <Ticker data-testid="project-v7-symbol">${symbol}</Ticker> : null}
-                  {isVerified ? (
-                    <Chip $on data-testid="project-v7-verified">
-                      Verified
-                    </Chip>
-                  ) : null}
-                  {isFeaturedPlacement ? <Chip $on data-testid="project-v7-featured">Featured</Chip> : null}
-                  {isOfficialClaimed ? (
-                    <Chip $on data-testid="project-v7-official">
-                      Official
-                    </Chip>
-                  ) : null}
-                  <span data-testid="project-v7-chain">
-                    <MelegaExploreChainBadge chainId={chainId} />
-                  </span>
-                </Row>
-              </div>
-            </Row>
-
-            {description ? <Desc data-testid="project-v7-desc">{description}</Desc> : null}
-
-            {!isUnclaimed ? (
-            <IconRow data-testid="project-v7-socials">
-              {website?.url ? (
-                <IconBtn href={website.url} target="_blank" rel="noreferrer" aria-label="Website" title="Website">
-                  Web
-                </IconBtn>
-              ) : null}
-              {xLink?.url ? (
-                <IconBtn href={xLink.url} target="_blank" rel="noreferrer" aria-label="X" title="X">
-                  X
-                </IconBtn>
-              ) : null}
-              {tgLink?.url ? (
-                <IconBtn href={tgLink.url} target="_blank" rel="noreferrer" aria-label="Telegram" title="Telegram">
-                  TG
-                </IconBtn>
-              ) : null}
-              {discordLink?.url ? (
-                <IconBtn href={discordLink.url} target="_blank" rel="noreferrer" aria-label="Discord" title="Discord">
-                  DC
-                </IconBtn>
-              ) : null}
-            </IconRow>
-            ) : null}
-
-            {contract ? (
-              <ContractRow data-testid="project-v7-contract">
-                <ContractAddr title={contract}>{contract}</ContractAddr>
-                <IconAction type="button" onClick={onCopy} aria-label="Copy contract" data-testid="project-v7-copy">
-                  {copied ? '✓' : 'Copy'}
-                </IconAction>
-                <IconBtn
-                  href={explorerUrlFor(contract, chainId)}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={explorerLabelFor(chainId)}
-                  data-testid="project-v7-explorer"
-                >
-                  ↗
-                </IconBtn>
-                <WalletIconWrap data-testid="project-v7-metamask">
-                  <AddToWalletButton
-                    tokenAddress={contract}
-                    tokenSymbol={symbol ?? displayName}
-                    tokenDecimals={tokenDecimals}
-                    tokenLogo={logoUrl || ''}
-                    textOptions={AddToWalletTextOptions.NO_TEXT}
+          <IdentityHeader data-testid="project-v7-market-first-identity">
+            <div data-testid="project-v7-hero-left">
+              <Row style={{ gap: 12, alignItems: 'center' }}>
+                <LogoWrap data-testid="project-v7-logo">
+                  <MelegaTokenAvatar
+                    symbol={symbol ?? displayName}
+                    name={displayName}
+                    address={contract ?? undefined}
+                    chainId={chainId}
+                    logoURI={logoUrl}
+                    size={56}
                   />
-                </WalletIconWrap>
-              </ContractRow>
-            ) : null}
-
-            {deployments.length > 1 ? (
-              <Row style={{ marginTop: 10, gap: 6, flexWrap: 'wrap' }} data-testid="project-v7-chain-switch">
-                {deployments.slice(0, 6).map((d) => (
-                  <Chip
-                    key={d.chainId}
-                    $on={d.chainId === chainId}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setSelectedChainId(d.chainId)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') setSelectedChainId(d.chainId)
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {d.shortLabel}
-                  </Chip>
-                ))}
+                  <ChainOverlay data-testid="project-v7-chain" title={`Chain ${chainId}`}>
+                    <MelegaExploreChainBadge chainId={chainId} />
+                  </ChainOverlay>
+                </LogoWrap>
+                <div style={{ minWidth: 0 }}>
+                  <Row style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <HeroName data-testid="project-v7-name">{displayName}</HeroName>
+                    {isVerified ? (
+                      <VerifiedMark
+                        aria-label="Verified project"
+                        title="Verified project"
+                        data-testid="project-v7-verified"
+                      >
+                        ✓
+                      </VerifiedMark>
+                    ) : null}
+                    {!isUnclaimed || hasPublishedProfile ? (
+                      <Handle data-testid="project-v7-handle">@{pageSlug}</Handle>
+                    ) : null}
+                  </Row>
+                  <Row style={{ gap: 8, marginTop: 4, alignItems: 'center', flexWrap: 'wrap' }}>
+                    {symbol ? <Ticker data-testid="project-v7-symbol">${symbol}</Ticker> : null}
+                    {isFeaturedPlacement ? (
+                      <Chip $on data-testid="project-v7-featured">
+                        Featured
+                      </Chip>
+                    ) : null}
+                    {trustAttestations.map((item) => (
+                      <HeroTrustBadge
+                        key={item.id}
+                        $verified={item.verified}
+                        data-testid={`project-v7-attestation-${item.id}`}
+                        title={
+                          item.verified
+                            ? `${item.label} verified${item.provider ? ` by ${item.provider}` : ''}`
+                            : `${item.label} not provided`
+                        }
+                      >
+                        <span aria-hidden>{item.id === 'audit' ? '⌁' : '◇'}</span>
+                        {item.label}
+                      </HeroTrustBadge>
+                    ))}
+                  </Row>
+                </div>
               </Row>
-            ) : null}
 
-            <HeroActions data-testid="project-v7-hero-actions">
-              <HeroCta type="button" onClick={focusSmartSwap} data-testid="project-v7-smart-swap-cta">
-                Smart Swap
-              </HeroCta>
-              {showClaimHeroCta ? (
-                <HeroCta $ghost type="button" onClick={() => setClaimOpen(true)} data-testid="project-v7-claim-cta">
-                  Claim Project
-                </HeroCta>
-              ) : isOfficialClaimed ? (
-                <Chip $on data-testid="project-v7-trust-badge">
-                  Official project
-                </Chip>
+              {!isUnclaimed || hasPublishedProfile ? (
+                <IconRow data-testid="project-v7-socials">
+                  {websiteUrl ? (
+                    <IconBtn href={websiteUrl} target="_blank" rel="noreferrer" aria-label="Website" title="Website">
+                      Web
+                    </IconBtn>
+                  ) : null}
+                  {xUrl ? (
+                    <IconBtn href={xUrl} target="_blank" rel="noreferrer" aria-label="X" title="X">
+                      X
+                    </IconBtn>
+                  ) : null}
+                  {telegramUrl ? (
+                    <IconBtn href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Telegram" title="Telegram">
+                      TG
+                    </IconBtn>
+                  ) : null}
+                  {discordUrl ? (
+                    <IconBtn href={discordUrl} target="_blank" rel="noreferrer" aria-label="Discord" title="Discord">
+                      DC
+                    </IconBtn>
+                  ) : null}
+                  {contract ? (
+                    <ContractRow data-testid="project-v7-contract">
+                      <ContractAddr title={contract}>{contract}</ContractAddr>
+                      <IconAction
+                        type="button"
+                        onClick={onCopy}
+                        aria-label="Copy contract"
+                        data-testid="project-v7-copy"
+                      >
+                        {copied ? '✓' : '⧉'}
+                      </IconAction>
+                      <IconBtn
+                        href={explorerUrlFor(contract, chainId)}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={explorerLabelFor(chainId)}
+                        data-testid="project-v7-explorer"
+                      >
+                        ↗
+                      </IconBtn>
+                      <WalletIconWrap data-testid="project-v7-metamask">
+                        <AddToWalletButton
+                          tokenAddress={contract}
+                          tokenSymbol={symbol ?? displayName}
+                          tokenDecimals={tokenDecimals}
+                          tokenLogo={logoUrl || ''}
+                          textOptions={AddToWalletTextOptions.NO_TEXT}
+                        />
+                      </WalletIconWrap>
+                    </ContractRow>
+                  ) : null}
+                </IconRow>
               ) : null}
-            </HeroActions>
-          </div>
 
-          <Terminal data-testid="project-v7-terminal" $chartless={chartCollapsed}>
-            <ChartSlot data-testid="project-v7-chart" $collapsed={chartCollapsed}>
-              {tradeReady ? (
-                <ProjectCharts
-                  slug={pageSlug}
-                  marketsDocument={marketsDocument}
-                  variant="hero"
-                  pairAddress={market.pairAddress}
-                  onHistoryAvailability={setChartHistory}
-                />
-              ) : (
-                <ChartSkeleton aria-label="Loading chart" />
-              )}
-            </ChartSlot>
-            <SwapSlot id="project-v7-swap" data-testid="project-v7-swap" $expand={chartCollapsed}>
-              {tradeReady ? (
-                <ProjectTradingEmbed
-                  slug={pageSlug}
-                  marketsDocument={marketsDocument}
-                  projectChainId={chainId}
-                  contractAddress={contract}
-                  variant="hero"
-                />
-              ) : (
-                <SwapSkeleton aria-label="Loading Smart Swap" />
-              )}
-            </SwapSlot>
-          </Terminal>
+              {isUnclaimed && !hasPublishedProfile && contract ? (
+                <ContractRow data-testid="project-v7-contract">
+                  <ContractAddr title={contract}>{contract}</ContractAddr>
+                  <IconAction type="button" onClick={onCopy} aria-label="Copy contract" data-testid="project-v7-copy">
+                    {copied ? '✓' : '⧉'}
+                  </IconAction>
+                  <IconBtn
+                    href={explorerUrlFor(contract, chainId)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={explorerLabelFor(chainId)}
+                    data-testid="project-v7-explorer"
+                  >
+                    ↗
+                  </IconBtn>
+                  <WalletIconWrap data-testid="project-v7-metamask">
+                    <AddToWalletButton
+                      tokenAddress={contract}
+                      tokenSymbol={symbol ?? displayName}
+                      tokenDecimals={tokenDecimals}
+                      tokenLogo={logoUrl || ''}
+                      textOptions={AddToWalletTextOptions.NO_TEXT}
+                    />
+                  </WalletIconWrap>
+                  {!hasPublishedProfile ? (
+                    <HeroCta
+                      $ghost
+                      type="button"
+                      onClick={() => setClaimOpen(true)}
+                      data-testid="project-v7-claim-cta"
+                      style={{ minHeight: 30, padding: '0 10px', fontSize: 11 }}
+                    >
+                      Claim project
+                    </HeroCta>
+                  ) : null}
+                </ContractRow>
+              ) : null}
+
+              {deployments.length > 1 ? (
+                <Row style={{ marginTop: 10, gap: 6, flexWrap: 'wrap' }} data-testid="project-v7-chain-switch">
+                  {deployments.slice(0, 6).map((d) => (
+                    <Chip
+                      key={d.chainId}
+                      $on={d.chainId === chainId}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedChainId(d.chainId)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') setSelectedChainId(d.chainId)
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {d.shortLabel}
+                    </Chip>
+                  ))}
+                </Row>
+              ) : null}
+              {isMarcoProject ? (
+                <>
+                  <MarcoActions data-testid="project-v7-marco-actions">
+                    <MarcoActionLink $primary href={contract ? `/swap?outputCurrency=${contract}` : '/swap'}>
+                      SWAP
+                    </MarcoActionLink>
+                    <MarcoActionLink $primary href="/bridge">
+                      BRIDGE
+                    </MarcoActionLink>
+                    <MarcoActionLink href="/farms?search=MARCO">EARN</MarcoActionLink>
+                  </MarcoActions>
+                  <MarcoAvailability data-testid="project-v7-marco-available-on">
+                    <span>Available on</span>
+                    {['BNB', 'Base', 'Solana', 'Robinhood Chain'].map((network) => (
+                      <Chip key={network}>{network}</Chip>
+                    ))}
+                  </MarcoAvailability>
+                </>
+              ) : null}
+            </div>
+            <HeroContext data-testid="project-v7-hero-context">
+              <HeroContextBlock data-testid="project-v7-about">
+                <h2>About</h2>
+                <p>
+                  {isUnclaimed && !hasPublishedProfile
+                    ? 'No project profile yet. Claim this project to publish verified identity and links.'
+                    : aboutFull || description || 'Project identity is indexed; extended information is not available.'}
+                </p>
+              </HeroContextBlock>
+              <HeroContextBlock data-testid="project-v7-community-react">
+                <h2>Community</h2>
+                <ReactRow>
+                  {[
+                    ['like', '👍 Like'],
+                    ['bullish', '🔥 Bullish'],
+                    ['moon', '🚀 Moon'],
+                    ['watching', '👀 Watching'],
+                  ].map(([id, label]) => (
+                    <ReactBtn
+                      key={id}
+                      type="button"
+                      $on={localReact === id}
+                      onClick={() => setLocalReact((v) => (v === id ? null : id))}
+                      data-testid={`project-v7-react-${id}`}
+                    >
+                      {label}
+                    </ReactBtn>
+                  ))}
+                </ReactRow>
+              </HeroContextBlock>
+            </HeroContext>
+          </IdentityHeader>
+
+          <MarketWorkspace
+            data-testid="project-v7-market-first-workspace"
+            data-project-concept="market-first-project-hq"
+          >
+            <WorkspacePanel data-testid="project-v7-terminal">
+              <WorkspaceHead>
+                <strong>{pairLabel}</strong>
+                <span>Live market · All indexed DEXs</span>
+              </WorkspaceHead>
+              <ChartSlot
+                data-testid="project-v7-chart"
+                $collapsed={chartHistory === false}
+                data-chart-history={chartHistory === false ? 'unavailable' : 'available'}
+              >
+                {tradeReady ? (
+                  <ProjectCharts
+                    slug={pageSlug}
+                    marketsDocument={marketsDocument}
+                    variant="hero"
+                    pairAddress={market.pairAddress}
+                    onHistoryAvailability={setChartHistory}
+                  />
+                ) : (
+                  <ChartSkeleton aria-label="Loading chart" />
+                )}
+              </ChartSlot>
+              <MarketStrip data-testid="project-v7-market" data-project-section="market">
+                {marketMetrics.map(([label, value, tone]) => (
+                  <StripCell key={label} title={`${label}: ${value}`}>
+                    <StripLabel>{label}</StripLabel>
+                    <StripValue $tone={tone}>{value}</StripValue>
+                  </StripCell>
+                ))}
+              </MarketStrip>
+              {dexMarket ? (
+                <DexCompactRow data-testid="project-v7-multi-dex">
+                  <span>
+                    DEXs<strong>{dexMarket.dexCount.toLocaleString()}</strong>
+                  </span>
+                  <span>
+                    Pairs<strong>{dexMarket.pairCount.toLocaleString()}</strong>
+                  </span>
+                  {dexMarket.venues.slice(0, 4).map((venue) => (
+                    <span key={venue.dexId}>
+                      {venue.dexId}
+                      <strong>{venue.pairCount}</strong>
+                    </span>
+                  ))}
+                  {dexAnalytics.data?.sourceUrl ? (
+                    <DexSourceLink href={dexAnalytics.data.sourceUrl} target="_blank" rel="noreferrer">
+                      Source ↗
+                    </DexSourceLink>
+                  ) : null}
+                </DexCompactRow>
+              ) : null}
+            </WorkspacePanel>
+            <WorkspacePanel aria-label={symbol ? `Buy ${symbol} with Smart Swap` : 'Smart Swap'}>
+              <SwapSlot id="project-v7-swap" data-testid="project-v7-swap" $expand>
+                {tradeReady ? (
+                  <ProjectTradingEmbed
+                    slug={pageSlug}
+                    marketsDocument={marketsDocument}
+                    projectChainId={chainId}
+                    contractAddress={contract}
+                    variant="hero"
+                  />
+                ) : (
+                  <SwapSkeleton aria-label="Loading Smart Swap" />
+                )}
+              </SwapSlot>
+            </WorkspacePanel>
+          </MarketWorkspace>
         </Hero>
-      </DenseBand>
-
-      <DenseBand data-testid="project-v7-market" data-project-section="market" style={{ padding: 0 }}>
-        <MarketStrip>
-          {(
-            [
-              ['Price', dash(market.priceUsd)],
-              [
-                '24H',
-                dash(market.trend),
-                market.trendPositive === true ? 'up' : market.trendPositive === false ? 'down' : 'mute',
-              ],
-              ['Liquidity', dash(market.liquidity)],
-              ['24H Volume', dash(market.volume24h)],
-              ['Market Cap', dash(market.marketCap)],
-              ['FDV', dash(market.fdv)],
-              ['Holders', dash(market.holders)],
-              ['Transactions', dash(market.swaps24h)],
-            ] as [string, string, 'up' | 'down' | 'mute' | undefined?][]
-          ).map(([label, value, tone]) => (
-            <StripCell key={label}>
-              <StripLabel>{label}</StripLabel>
-              <StripValue $tone={tone}>{value}</StripValue>
-            </StripCell>
-          ))}
-        </MarketStrip>
       </DenseBand>
 
       {belowFold ? (
         <>
           <DenseBand data-testid="project-v7-economy" data-project-section="economy">
             <BandHead>
-              <BandTitle>Project Economy</BandTitle>
+              <BandTitle>Earn & Liquidity</BandTitle>
               <BandMeta>
                 <MelegaExploreChainBadge chainId={chainId} />
               </BandMeta>
@@ -956,10 +1400,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
               <EconomyCard data-testid="project-v7-economy-liquidity">
                 <EconomyTitle>Liquidity</EconomyTitle>
                 <EconomyMeta>
-                  <span>TVL · {dash(market.liquidity)}</span>
-                  <span>24H Volume · {dash(market.volume24h)}</span>
-                  <span>Pairs · {economy.liquidity.pairCount || '—'}</span>
-                  <span>Largest · {economy.liquidity.largestPair || pairLabel}</span>
+                  {liveLiquidity !== '—' ? <span>TVL · {liveLiquidity}</span> : null}
+                  {dexMarket?.pairCount ? <span>{dexMarket.pairCount} indexed pairs</span> : null}
+                  <span>{pairLabel}</span>
                 </EconomyMeta>
                 <Btn $ghost href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v7-view-liquidity">
                   View Liquidity
@@ -971,10 +1414,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   <Muted data-testid="project-v7-economy-farms-empty">No active farms</Muted>
                 ) : (
                   <EconomyMeta>
-                    <span>Active · {economy.farms.count || '—'}</span>
-                    <span>Best APR · {economy.farms.bestAprDisplay}</span>
-                    <span>Farm TVL · {economy.farms.tvlDisplay}</span>
-                    <span>Reward · {economy.farms.rewardToken || '—'}</span>
+                    <span>{economy.farms.count} indexed farms</span>
+                    {economy.farms.topLabel ? <span>{economy.farms.topLabel}</span> : null}
+                    {economy.farms.rewardToken ? <span>Reward · {economy.farms.rewardToken}</span> : null}
                   </EconomyMeta>
                 )}
                 <Btn $ghost href={`/farms?chain=${chainId}`} data-testid="project-v7-view-farms">
@@ -987,10 +1429,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   <Muted data-testid="project-v7-economy-pools-empty">No active pools</Muted>
                 ) : (
                   <EconomyMeta>
-                    <span>Active · {economy.pools.count || '—'}</span>
-                    <span>Best APR · {economy.pools.bestAprDisplay}</span>
-                    <span>Pool TVL · {economy.pools.tvlDisplay}</span>
-                    <span>Reward · {economy.pools.rewardToken || '—'}</span>
+                    <span>{economy.pools.count} indexed pools</span>
+                    {economy.pools.topLabel ? <span>{economy.pools.topLabel}</span> : null}
+                    {economy.pools.rewardToken ? <span>Reward · {economy.pools.rewardToken}</span> : null}
                   </EconomyMeta>
                 )}
                 <Btn $ghost href={`/pools?chain=${chainId}`} data-testid="project-v7-view-pools">
@@ -1002,14 +1443,12 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
 
           <DenseBand data-testid="project-v7-intel" data-project-section="intel">
             <IntelGrid>
-              <IntelCard data-testid="project-v7-activity">
-                <BandHead>
-                  <BandTitle>Latest Activity</BandTitle>
-                </BandHead>
-                {projectActivity.length === 0 ? (
-                  <Muted data-testid="project-v7-activity-empty">—</Muted>
-                ) : (
-                  projectActivity.map((row) => (
+              {projectActivity.length > 0 ? (
+                <IntelCard data-testid="project-v7-activity">
+                  <BandHead>
+                    <BandTitle>Latest Activity</BandTitle>
+                  </BandHead>
+                  {projectActivity.map((row) => (
                     <ActivityRow key={`${row.transactionHash}-${row.logIndex}`}>
                       <span style={{ color: /sell|remove/i.test(row.eventType) ? pp.bad : pp.ok }}>
                         {/sell|remove/i.test(row.eventType) ? 'Sell' : 'Buy'}
@@ -1020,27 +1459,33 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                       </span>
                       <span style={{ color: pp.mute }}>{timeAgo(row.timestamp)}</span>
                     </ActivityRow>
-                  ))
-                )}
-                <Btn
-                  $ghost
-                  href={`/info/tokens/${contract || ''}`}
-                  style={{ marginTop: 8 }}
-                  data-testid="project-v7-view-tx"
-                >
-                  View all transactions
-                </Btn>
-              </IntelCard>
+                  ))}
+                  <Btn
+                    $ghost
+                    href={`/info/tokens/${contract || ''}`}
+                    style={{ marginTop: 8 }}
+                    data-testid="project-v7-view-tx"
+                  >
+                    View all transactions
+                  </Btn>
+                </IntelCard>
+              ) : null}
 
               <IntelCard data-testid="project-v7-holders">
                 <BandHead>
                   <BandTitle>Holders</BandTitle>
                 </BandHead>
-                <div style={{ fontSize: 28, fontWeight: 850, margin: '8px 0' }}>{dash(market.holders)}</div>
-                <Muted style={{ margin: 0 }}>Total holders</Muted>
-                <Muted style={{ margin: '8px 0 0', fontSize: 11 }} data-testid="project-v7-holders-dist">
-                  Distribution — (no certified concentration data)
-                </Muted>
+                <HolderDonutWrap>
+                  <HolderDonut aria-label="Indexed holder count">
+                    <strong>{dash(market.holders)}</strong>
+                  </HolderDonut>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>Indexed holders</div>
+                    <Muted style={{ margin: '4px 0 0', fontSize: 11 }} data-testid="project-v7-holders-dist">
+                      Live ownership count
+                    </Muted>
+                  </div>
+                </HolderDonutWrap>
               </IntelCard>
 
               <IntelCard data-testid="project-v7-score">
@@ -1094,92 +1539,48 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
             </BoostConsole>
           </DenseBand>
 
-          <DenseBand data-testid="project-v7-community-react" data-project-section="community">
-            <BandHead>
-              <BandTitle>Community</BandTitle>
-              <BandMeta data-testid="project-v7-react-persistence">Local preview · persistence unavailable</BandMeta>
-            </BandHead>
-            <ReactRow>
-              {[
-                ['like', '👍 Like'],
-                ['bullish', '🔥 Bullish'],
-                ['moon', '🚀 Moon'],
-                ['watching', '👀 Watching'],
-              ].map(([id, label]) => (
-                <ReactBtn
-                  key={id}
-                  type="button"
-                  $on={localReact === id}
-                  onClick={() => setLocalReact((v) => (v === id ? null : id))}
-                  data-testid={`project-v7-react-${id}`}
-                  title="Reactions persist when community backend is available"
-                >
-                  {label}
-                </ReactBtn>
-              ))}
-            </ReactRow>
-          </DenseBand>
-
-          <DenseBand data-testid="project-v7-about" data-project-section="about">
-            <AboutGrid>
-              <div>
-                <BandHead>
-                  <BandTitle>About</BandTitle>
-                </BandHead>
-                {isUnclaimed ? (
-                  <Muted data-testid="project-v7-about-unclaimed">No project description yet. Claim this project to publish identity.</Muted>
-                ) : aboutFull && aboutFull !== description ? (
-                  <div style={{ fontSize: 13, lineHeight: 1.5, color: 'rgba(255,255,255,0.78)' }}>{aboutFull}</div>
-                ) : description ? (
-                  <Muted>See project summary in the hero.</Muted>
-                ) : (
-                  <Muted>—</Muted>
-                )}
-                {tokenomicsDocument?.totalSupply ? (
-                  <Muted style={{ display: 'block', marginTop: 8 }}>Supply · {String(tokenomicsDocument.totalSupply)}</Muted>
-                ) : null}
-                {roadmapDocument?.milestones?.length ? (
-                  <Muted style={{ display: 'block', marginTop: 4 }}>
-                    Roadmap · {roadmapDocument.milestones.length} milestones
-                  </Muted>
-                ) : null}
-              </div>
-              <div data-testid="project-v7-links">
-                <BandHead>
-                  <BandTitle>Links</BandTitle>
-                </BandHead>
-                <IconRow>
-                  {website?.url ? (
-                    <IconBtn href={website.url} target="_blank" rel="noreferrer">
-                      Website
-                    </IconBtn>
-                  ) : null}
-                  {xLink?.url ? (
-                    <IconBtn href={xLink.url} target="_blank" rel="noreferrer">
-                      X
-                    </IconBtn>
-                  ) : null}
-                  {tgLink?.url ? (
-                    <IconBtn href={tgLink.url} target="_blank" rel="noreferrer">
-                      Telegram
-                    </IconBtn>
-                  ) : null}
-                </IconRow>
-              </div>
-            </AboutGrid>
-          </DenseBand>
-
           <DenseBand data-testid="project-v7-related" data-project-section="related">
             <BandHead>
               <BandTitle>Discover other projects</BandTitle>
             </BandHead>
-            <RelatedGrid data-testid="project-v7-related-grid">
+            <RelatedRail data-testid="project-v7-related-grid">
               {related.map((card) => (
-                <div key={card.id} data-testid={`project-v7-related-${card.slug}`} onClick={() => markProjectNavClick()}>
-                  <ProjectCard project={card} />
-                </div>
+                <RelatedCard
+                  key={card.id}
+                  href={card.projectHref}
+                  data-testid={`project-v7-related-${card.slug}`}
+                  onClick={() => markProjectNavClick()}
+                >
+                  <MelegaTokenAvatar
+                    symbol={card.symbol}
+                    name={card.name}
+                    address={card.contractAddress}
+                    chainId={card.chainId}
+                    logoURI={card.logoURI}
+                    size={34}
+                  />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <strong
+                      style={{
+                        display: 'block',
+                        color: '#fff',
+                        fontSize: 12,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {card.name}
+                    </strong>
+                    <span style={{ display: 'block', color: pp.mute, fontSize: 10 }}>
+                      ${card.symbol} · Indexed project
+                    </span>
+                  </div>
+                  <span aria-hidden style={{ color: pp.gold }}>
+                    ↗
+                  </span>
+                </RelatedCard>
               ))}
-            </RelatedGrid>
+            </RelatedRail>
           </DenseBand>
         </>
       ) : (
@@ -1198,9 +1599,37 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
           >
             <BandTitle style={{ marginBottom: 8 }}>Melega Score</BandTitle>
             <Muted style={{ margin: 0 }}>
-              Project readiness score from certified identity evidence. Not investment advice. Platform Audit Melega
-              Score lives in Audit Center.
+              Evidence-based project readiness. Missing evidence does not receive points; this is not investment advice.
             </Muted>
+            {readinessDocument?.components?.length ? (
+              <div style={{ display: 'grid', gap: 7, marginTop: 12 }} data-testid="project-v7-score-components">
+                {readinessDocument.components.map((component) => (
+                  <div
+                    key={component.componentId}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr auto',
+                      gap: 8,
+                      padding: '8px 9px',
+                      border: `1px solid ${pp.line}`,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,.76)' }}>{component.label}</span>
+                    <strong style={{ fontSize: 11, color: pp.gold }}>
+                      {component.achievedPoints}/{component.maxPoints}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Muted style={{ margin: '10px 0 0', fontSize: 11 }}>Score components unavailable.</Muted>
+            )}
+            {readinessDocument?.warnings?.length ? (
+              <Muted style={{ margin: '10px 0 0', fontSize: 11 }}>
+                Active warnings · {readinessDocument.warnings.filter((warning) => warning.status === 'ACTIVE').length}
+              </Muted>
+            ) : null}
             <div style={{ marginTop: 12 }}>
               <button
                 type="button"
@@ -1240,12 +1669,15 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
         projectSlug={document?.slug ?? pageSlug}
         projectName={displayName}
         projectContract={contract}
+        projectChainId={chainId}
+        projectSymbol={symbol}
         initialDraft={{
+          handle: pageSlug,
           description: aboutFull || description || '',
-          website: website?.url || '',
-          x: xLink?.url || '',
-          telegram: tgLink?.url || '',
-          discord: discordLink?.url || '',
+          website: websiteUrl || '',
+          x: xUrl || '',
+          telegram: telegramUrl || '',
+          discord: discordUrl || '',
           logo: logoUrl || '',
         }}
       />

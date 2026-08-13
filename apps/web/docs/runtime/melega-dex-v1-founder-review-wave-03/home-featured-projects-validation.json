@@ -1,9 +1,0 @@
-{
-  "mission": "MELEGA_DEX_V1_FOUNDER_REVIEW_HOME_LIQUIDITY_POOLS_REPAIR_WAVE_03",
-  "desktopColumnsAt1280": 4,
-  "scientificNotation": false,
-  "priceRule": "Price unavailable when <1e-6 BNB; else leading-zero compression",
-  "changeEmptyCopy": "Insufficient observations",
-  "glow": "ambient_animated_no_permanent_yellow_border",
-  "status": "CODE_PASS"
-}

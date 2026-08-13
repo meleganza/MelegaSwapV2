@@ -37,8 +37,23 @@ import {
   writeDurableTrendingSnapshot,
 } from 'lib/trending/durableTrendingSnapshot'
 import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements'
+import type { PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
+import { getAllProjects } from 'registry/projects/getAllProjects'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
+
+type ActiveTrendBoostResponse = {
+  placements?: Array<{
+    orderId: string
+    projectId: string
+    projectSlug: string | null
+    projectContract: string | null
+    chainId: number
+    startsAt: string | null
+    endsAt: string | null
+  }>
+}
 
 const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
   const map = new Map<string, TokenListEntry>()
@@ -48,6 +63,50 @@ const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
   }
   return map
 })()
+
+async function fetchActiveTrendBoosts(): Promise<PaidTickerPlacement[]> {
+  try {
+    const res = await fetch('/api/trend-boost/active')
+    if (!res.ok) return []
+    const body = (await res.json()) as ActiveTrendBoostResponse
+    const projects = getAllProjects()
+    return (body.placements ?? []).flatMap((placement) => {
+      const contract = placement.projectContract?.toLowerCase() ?? null
+      const project = projects.find(
+        (candidate) =>
+          candidate.slug === placement.projectSlug ||
+          candidate.aliases?.includes(placement.projectSlug || '') ||
+          candidate.resources.tokens.some(
+            (token) => token.chainId === placement.chainId && token.address.toLowerCase() === contract,
+          ),
+      )
+      const token =
+        project?.resources.tokens.find((candidate) => candidate.chainId === placement.chainId) ??
+        (contract ? TOKEN_LIST_BY_ADDRESS.get(contract) : undefined)
+      const address = placement.projectContract ?? token?.address ?? null
+      const symbol = token?.symbol
+      if (!symbol) return []
+      return [
+        {
+          id: placement.orderId,
+          kind: 'boosted' as const,
+          symbol,
+          chainId: placement.chainId,
+          address,
+          href: resolveCanonicalProjectHref({
+            slug: project?.slug ?? placement.projectSlug,
+            chainId: placement.chainId,
+            address,
+          }),
+          startsAt: placement.startsAt,
+          endsAt: placement.endsAt,
+        },
+      ]
+    })
+  } catch {
+    return []
+  }
+}
 
 /** Melega Factory / Router — DEX activity index roots (presentation selection only). */
 export const TRENDING_DEX_FACTORY = MELEGA_FACTORY_BSC
@@ -459,6 +518,18 @@ export function useDexTrendingRankings() {
   const busdPrice = useBUSDPrice(BUSD[56])
   const { candles, status: candleStatus } = useIndexerCandles(MARCO_WBNB_PAIR_BSC, '1H')
   const { transactions, indexerState } = useProtocolTransactionsIndexer()
+  const { data: activeTrendBoosts = [] } = useSWR('active-trend-boosts', fetchActiveTrendBoosts, {
+    revalidateOnFocus: true,
+    refreshInterval: 30_000,
+    dedupingInterval: 15_000,
+  })
+  const [placementNow, setPlacementNow] = useState(0)
+  useEffect(() => {
+    if (activeTrendBoosts.length === 0) return undefined
+    setPlacementNow(Date.now())
+    const id = window.setInterval(() => setPlacementNow(Date.now()), 30_000)
+    return () => window.clearInterval(id)
+  }, [activeTrendBoosts.length])
   const { data: pairRows = [], isValidating: pairsLoading } = useSWR('dex-trending-pairs', fetchTradeablePairs, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
@@ -1000,10 +1071,11 @@ export function useDexTrendingRankings() {
     () =>
       mergeTickerWithPaidPlacements({
         organic: resolvedTicker.items,
-        boosted: [],
+        boosted: activeTrendBoosts,
         featured: [],
+        nowMs: placementNow || Date.now(),
       }),
-    [resolvedTicker.items],
+    [resolvedTicker.items, activeTrendBoosts, placementNow],
   )
 
   const indexedRibbonAssets = useMemo(

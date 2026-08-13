@@ -29,7 +29,7 @@ export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
   if (card.discoveryClass === 'invalid_contract') return false
   // Membership must not flicker when CTA briefly leaves 'stake' during reload.
   // Stake button enablement is decided separately via stakeEnabled.
-  if (card.cta === 'none' || card.cta === 'emergency') return false
+  if (card.cta === 'none') return false
   const lifecycleLive = Boolean(card.lifecycle?.active || card.lifecycle?.rewarding)
   // Prefer status/display LIVE; also accept factual lifecycle for open-ended emission pools
   // that classification already counts as active/rewarding.
@@ -117,9 +117,15 @@ function resolveTvl(card: PoolPreviewCard): {
   return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
 }
 
-/** Participants = wallet census. No indexer today — never show totalStaked as participants. */
-function resolveParticipants(_card: PoolPreviewCard): string {
-  return '—'
+/** Participants = wallet census only; never substitute totalStaked or transaction count. */
+function resolveParticipants(card: PoolPreviewCard): string {
+  if (card.participantsSource === 'participant_index_pending') return 'Indexing…'
+  if (card.participantsSource !== 'smartchef_event_index' && card.participantsSource !== 'indexed_wallet_census') {
+    return 'Indexing…'
+  }
+  const value = String(card.participants ?? '').replace(/,/g, '').trim()
+  const count = Number(value)
+  return Number.isInteger(count) && count >= 0 ? Number(count).toLocaleString('en-US') : 'Indexing…'
 }
 
 function truthLabel(value?: string | null): string {
@@ -441,7 +447,7 @@ export function buildPoolsExplorePoolsViewModel(input: {
     filter: input.filter,
     sort: input.sort,
     search: input.search,
-    disclosure: anyPartial ? 'Some pool metrics are temporarily unavailable.' : null,
+    disclosure: null,
     liveRegion: `${list.length} active staking pool${list.length === 1 ? '' : 's'}`,
   }
 }

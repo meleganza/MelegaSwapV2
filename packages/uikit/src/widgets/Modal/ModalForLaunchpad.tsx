@@ -1,10 +1,17 @@
-import React, { PropsWithChildren, useRef } from "react";
+import React, { PropsWithChildren } from "react";
 import { useTheme } from "styled-components";
 import Heading from "../../components/Heading/Heading";
 import getThemeValue from "../../util/getThemeValue";
-import { ModalBody, ModalHeader, ModalTitle, ModalContainer, ModalCloseButton, ModalBackButton, ModalContainerForLaunchpad } from "./styles";
+import {
+  ModalBody,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBackButton,
+  ModalContainerForLaunchpad,
+} from "./styles";
 import { ModalProps, ModalWrapperProps } from "./types";
-import { useMatchBreakpoints } from "../../contexts";
+import { ModalWrapper as NativeModalWrapper } from "./Modal";
 
 export const MODAL_SWIPE_TO_CLOSE_VELOCITY = 300;
 
@@ -15,28 +22,17 @@ export const ModalWrapper = ({
   hideCloseButton,
   ...props
 }: PropsWithChildren<ModalWrapperProps>) => {
-  const { isMobile } = useMatchBreakpoints();
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
+  const normalizedMinWidth = typeof minWidth === "string" ? minWidth : "320px";
   return (
-    // @ts-ignore
-    <ModalContainerForLaunchpad
-      drag={isMobile && !hideCloseButton ? "y" : false}
-      dragConstraints={{ top: 0, bottom: 600 }}
-      dragElastic={{ top: 0 }}
-      dragSnapToOrigin
-      onDragStart={() => {
-        if (wrapperRef.current) wrapperRef.current.style.animation = "none";
-      }}
-      onDragEnd={(e, info) => {
-        if (info.velocity.y > MODAL_SWIPE_TO_CLOSE_VELOCITY && onDismiss) onDismiss();
-      }}
-      ref={wrapperRef}
-      $minWidth={minWidth}
+    <NativeModalWrapper
+      Container={ModalContainerForLaunchpad}
+      minWidth={normalizedMinWidth}
+      onDismiss={onDismiss}
+      hideCloseButton={hideCloseButton}
       {...props}
     >
       {children}
-    </ModalContainerForLaunchpad>
+    </NativeModalWrapper>
   );
 };
 
@@ -54,7 +50,10 @@ const ModalForLaunchpad: React.FC<React.PropsWithChildren<ModalProps>> = ({
   const theme = useTheme();
   return (
     <ModalWrapper minWidth={minWidth} onDismiss={onDismiss} hideCloseButton={hideCloseButton} {...props}>
-      <ModalHeader background={getThemeValue(theme, `colors.${headerBackground}`, headerBackground)}>
+      <ModalHeader
+        data-modal-drag-handle
+        background={getThemeValue(theme, `colors.${headerBackground}`, headerBackground)}
+      >
         <ModalTitle>
           {onBack && <ModalBackButton onBack={onBack} />}
           <Heading>{title}</Heading>

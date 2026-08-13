@@ -4,11 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
-import {
-  MY_MELEGA_CHAIN_FILTERS,
-  MY_MELEGA_ROUTES,
-  buildMyMelegaSnapshot,
-} from '../myMelegaPositions'
+import { MY_MELEGA_CHAIN_FILTERS, MY_MELEGA_ROUTES, buildMyMelegaSnapshot } from '../myMelegaPositions'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { GLOBAL_HEADER_NAV } from 'app-shell/config/globalHeaderNav'
 import type { FarmsWalletPosition } from 'views/FarmsStudio/modules/farmsMyFarmsTypes'
@@ -22,7 +18,9 @@ function load(rel: string) {
   return readFileSync(path.join(ROOT, rel), 'utf8')
 }
 
-function farm(partial: Partial<FarmsWalletPosition> & Pick<FarmsWalletPosition, 'positionId' | 'chainId'>): FarmsWalletPosition {
+function farm(
+  partial: Partial<FarmsWalletPosition> & Pick<FarmsWalletPosition, 'positionId' | 'chainId'>,
+): FarmsWalletPosition {
   return {
     farmId: 'f1',
     pid: 1,
@@ -59,7 +57,9 @@ function farm(partial: Partial<FarmsWalletPosition> & Pick<FarmsWalletPosition, 
   }
 }
 
-function pool(partial: Partial<PoolsWalletPosition> & Pick<PoolsWalletPosition, 'positionId' | 'chainId'>): PoolsWalletPosition {
+function pool(
+  partial: Partial<PoolsWalletPosition> & Pick<PoolsWalletPosition, 'positionId' | 'chainId'>,
+): PoolsWalletPosition {
   return {
     poolId: 'p1',
     sousId: 1,
@@ -91,7 +91,9 @@ function pool(partial: Partial<PoolsWalletPosition> & Pick<PoolsWalletPosition, 
   } as PoolsWalletPosition
 }
 
-function liq(partial: Partial<PassportLiquidityPosition> & Pick<PassportLiquidityPosition, 'id'>): PassportLiquidityPosition {
+function liq(
+  partial: Partial<PassportLiquidityPosition> & Pick<PassportLiquidityPosition, 'id'>,
+): PassportLiquidityPosition {
   return {
     type: 'Manual',
     pairLabel: 'BNB / MARCO',
@@ -130,7 +132,7 @@ describe('My Melega positions drawer — shell contracts', () => {
   })
 
   it('removes Portfolio from primary desktop header nav', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 

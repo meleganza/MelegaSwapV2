@@ -76,9 +76,10 @@ describe('Product IA refinement — Pools product UX redesign', () => {
     expect(wizard).not.toMatch(/>\s*Daily Rewards\s*</)
   })
 
-  it('Hero exposes compact community Create Pool CTA', () => {
+  it('Hero keeps one direct Create Pool CTA without redundant copy', () => {
     const hero = readFileSync(path.join(ROOT, 'modules/PoolsHeroModule.tsx'), 'utf8')
-    expect(hero).toContain('pools-hero-community-cta')
-    expect(hero).toContain('communityCtaTitle')
+    expect(hero).toContain('create-pool')
+    expect(hero).not.toContain('pools-hero-community-cta')
+    expect(hero).not.toContain('pools-hero-how-it-works')
   })
 })

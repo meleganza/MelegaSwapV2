@@ -20,10 +20,16 @@ type PairsPage = {
   error?: string
 }
 
-const PAGE_SIZE = 100
-const MAX_PAGES = 40
-/** Cap factory enumeration so Liquidity Studio never freezes on indexer lag. */
-const FACTORY_FETCH_TIMEOUT_MS = 10_000
+const PAGE_SIZE = 60
+const MAX_PAGES = 2
+const MAX_FACTORY_PAIR_SCAN = PAGE_SIZE * MAX_PAGES
+/**
+ * Wallet LP discovery is a progressive enhancement. Never fan thousands of
+ * balanceOf calls into the browser during route hydration: tracked pairs are
+ * already included separately and the capped factory sample expands coverage
+ * without blocking navigation.
+ */
+const FACTORY_FETCH_TIMEOUT_MS = 3_500
 
 function isBnbFactoryChain(chainId?: number): boolean {
   return chainId === 56 || chainId === 97
@@ -31,17 +37,14 @@ function isBnbFactoryChain(chainId?: number): boolean {
 
 async function fetchAllFactoryPairs(): Promise<ClassifiedAmmPair[]> {
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null
-  const timer =
-    controller != null
-      ? setTimeout(() => controller.abort(), FACTORY_FETCH_TIMEOUT_MS)
-      : null
+  const timer = controller != null ? setTimeout(() => controller.abort(), FACTORY_FETCH_TIMEOUT_MS) : null
 
   try {
     const all: ClassifiedAmmPair[] = []
     let page = 1
     let total = Infinity
 
-    while (all.length < total && page <= MAX_PAGES) {
+    while (all.length < total && all.length < MAX_FACTORY_PAIR_SCAN && page <= MAX_PAGES) {
       const res = await fetch(`/api/indexer/pairs?page=${page}&pageSize=${PAGE_SIZE}`, {
         signal: controller?.signal,
       })
@@ -52,7 +55,7 @@ async function fetchAllFactoryPairs(): Promise<ClassifiedAmmPair[]> {
       const data = (await res.json()) as PairsPage
       const rows = data.rows ?? []
       total = typeof data.total === 'number' ? data.total : all.length + rows.length
-      all.push(...rows)
+      all.push(...rows.slice(0, MAX_FACTORY_PAIR_SCAN - all.length))
       if (rows.length === 0) break
       page += 1
     }

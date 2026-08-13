@@ -3,7 +3,7 @@
  * Visual SSOT: approved dark Home mockup. Zero fabricated metrics.
  */
 import React, { useMemo, useRef } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
@@ -11,7 +11,7 @@ import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { TrendingUp, Sprout, Droplets, Sparkles, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
-import useHomeTradeData from './useHomeTradeData'
+import { HomeTradeDataProvider, useHomeCriticalData } from './HomeTradeDataContext'
 import { buildHomeNewListings } from './buildHomeNewListings'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
@@ -21,17 +21,32 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import {
   uxRebuildColors,
   uxRebuildFont,
+  uxRebuildDisplayFont,
   uxRebuildLayout,
+  uxRebuildMotion,
   uxRebuildRadius,
   uxRebuildShadow,
 } from 'design-system/melega/tokens/uxRebuild'
 
+const ambientDrift = keyframes`
+  0%, 100% { opacity: 0.45; transform: translate3d(0, 0, 0) scale(1); }
+  50% { opacity: 0.72; transform: translate3d(-2%, 2%, 0) scale(1.06); }
+`
+
+const surfaceIn = keyframes`
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+`
+
 const Root = styled.div`
   color: ${uxRebuildColors.text};
   font-family: ${uxRebuildFont};
-  background: ${uxRebuildColors.pageBg};
+  background: radial-gradient(circle at 78% 8%, rgba(221, 185, 47, 0.055), transparent 24%),
+    radial-gradient(circle at 12% 42%, rgba(44, 92, 255, 0.035), transparent 30%), ${uxRebuildColors.pageBg};
   min-width: 0;
   overflow-x: hidden;
+
+  font-variant-numeric: tabular-nums;
 `
 
 const Content = styled.div`
@@ -56,14 +71,26 @@ const Hero = styled.section`
   display: grid;
   grid-template-columns: minmax(0, 56%) minmax(0, 44%);
   gap: 24px;
-  min-height: 356px;
+  min-height: 332px;
   align-items: stretch;
   position: relative;
-  border-radius: ${uxRebuildRadius.hero};
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 110%, rgba(221, 185, 47, 0.14), transparent 60%),
-    linear-gradient(180deg, #0a0a0a 0%, ${uxRebuildColors.pageBg} 100%);
-  overflow: hidden;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 460px;
+    height: 460px;
+    right: 4%;
+    top: -290px;
+    border-radius: 50%;
+    background: rgba(221, 185, 47, 0.18);
+    filter: blur(90px);
+    pointer-events: none;
+    animation: ${ambientDrift} 12s ease-in-out infinite;
+  }
 
   @media (max-width: 1199px) {
     grid-template-columns: minmax(0, 55%) minmax(0, 45%);
@@ -76,7 +103,7 @@ const Hero = styled.section`
 `
 
 const HeroLeft = styled.div`
-  padding: 20px 8px;
+  padding: 24px 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -120,6 +147,8 @@ const Headline = styled.h1`
   margin: 16px 0 0;
   max-width: 580px;
   font-weight: 750;
+  font-family: ${uxRebuildDisplayFont};
+  letter-spacing: -0.045em;
 `
 
 const HeadlineLine1 = styled.span`
@@ -174,9 +203,17 @@ const PrimaryCta = styled.button`
   font-weight: 650;
   cursor: pointer;
   box-shadow: ${uxRebuildShadow.goldCta};
+  transition: transform ${uxRebuildMotion.standard}, background ${uxRebuildMotion.standard},
+    border-color ${uxRebuildMotion.standard}, box-shadow ${uxRebuildMotion.standard};
 
   &:hover {
     background: ${uxRebuildColors.goldHover};
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(221, 185, 47, 0.22);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.985);
   }
 `
 
@@ -193,11 +230,11 @@ const Trust = styled.p`
 
 const SwapWrap = styled.div`
   width: 100%;
-  border-radius: 20px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
+  border-radius: 18px;
+  border: 1px solid ${uxRebuildColors.borderStrong};
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 40%), rgba(13, 15, 17, 0.96);
+  box-shadow: ${uxRebuildShadow.elevated};
+  padding: 18px;
   box-sizing: border-box;
   min-height: 332px;
 
@@ -226,11 +263,12 @@ const KpiCard = styled.div`
   min-height: 76px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: ${uxRebuildColors.card};
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.024), transparent 45%), ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
   min-width: 0;
+  animation: ${surfaceIn} ${uxRebuildMotion.reveal} both;
 
   @media (max-width: 767px) {
     min-height: 96px;
@@ -257,6 +295,8 @@ const KpiValue = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  font-family: ${uxRebuildDisplayFont};
+  letter-spacing: -0.025em;
 
   @media (max-width: 767px) {
     margin-top: 6px;
@@ -283,10 +323,11 @@ const DiscCard = styled.section`
   min-height: 300px;
   padding: 18px 16px;
   border-radius: ${uxRebuildRadius.card};
-  background: ${uxRebuildColors.card};
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.024), transparent 42%), ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+  animation: ${surfaceIn} ${uxRebuildMotion.reveal} both;
 
   @media (max-width: 767px) {
     min-height: 0;
@@ -299,6 +340,7 @@ const DiscIcon = styled.span`
   height: 28px;
   border-radius: 8px;
   background: rgba(221, 185, 47, 0.12);
+  border: 1px solid rgba(221, 185, 47, 0.18);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -334,6 +376,12 @@ const ViewAll = styled(Link)`
   color: ${uxRebuildColors.gold};
   text-decoration: none;
   white-space: nowrap;
+  transition: color ${uxRebuildMotion.fast}, transform ${uxRebuildMotion.fast};
+
+  &:hover {
+    color: ${uxRebuildColors.goldHover};
+    transform: translateX(2px);
+  }
 `
 
 const DiscRow = styled(Link)`
@@ -346,6 +394,13 @@ const DiscRow = styled(Link)`
   align-items: center;
   text-decoration: none;
   color: inherit;
+  border-radius: 10px;
+  transition: background ${uxRebuildMotion.fast}, transform ${uxRebuildMotion.fast};
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.035);
+    transform: translateX(2px);
+  }
 
   &:first-of-type {
     border-top: 0;
@@ -386,8 +441,7 @@ const RowMetric = styled.div<{ $tone?: 'up' | 'down' | 'flat' }>`
   text-align: right;
   font-size: 13px;
   font-weight: 600;
-  color: ${({ $tone }) =>
-    $tone === 'up' ? '#00e676' : $tone === 'down' ? '#ff5252' : uxRebuildColors.text};
+  color: ${({ $tone }) => ($tone === 'up' ? '#00e676' : $tone === 'down' ? '#ff5252' : uxRebuildColors.text)};
 `
 
 const GoldMetric = styled(RowMetric)`
@@ -403,11 +457,11 @@ const EmptyRow = styled.div`
 
 const NA = '—'
 
-export const DexHomeScreen: React.FC = () => {
+const DexHomeScreenContent: React.FC = () => {
   const router = useRouter()
   const swapRef = useRef<HTMLDivElement>(null)
   const discoveryRef = useRef<HTMLElement>(null)
-  const data = useHomeTradeData()
+  const data = useHomeCriticalData()
   const listedProjects = useMemo(() => measureListedProjectsCount(), [])
   const projectCount = listedProjects.finalCount
 
@@ -440,12 +494,7 @@ export const DexHomeScreen: React.FC = () => {
       byLabel['rewarding pools'] ||
       data.liveEconomyMetrics.find((m) => /pool/i.test(m.label))?.value ||
       NA
-    const markets =
-      byId.liquidPairs ||
-      byId.markets ||
-      byLabel['liquid pairs'] ||
-      byLabel.markets ||
-      NA
+    const markets = byId.liquidPairs || byId.markets || byLabel['liquid pairs'] || byLabel.markets || NA
     const volumeValue = volCard?.value ?? NA
     const compact = (v: string) => {
       if (/not available/i.test(v)) return '—'
@@ -458,11 +507,7 @@ export const DexHomeScreen: React.FC = () => {
       if (v === '0' || n === 0) return '0'
       return '—'
     }
-    const tvlValue = tvlCard?.value
-      ? compact(tvlCard.value)
-      : data.marketCards.length === 0
-        ? 'Data syncing'
-        : '—'
+    const tvlValue = tvlCard?.value ? compact(tvlCard.value) : data.marketCards.length === 0 ? 'Data syncing' : '—'
     const volValue = volCard?.value ? compact(volumeValue) : '—'
     return [
       {
@@ -488,7 +533,8 @@ export const DexHomeScreen: React.FC = () => {
       {
         label: 'Active Pools',
         value: honestCount(pools),
-        title: 'LIVE SmartChef pool configurations across supported chains (runtime when loaded, else certified inventory).',
+        title:
+          'LIVE SmartChef pool configurations across supported chains (runtime when loaded, else certified inventory).',
       },
       {
         label: 'Markets',
@@ -505,8 +551,7 @@ export const DexHomeScreen: React.FC = () => {
     return entries.map((entry, idx) => {
       const move = entry.changeLabel?.trim()
       const positive = entry.accentPositive
-      const tone: 'up' | 'down' | 'flat' =
-        positive === true ? 'up' : positive === false ? 'down' : 'flat'
+      const tone: 'up' | 'down' | 'flat' = positive === true ? 'up' : positive === false ? 'down' : 'flat'
       const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : ''
       const ribbonMatch = ribbon.find(
         (a) =>
@@ -523,8 +568,7 @@ export const DexHomeScreen: React.FC = () => {
         meta: entry.address ? `${entry.address.slice(0, 6)}…${entry.address.slice(-4)}` : entry.symbol,
         metric: move ? `${arrow}${move}` : undefined,
         tone,
-        srLabel:
-          tone === 'up' ? `Up ${move}` : tone === 'down' ? `Down ${move}` : move || 'Unchanged',
+        srLabel: tone === 'up' ? `Up ${move}` : tone === 'down' ? `Down ${move}` : move || 'Unchanged',
         href: entry.href,
       }
     })
@@ -540,10 +584,7 @@ export const DexHomeScreen: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <DataSurfaceErrorBoundary
-          surface="Homepage"
-          userReason="Homepage market modules are temporarily unavailable."
-        >
+        <DataSurfaceErrorBoundary surface="Homepage" userReason="Homepage market modules are temporarily unavailable.">
           <Hero data-home-section="hero">
             <HeroLeft>
               <Badge>AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS</Badge>
@@ -555,18 +596,18 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
-                <PrimaryCta
-                  type="button"
-                  data-testid="dex-home-list-project"
-                  onClick={() => void router.push('/list')}
-                >
+                <PrimaryCta type="button" data-testid="dex-home-list-project" onClick={() => void router.push('/list')}>
                   List Your Project
                 </PrimaryCta>
                 <PrimaryCta
                   type="button"
                   data-testid="dex-home-open-trending"
                   onClick={() => void router.push('/projects?sort=trending')}
-                  style={{ background: 'transparent', border: '1px solid rgba(244,196,48,0.45)', color: uxRebuildColors.gold }}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(244,196,48,0.45)',
+                    color: uxRebuildColors.gold,
+                  }}
                 >
                   Explore Trending Projects
                 </PrimaryCta>
@@ -623,11 +664,7 @@ export const DexHomeScreen: React.FC = () => {
                       </RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
-                    <RowMetric
-                      $tone={row.tone}
-                      aria-label={row.srLabel}
-                      data-tone={row.tone}
-                    >
+                    <RowMetric $tone={row.tone} aria-label={row.srLabel} data-tone={row.tone}>
                       {row.metric ?? ''}
                     </RowMetric>
                   </DiscRow>
@@ -667,6 +704,7 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
                     <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
@@ -706,8 +744,14 @@ export const DexHomeScreen: React.FC = () => {
                         {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
                       <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
+                      <RowMeta>{`Reward ${row.rewards || '—'}`}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.apr || '—'}</RowMetric>
+                    <RowMetric
+                      title={row.aprUnavailable ? 'APR awaits a verified staking and reward-token price.' : undefined}
+                      aria-label={row.apr ? `APR ${row.apr}` : 'APR pricing pending'}
+                    >
+                      {row.apr || 'Pricing pending'}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}
@@ -745,9 +789,7 @@ export const DexHomeScreen: React.FC = () => {
                       </RowName>
                       <RowMeta>{row.symbol}</RowMeta>
                     </RowMain>
-                    <RowMetric
-                      data-listing-timestamp={row.listingTimestamp ?? row.listedAt ?? undefined}
-                    >
+                    <RowMetric data-listing-timestamp={row.listingTimestamp ?? row.listedAt ?? undefined}>
                       {row.metric}
                     </RowMetric>
                   </DiscRow>
@@ -762,5 +804,11 @@ export const DexHomeScreen: React.FC = () => {
     </Root>
   )
 }
+
+export const DexHomeScreen: React.FC = () => (
+  <HomeTradeDataProvider>
+    <DexHomeScreenContent />
+  </HomeTradeDataProvider>
+)
 
 export default DexHomeScreen

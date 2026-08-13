@@ -17,23 +17,24 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
   const add = load('views/LiquidityStudio/modules/LiquidityAddModule.tsx')
   const positions = load('views/LiquidityStudio/modules/LiquidityMyPositionsModule.tsx')
   const posTokens = load('views/LiquidityStudio/modules/liquidityMyPositionsTokens.ts')
-  const trust = load('views/LiquidityStudio/modules/LiquidityHeroTrustPanel.tsx')
-
-  it('Farms-parity hero geometry (440 / 480 / 360)', () => {
-    expect(tokens).toContain("leftW: '440px'")
-    expect(tokens).toContain("artworkW: '480px'")
-    expect(tokens).toContain("trustW: '360px'")
-    expect(tokens).toContain("heroMaxH: '220px'")
+  it('compact one-page hero keeps all liquidity journeys above the fold', () => {
     expect(tokens).toContain("gold: '#F4C430'")
-    expect(shell).toContain('LiquidityHeroArtwork')
-    expect(shell).toContain('LiquidityHeroTrustPanel')
-    expect(trust).toContain('min-height: 190px')
+    expect(shell).toContain('data-liquidity-hero-geometry="one-page-compact"')
+    expect(shell).toContain('liquidity-v3-hero-positions')
+    expect(shell).toContain('liquidity-v3-hero-add')
+    expect(shell).toContain('liquidity-v3-hero-ai')
+    expect(shell).toContain('liquidity-v3-explore-pools')
+    expect(shell).not.toContain('LiquidityHeroArtwork')
+    expect(shell).not.toContain('LiquidityHeroTrustPanel')
   })
 
-  it('single-surface tabs stay mounted without route remount flash', () => {
+  it('single-page surfaces stay mounted and addressable without route remount flash', () => {
     expect(shell).toContain('data-liquidity-panels="mounted"')
-    expect(shell).toContain("display: ${({ $active }) => ($active ? 'block' : 'none')}")
-    expect(shell).toContain("syncUrl: false")
+    expect(shell).toContain('id="liquidity-positions"')
+    expect(shell).toContain('id="liquidity-add"')
+    expect(shell).toContain('id="liquidity-builder"')
+    expect(shell).toContain('display: block')
+    expect(shell).toContain('syncUrl: false')
   })
 
   it('snapshot: 5 equal cards + mobile horizontal scroll', () => {
@@ -43,12 +44,13 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
     expect(shell).toContain('overflow-x: auto')
   })
 
-  it('AI builder is horizontal product card with Start Builder', () => {
-    expect(shell).toContain('data-ai-layout="horizontal"')
-    expect(shell).toContain('liquidity-v3-ai-steps')
-    expect(tokens).toContain("aiOpen: 'Start Builder'")
-    expect(tokens).toContain("aiStep1: 'Setup'")
-    expect(tokens).toContain("aiStep3: 'Activate'")
+  it('AI builder opens directly without a duplicated Start Builder card', () => {
+    expect(shell).toContain('setAiMounted(true)')
+    expect(shell).toContain("<ProgressiveSurface force={tab === 'building'}")
+    expect(shell).toContain('<LiquidityBuildingCard forceExpanded studioOwnedUrl />')
+    expect(shell).not.toContain('data-ai-layout="horizontal"')
+    expect(shell).not.toContain('liquidity-v3-ai-steps')
+    expect(shell).not.toContain('setTimeout(() => setAiMounted(true)')
   })
 
   it('Add Liquidity confirm uses MelegaModal V3 (not legacy pancake modal)', () => {
@@ -56,7 +58,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
     expect(runtime).toContain('LiquidityAddConfirmModal')
     expect(runtime).toContain('addConfirmModal')
     expect(runtime).not.toContain('ConfirmAddLiquidityModal')
-    expect(runtime).not.toContain("useModal(")
+    expect(runtime).not.toContain('useModal(')
     expect(addModal).toContain('MelegaModal')
     expect(addModal).toContain('Confirm Deposit')
     expect(add).toContain('addConfirmModal')
@@ -74,8 +76,10 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_PREMIUM_UX_CONSOLIDATION', () => {
     expect(positions).toContain('liquidity-my-positions-remove')
   })
 
-  it('Add Liquidity keeps two-column workspace', () => {
-    expect(add).toContain('50-50-workspace')
-    expect(add).toContain('minmax(0, 1fr) minmax(0, 1fr)')
+  it('Add Liquidity uses one horizontal card with an integrated preview rail', () => {
+    expect(add).toContain('single-card-horizontal')
+    expect(add).toContain('liquidity-add-horizontal-workspace')
+    expect(add).toContain('data-liquidity-preview="integrated"')
+    expect(add).not.toContain('50-50-workspace')
   })
 })

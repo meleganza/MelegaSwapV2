@@ -420,7 +420,7 @@ const List = styled.div`
 `
 
 const LIST_GRID =
-  'minmax(140px, 1.5fr) 72px minmax(72px, 0.75fr) minmax(64px, 0.65fr) minmax(64px, 0.65fr) minmax(80px, 0.75fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 72px minmax(140px, 1.1fr)'
+  'minmax(140px, 1.5fr) 72px minmax(72px, 0.75fr) minmax(64px, 0.65fr) minmax(64px, 0.65fr) minmax(80px, 0.75fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 72px minmax(140px, 1.1fr)'
 
 const ListHeader = styled.div`
   display: grid;
@@ -432,7 +432,7 @@ const ListHeader = styled.div`
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  min-width: 1180px;
+  min-width: 1080px;
 
   @media (max-width: 1023px) {
     display: none;
@@ -448,7 +448,7 @@ const ListRow = styled.div`
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(19, 19, 19, 0.96);
-  min-width: 1180px;
+  min-width: 1080px;
 
   @media (max-width: 1023px) {
     grid-template-columns: 1fr;
@@ -599,10 +599,6 @@ function ExploreFarmListRow({ farm }: { farm: ExploreFarmViewModel }) {
         {truthDash(farm.volume24h)}
       </ListCell>
       <ListCell>
-        <ListLabel>Fees 24h</ListLabel>
-        {truthDash(farm.fees24h)}
-      </ListCell>
-      <ListCell>
         <ListLabel>Participants</ListLabel>
         {truthDash(farm.participants)}
       </ListCell>
@@ -701,6 +697,10 @@ export const FarmsExploreFarmsModule: React.FC = () => {
   }, [vm])
 
   const showCount = vm.state !== 'loading' && vm.state !== 'unavailable' && vm.totalActive > 0
+  const chainCountLabel =
+    vm.chainFilter === 'all'
+      ? 'all LIVE chains'
+      : LIVE_CHAIN_FILTERS.find((chain) => chain.id === vm.chainFilter)?.label ?? String(vm.chainFilter)
 
   const viewToggle = (
     <ViewToggle role="group" aria-label="Explore farms view mode" data-testid="farms-explore-view-toggle">
@@ -794,7 +794,9 @@ export const FarmsExploreFarmsModule: React.FC = () => {
         <TitleRow>
           <Title id="farms-explore-farms-title">Explore Farms</Title>
           {showCount ? (
-            <Count aria-label={`${vm.totalActive} active farms`}>{vm.totalActive} farms · all LIVE chains</Count>
+            <Count aria-label={`${vm.totalActive} active farms on ${chainCountLabel}`}>
+              {vm.totalActive} farms · {chainCountLabel}
+            </Count>
           ) : null}
         </TitleRow>
         {vm.freshness ? (
@@ -874,7 +876,6 @@ export const FarmsExploreFarmsModule: React.FC = () => {
                   <span>APR</span>
                   <span>Multiplier</span>
                   <span>Volume 24h</span>
-                  <span>Fees 24h</span>
                   <span>Participants</span>
                   <span>Duration</span>
                   <span>Remaining</span>

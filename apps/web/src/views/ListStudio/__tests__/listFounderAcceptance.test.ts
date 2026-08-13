@@ -20,13 +20,7 @@ describe('List Founder Acceptance', () => {
   it('entry cards map to URL intents and workspace', () => {
     const cards = load('ListActionCards.tsx')
     const intent = load('useListIntent.ts')
-    for (const id of [
-      'import-token',
-      'create-token',
-      'claim-project',
-      'create-project',
-      'ai-assistant',
-    ]) {
+    for (const id of ['import-token', 'create-token', 'claim-project', 'create-project', 'ai-assistant']) {
       expect(cards).toContain(`intent: '${id}'`)
     }
     expect(cards).toContain('list-action-${def.intent}')
@@ -52,15 +46,15 @@ describe('List Founder Acceptance', () => {
     expect(hero).not.toMatch(/<Orbiter[^>]*>\s*USDT\s*</)
   })
 
-  it('places How it works as right-side vertical guide', () => {
+  it('keeps the complete detected-token journey inside one guided modal', () => {
     const screen = load('ListStudioScreen.tsx')
-    const how = load('ListHowItWorks.tsx')
-    expect(screen.indexOf('<ListWorkspace')).toBeLessThan(screen.indexOf('<ListHowItWorks'))
-    expect(how).toContain('data-list-how="vertical-right"')
-    expect(how).toContain('data-list-how-placement="right"')
-    expect(how).toContain('Configure')
-    expect(how).toContain('Verify')
-    expect(how).toContain('sticky')
+    const workspace = load('ListWorkspace.tsx')
+    expect(screen).toContain('list-adaptive-modal')
+    expect(screen).toContain('aria-label="Melega DEX listing flow"')
+    expect(screen).not.toContain('<ListHowItWorks')
+    expect(workspace).toContain('JourneyProgress')
+    expect(workspace).toContain('ListInlineLiquidityStep')
+    expect(workspace).not.toContain("pathname: '/liquidity'")
   })
 
   it('Featured offer is optional with canon terms in List checkout', () => {
@@ -74,11 +68,9 @@ describe('List Founder Acceptance', () => {
     expect(checkout).not.toMatch(/TreasuryRuntime|treasury-runtime/i)
   })
 
-  it('Create Token readiness is MAINNET READY with measured factory', () => {
+  it('Create Token exposes the measured factory through verified execution', () => {
     expect(CREATE_TOKEN_READINESS.status).toBe('READY')
-    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe(
-      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
-    )
+    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe('0x6dbb5d7162842da94ef9172aedc8d148d203d311')
     expect(CREATE_TOKEN_READINESS.blockerCode).toBeNull()
     const ws = load('ListWorkspace.tsx')
     expect(ws).toContain('list-create-token-ready')

@@ -1,9 +1,0 @@
-{
-  "rule": "No binding before receipt validation (code exists, non-zero address, runtime hash, constructor-derived state)",
-  "mechanism": "founderPostDeploy.validateFounderDeployReceipt → bind only when status passes",
-  "browserCannotRewriteRepoFiles": true,
-  "productionBindingNote": "CONTRACT_DEPLOYED_BINDING_RELEASE_PENDING until live app consumes persisted addresses",
-  "tests": [
-    "quarantines bytecode mismatch and only binds on full validation"
-  ]
-}

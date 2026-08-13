@@ -9,6 +9,9 @@ type MyMelegaContextValue = {
 
 const MyMelegaContext = createContext<MyMelegaContextValue | null>(null)
 
+/** Warm the personal dashboard chunk on user intent, not during first paint. */
+export const preloadMyMelegaDrawer = () => import('./MyMelegaDrawer')
+
 export function MyMelegaProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const openDrawer = useCallback(() => setOpen(true), [])

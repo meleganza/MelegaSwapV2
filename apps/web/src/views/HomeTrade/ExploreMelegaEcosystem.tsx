@@ -129,12 +129,19 @@ const CardSub = styled.div`
 `
 
 const Disabled = styled.span`
-  grid-column: 2;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(221, 185, 47, 0.32);
+  background: rgba(221, 185, 47, 0.1);
   font-size: 9px;
-  font-weight: 750;
+  line-height: 11px;
+  font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: ${uxRebuildColors.muted};
+  color: ${uxRebuildColors.gold};
   white-space: nowrap;
 `
 
@@ -153,10 +160,7 @@ export const ExploreMelegaEcosystem: React.FC = () => (
             <CardTitle>
               {item.title}
               {item.disabled ? (
-                <>
-                  {' '}
-                  <Disabled as="span">· {item.disabledLabel ?? 'Unavailable'}</Disabled>
-                </>
+                <Disabled as="span">{item.disabledLabel ?? 'Unavailable'}</Disabled>
               ) : null}
             </CardTitle>
             <CardSub>{item.subtitle}</CardSub>

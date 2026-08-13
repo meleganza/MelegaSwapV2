@@ -32,6 +32,8 @@ import { useMelegaFactoryPools, type MelegaFactoryPoolsResult } from './useMeleg
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import { buildPoolsWalletPortfolio, type PoolsPortfolioViewMode } from './buildPoolsWalletPortfolio'
+import { enrichPoolParticipantCounts } from 'lib/yield-participants/enrichYieldParticipantCards'
+import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
 
 export type PoolsRuntimePhase =
   | 'idle'
@@ -287,6 +289,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const initialBlock = useInitialBlock()
   const { pools: rawPools, userDataLoaded } = usePoolsWithVault(chainId)
   const terminal = usePoolsTerminalData()
+  const { snapshot: participantSnapshot } = useYieldParticipants()
   const poolClassificationSummary = usePoolClassificationSummary()
   const factoryPools = useMelegaFactoryPools(chainId)
 
@@ -322,6 +325,11 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     return cached
   }, [rawPools, chainId])
 
+  const participantStakingCards = useMemo(
+    () => enrichPoolParticipantCounts(realPreviewCards, participantSnapshot, chainId ?? 56),
+    [realPreviewCards, participantSnapshot, chainId],
+  )
+
   const previewCards = useMemo(() => {
     if (isPoolsUxFixtureEnabled()) {
       return getPoolsUxFixtureCards()
@@ -329,13 +337,16 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     // Prefer factual Melega Factory AMM pairs for discovery; keep staking cards after.
     if (factoryPools.previewCards.length > 0) {
       const byId = new Map<string, PoolPreviewCard>()
-      for (const card of [...factoryPools.previewCards, ...realPreviewCards]) {
+      for (const card of [
+        ...enrichPoolParticipantCounts(factoryPools.previewCards, participantSnapshot, chainId ?? 56),
+        ...participantStakingCards,
+      ]) {
         byId.set(card.id, card)
       }
       return [...byId.values()]
     }
-    return realPreviewCards
-  }, [realPreviewCards, factoryPools.previewCards])
+    return participantStakingCards
+  }, [participantStakingCards, factoryPools.previewCards, participantSnapshot, chainId])
 
   const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
   const positionsLoading = Boolean(account) && !userDataLoaded
@@ -346,10 +357,10 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
         chainId: chainId ?? null,
         chainName,
         generatedAt: '1970-01-01T00:00:00.000Z',
-        poolCards: realPreviewCards,
+        poolCards: participantStakingCards,
         positionsLoading,
       }),
-    [account, chainId, chainName, positionsLoading, realPreviewCards],
+    [account, chainId, chainName, positionsLoading, participantStakingCards],
   )
 
   const filteredPools = useMemo(() => {
@@ -374,7 +385,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   )
 
   // Featured from SmartChef staking inventory only — never AMM factory discovery cards.
-  const featuredCard = useMemo(() => selectFeaturedPool(realPreviewCards), [realPreviewCards])
+  const featuredCard = useMemo(() => selectFeaturedPool(participantStakingCards), [participantStakingCards])
 
   const featured = useMemo((): PoolsFeaturedMetrics => {
     const card = featuredCard

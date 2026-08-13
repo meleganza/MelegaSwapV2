@@ -51,11 +51,12 @@ export const useBlockFromTimeStampSWR = (
   timestamps: number[],
   sortDirection: 'asc' | 'desc' | undefined = 'desc',
   skipCount: number | undefined = 1000,
+  enabled = true,
 ) => {
   const chainName = useGetChainName()
   const timestampsString = JSON.stringify(timestamps)
   const timestampsArray = JSON.parse(timestampsString)
-  const { data } = useSWRImmutable([`info/blocks/${timestampsString}`, chainName], () =>
+  const { data } = useSWRImmutable(enabled ? [`info/blocks/${timestampsString}`, chainName] : null, () =>
     getBlocksFromTimestamps(timestampsArray, sortDirection, skipCount, chainName),
   )
   return { blocks: data }

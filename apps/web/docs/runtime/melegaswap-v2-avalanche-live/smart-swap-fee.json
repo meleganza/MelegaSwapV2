@@ -1,9 +1,0 @@
-{
-  "capturedAt": "2026-08-03T19:39:08Z",
-  "chainId": 43114,
-  "feeAsset": "AVAX",
-  "percent": 25,
-  "bps": 2500,
-  "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-  "dexEconomicAuthorityIncludes43114": true
-}

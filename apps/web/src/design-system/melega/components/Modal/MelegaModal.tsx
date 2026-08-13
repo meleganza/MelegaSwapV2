@@ -133,6 +133,22 @@ const TitleBlock = styled.div`
   padding-right: 4px;
 `
 
+const BrandLabel = styled.span`
+  display: inline-flex;
+  align-items: baseline;
+  margin-bottom: 1px;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.9);
+
+  strong {
+    color: #f4c430;
+    font-weight: 800;
+  }
+`
+
 const BrandMark = styled.div`
   flex-shrink: 0;
   width: 28px;
@@ -360,10 +376,7 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
 
   if (!open) return null
 
-  const portalTarget =
-    typeof document !== 'undefined'
-      ? document.getElementById('portal-root') ?? document.body
-      : null
+  const portalTarget = typeof document !== 'undefined' ? document.getElementById('portal-root') ?? document.body : null
 
   const modalTree = (
     <Overlay
@@ -398,6 +411,11 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
                 </BrandMark>
               ) : null}
               <TitleBlock>
+                {showBrand ? (
+                  <BrandLabel data-melega-modal-brand-label="true">
+                    Melega<strong>DEX</strong>
+                  </BrandLabel>
+                ) : null}
                 {title ? (
                   <Title id={titleId} data-melega-modal-title="true">
                     {title}
@@ -485,8 +503,7 @@ export const MelegaModalPreview = styled.aside`
   padding: 12px;
   border-radius: 14px;
   border: 1px solid rgba(221, 185, 47, 0.22);
-  background:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(221, 185, 47, 0.08), transparent 55%),
+  background: radial-gradient(ellipse 80% 60% at 0% 0%, rgba(221, 185, 47, 0.08), transparent 55%),
     rgba(255, 255, 255, 0.02);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 
@@ -510,18 +527,18 @@ export const MelegaModalStatus = styled.div<{ $tone?: 'ok' | 'warn' | 'bad' | 'm
       $tone === 'ok'
         ? 'rgba(109,220,140,0.35)'
         : $tone === 'warn'
-          ? 'rgba(240,180,60,0.4)'
-          : $tone === 'bad'
-            ? 'rgba(240,80,80,0.4)'
-            : 'rgba(255,255,255,0.1)'};
+        ? 'rgba(240,180,60,0.4)'
+        : $tone === 'bad'
+        ? 'rgba(240,80,80,0.4)'
+        : 'rgba(255,255,255,0.1)'};
   color: ${({ $tone }) =>
     $tone === 'ok'
       ? uxRebuildColors.positive
       : $tone === 'warn'
-        ? uxRebuildColors.warning
-        : $tone === 'bad'
-          ? uxRebuildColors.error
-          : uxRebuildColors.secondary};
+      ? uxRebuildColors.warning
+      : $tone === 'bad'
+      ? uxRebuildColors.error
+      : uxRebuildColors.secondary};
   background: rgba(0, 0, 0, 0.25);
 `
 
