@@ -9,7 +9,7 @@ import type { TradePairStat } from './useTradeTerminalData'
 const Shell = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${tradeLayout.sectionGap};
+  gap: ${tradeLayout.verticalRhythm};
   min-width: 0;
   width: 100%;
   height: 100%;
@@ -45,9 +45,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
 
   const orderedStats = useMemo((): TradePairStat[] => {
     const priceChange =
-      pairPrice?.change24h != null &&
-      Number.isFinite(pairPrice.change24h) &&
-      Math.abs(pairPrice.change24h) > 0.0001
+      pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h) && Math.abs(pairPrice.change24h) > 0.0001
         ? {
             text: `${pairPrice.change24h >= 0 ? '+' : ''}${pairPrice.change24h.toFixed(2)}%`,
             positive: pairPrice.change24h >= 0,
@@ -60,11 +58,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
       value: pairPrice?.formatted,
       change: priceChange?.text,
       changePositive: priceChange?.positive,
-      reasonCode: isIndexingMetrics
-        ? 'SUBGRAPH_LOADING'
-        : pairPrice?.formatted
-          ? undefined
-          : 'NO_EVENTS_INDEXED',
+      reasonCode: isIndexingMetrics ? 'SUBGRAPH_LOADING' : pairPrice?.formatted ? undefined : 'NO_EVENTS_INDEXED',
     }
 
     const byId = Object.fromEntries(pairStats.map((stat) => [stat.id, stat]))

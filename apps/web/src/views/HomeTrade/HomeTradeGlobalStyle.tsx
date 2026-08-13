@@ -441,11 +441,6 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     pointer-events: auto;
   }
 
-  .home-trade-swap #swap-currency-input > div:nth-of-type(3),
-  .home-trade-swap #swap-currency-output > div:nth-of-type(3) {
-    display: none !important;
-  }
-
   .home-trade-swap #swap-currency-input [class*='InputContainer'] > div,
   .home-trade-swap #swap-currency-output [class*='InputContainer'] > div {
     height: 32px !important;
@@ -810,6 +805,57 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       min-height: 48px !important;
       max-height: 48px !important;
     }
+  }
+
+  /* Canonical in-field wallet controls shared with /swap. */
+  .home-trade-swap #swap-currency-input,
+  .home-trade-swap #swap-currency-output {
+    height: 78px !important;
+    min-height: 78px !important;
+    max-height: 78px !important;
+  }
+
+  .home-trade-swap .token-amount-input,
+  .home-trade-swap [class*='CurrencyInputPanel'] input,
+  .home-trade-swap [class*='InputPanel'] input {
+    bottom: 25px !important;
+  }
+
+  .home-trade-swap [data-compact-wallet-controls] {
+    position: absolute !important;
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 6px !important;
+    top: auto !important;
+    z-index: 4 !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    width: auto !important;
+    white-space: nowrap !important;
+  }
+
+  .home-trade-swap [data-wallet-inline-actions],
+  .home-trade-swap [data-wallet-token-actions],
+  .home-trade-swap [data-wallet-percent-actions] {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  .home-trade-swap [data-wallet-inline-actions] button {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 18px !important;
+    height: 18px !important;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #f7c948 !important;
+    font-size: 10px !important;
+    line-height: 18px !important;
   }
 
   @media (prefers-reduced-motion: reduce) {

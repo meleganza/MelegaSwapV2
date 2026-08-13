@@ -48,7 +48,7 @@ const Content = styled.div`
 const TopGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
-  align-items: start;
+  align-items: stretch;
   min-width: 0;
 
   @media (min-width: 900px) {
@@ -97,7 +97,7 @@ const LeftWorkspace = styled.div`
   gap: ${tradeLayout.verticalRhythm};
   min-width: 0;
   min-height: 0;
-  align-self: start;
+  align-self: stretch;
 `
 
 const AreaCockpit = styled.div`

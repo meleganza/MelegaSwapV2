@@ -251,16 +251,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap [data-compact-wallet-controls] {
     position: absolute !important;
-    left: 2px !important;
-    right: 2px !important;
-    top: -20px !important;
-    bottom: auto !important;
+    left: 14px !important;
+    right: 14px !important;
+    top: auto !important;
+    bottom: 8px !important;
     height: 18px !important;
     z-index: 4 !important;
     white-space: nowrap !important;
   }
 
-  .trade-terminal-swap [data-wallet-percent-actions] button {
+  .trade-terminal-swap [data-wallet-inline-actions] button {
     min-width: 0 !important;
     width: auto !important;
     height: 18px !important;
@@ -364,11 +364,11 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-cockpit .trade-terminal-swap #swap-currency-input {
-    margin-top: 20px !important;
+    margin-top: 12px !important;
   }
 
   .trade-cockpit .trade-terminal-swap #swap-currency-output {
-    margin-top: calc(${tradeLayout.executionInputGap} + 20px) !important;
+    margin-top: 8px !important;
   }
 
   .trade-swap-cockpit [data-trade-route-line] {
@@ -563,6 +563,30 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
       max-width: 92px !important;
       font-size: 12px !important;
     }
+  }
+
+  .trade-terminal-swap [data-wallet-inline-actions],
+  .trade-terminal-swap [data-wallet-token-actions],
+  .trade-terminal-swap [data-wallet-percent-actions] {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  .trade-terminal-swap [data-wallet-inline-actions] button {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 18px !important;
+    height: 18px !important;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #f7c948 !important;
+    font-size: 10px !important;
+    line-height: 18px !important;
   }
 `
 
