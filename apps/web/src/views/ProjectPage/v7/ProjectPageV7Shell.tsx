@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
@@ -27,7 +27,10 @@ import {
 import { truthDash, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { resolveFounderFeaturedProjects } from 'views/HomeTrade/featuredProjectsCatalog'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
-import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
+import {
+  useProtocolActivityFeed,
+  type CanonicalProtocolActivityRow,
+} from 'lib/protocol-activity/useProtocolActivityFeed'
 import { readinessStateFromScore } from 'registry/projects/identity/readiness/schema'
 import { humanEnumLabel } from '../presentation/humanLabels'
 import { Band, BandHead, BandMeta, BandTitle, Btn, Chip, Muted, Page, Row, pp } from '../v1/theme'
@@ -106,11 +109,6 @@ function fullUsd(value?: number | null): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   })
-}
-
-function percent24h(value?: number | null): string {
-  if (value == null || !Number.isFinite(value)) return '—'
-  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
 }
 
 const TRUST_ATTESTATIONS = [
@@ -357,6 +355,91 @@ const HeroTrustBadge = styled.span<{ $verified?: boolean }>`
   letter-spacing: 0.035em;
   text-transform: uppercase;
 `
+const ScoreBadgeWrap = styled.span`
+  position: relative;
+  display: inline-flex;
+  z-index: 30;
+`
+const ScoreBadge = styled.button`
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 196, 48, 0.5);
+  background: radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.1), transparent 36%), #060606;
+  color: #fff;
+  box-shadow: inset 0 0 0 3px #111, 0 5px 18px rgba(0, 0, 0, 0.5);
+  cursor: help;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+
+  &::before {
+    content: 'M';
+    position: absolute;
+    top: 5px;
+    color: ${pp.gold};
+    font-size: 6px;
+    letter-spacing: -0.08em;
+  }
+
+  span {
+    transform: translateY(3px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${pp.gold};
+    outline-offset: 2px;
+  }
+`
+const ScorePopover = styled.div<{ $open?: boolean }>`
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 50;
+  width: min(340px, calc(100vw - 34px));
+  padding: 13px;
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  border-radius: 12px;
+  background: rgba(8, 8, 8, 0.98);
+  box-shadow: 0 20px 58px rgba(0, 0, 0, 0.72), 0 0 28px rgba(244, 196, 48, 0.08);
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  visibility: ${({ $open }) => ($open ? 'visible' : 'hidden')};
+  transform: translateY(${({ $open }) => ($open ? '0' : '-5px')});
+  transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
+  pointer-events: ${({ $open }) => ($open ? 'auto' : 'none')};
+
+  @media (max-width: 560px) {
+    position: fixed;
+    top: auto;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
+  }
+`
+const ScoreCriterion = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 10px;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  strong {
+    color: ${pp.gold};
+    font-variant-numeric: tabular-nums;
+  }
+`
 const IconRow = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -524,7 +607,7 @@ const EconomyGrid = styled.div`
   grid-template-columns: 1fr;
   gap: 10px;
   @media (min-width: 768px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 const EconomyCard = styled.div`
@@ -607,32 +690,18 @@ const ActivityBlock = styled.div`
   padding: 10px 12px 12px;
   border-top: 1px solid ${pp.line};
 `
-const LiquidityBlock = styled.div`
-  padding: 10px 12px 12px;
-  border-top: 1px solid ${pp.line};
-`
-const IntelGrid = styled.div`
+const MarketIntelligenceGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0;
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-`
-const IntelCard = styled.div`
-  padding: 12px;
-  border-radius: 0;
-  border: 0;
-  border-right: 1px solid ${pp.line};
-  background: transparent;
-  min-height: 140px;
-  &:last-child {
-    border-right: 0;
+  gap: 10px;
+
+  @media (min-width: 860px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 const ActivityRow = styled.div`
   display: grid;
-  grid-template-columns: 48px 1fr auto;
+  grid-template-columns: 54px minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
   padding: 6px 0;
@@ -641,31 +710,20 @@ const ActivityRow = styled.div`
   &:last-child {
     border-bottom: 0;
   }
-`
-const ScoreGauge = styled.div`
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  margin: 8px auto 10px;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 50% 45%, rgba(244, 196, 48, 0.18), transparent 62%),
-    conic-gradient(${pp.gold} var(--score-deg, 0deg), rgba(255, 255, 255, 0.08) 0);
-  position: relative;
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border-radius: 50%;
-    background: #0e0e0e;
+
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-`
-const ScoreValue = styled.div`
-  position: relative;
-  z-index: 1;
-  font-size: 22px;
-  font-weight: 850;
-  color: #fff;
+
+  @media (max-width: 620px) {
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    > span:nth-child(3) {
+      grid-column: 2 / -1;
+    }
+  }
 `
 const HolderDonutWrap = styled.div`
   display: flex;
@@ -698,6 +756,30 @@ const HolderDonut = styled.div`
     max-width: 76px;
     overflow-wrap: anywhere;
     text-align: center;
+  }
+`
+const HolderLegend = styled.div`
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+`
+const HolderLegendRow = styled.div`
+  display: grid;
+  grid-template-columns: 7px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+
+  i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  strong {
+    color: rgba(255, 255, 255, 0.9);
   }
 `
 const BoostConsole = styled.div`
@@ -754,7 +836,11 @@ const AboutGrid = styled.div`
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   }
 `
-const RelatedRail = styled.div`
+const featuredGlow = keyframes`
+  0%, 100% { box-shadow: 0 0 0 rgba(244, 196, 48, 0), inset 0 1px 0 rgba(255,255,255,.025); }
+  50% { box-shadow: 0 0 28px rgba(244, 196, 48, 0.13), inset 0 1px 0 rgba(255,255,255,.04); }
+`
+const FeaturedRail = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
@@ -762,7 +848,7 @@ const RelatedRail = styled.div`
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
-const RelatedCard = styled(Link)`
+const FeaturedCard = styled(Link)`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -770,11 +856,17 @@ const RelatedCard = styled(Link)`
   border-radius: 10px;
   border: 1px solid ${pp.line};
   background: rgba(255, 255, 255, 0.02);
+  animation: ${featuredGlow} 3.8s ease-in-out infinite;
   text-decoration: none;
   color: inherit;
   min-width: 0;
   &:hover {
     border-color: ${pp.goldLine};
+    box-shadow: 0 0 34px rgba(244, 196, 48, 0.2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `
 const MarcoActions = styled.div`
@@ -832,24 +924,6 @@ const HeroBand = styled(DenseBand)`
   background: transparent;
   box-shadow: none;
 `
-const ScoreOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 10040;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.55);
-  padding: 16px;
-`
-const ScoreDetails = styled.div`
-  border: 1px solid ${pp.line};
-  border-radius: 12px;
-  background: #111;
-  color: #fff;
-  padding: 16px;
-  max-width: 360px;
-  width: 100%;
-`
 const WalletIconWrap = styled.span`
   display: inline-flex;
   align-items: center;
@@ -876,6 +950,48 @@ function timeAgo(ts?: number) {
   if (sec < 3600) return `${Math.floor(sec / 60)}m`
   if (sec < 86400) return `${Math.floor(sec / 3600)}h`
   return `${Math.floor(sec / 86400)}d`
+}
+
+function scorePoints(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1)
+}
+
+function activityAmount(value?: string, symbol?: string): string {
+  if (!value && !symbol) return '—'
+  const numeric = Number(value)
+  const amount = Number.isFinite(numeric)
+    ? numeric.toLocaleString('en-US', { maximumSignificantDigits: 7 })
+    : String(value ?? '—').slice(0, 18)
+  return `${amount}${symbol ? ` ${symbol}` : ''}`
+}
+
+function activityLegs(row: CanonicalProtocolActivityRow, projectAddress?: string | null) {
+  const addresses = (row.assetAddresses ?? []).map((address) => address.toLowerCase())
+  const symbols = row.resolvedSymbols ?? []
+  const amounts = row.amounts ?? []
+  const projectIndex = projectAddress ? addresses.indexOf(projectAddress.toLowerCase()) : -1
+  const otherIndex = projectIndex === 0 ? 1 : projectIndex === 1 ? 0 : 1
+  const event = row.eventType.toLowerCase()
+
+  if (event.includes('buy') && projectIndex >= 0) {
+    return {
+      action: 'Buy',
+      exchanged: activityAmount(amounts[otherIndex], symbols[otherIndex]),
+      received: activityAmount(amounts[projectIndex], symbols[projectIndex]),
+    }
+  }
+  if (event.includes('sell') && projectIndex >= 0) {
+    return {
+      action: 'Sell',
+      exchanged: activityAmount(amounts[projectIndex], symbols[projectIndex]),
+      received: activityAmount(amounts[otherIndex], symbols[otherIndex]),
+    }
+  }
+  return {
+    action: /mint|add/i.test(row.eventType) ? 'Add' : /burn|remove/i.test(row.eventType) ? 'Remove' : 'Swap',
+    exchanged: activityAmount(amounts[0], symbols[0]),
+    received: activityAmount(amounts[1], symbols[1]),
+  }
 }
 
 const DISTRIBUTION_COLORS = ['#f4c430', '#27c499', '#7c8cff', '#e96fb3', '#4aa8ff', '#f1844a']
@@ -1113,9 +1229,8 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   )
 
   const related = useMemo(() => {
-    const exclude = document?.slug
     return resolveFounderFeaturedProjects()
-      .filter((p) => p.slug !== exclude && p.eligibleForRotation)
+      .filter((p) => p.eligibleForRotation)
       .slice(0, 4)
       .map((p) =>
         buildRelatedPreviewCard({
@@ -1132,7 +1247,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
           }),
         }),
       )
-  }, [document?.slug])
+  }, [])
 
   const score = readinessDocument?.readiness?.score
   const scoreBand = typeof score === 'number' ? humanEnumLabel(String(readinessStateFromScore(score))) : '—'
@@ -1191,7 +1306,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const pairLabel = economy.liquidity.largestPair || (symbol ? `${symbol} / WBNB` : '—')
   const dexMarket = dexAnalytics.data?.analytics ?? null
   const livePrice = market.priceUsd !== '—' ? market.priceUsd : preciseUsd(dexMarket?.priceUsd)
-  const liveTrend = market.trend !== '—' ? market.trend : percent24h(dexMarket?.priceChange24h)
   const liveLiquidity = dexMarket?.liquidityUsd != null ? compactUsd(dexMarket.liquidityUsd) : market.liquidity
   const liveVolume = dexMarket?.volume24hUsd != null ? compactUsd(dexMarket.volume24hUsd) : market.volume24h
   const liveTransactions =
@@ -1202,29 +1316,12 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
       : market.row?.marketCapLabel === 'Market Cap'
       ? market.marketCap
       : '—'
-  const liveFdv = dexMarket?.fdvUsd != null ? fullUsd(dexMarket.fdvUsd) : market.fdv
-  const marketMetrics = (
-    [
-      ['Price', livePrice],
-      [
-        '24H',
-        liveTrend,
-        (market.trendPositive ?? (dexMarket?.priceChange24h != null ? dexMarket.priceChange24h >= 0 : undefined)) ===
-        true
-          ? 'up'
-          : (market.trendPositive ??
-              (dexMarket?.priceChange24h != null ? dexMarket.priceChange24h >= 0 : undefined)) === false
-          ? 'down'
-          : 'mute',
-      ],
-      ['Liquidity', liveLiquidity],
-      ['24H Volume', liveVolume],
-      ['Market Cap', liveMarketCap],
-      ['FDV', liveFdv],
-      ['Holders', market.holders],
-      ['Transactions', liveTransactions],
-    ] as [string, string, ('up' | 'down' | 'mute')?][]
-  ).filter(([, value]) => value !== '—')
+  const marketMetrics = [
+    ['Price', livePrice],
+    ['Vol 24H', liveVolume],
+    ['Transactions', liveTransactions],
+    ['Market Cap', liveMarketCap],
+  ] as [string, string, ('up' | 'down' | 'mute')?][]
 
   return (
     <CanonicalPage
@@ -1293,6 +1390,53 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                         {item.label}
                       </HeroTrustBadge>
                     ))}
+                    <ScoreBadgeWrap
+                      onMouseEnter={() => setScoreOpen(true)}
+                      onMouseLeave={() => setScoreOpen(false)}
+                      onFocus={() => setScoreOpen(true)}
+                      onBlur={(event) => {
+                        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setScoreOpen(false)
+                      }}
+                      data-testid="project-v7-score"
+                    >
+                      <ScoreBadge
+                        type="button"
+                        aria-label="Open Melega Score criteria"
+                        aria-expanded={scoreOpen}
+                        onClick={() => setScoreOpen(true)}
+                        data-testid="project-v7-score-open"
+                      >
+                        <span>{typeof score === 'number' ? Math.round(score) : '—'}</span>
+                      </ScoreBadge>
+                      <ScorePopover $open={scoreOpen} role="tooltip" data-testid="project-v7-score-details">
+                        <Row style={{ alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
+                          <BandTitle>Melega Score</BandTitle>
+                          <strong style={{ color: pp.gold, fontSize: 16 }}>
+                            {typeof score === 'number' ? `${Math.round(score)}/100` : '—'}
+                          </strong>
+                        </Row>
+                        <Muted style={{ margin: '5px 0 8px', fontSize: 10 }}>
+                          {scoreBand} · measured {scoreMeasured} ago. One deterministic readiness method based on the
+                          registered evidence below; it is not an audit or investment rating.
+                        </Muted>
+                        {readinessDocument?.components?.length ? (
+                          <div data-testid="project-v7-score-components">
+                            {readinessDocument.components.map((component) => (
+                              <ScoreCriterion key={component.componentId}>
+                                <span>{component.label}</span>
+                                <strong>
+                                  {scorePoints(component.achievedPoints)}/{scorePoints(component.maxPoints)}
+                                </strong>
+                              </ScoreCriterion>
+                            ))}
+                          </div>
+                        ) : (
+                          <Muted style={{ margin: 0, fontSize: 10 }}>
+                            Score criteria unavailable for this project.
+                          </Muted>
+                        )}
+                      </ScorePopover>
+                    </ScoreBadgeWrap>
                   </Row>
                 </div>
               </Row>
@@ -1488,64 +1632,40 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   </StripCell>
                 ))}
               </MarketStrip>
-              {dexMarket ? (
-                <DexCompactRow data-testid="project-v7-multi-dex">
-                  <span>
-                    DEXs<strong>{dexMarket.dexCount.toLocaleString()}</strong>
-                  </span>
-                  <span>
-                    Pairs<strong>{dexMarket.pairCount.toLocaleString()}</strong>
-                  </span>
-                  {dexMarket.venues.slice(0, 4).map((venue) => (
-                    <span key={venue.dexId}>
-                      {venue.dexId}
-                      <strong>{venue.pairCount}</strong>
-                    </span>
-                  ))}
-                  {dexAnalytics.data?.sourceUrl ? (
-                    <DexSourceLink href={dexAnalytics.data.sourceUrl} target="_blank" rel="noreferrer">
-                      Source ↗
-                    </DexSourceLink>
-                  ) : null}
-                </DexCompactRow>
-              ) : null}
-              <LiquidityBlock data-testid="project-v7-liquidity-distribution">
-                <BandHead>
-                  <BandTitle>Liquidity</BandTitle>
-                  <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
-                    ADD LIQUIDITY
-                  </Btn>
-                </BandHead>
-                <DistributionSummary
-                  items={(dexMarket?.pairs ?? []).map((pair) => ({
-                    id: pair.pairAddress,
-                    label: pair.label,
-                    tvlUsd: pair.liquidityUsd,
-                    sharePct: pair.liquiditySharePct,
-                  }))}
-                  total={liveLiquidity}
-                  emptyLabel="Liquidity distribution unavailable."
-                />
-              </LiquidityBlock>
               <ActivityBlock data-testid="project-v7-activity">
                 <BandHead>
-                  <BandTitle>Latest Activity</BandTitle>
+                  <BandTitle>Latest Transactions</BandTitle>
+                  <BandMeta>Exchanged · received</BandMeta>
                 </BandHead>
                 {projectActivity.length ? (
-                  projectActivity.map((row) => (
-                    <ActivityRow key={`${row.transactionHash}-${row.logIndex}`}>
-                      <span style={{ color: /sell|remove/i.test(row.eventType) ? pp.bad : pp.ok }}>
-                        {/sell|remove/i.test(row.eventType) ? 'Sell' : 'Buy'}
-                      </span>
-                      <span>
-                        {(row.amounts?.[0] || row.resolvedSymbols?.[0] || '—').toString().slice(0, 18)} ·{' '}
-                        {shortWallet(row.wallet)}
-                      </span>
-                      <span style={{ color: pp.mute }}>{timeAgo(row.timestamp)}</span>
-                    </ActivityRow>
-                  ))
+                  projectActivity.map((row) => {
+                    const legs = activityLegs(row, contract)
+                    return (
+                      <ActivityRow key={`${row.transactionHash}-${row.logIndex}`} title={row.pairOrPoolIdentity}>
+                        <span style={{ color: /sell|remove/i.test(legs.action) ? pp.bad : pp.ok }}>{legs.action}</span>
+                        <span title={`Exchanged ${legs.exchanged}`}>
+                          <strong style={{ color: 'rgba(255,255,255,.9)' }}>{legs.exchanged}</strong>
+                          <small style={{ display: 'block', color: pp.mute2 }}>Exchanged</small>
+                        </span>
+                        <span title={`Received ${legs.received}`}>
+                          <strong style={{ color: 'rgba(255,255,255,.9)' }}>{legs.received}</strong>
+                          <small style={{ display: 'block', color: pp.mute2 }}>
+                            Received · {shortWallet(row.wallet)}
+                          </small>
+                        </span>
+                        <a
+                          href={row.explorerUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: pp.gold, textDecoration: 'none' }}
+                        >
+                          {timeAgo(row.timestamp)} ↗
+                        </a>
+                      </ActivityRow>
+                    )
+                  })
                 ) : (
-                  <Muted style={{ margin: 0 }}>No indexed activity yet.</Muted>
+                  <Muted style={{ margin: 0 }}>No indexed transactions yet.</Muted>
                 )}
               </ActivityBlock>
             </WorkspacePanel>
@@ -1602,52 +1722,73 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   CREATE POOL
                 </Btn>
               </EconomyCard>
+            </EconomyGrid>
+          </DenseBand>
+
+          <DenseBand data-testid="project-v7-market-intelligence" data-project-section="market-intelligence">
+            <MarketIntelligenceGrid>
+              <EconomyCard data-testid="project-v7-liquidity-distribution">
+                <BandHead>
+                  <EconomyTitle>Liquidity</EconomyTitle>
+                  <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
+                    ADD LIQUIDITY
+                  </Btn>
+                </BandHead>
+                <DistributionSummary
+                  items={(dexMarket?.pairs ?? []).map((pair) => ({
+                    id: pair.pairAddress,
+                    label: pair.label,
+                    tvlUsd: pair.liquidityUsd,
+                    sharePct: pair.liquiditySharePct,
+                  }))}
+                  total={liveLiquidity}
+                  emptyLabel="Liquidity distribution unavailable."
+                />
+                {dexMarket ? (
+                  <DexCompactRow data-testid="project-v7-multi-dex">
+                    <span>
+                      DEXs<strong>{dexMarket.dexCount.toLocaleString()}</strong>
+                    </span>
+                    <span>
+                      Pairs<strong>{dexMarket.pairCount.toLocaleString()}</strong>
+                    </span>
+                    {dexMarket.venues.slice(0, 4).map((venue) => (
+                      <span key={venue.dexId}>
+                        {venue.dexId}
+                        <strong>{venue.pairCount}</strong>
+                      </span>
+                    ))}
+                    {dexAnalytics.data?.sourceUrl ? (
+                      <DexSourceLink href={dexAnalytics.data.sourceUrl} target="_blank" rel="noreferrer">
+                        Source ↗
+                      </DexSourceLink>
+                    ) : null}
+                  </DexCompactRow>
+                ) : null}
+              </EconomyCard>
               <EconomyCard data-testid="project-v7-holders">
                 <EconomyTitle>Holders</EconomyTitle>
                 <HolderDonutWrap>
                   <HolderDonut aria-label="Indexed holder count">
                     <strong>{dash(market.holders)}</strong>
                   </HolderDonut>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>Total indexed</div>
-                    <Muted style={{ margin: '4px 0 0', fontSize: 11 }} data-testid="project-v7-holders-dist">
-                      Wallets · —
-                      <br />
-                      Smart contracts · —
-                    </Muted>
-                  </div>
+                  <HolderLegend data-testid="project-v7-holders-dist">
+                    {['Pools', 'Smart contracts', 'Team', 'Top 100 holders', 'Wallet holders'].map(
+                      (category, index) => (
+                        <HolderLegendRow key={category}>
+                          <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
+                          <span>{category}</span>
+                          <strong>—</strong>
+                        </HolderLegendRow>
+                      ),
+                    )}
+                  </HolderLegend>
                 </HolderDonutWrap>
-                <Muted style={{ margin: 0, fontSize: 10 }}>Holder-type distribution is not indexed.</Muted>
+                <Muted style={{ margin: 0, fontSize: 10 }}>
+                  Total holders are indexed when available; holder-type percentages are not yet indexed.
+                </Muted>
               </EconomyCard>
-            </EconomyGrid>
-          </DenseBand>
-
-          <DenseBand data-testid="project-v7-intel" data-project-section="intel">
-            <IntelGrid style={{ gridTemplateColumns: '1fr' }}>
-              <IntelCard data-testid="project-v7-score">
-                <BandHead>
-                  <BandTitle>Melega Score</BandTitle>
-                </BandHead>
-                <button
-                  type="button"
-                  onClick={() => setScoreOpen(true)}
-                  style={{ border: 0, background: 'transparent', width: '100%', cursor: 'pointer', color: 'inherit' }}
-                  data-testid="project-v7-score-open"
-                >
-                  <ScoreGauge
-                    style={
-                      {
-                        ['--score-deg' as string]: `${Math.max(0, Math.min(100, Number(score) || 0)) * 3.6}deg`,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <ScoreValue>{typeof score === 'number' ? Math.round(score) : '—'}</ScoreValue>
-                  </ScoreGauge>
-                  <div style={{ textAlign: 'center', fontWeight: 750 }}>{scoreBand}</div>
-                  <Muted style={{ textAlign: 'center', margin: '4px 0 0' }}>Measured {scoreMeasured} ago</Muted>
-                </button>
-              </IntelCard>
-            </IntelGrid>
+            </MarketIntelligenceGrid>
           </DenseBand>
 
           <DenseBand data-testid="project-v7-boost" data-project-section="boost">
@@ -1675,13 +1816,13 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
             </BoostConsole>
           </DenseBand>
 
-          <DenseBand data-testid="project-v7-related" data-project-section="related">
+          <DenseBand data-testid="project-v7-related" data-project-section="featured-projects">
             <BandHead>
-              <BandTitle>Discover other projects</BandTitle>
+              <BandTitle>Featured Projects</BandTitle>
             </BandHead>
-            <RelatedRail data-testid="project-v7-related-grid">
+            <FeaturedRail data-testid="project-v7-related-grid">
               {related.map((card) => (
-                <RelatedCard
+                <FeaturedCard
                   key={card.id}
                   href={card.projectHref}
                   data-testid={`project-v7-related-${card.slug}`}
@@ -1714,9 +1855,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   <span aria-hidden style={{ color: pp.gold }}>
                     ↗
                   </span>
-                </RelatedCard>
+                </FeaturedCard>
               ))}
-            </RelatedRail>
+            </FeaturedRail>
           </DenseBand>
         </>
       ) : (
@@ -1724,69 +1865,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
           <Muted>Loading project intelligence…</Muted>
         </DenseBand>
       )}
-
-      {scoreOpen ? (
-        <ScoreOverlay role="presentation" onClick={() => setScoreOpen(false)}>
-          <ScoreDetails
-            role="dialog"
-            aria-modal="true"
-            data-testid="project-v7-score-details"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <BandTitle style={{ marginBottom: 8 }}>Melega Score</BandTitle>
-            <Muted style={{ margin: 0 }}>
-              Evidence-based project readiness. Missing evidence does not receive points; this is not investment advice.
-            </Muted>
-            {readinessDocument?.components?.length ? (
-              <div style={{ display: 'grid', gap: 7, marginTop: 12 }} data-testid="project-v7-score-components">
-                {readinessDocument.components.map((component) => (
-                  <div
-                    key={component.componentId}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr auto',
-                      gap: 8,
-                      padding: '8px 9px',
-                      border: `1px solid ${pp.line}`,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,.76)' }}>{component.label}</span>
-                    <strong style={{ fontSize: 11, color: pp.gold }}>
-                      {component.achievedPoints}/{component.maxPoints}
-                    </strong>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Muted style={{ margin: '10px 0 0', fontSize: 11 }}>Score components unavailable.</Muted>
-            )}
-            {readinessDocument?.warnings?.length ? (
-              <Muted style={{ margin: '10px 0 0', fontSize: 11 }}>
-                Active warnings · {readinessDocument.warnings.filter((warning) => warning.status === 'ACTIVE').length}
-              </Muted>
-            ) : null}
-            <div style={{ marginTop: 12 }}>
-              <button
-                type="button"
-                onClick={() => setScoreOpen(false)}
-                style={{
-                  minHeight: 40,
-                  padding: '0 14px',
-                  borderRadius: 9,
-                  border: `1px solid ${pp.line}`,
-                  background: 'transparent',
-                  color: '#fff',
-                  fontWeight: 750,
-                  cursor: 'pointer',
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </ScoreDetails>
-        </ScoreOverlay>
-      ) : null}
 
       <CommercialCheckoutModal
         open={checkoutOpen}

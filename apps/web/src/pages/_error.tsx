@@ -13,9 +13,15 @@
 
 import { captureUnderscoreErrorException } from '@sentry/nextjs'
 import NextErrorComponent, { ErrorProps } from 'next/error'
-import { NotFound } from '@pancakeswap/uikit'
+import PremiumErrorScreen from 'components/ErrorBoundary/PremiumErrorScreen'
 
-const CustomErrorComponent = (props: ErrorProps) => <NotFound statusCode={props.statusCode} />
+const CustomErrorComponent = (props: ErrorProps) => (
+  <PremiumErrorScreen
+    code={props.statusCode ? `Error ${props.statusCode}` : 'Route interrupted'}
+    title="Melega DEX could not complete this route."
+    message="The request stopped before the page was ready. Return home and continue from a live destination."
+  />
+)
 
 CustomErrorComponent.getInitialProps = async (contextData) => {
   // In case this is running in a serverless function, await this in order to give Sentry

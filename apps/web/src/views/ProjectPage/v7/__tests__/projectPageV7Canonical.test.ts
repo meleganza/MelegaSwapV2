@@ -40,7 +40,7 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
       'data-testid="project-v7-community-react"',
       'data-testid="project-v7-market"',
       'data-testid="project-v7-economy"',
-      'data-testid="project-v7-intel"',
+      'data-testid="project-v7-market-intelligence"',
       'data-testid="project-v7-boost"',
       'data-testid="project-v7-related"',
     ]
@@ -75,13 +75,22 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).toContain('<MarketStrip data-testid="project-v7-market"')
     expect(shell).toContain('project-v7-multi-dex')
     expect(shell).toContain('dexMarket?.liquidityUsd')
+    expect(shell).toContain("['Price', livePrice]")
+    expect(shell).toContain("['Vol 24H', liveVolume]")
+    expect(shell).toContain("['Transactions', liveTransactions]")
+    expect(shell).toContain("['Market Cap', liveMarketCap]")
+    expect(shell).toContain('<BandTitle>Latest Transactions</BandTitle>')
     expect(shell).not.toContain('All DEX Markets')
     expect(shell).not.toContain('Loading multi-DEX markets')
     expect(shell).not.toContain('<strong>⚡ Smart Swap</strong>')
   })
 
-  it('keeps liquidity beside the chart, earn distributions aligned, and five boost actions in one row', () => {
+  it('keeps liquidity beside holders, earn distributions aligned, and five boost actions in one row', () => {
     expect(shell).toContain('project-v7-liquidity-distribution')
+    expect(shell).toContain('project-v7-market-intelligence')
+    expect(shell).toContain('MarketIntelligenceGrid')
+    expect(shell).toContain('project-v7-holders-dist')
+    expect(shell).toContain('Top 100 holders')
     expect(shell).toContain('ADD LIQUIDITY')
     expect(shell).toContain('<BandTitle>Earn</BandTitle>')
     expect(shell).not.toContain('Earn & Liquidity')
@@ -92,12 +101,21 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).not.toContain('ClaimProjectWizardModal')
   })
 
+  it('renders Melega Score as a compact hero badge with repository-owned criteria', () => {
+    expect(shell).toContain('<ScoreBadgeWrap')
+    expect(shell).toContain('project-v7-score-details')
+    expect(shell).toContain('readinessDocument.components.map')
+    expect(shell).not.toContain('<ScoreGauge')
+  })
+
   it('related projects remain compact and do not render unavailable market metrics', () => {
-    expect(shell).toContain('RelatedCard')
+    expect(shell).toContain('FeaturedCard')
     expect(shell).toContain('Indexed project')
     expect(shell).not.toContain('ProjectCard project={card}')
     expect(shell).not.toContain("from 'views/ProjectsStudio/components/ProjectGridCard'")
     expect(shell).toContain('project-v7-related-grid')
+    expect(shell).toContain('<BandTitle>Featured Projects</BandTitle>')
+    expect(shell).toContain('featuredGlow')
   })
 
   it('resolveCanonicalProjectHref routes claimed vs unclaimed', () => {

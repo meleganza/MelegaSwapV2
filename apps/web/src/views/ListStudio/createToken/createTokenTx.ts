@@ -84,7 +84,16 @@ export type CreateTokenHandoffPayload = {
 
 const MAX_NAME = 64
 const MAX_SYMBOL = 16
-const MAX_SUPPLY_RAW = 10n ** 36n
+function pow10BigInt(decimals: number): bigint {
+  let value = 1n
+  for (let index = 0; index < decimals; index += 1) value *= 10n
+  return value
+}
+
+// Keep native BigInt exponentiation out of the browser bundle. The production
+// Babel target rewrites `10n ** 36n` to Math.pow, which throws during module
+// evaluation and used to crash the Claim Project route before the modal opened.
+const MAX_SUPPLY_RAW = BigInt('1000000000000000000000000000000000000')
 
 export function resolveCreateTokenUiState(input: {
   factoryAddress: string | null
@@ -147,7 +156,7 @@ export function humanSupplyToRaw(supplyHuman: string, decimals: number): bigint 
   const [whole, frac = ''] = cleaned.split('.')
   if (frac.length > decimals) throw new Error('too many fractional digits')
   const padded = frac.padEnd(decimals, '0')
-  const raw = BigInt(whole || '0') * 10n ** BigInt(decimals) + BigInt(padded || '0')
+  const raw = BigInt(whole || '0') * pow10BigInt(decimals) + BigInt(padded || '0')
   return raw
 }
 
