@@ -5,11 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { createHash } from 'crypto'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
-import {
-  POOLS_HERO_COPY,
-  POOLS_HERO_COPY_DEVIATIONS,
-  poolsHero,
-} from '../modules/poolsHeroTokens'
+import { POOLS_HERO_COPY, POOLS_HERO_COPY_DEVIATIONS, poolsHero } from '../modules/poolsHeroTokens'
 import { POOLS_FOUNDER_MOCKUP, POOLS_MODULE_PLAN } from '../poolsArchitecture000Contracts'
 
 const WEB = path.resolve(__dirname, '../../../../')
@@ -68,6 +64,16 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(uiSrc).not.toContain('maximum returns')
     expect(uiSrc).not.toContain('risk-free')
     expect(uiSrc).not.toContain('Melega Labs')
+  })
+
+  it('uses the Founder-approved MARCO 3D artwork with premium reduced-motion-safe animation', () => {
+    const artwork = load('modules/PoolsHeroArtwork.tsx')
+    expect(artwork).toContain('/images/pools/pools-hero-marco-3d.png')
+    expect(artwork).toContain('data-pools-hero-approved-artwork="marco-3d"')
+    expect(artwork).toContain('data-pools-hero-animated="true"')
+    expect(artwork).toContain('prefers-reduced-motion: reduce')
+    expect(artwork).toContain('will-change: transform')
+    expect(artwork).toContain('mask-image: linear-gradient')
   })
 
   it('mounts Module 001 on live screen while preserving legacy body and page entry', () => {

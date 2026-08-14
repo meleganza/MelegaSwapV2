@@ -20,6 +20,7 @@ import {
 } from 'views/SmartSwapStudio/modules/SmartSwapExecutionHandoff'
 import {
   SMART_SWAP_PREVIEW_GAS_UNITS,
+  normalizeGasPriceWei,
   useSmartSwapGasProtocolFeePreview,
 } from 'lib/smart-swap-gas-protocol-fee'
 
@@ -173,30 +174,25 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
     // BNB Chain exposes a canonical 5 gwei UI default when the disconnected
     // provider has not hydrated yet. The confirmation flow still replaces this
     // pre-trade estimate with wallet estimateGas + live gas price.
-    const gasPriceWei = /^\d+(?:\.\d+)?$/.test(liveGasPrice) && liveGasPrice !== '0'
-      ? isBsc && Number(liveGasPrice) < 1_000_000_000
-        ? String(Number(liveGasPrice) * 1_000_000_000)
-        : liveGasPrice
-      : isBsc
-        ? '5000000000'
-        : null
+    const gasPriceWei = isBsc
+      ? normalizeGasPriceWei(liveGasPrice) ?? '5000000000'
+      : /^\d+(?:\.\d+)?$/.test(liveGasPrice) && liveGasPrice !== '0'
+      ? liveGasPrice
+      : null
     if (!gasPriceWei) return '—'
     const estimatedNative = (Number(gasUnits) * Number(gasPriceWei)) / 1e18
     if (!Number.isFinite(estimatedNative) || estimatedNative <= 0) return '—'
-    const nativeSymbol =
-      isBsc
-        ? 'BNB'
-        : normalizedChainId === 137
-          ? 'POL'
-          : normalizedChainId === 43114
-            ? 'AVAX'
-            : 'ETH'
+    const nativeSymbol = isBsc
+      ? 'BNB'
+      : normalizedChainId === 137
+      ? 'POL'
+      : normalizedChainId === 43114
+      ? 'AVAX'
+      : 'ETH'
     const formatted = estimatedNative.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')
     return `~${formatted} ${nativeSymbol}`
   }, [preview, gasPrice, quoteChainId])
-  const protocolFee = gasFeePlan
-    ? `~${gasFeePlan.display.protocolFeeBnb} ${gasFeePlan.fee.feeAsset}`
-    : '—'
+  const protocolFee = gasFeePlan ? `~${gasFeePlan.display.protocolFeeBnb} ${gasFeePlan.fee.feeAsset}` : '—'
 
   const metrics = [
     { label: 'Expected output', value: expected },

@@ -1,21 +1,54 @@
 /**
- * POOLS_MODULE_001 — decorative staking-platform artwork (local SVG).
- * No readable fake APR, balances, or pool counts.
+ * POOLS_MODULE_001 — Founder-approved MARCO 3D hero artwork.
+ * Motion stays on compositor-only transforms/opacity and preserves the locked
+ * 480×230 artwork box used by the Pools hero.
  */
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { poolsHero } from './poolsHeroTokens'
+
+const POOLS_HERO_ARTWORK = '/images/pools/pools-hero-marco-3d.png'
+
+const cinematicDrift = keyframes`
+  0%, 100% { transform: scale(1.05) translate3d(-0.8%, 0.3%, 0); }
+  50% { transform: scale(1.085) translate3d(1.2%, -0.8%, 0); }
+`
+
+const glowBreath = keyframes`
+  0%, 100% { opacity: 0.3; transform: translate3d(0, 0, 0) scale(0.96); }
+  50% { opacity: 0.65; transform: translate3d(-1.5%, -1%, 0) scale(1.06); }
+`
+
+const orbitTurn = keyframes`
+  from { transform: translate3d(-50%, -50%, 0) rotate(-8deg); opacity: 0.2; }
+  50% { opacity: 0.46; }
+  to { transform: translate3d(-50%, -50%, 0) rotate(352deg); opacity: 0.2; }
+`
+
+const lightPass = keyframes`
+  0%, 18% { transform: translate3d(-155%, 0, 0) skewX(-18deg); opacity: 0; }
+  35% { opacity: 0.26; }
+  56%, 100% { transform: translate3d(205%, 0, 0) skewX(-18deg); opacity: 0; }
+`
+
+const particleFloat = keyframes`
+  0%, 100% { transform: translate3d(0, 3px, 0) scale(0.8); opacity: 0.24; }
+  50% { transform: translate3d(7px, -7px, 0) scale(1.15); opacity: 0.72; }
+`
 
 const Frame = styled.div`
   width: ${poolsHero.artworkBoxW};
   height: ${poolsHero.artworkBoxH};
   max-width: 100%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
   flex: 0 0 auto;
+  overflow: hidden;
+  isolation: isolate;
+  contain: paint;
+  pointer-events: none;
+  /* Feather the raster into the existing hero instead of rendering a framed card. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
 
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: min(100%, ${poolsHero.mobileArtworkMaxW});
@@ -23,62 +56,128 @@ const Frame = styled.div`
   }
 `
 
-const Glow = styled.div`
+const Artwork = styled.img`
   position: absolute;
-  inset: 8% 12% 4%;
-  background: radial-gradient(
-    ellipse at 50% 62%,
-    rgba(244, 196, 48, 0.22) 0%,
-    rgba(59, 130, 246, 0.08) 38%,
-    rgba(8, 8, 8, 0) 72%
-  );
-  filter: blur(2px);
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  display: block;
+  object-fit: cover;
+  object-position: 62% center;
+  transform-origin: 62% 50%;
+  animation: ${cinematicDrift} 13s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform;
 
   @media (prefers-reduced-motion: reduce) {
-    filter: none;
+    animation: none;
+    transform: scale(1.05);
+    will-change: auto;
   }
 `
 
-const Svg = styled.svg`
-  width: 92%;
-  height: 92%;
-  display: block;
-  overflow: visible;
+const DepthVeil = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(3, 3, 3, 0.28) 0%, rgba(3, 3, 3, 0.03) 44%, rgba(3, 3, 3, 0.07) 100%),
+    radial-gradient(circle at 67% 52%, rgba(244, 196, 48, 0.08), transparent 43%);
+`
+
+const OrbitalGlow = styled.div`
+  position: absolute;
+  left: 64%;
+  top: 52%;
+  width: 72%;
+  height: 52%;
+  z-index: 2;
+  border: 1px solid rgba(255, 211, 77, 0.18);
+  border-left-color: rgba(255, 255, 255, 0.4);
+  border-right-color: rgba(244, 196, 48, 0.04);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 7px rgba(244, 196, 48, 0.16));
+  animation: ${orbitTurn} 19s linear infinite;
+  will-change: transform, opacity;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    will-change: auto;
+  }
+`
+
+const Glow = styled.div`
+  position: absolute;
+  right: 8%;
+  bottom: 5%;
+  width: 58%;
+  height: 58%;
+  z-index: 2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 196, 48, 0.18), rgba(244, 196, 48, 0) 68%);
+  filter: blur(10px);
+  animation: ${glowBreath} 6.8s ease-in-out infinite;
+  will-change: transform, opacity;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    will-change: auto;
+  }
+`
+
+const LightSweep = styled.div`
+  position: absolute;
+  top: -22%;
+  bottom: -22%;
+  left: 34%;
+  width: 13%;
+  z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255, 245, 204, 0.46), transparent);
+  filter: blur(9px);
+  animation: ${lightPass} 9.5s ease-in-out infinite;
+  will-change: transform, opacity;
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+    animation: none;
+    will-change: auto;
+  }
+`
+
+const Particle = styled.span<{ $left: string; $top: string; $delay: string; $size: string }>`
+  position: absolute;
+  left: ${({ $left }) => $left};
+  top: ${({ $top }) => $top};
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  z-index: 4;
+  border-radius: 50%;
+  background: #ffe18a;
+  box-shadow: 0 0 9px rgba(244, 196, 48, 0.66);
+  animation: ${particleFloat} 5.2s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay};
+  will-change: transform, opacity;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    will-change: auto;
+  }
 `
 
 export const PoolsHeroArtwork: React.FC = () => (
-  <Frame data-testid="pools-hero-artwork" data-pools-hero-artwork aria-hidden="true">
+  <Frame
+    data-testid="pools-hero-artwork"
+    data-pools-hero-artwork
+    data-pools-hero-approved-artwork="marco-3d"
+    data-pools-hero-animated="true"
+    aria-hidden="true"
+  >
+    <Artwork src={POOLS_HERO_ARTWORK} alt="" width={1669} height={942} decoding="async" fetchPriority="high" />
+    <DepthVeil />
     <Glow />
-    <Svg viewBox="0 0 480 230" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Platform base */}
-      <ellipse cx="240" cy="168" rx="118" ry="28" fill="#121212" stroke="rgba(244,196,48,0.35)" strokeWidth="2" />
-      <ellipse cx="240" cy="158" rx="96" ry="20" fill="#181818" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
-      <ellipse cx="240" cy="148" rx="64" ry="12" fill="#0F0F0F" stroke="rgba(244,196,48,0.55)" strokeWidth="1.5" />
-      {/* Core glow */}
-      <ellipse cx="240" cy="148" rx="28" ry="6" fill="rgba(244,196,48,0.55)" />
-      <path
-        d="M240 70 C248 100 252 120 240 148 C228 120 232 100 240 70Z"
-        fill="url(#poolsHeroBeam)"
-        opacity="0.85"
-      />
-      {/* Floating token tiles — shapes only, no labels/values */}
-      <rect x="148" y="78" width="36" height="36" rx="10" fill="#1A1A1A" stroke="#F4C430" strokeWidth="1.5" />
-      <circle cx="166" cy="96" r="8" fill="#F4C430" />
-      <rect x="296" y="72" width="34" height="34" rx="10" fill="#141414" stroke="rgba(59,130,246,0.65)" strokeWidth="1.5" />
-      <circle cx="313" cy="89" r="7" fill="#3B82F6" />
-      <rect x="188" y="48" width="30" height="30" rx="9" fill="#161616" stroke="rgba(244,196,48,0.45)" strokeWidth="1.25" />
-      <circle cx="203" cy="63" r="6" fill="#FFD34D" />
-      <rect x="262" y="52" width="28" height="28" rx="8" fill="#121212" stroke="rgba(255,255,255,0.18)" strokeWidth="1.25" />
-      <circle cx="276" cy="66" r="5.5" fill="#B5B5B5" />
-      <rect x="120" y="118" width="26" height="26" rx="8" fill="#151515" stroke="rgba(244,196,48,0.3)" strokeWidth="1" />
-      <rect x="334" y="112" width="26" height="26" rx="8" fill="#151515" stroke="rgba(59,130,246,0.35)" strokeWidth="1" />
-      <defs>
-        <linearGradient id="poolsHeroBeam" x1="240" y1="70" x2="240" y2="148" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#F4C430" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#F4C430" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </Svg>
+    <OrbitalGlow />
+    <LightSweep />
+    <Particle $left="19%" $top="24%" $delay="-1.1s" $size="3px" />
+    <Particle $left="84%" $top="20%" $delay="-3.6s" $size="4px" />
+    <Particle $left="76%" $top="78%" $delay="-2.2s" $size="3px" />
   </Frame>
 )
 

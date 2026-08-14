@@ -1,36 +1,28 @@
-import { useMemo } from 'react'
-import Link from 'next/link'
 import styled from 'styled-components'
-import { Text } from '@pancakeswap/uikit'
 import { Currency, TradeType } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import {
-  DEX_ECONOMIC_AUTHORITY,
-  MELEGA_TREASURY_WALLET_ADDRESS,
-  MELEGA_TREASURY_WALLET_LABEL,
-} from 'config/dexEconomicAuthority'
 import { SMART_SWAP_PREVIEW_GAS_UNITS, useSmartSwapGasProtocolFeePreview } from 'lib/smart-swap-gas-protocol-fee'
 import { useSmartRouterFeePanelContext } from './useSmartRouterFeePanelContext'
 
 const Panel = styled.div`
-  margin-top: 10px;
+  margin: 8px 16px 0;
   min-width: 0;
-  max-width: 100%;
+  max-width: calc(100% - 32px);
   box-sizing: border-box;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
 `
 
 const Row = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  color: #b8b8b8;
+  display: grid;
+  grid-template-columns: minmax(92px, 0.7fr) minmax(0, 1.3fr);
+  align-items: start;
+  gap: 10px;
   margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.35;
 
   &:first-child {
     margin-top: 0;
@@ -43,31 +35,10 @@ const Label = styled.span`
 `
 
 const Value = styled.span`
-  color: #f2f2f2;
+  color: #e8e8e8;
   text-align: right;
   min-width: 0;
-  max-width: 100%;
   overflow-wrap: anywhere;
-`
-
-const Note = styled(Text)`
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #8f8f8f;
-  line-height: 1.45;
-`
-
-const PricingLink = styled(Link)`
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #F4C430;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `
 
 type Props = {
@@ -82,48 +53,31 @@ export function DexSwapFeeDisclosure({ trade }: Props) {
   const { chainId } = useActiveChainId()
   const panel = useSmartRouterFeePanelContext()
   const feePlan = useSmartSwapGasProtocolFeePreview(SMART_SWAP_PREVIEW_GAS_UNITS, chainId)
-  const ctx = useMemo(() => (trade ? { ready: true } : null), [trade])
 
-  if (!ctx) return null
+  if (!trade) return null
 
   return (
     <Panel data-d87-swap-fee-disclosure>
       <Row>
-        <Label>Execution Router</Label>
+        <Label>Execution router</Label>
         <Value>{panel?.executionRouterLabel ?? 'PancakeSwap Smart Router'}</Value>
       </Row>
       <Row>
-        <Label>Protocol Wrapper</Label>
-        <Value>{panel?.protocolWrapperLabel ?? 'ADAPTER → WRAPPER (undeployed on mainnet)'}</Value>
-      </Row>
-      <Row>
-        <Label>Protocol Fee</Label>
-        <Value>{feePlan ? `~${feePlan.display.protocolFeeBnb} ${feePlan.fee.feeAsset}` : '—'}</Value>
+        <Label>Protocol fee</Label>
+        <Value>{feePlan ? `~${feePlan.display.protocolFeeBnb} ${feePlan.fee.feeAsset}` : 'Unavailable'}</Value>
       </Row>
       <Row>
         <Label>Calculation</Label>
-        <Value>25% of estimated gas · finalized at confirmation</Value>
+        <Value>25% of estimated gas · fixed at confirmation</Value>
       </Row>
       <Row>
-        <Label>LP Fee</Label>
-        <Value>Separate — paid to liquidity providers</Value>
+        <Label>Collection</Label>
+        <Value>Unavailable on this network</Value>
       </Row>
       <Row>
-        <Label>Fee destination</Label>
-        <Value>
-          {MELEGA_TREASURY_WALLET_LABEL} ({MELEGA_TREASURY_WALLET_ADDRESS})
-        </Value>
+        <Label>LP fee</Label>
+        <Value>Separate · paid to liquidity providers</Value>
       </Row>
-      <Row>
-        <Label>Execution</Label>
-        <Value>{DEX_ECONOMIC_AUTHORITY.executionModel}</Value>
-      </Row>
-      <Note>Collection status: Not collected — the atomic protocol wrapper is not deployed on mainnet.</Note>
-      <Note>
-        DEX-owned application fees route directly to {MELEGA_TREASURY_WALLET_LABEL}. LP fees remain with
-        liquidity providers. Execution is non-custodial.
-      </Note>
-      <PricingLink href="/pricing-fees">Pricing &amp; Fees</PricingLink>
     </Panel>
   )
 }

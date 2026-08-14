@@ -27,12 +27,13 @@ describe('Smart Swap wallet controls layout', () => {
     expect(homeStyle).toContain('bottom: 6px !important')
   })
 
-  it('stretches the cockpit and market column to one lower baseline', () => {
+  it('keeps the market column independent when cockpit Details expands', () => {
     const screen = readFileSync(path.join(WEB, 'views/Trade/TradeTerminalScreen.tsx'), 'utf8')
     const center = readFileSync(path.join(WEB, 'views/Trade/TradeCenterPanel.tsx'), 'utf8')
 
-    expect(screen).toContain('align-items: stretch')
-    expect(screen).toContain('align-self: stretch')
+    expect(screen).toContain('align-items: start')
+    expect(screen).toContain('align-self: start')
+    expect(screen).not.toContain('grid-area: cockpit;\n  ${stretchColumn}')
     expect(center).toContain('gap: ${tradeLayout.verticalRhythm}')
   })
 })

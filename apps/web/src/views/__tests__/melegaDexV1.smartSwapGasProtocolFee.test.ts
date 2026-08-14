@@ -36,6 +36,15 @@ describe('MELEGA_DEX_V1_SMART_SWAP_PROTOCOL_FEE_SETTLEMENT wiring', () => {
     expect(fee).toContain('feeCollectionProven: false')
   })
 
+  it('keeps compact Details factual and omits treasury wallet/address copy', () => {
+    const details = load('src/components/DexPricing/DexSwapFeeDisclosure.tsx')
+    const advanced = load('src/views/Swap/components/AdvancedSwapDetails.tsx')
+    expect(details).toContain('Unavailable on this network')
+    expect(details).not.toContain('MELEGA_TREASURY')
+    expect(details).not.toContain('Fee destination')
+    expect(advanced).not.toContain('DexExecutionDetailsPanel')
+  })
+
   it('recipient lock', () => {
     const f = calculateSmartRouterGasProtocolFee({
       gasEstimateUnits: 100000,

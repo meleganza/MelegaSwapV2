@@ -13,7 +13,6 @@ import FormattedPriceImpact from './FormattedPriceImpact'
 import { RouterViewer } from './RouterViewer'
 import SwapRoute from './SwapRoute'
 import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
-import { DexExecutionDetailsPanel } from 'components/DexPricing/DexExecutionDetailsPanel'
 
 const DetailsColumn = styled(AutoColumn)`
   width: 100%;
@@ -117,20 +116,24 @@ function TradeSummary({
       {realizedLPFee && (
         <RowBetween>
           <RowFixed>
-            <Text fontSize="14px">
-              {t('Liquidity Provider Fee')}
-            </Text>
+            <Text fontSize="14px">{t('Liquidity Provider Fee')}</Text>
             <QuestionHelper
               text={
                 <>
-                  <Text mb="12px" fontSize="14px" color='#000'>
+                  <Text mb="12px" fontSize="14px" color="#000">
                     {hasStablePair
                       ? t('For each non-stableswap trade, a %amount% fee is paid', { amount: totalFeePercent })
                       : t('For each trade a %amount% fee is paid', { amount: totalFeePercent })}
                   </Text>
-                  <Text fontSize="14px" color='#000'>- {t('%amount% to LP token holders', { amount: lpHoldersFeePercent })}</Text>
-                  <Text fontSize="14px" color='#000'>- {t('%amount% to the Treasury', { amount: treasuryFeePercent })}</Text>
-                  <Text fontSize="14px" color='#000'>- {t('%amount% towards MARCO buyback and burn', { amount: buyBackFeePercent })}</Text>
+                  <Text fontSize="14px" color="#000">
+                    - {t('%amount% to LP token holders', { amount: lpHoldersFeePercent })}
+                  </Text>
+                  <Text fontSize="14px" color="#000">
+                    - {t('%amount% to the Treasury', { amount: treasuryFeePercent })}
+                  </Text>
+                  <Text fontSize="14px" color="#000">
+                    - {t('%amount% towards MARCO buyback and burn', { amount: buyBackFeePercent })}
+                  </Text>
                   {hasStablePair && (
                     <>
                       <Text mt="12px">
@@ -203,15 +206,6 @@ export function AdvancedSwapDetails({
           />
           {outputAmount && (
             <DexSwapFeeDisclosure
-              trade={{
-                inputAmount,
-                outputAmount,
-                tradeType,
-              }}
-            />
-          )}
-          {outputAmount && (
-            <DexExecutionDetailsPanel
               trade={{
                 inputAmount,
                 outputAmount,

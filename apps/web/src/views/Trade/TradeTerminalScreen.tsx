@@ -50,7 +50,7 @@ const Content = styled.div`
 const TopGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
-  align-items: stretch;
+  align-items: start;
   min-width: 0;
 
   @media (min-width: 900px) {
@@ -99,12 +99,13 @@ const LeftWorkspace = styled.div`
   gap: ${tradeLayout.verticalRhythm};
   min-width: 0;
   min-height: 0;
-  align-self: stretch;
+  align-self: start;
 `
 
 const AreaCockpit = styled.div`
   grid-area: cockpit;
-  ${stretchColumn}
+  min-width: 0;
+  align-self: start;
 `
 
 const AreaSwaps = styled.div`

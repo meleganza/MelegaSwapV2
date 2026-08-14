@@ -6,6 +6,7 @@ import {
   formatFeeWeiAsBnb,
   isCanonicalTreasuryRecipient,
   buildGasProtocolFeeSettlementPlan,
+  normalizeGasPriceWei,
 } from '../index'
 
 describe('Smart Swap gas protocol fee (Founder 25%)', () => {
@@ -61,11 +62,21 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
     expect(formatFeeWeiAsBnb('0')).toBe('0')
   })
 
+  it('keeps BSC provider gas prices in wei without a second gwei multiplication', () => {
+    expect(normalizeGasPriceWei('5000000000')).toBe('5000000000')
+    expect(normalizeGasPriceWei('50000000')).toBe('50000000')
+    expect(normalizeGasPriceWei('0')).toBeNull()
+    expect(normalizeGasPriceWei('rpcDefault')).toBeNull()
+
+    const lowGasPlan = buildGasProtocolFeeSettlementPlan({
+      gasEstimateUnits: 220_000,
+      gasPriceWei: normalizeGasPriceWei('50000000')!,
+    })
+    expect(lowGasPlan.display.protocolFeeBnb).toBe('0.00000275')
+  })
+
   it('does not depend on Treasury Runtime or KERL', () => {
-    const src = [
-      calculateSmartRouterGasProtocolFee.toString(),
-      buildGasProtocolFeeSettlementPlan.toString(),
-    ].join('\n')
+    const src = [calculateSmartRouterGasProtocolFee.toString(), buildGasProtocolFeeSettlementPlan.toString()].join('\n')
     expect(src).not.toMatch(/treasury\.melega\.ai/i)
     expect(src).not.toMatch(/Treasury Runtime/i)
     expect(src).not.toMatch(/kerl/i)
@@ -96,9 +107,9 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
   })
 
   it('rejects unsupported fee chains', () => {
-    expect(() =>
-      calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 1, chainId: 999 }),
-    ).toThrow(/No canonical fee beneficiary|unsupported/i)
+    expect(() => calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 1, chainId: 999 })).toThrow(
+      /No canonical fee beneficiary|unsupported/i,
+    )
   })
 
   it('settles Polygon fee as native POL to the same treasury (25% economics unchanged)', () => {
