@@ -27,6 +27,46 @@ export function buildCanonicalMarcoPair(tokenA: Token, tokenB: Token, encodedRes
 }
 
 /**
+ * Direct reserve fallback for the currently selected Melega pair. The shared
+ * multicall cache is allowed to hydrate later, but a real pair must remain
+ * quotable even when that cache is cold or unavailable.
+ */
+export function useDirectMelegaPair(tokenA?: Token, tokenB?: Token): Pair | null {
+  const eligible = Boolean(tokenA && tokenB && tokenA.chainId === tokenB.chainId && !tokenA.equals(tokenB))
+  let pairAddress: string | null = null
+  if (eligible) {
+    try {
+      pairAddress = Pair.getAddress(tokenA!, tokenB!)
+    } catch {
+      pairAddress = null
+    }
+  }
+
+  const { data } = useSWR(
+    pairAddress && tokenA && tokenB
+      ? ['direct-melega-pair-reserves', tokenA.chainId, pairAddress, tokenA.address, tokenB.address]
+      : null,
+    async () => {
+      const encoded = PAIR_INTERFACE.encodeFunctionData('getReserves')
+      const result = await provider({ chainId: tokenA!.chainId }).call({
+        to: pairAddress!,
+        data: encoded,
+      })
+      return buildCanonicalMarcoPair(tokenA!, tokenB!, result)
+    },
+    {
+      dedupingInterval: 12_000,
+      refreshInterval: 12_000,
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    },
+  )
+
+  return data ?? null
+}
+
+/**
  * The canonical MARCO/WBNB pool is a public Melega V2 pair. Keep the normal
  * multicall discovery as the primary source, but read this single known pair
  * directly when the shared multicall cache has not hydrated yet. The SWR key

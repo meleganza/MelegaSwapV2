@@ -15,7 +15,7 @@ import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens, useWarningTokens } from './Tokens'
 import { useActiveChainId } from './useActiveChainId'
-import { useCanonicalMarcoPair } from './useCanonicalMarcoPair'
+import { useCanonicalMarcoPair, useDirectMelegaPair } from './useCanonicalMarcoPair'
 
 export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const { chainId } = useActiveChainId()
@@ -74,6 +74,7 @@ export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): P
 
   const allPairs = usePairs(allPairCombinations)
   const canonicalMarcoPair = useCanonicalMarcoPair(tokenA, tokenB)
+  const directMelegaPair = useDirectMelegaPair(tokenA, tokenB)
 
   // only pass along valid pairs, non-duplicated pairs
   return useMemo(
@@ -83,12 +84,18 @@ export function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): P
           // filter out invalid pairs
           .filter((result): result is [PairState.EXISTS, Pair] => Boolean(result[0] === PairState.EXISTS && result[1]))
           // filter out duplicated pairs
-          .reduce<{ [pairAddress: string]: Pair }>((memo, [, curr]) => {
-            memo[curr.liquidityToken.address] = memo[curr.liquidityToken.address] ?? curr
-            return memo
-          }, canonicalMarcoPair ? { [canonicalMarcoPair.liquidityToken.address]: canonicalMarcoPair } : {}),
+          .reduce<{ [pairAddress: string]: Pair }>(
+            (memo, [, curr]) => {
+              memo[curr.liquidityToken.address] = memo[curr.liquidityToken.address] ?? curr
+              return memo
+            },
+            [canonicalMarcoPair, directMelegaPair].reduce<{ [pairAddress: string]: Pair }>((memo, pair) => {
+              if (pair) memo[pair.liquidityToken.address] = pair
+              return memo
+            }, {}),
+          ),
       ),
-    [allPairs, canonicalMarcoPair],
+    [allPairs, canonicalMarcoPair, directMelegaPair],
   )
 }
 

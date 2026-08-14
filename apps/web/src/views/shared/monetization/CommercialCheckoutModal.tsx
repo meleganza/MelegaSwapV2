@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useAccount, useSigner } from 'wagmi'
 import { MarcoPay } from 'components/MarcoWidgets'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import {
   MelegaModal,
   MelegaModalFooter,
@@ -368,6 +369,21 @@ const PrimaryBtn = styled.button`
   }
 `
 
+const CheckoutConnectBtn = styled(ConnectWalletButton)`
+  appearance: none;
+  cursor: pointer;
+  min-height: 38px;
+  height: 38px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(221, 185, 47, 0.65);
+  background: rgba(221, 185, 47, 0.16);
+  color: ${uxRebuildColors.gold};
+  font-size: 12px;
+  font-weight: 780;
+  box-shadow: none;
+`
+
 const Err = styled.p`
   margin: 0;
   font-size: 12px;
@@ -467,7 +483,9 @@ function parseDetectedProject(
   const project = json.project ?? null
   const dex = json.dex ?? null
   const token = project?.tokens?.find((item) => Number(item.chainId) === requestedChain)
-  const name = String(project?.displayName ?? dex?.name ?? json.onChain.name ?? json.profile?.name?.value ?? 'Detected token')
+  const name = String(
+    project?.displayName ?? dex?.name ?? json.onChain.name ?? json.profile?.name?.value ?? 'Detected token',
+  )
   const symbol = String(token?.symbol ?? dex?.symbol ?? json.onChain.symbol ?? json.profile?.symbol?.value ?? 'TOKEN')
   return {
     tier: canonical ? 'canonical' : 'pending',
@@ -707,9 +725,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       }
       const slug = published.claim?.slug ?? metadata.handle
       setDetected((current) =>
-        current
-          ? { ...current, tier: 'canonical', slug, projectPageExists: true, logoUrl: metadata.logo }
-          : current,
+        current ? { ...current, tier: 'canonical', slug, projectPageExists: true, logoUrl: metadata.logo } : current,
       )
       return true
     } catch (cause) {
@@ -1040,7 +1056,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <PreviewLine>Decimals · {detected.decimals ?? 'Unavailable'}</PreviewLine>
             <PreviewLine>Project Page · {detected.projectPageExists ? `@${detected.slug}` : 'Required'}</PreviewLine>
             <PreviewLine>DEX listing · {detected.dexListed ? 'MelegaSwap listed' : 'Not verified'}</PreviewLine>
-            {detected.website ? <PreviewLine>Website · {detected.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</PreviewLine> : null}
+            {detected.website ? (
+              <PreviewLine>Website · {detected.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</PreviewLine>
+            ) : null}
           </>
         ) : (
           <PreviewLine>Paste a contract to load canonical data.</PreviewLine>
@@ -1076,7 +1094,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'checkout' ? (
+        {step === 'checkout' && !buyerWallet && pay !== 'MARCO_PAY' ? (
+          <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
+        ) : step === 'checkout' ? (
           <PrimaryBtn
             type="button"
             disabled={busy || Boolean(checkoutBlocker) || pay === 'MARCO_PAY'}
@@ -1167,11 +1187,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         <Badge $green={detected.projectPageExists}>
                           {detected.projectPageExists ? `Project Page @${detected.slug}` : 'Project Page required'}
                         </Badge>
-                        {detected.dexListed ? (
-                          <Badge $green>Listed</Badge>
-                        ) : (
-                          <Badge>Detected on-chain</Badge>
-                        )}
+                        {detected.dexListed ? <Badge $green>Listed</Badge> : <Badge>Detected on-chain</Badge>}
                       </BadgeRow>
                     </div>
                   </Identity>
