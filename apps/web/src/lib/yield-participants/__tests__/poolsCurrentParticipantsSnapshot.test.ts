@@ -18,6 +18,7 @@ describe('Pools current participant release snapshot', () => {
   it('keeps credentials server-side and retains the honest pending snapshot on failure', () => {
     expect(script).toContain('process.env.BSCSCAN_API_KEY')
     expect(script).toContain('process.env.BSC_RPC_URL')
+    expect(script).toContain("rpc('eth_getLogs'")
     expect(script).toContain('keeping honest pending state')
     expect(script).not.toContain('NEXT_PUBLIC_BSCSCAN_API_KEY')
   })

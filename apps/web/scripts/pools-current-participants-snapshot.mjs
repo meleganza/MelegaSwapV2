@@ -117,10 +117,36 @@ async function fetchTopicLogs(address, fromBlock, toBlock, topic0) {
   return rows
 }
 
+async function fetchRpcTopicLogs(address, fromBlock, toBlock, topic0) {
+  const result = await rpc('eth_getLogs', [
+    {
+      address,
+      fromBlock: `0x${fromBlock.toString(16)}`,
+      toBlock: `0x${toBlock.toString(16)}`,
+      topics: [topic0],
+    },
+  ])
+  if (!Array.isArray(result)) throw new Error(`Invalid RPC log response for ${address}`)
+  return result
+}
+
+async function fetchIndexedTopicLogs(address, fromBlock, toBlock, topic0) {
+  try {
+    return await fetchTopicLogs(address, fromBlock, toBlock, topic0)
+  } catch (explorerError) {
+    console.warn(
+      `Pools participant snapshot: explorer unavailable for ${address}; trying configured archive RPC (${
+        explorerError instanceof Error ? explorerError.message : String(explorerError)
+      }).`,
+    )
+    return fetchRpcTopicLogs(address, fromBlock, toBlock, topic0)
+  }
+}
+
 async function indexPool(address, startBlock, chainHead) {
   const batches = []
   for (const [kind, topic0] of Object.entries(TOPICS)) {
-    batches.push({ kind, logs: await fetchTopicLogs(address, startBlock, chainHead, topic0) })
+    batches.push({ kind, logs: await fetchIndexedTopicLogs(address, startBlock, chainHead, topic0) })
     await sleep(260)
   }
   const events = batches
