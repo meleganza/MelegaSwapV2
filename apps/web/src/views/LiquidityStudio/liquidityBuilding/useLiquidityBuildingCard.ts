@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAccount, useNetwork } from 'wagmi'
 import { ChainId, Currency } from '@pancakeswap/sdk'
-import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useLiveCurrencyBalance } from 'state/wallet/hooks'
 import {
   EMPTY_SETUP_DRAFT,
   type EpochSeconds,
@@ -31,12 +31,7 @@ import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
 import { useContract } from 'hooks/useContract'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { LB_FACTORY_READ_ABI } from './abi/fragments'
-import {
-  mapStrategyPreset,
-  type LiquidityGoalKey,
-  type QuoteAssetKey,
-  type StrategyPreset,
-} from './strategyPresets'
+import { mapStrategyPreset, type LiquidityGoalKey, type QuoteAssetKey, type StrategyPreset } from './strategyPresets'
 import { formatLbTokenAmount } from './formatLbAmount'
 import type { ActivateProgressEvent } from './founderActivateFlow'
 
@@ -159,20 +154,14 @@ function buildSnapshot(
     pairLabel: s.pair ? pairLabel : pairLabel,
     lpOwner: s.owner,
     lpRecipient: s.lpRecipient,
-    initialBudgetLabel:
-      s.view?.totalDepositedBudget != null
-        ? fmtProject(String(s.view.totalDepositedBudget))
-        : null,
+    initialBudgetLabel: s.view?.totalDepositedBudget != null ? fmtProject(String(s.view.totalDepositedBudget)) : null,
     remainingBudgetLabel:
-      s.view?.remainingBudget != null
-        ? fmtProject(String(s.view.remainingBudget))
-        : s.metrics.budgetRemainingLabel,
+      s.view?.remainingBudget != null ? fmtProject(String(s.view.remainingBudget)) : s.metrics.budgetRemainingLabel,
     tokensSoldLabel: fmtProject(s.tokensSold),
     tokensMatchedLabel: fmtProject(s.tokensMatched),
     grossQuoteLabel: fmtQuote(s.grossQuoteAcquired),
     feePaidLabel: fmtQuote(s.totalFeePaid),
-    netQuoteLabel:
-      s.view?.totalQuoteAdded != null ? fmtQuote(String(s.view.totalQuoteAdded)) : null,
+    netQuoteLabel: s.view?.totalQuoteAdded != null ? fmtQuote(String(s.view.totalQuoteAdded)) : null,
     lpMintedLabel: formatLbTokenAmount(s.totalLpMinted, decimals, null),
     inFlightLabel: null,
     availableToAddLabel: null,
@@ -208,9 +197,7 @@ export type UseLiquidityBuildingCardOptions = {
   disableUrlSync?: boolean
 }
 
-export function useLiquidityBuildingCard(
-  options: UseLiquidityBuildingCardOptions = {},
-): LiquidityBuildingCardState {
+export function useLiquidityBuildingCard(options: UseLiquidityBuildingCardOptions = {}): LiquidityBuildingCardState {
   const disableUrlSync = Boolean(options.disableUrlSync)
   const router = useRouter()
   const { address } = useAccount()
@@ -247,7 +234,7 @@ export function useLiquidityBuildingCard(
   )
   const quoteEnabled = Boolean(quoteEnabledResult?.result?.[0])
 
-  const balance = useCurrencyBalance(address ?? undefined, selectedCurrency ?? undefined)
+  const { balance } = useLiveCurrencyBalance(address ?? undefined, selectedCurrency ?? undefined)
   const walletConnected = Boolean(address)
   const correctChain = chain?.id === ChainId.BSC
   // Founder create/deposit/activate uses factory binding — not autonomous KMS/relay gates.
@@ -289,11 +276,7 @@ export function useLiquidityBuildingCard(
     if (linked) nextQuery.program = linked
     const currentStep = stepFromQuery(router.query.step) ?? 'intro'
     const currentProgram = programFromQuery(router.query.program)
-    if (
-      currentStep === step &&
-      currentView === 'building' &&
-      (currentProgram ?? null) === (linked ?? null)
-    ) {
+    if (currentStep === step && currentView === 'building' && (currentProgram ?? null) === (linked ?? null)) {
       return
     }
     void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
@@ -326,8 +309,7 @@ export function useLiquidityBuildingCard(
 
   const effectiveStatus: ProgramStatus = programRead.snapshot.status ?? status
   const manageActions = availableManageActions(effectiveStatus)
-  const decisionFrequencyLabel =
-    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? '5m'
+  const decisionFrequencyLabel = DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? '5m'
 
   const metrics: ProgramMetrics =
     programRead.source === 'ON_CHAIN' ? programRead.snapshot.metrics : EMPTY_PROGRAM_METRICS
@@ -335,21 +317,12 @@ export function useLiquidityBuildingCard(
   const liquiditySeries = useMemo(() => seriesFromActivity(activity), [activity])
 
   const pairLabel =
-    pairDetection.available && draft.tokenSymbol
-      ? `${draft.tokenSymbol}/${pairDetection.quoteSymbol}`
-      : null
+    pairDetection.available && draft.tokenSymbol ? `${draft.tokenSymbol}/${pairDetection.quoteSymbol}` : null
 
   const tokenDecimals = selectedCurrency?.wrapped?.decimals ?? 18
 
   const programSnapshot = useMemo(
-    () =>
-      buildSnapshot(
-        programRead,
-        draft.tokenSymbol,
-        pairLabel,
-        tokenDecimals,
-        pairDetection.quoteSymbol ?? null,
-      ),
+    () => buildSnapshot(programRead, draft.tokenSymbol, pairLabel, tokenDecimals, pairDetection.quoteSymbol ?? null),
     [programRead, draft.tokenSymbol, pairLabel, tokenDecimals, pairDetection.quoteSymbol],
   )
 
@@ -444,8 +417,7 @@ export function useLiquidityBuildingCard(
         return {
           ok: false as const,
           reason:
-            mutateGate.reason ??
-            'Connect MELEGA DEPLOYER on BNB Smart Chain with Liquidity Builder Factory bound.',
+            mutateGate.reason ?? 'Connect MELEGA DEPLOYER on BNB Smart Chain with Liquidity Builder Factory bound.',
         }
       }
       if (!factoryBound && !isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory)) {
@@ -476,7 +448,8 @@ export function useLiquidityBuildingCard(
         minimumRateBps: Number(draft.minimumRateBps) || 0,
         maximumRateBps: Number(draft.maximumRateBps) || 0,
         epochDurationSeconds: draft.epochSeconds,
-        quoteEnabled: quoteEnabled || pairDetection.quoteAddress.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+        quoteEnabled:
+          quoteEnabled || pairDetection.quoteAddress.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
         correctChain,
         onProgress: opts?.onProgress,
       })
@@ -505,7 +478,11 @@ export function useLiquidityBuildingCard(
     },
     openManage: () => setPhase('manage'),
     closeManage: () =>
-      setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED', 'SAFETY_PAUSED'].includes(effectiveStatus) ? 'active' : 'entry'),
+      setPhase(
+        ['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED', 'SAFETY_PAUSED'].includes(effectiveStatus)
+          ? 'active'
+          : 'entry',
+      ),
     goToPhase,
     toggleTechnical: () => setTechnicalOpen((v) => !v),
     reset,

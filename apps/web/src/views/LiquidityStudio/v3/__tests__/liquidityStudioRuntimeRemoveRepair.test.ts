@@ -23,13 +23,16 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(runtime).not.toMatch(/onBurnInput\(\s*pct\s*\)/)
   })
 
-  it('factory indexer is BNB-only (Base must not hydrate via BSC pairs)', () => {
+  it('wallet-scoped factory indexer is BNB-only (Base must not hydrate via BSC pairs)', () => {
     expect(factory).toContain('isBnbFactoryChain')
     expect(factory).toContain('chainId === 56')
     expect(factory).toContain('FACTORY_FETCH_TIMEOUT_MS')
-    expect(factory).toContain('MAX_FACTORY_PAIR_SCAN')
-    expect(factory).toContain('const MAX_PAGES = 2')
-    expect(positions).toContain('useFactoryLiquidityTokenPairs(Boolean(account), chainId)')
+    expect(factory).toContain('/api/indexer/liquidity-positions?account=')
+    expect(factory).toContain('factoryLpBalancesRaw')
+    expect(factory).toContain('account')
+    expect(positions).toContain(
+      'useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId, effectiveAccount, retryNonce)',
+    )
   })
 
   it('positions expose CONNECTING → FETCHING → READY → EMPTY lifecycle', () => {

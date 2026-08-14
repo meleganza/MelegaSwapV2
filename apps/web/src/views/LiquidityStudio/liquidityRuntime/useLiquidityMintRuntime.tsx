@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, CurrencyAmount, Token } from '@pancakeswap/sdk'
-import { CAKE, USDC } from '@pancakeswap/tokens'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -52,6 +51,7 @@ import { buildLiquidityCanonicalOwnership } from 'lib/liquidity-runtime/canonica
 import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
 import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 import { resolveReceiptOutcome } from 'lib/transactions/resolveReceiptOutcome'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -210,16 +210,17 @@ export function useLiquidityMintRuntime({
   // query once; continuous sync raced local tabs and snapped wrong panels.
 
   const defaultB = useMemo(() => {
-    if (!chainId) return undefined
-    return CAKE[chainId]?.address ?? USDC[chainId]?.address
+    if (chainId !== 56) return undefined
+    return MARCO_BSC_ADDRESS
   }, [chainId])
 
   const isRemoveMode = mode === 'Remove Liquidity'
   const isPositionsMode = mode === 'My Positions'
 
-  // Remove Liquidity must not force BNB/MARCO while wallet LP ownership is the source of truth.
-  const resolvedIdA = currencyIdA ?? (isRemoveMode || isPositionsMode ? undefined : native.symbol)
-  const resolvedIdB = currencyIdB ?? (isRemoveMode || isPositionsMode ? undefined : defaultB)
+  // Add always opens on the canonical BNB/MARCO pair. Remove derives its pair
+  // exclusively from a wallet-owned LP position.
+  const resolvedIdA = currencyIdA ?? (isRemoveMode ? undefined : native.symbol)
+  const resolvedIdB = currencyIdB ?? (isRemoveMode ? undefined : defaultB)
 
   const currencyA = useCurrency(resolvedIdA)
   const currencyB = useCurrency(resolvedIdB)
@@ -232,6 +233,10 @@ export function useLiquidityMintRuntime({
   const setMode = useCallback(
     (next: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => {
       setModeState(next)
+      if (next === 'Add Liquidity') {
+        setCurrencyIdA(undefined)
+        setCurrencyIdB(undefined)
+      }
       if (next === 'Remove Liquidity') onBurnInput(BurnField.LIQUIDITY_PERCENT, '50')
       if (opts?.syncUrl === false) return
       const view = LIQUIDITY_MODE_TO_VIEW[next]
@@ -330,12 +335,12 @@ export function useLiquidityMintRuntime({
 
   useEffect(() => {
     if (!selectedPosition?.pair) return
-    if (!isRemoveMode && !isPositionsMode) return
+    if (!isRemoveMode) return
     const nextA = selectedPosition.pair.token0.address
     const nextB = selectedPosition.pair.token1.address
     if (currencyIdA !== nextA) setCurrencyIdA(nextA)
     if (currencyIdB !== nextB) setCurrencyIdB(nextB)
-  }, [selectedPosition, isRemoveMode, isPositionsMode, currencyIdA, currencyIdB])
+  }, [selectedPosition, isRemoveMode, currencyIdA, currencyIdB])
 
   const terminal = useLiquidityTerminalData(poolAddress, currencyA?.symbol, currencyB?.symbol, terminalEnabled)
 
@@ -421,11 +426,15 @@ export function useLiquidityMintRuntime({
   const typedValueA =
     independentField === Field.CURRENCY_A
       ? typedValue
-      : otherTypedValue || parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) || '0.0'
+      : (noLiquidity ? otherTypedValue : parsedAmounts[Field.CURRENCY_A]?.toSignificant(12)) ||
+        parsedAmounts[Field.CURRENCY_A]?.toSignificant(12) ||
+        '0.0'
   const typedValueB =
     independentField === Field.CURRENCY_B
       ? typedValue
-      : otherTypedValue || parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) || '0.0'
+      : (noLiquidity ? otherTypedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(12)) ||
+        parsedAmounts[Field.CURRENCY_B]?.toSignificant(12) ||
+        '0.0'
 
   const preview = useMemo((): LiquidityPreviewMetrics => {
     const feeTier = '0.25%'

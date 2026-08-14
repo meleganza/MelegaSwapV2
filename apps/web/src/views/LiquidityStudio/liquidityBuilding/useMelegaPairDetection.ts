@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Currency } from '@pancakeswap/sdk'
 import { bscTokens } from '@pancakeswap/tokens'
 import { usePair, PairState } from 'hooks/usePairs'
+import { useCanonicalMarcoPair } from 'hooks/useCanonicalMarcoPair'
 import type { QuoteAssetKey } from './strategyPresets'
 import { QUOTE_ASSET_OPTIONS } from './strategyPresets'
 
@@ -34,12 +35,15 @@ export function useMelegaPairDetection(
 ): MelegaPairDetection {
   const quote = resolveQuoteCurrency(quoteKey)
   const key = (quoteKey ?? 'WBNB') as QuoteAssetKey
-  const [pairState, pair] = usePair(projectToken ?? undefined, quote)
+  const [discoveredPairState, discoveredPair] = usePair(projectToken ?? undefined, quote)
+  const canonicalMarcoPair = useCanonicalMarcoPair(projectToken?.wrapped, quote.wrapped)
+  const pair = discoveredPair ?? canonicalMarcoPair
+  const pairState = pair ? PairState.EXISTS : discoveredPairState
 
   return useMemo(() => {
     const base = {
       quoteSymbol: quote.symbol,
-      quoteAddress: quote.address,
+      quoteAddress: quote.wrapped.address,
       quoteKey: key,
     }
 
@@ -80,6 +84,8 @@ export function useMelegaPairDetection(
       }
     }
 
+    const unavailableStatus: MelegaPairDetection['poolStatus'] =
+      pairState === PairState.INVALID ? 'INVALID' : 'NOT_EXISTS'
     return {
       ...base,
       loading: false,
@@ -87,9 +93,9 @@ export function useMelegaPairDetection(
       pairAddress: null,
       reserveProject: null,
       reserveQuote: null,
-      poolStatus: (pairState === PairState.INVALID ? 'INVALID' : 'NOT_EXISTS') as const,
+      poolStatus: unavailableStatus,
     }
-  }, [pair, pairState, projectToken, quote.address, quote.symbol, key])
+  }, [pair, pairState, projectToken, quote.wrapped.address, quote.symbol, key])
 }
 
 export function quoteOptionLabel(key: QuoteAssetKey): string {

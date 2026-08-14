@@ -18,6 +18,7 @@ import { useTradeExactIn } from 'hooks/Trades'
 import { useZapContract } from 'hooks/useContract'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { PairState, usePair } from 'hooks/usePairs'
+import { useCanonicalMarcoPair } from 'hooks/useCanonicalMarcoPair'
 import { usePreviousValue } from '@pancakeswap/hooks'
 import { useSWRContract } from 'hooks/useSWRContract'
 import useTotalSupply from 'hooks/useTotalSupply'
@@ -28,7 +29,7 @@ import { warningSeverity } from 'utils/exchange'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useAccount } from 'wagmi'
 import { AppState, useAppDispatch } from '../index'
-import { useCurrencyBalances } from '../wallet/hooks'
+import { useLiveCurrencyBalance } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
 
 export function useMintState(): AppState['mint'] {
@@ -95,7 +96,19 @@ export function useDerivedMintInfo(
   )
 
   // pair
-  const [pairState, pair] = usePair(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
+  const [discoveredPairState, discoveredPair] = usePair(
+    currencies[Field.CURRENCY_A],
+    currencies[Field.CURRENCY_B],
+  )
+  const canonicalMarcoPair = useCanonicalMarcoPair(
+    currencies[Field.CURRENCY_A]?.wrapped,
+    currencies[Field.CURRENCY_B]?.wrapped,
+  )
+  // The shared multicall cache may not be hydrated when the Liquidity surface
+  // first opens. For the canonical MARCO/WBNB pool, reuse the existing direct
+  // reserve reader so entering either amount immediately derives its pair.
+  const pair = discoveredPair ?? canonicalMarcoPair
+  const pairState = pair ? PairState.EXISTS : discoveredPairState
 
   const totalSupply = useTotalSupply(pair?.liquidityToken)
 
@@ -110,13 +123,11 @@ export function useDerivedMintInfo(
     )
 
   // balances
-  const balances = useCurrencyBalances(
-    account ?? undefined,
-    useMemo(() => [currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]], [currencies]),
-  )
+  const { balance: balanceA } = useLiveCurrencyBalance(account ?? undefined, currencies[Field.CURRENCY_A])
+  const { balance: balanceB } = useLiveCurrencyBalance(account ?? undefined, currencies[Field.CURRENCY_B])
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
-    [Field.CURRENCY_A]: balances[0],
-    [Field.CURRENCY_B]: balances[1],
+    [Field.CURRENCY_A]: balanceA,
+    [Field.CURRENCY_B]: balanceB,
   }
 
   // amounts

@@ -551,7 +551,8 @@ function cardValue(cards: ReturnType<typeof useLiquidityMarketSnapshot>['cards']
 const LiquidityV3Body: React.FC = () => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
-  const { mode, setMode, positions, positionsPhase, pairLabel, noLiquidity } = useLiquidityRuntime()
+  const { mode, setMode, setSelectedPositionId, positions, positionsPhase, pairLabel, noLiquidity } =
+    useLiquidityRuntime()
   const snapshot = useLiquidityMarketSnapshot()
   const hydratedRef = React.useRef(false)
   const deferredDeepLinkScrollRef = React.useRef<string | null>(null)
@@ -622,10 +623,10 @@ const LiquidityV3Body: React.FC = () => {
   }, [setMode, scrollToSection])
 
   const goRemove = useCallback(() => {
-    if (positions.length === 0) return
+    if (positions.length > 0) setSelectedPositionId(positions[0].id)
     setMode('Remove Liquidity', { syncUrl: false })
     scrollToSection('liquidity-add')
-  }, [positions.length, setMode, scrollToSection])
+  }, [positions, setSelectedPositionId, setMode, scrollToSection])
 
   const goPositions = useCallback(() => {
     setMode('My Positions', { syncUrl: false })
@@ -684,7 +685,7 @@ const LiquidityV3Body: React.FC = () => {
               data-testid="liquidity-v3-hero-ai"
             >
               {LIQ_V3_COPY.aiEntry}
-              <ExclusiveBadge>EXCLUSIVE</ExclusiveBadge>
+              <ExclusiveBadge>BETA</ExclusiveBadge>
             </Btn>
             <Btn $ghost type="button" onClick={goExplore} data-testid="liquidity-v3-explore-pools">
               Explore pools ↓
@@ -755,9 +756,7 @@ const LiquidityV3Body: React.FC = () => {
                   type="button"
                   $active={removing}
                   onClick={goRemove}
-                  disabled={positions.length === 0}
                   aria-pressed={removing}
-                  title={positions.length === 0 ? 'No liquidity position available to remove' : undefined}
                 >
                   Remove
                 </ModeButton>
@@ -785,10 +784,10 @@ const LiquidityV3Body: React.FC = () => {
             <SectionTitleRow>
               <SectionIndex>{sectionNumber(builderIndex)}</SectionIndex>
               <SectionTitle>
-                AI Liquidity Builder <span data-liquidity-builder-exclusive>EXCLUSIVE FEATURE</span>
+                AI Liquidity Builder <span data-liquidity-builder-exclusive>BETA</span>
               </SectionTitle>
             </SectionTitleRow>
-            <SectionMeta>Configure · Review · Activate</SectionMeta>
+            <SectionMeta>Pair · Reserve · Strategy · Frequency · Start</SectionMeta>
           </SectionHeader>
           <ProgressiveSurface force={mode === 'Liquidity Building'} label="AI Liquidity Builder">
             {lbSupported ? (

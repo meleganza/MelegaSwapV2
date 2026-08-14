@@ -9,6 +9,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import { CurrencyLogo } from 'components/Logo'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { useCurrency, useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
 import { isAddress } from 'utils'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
@@ -477,6 +478,11 @@ const PairLink = styled(Link)`
   text-decoration: none;
 `
 
+const ApprovedPairLink = styled(PairLink)`
+  width: 100%;
+  box-sizing: border-box;
+`
+
 const TokenChip = styled.button<{ $on?: boolean }>`
   appearance: none;
   height: 36px;
@@ -515,6 +521,188 @@ const StudioDash = styled.div`
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: start;
     gap: 18px;
+  }
+`
+
+const ApprovedBuilderGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(300px, 1fr);
+  border: 1px solid ${liqOne.borderDefault};
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(7, 8, 8, 0.72);
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const ApprovedBuilderPane = styled.div`
+  padding: 18px 20px;
+  min-width: 0;
+
+  & + & {
+    border-left: 1px solid ${liqOne.borderDefault};
+  }
+
+  @media (max-width: 900px) {
+    & + & {
+      border-left: 0;
+      border-top: 1px solid ${liqOne.borderDefault};
+    }
+  }
+`
+
+const ApprovedLabel = styled.div`
+  margin: 0 0 8px;
+  color: ${liqOne.text};
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 750;
+`
+
+const PairSelector = styled.button`
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid ${liqOne.borderStrong};
+  border-radius: 10px;
+  background: ${liqOne.elevated};
+  color: ${liqOne.text};
+  font: 750 15px/20px ${liqOne.font};
+  cursor: pointer;
+`
+
+const OrDivider = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 0;
+  color: ${liqOne.muted};
+  font-size: 11px;
+
+  &::before,
+  &::after {
+    content: '';
+    height: 1px;
+    background: ${liqOne.borderDefault};
+  }
+`
+
+const ReserveControl = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  min-height: 52px;
+  border: 1px solid ${liqOne.borderStrong};
+  border-radius: 10px;
+  overflow: hidden;
+  background: ${liqOne.elevated};
+
+  ${Input} {
+    height: 50px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+`
+
+const ReserveToken = styled.button`
+  height: 40px;
+  margin-right: 8px;
+  padding: 0 12px;
+  border: 1px solid ${liqOne.borderDefault};
+  border-radius: 9px;
+  background: #0b0c0d;
+  color: ${liqOne.text};
+  font: 750 13px/18px ${liqOne.font};
+  cursor: pointer;
+`
+
+const BalanceText = styled.span`
+  padding: 0 10px;
+  color: ${liqOne.secondary};
+  font-size: 11px;
+  white-space: nowrap;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`
+
+const MaxButton = styled.button`
+  height: 34px;
+  margin-right: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(221, 185, 47, 0.58);
+  border-radius: 9px;
+  background: transparent;
+  color: ${liqOne.gold};
+  font: 750 11px/16px ${liqOne.font};
+  cursor: pointer;
+`
+
+const SegmentedControls = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid ${liqOne.borderDefault};
+  border-radius: 10px;
+  overflow: hidden;
+
+  ${TokenChip} {
+    width: 100%;
+    height: 42px;
+    border: 0;
+    border-right: 1px solid ${liqOne.borderDefault};
+    border-radius: 0;
+  }
+
+  ${TokenChip}:last-child {
+    border-right: 0;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const BuilderField = styled.div`
+  margin-top: 14px;
+`
+
+const PreviewGraph = styled.div`
+  height: 112px;
+  margin: 12px 0 8px;
+  border-bottom: 1px solid ${liqOne.borderDefault};
+  background:
+    radial-gradient(ellipse at 66% 100%, rgba(221, 185, 47, 0.24), transparent 63%),
+    linear-gradient(160deg, transparent 49%, rgba(244, 196, 48, 0.96) 50%, transparent 51%);
+  clip-path: polygon(0 80%, 16% 55%, 34% 32%, 53% 18%, 72% 11%, 88% 13%, 100% 23%, 100% 100%, 0 100%);
+`
+
+const ApprovedBuilderFoot = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 20px;
+  border: 1px solid ${liqOne.borderDefault};
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  color: ${liqOne.secondary};
+  font-size: 11px;
+
+  a {
+    color: ${liqOne.gold};
+    text-decoration: none;
   }
 `
 
@@ -1087,6 +1275,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   ])
 
   const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
+  const defaultMarcoCurrency = useCurrency(MARCO_BSC_ADDRESS)
   const pastedAddress = isAddress(addressInput) || undefined
   const pastedCurrency = useCurrency(pastedAddress)
   const selectedErc20 = (
@@ -1098,6 +1287,13 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   useEffect(() => {
     setTokenRef.current = card.setToken
   }, [card.setToken])
+
+  useEffect(() => {
+    if (!forceExpanded || card.draft.tokenAddress || !defaultMarcoCurrency) return
+    setTokenRef.current(defaultMarcoCurrency)
+    setSetupStarted(true)
+    setStepError(null)
+  }, [forceExpanded, card.draft.tokenAddress, defaultMarcoCurrency])
 
   useEffect(() => {
     if (!pastedCurrency) return
@@ -1599,6 +1795,131 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           })}
         </StepTrack>
 
+        <ApprovedBuilderGrid data-testid="liq-lb-approved-mockup">
+          <ApprovedBuilderPane>
+            <ApprovedLabel>Select liquidity pair</ApprovedLabel>
+            <PairSelector type="button" onClick={onPresentCustomToken} data-testid="lb-approved-pair-select">
+              <span>BNB / {card.draft.tokenSymbol || 'MARCO'} {pair.available ? '· Active' : ''}</span>
+              <span aria-hidden>⌄</span>
+            </PairSelector>
+            <OrDivider>OR</OrDivider>
+            <ApprovedPairLink href="#liquidity-add" data-testid="lb-approved-create-pair">
+              ＋ Create pair with Add Liquidity
+            </ApprovedPairLink>
+
+            <BuilderField>
+              <ApprovedLabel>Deposit token reserve</ApprovedLabel>
+              <ReserveControl>
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="Enter token amount"
+                  value={card.draft.tokenBudget}
+                  onChange={(event) => {
+                    setStepError(null)
+                    card.setBudget(sanitizeDecimalInput(event.target.value))
+                  }}
+                  data-testid="lb-approved-budget-input"
+                />
+                <ReserveToken type="button" onClick={onPresentCustomToken}>
+                  {card.draft.tokenSymbol || 'MARCO'}⌄
+                </ReserveToken>
+                <BalanceText>{card.walletBalanceLabel ? `Balance ${card.walletBalanceLabel}` : 'Balance —'}</BalanceText>
+                <MaxButton
+                  type="button"
+                  disabled={!card.walletBalanceLabel}
+                  onClick={() => card.setBudget(card.walletBalanceLabel?.split(' ')[0] || '')}
+                  data-testid="lb-approved-max"
+                >
+                  MAX
+                </MaxButton>
+              </ReserveControl>
+              <FieldHint>Budget available to execute this liquidity program.</FieldHint>
+            </BuilderField>
+
+            <BuilderField>
+              <ApprovedLabel>Strategy</ApprovedLabel>
+              <SegmentedControls>
+                {STRATEGY_PRESET_OPTIONS.map((strategy) => (
+                  <TokenChip
+                    key={strategy.key}
+                    type="button"
+                    $on={card.draft.strategyPreset === strategy.key}
+                    onClick={() => card.setStrategyPreset(strategy.key)}
+                    data-testid={`lb-approved-strategy-${strategy.key.toLowerCase()}`}
+                  >
+                    {strategy.title}
+                  </TokenChip>
+                ))}
+              </SegmentedControls>
+            </BuilderField>
+
+            <BuilderField>
+              <ApprovedLabel>Frequency</ApprovedLabel>
+              <SegmentedControls>
+                {EPOCH_OPTIONS.map((option) => (
+                  <TokenChip
+                    key={option.seconds}
+                    type="button"
+                    $on={card.draft.epochSeconds === option.seconds}
+                    onClick={() => card.setEpoch(option.seconds)}
+                    data-testid={`lb-approved-frequency-${option.seconds}`}
+                  >
+                    {option.label}
+                  </TokenChip>
+                ))}
+              </SegmentedControls>
+            </BuilderField>
+          </ApprovedBuilderPane>
+
+          <ApprovedBuilderPane>
+            <PreviewHeading>
+              Program preview
+              <PreviewStatus $ready={executionReady}>{executionReady ? 'Ready' : 'Setup'}</PreviewStatus>
+            </PreviewHeading>
+            <PreviewGraph aria-hidden />
+            <PreviewRow>
+              <PreviewKey>Pair</PreviewKey>
+              <PreviewValue>BNB / {card.draft.tokenSymbol || 'MARCO'}</PreviewValue>
+            </PreviewRow>
+            <PreviewRow>
+              <PreviewKey>Reserve</PreviewKey>
+              <PreviewValue>
+                {card.draft.tokenBudget || '—'} {card.draft.tokenSymbol || 'MARCO'}
+              </PreviewValue>
+            </PreviewRow>
+            <PreviewRow>
+              <PreviewKey>Strategy</PreviewKey>
+              <PreviewValue>
+                {STRATEGY_PRESET_OPTIONS.find((strategy) => strategy.key === card.draft.strategyPreset)?.title}
+              </PreviewValue>
+            </PreviewRow>
+            <PreviewRow>
+              <PreviewKey>Frequency</PreviewKey>
+              <PreviewValue>{card.decisionFrequencyLabel}</PreviewValue>
+            </PreviewRow>
+            <PreviewRow>
+              <PreviewKey>Execution</PreviewKey>
+              <PreviewValue>Non-custodial</PreviewValue>
+            </PreviewRow>
+            <Primary
+              type="button"
+              onClick={onPrimary}
+              disabled={primaryDisabled}
+              data-testid="liq-lb-primary"
+              style={{ width: '100%', marginTop: 18 }}
+            >
+              {builderStep === 1 ? 'Review & Start' : primaryLabel}
+            </Primary>
+          </ApprovedBuilderPane>
+        </ApprovedBuilderGrid>
+        <ApprovedBuilderFoot>
+          <span>Wallet confirmation required for every transaction</span>
+          <Link href={LB_UX.docsHowItWorks}>Docs ↗</Link>
+        </ApprovedBuilderFoot>
+
+        <div hidden aria-hidden>
+
         <FlowIntro data-testid="liq-lb-flow-intro">
           <FlowIntroCopy>
             <FlowKicker>{builderStep === 1 ? 'AI liquidity program' : 'Final check'}</FlowKicker>
@@ -1927,6 +2248,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           ) : null}
         </div>
         </StudioDash>
+        </div>
 
         <div data-testid="liq-lb-step-activate" hidden aria-hidden>
           {/* Compatibility sentinel for prior wizard tests — activation is footer CTA only. */}
@@ -2023,7 +2345,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         <BodyScroll key={`${card.phase}-${isActive ? 'active' : `step-${builderStep}`}`}>{content}</BodyScroll>
       </Body>
 
-      <Footer data-testid="liq-lb-footer">
+      {!inFlow ? <Footer data-testid="liq-lb-footer">
         <FooterRow>
           {inFlow && !isActive && builderStep === 1 ? (
             <Secondary type="button" data-testid="liq-lb-cancel-create" onClick={returnToPortfolio}>
@@ -2068,7 +2390,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           )}
         </FooterRow>
         {stepError ? <InlineError data-testid="liq-lb-footer-error">{stepError}</InlineError> : null}
-      </Footer>
+      </Footer> : null}
     </Card>
   )
 })

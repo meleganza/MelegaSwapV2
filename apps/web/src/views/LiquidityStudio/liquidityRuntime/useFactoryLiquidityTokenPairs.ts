@@ -10,59 +10,42 @@ import { useMemo } from 'react'
 import { ERC20Token } from '@pancakeswap/sdk'
 import useSWR from 'swr'
 import { getAddress } from '@ethersproject/address'
-import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 
-type PairsPage = {
+type WalletPositionPair = {
+  pairAddress: string
+  token0: string
+  token1: string
+  symbol0?: string
+  symbol1?: string
+  token0Decimals?: number
+  token1Decimals?: number
+  lpBalanceRaw?: string
+}
+
+type PositionsResponse = {
   status?: string
-  total?: number
-  rows?: ClassifiedAmmPair[]
+  scannedPairs?: number
+  rows?: WalletPositionPair[]
   error?: string
 }
 
-const PAGE_SIZE = 60
-const MAX_PAGES = 2
-const MAX_FACTORY_PAIR_SCAN = PAGE_SIZE * MAX_PAGES
-/**
- * Wallet LP discovery is a progressive enhancement. Never fan thousands of
- * balanceOf calls into the browser during route hydration: tracked pairs are
- * already included separately and the capped factory sample expands coverage
- * without blocking navigation.
- */
-const FACTORY_FETCH_TIMEOUT_MS = 3_500
+const FACTORY_FETCH_TIMEOUT_MS = 10_000
 
 function isBnbFactoryChain(chainId?: number): boolean {
   return chainId === 56 || chainId === 97
 }
 
-async function fetchAllFactoryPairs(): Promise<ClassifiedAmmPair[]> {
+async function fetchWalletFactoryPairs(url: string): Promise<PositionsResponse> {
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null
   const timer = controller != null ? setTimeout(() => controller.abort(), FACTORY_FETCH_TIMEOUT_MS) : null
 
   try {
-    const all: ClassifiedAmmPair[] = []
-    let page = 1
-    let total = Infinity
-
-    while (all.length < total && all.length < MAX_FACTORY_PAIR_SCAN && page <= MAX_PAGES) {
-      const res = await fetch(`/api/indexer/pairs?page=${page}&pageSize=${PAGE_SIZE}`, {
-        signal: controller?.signal,
-      })
-      if (!res.ok) {
-        if (page === 1) return []
-        break
-      }
-      const data = (await res.json()) as PairsPage
-      const rows = data.rows ?? []
-      total = typeof data.total === 'number' ? data.total : all.length + rows.length
-      all.push(...rows.slice(0, MAX_FACTORY_PAIR_SCAN - all.length))
-      if (rows.length === 0) break
-      page += 1
-    }
-
-    return all
+    const res = await fetch(url, { signal: controller?.signal })
+    if (!res.ok) throw new Error(`Wallet LP discovery failed (${res.status})`)
+    return (await res.json()) as PositionsResponse
   } catch {
-    return []
+    throw new Error('Wallet LP discovery timed out')
   } finally {
     if (timer != null) clearTimeout(timer)
   }
@@ -77,20 +60,35 @@ function safeAddress(value?: string): string | null {
   }
 }
 
-function pairToTokens(pair: ClassifiedAmmPair): [ERC20Token, ERC20Token] | null {
+function pairToTokens(pair: WalletPositionPair): [ERC20Token, ERC20Token] | null {
   const a = safeAddress(pair.token0)
   const b = safeAddress(pair.token1)
   if (!a || !b) return null
-  const t0 = new ERC20Token(MELEGA_CHAIN_ID, a, 18, pair.symbol0 || 'T0', pair.symbol0 || 'Token0')
-  const t1 = new ERC20Token(MELEGA_CHAIN_ID, b, 18, pair.symbol1 || 'T1', pair.symbol1 || 'Token1')
+  const t0 = new ERC20Token(
+    MELEGA_CHAIN_ID,
+    a,
+    pair.token0Decimals ?? 18,
+    pair.symbol0 || 'T0',
+    pair.symbol0 || 'Token0',
+  )
+  const t1 = new ERC20Token(
+    MELEGA_CHAIN_ID,
+    b,
+    pair.token1Decimals ?? 18,
+    pair.symbol1 || 'T1',
+    pair.symbol1 || 'Token1',
+  )
   return [t0, t1]
 }
 
 export function useFactoryLiquidityTokenPairs(
   enabled: boolean,
   chainId?: number,
+  account?: string,
+  retryNonce = 0,
 ): {
   factoryTokenPairs: [ERC20Token, ERC20Token][]
+  factoryLpBalancesRaw: Record<string, string>
   factoryPairCount: number | null
   isLoading: boolean
   error: string | null
@@ -98,16 +96,18 @@ export function useFactoryLiquidityTokenPairs(
 } {
   const factoryEnabled = Boolean(enabled && isBnbFactoryChain(chainId))
   const { data, error, isLoading } = useSWR(
-    factoryEnabled ? `factory-liquidity-token-pairs-v2-${chainId ?? 56}` : null,
-    fetchAllFactoryPairs,
+    factoryEnabled && account
+      ? `/api/indexer/liquidity-positions?account=${encodeURIComponent(account)}&retry=${retryNonce}`
+      : null,
+    fetchWalletFactoryPairs,
     { revalidateOnFocus: false, dedupingInterval: 60_000 },
   )
 
   const factoryTokenPairs = useMemo(() => {
-    if (!data?.length) return []
+    if (!data?.rows?.length) return []
     const seen = new Set<string>()
     const out: [ERC20Token, ERC20Token][] = []
-    for (const row of data) {
+    for (const row of data.rows) {
       const tokens = pairToTokens(row)
       if (!tokens) continue
       const key = [tokens[0].address, tokens[1].address]
@@ -121,9 +121,20 @@ export function useFactoryLiquidityTokenPairs(
     return out
   }, [data])
 
+  const factoryLpBalancesRaw = useMemo(() => {
+    const balances: Record<string, string> = {}
+    for (const row of data?.rows ?? []) {
+      const pairAddress = safeAddress(row.pairAddress)
+      if (!pairAddress || !row.lpBalanceRaw || row.lpBalanceRaw === '0') continue
+      balances[pairAddress.toLowerCase()] = row.lpBalanceRaw
+    }
+    return balances
+  }, [data])
+
   return {
     factoryTokenPairs,
-    factoryPairCount: data ? data.length : null,
+    factoryLpBalancesRaw,
+    factoryPairCount: data?.scannedPairs ?? null,
     isLoading: factoryEnabled && isLoading && !data,
     error: error ? (error instanceof Error ? error.message : String(error)) : null,
     factoryEnabled,

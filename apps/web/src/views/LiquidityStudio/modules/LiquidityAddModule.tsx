@@ -15,7 +15,7 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { useCurrencyBalances } from 'state/wallet/hooks'
+import { useLiveCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
@@ -79,7 +79,7 @@ const PreviewRail = styled.aside<{ $embedded?: boolean }>`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(255,255,255,0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   padding-left: 16px;
 
   @media (max-width: ${liquidityAdd.tabletBreak}) {
@@ -546,9 +546,8 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     }
   }, [seedA, seedB, seeded, setCurrencyA, setCurrencyB])
 
-  const balances = useCurrencyBalances(account ?? undefined, [currencyA ?? undefined, currencyB ?? undefined])
-  const balA = balances[0]
-  const balB = balances[1]
+  const { balance: balA } = useLiveCurrencyBalance(account ?? undefined, currencyA ?? undefined)
+  const { balance: balB } = useLiveCurrencyBalance(account ?? undefined, currencyB ?? undefined)
   const maxA = maxAmountSpend(balA)
   const maxB = maxAmountSpend(balB)
 

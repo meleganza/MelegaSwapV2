@@ -140,6 +140,10 @@ const Cta = styled.button`
   border: 1px solid ${liqV3.goldLine};
   background: linear-gradient(180deg, #f2c84c 0%, #d4a017 100%);
   color: #111;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
 `
 
 const Advanced = styled.details`
@@ -195,6 +199,7 @@ export const LiquidityRemovePanel: React.FC = () => {
   const share = formatPoolShare(positionDetails?.poolShare)
   const lpBal = selectedPosition?.lpBalance?.greaterThan(0) ? selectedPosition.lpBalance.toSignificant(6) : '—'
   const removalLabel = removePercent === '100' ? 'MAX' : `${removePercent}%`
+  const hasRemovablePosition = Boolean(selectedPosition?.lpBalance?.greaterThan(0))
 
   return (
     <Shell
@@ -264,8 +269,13 @@ export const LiquidityRemovePanel: React.FC = () => {
           <div style={{ marginTop: 8 }}>Slippage: {slippageLabel}</div>
         </Advanced>
 
-        <Cta type="button" onClick={onPrimaryAction} data-testid="liquidity-remove-cta">
-          {primaryCtaLabel || 'Remove Liquidity'}
+        <Cta
+          type="button"
+          onClick={onPrimaryAction}
+          disabled={!hasRemovablePosition}
+          data-testid="liquidity-remove-cta"
+        >
+          {hasRemovablePosition ? primaryCtaLabel || 'Remove Liquidity' : 'Select a position to remove'}
         </Cta>
       </SummaryRail>
 

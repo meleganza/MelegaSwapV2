@@ -10,10 +10,7 @@ import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks'
 import { useLPTokensWithBalanceByAccount } from 'views/Swap/StableSwap/hooks/useStableConfig'
 import { multiplyPriceByAmount } from 'utils/prices'
-import {
-  OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
-  type WalletLpOwnershipSource,
-} from './walletLpPositionMath'
+import { OWNERSHIP_SOURCE_DIRECT_WALLET_LP, type WalletLpOwnershipSource } from './walletLpPositionMath'
 import { useFactoryLiquidityTokenPairs } from './useFactoryLiquidityTokenPairs'
 
 /** Deterministic wallet LP hydration lifecycle (UI never freezes on partial state). */
@@ -64,27 +61,37 @@ export function useLiquidityPositions(enabled = true) {
   const { address: account } = useAccount()
   const effectiveAccount = enabled ? account : undefined
   const { chainId } = useActiveChainId()
+  const [timedOut, setTimedOut] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
   const trackedTokenPairs = useTrackedTokenPairs()
   const {
     factoryTokenPairs,
+    factoryLpBalancesRaw,
     factoryPairCount,
     isLoading: factoryLoading,
     factoryEnabled,
-  } = useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId)
+    error: factoryError,
+  } = useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId, effectiveAccount, retryNonce)
+  const factoryScanComplete = factoryEnabled && factoryPairCount !== null && !factoryError
 
-  /** Tracked + factory-enumerated pairs (deduped). Balance gate hides empty LPs. */
+  /**
+   * Once the wallet-scoped factory scan completes it is the authoritative BNB
+   * result. Falling back to the legacy tracked set after that point would make
+   * an empty wallet wait forever on the old global multicall.
+   */
   const discoveryTokenPairs = useMemo(() => {
     const seen = new Set<string>()
     const out: [ERC20Token, ERC20Token][] = []
     if (!enabled) return out
-    for (const tokens of [...trackedTokenPairs, ...factoryTokenPairs]) {
+    const sourcePairs = factoryScanComplete ? factoryTokenPairs : [...trackedTokenPairs, ...factoryTokenPairs]
+    for (const tokens of sourcePairs) {
       const key = pairKey(tokens)
       if (seen.has(key)) continue
       seen.add(key)
       out.push(tokens)
     }
     return out
-  }, [enabled, trackedTokenPairs, factoryTokenPairs])
+  }, [enabled, trackedTokenPairs, factoryTokenPairs, factoryEnabled, factoryPairCount, factoryError])
 
   const tokenPairsWithLiquidityTokens = useMemo(
     () => discoveryTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
@@ -101,19 +108,32 @@ export function useLiquidityPositions(enabled = true) {
     liquidityTokens,
   )
 
+  // The server-side factory scan is authoritative for the LP balances it found.
+  // Merge those values immediately so a stalled global multicall cannot hide a
+  // valid position that has already been certified by the wallet-scoped scan.
+  const effectiveV2PairBalances = useMemo(() => {
+    const balances = { ...v2PairsBalances }
+    for (const { liquidityToken } of tokenPairsWithLiquidityTokens) {
+      const raw = factoryLpBalancesRaw[liquidityToken.address.toLowerCase()]
+      if (!raw) continue
+      balances[liquidityToken.address] = CurrencyAmount.fromRawAmount(liquidityToken, raw)
+    }
+    return balances
+  }, [v2PairsBalances, factoryLpBalancesRaw, tokenPairsWithLiquidityTokens])
+
   const stablePairs = useLPTokensWithBalanceByAccount(effectiveAccount)
 
   const liquidityTokensWithBalances = useMemo(
     () =>
       tokenPairsWithLiquidityTokens.filter(({ liquidityToken }) =>
-        v2PairsBalances[liquidityToken.address]?.greaterThan('0'),
+        effectiveV2PairBalances[liquidityToken.address]?.greaterThan('0'),
       ),
-    [tokenPairsWithLiquidityTokens, v2PairsBalances],
+    [tokenPairsWithLiquidityTokens, effectiveV2PairBalances],
   )
 
   const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
   const v2IsLoading =
-    fetchingV2PairBalances ||
+    (!factoryScanComplete && fetchingV2PairBalances) ||
     factoryLoading ||
     v2Pairs?.length < liquidityTokensWithBalances.length ||
     Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))
@@ -125,7 +145,7 @@ export function useLiquidityPositions(enabled = true) {
       const [, pair] = entry
       if (!pair) return
       const pairAddress = pair.liquidityToken.address
-      const userBalance = v2PairsBalances[pairAddress]
+      const userBalance = effectiveV2PairBalances[pairAddress]
       if (!userBalance?.greaterThan(0)) return
       const key = pairAddress.toLowerCase()
       if (byPair.has(key)) return
@@ -142,22 +162,14 @@ export function useLiquidityPositions(enabled = true) {
       })
     })
     return [...byPair.values()]
-  }, [v2Pairs, v2PairsBalances, account])
+  }, [v2Pairs, effectiveV2PairBalances, account])
 
   const stablePositions = useMemo((): LiquidityPositionRow[] => {
     if (!stablePairs?.length) return []
     return stablePairs
       .map((stablePair) => {
-        const balance = v2PairsBalances[stablePair.liquidityToken.address]
-        if (!balance?.greaterThan(0)) {
-          return {
-            id: stablePair.liquidityToken.address,
-            pair: stablePair as unknown as Pair,
-            pairLabel: `${stablePair.token0.symbol} / ${stablePair.token1.symbol}`,
-            lpBalance: stablePair.liquidityToken,
-            isStable: true,
-          }
-        }
+        const balance = effectiveV2PairBalances[stablePair.liquidityToken.address]
+        if (!balance?.greaterThan(0)) return null
         return {
           id: stablePair.liquidityToken.address,
           pair: stablePair as unknown as Pair,
@@ -167,13 +179,10 @@ export function useLiquidityPositions(enabled = true) {
         }
       })
       .filter(Boolean) as LiquidityPositionRow[]
-  }, [stablePairs, v2PairsBalances])
+  }, [stablePairs, effectiveV2PairBalances])
 
   const positions = useMemo(() => [...v2Positions, ...stablePositions], [v2Positions, stablePositions])
   const rawLoading = enabled && Boolean(effectiveAccount) && v2IsLoading
-
-  const [timedOut, setTimedOut] = useState(false)
-  const [retryNonce, setRetryNonce] = useState(0)
 
   // Reset timeout when wallet / chain / load cycle / manual retry changes.
   useEffect(() => {
@@ -196,12 +205,12 @@ export function useLiquidityPositions(enabled = true) {
     : !account
     ? 'connecting'
     : timedOut && positions.length === 0
-      ? 'error'
-      : isLoading
-        ? 'fetching'
-        : positions.length > 0
-          ? 'ready'
-          : 'empty'
+    ? 'error'
+    : isLoading
+    ? 'fetching'
+    : positions.length > 0
+    ? 'ready'
+    : 'empty'
 
   const retryPositions = () => setRetryNonce((n) => n + 1)
 
@@ -242,12 +251,7 @@ export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {
     ]
   }, [position?.pair, totalSupply, userBalance])
 
-  const usdValue = usePositionUsdValue(
-    position?.pair.token0,
-    position?.pair.token1,
-    token0Deposited,
-    token1Deposited,
-  )
+  const usdValue = usePositionUsdValue(position?.pair.token0, position?.pair.token1, token0Deposited, token1Deposited)
 
   const poolShare = useMemo(() => {
     if (!totalSupply || !userBalance || totalSupply.equalTo(0)) return undefined

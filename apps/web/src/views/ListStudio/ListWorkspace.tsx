@@ -38,6 +38,7 @@ import {
 } from 'config/constants/createTokenFactoryDeployment'
 import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
 import { buildCreateTokenSuccessModel, type CreateTokenSuccessModel } from './createToken/createTokenPostCreationTypes'
+import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -945,6 +946,7 @@ export const ListWorkspace: React.FC = () => {
   const [claimError, setClaimError] = useState<string | null>(null)
   const [claimAuthorityType, setClaimAuthorityType] = useState<ProjectClaimRecord['authorityType'] | null>(null)
   const [liquidityConfirmed, setLiquidityConfirmed] = useState(false)
+  const [visibilityCheckoutOpen, setVisibilityCheckoutOpen] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const querySlug =
     typeof router.query.slug === 'string' && router.query.slug.trim() ? router.query.slug.trim().toLowerCase() : null
@@ -976,6 +978,7 @@ export const ListWorkspace: React.FC = () => {
     setClaimError(null)
     setClaimAuthorityType(null)
     setLiquidityConfirmed(queryLiquidityConfirmed)
+    setVisibilityCheckoutOpen(false)
     if (!listIntent) {
       setValues({})
       return
@@ -1657,6 +1660,14 @@ export const ListWorkspace: React.FC = () => {
               buyerWallet={values.wallet || address || null}
               identityReady
             />
+            <Btn
+              type="button"
+              $primary
+              data-testid="list-claim-open-visibility-checkout"
+              onClick={() => setVisibilityCheckoutOpen(true)}
+            >
+              Choose visibility packages
+            </Btn>
           </FormStack>
         )
       }
@@ -2096,6 +2107,7 @@ export const ListWorkspace: React.FC = () => {
   })()
 
   return (
+    <>
     <Shell
       data-testid="list-workspace"
       data-list-module="007"
@@ -2215,6 +2227,19 @@ export const ListWorkspace: React.FC = () => {
         </FooterRight>
       </Footer>
     </Shell>
+    {claimSubmitted && claimRecord ? (
+      <CommercialCheckoutModal
+        open={visibilityCheckoutOpen}
+        onClose={() => setVisibilityCheckoutOpen(false)}
+        projectId={`claim:${claimRecord.contract}`}
+        projectSlug={claimRecord.slug}
+        projectContract={claimRecord.contract}
+        chainId={claimRecord.chainId}
+        identityReady
+        visibilityOnly
+      />
+    ) : null}
+    </>
   )
 }
 
