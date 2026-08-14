@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+import { localBscTokenLogoCandidates } from 'lib/token-logo/localTokenLogoPath'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { PROJECTS_SCROLL_KEY } from '../projectsDirectoryV3'
 import type { ProjectPreviewCard } from '../projectsStudioData'
@@ -177,15 +178,37 @@ function metric(project: ProjectPreviewCard, ...labels: string[]): string {
   return project.metrics.find((entry) => labels.includes(entry.label))?.value ?? '—'
 }
 
-/** Fail closed: discovery never publishes a URL-as-name, a generic DEX shell,
- * a missing contract, or a record with no indexed market observation. */
+/** Discovery publishes every valid indexed/listed contract, while market fields
+ * remain honest dashes until an observation is available. */
 export function isMarketDiscoverableProject(project: ProjectPreviewCard): boolean {
   const address = project.contractAddress ?? project.contract
   if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) return false
-  if (/^https?:\/\//i.test(project.name.trim())) return false
-  if (/^melega\s*dex$/i.test(project.name.trim())) return false
-  const values = project.metrics.map((entry) => entry.value)
-  return values.some((value) => Boolean(value && value !== '—' && value !== 'Unavailable'))
+  const name = project.name.trim()
+  if (!name || /^https?:\/\//i.test(name)) return false
+  return !/^melega\s*dex$/i.test(name)
+}
+
+const IndexedProjectLogo: React.FC<{ project: ProjectPreviewCard }> = ({ project }) => {
+  const address = project.contractAddress ?? project.contract
+  const candidates = useMemo(() => {
+    const local = project.chainId === 56 ? localBscTokenLogoCandidates(address) : []
+    return [...new Set([project.logoURI, ...local].filter((value): value is string => Boolean(value)))]
+  }, [address, project.chainId, project.logoURI])
+  const [candidateIndex, setCandidateIndex] = useState(0)
+
+  useEffect(() => setCandidateIndex(0), [address, project.chainId, project.logoURI])
+
+  const candidate = candidates[candidateIndex]
+  if (!candidate) return <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>
+
+  return (
+    <Logo
+      src={candidate}
+      alt={`${project.name} logo`}
+      loading="lazy"
+      onError={() => setCandidateIndex((index) => index + 1)}
+    />
+  )
 }
 
 export const ProjectsGrid: React.FC = () => {
@@ -245,11 +268,7 @@ export const ProjectsGrid: React.FC = () => {
                 <Row role="row" key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`}>
                   <Rank>{index + 1}</Rank>
                   <Identity>
-                    {project.logoURI ? (
-                      <Logo src={project.logoURI} alt="" loading="lazy" />
-                    ) : (
-                      <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>
-                    )}
+                    <IndexedProjectLogo project={project} />
                     <IdentityText>
                       <ProjectName href={project.projectHref ?? `/@${project.slug}`}>{project.name}</ProjectName>
                       <Sub>{project.symbol ? `$${project.symbol}` : project.contractAddress?.slice(0, 10)}</Sub>

@@ -32,6 +32,7 @@ const ChartSkeleton = styled.div<{ $size?: 'compact' | 'hero' | 'full' }>`
 
 const Timeframes = styled.div<{ $inline?: boolean }>`
   display: flex;
+  align-items: center;
   flex-wrap: ${({ $inline }) => ($inline ? 'nowrap' : 'wrap')};
   gap: 6px;
   margin: ${({ $inline }) => ($inline ? '0' : '6px 0 8px')};
@@ -39,14 +40,19 @@ const Timeframes = styled.div<{ $inline?: boolean }>`
 
 const TfButton = styled.button<{ $active?: boolean }>`
   min-width: 36px;
+  height: 28px;
   min-height: 28px;
   padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
   border: 1px solid ${({ $active }) => ($active ? pp.gold : pp.line)};
   background: ${({ $active }) => ($active ? pp.goldDim : 'transparent')};
   color: ${({ $active }) => ($active ? pp.gold : pp.mute)};
   font-size: 11px;
   font-weight: 750;
+  line-height: 1;
   cursor: pointer;
 `
 
@@ -140,6 +146,7 @@ const HeroPairTitle = styled.strong`
   color: #fff;
   font-size: 13px;
   font-weight: 850;
+  line-height: 28px;
   white-space: nowrap;
 `
 
@@ -149,13 +156,17 @@ const HeroMetrics = styled.div`
   align-items: center;
   gap: 6px;
   min-width: max-content;
+  height: 28px;
 `
 
 const HeroMetric = styled.span`
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
+  height: 28px;
   min-height: 28px;
+  box-sizing: border-box;
   padding: 0 7px;
   border: 1px solid ${pp.line};
   border-radius: 8px;
@@ -165,6 +176,7 @@ const HeroMetric = styled.span`
   font-weight: 750;
   letter-spacing: 0.035em;
   text-transform: uppercase;
+  line-height: 1;
   white-space: nowrap;
 
   strong {
@@ -172,6 +184,7 @@ const HeroMetric = styled.span`
     font-size: 10px;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0;
+    line-height: 1;
     text-transform: none;
   }
 `

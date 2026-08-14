@@ -4,6 +4,7 @@ import { formatPendingReviewStatusLabel } from 'registry/projects/pending/update
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { StaticProjectRecord } from 'registry/projects/types'
 import type { DexAssetRecord } from 'lib/dex-asset-index'
+import { localBscTokenLogoPath } from 'lib/token-logo/localTokenLogoPath'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { FOUNDER_FEATURED_SLUGS } from 'views/HomeTrade/featuredProjectsCatalog'
 import type {
@@ -72,7 +73,10 @@ export function mapIndexedAssetToPreviewCard(asset: DexAssetRecord, rank: number
     featured,
     rankingLayer: featured ? 'featured' : null,
     listedAtMs: null,
-    logoURI: asset.logo ?? null,
+    logoURI:
+      asset.chainId === 56 && asset.sources.includes('token-list')
+        ? localBscTokenLogoPath(asset.address) ?? asset.logo ?? null
+        : asset.logo ?? null,
     rating: verified ? 70 : 40,
     ratingTier: verified ? 'active' : 'emerging',
     aiSummary: 'Indexed Melega DEX listing.',

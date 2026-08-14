@@ -5,10 +5,12 @@ import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
 import { buildAiSummary } from '../buildAiSummary'
 import { buildProjectRating } from '../buildProjectRating'
 import { discoverProjectFromContract } from '../discoverProjectFromContract'
-import { mapPendingToPreviewCard, aggregateKpis } from '../formatProjectsRuntime'
+import { mapIndexedAssetToPreviewCard, mapPendingToPreviewCard, aggregateKpis } from '../formatProjectsRuntime'
 import { buildOnChainMetrics } from '../onChainMetrics'
 import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import { createProjectsRuntimeError } from '../projectsRuntimeErrors'
+import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
+import { isMarketDiscoverableProject } from '../../components/ProjectsGrid'
 
 describe('projectsRuntime', () => {
   const project = enrichProject(getAllProjects()[0])
@@ -80,5 +82,17 @@ describe('projectsRuntime', () => {
     const metrics = buildOnChainMetrics(project, buildProjectLiveMetrics(project))
     expect(metrics.reasonCodes?.holders).toBe('EXPLORER_SOURCE_MISSING')
     expect(metrics.holders).toBe('Unavailable')
+  })
+
+  it('publishes the complete valid BSC token inventory with deterministic local logos', () => {
+    const cards = getCanonicalIndexedAssets()
+      .map((asset, index) => mapIndexedAssetToPreviewCard(asset, index + 1))
+      .filter((card): card is NonNullable<typeof card> => Boolean(card))
+      .filter(isMarketDiscoverableProject)
+
+    expect(cards.length).toBeGreaterThan(200)
+    const listed = cards.filter((card) => card.category === 'Listed')
+    expect(listed.length).toBeGreaterThan(200)
+    expect(listed.every((card) => card.logoURI?.startsWith('/images/56/tokens/'))).toBe(true)
   })
 })
