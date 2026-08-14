@@ -13,10 +13,17 @@ import {
   updateTrendBoostOrder,
 } from 'lib/monetization/trendBoostOrders'
 import { TREND_BOOST_PACKAGES } from 'lib/monetization/packages'
+import type { VisibilityProductId } from 'lib/monetization/packages'
 import { isQuoteExpired } from 'lib/featured-placement/quote'
 import { verifyBscPaymentReceipt } from 'lib/monetization/verifyPaymentReceipt'
 
 const ASSETS = new Set(FEATURED_OFFER.acceptedAssets)
+const VISIBILITY_PRODUCTS = new Set<VisibilityProductId>([
+  'trend-boost',
+  'sponsored-research',
+  'featured-farm',
+  'featured-pool',
+])
 
 async function fetchUnitPriceUsd(asset: FeaturedPayAsset): Promise<{ price: number | null; source: string }> {
   if (asset === 'USDT' || asset === 'USDC') return { price: 1, source: 'stablecoin-1usd' }
@@ -76,10 +83,16 @@ const handler: NextApiHandler = async (req, res) => {
       const projectId = String(body.projectId || '').trim()
       const buyerWallet = String(body.buyerWallet || '').trim()
       const paymentAsset = String(body.paymentAsset || 'BNB').toUpperCase() as FeaturedPayAsset
+      const serviceId = String(body.serviceId || 'trend-boost') as VisibilityProductId
+      const targetId = body.targetId ? String(body.targetId).trim() : null
       if (!projectId || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
         return res.status(400).json({ error: 'projectId and buyerWallet required' })
       }
       if (!ASSETS.has(paymentAsset)) return res.status(400).json({ error: 'unsupported paymentAsset' })
+      if (!VISIBILITY_PRODUCTS.has(serviceId)) return res.status(400).json({ error: 'unsupported serviceId' })
+      if ((serviceId === 'featured-farm' || serviceId === 'featured-pool') && !targetId) {
+        return res.status(400).json({ error: 'targetId required for the selected placement' })
+      }
       const order = createTrendBoostOrder({
         projectId,
         projectSlug: body.projectSlug ? String(body.projectSlug) : null,
@@ -87,6 +100,8 @@ const handler: NextApiHandler = async (req, res) => {
         buyerWallet,
         paymentAsset,
         packageId: body.packageId ? String(body.packageId) : null,
+        serviceId,
+        targetId,
       })
       await persistTrendBoostOrderDurably(order)
       return res.status(201).json({ order })

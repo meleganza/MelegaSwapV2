@@ -23,6 +23,8 @@ type PositionRow = {
   symbol1?: string
   token0Decimals?: number
   token1Decimals?: number
+  reserve0Raw?: string
+  reserve1Raw?: string
   lpBalanceRaw: string
 }
 
@@ -107,6 +109,8 @@ const handler: NextApiHandler = async (req, res) => {
           token1: pair.token1,
           symbol0: pair.symbol0,
           symbol1: pair.symbol1,
+          reserve0Raw: pair.reserve0,
+          reserve1Raw: pair.reserve1,
           lpBalanceRaw: balance.toString(),
         })
       })

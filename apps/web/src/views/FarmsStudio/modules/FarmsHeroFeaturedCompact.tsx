@@ -4,6 +4,7 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import useSWR from 'swr'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsHero } from './farmsHeroTokens'
 
@@ -88,8 +89,29 @@ const Empty = styled.p`
 `
 
 export const FarmsHeroFeaturedCompact: React.FC = () => {
-  const { featured, requestModal } = useFarmsRuntime()
-  if (!featured?.card) {
+  const { featured, portfolioFarms, requestModal } = useFarmsRuntime()
+  const { data: paidTarget = null } = useSWR(
+    '/api/trend-boost/active?service=featured-farm',
+    async (url: string) => {
+      const response = await fetch(url)
+      if (!response.ok) return null
+      const payload = (await response.json()) as { placements?: Array<{ targetId?: string | null }> }
+      return payload.placements?.[0]?.targetId?.toLowerCase() ?? null
+    },
+    { refreshInterval: 30_000, revalidateOnFocus: false },
+  )
+  const paidCard = paidTarget
+    ? portfolioFarms.find((candidate) => {
+        const lpAddress = candidate.rawFarm?.lpAddress?.toLowerCase()
+        return (
+          candidate.id.toLowerCase() === paidTarget ||
+          String(candidate.pid ?? '').toLowerCase() === paidTarget ||
+          lpAddress === paidTarget
+        )
+      })
+    : null
+  const card = paidCard ?? featured?.card
+  if (!card) {
     return (
       <Card data-testid="farms-hero-featured-compact" data-featured="empty">
         <Eyebrow>Featured Farm</Eyebrow>
@@ -97,27 +119,26 @@ export const FarmsHeroFeaturedCompact: React.FC = () => {
       </Card>
     )
   }
-  const card = featured.card
+  const pair = paidCard?.pair ?? featured.pair
   const farmUrl = card.masterChefExplorerUrl
   const lpUrl = card.explorerUrl
   const canStake = card.cta === 'stake' || card.status === 'live'
+  const apr = paidCard?.displayApr ?? paidCard?.apr ?? featured.apr
+  const tvl = paidCard?.tvl ?? featured.tvl
+  const rewardToken = paidCard?.rewardToken ?? featured.rewardToken
 
   return (
     <Card data-testid="farms-hero-featured-compact" data-featured="ready" data-farm-pid={card.pid ?? undefined}>
       <Eyebrow>Featured Farm</Eyebrow>
-      <Pair title={featured.pair}>{featured.pair}</Pair>
+      <Pair title={pair}>{pair}</Pair>
       <Meta>
-        {featured.displayApr || featured.apr ? <Apr>{featured.displayApr ?? featured.apr}</Apr> : null}
-        {featured.tvl ? <span>TVL {featured.tvl}</span> : null}
-        {featured.rewardToken ? <span>Earn {featured.rewardToken}</span> : null}
+        {apr ? <Apr>{apr}</Apr> : null}
+        {tvl ? <span>TVL {tvl}</span> : null}
+        {rewardToken ? <span>Earn {rewardToken}</span> : null}
       </Meta>
       <Links>
         {canStake ? (
-          <StakeBtn
-            type="button"
-            data-testid="farms-featured-stake"
-            onClick={() => requestModal(card, 'stake')}
-          >
+          <StakeBtn type="button" data-testid="farms-featured-stake" onClick={() => requestModal(card, 'stake')}>
             Stake
           </StakeBtn>
         ) : null}

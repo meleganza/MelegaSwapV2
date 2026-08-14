@@ -7,7 +7,7 @@
  */
 
 import { useMemo } from 'react'
-import { ERC20Token } from '@pancakeswap/sdk'
+import { CurrencyAmount, ERC20Token, Pair } from '@pancakeswap/sdk'
 import useSWR from 'swr'
 import { getAddress } from '@ethersproject/address'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
@@ -20,6 +20,8 @@ type WalletPositionPair = {
   symbol1?: string
   token0Decimals?: number
   token1Decimals?: number
+  reserve0Raw?: string
+  reserve1Raw?: string
   lpBalanceRaw?: string
 }
 
@@ -89,6 +91,8 @@ export function useFactoryLiquidityTokenPairs(
 ): {
   factoryTokenPairs: [ERC20Token, ERC20Token][]
   factoryLpBalancesRaw: Record<string, string>
+  factoryPairsByAddress: Record<string, Pair>
+  factoryPairAddressByTokenKey: Record<string, string>
   factoryPairCount: number | null
   isLoading: boolean
   error: string | null
@@ -131,9 +135,44 @@ export function useFactoryLiquidityTokenPairs(
     return balances
   }, [data])
 
+  const factoryPairsByAddress = useMemo(() => {
+    const pairs: Record<string, Pair> = {}
+    for (const row of data?.rows ?? []) {
+      const pairAddress = safeAddress(row.pairAddress)
+      const tokens = pairToTokens(row)
+      if (!pairAddress || !tokens || row.reserve0Raw == null || row.reserve1Raw == null) continue
+      try {
+        pairs[pairAddress.toLowerCase()] = new Pair(
+          CurrencyAmount.fromRawAmount(tokens[0], row.reserve0Raw),
+          CurrencyAmount.fromRawAmount(tokens[1], row.reserve1Raw),
+        )
+      } catch {
+        // A live pair fetch remains available when a stale registry row cannot be hydrated.
+      }
+    }
+    return pairs
+  }, [data])
+
+  const factoryPairAddressByTokenKey = useMemo(() => {
+    const addresses: Record<string, string> = {}
+    for (const row of data?.rows ?? []) {
+      const pairAddress = safeAddress(row.pairAddress)
+      const tokens = pairToTokens(row)
+      if (!pairAddress || !tokens) continue
+      const key = [tokens[0].address, tokens[1].address]
+        .map((address) => address.toLowerCase())
+        .sort()
+        .join('-')
+      addresses[key] = pairAddress
+    }
+    return addresses
+  }, [data])
+
   return {
     factoryTokenPairs,
     factoryLpBalancesRaw,
+    factoryPairsByAddress,
+    factoryPairAddressByTokenKey,
     factoryPairCount: data?.scannedPairs ?? null,
     isLoading: factoryEnabled && isLoading && !data,
     error: error ? (error instanceof Error ? error.message : String(error)) : null,

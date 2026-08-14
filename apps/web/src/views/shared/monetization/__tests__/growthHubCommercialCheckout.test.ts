@@ -17,6 +17,10 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
   const featuredSection = load('views/ProjectsStudio/components/FeaturedProjectsSection.tsx')
   const home = load('views/HomeTrade/DexHomeScreen.tsx')
   const packages = load('lib/monetization/packages.ts')
+  const activePlacements = load('pages/api/trend-boost/active.ts')
+  const sponsoredSearch = load('views/shared/monetization/SponsoredSuggestionsStrip.tsx')
+  const featuredFarm = load('views/FarmsStudio/modules/FarmsHeroFeaturedCompact.tsx')
+  const featuredPool = load('views/PoolsStudio/modules/PoolsHeroFeaturedCompact.tsx')
 
   it('Growth Hub renames Grow → Boost with six service cards', () => {
     expect(shell).toContain('Boost Your Project')
@@ -31,17 +35,15 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(COMMERCIAL_SERVICE_COUNT(types)).toBe(6)
   })
 
-  it('CommercialCheckoutModal is MelegaModal V3 with a two-step checkout', () => {
+  it('CommercialCheckoutModal keeps one compact identity and the verified checkout', () => {
     expect(checkout).toContain('MelegaModal')
-    expect(checkout).toContain('MelegaModalPreview')
+    expect(checkout).not.toContain('MelegaModalPreview')
+    expect(checkout).toContain('commercial-project-identity-compact')
     expect(checkout).toContain('MelegaModalFooter')
-    expect(checkout).toContain("title=\"Boost Your Project\"")
+    expect(checkout).toContain('title="Boost Your Project"')
     expect(checkout).toContain('commercial-checkout-modal')
-    for (const step of ['configure', 'confirm']) {
+    for (const step of ['project', 'service', 'package', 'chain', 'payment', 'review', 'checkout']) {
       expect(checkout).toContain(`commercial-step-${step}`)
-    }
-    for (const removedStep of ['review', 'checkout']) {
-      expect(checkout).not.toContain(`commercial-step-${removedStep}`)
     }
     expect(checkout).toContain('BNB')
     expect(checkout).toContain('USDT')
@@ -51,17 +53,28 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).toContain('/api/trend-boost/orders')
   })
 
-  it('Featured and Trend packages + badges', () => {
+  it('Featured and Trend packages use centered duration cards without reach badges', () => {
     expect(packages).toContain('featured_24h')
     expect(packages).toContain('featured_72h')
     expect(packages).toContain('featured_1w')
     expect(packages).toContain('featured_1m')
     expect(packages).toContain('trend_1h')
     expect(packages).toContain('trend_24h')
-    expect(types).toContain('impressions')
-    expect(types).toContain('Estimated Reach')
-    expect(checkout).toContain('FEATURED_PACKAGE_BADGES')
-    expect(checkout).toContain('TREND_PACKAGE_BADGES')
+    expect(checkout).not.toContain('FEATURED_PACKAGE_BADGES')
+    expect(checkout).not.toContain('TREND_PACKAGE_BADGES')
+    expect(checkout).not.toContain('ESTIMATED REACH')
+    expect(checkout).not.toContain('DISCOVERY BOOST')
+    expect(checkout).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+  })
+
+  it('every paid visibility service has a receipt-gated consumer surface', () => {
+    expect(activePlacements).toContain("'trend-boost'")
+    expect(sponsoredSearch).toContain('service=sponsored-research')
+    expect(featuredFarm).toContain('service=featured-farm')
+    expect(featuredPool).toContain('service=featured-pool')
+    expect(checkout).toContain('serviceId: service')
+    expect(checkout).toContain("service === 'featured-farm' ? farmTarget")
+    expect(checkout).toContain("service === 'featured-pool' ? poolTarget")
   })
 
   it('Claim wizard has 5 steps and MelegaModal V3', () => {
@@ -102,9 +115,9 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
 
   it('evidence folder contract exists after acceptance', () => {
     // Created by acceptance step — assert path convention.
-    expect(
-      'apps/web/docs/runtime/melegaswap-v2-growth-hub-commercial-checkout/REPORT.md',
-    ).toContain('growth-hub-commercial-checkout')
+    expect('apps/web/docs/runtime/melegaswap-v2-growth-hub-commercial-checkout/REPORT.md').toContain(
+      'growth-hub-commercial-checkout',
+    )
   })
 
   it('mission files exist', () => {

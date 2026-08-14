@@ -149,7 +149,7 @@ export const usePoolsPageFetch = () => {
         dispatch(fetchCakeFlexibleSideVaultUserData({ account, chainId }))
       }
     })
-  }, [account, dispatch])
+  }, [account, chainId, dispatch])
 
   useEffect(() => {
     batch(() => {
@@ -157,7 +157,7 @@ export const usePoolsPageFetch = () => {
       // if (chainId === 56)
       dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
     })
-  }, [dispatch])
+  }, [chainId, dispatch])
 }
 
 export const useCakeVaultUserData = (chainId) => {
@@ -168,7 +168,7 @@ export const useCakeVaultUserData = (chainId) => {
     if (account) {
       dispatch(fetchCakeVaultUserData({ account, chainId }))
     }
-  }, [account, dispatch])
+  }, [account, chainId, dispatch])
 }
 
 export const useCakeVaultPublicData = () => {

@@ -184,6 +184,21 @@ export function getTrendBoostPackage(id?: string | null): PlacementPackage {
   return found ?? TREND_BOOST_PACKAGES.find((p) => p.isDefault)!
 }
 
+export type VisibilityProductId = 'trend-boost' | 'sponsored-research' | 'featured-farm' | 'featured-pool'
+
+/** Resolve the commercial catalog that belongs to the selected visibility surface. */
+export function getVisibilityPackage(product: VisibilityProductId, id?: string | null): PlacementPackage {
+  const catalog =
+    product === 'sponsored-research'
+      ? SPONSORED_RESEARCH_PACKAGES
+      : product === 'featured-farm'
+      ? FEATURED_FARM_PACKAGES
+      : product === 'featured-pool'
+      ? FEATURED_POOL_PACKAGES
+      : TREND_BOOST_PACKAGES
+  return catalog.find((pkg) => pkg.id === id) ?? catalog.find((pkg) => pkg.isDefault) ?? catalog[0]
+}
+
 export function listFeaturedPackageIds(): FeaturedPackageId[] {
   return FEATURED_PACKAGES.map((p) => p.id as FeaturedPackageId)
 }

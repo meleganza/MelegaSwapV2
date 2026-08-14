@@ -4,6 +4,7 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import useSWR from 'swr'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
@@ -112,13 +113,33 @@ const ConnectBtn = styled(ConnectWalletButton)`
 `
 
 export const PoolsHeroFeaturedCompact: React.FC = () => {
-  const { account, featured, requestModal } = usePoolsRuntime()
-  const card = featured?.card
+  const { account, featured, portfolioPools, requestModal } = usePoolsRuntime()
+  const { data: paidTarget = null } = useSWR(
+    '/api/trend-boost/active?service=featured-pool',
+    async (url: string) => {
+      const response = await fetch(url)
+      if (!response.ok) return null
+      const payload = (await response.json()) as { placements?: Array<{ targetId?: string | null }> }
+      return payload.placements?.[0]?.targetId?.toLowerCase() ?? null
+    },
+    { refreshInterval: 30_000, revalidateOnFocus: false },
+  )
+  const paidCard = paidTarget
+    ? portfolioPools.find((candidate) =>
+        [candidate.id, String(candidate.sousId ?? ''), candidate.contractAddress, candidate.stakeContractAddress]
+          .filter(Boolean)
+          .some((value) => value?.toLowerCase() === paidTarget),
+      )
+    : null
+  const card = paidCard ?? featured?.card
   // No factual featured pool → collapse entirely (no Active / Stake / — → — shell).
   if (!card?.rawPool) return null
 
-  const stakeToken = featured.stakeToken && featured.stakeToken !== '—' ? featured.stakeToken : card.stakeToken
-  const rewardToken = featured.rewardToken && featured.rewardToken !== '—' ? featured.rewardToken : card.rewardToken
+  const stakeToken =
+    paidCard?.stakeToken ?? (featured.stakeToken && featured.stakeToken !== '—' ? featured.stakeToken : card.stakeToken)
+  const rewardToken =
+    paidCard?.rewardToken ??
+    (featured.rewardToken && featured.rewardToken !== '—' ? featured.rewardToken : card.rewardToken)
   const title =
     [stakeToken, rewardToken].filter((t) => t && t !== '—').join(' → ') ||
     card.tokens?.join(' / ') ||
@@ -140,8 +161,8 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
     contractExplorerUrl: card.analyzePreview?.contractExplorerUrl,
   })
   const contractUrl = poolBscScanContractUrl(contractAddress)
-  const apr = featured.apr && featured.apr !== '—' ? featured.apr : card.apr
-  const tvl = featured.tvl && featured.tvl !== '—' ? featured.tvl : card.tvl
+  const apr = paidCard?.apr ?? (featured.apr && featured.apr !== '—' ? featured.apr : card.apr)
+  const tvl = paidCard?.tvl ?? (featured.tvl && featured.tvl !== '—' ? featured.tvl : card.tvl)
 
   return (
     <Card data-testid="pools-hero-featured-compact" data-featured="ready" data-pool-id={card.id}>

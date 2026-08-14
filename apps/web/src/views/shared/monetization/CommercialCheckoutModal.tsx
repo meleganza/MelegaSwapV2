@@ -3,8 +3,8 @@
  * Project identity is resolved before a commercial offer can be reviewed.
  * Products without verified settlement/fulfilment remain visible but fail closed.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import React, { useCallback, useEffect, useState } from 'react'
+import styled, { keyframes } from 'styled-components'
 import { useAccount, useSigner } from 'wagmi'
 import { MarcoPay } from 'components/MarcoWidgets'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -13,7 +13,6 @@ import {
   MelegaModalFooter,
   MelegaModalFooterActions,
   MelegaModalFooterMeta,
-  MelegaModalPreview,
 } from 'design-system/melega/components'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { RC_COPY } from 'lib/monetization/copy'
@@ -33,8 +32,6 @@ import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-cl
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
-  FEATURED_PACKAGE_BADGES,
-  TREND_PACKAGE_BADGES,
   VISIBILITY_SERVICES,
   type CommercialCheckoutStep,
   type CommercialPaymentAsset,
@@ -42,7 +39,7 @@ import {
 } from './commercialCheckoutTypes'
 import { appendMarketingHistory } from './marketingHistory'
 
-const MARCO_PAY_APPLICATION = process.env.NEXT_PUBLIC_MARCO_PAY_APPLICATION?.trim() || 'Melega DEX'
+const MARCO_PAY_APPLICATION = process.env.NEXT_PUBLIC_MARCO_PAY_APPLICATION?.trim() || ''
 
 const IDENTITY_CHAINS = [
   { id: 56, label: 'BNB Chain', short: 'BSC' },
@@ -90,11 +87,6 @@ const Grid = styled.div<{ $serviceWide?: boolean }>`
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   min-width: 0;
-  @media (min-width: 820px) {
-    grid-template-columns: ${({ $serviceWide }) =>
-      $serviceWide ? 'minmax(0, 1fr)' : 'minmax(0, 1.45fr) minmax(270px, 0.55fr)'};
-    align-items: start;
-  }
 `
 
 const Stack = styled.div`
@@ -107,84 +99,117 @@ const Stack = styled.div`
 const ServiceGrid = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
+  gap: 10px;
   @media (min-width: 620px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  @media (min-width: 920px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (min-width: 1080px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
+`
+
+const pricePulse = keyframes`
+  0%, 100% { text-shadow: 0 0 0 rgba(244, 196, 48, 0); transform: translateY(0); }
+  50% { text-shadow: 0 0 14px rgba(244, 196, 48, .32); transform: translateY(-1px); }
 `
 
 const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
   appearance: none;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   min-width: 0;
-  min-height: 86px;
-  padding: 11px 13px;
+  min-height: 164px;
+  padding: 18px 14px 15px;
   border-radius: 14px;
   border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.62)' : 'rgba(255,255,255,.1)')};
   background: ${({ $on }) => ($on ? 'rgba(221,185,47,.11)' : 'rgba(255,255,255,.025)')};
   color: ${uxRebuildColors.text};
-  opacity: ${({ $live }) => ($live ? 1 : 0.72)};
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
-  grid-template-areas:
-    'icon title price'
-    'icon desc price';
+  opacity: ${({ $live }) => ($live ? 1 : 0.7)};
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  column-gap: 9px;
-  row-gap: 3px;
+  justify-content: flex-start;
+  gap: 9px;
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(221, 185, 47, 0.62);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`
+
+const ServiceTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
 `
 
 const Icon = styled.div`
-  grid-area: icon;
   color: ${uxRebuildColors.gold};
-  font-size: 17px;
+  font-size: 23px;
+  line-height: 1;
 `
 
 const STitle = styled.div`
-  grid-area: title;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.2;
   font-weight: 780;
 `
 
 const SDesc = styled.div`
-  grid-area: desc;
-  font-size: 10px;
-  line-height: 1.35;
+  font-size: 12px;
+  line-height: 1.4;
   color: ${uxRebuildColors.secondary};
 `
 
 const SPrice = styled.div`
-  grid-area: price;
-  margin-left: 6px;
-  text-align: right;
+  margin-top: auto;
+  text-align: center;
   color: ${uxRebuildColors.gold};
-  font-size: 11px;
-  font-weight: 760;
+  font-size: 18px;
+  font-weight: 820;
+  animation: ${pricePulse} 2.8s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `
 
 const PkgGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  @media (min-width: 620px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  @media (min-width: 920px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `
 
 const PkgCard = styled.button<{ $on?: boolean }>`
   appearance: none;
   cursor: pointer;
-  text-align: left;
-  padding: 11px;
+  text-align: center;
+  min-height: 150px;
+  padding: 18px 12px;
   border-radius: 12px;
   border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.62)' : 'rgba(255,255,255,.1)')};
   background: ${({ $on }) => ($on ? 'rgba(221,185,47,.1)' : 'rgba(255,255,255,.025)')};
   color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(221, 185, 47, 0.62);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `
 
 const BadgeRow = styled.div`
@@ -229,6 +254,10 @@ const Chip = styled.button<{ $on?: boolean }>`
   color: ${({ $on }) => ($on ? uxRebuildColors.gold : '#e8e8e8')};
   font-size: 12px;
   font-weight: 720;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
 `
 
 const Input = styled.input`
@@ -299,6 +328,20 @@ const Identity = styled.div`
   background: rgba(255, 255, 255, 0.025);
 `
 
+const IdentityChip = styled.div`
+  margin: 0 0 12px auto;
+  width: fit-content;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, auto);
+  align-items: center;
+  gap: 10px;
+  padding: 7px 11px 7px 7px;
+  border: 1px solid rgba(221, 185, 47, 0.3);
+  border-radius: 999px;
+  background: rgba(221, 185, 47, 0.055);
+`
+
 const Logo = styled.div`
   width: 48px;
   height: 48px;
@@ -317,17 +360,19 @@ const Logo = styled.div`
   }
 `
 
-const CheckRow = styled.label`
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-  padding: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  cursor: pointer;
-`
+const ProjectLogo: React.FC<{ project: DetectedProject; compact?: boolean }> = ({ project, compact = false }) => {
+  const [failed, setFailed] = useState(false)
+  useEffect(() => setFailed(false), [project.logoUrl])
+  return (
+    <Logo style={compact ? { width: 38, height: 38 } : undefined}>
+      {project.logoUrl && !failed ? (
+        <img src={project.logoUrl} alt={`${project.name} logo`} onError={() => setFailed(true)} />
+      ) : (
+        project.symbol.slice(0, 1)
+      )}
+    </Logo>
+  )
+}
 
 const Alert = styled.div<{ $error?: boolean }>`
   padding: 10px 12px;
@@ -395,16 +440,6 @@ const Meta = styled.p`
   color: ${uxRebuildColors.secondary};
   font-size: 12px;
   line-height: 1.45;
-`
-
-const PreviewLine = styled.div`
-  overflow-wrap: anywhere;
-  font-size: 12px;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.82);
-  & + & {
-    margin-top: 7px;
-  }
 `
 
 const Label = styled.div`
@@ -550,8 +585,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [detecting, setDetecting] = useState(false)
   const [draft, setDraft] = useState<ProjectDraft>(EMPTY_DRAFT)
   const [pay, setPay] = useState<CommercialPaymentAsset>('BNB')
-  const [featuredFarm, setFeaturedFarm] = useState(false)
-  const [featuredPool, setFeaturedPool] = useState(false)
   const [farmTarget, setFarmTarget] = useState('')
   const [poolTarget, setPoolTarget] = useState('')
   const [referral, setReferral] = useState('')
@@ -570,23 +603,20 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     packages[0] ??
     null
   const projectPageReady = Boolean(detected?.projectPageExists && identityReady)
-  const hasAddOns = Boolean(featuredFarm || featuredPool)
   const runtimeCheckoutBlocker = visibilityCheckoutBlocker({
     service,
     payment: pay,
     projectPageReady,
     hasReferral: Boolean(referral.trim()),
-    hasFeaturedAddOns: hasAddOns,
+    hasFeaturedAddOns: false,
   })
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
     (pay === 'MARCO_PAY' && !MARCO_PAY_APPLICATION
-      ? 'MARCO PAY is not configured for this production application.'
+      ? 'MARCO PAY cannot prepare production payments until the provider issues the Melega DEX application key.'
       : null)
-  const addOnCount = Number(featuredFarm) + Number(featuredPool)
   const subtotal = selectedPackage?.usdPrice ?? 0
-  const addOnPrice = service === 'featured' ? subtotal * 0.5 : 0
-  const totalUsd = subtotal + addOnPrice * addOnCount
+  const totalUsd = subtotal
 
   const detectProject = useCallback(async () => {
     if (!/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) {
@@ -631,8 +661,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setDetected(null)
     setDraft(EMPTY_DRAFT)
     setPay('BNB')
-    setFeaturedFarm(false)
-    setFeaturedPool(false)
     setFarmTarget('')
     setPoolTarget('')
     setReferral('')
@@ -772,12 +800,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         setError('Choose a duration.')
         return
       }
-      if (featuredFarm && !farmTarget.trim()) {
-        setError('Select the Farm to feature.')
+      if (service === 'featured-farm' && !farmTarget.trim()) {
+        setError('Enter the Farm PID or LP address to feature.')
         return
       }
-      if (featuredPool && !poolTarget.trim()) {
-        setError('Select the Pool to feature.')
+      if (service === 'featured-pool' && !poolTarget.trim()) {
+        setError('Enter the Pool ID or staking contract to feature.')
         return
       }
       setStep('chain')
@@ -826,9 +854,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const paymentId = event.detail?.paymentId ?? event.detail?.id ?? event.detail?.reference
     setStatus('marco_pay_pending_verification')
     setWalletStage('confirm')
-    setQuoteSummary(
-      `Payment received${paymentId ? ` · ${String(paymentId)}` : ''} · activation pending verified callback`,
-    )
+    setQuoteSummary(`Payment received${paymentId ? ` · ${String(paymentId)}` : ''} · verifying provider receipt`)
   }, [])
 
   const handleMarcoPayError = useCallback((cause: Error) => {
@@ -861,6 +887,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const paymentAsset = pay as MonetizationAsset
     const resolvedContract = detected?.contract ?? projectContract
     const resolvedSlug = detected?.slug ?? projectSlug
+    const resolvedProjectId = projectId || resolvedSlug || resolvedContract || detected?.symbol || 'visibility-project'
     setBusy(true)
     try {
       setWalletStage('confirm')
@@ -874,7 +901,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            projectId,
+            projectId: resolvedProjectId,
             projectSlug: resolvedSlug,
             projectContract: resolvedContract,
             buyerWallet,
@@ -908,12 +935,14 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             action: 'create',
-            projectId,
+            projectId: resolvedProjectId,
             projectSlug: resolvedSlug,
             projectContract: resolvedContract,
             buyerWallet,
             paymentAsset,
             packageId: selectedPackage.id,
+            serviceId: service,
+            targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
           }),
         })
         const created = await createRes.json()
@@ -1016,7 +1045,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         }`,
       )
       appendMarketingHistory(resolvedSlug || projectSlug, {
-        kind: isFeatured ? 'featured' : 'trend-boost',
+        kind:
+          service === 'sponsored-research'
+            ? 'sponsored-research'
+            : service === 'featured-farm'
+            ? 'farm'
+            : service === 'featured-pool'
+            ? 'pool'
+            : isFeatured
+            ? 'featured'
+            : 'trend-boost',
         label: selectedPackage.label,
         status: 'Running',
         packageId: String(selectedPackage.id),
@@ -1043,46 +1081,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     service,
     signer,
   ])
-
-  const preview = useMemo(
-    () => (
-      <MelegaModalPreview data-testid="commercial-checkout-preview">
-        <PreviewLine>
-          <strong>Project identity</strong>
-        </PreviewLine>
-        {detected ? (
-          <>
-            <Identity style={{ marginTop: 10 }}>
-              <Logo>{detected.logoUrl ? <img src={detected.logoUrl} alt="" /> : detected.symbol.slice(0, 1)}</Logo>
-              <div>
-                <strong>{detected.name}</strong>
-                <Meta>
-                  ${detected.symbol} · {IDENTITY_CHAINS.find((item) => item.id === detected.chainId)?.label}
-                </Meta>
-              </div>
-            </Identity>
-            <PreviewLine>Supply · {compactSupply(detected.totalSupply)}</PreviewLine>
-            <PreviewLine>Decimals · {detected.decimals ?? 'Unavailable'}</PreviewLine>
-            <PreviewLine>Project Page · {detected.projectPageExists ? `@${detected.slug}` : 'Required'}</PreviewLine>
-            <PreviewLine>DEX listing · {detected.dexListed ? 'MelegaSwap listed' : 'Not verified'}</PreviewLine>
-            {detected.website ? (
-              <PreviewLine>Website · {detected.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</PreviewLine>
-            ) : null}
-          </>
-        ) : (
-          <PreviewLine>Paste a contract to load canonical data.</PreviewLine>
-        )}
-        {serviceMeta ? <PreviewLine>Service · {serviceMeta.title}</PreviewLine> : null}
-        {selectedPackage ? <PreviewLine>Duration · {selectedPackage.shortLabel}</PreviewLine> : null}
-        {selectedPackage ? <PreviewLine>Total · ${totalUsd}</PreviewLine> : null}
-        <PreviewLine>Settlement · {pay === 'MARCO_PAY' ? 'MARCO PAY' : 'BNB Chain'}</PreviewLine>
-        <PreviewLine>Payment · {pay === 'MARCO_PAY' ? 'MARCO PAY' : pay}</PreviewLine>
-        {referral ? <PreviewLine>Referral · 50% attribution requested</PreviewLine> : null}
-        {orderId ? <PreviewLine>Order · {orderId}</PreviewLine> : null}
-      </MelegaModalPreview>
-    ),
-    [detected, orderId, pay, referral, selectedPackage, serviceMeta, totalUsd],
-  )
 
   const footer = (
     <MelegaModalFooter>
@@ -1133,7 +1131,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       open={open}
       onClose={onClose}
       title="Boost Your Project"
-      subtitle="Identify once, complete the Project Page, then choose visibility and payment."
       steps={modalSteps}
       size="lg"
       footer={footer}
@@ -1144,6 +1141,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     >
       <Grid $serviceWide={step === 'service' || step === 'project'}>
         <Stack>
+          {step !== 'project' && detected ? (
+            <IdentityChip data-testid="commercial-project-identity-compact">
+              <ProjectLogo project={detected} compact />
+              <div>
+                <strong>{detected.name}</strong>
+                <Meta>${detected.symbol}</Meta>
+              </div>
+            </IdentityChip>
+          ) : null}
           {step === 'project' ? (
             <div data-testid="commercial-step-project">
               <Label>Token address</Label>
@@ -1177,13 +1183,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               {detected ? (
                 <Stack style={{ marginTop: 10 }}>
                   <Identity>
-                    <Logo>
-                      {detected.logoUrl ? (
-                        <img src={detected.logoUrl} alt={`${detected.name} logo`} />
-                      ) : (
-                        detected.symbol.slice(0, 1)
-                      )}
-                    </Logo>
+                    <ProjectLogo project={detected} />
                     <div>
                       <STitle>
                         {detected.name} · ${detected.symbol}
@@ -1260,15 +1260,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       onClick={() => {
                         setService(item.id)
                         setSelectedPackageId('')
-                        setFeaturedFarm(false)
-                        setFeaturedPool(false)
                       }}
                       data-testid={`commercial-service-${item.id}`}
                     >
-                      <Icon>{item.icon}</Icon>
-                      <STitle>{item.title}</STitle>
+                      <ServiceTitleRow>
+                        <Icon>{item.icon}</Icon>
+                        <STitle>{item.title}</STitle>
+                      </ServiceTitleRow>
                       <SDesc>{item.description}</SDesc>
-                      <SPrice>{live ? item.priceHint : `${item.priceHint} · activation pending`}</SPrice>
+                      <SPrice>{item.priceHint}</SPrice>
                     </ServiceCard>
                   )
                 })}
@@ -1291,64 +1291,28 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     <STitle>{item.shortLabel}</STitle>
                     <SDesc>{item.durationLabel}</SDesc>
                     <SPrice>${item.usdPrice}</SPrice>
-                    <BadgeRow>
-                      {(service === 'trend-boost' ? TREND_PACKAGE_BADGES : FEATURED_PACKAGE_BADGES)
-                        .slice(0, 2)
-                        .map((badge) => (
-                          <Badge key={badge}>{badge}</Badge>
-                        ))}
-                    </BadgeRow>
                   </PkgCard>
                 ))}
               </PkgGrid>
-              {service === 'featured' && selectedPackage ? (
-                <Stack style={{ marginTop: 10 }}>
-                  <Label>Bundle placements · 50% off each add-on</Label>
-                  <CheckRow>
-                    <input
-                      type="checkbox"
-                      checked={featuredFarm}
-                      onChange={(event) => setFeaturedFarm(event.target.checked)}
-                    />
-                    <span>
-                      <strong>Featured Farm</strong>
-                      <Meta>Premium Farm hero rotation</Meta>
-                    </span>
-                    <strong>${addOnPrice}</strong>
-                  </CheckRow>
-                  {featuredFarm ? (
-                    <Input
-                      value={farmTarget}
-                      onChange={(event) => setFarmTarget(event.target.value)}
-                      placeholder="Select Farm ID or LP address"
-                    />
-                  ) : null}
-                  <CheckRow>
-                    <input
-                      type="checkbox"
-                      checked={featuredPool}
-                      onChange={(event) => setFeaturedPool(event.target.checked)}
-                    />
-                    <span>
-                      <strong>Featured Pool</strong>
-                      <Meta>Premium Pool hero rotation</Meta>
-                    </span>
-                    <strong>${addOnPrice}</strong>
-                  </CheckRow>
-                  {featuredPool ? (
-                    <Input
-                      value={poolTarget}
-                      onChange={(event) => setPoolTarget(event.target.value)}
-                      placeholder="Select Pool ID or staking contract"
-                    />
-                  ) : null}
-                  {hasAddOns ? (
-                    <Alert>
-                      Bundle pricing is configured, but Farm/Pool settlement and rotation fulfilment remain blocked
-                      until their production services are activated.
-                    </Alert>
-                  ) : null}
-                </Stack>
+              {service === 'featured-farm' ? (
+                <div style={{ marginTop: 10 }}>
+                  <Label>Farm to feature</Label>
+                  <Input
+                    value={farmTarget}
+                    onChange={(event) => setFarmTarget(event.target.value)}
+                    placeholder="Farm PID or LP address"
+                  />
+                </div>
+              ) : null}
+              {service === 'featured-pool' ? (
+                <div style={{ marginTop: 10 }}>
+                  <Label>Pool to feature</Label>
+                  <Input
+                    value={poolTarget}
+                    onChange={(event) => setPoolTarget(event.target.value)}
+                    placeholder="Pool ID or staking contract"
+                  />
+                </div>
               ) : null}
             </div>
           ) : null}
@@ -1370,33 +1334,52 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               <Label>Choose payment</Label>
               <ChipRow>
                 {(['BNB', 'USDT', 'USDC', 'MARCO', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
-                  (asset) => (
-                    <Chip
-                      key={asset}
-                      type="button"
-                      $on={pay === asset}
-                      onClick={() => {
-                        setPay(asset)
-                        setError(null)
-                        setStatus('idle')
-                        setWalletStage('idle')
-                        setQuoteSummary(null)
-                        setOrderId(null)
-                      }}
-                      data-testid={`commercial-pay-${asset}`}
-                    >
-                      {asset === 'MARCO_PAY' ? 'MARCO PAY' : asset}
-                      {asset === 'MARCO'
-                        ? ' · +5% CASHBACK'
-                        : asset === 'MARCO_PAY'
-                        ? ' · Passport'
-                        : asset === 'M_CREDITS'
-                        ? ' · MARCO Passport'
-                        : ''}
-                    </Chip>
-                  ),
+                  (asset) => {
+                    const disabled =
+                      (asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION) ||
+                      (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
+                    return (
+                      <Chip
+                        key={asset}
+                        type="button"
+                        $on={pay === asset}
+                        disabled={disabled}
+                        title={
+                          asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION
+                            ? 'Awaiting the production application key from MARCO PAY.'
+                            : undefined
+                        }
+                        onClick={() => {
+                          setPay(asset)
+                          setError(null)
+                          setStatus('idle')
+                          setWalletStage('idle')
+                          setQuoteSummary(null)
+                          setOrderId(null)
+                        }}
+                        data-testid={`commercial-pay-${asset}`}
+                      >
+                        {asset === 'MARCO_PAY' ? 'MARCO PAY' : asset}
+                        {asset === 'MARCO'
+                          ? ' · +5% CASHBACK'
+                          : asset === 'MARCO_PAY'
+                          ? MARCO_PAY_APPLICATION
+                            ? ' · Passport'
+                            : ' · Provider setup'
+                          : asset === 'M_CREDITS'
+                          ? ' · MARCO Passport'
+                          : ''}
+                      </Chip>
+                    )
+                  },
                 )}
               </ChipRow>
+              {!MARCO_PAY_APPLICATION ? (
+                <Meta style={{ marginTop: 8 }}>
+                  MARCO PAY is awaiting its production application key. BNB, USDT, USDC and MARCO settlement remain
+                  available and receipt-verified.
+                </Meta>
+              ) : null}
               {pay === 'MARCO' ? (
                 <BadgeRow>
                   <Badge $purple>+5% cashback</Badge>
@@ -1439,8 +1422,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   ? `Pay $${totalUsd} with MARCO PAY`
                   : `Pay $${totalUsd} in ${pay} · settlement on BNB Chain`}
               </Meta>
-              {featuredFarm ? <Meta>Featured Farm · {farmTarget} · 50% off</Meta> : null}
-              {featuredPool ? <Meta>Featured Pool · {poolTarget} · 50% off</Meta> : null}
               {checkoutBlocker ? (
                 <Alert $error style={{ marginTop: 10 }}>
                   {checkoutBlocker}
@@ -1492,7 +1473,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           ) : null}
           {error ? <Err data-testid="commercial-checkout-error">{error}</Err> : null}
         </Stack>
-        {step === 'project' ? null : preview}
       </Grid>
     </MelegaModal>
   )

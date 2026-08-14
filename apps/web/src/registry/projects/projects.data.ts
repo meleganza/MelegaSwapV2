@@ -272,7 +272,7 @@ const mm72 = listedBscTokenProject({
   displayName: 'MM72',
   symbol: 'MM72',
   address: '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E',
-  logoUrl: 'https://melega.finance/images/tokens/0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E.png',
+  logoUrl: 'https://mm72.io/assets/mm72-logo-Cids781m.png',
   tagline: 'Listed Melega DEX project token',
   description: 'MM72 is a listed project token on Melega DEX (BNB Smart Chain).',
   sectorTags: ['DeFi'],

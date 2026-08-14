@@ -4,6 +4,7 @@
  */
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import useSWR from 'swr'
 import { suggestionsForQuery, type TokenSuggestion } from 'lib/monetization/sponsorship'
 import { PlacementLabel } from './PlacementLabel'
 
@@ -58,12 +59,55 @@ type Props = {
   testId?: string
 }
 
+type ActiveSponsoredPlacement = {
+  orderId: string
+  projectSlug: string | null
+  projectContract: string | null
+  chainId: number
+  name: string
+  symbol: string
+}
+
+const loadSponsored = async (url: string): Promise<ActiveSponsoredPlacement[]> => {
+  const response = await fetch(url)
+  if (!response.ok) return []
+  const payload = (await response.json()) as { placements?: ActiveSponsoredPlacement[] }
+  return payload.placements ?? []
+}
+
 export const SponsoredSuggestionsStrip: React.FC<Props> = ({
   query = '',
   onSelect,
   testId = 'sponsored-suggestions',
 }) => {
-  const items = useMemo(() => suggestionsForQuery(query), [query])
+  const { data: paidSponsored = [] } = useSWR('/api/trend-boost/active?service=sponsored-research', loadSponsored, {
+    refreshInterval: 30_000,
+    revalidateOnFocus: false,
+  })
+  const items = useMemo(() => {
+    const paid = paidSponsored.map<TokenSuggestion>((placement) => ({
+      kind: 'sponsored',
+      label: 'Sponsored',
+      symbol: placement.symbol,
+      name: placement.name,
+      address: /^0x[a-fA-F0-9]{40}$/.test(placement.projectContract ?? '')
+        ? (placement.projectContract as `0x${string}`)
+        : null,
+      chainId: placement.chainId,
+      href: placement.projectSlug ? `/project-hq/${placement.projectSlug}` : undefined,
+    }))
+    const base = suggestionsForQuery(query).filter((item) => item.kind !== 'sponsored')
+    const normalizedQuery = query.trim().toLowerCase()
+    const visiblePaid = normalizedQuery
+      ? paid.filter(
+          (item) =>
+            item.symbol.toLowerCase().includes(normalizedQuery) ||
+            item.name.toLowerCase().includes(normalizedQuery) ||
+            item.address?.toLowerCase().includes(normalizedQuery),
+        )
+      : paid
+    return [...visiblePaid, ...base]
+  }, [paidSponsored, query])
   if (!items.length) return null
   return (
     <Wrap data-testid={testId} aria-label="Featured, Trending, and Sponsored suggestions">

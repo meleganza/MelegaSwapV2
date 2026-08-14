@@ -67,6 +67,8 @@ export function useLiquidityPositions(enabled = true) {
   const {
     factoryTokenPairs,
     factoryLpBalancesRaw,
+    factoryPairsByAddress,
+    factoryPairAddressByTokenKey,
     factoryPairCount,
     isLoading: factoryLoading,
     factoryEnabled,
@@ -94,8 +96,15 @@ export function useLiquidityPositions(enabled = true) {
   }, [enabled, trackedTokenPairs, factoryTokenPairs, factoryEnabled, factoryPairCount, factoryError])
 
   const tokenPairsWithLiquidityTokens = useMemo(
-    () => discoveryTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [discoveryTokenPairs],
+    () =>
+      discoveryTokenPairs.map((tokens) => {
+        const indexedPairAddress = factoryPairAddressByTokenKey[pairKey(tokens)]
+        const liquidityToken = indexedPairAddress
+          ? new ERC20Token(tokens[0].chainId, indexedPairAddress, 18, 'MLP', 'Melega LP Token')
+          : toV2LiquidityToken(tokens)
+        return { liquidityToken, tokens }
+      }),
+    [discoveryTokenPairs, factoryPairAddressByTokenKey],
   )
 
   const liquidityTokens = useMemo(
@@ -132,19 +141,29 @@ export function useLiquidityPositions(enabled = true) {
   )
 
   const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
+  const factoryOwnedPairsHydrated =
+    liquidityTokensWithBalances.length > 0 &&
+    liquidityTokensWithBalances.every(({ liquidityToken }) =>
+      Boolean(factoryPairsByAddress[liquidityToken.address.toLowerCase()]),
+    )
   const v2IsLoading =
     (!factoryScanComplete && fetchingV2PairBalances) ||
     factoryLoading ||
-    v2Pairs?.length < liquidityTokensWithBalances.length ||
-    Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))
+    (!factoryOwnedPairsHydrated &&
+      (v2Pairs?.length < liquidityTokensWithBalances.length ||
+        Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))))
 
   const v2Positions = useMemo((): LiquidityPositionRow[] => {
     if (!v2Pairs) return []
     const byPair = new Map<string, LiquidityPositionRow>()
-    v2Pairs.forEach((entry) => {
-      const [, pair] = entry
+    liquidityTokensWithBalances.forEach(({ liquidityToken }, index) => {
+      const [, livePair] = v2Pairs[index] ?? []
+      const pair = livePair ?? factoryPairsByAddress[liquidityToken.address.toLowerCase()]
       if (!pair) return
-      const pairAddress = pair.liquidityToken.address
+      // Pair derives a canonical SDK LP address. The Melega indexer is the
+      // authority for historical factory deployments, so retain its real LP
+      // address when associating the wallet balance with the hydrated reserves.
+      const pairAddress = liquidityToken.address
       const userBalance = effectiveV2PairBalances[pairAddress]
       if (!userBalance?.greaterThan(0)) return
       const key = pairAddress.toLowerCase()
@@ -155,14 +174,14 @@ export function useLiquidityPositions(enabled = true) {
         pairLabel: `${pair.token0.symbol} / ${pair.token1.symbol}`,
         lpBalance: userBalance,
         isStable: false,
-        chainId: pair.liquidityToken.chainId,
+        chainId: liquidityToken.chainId,
         pairAddress,
         walletAddress: account,
         ownershipSource: OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
       })
     })
     return [...byPair.values()]
-  }, [v2Pairs, effectiveV2PairBalances, account])
+  }, [v2Pairs, effectiveV2PairBalances, account, factoryPairsByAddress, liquidityTokensWithBalances])
 
   const stablePositions = useMemo((): LiquidityPositionRow[] => {
     if (!stablePairs?.length) return []

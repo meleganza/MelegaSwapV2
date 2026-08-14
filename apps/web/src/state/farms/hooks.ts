@@ -54,7 +54,7 @@ export const usePollFarmsWithUserData = () => {
       const farmsConfig = await getFarmConfig(chainId)
       if (!farmsConfig?.length) return
       const pids = farmsConfig.map((farmToFetch) => farmToFetch.pid)
-      dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: farmFlag }))
+      return dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: farmFlag })).unwrap()
     },
     {
       refreshInterval: farmFlag === 'api' ? 50 * 1000 : SLOW_INTERVAL,
@@ -65,7 +65,7 @@ export const usePollFarmsWithUserData = () => {
   //   ? ['farmsWithUserData', account, proxyAddress, chainId]
   //   : ['farmsWithUserData', account, chainId]
 
-    const name = ['farmsWithUserData', account, chainId]
+  const name = ['farmsWithUserData', account, chainId]
 
   useSWRImmutable(
     // account && chainId && !isProxyContractLoading ? name : null,
@@ -77,7 +77,7 @@ export const usePollFarmsWithUserData = () => {
       // const params = proxyCreated ? { account, pids, proxyAddress, chainId } : { account, pids, chainId }
       const params = { account, pids, chainId }
 
-      dispatch(fetchFarmUserDataAsync(params))
+      return dispatch(fetchFarmUserDataAsync(params)).unwrap()
     },
     {
       refreshInterval: SLOW_INTERVAL,

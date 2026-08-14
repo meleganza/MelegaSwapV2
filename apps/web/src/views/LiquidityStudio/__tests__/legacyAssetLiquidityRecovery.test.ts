@@ -32,10 +32,12 @@ describe('DEX_V1_LEGACY_ASSET_AND_LIQUIDITY_RECOVERY', () => {
   it('wallet LP discovery merges factory pairs', () => {
     const positions = load('liquidityRuntime/useLiquidityPositions.ts')
     const factory = load('liquidityRuntime/useFactoryLiquidityTokenPairs.ts')
-    expect(factory).toContain('/api/indexer/pairs')
-    expect(factory).toContain('fetchAllFactoryPairs')
+    expect(factory).toContain('/api/indexer/liquidity-positions?account=')
+    expect(factory).toContain('factoryPairAddressByTokenKey')
+    expect(factory).toContain('factoryPairsByAddress')
     expect(positions).toContain('useFactoryLiquidityTokenPairs')
     expect(positions).toContain('discoveryTokenPairs')
+    expect(positions).toContain('const pairAddress = liquidityToken.address')
   })
 
   it('does not ship production mock position arrays in recovery hooks', () => {

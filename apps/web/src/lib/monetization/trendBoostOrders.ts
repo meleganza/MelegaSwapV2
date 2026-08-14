@@ -9,10 +9,10 @@ import { get, list, put } from '@vercel/blob'
 import { FEATURED_PAYMENT_TOKENS, FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
 import { isQuoteExpired } from 'lib/featured-placement/quote'
 import {
-  getTrendBoostPackage,
+  getVisibilityPackage,
   MONETIZATION_TREASURY,
   schedulePlacementWindow,
-  type TrendBoostPackageId,
+  type VisibilityProductId,
 } from 'lib/monetization/packages'
 
 export type TrendBoostOrderState =
@@ -34,7 +34,9 @@ export type TrendBoostOrder = {
   projectSlug: string | null
   projectContract: string | null
   buyerWallet: string
-  packageId: TrendBoostPackageId
+  serviceId?: VisibilityProductId
+  targetId?: string | null
+  packageId: string
   durationMs: number
   paymentAsset: FeaturedPayAsset
   usdReferenceAmount: number
@@ -204,8 +206,11 @@ export function createTrendBoostOrder(input: {
   buyerWallet: string
   paymentAsset: FeaturedPayAsset
   packageId?: string | null
+  serviceId?: VisibilityProductId
+  targetId?: string | null
 }): TrendBoostOrder {
-  const pkg = getTrendBoostPackage(input.packageId)
+  const serviceId = input.serviceId ?? 'trend-boost'
+  const pkg = getVisibilityPackage(serviceId, input.packageId)
   const now = new Date().toISOString()
   const order: TrendBoostOrder = {
     schema: 'melega.trend-boost-order.v1',
@@ -215,7 +220,9 @@ export function createTrendBoostOrder(input: {
     projectSlug: input.projectSlug ?? null,
     projectContract: input.projectContract ?? null,
     buyerWallet: input.buyerWallet.toLowerCase(),
-    packageId: pkg.id as TrendBoostPackageId,
+    serviceId,
+    targetId: input.targetId?.trim() || null,
+    packageId: pkg.id,
     durationMs: pkg.durationMs,
     paymentAsset: input.paymentAsset,
     usdReferenceAmount: pkg.usdPrice,

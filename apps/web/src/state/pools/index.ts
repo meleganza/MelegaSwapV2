@@ -434,9 +434,15 @@ export const PoolsSlice = createSlice({
     },
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
-      const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
+      const previousPoolsSousIdMap = keyBy(state.data, 'sousId')
 
-      state.data = livePoolsData;
+      // A public refresh can finish after the wallet request. Preserve the
+      // certified stake, balance and rewards already attached to that pool.
+      state.data = livePoolsData.map((pool) => {
+        const previous = previousPoolsSousIdMap[pool.sousId]
+        if (!previous) return pool
+        return { ...previous, ...pool, userData: previous.userData }
+      })
 
       // state.data = state.data.map((pool) => {
       //   const livePoolData = livePoolsSousIdMap[pool.sousId]
