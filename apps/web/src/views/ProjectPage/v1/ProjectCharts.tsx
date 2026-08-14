@@ -30,11 +30,11 @@ const ChartSkeleton = styled.div<{ $size?: 'compact' | 'hero' | 'full' }>`
   border: 1px solid ${pp.line};
 `
 
-const Timeframes = styled.div`
+const Timeframes = styled.div<{ $inline?: boolean }>`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: ${({ $inline }) => ($inline ? 'nowrap' : 'wrap')};
   gap: 6px;
-  margin: 6px 0 8px;
+  margin: ${({ $inline }) => ($inline ? '0' : '6px 0 8px')};
 `
 
 const TfButton = styled.button<{ $active?: boolean }>`
@@ -120,6 +120,62 @@ const HeroChartWrap = styled.div`
   }
 `
 
+const HeroToolbar = styled.div`
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 2px 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`
+
+const HeroPairTitle = styled.strong`
+  flex: 0 0 auto;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+`
+
+const HeroMetrics = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: max-content;
+`
+
+const HeroMetric = styled.span`
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0 7px;
+  border: 1px solid ${pp.line};
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: ${pp.mute2};
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  strong {
+    color: #fff;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+`
+
 type UiWindow = '1H' | '24H' | '7D' | '30D' | 'ALL'
 
 const TIMEFRAMES: { id: UiWindow; label: string; interval: OhlcvCandle['interval']; limit: number }[] = [
@@ -138,6 +194,9 @@ interface Props {
   /** V6: parent reclaim chart space when no factual history. */
   onHistoryAvailability?: (available: boolean) => void
   chainId?: number
+  /** V7: keeps pair, timeframe and compact market truth on the chart's single toolbar. */
+  heroPairLabel?: string
+  heroMetrics?: Array<{ label: string; value: string }>
 }
 
 function resolveChartPair(
@@ -161,6 +220,8 @@ const ProjectCharts: React.FC<Props> = ({
   pairAddress: pairProp,
   onHistoryAvailability,
   chainId = 56,
+  heroPairLabel,
+  heroMetrics,
 }) => {
   const compact = variant === 'compact'
   const hero = variant === 'hero'
@@ -205,6 +266,7 @@ const ProjectCharts: React.FC<Props> = ({
 
   const timeframeRow = (
     <Timeframes
+      $inline={hero && Boolean(heroMetrics?.length)}
       role="group"
       aria-label="Chart timeframe"
       data-testid={hero ? 'project-v3-chart-timeframes' : 'project-v1-chart-timeframes'}
@@ -252,11 +314,28 @@ const ProjectCharts: React.FC<Props> = ({
   if (hero) {
     return (
       <HeroChartWrap data-testid="project-v5-chart-panel" data-chart-variant="hero">
-        <BandHead style={{ marginBottom: 4 }}>
-          <BandMeta>{pairLabel}</BandMeta>
-          {priceText ? <PriceLine style={{ fontSize: 16 }}>{priceText}</PriceLine> : null}
-        </BandHead>
-        {timeframeRow}
+        {heroMetrics?.length ? (
+          <HeroToolbar data-testid="project-v7-chart-toolbar">
+            <HeroPairTitle>{heroPairLabel || pairLabel}</HeroPairTitle>
+            {timeframeRow}
+            <HeroMetrics data-testid="project-v7-chart-metrics">
+              {heroMetrics.map((metric) => (
+                <HeroMetric key={metric.label} title={`${metric.label}: ${metric.value}`}>
+                  {metric.label}
+                  <strong>{metric.value}</strong>
+                </HeroMetric>
+              ))}
+            </HeroMetrics>
+          </HeroToolbar>
+        ) : (
+          <>
+            <BandHead style={{ marginBottom: 4 }}>
+              <BandMeta>{pairLabel}</BandMeta>
+              {priceText ? <PriceLine style={{ fontSize: 16 }}>{priceText}</PriceLine> : null}
+            </BandHead>
+            {timeframeRow}
+          </>
+        )}
         {showPlaceholder ? (
           <ElegantPlaceholder
             $hero={false}

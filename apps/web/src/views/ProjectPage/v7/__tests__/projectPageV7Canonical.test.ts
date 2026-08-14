@@ -38,9 +38,8 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
       'data-testid="project-v7-hero"',
       'data-testid="project-v7-about"',
       'data-testid="project-v7-community-react"',
-      'data-testid="project-v7-market"',
+      'data-testid="project-v7-chart"',
       'data-testid="project-v7-economy"',
-      'data-testid="project-v7-market-intelligence"',
       'data-testid="project-v7-boost"',
       'data-testid="project-v7-related"',
     ]
@@ -71,28 +70,35 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).toContain('project-v7-attestation-${item.id}')
   })
 
-  it('keeps indexed analytics inside the chart workspace without a duplicate market band', () => {
-    expect(shell).toContain('<MarketStrip data-testid="project-v7-market"')
+  it('keeps periods and indexed analytics on the chart toolbar without a duplicate market strip', () => {
+    const charts = load('views/ProjectPage/v1/ProjectCharts.tsx')
+    expect(shell).not.toContain('<MarketStrip')
+    expect(shell).toContain('heroPairLabel={pairLabel}')
+    expect(shell).toContain('heroMetrics={marketMetrics.map')
+    expect(charts).toContain('project-v7-chart-toolbar')
+    expect(charts).toContain('project-v7-chart-metrics')
     expect(shell).toContain('project-v7-multi-dex')
     expect(shell).toContain('dexMarket?.liquidityUsd')
-    expect(shell).toContain("['Price', livePrice]")
-    expect(shell).toContain("['Vol 24H', liveVolume]")
-    expect(shell).toContain("['Transactions', liveTransactions]")
-    expect(shell).toContain("['Market Cap', liveMarketCap]")
+    expect(shell).toContain("['PRICE', livePrice]")
+    expect(shell).toContain("['VOL', liveVolume]")
+    expect(shell).toContain("['TX', liveTransactions]")
+    expect(shell).toContain("['MC', liveMarketCap]")
     expect(shell).toContain('<BandTitle>Latest Transactions</BandTitle>')
     expect(shell).not.toContain('All DEX Markets')
     expect(shell).not.toContain('Loading multi-DEX markets')
     expect(shell).not.toContain('<strong>⚡ Smart Swap</strong>')
   })
 
-  it('keeps liquidity beside holders, earn distributions aligned, and five boost actions in one row', () => {
+  it('keeps farms, pools, liquidity and holders in one four-card row without duplicate Earn chrome', () => {
     expect(shell).toContain('project-v7-liquidity-distribution')
-    expect(shell).toContain('project-v7-market-intelligence')
-    expect(shell).toContain('MarketIntelligenceGrid')
+    expect(shell).toContain('EconomyOverview')
+    expect(shell).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))')
     expect(shell).toContain('project-v7-holders-dist')
     expect(shell).toContain('Top 100 holders')
     expect(shell).toContain('ADD LIQUIDITY')
-    expect(shell).toContain('<BandTitle>Earn</BandTitle>')
+    expect(shell).not.toContain('<BandTitle>Earn</BandTitle>')
+    expect(shell).not.toContain('MarketIntelligenceGrid')
+    expect(shell).toContain('overflow-x: hidden')
     expect(shell).not.toContain('Earn & Liquidity')
     expect(shell).toContain('project-v7-create-farm')
     expect(shell).toContain('project-v7-create-pool')

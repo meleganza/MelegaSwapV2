@@ -282,24 +282,6 @@ const WorkspacePanel = styled.div`
   border: 1px solid ${pp.line};
   background: linear-gradient(180deg, rgba(15, 15, 15, 0.99), rgba(8, 8, 8, 0.99));
 `
-const WorkspaceHead = styled.div`
-  min-height: 42px;
-  padding: 8px 12px;
-  border-bottom: 1px solid ${pp.line};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: #fff;
-
-  strong {
-    font-size: 13px;
-  }
-  span {
-    color: ${pp.mute2};
-    font-size: 11px;
-  }
-`
 const LogoWrap = styled.div`
   position: relative;
   width: 56px;
@@ -509,16 +491,16 @@ const ContractAddr = styled.span`
 `
 const ChartSlot = styled.div<{ $collapsed?: boolean }>`
   flex: 0 0 auto;
-  min-height: ${({ $collapsed }) => ($collapsed ? '0' : '180px')};
+  min-height: ${({ $collapsed }) => ($collapsed ? '0' : '205px')};
   padding: ${({ $collapsed }) => ($collapsed ? '6px 10px 0' : '8px 10px 4px')};
   border-bottom: ${({ $collapsed }) => ($collapsed ? '0' : `1px solid ${pp.line}`)};
   @media (min-width: 960px) {
-    min-height: ${({ $collapsed }) => ($collapsed ? '0' : '255px')};
+    min-height: ${({ $collapsed }) => ($collapsed ? '0' : '295px')};
 
     [data-trade-chart-area] {
-      height: 165px !important;
-      min-height: 165px !important;
-      max-height: 180px !important;
+      height: 205px !important;
+      min-height: 205px !important;
+      max-height: 220px !important;
     }
   }
 `
@@ -534,51 +516,18 @@ const SwapSlot = styled.div<{ $expand?: boolean }>`
     padding: 0;
   }
 `
-const MarketStrip = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  @media (min-width: 960px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-`
-const StripCell = styled.div`
-  min-width: 0;
-  padding: 9px 10px;
-  border-right: 1px solid ${pp.line};
-  border-top: 1px solid ${pp.line};
-  &:last-child {
-    border-right: 0;
-  }
-`
-const StripLabel = styled.div`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: ${pp.mute2};
-  margin-bottom: 3px;
-`
-const StripValue = styled.div<{ $tone?: 'up' | 'down' | 'mute' }>`
-  min-width: 0;
-  overflow-wrap: anywhere;
-  font-size: 13px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: ${({ $tone }) => ($tone === 'up' ? pp.ok : $tone === 'down' ? pp.bad : $tone === 'mute' ? pp.mute : '#fff')};
-  white-space: normal;
-`
 const DexCompactRow = styled.div`
   min-height: 34px;
   padding: 6px 10px;
   border-top: 1px solid ${pp.line};
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
-  overflow-x: auto;
+  overflow-x: hidden;
   color: ${pp.mute};
   font-size: 10px;
-  white-space: nowrap;
+  white-space: normal;
   strong {
     margin-left: 4px;
     color: rgba(255, 255, 255, 0.82);
@@ -602,12 +551,17 @@ const DexSourceLink = styled.a`
     margin-left: 0;
   }
 `
-const EconomyGrid = styled.div`
+const EconomyOverview = styled.section`
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1180px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 const EconomyCard = styled.div`
@@ -687,17 +641,9 @@ const DistributionLegend = styled.div`
   }
 `
 const ActivityBlock = styled.div`
+  flex: 1 1 auto;
   padding: 10px 12px 12px;
   border-top: 1px solid ${pp.line};
-`
-const MarketIntelligenceGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-
-  @media (min-width: 860px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 `
 const ActivityRow = styled.div`
   display: grid;
@@ -1183,7 +1129,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
         const assets = (r.assetAddresses || []).map((a) => a.toLowerCase())
         return assets.includes(addr) || r.contractAddress?.toLowerCase() === addr
       })
-      .slice(0, 5)
+      .slice(0, 7)
   }, [activityFeed.rows, contract])
 
   const featuredPkg = getFeaturedPackage('featured_1w')
@@ -1317,10 +1263,10 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
       ? market.marketCap
       : '—'
   const marketMetrics = [
-    ['Price', livePrice],
-    ['Vol 24H', liveVolume],
-    ['Transactions', liveTransactions],
-    ['Market Cap', liveMarketCap],
+    ['PRICE', livePrice],
+    ['VOL', liveVolume],
+    ['TX', liveTransactions],
+    ['MC', liveMarketCap],
   ] as [string, string, ('up' | 'down' | 'mute')?][]
 
   return (
@@ -1602,12 +1548,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
             data-project-concept="market-first-project-hq"
           >
             <WorkspacePanel data-testid="project-v7-terminal">
-              <WorkspaceHead>
-                <strong>{pairLabel}</strong>
-                <span>Live market · All indexed DEXs</span>
-              </WorkspaceHead>
               <ChartSlot
                 data-testid="project-v7-chart"
+                data-project-section="market"
                 $collapsed={chartHistory === false}
                 data-chart-history={chartHistory === false ? 'unavailable' : 'available'}
               >
@@ -1619,19 +1562,13 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                     pairAddress={dexMarket?.primaryPairAddress ?? market.pairAddress}
                     chainId={chainId}
                     onHistoryAvailability={setChartHistory}
+                    heroPairLabel={pairLabel}
+                    heroMetrics={marketMetrics.map(([label, value]) => ({ label, value }))}
                   />
                 ) : (
                   <ChartSkeleton aria-label="Loading chart" />
                 )}
               </ChartSlot>
-              <MarketStrip data-testid="project-v7-market" data-project-section="market">
-                {marketMetrics.map(([label, value, tone]) => (
-                  <StripCell key={label} title={`${label}: ${value}`}>
-                    <StripLabel>{label}</StripLabel>
-                    <StripValue $tone={tone}>{value}</StripValue>
-                  </StripCell>
-                ))}
-              </MarketStrip>
               <ActivityBlock data-testid="project-v7-activity">
                 <BandHead>
                   <BandTitle>Latest Transactions</BandTitle>
@@ -1690,106 +1627,93 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
 
       {belowFold ? (
         <>
-          <DenseBand data-testid="project-v7-economy" data-project-section="economy">
-            <BandHead>
-              <BandTitle>Earn</BandTitle>
-              <BandMeta>
-                <MelegaExploreChainBadge chainId={chainId} />
-              </BandMeta>
-            </BandHead>
-            <EconomyGrid>
-              <EconomyCard data-testid="project-v7-economy-farms">
-                <EconomyTitle>Farms</EconomyTitle>
-                <DistributionSummary
-                  items={projectYield.farms.items}
-                  total={fullUsd(projectYield.farms.totalTvlUsd)}
-                  emptyLabel={projectYield.farms.loading ? 'Indexing farms…' : 'No active farms for this token.'}
-                />
-                <YieldDetails items={projectYield.farms.items} />
-                <Btn $ghost href={`/farms?create=1&chain=${chainId}`} data-testid="project-v7-create-farm">
-                  CREATE FARM
+          <EconomyOverview data-testid="project-v7-economy" data-project-section="economy">
+            <EconomyCard data-testid="project-v7-economy-farms">
+              <EconomyTitle>Farms</EconomyTitle>
+              <DistributionSummary
+                items={projectYield.farms.items}
+                total={fullUsd(projectYield.farms.totalTvlUsd)}
+                emptyLabel={projectYield.farms.loading ? 'Indexing farms…' : 'No active farms for this token.'}
+              />
+              <YieldDetails items={projectYield.farms.items} />
+              <Btn $ghost href={`/farms?create=1&chain=${chainId}`} data-testid="project-v7-create-farm">
+                CREATE FARM
+              </Btn>
+            </EconomyCard>
+            <EconomyCard data-testid="project-v7-economy-pools">
+              <EconomyTitle>Pools</EconomyTitle>
+              <DistributionSummary
+                items={projectYield.pools.items}
+                total={fullUsd(projectYield.pools.totalTvlUsd)}
+                emptyLabel={projectYield.pools.loading ? 'Indexing pools…' : 'No active pools for this token.'}
+              />
+              <YieldDetails items={projectYield.pools.items} />
+              <Btn $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
+                CREATE POOL
+              </Btn>
+            </EconomyCard>
+            <EconomyCard data-testid="project-v7-liquidity-distribution">
+              <BandHead>
+                <EconomyTitle>Liquidity</EconomyTitle>
+                <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
+                  ADD LIQUIDITY
                 </Btn>
-              </EconomyCard>
-              <EconomyCard data-testid="project-v7-economy-pools">
-                <EconomyTitle>Pools</EconomyTitle>
-                <DistributionSummary
-                  items={projectYield.pools.items}
-                  total={fullUsd(projectYield.pools.totalTvlUsd)}
-                  emptyLabel={projectYield.pools.loading ? 'Indexing pools…' : 'No active pools for this token.'}
-                />
-                <YieldDetails items={projectYield.pools.items} />
-                <Btn $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
-                  CREATE POOL
-                </Btn>
-              </EconomyCard>
-            </EconomyGrid>
-          </DenseBand>
-
-          <DenseBand data-testid="project-v7-market-intelligence" data-project-section="market-intelligence">
-            <MarketIntelligenceGrid>
-              <EconomyCard data-testid="project-v7-liquidity-distribution">
-                <BandHead>
-                  <EconomyTitle>Liquidity</EconomyTitle>
-                  <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
-                    ADD LIQUIDITY
-                  </Btn>
-                </BandHead>
-                <DistributionSummary
-                  items={(dexMarket?.pairs ?? []).map((pair) => ({
-                    id: pair.pairAddress,
-                    label: pair.label,
-                    tvlUsd: pair.liquidityUsd,
-                    sharePct: pair.liquiditySharePct,
-                  }))}
-                  total={liveLiquidity}
-                  emptyLabel="Liquidity distribution unavailable."
-                />
-                {dexMarket ? (
-                  <DexCompactRow data-testid="project-v7-multi-dex">
-                    <span>
-                      DEXs<strong>{dexMarket.dexCount.toLocaleString()}</strong>
+              </BandHead>
+              <DistributionSummary
+                items={(dexMarket?.pairs ?? []).map((pair) => ({
+                  id: pair.pairAddress,
+                  label: pair.label,
+                  tvlUsd: pair.liquidityUsd,
+                  sharePct: pair.liquiditySharePct,
+                }))}
+                total={liveLiquidity}
+                emptyLabel="Liquidity distribution unavailable."
+              />
+              {dexMarket ? (
+                <DexCompactRow data-testid="project-v7-multi-dex">
+                  <span>
+                    DEXs<strong>{dexMarket.dexCount.toLocaleString()}</strong>
+                  </span>
+                  <span>
+                    Pairs<strong>{dexMarket.pairCount.toLocaleString()}</strong>
+                  </span>
+                  {dexMarket.venues.slice(0, 4).map((venue) => (
+                    <span key={venue.dexId}>
+                      {venue.dexId}
+                      <strong>{venue.pairCount}</strong>
                     </span>
-                    <span>
-                      Pairs<strong>{dexMarket.pairCount.toLocaleString()}</strong>
-                    </span>
-                    {dexMarket.venues.slice(0, 4).map((venue) => (
-                      <span key={venue.dexId}>
-                        {venue.dexId}
-                        <strong>{venue.pairCount}</strong>
-                      </span>
-                    ))}
-                    {dexAnalytics.data?.sourceUrl ? (
-                      <DexSourceLink href={dexAnalytics.data.sourceUrl} target="_blank" rel="noreferrer">
-                        Source ↗
-                      </DexSourceLink>
-                    ) : null}
-                  </DexCompactRow>
-                ) : null}
-              </EconomyCard>
-              <EconomyCard data-testid="project-v7-holders">
-                <EconomyTitle>Holders</EconomyTitle>
-                <HolderDonutWrap>
-                  <HolderDonut aria-label="Indexed holder count">
-                    <strong>{dash(market.holders)}</strong>
-                  </HolderDonut>
-                  <HolderLegend data-testid="project-v7-holders-dist">
-                    {['Pools', 'Smart contracts', 'Team', 'Top 100 holders', 'Wallet holders'].map(
-                      (category, index) => (
-                        <HolderLegendRow key={category}>
-                          <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
-                          <span>{category}</span>
-                          <strong>—</strong>
-                        </HolderLegendRow>
-                      ),
-                    )}
-                  </HolderLegend>
-                </HolderDonutWrap>
-                <Muted style={{ margin: 0, fontSize: 10 }}>
-                  Total holders are indexed when available; holder-type percentages are not yet indexed.
-                </Muted>
-              </EconomyCard>
-            </MarketIntelligenceGrid>
-          </DenseBand>
+                  ))}
+                  {dexAnalytics.data?.sourceUrl ? (
+                    <DexSourceLink href={dexAnalytics.data.sourceUrl} target="_blank" rel="noreferrer">
+                      Source ↗
+                    </DexSourceLink>
+                  ) : null}
+                </DexCompactRow>
+              ) : null}
+            </EconomyCard>
+            <EconomyCard data-testid="project-v7-holders">
+              <EconomyTitle>Holders</EconomyTitle>
+              <HolderDonutWrap>
+                <HolderDonut aria-label="Indexed holder count">
+                  <strong>{dash(market.holders)}</strong>
+                </HolderDonut>
+                <HolderLegend data-testid="project-v7-holders-dist">
+                  {['Pools', 'Smart contracts', 'Team', 'Top 100 holders', 'Wallet holders'].map(
+                    (category, index) => (
+                      <HolderLegendRow key={category}>
+                        <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
+                        <span>{category}</span>
+                        <strong>—</strong>
+                      </HolderLegendRow>
+                    ),
+                  )}
+                </HolderLegend>
+              </HolderDonutWrap>
+              <Muted style={{ margin: 0, fontSize: 10 }}>
+                Total holders are indexed when available; holder-type percentages are not yet indexed.
+              </Muted>
+            </EconomyCard>
+          </EconomyOverview>
 
           <DenseBand data-testid="project-v7-boost" data-project-section="boost">
             <BoostConsole data-testid="project-v7-boost-console">
