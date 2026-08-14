@@ -27,14 +27,14 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(bytes.length).toBe(FARMS_FOUNDER_MOCKUP.bytes)
   })
 
-  it('locks Hero geometry contracts (1376×260 / 440+48+480+48+360)', () => {
+  it('locks Hero geometry contracts (1376×260 / 440+24+480+24+360)', () => {
     expect(farmsHero.heroW).toBe('1376px')
     expect(farmsHero.heroH).toBe('260px')
     expect(farmsHero.topAfterTrending).toBe('24px')
     expect(farmsHero.leftW).toBe('440px')
     expect(farmsHero.artworkW).toBe('480px')
     expect(farmsHero.trustW).toBe('360px')
-    expect(farmsHero.columnGap).toBe('48px')
+    expect(farmsHero.columnGap).toBe('24px')
     expect(farmsHero.trustBoxW).toBe('360px')
     expect(farmsHero.trustBoxH).toBe('230px')
     const sum =
@@ -43,13 +43,13 @@ describe('FARMS_MODULE_001 Hero', () => {
       parseInt(farmsHero.artworkW, 10) +
       parseInt(farmsHero.columnGap, 10) +
       parseInt(farmsHero.trustW, 10)
-    expect(sum).toBe(1376)
+    expect(sum).toBe(1328)
   })
 
   it('ships locked factual copy without runtime KPIs or forbidden claims', () => {
     expect(FARMS_HERO_COPY.title).toBe('Farms')
     expect(FARMS_HERO_COPY.description).toBe('Stake LP tokens.\nEarn farming rewards.\nGrow liquidity.')
-    expect(FARMS_HERO_COPY.primaryCta).toBe('Explore Farms')
+    expect(FARMS_HERO_COPY.primaryCta).toBe('Create Farm')
     expect(FARMS_HERO_COPY.trustTitle).toBe('Why Farm on Melega DEX?')
     expect(FARMS_HERO_COPY.trustItems).toHaveLength(4)
     expect(FARMS_HERO_COPY.trustItems.map((i) => i.title)).toEqual([
@@ -89,7 +89,7 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(screen).toContain('FarmsHeroModule')
     expect(screen).toContain('data-farms-module-001="mounted"')
     expect(screen).toContain('FarmsMyFarmsModule')
-    expect(screen).toContain('FarmsYieldAdvisorModule')
+    expect(screen).toContain('FarmsExploreFarmsModule')
     expect(screen).not.toContain('AIYieldAdvisorPanel')
     expect(screen).not.toContain('FarmsStudioPageHeader')
     // Modules 002–008 may mount after Hero; Modules 009+ remain forbidden here.
@@ -134,7 +134,7 @@ describe('FARMS_MODULE_001 Hero', () => {
     const art = load('modules/FarmsHeroArtwork.tsx')
     expect(art).toContain('LP Pair')
     expect(art).toContain('Farm')
-    expect(art).toContain('Reward Token')
+    expect(art).toMatch(/Reward Token|MARCO Rewards/)
     expect(art).not.toContain('PoolsStudio')
     expect(art).toContain('aria-hidden')
     // Ban readable fake yield figures (CSS % units are allowed).

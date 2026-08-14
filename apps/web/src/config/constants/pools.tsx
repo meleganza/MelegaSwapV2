@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber'
-import { Pool } from '@pancakeswap/uikit'
+import type { Pool } from '@pancakeswap/uikit'
 import { SerializedWrappedToken } from '@pancakeswap/token-lists'
 import Trans from 'components/Trans'
 import { VaultKey } from 'state/types'
@@ -2623,6 +2623,12 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
   stakingToken: p.stakingToken.serialize,
   earningToken: p.earningToken.serialize,
 }))
+
+/** Arbitrum — no fabricated sous pools; factual inventory empty until Founder supplies pool contracts. */
+export const livePools42161: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = []
+
+/** Avalanche — no fabricated sous pools; factual inventory empty until Founder supplies pool contracts. */
+export const livePools43114: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = []
 
 // known finished pools
 const finishedPools = [

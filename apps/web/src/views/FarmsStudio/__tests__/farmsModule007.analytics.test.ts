@@ -103,10 +103,9 @@ describe('FARMS_MODULE_007 Analytics', () => {
 
   it('mounts Module 007 after Yield Advisor; Modules 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('FarmsAnalyticsModule')
-    expect(screen).toContain('data-farms-module-007="mounted"')
-    expect(screen.indexOf('FarmsYieldAdvisorModule')).toBeLessThan(screen.indexOf('FarmsAnalyticsModule'))
-    expect(screen).not.toContain('data-farms-module="009"')
+    expect(screen).not.toContain('FarmsAnalyticsModule')
+    expect(screen).toContain('data-farms-module-007="unmounted"')
+        expect(screen).not.toContain('data-farms-module="009"')
     expect(screen).not.toContain('FarmsIntegrationModule')
   })
 

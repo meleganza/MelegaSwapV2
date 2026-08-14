@@ -1,88 +1,67 @@
 /**
- * UX002 — Premium mobile Project Page consumer experience.
+ * UX002 — Premium Project Page experience (Zero Rebuild V1).
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
 
 const ROOT = path.join(__dirname, '../../../../')
-const CONSUMER = path.join(ROOT, 'views/ProjectPage/consumer')
+const V1 = path.join(ROOT, 'views/ProjectPage/v1')
 const IDENTITY = path.join(ROOT, 'registry/projects/identity')
 
-describe('UX002 premium mobile consumer IA', () => {
-  it('sticky nav includes Buy, Community, and Security renamed in trust section', () => {
-    const nav = readFileSync(path.join(CONSUMER, 'ProjectStickyNav.tsx'), 'utf8')
-    expect(nav).toContain("'buy'")
-    expect(nav).toContain("'community'")
-    expect(nav).toContain("'about'")
-    expect(nav).not.toContain("'swap'")
-    expect(nav).toMatch(/Overview|Chart|Buy|About|Community|Tokenomics|Roadmap|Earn|More/)
-    expect(nav).toContain('44px')
-
-    const trust = readFileSync(path.join(CONSUMER, 'ProjectTransparencySummary.tsx'), 'utf8')
-    expect(trust).toContain('Security & Transparency')
-    expect(trust).toContain('View technical report')
-    expect(trust).not.toContain('View technical transparency report')
+describe('UX002 premium Project Page V1 IA', () => {
+  it('is one dense long page without sticky tab navigation', () => {
+    const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
+    const trading = readFileSync(path.join(V1, 'ProjectTradingEmbed.tsx'), 'utf8')
+    expect(shell).toContain('data-project-nav="none"')
+    expect(shell).toContain('data-project-rebuild="zero-rebuild-v1"')
+    expect(shell).not.toContain('ProjectStickyNav')
+    expect(shell).toContain('data-project-section="identity-hero"')
+    expect(shell).toContain('data-project-section="live-market"')
+    expect(trading).toContain('data-project-section="trading"')
+    expect(shell).toContain('data-project-section="featured-promotion"')
   })
 
-  it('shell order places Community after About and Buy before About', () => {
-    const shell = readFileSync(path.join(CONSUMER, 'ProjectConsumerShell.tsx'), 'utf8')
-    const aboutIdx = shell.indexOf('id="about"')
-    const communityIdx = shell.indexOf('id="community"')
-    const buyIdx = shell.indexOf('id="buy"')
-    const chartIdx = shell.indexOf('id="chart"')
-    const trustIdx = shell.indexOf('id="trust"')
-    const earnIdx = shell.indexOf('id="earn"')
-
-    expect(chartIdx).toBeGreaterThan(-1)
-    expect(buyIdx).toBeGreaterThan(chartIdx)
-    expect(aboutIdx).toBeGreaterThan(buyIdx)
-    expect(communityIdx).toBeGreaterThan(aboutIdx)
-    expect(earnIdx).toBeGreaterThan(communityIdx)
-    expect(trustIdx).toBeGreaterThan(earnIdx)
-    expect(shell).not.toContain('ProjectMarketSnapshot')
-    expect(shell).not.toContain('ProjectUtilitiesSection')
+  it('section order places in-hero Smart Swap, then market, chart, project', () => {
+    const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
+    const heroIdx = shell.indexOf('data-project-section="identity-hero"')
+    const tradingCompIdx = shell.indexOf('<ProjectTradingEmbed')
+    const marketIdx = shell.indexOf('data-project-section="live-market"')
+    const chartsCompIdx = shell.indexOf('<ProjectCharts')
+    const projectIdx = shell.indexOf('data-project-section="project"')
+    const featuredIdx = shell.indexOf('data-project-section="featured-promotion"')
+    expect(heroIdx).toBeGreaterThan(-1)
+    expect(tradingCompIdx).toBeGreaterThan(heroIdx)
+    expect(marketIdx).toBeGreaterThan(tradingCompIdx)
+    expect(chartsCompIdx).toBeGreaterThan(marketIdx)
+    expect(projectIdx).toBeGreaterThan(chartsCompIdx)
+    expect(featuredIdx).toBeGreaterThan(projectIdx)
   })
 
-  it('hero promotes Buy MARCO and removes dense social row', () => {
-    const hero = readFileSync(path.join(CONSUMER, 'ProjectHero.tsx'), 'utf8')
-    expect(hero).toContain('getBuyCtaLabel')
-    expect(hero).toContain('#buy')
-    expect(hero).toContain('92px')
-    expect(hero).not.toContain('SocialRow')
-    expect(hero).not.toContain('SocialLink')
-
-    const helpers = readFileSync(path.join(CONSUMER, 'helpers.ts'), 'utf8')
-    expect(helpers).toContain("'Buy MARCO'")
+  it('hero includes Buy/Trade CTAs and contract copy', () => {
+    const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
+    expect(shell).toContain('project-v1-buy')
+    expect(shell).toContain('project-v1-trade')
+    expect(shell).toContain('project-v1-copy-contract')
+    expect(shell).not.toContain('Owner access')
   })
 
-  it('buy card rebrand and microcopy', () => {
-    const buy = readFileSync(path.join(CONSUMER, 'ProjectSwapCard.tsx'), 'utf8')
-    expect(buy).toContain('getBuySectionTitle')
-    expect(buy).toContain('Buy with BNB on')
-    expect(buy).toContain('SmartSwapForm')
-    expect(buy).not.toMatch(/>\s*Swap\s*</)
-
-    const helpers = readFileSync(path.join(CONSUMER, 'helpers.ts'), 'utf8')
-    expect(helpers).toContain("'Buy MARCO'")
+  it('trading embed reuses SmartSwapForm', () => {
+    const buy = readFileSync(path.join(V1, 'ProjectTradingEmbed.tsx'), 'utf8')
+    const island = readFileSync(path.join(V1, 'ProjectSwapFormIsland.tsx'), 'utf8')
+    expect(buy).toContain('ProjectSwapFormIsland')
+    expect(island).toContain('SmartSwapForm')
+    expect(island).toContain('views/Swap/SmartSwap')
   })
 
-  it('tokenomics shows Publishing soon for unpublished states', () => {
-    const tok = readFileSync(path.join(CONSUMER, 'ProjectTokenomicsSection.tsx'), 'utf8')
-    expect(tok).toContain('Publishing soon')
-    expect(tok).not.toMatch(/Tokenomics data is unavailable/i)
+  it('theme is dense with reduced empty space', () => {
+    const theme = readFileSync(path.join(V1, 'theme.ts'), 'utf8')
+    expect(theme).toContain('max-width: 1180px')
+    expect(theme).toContain('margin: 0 0 10px')
+    expect(theme).toContain('grid-template-columns')
   })
 
-  it('theme spacing and motion respect reduced motion', () => {
-    const theme = readFileSync(path.join(CONSUMER, 'theme.ts'), 'utf8')
-    // DS001.1 — body 16px / section gap on allow-list; motion retained from UX002.
-    expect(theme).toMatch(/ds001TypeRoles\.body\.size|BODY_SIZE/)
-    expect(theme).toContain('ds001Spacing')
-    expect(theme).toContain('prefers-reduced-motion')
-    expect(theme).toContain('fadeInUp')
-  })
-
-  it('no registry schema or builder edits in identity layer', () => {
+  it('no registry schema or builder edits required for shell', () => {
     const schemaPaths = [
       'tokenomics/schema.ts',
       'roadmap/schema.ts',
@@ -93,7 +72,7 @@ describe('UX002 premium mobile consumer IA', () => {
       const full = path.join(IDENTITY, rel)
       expect(() => readFileSync(full, 'utf8')).not.toThrow()
     }
-    const shell = readFileSync(path.join(CONSUMER, 'ProjectConsumerShell.tsx'), 'utf8')
+    const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
     expect(shell).not.toContain('buildProjectTokenomicsDocument')
     expect(shell).not.toContain('buildProjectRoadmapDocument')
   })

@@ -28,6 +28,9 @@ export const FACTORY_ADDRESS_MAP: Record<number, string> = {
   [ChainId.BSC_TESTNET]: "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
   [ChainId.BASE]: "0x78fA7Fa39CF6544DD9768A75d8Ad8C45854aE530",
   [ChainId.POLYGON]: "0x2541DBEa199a22501D75EA141627776Bd4EefC80",
+  [ChainId.ARBITRUM]: "0x816ddf4e751dfe6a5e65837f721c5fd971108ede",
+  /** Avalanche PREPARING — factual unused Factory; required so Pair.getAddress never crashes */
+  [ChainId.AVAX]: "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
 }
 export const INIT_CODE_HASH = '0x5547397b1a1ae1e97b89728e7a77fdc2a6b167647566f81793b3b72fb8fde0f5'
 
@@ -37,6 +40,9 @@ export const INIT_CODE_HASH_MAP: Record<number, string> = {
   [ChainId.BSC_TESTNET]: "0x57224589c67f3f30a6b0d7ffa1c4d31a992c0afd7db71bd78779ba44415c0fba",
   [ChainId.BASE]: "0x1e6e24914b2abfdd5ec33609095c9b570a9e1dc137992c0995bb45f57cf1932a",
   [ChainId.POLYGON]: "0x8c114e6d042bd14975f9a4dfbeb0c15c35a0b30acf8e0bd3432b551b131c46b1",
+  [ChainId.ARBITRUM]: "0x123df41ea13c641f83ba2697ca5238ee7c981d281c2b18dd1a5b34c0408c80cc",
+  /** keccak256(pair creation bytecode) from Avalanche Factory runtime slice [1730:10800] */
+  [ChainId.AVAX]: "0x61d8b54c70e4fa58ec2fa33190002b375d3e6e19d891be1b158ba25e0886eea2",
 }
 
 export const WETH9 = {

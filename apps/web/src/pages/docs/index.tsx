@@ -6,17 +6,8 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
-import {
-  MELEGA_FACTORY_BSC,
-  MELEGA_ROUTER_BSC,
-  MELEGA_CHAIN_ID,
-} from 'lib/bsc-indexer/constants'
-import {
-  uxRebuildColors,
-  uxRebuildFont,
-  uxRebuildLayout,
-  uxRebuildRadius,
-} from 'design-system/melega/tokens/uxRebuild'
+import { MELEGA_FACTORY_BSC, MELEGA_ROUTER_BSC, MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import { uxRebuildColors, uxRebuildFont, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 
 type DocSection = {
   id: string
@@ -53,8 +44,62 @@ const SECTIONS: DocSection[] = [
   {
     id: 'ai-liquidity-builder',
     title: 'AI Liquidity Builder',
-    href: '/liquidity-studio',
-    body: 'Liquidity Building (AI Liquidity Builder) guides pair/setup readiness and activation checks. It monitors contracts and runtime gates; it does not invent APR, TVL, or guaranteed launch outcomes.',
+    href: '/docs/liquidity-builder',
+    body: 'Knowledge center for AI Liquidity Builder — automatically grow and optimize your token liquidity. Product surface: /liquidity-studio. Guides under /docs/liquidity-builder/.',
+  },
+  {
+    id: 'lb-overview',
+    title: 'LB Overview',
+    href: '/docs/liquidity-builder/overview',
+    body: 'Founder overview of Token to Grow, Create Market Against, Token Reserve, goals, and strategies.',
+  },
+  {
+    id: 'lb-how-it-works',
+    title: 'LB How it Works',
+    href: '/docs/liquidity-builder/how-it-works',
+    body: 'Seven steps from choosing a token to activating a program and monitoring the portfolio.',
+  },
+  {
+    id: 'lb-token-reserve',
+    title: 'Token Reserve',
+    href: '/docs/liquidity-builder/token-reserve',
+    body: 'Token Reserve is the project-token amount deposited into Liquidity Builder. It is not a WBNB budget. Create Market Against stays separate.',
+  },
+  {
+    id: 'lb-liquidity-goals',
+    title: 'Liquidity Goals',
+    href: '/docs/liquidity-builder/liquidity-goals',
+    body: 'Steady Growth, Deeper Market, and Launch Support — founder goals with plain-language tooltips.',
+  },
+  {
+    id: 'lb-strategies',
+    title: 'Liquidity Strategies',
+    href: '/docs/liquidity-builder/strategies',
+    body: 'Conservative, Balanced, AI Optimized, and Aggressive presets map to existing on-chain strategy modes without changing fee economics.',
+  },
+  {
+    id: 'lb-execution',
+    title: 'Program Execution',
+    href: '/docs/liquidity-builder/execution',
+    body: 'Activation creates a program, deposits Token Reserve, and enables market-driven growth steps under your chosen strategy and check frequency.',
+  },
+  {
+    id: 'lb-fees',
+    title: 'Liquidity Builder Fees',
+    href: '/docs/liquidity-builder/fees',
+    body: '10% protocol fee path: Program → FeeSink → FeeReceiver → MELEGA TREASURY. No Treasury Runtime.',
+  },
+  {
+    id: 'lb-risk-safety',
+    title: 'LB Risk & Safety',
+    href: '/docs/liquidity-builder/risk-safety',
+    body: 'Liquidity does not guarantee price. Strategies optimize execution. Pause and safety controls.',
+  },
+  {
+    id: 'lb-examples',
+    title: 'LB Examples',
+    href: '/docs/liquidity-builder/examples',
+    body: 'New token launch and existing multi-market project setups.',
   },
   {
     id: 'farms',
@@ -117,6 +162,12 @@ const SECTIONS: DocSection[] = [
     id: 'networks',
     title: 'Supported networks',
     body: 'Production Melega AMM liquidity and indexing described here target BNB Smart Chain (BSC, chain id 56). Other chains in the wallet selector, if present, do not imply Melega Factory/Router parity unless explicitly documented for that chain.',
+  },
+  {
+    id: 'troubleshooting',
+    title: 'Troubleshooting',
+    href: '/support',
+    body: 'Wallet will not connect: unlock the extension, approve the site, and confirm BSC (56). Wrong network: use the network switcher before signing. Quote stuck or unavailable: refresh price, check pair liquidity, and raise slippage only if you accept worse fill. Metrics show — / unavailable: indexer or subgraph has no factual value — do not treat empty as zero. Activate unavailable in AI Liquidity Builder: program contracts or activation gates are not ready; entered setup is retained. Token search opens behind chrome: use the latest shell build (modal layer above TOP MOVERS). For community help see Support.',
   },
 ]
 
@@ -291,8 +342,7 @@ const DocsPage: React.FC = () => (
         </Card>
         <Note>
           Factory and Router addresses above are for presentation and verification. Always confirm on BscScan before
-          interacting. Formal smart-contract audit status: see{' '}
-          <MetaLink href="/audit">/audit</MetaLink>.
+          interacting. Formal smart-contract audit status: see <MetaLink href="/audit">/audit</MetaLink>.
         </Note>
       </Main>
     </Inner>

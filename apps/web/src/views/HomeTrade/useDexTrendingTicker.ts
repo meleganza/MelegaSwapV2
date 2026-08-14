@@ -1,11 +1,18 @@
-import useDexTrendingRankings from './useDexTrendingRankings'
+import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 
+/** Ticker consumer — reads the shared Top Movers snapshot (never a second ranking instance). */
 export default function useDexTrendingTicker() {
-  const { items, indexedRibbonAssets, indexerScopeNote, useMarquee, trendingEmpty, isLoading } =
-    useDexTrendingRankings()
+  const {
+    tickerItems,
+    indexedRibbonAssets,
+    indexerScopeNote,
+    useMarquee,
+    trendingEmpty,
+    isLoading,
+  } = useTopMoversSnapshot()
 
   return {
-    items,
+    items: tickerItems,
     indexedRibbonAssets,
     indexerScopeNote,
     useMarquee,

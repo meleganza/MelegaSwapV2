@@ -8,16 +8,26 @@ import { resolveFarmEmissionState, formatTotalDailyEmissionKpi, formatHumanMarco
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 import type { FarmEmissionState } from 'lib/data-truth/masterChefEmissionMath'
+import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
+import {
+  formatFarmAprDisplay,
+  resolveFarmAprPercent,
+  resolveFarmChainId,
+  resolveFarmLiquidityUsd,
+  resolveFarmRewardToken,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 export const formatUsd = (value?: number | null): string => {
-  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
+  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
+    return METRIC_STATUS.UNAVAILABLE
+  }
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
   return `$${value.toFixed(2)}`
 }
 
 export const formatApr = (apr?: number | null): string => {
-  if (apr === undefined || apr === null || !Number.isFinite(apr)) return '—'
+  if (apr === undefined || apr === null || !Number.isFinite(apr)) return APR_UNAVAILABLE_LABEL
   return `${apr.toFixed(2)}%`
 }
 
@@ -42,18 +52,19 @@ function formatFarmDailyRewards(
   dailyMarco: number,
   rewardSymbol: string,
 ): string {
-  if (emissionState === 'unavailable') return '—'
+  if (emissionState === 'unavailable') return METRIC_STATUS.UNAVAILABLE
   if (emissionState === 'active' && dailyMarco > 0) {
     return formatHumanTokenAmount(dailyMarco, rewardSymbol)
   }
-  return '0.00'
+  return METRIC_STATUS.UNAVAILABLE
 }
 
 export function formatFarmDisplayApr(farm: FarmWithStakedValue, status: FarmStatus): string | undefined {
-  if (status !== 'live') return undefined
-  const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  if (!Number.isFinite(totalApr) || totalApr <= 0) return undefined
-  return formatApr(totalApr)
+  if (status === 'finished') return undefined
+  if (status !== 'live' && status !== 'indexing') return undefined
+  const apr = resolveFarmAprPercent(farm)
+  if (apr == null) return APR_UNAVAILABLE_LABEL
+  return formatFarmAprDisplay(farm)
 }
 
 export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] {
@@ -67,10 +78,32 @@ export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] 
   )
 }
 
+function farmLiquidityUsd(card: FarmPreviewCard): number {
+  if (!card.rawFarm) return 0
+  return resolveFarmLiquidityUsd(card.rawFarm)
+}
+
+/** Featured = active + emission + TVL + sustainable APR; tie-break by lowest pid. */
 export function selectFeaturedFarm(cards: FarmPreviewCard[]): FarmPreviewCard | undefined {
-  const rewarding = listRewardingFarms(cards)
-  if (!rewarding.length) return undefined
-  return [...rewarding].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
+  const eligible = cards.filter((f) => {
+    if (f.status !== 'live') return false
+    if (f.rawFarm?.multiplier === '0X') return false
+    if (f.emissionState !== 'active') return false
+    // liquidity is a BigNumber on FarmWithStakedValue — never compare the object as a number
+    if (!(farmLiquidityUsd(f) > 0)) return false
+    if (!f.apr || isUnavailableFarmMetric(f.apr)) return false
+    const aprN = parseFloat(String(f.apr).replace('%', ''))
+    if (!Number.isFinite(aprN) || aprN <= 0 || aprN > 1_000_000) return false
+    return true
+  })
+  if (!eligible.length) return undefined
+  return [...eligible].sort((a, b) => {
+    const tvlDiff = farmLiquidityUsd(b) - farmLiquidityUsd(a)
+    if (tvlDiff !== 0) return tvlDiff
+    const aprDiff = parseFloat(String(b.apr || '0')) - parseFloat(String(a.apr || '0'))
+    if (aprDiff !== 0) return aprDiff
+    return (a.pid ?? 0) - (b.pid ?? 0)
+  })[0]
 }
 
 export function mapFarmToPreviewCard(
@@ -78,31 +111,29 @@ export function mapFarmToPreviewCard(
   emission: MasterChefEmission,
 ): FarmPreviewCard {
   const status = farmStatus(farm)
-  const liquidityUsd = farm.liquidity?.toNumber() ?? 0
+  const liquidityUsd = resolveFarmLiquidityUsd(farm)
   const aprDisplay = formatFarmDisplayApr(farm, status)
 
   const pid = farm.pid ?? -1
   const poolWeight = farm.poolWeight ? new BigNumber(farm.poolWeight).toNumber() : undefined
   const { dailyMarco, state: emissionState } = resolveFarmEmissionState(emission, pid, poolWeight)
-  const rewardSymbol = farm.earningToken?.symbol ?? 'MARCO'
+  const rewardSymbol = resolveFarmRewardToken(farm)
 
   const token0 = farm.token?.symbol ?? '?'
   const token1 = farm.quoteToken?.symbol ?? '?'
 
-  const chainId = farm.token?.chainId ?? 56
+  const chainId = resolveFarmChainId(farm, 56)
   const lpExplorerUrl = farm.lpAddress ? getAddressExplorerUrl(farm.lpAddress, chainId) : undefined
   const masterChefExplorerUrl = getAddressExplorerUrl(getMasterChefAddress(chainId), chainId)
 
   const analyzePreview: FarmAnalyzePreview = {
-    aprHistory: aprDisplay ?? '—',
-    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : '—',
+    aprHistory: aprDisplay && aprDisplay !== APR_UNAVAILABLE_LABEL ? aprDisplay : METRIC_STATUS.UNAVAILABLE,
+    rewardToken: rewardSymbol,
+    emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : METRIC_STATUS.UNAVAILABLE,
     contract: farm.lpAddress ?? 'On-chain',
     contractExplorerUrl: lpExplorerUrl,
     risk: farm.isStable ? 'Stable pair' : 'Standard',
   }
-
-  const lpStaked = farm.lpTotalSupply ? getBalanceNumber(farm.lpTotalSupply, 18) : 0
 
   return {
     id: `farm-${farm.pid}`,
@@ -114,9 +145,11 @@ export function mapFarmToPreviewCard(
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
     dailyRewards: formatFarmDailyRewards(emissionState, dailyMarco, rewardSymbol),
-    multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
-    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
+    multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : METRIC_STATUS.UNAVAILABLE,
+    rewardToken: rewardSymbol,
+    // Never map LP supply / emission amounts to participants (e.g. "1.505.47M").
+    // Show — until a verified participant census exists.
+    participants: METRIC_STATUS.UNAVAILABLE,
     cta: status === 'finished' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawFarm: farm,
@@ -141,9 +174,8 @@ export function aggregateKpis(
 
   farms.forEach((farm) => {
     if (farm.multiplier !== '0X' && farm.pid !== 0) activeFarms += 1
-    const liq = farm.liquidity?.toNumber() ?? 0
-    totalTvl += liq
-    const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
+    totalTvl += resolveFarmLiquidityUsd(farm)
+    const apr = resolveFarmAprPercent(farm) ?? 0
     if (apr > highestApr) highestApr = apr
   })
 
@@ -158,8 +190,13 @@ export function aggregateKpis(
       label: 'MARCO Emitted Today',
       value: emissionValue,
     },
-    { id: 'apr', label: 'Highest APR', value: highestApr > 0 ? formatApr(highestApr) : '—', gold: true },
-    { id: 'ai', label: 'Featured Farm', value: featuredPair ?? '—', gold: true },
+    {
+      id: 'apr',
+      label: 'Highest APR',
+      value: highestApr > 0 ? formatApr(highestApr) : APR_UNAVAILABLE_LABEL,
+      gold: true,
+    },
+    { id: 'ai', label: 'Featured Farm', value: featuredPair ?? METRIC_STATUS.UNAVAILABLE, gold: true },
   ]
 }
 

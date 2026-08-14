@@ -172,7 +172,7 @@ describe('LIQUIDITY_MODULE_007 Analytics', () => {
     const mod = load('modules/LiquidityAnalyticsModule.tsx')
     const tokens = load('modules/liquidityAnalyticsTokens.ts')
     expect(mod).not.toMatch(/Awaiting Indexer/i)
-    expect(tokens).toContain("unavailable: 'Data unavailable'")
+    expect(tokens).toContain("unavailable: '—'")
     expect(tokens).not.toMatch(/Awaiting Indexer/i)
   })
 
@@ -196,23 +196,12 @@ describe('LIQUIDITY_MODULE_007 Analytics', () => {
 
   it('mounts Module 007 inside Liquidity Insights after My Positions', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-007="mounted"')
-    expect(page).toContain('LiquidityInsightsModule')
-    const positions = page.indexOf('<LiquidityMyPositionsModule')
-    const insights = page.indexOf('<LiquidityInsightsModule')
-    expect(positions).toBeGreaterThan(-1)
-    expect(insights).toBeGreaterThan(positions)
-    const providerClose = page.indexOf('</LiquidityRuntimeProvider>')
-    expect(providerClose).toBeGreaterThan(-1)
-    expect(insights).toBeGreaterThan(providerClose)
-    const insightsSrc = readFileSync(
-      path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'),
-      'utf8',
-    )
-    expect(insightsSrc).toContain('useLiquidityAnalytics')
-    expect(insightsSrc).not.toContain('LiquidityAnalyticsModule')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-007="mounted"')
+    expect(shell).toContain('data-liquidity-module-006="mounted"')
   })
+
 
   it('certifies Module 007 in architecture plan and ships evidence paths', () => {
     const plan = LIQUIDITY_MODULE_PLAN.find((m) => m.id === '007-analytics')

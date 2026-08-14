@@ -12,6 +12,8 @@ export const CHAIN_LABELS: Record<number, string> = {
   56: 'BSC',
   137: 'Polygon',
   8453: 'Base',
+  42161: 'Arbitrum',
+  43114: 'Avalanche',
 }
 
 export const CHAIN_EXPLORER_TOKEN_URL: Record<number, (address: string) => string> = {
@@ -19,6 +21,8 @@ export const CHAIN_EXPLORER_TOKEN_URL: Record<number, (address: string) => strin
   56: (address) => `https://bscscan.com/token/${address}`,
   137: (address) => `https://polygonscan.com/token/${address}`,
   8453: (address) => `https://basescan.org/token/${address}`,
+  42161: (address) => `https://arbiscan.io/token/${address}`,
+  43114: (address) => `https://snowtrace.io/token/${address}`,
 }
 
 export const ASSET_CAPABILITY_LABELS: Record<keyof AssetCapabilities, string> = {

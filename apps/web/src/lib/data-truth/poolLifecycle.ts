@@ -51,19 +51,38 @@ export function derivePoolLifecycle(
   let started = true
   let ended = Boolean(pool.isFinished)
   const bonusEndBlock = Number(pool.bonusEndBlock ?? pool.endBlock)
-  if (Number.isFinite(bonusEndBlock) && Number.isFinite(currentBlock) && currentBlock > bonusEndBlock) {
+  // endBlock/bonusEndBlock <= 0 means open-ended emission — never treat as past end.
+  const openEnded = !Number.isFinite(bonusEndBlock) || bonusEndBlock <= 0
+  if (
+    !openEnded &&
+    Number.isFinite(bonusEndBlock) &&
+    Number.isFinite(currentBlock) &&
+    currentBlock > bonusEndBlock
+  ) {
     ended = true
   }
   if (pool.sousId !== 0) {
-    const { hasPoolStarted, hasPoolEnded } = getPoolBlockInfo(pool, currentBlock)
-    started = hasPoolStarted
-    ended = ended || hasPoolEnded
+    if (openEnded) {
+      // getPoolBlockInfo treats endBlock=0 as not started (blocksRemaining=0) — override.
+      const startBlock = Number(pool.startBlock)
+      // currentBlock<=0 means block not loaded yet — do not falsely mark unstarted.
+      started =
+        !Number.isFinite(startBlock) ||
+        startBlock <= 0 ||
+        !Number.isFinite(currentBlock) ||
+        currentBlock <= 0 ||
+        currentBlock >= startBlock
+    } else {
+      const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
+      started = hasPoolStarted
+    }
   }
 
   const active = started && !ended && (poolIsLive(pool, currentBlock) || rewardPerBlockPositive)
-  const funded = rewardBalancePositive
-  const rewarding = active && rewardPerBlockPositive && rewardBalancePositive
-  const finished = ended || (!rewardPerBlockPositive && !rewardBalancePositive && started)
+  const funded =
+    rewardBalancePositive || (active && rewardPerBlockPositive && openEnded)
+  const rewarding = active && rewardPerBlockPositive && funded
+  const finished = ended || (!rewardPerBlockPositive && !rewardBalancePositive && started && !openEnded)
 
   return {
     contractVerified,

@@ -25,9 +25,7 @@ describe('Founder acceptance — MelegaDexFooter', () => {
   it('links Docs → /docs and Audit → /audit', () => {
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Docs')?.href).toBe('/docs')
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Audit')?.href).toBe('/audit')
-    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Support')?.href).toBe(
-      'https://t.me/melegacommunity',
-    )
+    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Support')?.href).toBe('/support')
   })
 
   it('includes required social URLs (icons only, no raw URL labels)', () => {
@@ -49,9 +47,12 @@ describe('Founder acceptance — MelegaDexFooter', () => {
     expect(MELEGA_FOOTER_SOCIALS).toHaveLength(10)
   })
 
-  it('is mounted on DexHomeScreen and TrustRail is removed', () => {
+  it('is mounted globally via MelegaAppShell; TrustRail remains removed from Home', () => {
     const home = load('DexHomeScreen.tsx')
-    expect(home).toContain('MelegaDexFooter')
+    const shell = readFileSync(path.resolve(ROOT, '../../app-shell/MelegaAppShell.tsx'), 'utf8')
+    expect(shell).toContain('MelegaDexFooter')
+    expect(shell).toContain('melega-global-footer')
+    expect(home).not.toContain('MelegaDexFooter')
     expect(home).not.toContain('TrustRail')
     expect(home).not.toContain('dex-home-trust-rail')
     expect(home).not.toContain('Backed by')
@@ -59,17 +60,20 @@ describe('Founder acceptance — MelegaDexFooter', () => {
   })
 })
 
+
 describe('Founder acceptance — ecosystem destinations', () => {
-  it('wires live destinations without false Coming soon', () => {
+  it('wires live destinations without Radar/Labs; includes BlackPump', () => {
     const live = ECOSYSTEM_DESTINATIONS.filter((d) => !d.disabled)
     expect(live.map((d) => d.id)).toEqual(
-      expect.arrayContaining(['passport', 'smartdrop', 'labs', 'space', 'radar']),
+      expect.arrayContaining(['passport', 'smartdrop', 'blackpump', 'space']),
     )
+    expect(live.map((d) => d.id)).not.toEqual(expect.arrayContaining(['labs', 'radar']))
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'labs')).toBeUndefined()
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'radar')).toBeUndefined()
     expect(live.find((d) => d.id === 'passport')?.href).toBe('https://marco.melega.ai')
     expect(live.find((d) => d.id === 'smartdrop')?.href).toBe('https://smartdrop.melega.ai/dashboard')
-    expect(live.find((d) => d.id === 'labs')?.href).toBe('https://labs.melega.ai/labs')
+    expect(live.find((d) => d.id === 'blackpump')?.href).toBe('https://black.mn')
     expect(live.find((d) => d.id === 'space')?.href).toBe('https://melega.space/')
-    expect(live.find((d) => d.id === 'radar')?.href).toBe('/radar')
 
     for (const d of live) {
       expect(d.disabled).toBeFalsy()
@@ -81,12 +85,12 @@ describe('Founder acceptance — ecosystem destinations', () => {
     const maiora = ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'maiora')
     expect(maiora?.disabled).toBe(true)
     expect(maiora?.href).toBeUndefined()
+    expect(maiora?.disabledLabel).toBe('Coming soon')
   })
 
-  it('ExploreMelegaEcosystem does not mark live products Coming soon', () => {
+  it('marks only disabled Maiora as Coming soon', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
     expect(eco).not.toMatch(/comingSoon:\s*true/)
-    expect(eco).not.toContain('Coming soon')
     expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
   })
 })
@@ -113,16 +117,37 @@ describe('Founder acceptance — docs and audit pages', () => {
   })
 
   it('audit page states telemetry-only and does not fabricate scores', () => {
+    const page = readFileSync(path.resolve(__dirname, '../../../pages/audit/index.tsx'), 'utf8')
     const audit = readFileSync(
-      path.resolve(__dirname, '../../../pages/audit/index.tsx'),
+      path.resolve(__dirname, '../../../views/AuditStudio/AuditCenterV2.tsx'),
       'utf8',
     )
-    expect(audit).toContain('not</strong> a substitute for an external')
-    expect(audit).toContain('Not published')
-    expect(audit).toContain('MELEGA_MASTERCHEF_BSC')
-    expect(audit).toContain('MELEGA_VAULT_BSC')
+    const builder = readFileSync(
+      path.resolve(__dirname, '../../../views/AuditStudio/buildOfficialContracts.ts'),
+      'utf8',
+    )
+    expect(page).toContain('AuditCenterV2')
+    expect(audit).toContain('not a formal third-party smart-contract audit')
+    expect(audit).toContain('Not available (not fabricated)')
     expect(audit).toContain('/api/runtime/readiness')
     expect(audit).toContain('/api/indexer/health')
+    expect(builder).toContain('MELEGA_MASTERCHEF_BSC')
+    expect(builder).toContain('MELEGA_VAULT_BSC')
     expect(audit).not.toMatch(/audit score:\s*\d+/i)
+    expect(audit).toContain('calculated from official contract SSOTs')
+  })
+
+  it('support page exists without fabricating ticket infrastructure', () => {
+    const support = readFileSync(
+      path.resolve(__dirname, '../../../pages/support/index.tsx'),
+      'utf8',
+    )
+    expect(support).toContain('Support')
+    expect(support).toContain('/docs')
+    expect(support).toContain('/audit')
+    expect(support).toContain('MELEGA_FOOTER_SOCIALS')
+    expect(support).toContain('telegram-community')
+    expect(support).not.toMatch(/submit a ticket/i)
+    expect(support).not.toMatch(/zendesk|intercom|freshdesk/i)
   })
 })

@@ -126,7 +126,7 @@ export interface TreasuryHandoffPreparedEvent {
   collectorAddress: string | null
   protocolFee: string | null
   handoffPath: '/api/treasury/settlement-events'
-  settlementOwnedBy: 'Treasury Runtime'
+  settlementOwnedBy: 'NONE'
   forbiddenLocalSplit: true
 }
 
@@ -177,7 +177,7 @@ export type CivilizationRouteResult = CivilizationRoutePrepared | CivilizationRo
 export interface BlockerAuditRow {
   phase: string
   requirement: string
-  status: 'READY' | 'PARTIAL' | 'BLOCKED'
+  status: 'READY' | 'PARTIAL' | 'BLOCKED' | 'DECOMMISSIONED'
   evidence: string
   nextRequiredAction: string
 }

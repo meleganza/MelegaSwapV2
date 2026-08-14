@@ -28,21 +28,34 @@
       "deployedBytes": 3105
     },
     "LiquidityBuildingFactoryV1": {
-      "deployedBytecodeSha256": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+      "deployedBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
       "deployedBytes": 8052
     },
     "LiquidityBuildingExecutionMathV1": {
-      "deployedBytecodeSha256": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+      "deployedBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
       "deployedBytes": 3746
     },
     "LiquidityBuildingProgramV1": {
       "deployedBytes": 22911,
       "eip170Ok": true,
-      "note": "Linked-library bytecode hash deferred until production CREATE with library addresses fixed."
+      "note": "Linked-library placeholders zeroed for hash; production CREATE fixes library addresses.",
+      "deployedBytecodeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c"
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "deployedBytecodeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+      "deployedBytes": 594
     }
   },
+  "founderFeeSchedule": {
+    "ref": "apps/web/src/config/constants/fee-schedule.json#services.liquidityBuilder",
+    "protocolFeePercentOfSwap": 10,
+    "protocolFeeBps": 1000,
+    "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "onChainLockBps": 1000,
+    "note": "Founder finalized protocol fee at 1000 bps (10%). Factory constructor and SUCCESS_FEE_BPS aligned. Destination MELEGA TREASURY WALLET via FeeReceiver/FeeSink (not Treasury Runtime)."
+  },
   "protocolParameters": {
-    "successFeeBps": 500,
+    "successFeeBps": 1000,
     "strategyCeilingBps": 5000,
     "operatingCurveImpactBps": 40,
     "hardCurveImpactBps": 100,
@@ -64,17 +77,21 @@
     "publicKeyFingerprint": null,
     "nonExportable": null,
     "verdict": "AUTONOMOUS_AUTHORITY_NOT_READY",
-    "rejectedModels": ["HOT_SIGNER", "local_private_key", "vm.sign"]
+    "rejectedModels": [
+      "HOT_SIGNER",
+      "local_private_key",
+      "vm.sign"
+    ]
   },
   "authorizer": {
-    "address": null,
+    "address": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
     "schemaVersion": "LIQUIDITY_BUILDING_EXECUTION_INTENT_V1",
-    "status": "NOT_DEPLOYED"
+    "status": "DEPLOYED_VALIDATED"
   },
   "treasury": {
-    "feeSinkAddress": null,
-    "receiverAddress": null,
-    "receiverVerdict": "PRODUCTION_BINDING_NOT_FOUND",
+    "feeSinkAddress": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "receiverAddress": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "receiverVerdict": "FEE_RECEIVER_BOUND_TO_TREASURY_BENEFICIARY",
     "reprobeUtc": "2026-07-19T17:56:00Z",
     "rejectedCandidates": [
       {
@@ -159,7 +176,45 @@
     "LB-G11",
     "LB-G12"
   ],
-  "deploymentReadinessState": "BLOCKED",
+  "deploymentReadinessState": "DEPLOYED",
   "validatorExpectedResult": "DEPLOYMENT_INPUTS_BLOCKED",
-  "activationAuthorized": false
+  "activationAuthorized": false,
+  "lbProtocolFeeFinalization": {
+    "missionId": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_PROTOCOL_FEE_FINALIZATION",
+    "priorSuccessFeeBps": 500,
+    "successFeeBps": 1000,
+    "successFeePercent": 10,
+    "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "bytecodeDelta": {
+      "LiquidityBuildingFactoryV1": {
+        "previousDeployedBytecodeSha256": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+        "deployedBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+        "deployedBytes": 8052,
+        "changed": true
+      },
+      "LiquidityBuildingExecutionMathV1": {
+        "previousDeployedBytecodeSha256": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+        "deployedBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+        "deployedBytes": 3746,
+        "changed": true
+      },
+      "LiquidityBuildingProgramV1": {
+        "previousDeployedBytecodeSha256": null,
+        "deployedBytecodeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c",
+        "deployedBytes": 22911,
+        "changed": true
+      },
+      "LiquidityBuildingTreasuryFeeReceiverV1": {
+        "previousDeployedBytecodeSha256": null,
+        "deployedBytecodeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+        "deployedBytes": 594,
+        "changed": true
+      }
+    }
+  },
+  "factory": {
+    "address": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "status": "DEPLOYED_VALIDATED",
+    "transactionHash": "0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d"
+  }
 }

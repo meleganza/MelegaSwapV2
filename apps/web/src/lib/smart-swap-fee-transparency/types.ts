@@ -25,10 +25,10 @@ export interface SmartSwapFeeTransparency {
     label: string
     buyMarcoApplied: boolean | null
   }
-  /** Settlement owner label when factual — never a fabricated wallet. */
+  /** Canonical fee destination label when factual — MELEGA TREASURY WALLET. */
   treasuryDestination: string | null
   allocationStatus: SmartSwapFeeAttributionStatus
-  /** Attribution layer label when factual (e.g. KERL). Never reward amounts. */
+  /** Attribution layer — null unless proven in the active execution path. */
   economicAttribution: string | null
   source: string
   freshness: string | null
@@ -59,6 +59,13 @@ export interface SmartSwapFeeTransparencyInput {
   feeSplitPolicyRef?: string | null
   treasuryStatus?: 'available' | 'unavailable' | 'pending'
   kerlStatus?: 'available' | 'unavailable' | 'pending'
+  /**
+   * When true, protocol fee rate/amount may be shown as collected.
+   * Default false — D87 policy alone is not proof of on-chain collection.
+   */
+  feeCollectionProven?: boolean
+  /** When protocol fee is unproven, still disclose the canonical destination. */
+  forceShowDestinationOnly?: boolean
   freshness?: string | null
   stale?: boolean
   notApplicable?: boolean

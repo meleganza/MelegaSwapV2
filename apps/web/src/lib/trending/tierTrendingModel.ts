@@ -43,7 +43,7 @@ const QUOTE_TOKEN_ADDRESSES = new Set([
   '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
 ])
 
-export const TRENDING_ELIGIBLE_STATUSES = new Set<TierMetricStatus>(['READY', 'EMPTY_VERIFIED'])
+export const TRENDING_ELIGIBLE_STATUSES = new Set<TierMetricStatus>(['READY', 'EMPTY_VERIFIED', 'SYNCING'])
 
 export function isTrendingTierStatus(status: string): status is TierMetricStatus {
   return TRENDING_ELIGIBLE_STATUSES.has(status as TierMetricStatus)
@@ -100,6 +100,32 @@ export function hasTrendingSwapActivity(input: {
   volume24h: number
 }): boolean {
   return input.tradeCount24h > 0 || input.volume24h > 0
+}
+
+/** Reject impossible or dust-driven changes unless measured activity supports them. */
+export function isCredibleMoverChange(input: {
+  pct: number
+  tradeCount24h: number
+  volume24h: number
+  liquidityScore: number
+  externalVolumeUsd?: number
+  hasExternalChange?: boolean
+}): boolean {
+  const abs = Math.abs(input.pct)
+  if (!Number.isFinite(abs) || abs <= 0.0001) return false
+  const hasInternal = input.tradeCount24h >= 1 || input.volume24h > 0
+  const hasExternal =
+    Boolean(input.hasExternalChange) &&
+    ((input.externalVolumeUsd != null && input.externalVolumeUsd > 0) || input.liquidityScore > 0)
+  if (!hasInternal && !hasExternal) return false
+  if (hasInternal) {
+    if (abs > 25 && input.tradeCount24h < 3) return false
+    if (abs > 40 && input.liquidityScore <= 0) return false
+    if (abs > 80) return false
+  } else if (abs > 60) {
+    return false
+  }
+  return true
 }
 
 /** Rank: swap count → volume → unique traders → recency → |%|. */

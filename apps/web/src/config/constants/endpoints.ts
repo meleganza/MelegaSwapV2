@@ -9,7 +9,8 @@ export const MELEGA_SUBGRAPH_URL = process.env.NEXT_PUBLIC_MELEGA_SUBGRAPH_URL?.
 export const INFO_CLIENT = MELEGA_SUBGRAPH_URL
 
 export const INFO_CLIENT_ETH = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exhange-eth'
-export const BLOCKS_CLIENT = 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks'
+/** Melega block-time subgraph — unset until a maintained endpoint is deployed. */
+export const BLOCKS_CLIENT = process.env.NEXT_PUBLIC_MELEGA_BLOCKS_SUBGRAPH_URL?.trim() || ''
 export const BLOCKS_CLIENT_ETH = 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks'
 export const STABLESWAP_SUBGRAPH_CLIENT = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-stableswap'
 export const GRAPH_HEALTH = 'https://api.thegraph.com/index-node/graphql'

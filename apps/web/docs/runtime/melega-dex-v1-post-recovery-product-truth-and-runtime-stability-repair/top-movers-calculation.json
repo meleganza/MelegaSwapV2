@@ -1,9 +1,0 @@
-{
-  "ribbonLabel": "TOP MOVERS",
-  "removedFullHistoryFallback": true,
-  "credibilityGate": "isCredibleMoverChange",
-  "ranking": "absolute pct desc, then trades/volume/recency",
-  "animationRequires": ">=2 factual entries",
-  "marcoMinus491RootCause": "full multi-day OHLCV history fallback in computeIndexedMove \u2014 removed",
-  "file": "84b3a3a074aaadee1c8261586c9579dac8f63ea48d66f3edf0e7e2bd0f20f71d"
-}

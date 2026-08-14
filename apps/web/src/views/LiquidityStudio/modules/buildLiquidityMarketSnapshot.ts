@@ -30,6 +30,8 @@ export function formatSnapshotUsd(value?: number | null): string | null {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
+  // Preserve sub-dollar factual volume (never round non-zero to $0.00 / —).
+  if (value < 0.01) return `$${value.toFixed(4)}`
   return `$${value.toFixed(2)}`
 }
 
@@ -65,23 +67,34 @@ export function buildLiquidityMarketSnapshot(input: {
   pools: ClassifiedAmmPair[]
   factoryFreshness?: string | null
   nowIso?: string
+  /** Optional Factory-reserve TVL sum (factual) when protocol subgraph TVL is empty. */
+  factoryTvlUsd?: number | null
+  /** Optional durable-index 24h volume (USD) when subgraph volume is empty. */
+  indexerVolume24hUsd?: number | null
 }): LiquidityMarketSnapshotView {
   const now = input.nowIso ?? new Date().toISOString()
-  const tvlFormatted = formatSnapshotUsd(input.protocol?.liquidityUSD)
-  const volFormatted = formatSnapshotUsd(input.protocol?.volumeUSD)
+  const protocolTvl = formatSnapshotUsd(input.protocol?.liquidityUSD)
+  const factoryTvl = formatSnapshotUsd(input.factoryTvlUsd)
+  const tvlFormatted = protocolTvl ?? factoryTvl
+  const tvlSource = protocolTvl
+    ? 'Verified protocol liquidity'
+    : factoryTvl
+      ? 'Factory reserves × quote USD'
+      : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
+  const indexerVol = formatSnapshotUsd(input.indexerVolume24hUsd)
+  const protocolVol = formatSnapshotUsd(input.protocol?.volumeUSD)
+  // Canonical Melega indexer WBNB-side volume wins over external protocol totals.
+  const volFormatted = indexerVol ?? protocolVol
 
   const tvl = card('tvl', {
     value: input.protocolLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
       : tvlFormatted ?? LIQUIDITY_MARKET_SNAPSHOT_COPY.emptyMetric,
-    supporting: input.protocolLoading
-      ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
-      : tvlFormatted
-        ? 'Verified protocol liquidity'
-        : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
+    supporting: input.protocolLoading ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading : tvlSource,
     state: input.protocolLoading ? 'loading' : tvlFormatted ? 'available' : 'unavailable',
     timestamp: tvlFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : tvlFormatted ? 'ok' : 'unavailable',
+    source: protocolTvl ? undefined : factoryTvl ? 'melega-factory-reserves' : undefined,
   })
 
   const activeCount = input.factoryReady ? countActivePools(input.pools) : null
@@ -109,12 +122,15 @@ export function buildLiquidityMarketSnapshot(input: {
       : volFormatted ?? LIQUIDITY_MARKET_SNAPSHOT_COPY.emptyMetric,
     supporting: input.protocolLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
-      : volFormatted
-        ? 'Verified 24H swap volume'
-        : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
+      : indexerVol
+        ? 'Melega DEX · WBNB-side · rolling 24H'
+        : protocolVol
+          ? 'Verified 24H swap volume'
+          : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
     state: input.protocolLoading ? 'loading' : volFormatted ? 'available' : 'unavailable',
     timestamp: volFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : volFormatted ? 'ok' : 'unavailable',
+    source: indexerVol ? 'melega-durable-market-index' : protocolVol ? undefined : undefined,
   })
 
   const lpProviders = card('lpProviders', {

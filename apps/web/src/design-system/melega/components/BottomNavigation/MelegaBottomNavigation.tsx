@@ -1,8 +1,10 @@
 import React from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
+import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 
 export interface MelegaBottomNavItem {
   id: string
@@ -26,8 +28,8 @@ const Nav = styled.nav<{
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: calc(68px + env(safe-area-inset-bottom, 0px));
-  padding: 6px 4px env(safe-area-inset-bottom, 0px);
+  min-height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 4px 4px env(safe-area-inset-bottom, 0px);
   background: #080808;
   backdrop-filter: blur(12px);
   border-top: 1px solid #1f1f1f;
@@ -42,7 +44,7 @@ const Nav = styled.nav<{
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
-const Item = styled.a<{ $active?: boolean }>`
+const Item = styled(Link)<{ $active?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -108,7 +110,20 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
     {items.map((item) => {
       const active = item.id === activeId
       return (
-        <Item key={item.id} href={disabled ? '#' : item.href} $active={active} aria-current={active ? 'page' : undefined}>
+        <Item
+          key={item.id}
+          href={disabled ? '#' : item.href}
+          $active={active}
+          aria-current={active ? 'page' : undefined}
+          prefetch
+          onClick={(event) => {
+            if (disabled) {
+              event.preventDefault()
+              return
+            }
+            preserveEarlyNavigation(event, item.href)
+          }}
+        >
           {active && <Indicator />}
           <Icon $active={active}>{item.icon}</Icon>
           <Label $active={active}>{item.label}</Label>

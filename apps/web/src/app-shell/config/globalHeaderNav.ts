@@ -1,6 +1,7 @@
 /**
  * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Liquidity · Farms · Pools · List · Passport
+ * Home · Swap · Liquidity · Farms · Pools · List
+ * Portfolio is secondary via My Melega → View Full Portfolio (/portfolio kept).
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -122,7 +123,12 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 
 /** Secondary surfaces — available via search / deep links, not primary nav. */
 export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
-  { id: 'trending', label: 'Trending', href: '/trending', match: (p) => p === '/trending' },
+  {
+    id: 'trending',
+    label: 'Trending Projects',
+    href: '/projects?sort=trending',
+    match: (p) => p === '/projects' || p.startsWith('/projects'),
+  },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',
@@ -158,22 +164,29 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     label: 'Home',
     kind: 'link',
     href: '/',
-    // Home owns Discover + Trade entry; Project Pages map to Discover parent domain.
-    // Public Project Page URLs stay `/@{slug}` (rewrite); header match uses asPath.
-    match: (p) =>
-      p === '/' ||
-      p === '/trade' ||
-      p.startsWith('/trade/') ||
-      p === '/swap' ||
-      p.startsWith('/swap/') ||
-      p.startsWith('/project-hq') ||
-      p.startsWith('/@'),
+    // Home owns Discover only — Swap / Project Pages must not highlight Home.
+    match: (p) => p === '/',
+  },
+  {
+    id: 'swap',
+    label: 'Swap',
+    kind: 'link',
+    href: '/swap',
+    match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+  },
+  {
+    id: 'bridge',
+    label: 'Bridge',
+    kind: 'link',
+    href: '/bridge',
+    match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
+    compactHide: true,
   },
   {
     id: 'liquidity',
     label: 'Liquidity',
     kind: 'link',
-    href: '/liquidity-studio',
+    href: '/liquidity',
     match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
   },
   {
@@ -202,16 +215,5 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
       p === '/launch' ||
       p === '/new-project' ||
       p.startsWith('/build-studio'),
-  },
-  {
-    id: 'passport',
-    label: 'Passport',
-    kind: 'link',
-    href: '/passport',
-    match: (p) =>
-      p.startsWith('/passport') ||
-      p.startsWith('/command-center') ||
-      p.startsWith('/portfolio') ||
-      p.startsWith('/workspace'),
   },
 ]

@@ -6,6 +6,7 @@ import { Interface } from '@ethersproject/abi'
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 import { useActiveChainId } from './useActiveChainId'
+import { useDirectMelegaPair } from './useCanonicalMarcoPair'
 
 const PAIR_INTERFACE = new Interface(IPancakePairABI)
 
@@ -72,5 +73,10 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
 
 export function usePair(tokenA?: Currency, tokenB?: Currency): [PairState, Pair | null] {
   const pairCurrencies = useMemo<[Currency, Currency][]>(() => [[tokenA, tokenB]], [tokenA, tokenB])
-  return usePairs(pairCurrencies)[0]
+  const discovered = usePairs(pairCurrencies)[0]
+  const directPair = useDirectMelegaPair(
+    wrappedCurrency(tokenA, tokenA?.chainId),
+    wrappedCurrency(tokenB, tokenB?.chainId),
+  )
+  return directPair ? [PairState.EXISTS, directPair] : discovered
 }

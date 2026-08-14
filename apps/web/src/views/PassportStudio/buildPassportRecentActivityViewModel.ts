@@ -28,7 +28,7 @@ export const ACTIVITY_SOURCE_CATALOG: readonly PassportActivitySourceStatus[] = 
   },
   {
     id: 'mcredits',
-    owner: 'Treasury Runtime',
+    owner: 'M-Credits history',
     endpointOrHook: 'M-Credits history GET — not exposed to Passport',
     available: false,
     reason: 'MCREDITS_HISTORY_UNSUPPORTED',

@@ -5,11 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { createHash } from 'crypto'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
-import {
-  POOLS_HERO_COPY,
-  POOLS_HERO_COPY_DEVIATIONS,
-  poolsHero,
-} from '../modules/poolsHeroTokens'
+import { POOLS_HERO_COPY, POOLS_HERO_COPY_DEVIATIONS, poolsHero } from '../modules/poolsHeroTokens'
 import { POOLS_FOUNDER_MOCKUP, POOLS_MODULE_PLAN } from '../poolsArchitecture000Contracts'
 
 const WEB = path.resolve(__dirname, '../../../../')
@@ -31,21 +27,21 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(bytes.length).toBe(POOLS_FOUNDER_MOCKUP.bytes)
   })
 
-  it('locks Hero geometry contracts (1376×260 / 440+48+480+48+360)', () => {
+  it('locks Hero geometry contracts (1376×260 / 440+24+480+24+360)', () => {
     expect(poolsHero.heroW).toBe('1376px')
     expect(poolsHero.heroH).toBe('260px')
     expect(poolsHero.topAfterTrending).toBe('24px')
     expect(poolsHero.leftW).toBe('440px')
     expect(poolsHero.artworkW).toBe('480px')
     expect(poolsHero.trustW).toBe('360px')
-    expect(poolsHero.columnGap).toBe('48px')
+    expect(poolsHero.columnGap).toBe('24px')
     const sum =
       parseInt(poolsHero.leftW, 10) +
       parseInt(poolsHero.columnGap, 10) +
       parseInt(poolsHero.artworkW, 10) +
       parseInt(poolsHero.columnGap, 10) +
       parseInt(poolsHero.trustW, 10)
-    expect(sum).toBe(1376)
+    expect(sum).toBe(1328)
   })
 
   it('ships locked factual copy without mockup KPI numbers', () => {
@@ -70,6 +66,16 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(uiSrc).not.toContain('Melega Labs')
   })
 
+  it('uses the Founder-approved MARCO 3D artwork with premium reduced-motion-safe animation', () => {
+    const artwork = load('modules/PoolsHeroArtwork.tsx')
+    expect(artwork).toContain('/images/pools/pools-hero-marco-3d.webp')
+    expect(artwork).toContain('data-pools-hero-approved-artwork="marco-3d"')
+    expect(artwork).toContain('data-pools-hero-animated="true"')
+    expect(artwork).toContain('prefers-reduced-motion: reduce')
+    expect(artwork).toContain('will-change: transform')
+    expect(artwork).toContain('mask-image: linear-gradient')
+  })
+
   it('mounts Module 001 on live screen while preserving legacy body and page entry', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/pools/index.tsx'), 'utf8')
     expect(page).toContain('PoolsStudioScreen')
@@ -84,13 +90,12 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(screen).not.toContain('data-pools-module="009"')
   })
 
-  it('uses factual Create Pool destination and reserved How it Works behavior', () => {
+  it('uses one factual Create Pool destination and no dead secondary CTA', () => {
     expect(poolsHero.createPoolHref).toBe('#create-pool')
-    expect(poolsHero.createPoolFallback).toContain('build-studio')
-    expect(poolsHero.howItWorksReserved).toBe(true)
     const mod = load('modules/PoolsHeroModule.tsx')
     expect(mod).toContain('create-pool')
-    expect(mod).toContain('pools-hero-how-it-works')
+    expect(mod).not.toContain('pools-hero-how-it-works')
+    expect(mod).not.toContain('pools-hero-community-cta')
   })
 
   it('keeps Modules 009–010 unmounted (Modules 002–008 may follow Hero)', () => {

@@ -1,8 +1,8 @@
 import type { CivilizationRouteType, RouteTypeDefinition } from './types'
 import { readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 
-const SETTLEMENT_SWAP = 'Treasury Runtime FSC-01 post-confirmation'
-const SETTLEMENT_RUNTIME = 'Treasury Runtime intake required'
+const SETTLEMENT_SWAP = 'MELEGA TREASURY WALLET — FSC-01 post-confirmation (direct beneficiary)'
+const SETTLEMENT_RUNTIME = 'DECOMMISSIONED — no runtime intake required'
 const SETTLEMENT_SCHEMA = 'Schema publication required'
 
 /** Phase 9 — canonical route type matrix. */
@@ -59,7 +59,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
         'KERLRef',
         'executionManifest',
       ],
-      requiredRegistries: ['KERL', 'Treasury Runtime', 'Smart Router Wrapper', 'D90', 'D99'],
+      requiredRegistries: ['KERL', 'MELEGA TREASURY WALLET', 'Smart Router Wrapper', 'D90', 'D99'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.narrative-trade.v1',
     },
@@ -70,7 +70,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       blocked: true,
       blockerReason: 'AI_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT — no marketplace execution surface',
       requiredInputs: ['serviceId', 'agentId', 'buyer', 'seller', 'pricingRef', 'policyRef', 'treasuryRef', 'settlementRef'],
-      requiredRegistries: ['KERL', 'Treasury Runtime', 'Smart Router Wrapper'],
+      requiredRegistries: ['KERL', 'MELEGA TREASURY WALLET', 'Smart Router Wrapper'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.ai-service.v1',
     },
@@ -81,7 +81,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       blocked: true,
       blockerReason: 'MARKETPLACE_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT',
       requiredInputs: ['serviceId', 'buyer', 'seller', 'pricingRef', 'policyRef', 'treasuryRef'],
-      requiredRegistries: ['KERL', 'Treasury Runtime'],
+      requiredRegistries: ['KERL', 'MELEGA TREASURY WALLET'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.marketplace-service.v1',
     },
@@ -92,7 +92,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       blocked: true,
       blockerReason: 'MARKETPLACE_SETTLEMENT_BLOCKED_BY_MISSING_ROUTER_CONTRACT — no fake marketplace settlement',
       requiredInputs: ['serviceId', 'settlementRef', 'treasuryRef', 'executionManifest'],
-      requiredRegistries: ['Treasury Runtime', 'KERL'],
+      requiredRegistries: ['MELEGA TREASURY WALLET', 'KERL'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.marketplace-settlement.v1',
     },
@@ -103,7 +103,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       blocked: true,
       blockerReason: 'TREASURY_TRANSFER_BLOCKED_BY_MISSING_RUNTIME',
       requiredInputs: ['treasuryRef', 'settlementRef', 'amount', 'asset'],
-      requiredRegistries: ['Treasury Runtime'],
+      requiredRegistries: ['MELEGA TREASURY WALLET'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.treasury-transfer.v1',
     },
@@ -123,9 +123,9 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       supported: false,
       planned: true,
       blocked: true,
-      blockerReason: 'REFERRAL_BLOCKED_BY_MISSING_RUNTIME — SRD-01 owned by Treasury Runtime',
+      blockerReason: 'REFERRAL_BLOCKED_BY_MISSING_RUNTIME — SRD-01 settlement schema not published',
       requiredInputs: ['referralRef', 'settlementRef'],
-      requiredRegistries: ['Treasury Runtime', 'SRD-01'],
+      requiredRegistries: ['MELEGA TREASURY WALLET', 'SRD-01'],
       requiredSettlement: SETTLEMENT_RUNTIME,
       machineSchema: 'melega.civilization-router.referral.v1',
     },
@@ -136,7 +136,7 @@ export function buildRouteTypeMatrix(): RouteTypeDefinition[] {
       blocked: true,
       blockerReason: 'PROPAGATION_BLOCKED_BY_MISSING_SCHEMA',
       requiredInputs: ['sourceOrgan', 'targetOrgan', 'policyRef'],
-      requiredRegistries: ['KERL', 'Treasury Runtime'],
+      requiredRegistries: ['KERL', 'MELEGA TREASURY WALLET'],
       requiredSettlement: SETTLEMENT_SCHEMA,
       machineSchema: 'melega.civilization-router.propagation.v1',
     },

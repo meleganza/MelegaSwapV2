@@ -1,0 +1,23 @@
+{
+  "schema": "melega.farms.farmer-participants.v1",
+  "chainId": 56,
+  "masterChef": "0x41D5487836452d23f2c467070244E5842B412794",
+  "deploymentBlock": 20330833,
+  "creationTx": "0x3f270e4b4485d2a3023467a9cede6e8c39c5625250b10f2bcbfb01de80ee71f8",
+  "lastIndexedBlock": 112863550,
+  "chainHead": 112863552,
+  "coveragePct": 100,
+  "status": "ready",
+  "uniqueParticipants": 318,
+  "uniqueLpParticipants": 304,
+  "historicalParticipants": 318,
+  "currentlyStakedWallets": null,
+  "depositEventCount": 41779,
+  "withdrawEventCount": 25180,
+  "emergencyWithdrawEventCount": 3,
+  "rangesScanned": 9254,
+  "lastError": null,
+  "updatedAt": "2026-07-29T18:10:28.465Z",
+  "source": "masterchef-event-scan",
+  "note": "Unique wallets that participated in Melega DEX farms (MasterChef Deposit/Withdraw/EmergencyWithdraw)."
+}

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 
 export function useTrendingDisplayLimit(): number {
-  const [limit, setLimit] = useState(12)
+  const [limit, setLimit] = useState(24)
 
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth
-      // Prefer showing enough real assets for a live ticker (target ≥10 when available).
-      if (w >= 1024) setLimit(12)
-      else if (w >= 768) setLimit(10)
-      else setLimit(10)
+      // Display top of shared full-universe ranking (producer ranks ~40 from ~266).
+      if (w >= 1024) setLimit(24)
+      else if (w >= 768) setLimit(18)
+      else setLimit(14)
     }
     update()
     window.addEventListener('resize', update)

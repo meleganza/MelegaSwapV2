@@ -91,18 +91,22 @@ describe('PASSPORT_MODULE_002 Portfolio Overview', () => {
     expect(overview).not.toContain('PassportHeroIdentityModule')
   })
 
-  it('mounts Module 002 on PassportScreen without removing Module 001 or Command Center', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportHeroIdentityModule')
-    expect(screen).toContain('PassportPortfolioOverview')
-    expect(screen).toContain('CommandCenterScreen')
-    expect(screen).toContain('data-passport-module-002')
+  it('mounts Module 002 on PassportScreen without removing Module 001 or Command Center (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportPortfolioOverview.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
-  it('Module 002 remains mounted without ArchitectureShell', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('data-passport-module-002')
-    expect(screen).not.toContain('PassportArchitectureShell')
+  it('Module 002 remains mounted without ArchitectureShell (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportPortfolioOverview.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
   it('Module 002 UI avoids Connect Wallet and forbidden product names', () => {

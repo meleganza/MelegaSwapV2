@@ -113,6 +113,9 @@ interface CurrencyInputPanelProps {
   error?: boolean
   showBUSD?: boolean
   tokensToShow?: Token[]
+  compactWalletControls?: boolean
+  balanceOverride?: CurrencyAmount<Currency>
+  balanceLoading?: boolean
 }
 export default function CurrencyInputPanel({
   value,
@@ -141,9 +144,16 @@ export default function CurrencyInputPanel({
   error,
   showBUSD,
   tokensToShow,
+  compactWalletControls = false,
+  balanceOverride,
+  balanceLoading = false,
 }: CurrencyInputPanelProps) {
   const { address: account } = useAccount()
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const legacyCurrencyBalance = useCurrencyBalance(
+    account ?? undefined,
+    balanceOverride ? undefined : currency ?? undefined,
+  )
+  const selectedCurrencyBalance = balanceOverride ?? legacyCurrencyBalance
   const { t } = useTranslation()
 
   const token = pair ? pair.liquidityToken : currency?.isToken ? currency : null
@@ -252,42 +262,43 @@ export default function CurrencyInputPanel({
           </Flex>
         </CurrencySelectButton>
       </Flex>
-      <InputPanel>
-        {account && (
-          <Flex alignItems="center" justifyContent="space-between" p="0 1rem 0.75rem 0.75rem">
-            <Text
-              onClick={!disabled && onMax}
-              color="textSubtle"
-              fontSize="14px"
-              style={{ display: 'inline', cursor: 'pointer' }}
-            >
-              {!hideBalance && !!currency
-                ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
-                : ' -'}
-            </Text>
-            {token && tokenAddress ? (
-              <Flex style={{ gap: '4px' }} ml="4px" alignItems="center">
-                <CopyButton
-                  width="16px"
-                  buttonColor="textSubtle"
-                  text={tokenAddress}
-                  tooltipMessage={t('Token address copied')}
-                />
-                <AddToWalletButton
-                  variant="text"
-                  p="0"
-                  height="auto"
-                  width="fit-content"
-                  tokenAddress={tokenAddress}
-                  tokenSymbol={token.symbol}
-                  tokenDecimals={token.decimals}
-                  tokenLogo={token instanceof WrappedTokenInfo ? token.logoURI : undefined}
-                />
-              </Flex>
-            ) : (
-              <div />
-            )}
-            {/* {!!currency && showBUSD && Number.isFinite(amountInDollar) && (
+      {!compactWalletControls ? (
+        <InputPanel>
+          {account && (
+            <Flex alignItems="center" justifyContent="space-between" p="0 1rem 0.75rem 0.75rem">
+              <Text
+                onClick={!disabled && onMax}
+                color="textSubtle"
+                fontSize="14px"
+                style={{ display: 'inline', cursor: 'pointer' }}
+              >
+                {!hideBalance && !!currency
+                  ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
+                  : ' -'}
+              </Text>
+              {token && tokenAddress ? (
+                <Flex style={{ gap: '4px' }} ml="4px" alignItems="center">
+                  <CopyButton
+                    width="16px"
+                    buttonColor="textSubtle"
+                    text={tokenAddress}
+                    tooltipMessage={t('Token address copied')}
+                  />
+                  <AddToWalletButton
+                    variant="text"
+                    p="0"
+                    height="auto"
+                    width="fit-content"
+                    tokenAddress={tokenAddress}
+                    tokenSymbol={token.symbol}
+                    tokenDecimals={token.decimals}
+                    tokenLogo={token instanceof WrappedTokenInfo ? token.logoURI : undefined}
+                  />
+                </Flex>
+              ) : (
+                <div />
+              )}
+              {/* {!!currency && showBUSD && Number.isFinite(amountInDollar) && (
             <Flex justifyContent="flex-end">
               <Flex maxWidth="200px">
                 <Text fontSize="12px" color="textSubtle">
@@ -296,9 +307,9 @@ export default function CurrencyInputPanel({
               </Flex>
             </Flex>
           )} */}
-          </Flex>
-        )}
-        <InputRow selected={disableCurrencySelect}>
+            </Flex>
+          )}
+          <InputRow selected={disableCurrencySelect}>
             {account && currency && selectedCurrencyBalance?.greaterThan(0) && !disabled && label !== 'To' && (
               <Flex alignItems="right" justifyContent="right">
                 {maxAmount?.greaterThan(0) &&
@@ -344,9 +355,74 @@ export default function CurrencyInputPanel({
               </Flex>
             )}
           </InputRow>
-        <div style={{ paddingBottom: '10px' }}></div>
-        {disabled && <Overlay />}
-      </InputPanel>
+          <div style={{ paddingBottom: '10px' }}></div>
+          {disabled && <Overlay />}
+        </InputPanel>
+      ) : null}
+      {compactWalletControls && account ? (
+        <Flex data-compact-wallet-controls alignItems="center" justifyContent="space-between" style={{ gap: '8px' }}>
+          <Text color="textSubtle" fontSize="11px" data-wallet-balance>
+            {!hideBalance && currency
+              ? t('Balance: %balance%', {
+                  balance: selectedCurrencyBalance?.toSignificant(6) ?? (balanceLoading ? t('Loading') : '—'),
+                })
+              : '—'}
+          </Text>
+          <Flex alignItems="center" style={{ gap: '4px' }} data-wallet-inline-actions>
+            {token && tokenAddress ? (
+              <Flex style={{ gap: '4px' }} alignItems="center" data-wallet-token-actions>
+                <CopyButton
+                  width="16px"
+                  buttonColor="textSubtle"
+                  text={tokenAddress}
+                  tooltipMessage={t('Token address copied')}
+                />
+                <AddToWalletButton
+                  variant="text"
+                  p="0"
+                  height="auto"
+                  width="fit-content"
+                  tokenAddress={tokenAddress}
+                  tokenSymbol={token.symbol}
+                  tokenDecimals={token.decimals}
+                  tokenLogo={token instanceof WrappedTokenInfo ? token.logoURI : undefined}
+                />
+              </Flex>
+            ) : null}
+            {showQuickInputButton && maxAmount?.greaterThan(0) && onPercentInput ? (
+              <Flex alignItems="center" style={{ gap: '2px' }} data-wallet-percent-actions>
+                {[25, 50].map((percent) => (
+                  <Button
+                    key={`compact-percent-${percent}`}
+                    type="button"
+                    scale="xs"
+                    variant="text"
+                    onClick={() => onPercentInput(percent)}
+                  >
+                    {percent}%
+                  </Button>
+                ))}
+              </Flex>
+            ) : null}
+            {showMaxButton && maxAmount?.greaterThan(0) && onMax ? (
+              <Button
+                type="button"
+                scale="xs"
+                variant="text"
+                data-wallet-max-button
+                onClick={(event) => {
+                  event.stopPropagation()
+                  event.preventDefault()
+                  onMax()
+                  setCurrentClickedPercent('MAX')
+                }}
+              >
+                {t('Max')}
+              </Button>
+            ) : null}
+          </Flex>
+        </Flex>
+      ) : null}
     </Container>
   )
 }

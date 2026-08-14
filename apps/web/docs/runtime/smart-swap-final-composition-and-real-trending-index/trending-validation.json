@@ -1,1 +1,0 @@
-{"mission":"SMART_SWAP_FINAL_COMPOSITION_AND_REAL_TRENDING_INDEX","timestamp":"2026-07-27T01:15:58Z","checks":[{"name":"protocol activity feed","pass":true},{"name":"indexer Swap events","pass":true},{"name":"Factory/Router constants","pass":true},{"name":"rank swaps→volume→recency","pass":true},{"name":"no Price unavailable","pass":true}],"pass":true}

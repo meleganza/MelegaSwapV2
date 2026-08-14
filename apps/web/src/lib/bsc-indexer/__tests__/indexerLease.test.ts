@@ -53,7 +53,7 @@ describe('indexerLease', () => {
 
 describe('masterchefTopics', () => {
   it('validates 32-byte topic hashes', () => {
-    expect(isValidTopicHash('0x90890809c654f11f630942b0e6f67ee8cb438cbdfb1d1f45533e7576391dc195')).toBe(true)
+    expect(isValidTopicHash('0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15')).toBe(true)
     expect(isValidTopicHash('0xbad')).toBe(false)
   })
 })

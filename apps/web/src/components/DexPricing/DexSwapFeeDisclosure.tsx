@@ -1,34 +1,28 @@
-import { useMemo } from 'react'
-import Link from 'next/link'
 import styled from 'styled-components'
-import { Text } from '@pancakeswap/uikit'
 import { Currency, TradeType } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import {
-  FSC_01_POLICY_REF,
-  formatProtocolFeePercent,
-  resolveSwapProtocolFeeContext,
-  SWAP_PROTOCOL_FEE_BUY_MARCO_BPS,
-  SWAP_PROTOCOL_FEE_STANDARD_BPS,
-} from 'lib/d87-pricing'
-import { MarcoBuyFeeIncentive } from './MarcoBuyFeeIncentive'
+import { SMART_SWAP_PREVIEW_GAS_UNITS, useSmartSwapGasProtocolFeePreview } from 'lib/smart-swap-gas-protocol-fee'
 import { useSmartRouterFeePanelContext } from './useSmartRouterFeePanelContext'
 
 const Panel = styled.div`
-  margin-top: 10px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  margin: 8px 16px 0;
+  min-width: 0;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
 `
 
 const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  color: #b8b8b8;
+  display: grid;
+  grid-template-columns: minmax(92px, 0.7fr) minmax(0, 1.3fr);
+  align-items: start;
+  gap: 10px;
   margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.35;
 
   &:first-child {
     margin-top: 0;
@@ -37,31 +31,14 @@ const Row = styled.div`
 
 const Label = styled.span`
   color: #8f8f8f;
+  min-width: 0;
 `
 
 const Value = styled.span`
-  color: #f2f2f2;
+  color: #e8e8e8;
   text-align: right;
-`
-
-const Note = styled(Text)`
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #8f8f8f;
-  line-height: 1.45;
-`
-
-const PricingLink = styled(Link)`
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #F4C430;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  min-width: 0;
+  overflow-wrap: anywhere;
 `
 
 type Props = {
@@ -75,65 +52,32 @@ type Props = {
 export function DexSwapFeeDisclosure({ trade }: Props) {
   const { chainId } = useActiveChainId()
   const panel = useSmartRouterFeePanelContext()
-  const ctx = useMemo(
-    () => (trade ? resolveSwapProtocolFeeContext(trade, chainId) : null),
-    [trade, chainId],
-  )
+  const feePlan = useSmartSwapGasProtocolFeePreview(SMART_SWAP_PREVIEW_GAS_UNITS, chainId)
 
-  if (!ctx) return null
+  if (!trade) return null
 
   return (
     <Panel data-d87-swap-fee-disclosure>
       <Row>
-        <Label>Execution Router</Label>
+        <Label>Execution router</Label>
         <Value>{panel?.executionRouterLabel ?? 'PancakeSwap Smart Router'}</Value>
       </Row>
       <Row>
-        <Label>Protocol Wrapper</Label>
-        <Value>{panel?.protocolWrapperLabel ?? 'ADAPTER → WRAPPER'}</Value>
+        <Label>Protocol fee</Label>
+        <Value>{feePlan ? `~${feePlan.display.protocolFeeBnb} ${feePlan.fee.feeAsset}` : 'Unavailable'}</Value>
       </Row>
       <Row>
-        <Label>Protocol Fee</Label>
-        <Value>
-          {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_STANDARD_BPS)} standard ·{' '}
-          {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_BUY_MARCO_BPS)} BUY MARCO
-        </Value>
+        <Label>Calculation</Label>
+        <Value>25% of estimated gas · fixed at confirmation</Value>
       </Row>
       <Row>
-        <Label>Applied</Label>
-        <Value>{formatProtocolFeePercent(ctx.protocolFeeBps)}</Value>
+        <Label>Collection</Label>
+        <Value>Unavailable on this network</Value>
       </Row>
       <Row>
-        <Label>LP Fee</Label>
-        <Value>Separate — paid to liquidity providers (not Civilization Revenue)</Value>
+        <Label>LP fee</Label>
+        <Value>Separate · paid to liquidity providers</Value>
       </Row>
-      <Row>
-        <Label>Treasury Runtime</Label>
-        <Value>FSC-01 settlement — DEX forwards fee only</Value>
-      </Row>
-      <Row>
-        <Label>Current Collector</Label>
-        <Value>{panel?.collectorAddress ?? 'Not published'}</Value>
-      </Row>
-      <Row>
-        <Label>Registry Source</Label>
-        <Value>
-          Collector: {panel?.collectorSource ?? '—'} · MARCO: {panel?.marcoSource ?? '—'}
-        </Value>
-      </Row>
-      {ctx.buyMarcoApplied ? (
-        <Note color="#F4C430">
-          BUY MARCO incentive applied: protocol fee reduced to 0.20%.
-        </Note>
-      ) : (
-        <Note>Standard D87 protocol fee: 0.30%.</Note>
-      )}
-      <Note>
-        Protocol Fees are routed to Treasury Runtime under {FSC_01_POLICY_REF}. LP fees are separate
-        and remain with liquidity providers. Referral rewards are always distributed in MARCO.
-      </Note>
-      <MarcoBuyFeeIncentive trade={trade ?? undefined} compact />
-      <PricingLink href="/pricing-fees">Pricing &amp; Fees</PricingLink>
     </Panel>
   )
 }

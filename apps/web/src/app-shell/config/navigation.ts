@@ -36,21 +36,28 @@ export const shellNavigation: ShellNavSection[] = [
   },
   {
     label: 'TRADE',
-    visibleCount: 2,
+    visibleCount: 3,
     items: [
       {
         id: 'trade',
         label: 'Trade',
-        href: '/trade',
+        href: '/swap',
         icon: 'swap',
-        match: (p) => p === '/trade' || p.startsWith('/trade/'),
+        match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+      },
+      {
+        id: 'bridge-marco',
+        label: 'Bridge MARCO',
+        href: '/bridge',
+        icon: 'swap',
+        match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
       },
       {
         id: 'liquidity-studio',
         label: 'Liquidity Studio',
-        href: '/liquidity-studio',
+        href: '/liquidity',
         icon: 'drop',
-        match: (p) => p.startsWith('/liquidity-studio'),
+        match: (p) => p === '/liquidity' || p.startsWith('/liquidity-studio'),
       },
     ],
   },
@@ -66,7 +73,13 @@ export const shellNavigation: ShellNavSection[] = [
     label: 'FIND',
     visibleCount: 5,
     items: [
-      { id: 'trending', label: 'Trending', href: '/trending', icon: 'star', match: (p) => p === '/trending' },
+      {
+        id: 'trending',
+        label: 'Trending',
+        href: '/projects?sort=trending',
+        icon: 'star',
+        match: (p) => p === '/projects' || p.startsWith('/projects'),
+      },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
       { id: 'radar', label: 'DEX Intelligence', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {
@@ -112,10 +125,12 @@ export const shellNavigation: ShellNavSection[] = [
     items: [
       {
         id: 'command-center',
-        label: 'Passport',
-        href: '/passport',
+        label: 'Portfolio',
+        href: '/portfolio',
         icon: 'command',
         match: (p) =>
+          p === '/portfolio' ||
+          p.startsWith('/portfolio/') ||
           p === '/passport' ||
           p.startsWith('/passport/') ||
           p === '/command-center' ||
@@ -133,27 +148,27 @@ export const shellNavigation: ShellNavSection[] = [
   },
 ]
 
-/** Mobile bottom rail — Home · Liquidity · Farms · Pools · Passport */
+/** Mobile bottom rail — core DEX funnels, each reachable in one tap. */
 export const shellBottomNavItems = [
   {
     id: 'home',
     label: 'Home',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
-    // Align with header: Home owns Discover + Trade; Project Pages under Discover.
-    match: (p: string) =>
-      p === '/' ||
-      p === '/trade' ||
-      p.startsWith('/trade/') ||
-      p === '/swap' ||
-      p.startsWith('/swap/') ||
-      p.startsWith('/project-hq') ||
-      p.startsWith('/@'),
+    // Home owns Discover only — Swap / Project Pages must not highlight Home.
+    match: (p: string) => p === '/',
+  },
+  {
+    id: 'swap',
+    label: 'Swap',
+    href: '/swap',
+    icon: 'swap' as MelegaNavIcon,
+    match: (p: string) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
   },
   {
     id: 'liquidity',
     label: 'Liquidity',
-    href: '/liquidity-studio',
+    href: '/liquidity',
     icon: 'drop' as MelegaNavIcon,
     match: (p: string) => p.startsWith('/liquidity-studio') || p === '/liquidity',
   },
@@ -170,16 +185,5 @@ export const shellBottomNavItems = [
     href: '/pools',
     icon: 'coins' as MelegaNavIcon,
     match: (p: string) => p.startsWith('/pools'),
-  },
-  {
-    id: 'passport',
-    label: 'Passport',
-    href: '/passport',
-    icon: 'command' as MelegaNavIcon,
-    match: (p: string) =>
-      p.startsWith('/passport') ||
-      p.startsWith('/command-center') ||
-      p.startsWith('/portfolio') ||
-      p.startsWith('/workspace'),
   },
 ]

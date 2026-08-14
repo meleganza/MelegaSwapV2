@@ -87,10 +87,10 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(LIQUIDITY_HERO_COPY.trustTitle).toBe('Why provide liquidity?')
     expect(LIQUIDITY_HERO_COPY.trustItems).toHaveLength(4)
     expect(LIQUIDITY_HERO_COPY.trustItems.map((i) => i.title)).toEqual([
-      'Non-custodial Ownership',
-      'Transparent Pools',
-      'Earn Fees',
-      'Open Ecosystem',
+      'Non-custodial ownership',
+      'Transparent pools',
+      'Earn fees',
+      'Open ecosystem',
     ])
     // IA redesign: redundant journey copy removed from Hero — journeys live in workspace.
     expect(LIQUIDITY_HERO_COPY.journeys).toBe('')
@@ -115,9 +115,11 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
 
   it('mounts Module 001 on /liquidity with legacy Pool body archived', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityHeroModule')
-    expect(page).toContain('data-liquidity-module-001="mounted"')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    // V1 hero module retained for regression; V3 page mounts shell
+    expect(shell).toContain('data-liquidity-module-001="mounted"')
+    expect(page).toContain('LiquidityStudioV3Shell')
     expect(page).not.toContain("import Liquidity from 'views/Pool'")
     expect(page).not.toContain('<Liquidity />')
     expect(page).not.toContain('LiquidityArchitectureShell')

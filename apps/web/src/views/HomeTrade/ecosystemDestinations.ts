@@ -1,6 +1,7 @@
 /**
- * Explore Melega Ecosystem destinations — live URLs only where known in product surface.
- * Maiora has no certified public URL in this codebase; keep disabled.
+ * Explore Melega Ecosystem destinations — public LIVE URLs only.
+ * Radar and Labs removed from Founder-facing Home (RC2 emergency repair).
+ * BLACK canonical public URL: https://black.mn (Melega fair-launch infrastructure).
  */
 export type EcosystemDestination = {
   id: string
@@ -17,7 +18,7 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
   {
     id: 'passport',
     title: 'PASSPORT',
-    subtitle: 'Identity and portfolio hub.',
+    subtitle: 'Identity & rewards.',
     href: 'https://marco.melega.ai',
     external: true,
   },
@@ -29,10 +30,10 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     external: true,
   },
   {
-    id: 'labs',
-    title: 'LABS',
-    subtitle: 'Trade narratives before listing.',
-    href: 'https://labs.melega.ai/labs',
+    id: 'blackpump',
+    title: 'BLACK',
+    subtitle: 'Fair-launch infrastructure.',
+    href: 'https://black.mn',
     external: true,
   },
   {
@@ -43,17 +44,10 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     external: true,
   },
   {
-    id: 'radar',
-    title: 'RADAR',
-    subtitle: 'Discover trends and claim profiles.',
-    href: '/radar',
-    external: false,
-  },
-  {
     id: 'maiora',
     title: 'MAIORA',
     subtitle: 'Melega strategic layer.',
     disabled: true,
-    disabledLabel: 'Unavailable',
+    disabledLabel: 'Coming soon',
   },
 ]

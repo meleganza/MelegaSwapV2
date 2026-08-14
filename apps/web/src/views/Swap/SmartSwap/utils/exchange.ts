@@ -16,6 +16,8 @@ export const SMART_ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.ARBITRUM]: '',
   [ChainId.BSC]: '0xC6665d98Efd81f47B03801187eB46cbC63F328B0',
   [ChainId.SHIMMER2]: '',
+  // Base has Melega V2 Router only — Pancake Smart Router not deployed. Trade falls back to V2.
+  [ChainId.BASE]: '',
 }
 
 export function useSmartRouterContract() {

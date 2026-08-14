@@ -397,14 +397,13 @@ function rewardTokenFor(farm: FarmPreviewCard) {
 function aprDisplay(farm: FarmPreviewCard) {
   if (farm.status === 'finished') return 'Ended'
   const apr = farm.displayApr ?? farm.apr
-  if (apr) return apr
-  return RUNTIME_UNAVAILABLE_LABEL
+  if (apr && apr !== '—' && !isUnavailableFarmMetric(apr)) return apr
+  return 'APR unavailable'
 }
 
 function formatRewardValue(value: string) {
   if (value === '—') return RUNTIME_UNAVAILABLE_LABEL
-  if (value === '0.00') return '0.00'
-  if (isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
+  if (value === '0.00' || isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
   return formatCompactDisplay(value.replace(/\s*MARCO\s*$/i, ''))
 }
 

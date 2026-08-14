@@ -32,13 +32,14 @@ export const CAKE_POLYGON = new ERC20Token(
   'Meleta Token',
   ' https://www.melegaswap.finance/marco-token',
 )
+/** Arbitrum MARCO — same address as BSC; verified on 42161 (name MELEGA, symbol MARCO, 18). Not a BSC fallback. */
 export const CAKE_ARB = new ERC20Token(
   ChainId.ARBITRUM,
   '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
   18,
   'MARCO',
-  'Meleta Token',
-  ' https://www.melegaswap.finance/marco-token',
+  'MELEGA',
+  'https://melega.finance/',
 )
 
 export const CAKE_SMR = new ERC20Token(
@@ -256,6 +257,14 @@ export const CAKE = {
   [ChainId.BASE]: CAKE_BASE,
   [ChainId.ETHEREUM]: CAKE_ETH,
   [ChainId.SHIMMER2]: CAKE_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0x8c880e839f3cacf60f11612087babd3307a33720',
+    18,
+    'MARCO',
+    'MELEGA',
+    'https://melega.finance/',
+  ),
 }
 
 export const USDC = {
@@ -265,6 +274,14 @@ export const USDC = {
   [ChainId.ARBITRUM]: USDC_ARB,
   [ChainId.POLYGON]: USDC_POLYGON,
   [ChainId.SHIMMER2]: USDC_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+    6,
+    'USDC.e',
+    'USDCoin (Bridged from Ethereum)',
+    '',
+  ),
 }
 
 export const USDT = {
@@ -274,6 +291,14 @@ export const USDT = {
   [ChainId.POLYGON]: USDT_POLYGON,
   [ChainId.ARBITRUM]: USDT_ARB,
   [ChainId.SHIMMER2]: USDT_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+    6,
+    'USDT',
+    'Tether USD',
+    'https://tether.to/',
+  ),
 }
 
 export const DAI = {

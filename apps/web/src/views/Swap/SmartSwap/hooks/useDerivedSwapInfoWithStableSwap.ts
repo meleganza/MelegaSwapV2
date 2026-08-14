@@ -1,7 +1,7 @@
 import { Currency, CurrencyAmount, Pair, TradeType } from '@pancakeswap/sdk'
 import { StableSwapPair, TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { Field } from 'state/swap/actions'
-import { useCurrencyBalances } from 'state/wallet/hooks'
+import { useCurrencyBalances, useLiveCurrencyBalance } from 'state/wallet/hooks'
 import { useTranslation } from '@pancakeswap/localization'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -48,6 +48,7 @@ export function useDerivedSwapInfoWithStableSwap(
 ): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount<Currency> }
+  currencyBalanceLoading: { [field in Field]: boolean }
   parsedAmount: CurrencyAmount<Currency> | undefined
   trade: TradeWithStableSwap<Currency, Currency, TradeType> | null
   inputError?: string
@@ -64,6 +65,8 @@ export function useDerivedSwapInfoWithStableSwap(
     inputCurrency ?? undefined,
     outputCurrency ?? undefined,
   ])
+  const liveInputBalance = useLiveCurrencyBalance(account ?? undefined, inputCurrency)
+  const liveOutputBalance = useLiveCurrencyBalance(account ?? undefined, outputCurrency)
 
   const isExactIn: boolean = independentField === Field.INPUT
   const independentCurrency = isExactIn ? inputCurrency : outputCurrency
@@ -89,8 +92,12 @@ export function useDerivedSwapInfoWithStableSwap(
   // TODO add invariant make sure v2 trade has the same input & output amount as trade with stable swap
 
   const currencyBalances = {
-    [Field.INPUT]: relevantTokenBalances[0],
-    [Field.OUTPUT]: relevantTokenBalances[1],
+    [Field.INPUT]: liveInputBalance.balance ?? relevantTokenBalances[0],
+    [Field.OUTPUT]: liveOutputBalance.balance ?? relevantTokenBalances[1],
+  }
+  const currencyBalanceLoading = {
+    [Field.INPUT]: liveInputBalance.loading && !relevantTokenBalances[0],
+    [Field.OUTPUT]: liveOutputBalance.loading && !relevantTokenBalances[1],
   }
 
   const currencies: { [field in Field]?: Currency } = {
@@ -144,6 +151,7 @@ export function useDerivedSwapInfoWithStableSwap(
     trade: resolvedTrade,
     currencies,
     currencyBalances,
+    currencyBalanceLoading,
     parsedAmount,
     inputError,
   }

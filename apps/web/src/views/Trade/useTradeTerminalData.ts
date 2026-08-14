@@ -19,23 +19,47 @@ import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 import { reconcileTradeSurface, type TradeReconciliationStatus } from 'lib/data-truth/tradeReconciliation'
 import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
-import { usePriceCakeBusd } from 'state/farms/hooks'
 import useBUSDPrice from 'hooks/useBUSDPrice'
+import useTotalSupply from 'hooks/useTotalSupply'
 import { PairState, usePairs } from 'hooks/usePairs'
-import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import type { MarcoPairLiquiditySnapshot } from 'lib/trade-market/fetchMarcoPairLiquidity'
+import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
+import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
 
 const SECONDS_24H = 86_400
 
+type TokenPairsResponse = {
+  analytics: ProjectDexAnalytics
+}
+
+async function fetchTokenPairs(url: string): Promise<TokenPairsResponse> {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`TOKEN_PAIRS_HTTP_${response.status}`)
+  return response.json()
+}
+
 async function fetchBnbUsdPrice(): Promise<number | undefined> {
   try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
-      { headers: { accept: 'application/json' } },
-    )
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd', {
+      headers: { accept: 'application/json' },
+    })
     if (!res.ok) return undefined
     const json = (await res.json()) as { binancecoin?: { usd?: number } }
     const usd = json.binancecoin?.usd
     return usd != null && Number.isFinite(usd) && usd > 0 ? usd : undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function fetchMarcoPairLiquiditySnapshot(): Promise<MarcoPairLiquiditySnapshot | undefined> {
+  try {
+    const response = await fetch('/api/trade/pair-liquidity', {
+      headers: { accept: 'application/json' },
+    })
+    if (!response.ok) return undefined
+    const snapshot = (await response.json()) as MarcoPairLiquiditySnapshot
+    return snapshot.status === 'ready' && snapshot.liquidityUsd > 0 ? snapshot : undefined
   } catch {
     return undefined
   }
@@ -81,7 +105,7 @@ export interface TradeDataMachinePayload {
   runtimeLinks: string[]
   missingReason: TradeDataMissingReason
   missingReasonDetail?: string
-  holder_source: 'bscscan'
+  holder_source: 'binplorer' | 'bscscan'
   holder_status: 'configured' | 'not_configured' | 'error'
   holder_reason?: string
   timestamp: string
@@ -132,7 +156,6 @@ const formatTokenAmount = (value: number, symbol: string): string | undefined =>
   return `${value.toFixed(4)} ${symbol}`
 }
 
-
 const bscExplorerTx = (hash: string): string => `https://bscscan.com/tx/${hash}`
 
 const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean => {
@@ -157,25 +180,40 @@ function resolveCanonicalOutputAddress(
   return undefined
 }
 
-export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
+export const useTradeTerminalData = (
+  inputSymbol?: string,
+  outputSymbol?: string,
+  outputAddress?: string,
+  inputAddress?: string,
+) => {
   const { chainId } = useActiveChainId()
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured)
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
-  const tokenAddress = resolvedOutput
+  const resolvedInput = resolveCanonicalOutputAddress(chainId, inputSymbol, inputAddress)
+  const outputIsNative = Boolean(outputAddress && !/^0x[a-fA-F0-9]{40}$/.test(outputAddress))
+  // Prefer the buy/output asset; when the user reverses the route, keep analytics
+  // alive by indexing the non-native input token instead of reporting UNAVAILABLE.
+  const tokenAddress = outputIsNative ? resolvedInput : resolvedOutput ?? resolvedInput
+  const { data: tokenPairsData } = useSWR<TokenPairsResponse>(
+    chainId && tokenAddress
+      ? `/api/market-data/token-pairs?chainId=${chainId}&address=${encodeURIComponent(tokenAddress)}`
+      : null,
+    fetchTokenPairs,
+    { refreshInterval: 60_000, revalidateOnFocus: false, dedupingInterval: 45_000 },
+  )
+  const externalDex = tokenPairsData?.analytics
   const tokenData = useTokenDataSWR(tokenAddress)
   const { data: holderCount, isLoading: holderLoading } = useHolderCount(chainId, tokenAddress)
-  const isMarcoRoute =
-    isMarcoSymbol(outputSymbol) ||
-    !outputSymbol ||
-    resolvedOutput?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
-  const { data: publicMarket } = useSWR(
-    isMarcoRoute ? 'trade-marco-coingecko-market' : null,
-    fetchMarcoPublicMarket,
-    { refreshInterval: 120_000, revalidateOnFocus: false },
-  )
+  const isMarcoRoute = tokenAddress
+    ? tokenAddress.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
+    : isMarcoSymbol(outputSymbol) || isMarcoSymbol(inputSymbol) || !outputSymbol
+  const { data: publicMarket } = useSWR(isMarcoRoute ? 'trade-marco-coingecko-market' : null, fetchMarcoPublicMarket, {
+    refreshInterval: 120_000,
+    revalidateOnFocus: false,
+  })
   const { candles: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
     useDurableIndexer && isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined,
     '1H',
@@ -185,7 +223,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     fetchBnbUsdPrice,
     { refreshInterval: 120_000, revalidateOnFocus: false },
   )
-  const marcoOnChainPrice = usePriceCakeBusd({ forceMainnet: true })
+  const { data: indexedPairLiquidity } = useSWR(
+    useDurableIndexer && isMarcoRoute ? 'trade-marco-wbnb-reserve-liquidity' : null,
+    fetchMarcoPairLiquiditySnapshot,
+    { refreshInterval: 60_000, revalidateOnFocus: false },
+  )
   const wbnbOnChainPrice = useBUSDPrice(chainId ? WBNB[chainId] : WBNB[56])
   const effectiveBnbUsd = useMemo(() => {
     if (bnbUsdPrice != null && Number.isFinite(bnbUsdPrice) && bnbUsdPrice > 0) return bnbUsdPrice
@@ -198,21 +240,27 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   )
   const wbnbToken = chainId ? WNATIVE[chainId] : undefined
   const [[pairState, pair]] = usePairs([[marcoToken, wbnbToken]])
+  const marcoTotalSupply = useTotalSupply(marcoToken)
 
-  const reserveLiquidityUsd = useMemo(() => {
+  const marcoPairMarket = useMemo(() => {
     if (!isMarcoRoute || pairState !== PairState.EXISTS || !pair) return undefined
-    const marcoUsd = marcoOnChainPrice?.toNumber()
-    const bnbUsd = effectiveBnbUsd
-    if (!marcoUsd || !bnbUsd) return undefined
-    const marcoReserve = pair.token0.symbol === 'MARCO'
-      ? getBalanceNumber(pair.reserve0, pair.token0.decimals)
-      : getBalanceNumber(pair.reserve1, pair.token1.decimals)
-    const bnbReserve = pair.token0.symbol === 'WBNB' || pair.token0.symbol === 'BNB'
-      ? getBalanceNumber(pair.reserve0, pair.token0.decimals)
-      : getBalanceNumber(pair.reserve1, pair.token1.decimals)
-    const total = marcoReserve * marcoUsd + bnbReserve * bnbUsd
-    return total > 0 ? total : undefined
-  }, [isMarcoRoute, pairState, pair, marcoOnChainPrice, effectiveBnbUsd])
+    const nativeUsd = effectiveBnbUsd
+    const marcoReserve =
+      pair.token0.symbol === 'MARCO' ? Number(pair.reserve0.toSignificant(18)) : Number(pair.reserve1.toSignificant(18))
+    const bnbReserve =
+      pair.token0.symbol === 'WBNB' || pair.token0.symbol === 'BNB'
+        ? Number(pair.reserve0.toSignificant(18))
+        : Number(pair.reserve1.toSignificant(18))
+    const totalSupply = marcoTotalSupply ? Number(marcoTotalSupply.toSignificant(18)) : undefined
+    return computeMarcoPairMarket({ marcoReserve, nativeReserve: bnbReserve, nativeUsd: nativeUsd ?? 0, totalSupply })
+  }, [isMarcoRoute, pairState, pair, effectiveBnbUsd, marcoTotalSupply])
+
+  const reserveLiquidityUsd =
+    indexedPairLiquidity?.liquidityUsd && indexedPairLiquidity.liquidityUsd > 0
+      ? indexedPairLiquidity.liquidityUsd
+      : marcoPairMarket?.liquidityUsd
+
+  const onChainFdvUsd = marcoPairMarket?.fdvUsd
 
   const indexerMetrics24h = useMemo(() => {
     if (!useDurableIndexer || !isMarcoRoute) return undefined
@@ -226,8 +274,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         const ts = Number(tx.timestamp)
         return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= cutoff
       }).length ?? 0
-    const swapEventCount = indexerState.eventCounts?.Swap ?? 0
-    const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h > 0 ? txCount24h : swapEventCount
+    const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h
     const volumeUsd =
       quoteVolumeWbnb > 0 && effectiveBnbUsd != null && Number.isFinite(effectiveBnbUsd)
         ? quoteVolumeWbnb * effectiveBnbUsd
@@ -240,15 +287,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       tradeCount: resolvedTradeCount,
       lastClose: indexerCandles[indexerCandles.length - 1]?.close,
     }
-  }, [
-    useDurableIndexer,
-    isMarcoRoute,
-    indexerCandles,
-    transactions,
-    indexerState.eventCounts,
-    effectiveBnbUsd,
-    indexerCandleStatus,
-  ])
+  }, [useDurableIndexer, isMarcoRoute, indexerCandles, transactions, effectiveBnbUsd, indexerCandleStatus])
 
   const formatCompactUsd = (value?: number): string | undefined => {
     if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return undefined
@@ -291,9 +330,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
           token1Symbol: tx.token1Symbol,
           token0Address: tx.token0Address,
           token1Address: tx.token1Address,
-          amount: formatUsd(tx.amountUSD) ?? formatTokenAmount(Math.max(tx.amountToken0, tx.amountToken1), tx.token0Symbol) ?? '—',
-          amountReason:
-            tx.amountUSD > 0 ? undefined : DATA_REASON_LABELS.NO_EVENTS_INDEXED,
+          amount:
+            formatUsd(tx.amountUSD) ??
+            formatTokenAmount(Math.max(tx.amountToken0, tx.amountToken1), tx.token0Symbol) ??
+            '—',
+          amountReason: tx.amountUSD > 0 ? undefined : DATA_REASON_LABELS.NO_EVENTS_INDEXED,
           received: receivedAmount,
           receivedReason: receivedAmount ? undefined : 'Swap output amount not indexed',
           direction: swapDirection(tx, displayOutput),
@@ -306,68 +347,82 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const useCanonicalIndexerStats = useDurableIndexer && isMarcoRoute
     const volChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.volumeUSDChange ?? NaN)
     const liqChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.liquidityUSDChange ?? NaN)
-    const txChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.txCountChange ?? NaN)
+    // TokenData exposes a factual transaction count but no previous-period
+    // baseline. Do not manufacture a 24H change percentage.
+    const txChange = undefined
 
     const indexedVolumeValue =
       indexerMetrics24h?.volumeUsd != null
         ? formatUsd(indexerMetrics24h.volumeUsd)
         : indexerMetrics24h?.quoteVolumeWbnb != null
-          ? `${indexerMetrics24h.quoteVolumeWbnb < 0.01 ? indexerMetrics24h.quoteVolumeWbnb.toFixed(6) : indexerMetrics24h.quoteVolumeWbnb.toFixed(4)} WBNB`
-          : undefined
+        ? `${
+            indexerMetrics24h.quoteVolumeWbnb < 0.01
+              ? indexerMetrics24h.quoteVolumeWbnb.toFixed(6)
+              : indexerMetrics24h.quoteVolumeWbnb.toFixed(4)
+          } WBNB`
+        : undefined
     const indexedTradeValue =
       indexerMetrics24h?.tradeCount != null && indexerMetrics24h.tradeCount > 0
         ? indexerMetrics24h.tradeCount.toLocaleString()
         : undefined
 
     const volumeValue = useCanonicalIndexerStats
-      ? indexedVolumeValue
-      : indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
+      ? indexedVolumeValue ?? (externalDex?.volume24hUsd != null ? formatUsd(externalDex.volume24hUsd) : undefined)
+      : indexedVolumeValue ??
+        (externalDex?.volume24hUsd != null
+          ? formatUsd(externalDex.volume24hUsd)
+          : formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0))
     const liquidityValue =
       reserveLiquidityUsd != null
         ? formatUsd(reserveLiquidityUsd)
+        : externalDex?.liquidityUsd != null
+        ? formatUsd(externalDex.liquidityUsd)
         : useCanonicalIndexerStats
-          ? undefined
-          : formatUsd(tokenData?.liquidityUSD ?? 0)
-    const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
-    const fdvValue = formatCompactUsd(publicMarket?.fdvUsd)
+        ? undefined
+        : formatUsd(tokenData?.liquidityUSD ?? 0)
+    const mcapValue = formatCompactUsd(externalDex?.marketCapUsd ?? publicMarket?.marketCapUsd)
+    const fdvValue = formatCompactUsd(externalDex?.fdvUsd ?? publicMarket?.fdvUsd ?? onChainFdvUsd)
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
 
-    const volumeReason: DataReasonCode | undefined =
-      indexedVolumeValue
-        ? undefined
-        : tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
-          ? 'SUBGRAPH_LOADING'
-          : !tokenData?.exists && !publicMarket?.volume24hUsd
-            ? 'PAIR_NOT_INDEXED'
-            : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
-              ? 'NO_EVENTS_INDEXED'
-              : undefined
+    const volumeReason: DataReasonCode | undefined = indexedVolumeValue
+      ? undefined
+      : tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
+      ? 'SUBGRAPH_LOADING'
+      : !tokenData?.exists && !publicMarket?.volume24hUsd && externalDex?.volume24hUsd == null
+      ? 'PAIR_NOT_INDEXED'
+      : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
+      ? 'NO_EVENTS_INDEXED'
+      : undefined
 
     const liquidityReason: DataReasonCode | undefined =
       reserveLiquidityUsd != null
         ? undefined
         : pairState === PairState.EXISTS && isMarcoRoute
-          ? 'SUBGRAPH_LOADING'
-          : useCanonicalIndexerStats
-            ? 'NO_POOL_FOUND'
-            : tokenData === undefined && subgraphReport.melegaNativeConfigured
-              ? 'SUBGRAPH_LOADING'
-              : !tokenData?.exists
-                ? 'PAIR_NOT_INDEXED'
-                : !tokenData.liquidityUSD
-                  ? 'NO_POOL_FOUND'
-                  : undefined
+        ? 'SUBGRAPH_LOADING'
+        : externalDex?.liquidityUsd != null
+        ? undefined
+        : useCanonicalIndexerStats
+        ? 'NO_POOL_FOUND'
+        : tokenData === undefined && subgraphReport.melegaNativeConfigured
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData?.exists
+        ? 'PAIR_NOT_INDEXED'
+        : !tokenData.liquidityUSD
+        ? 'NO_POOL_FOUND'
+        : undefined
 
+    const externalTrades =
+      externalDex?.transactions24h != null ? externalDex.transactions24h.toLocaleString() : undefined
     const tradesReason: DataReasonCode | undefined =
-      indexedTradeValue
+      indexedTradeValue || externalTrades
         ? undefined
         : tokenData === undefined && subgraphReport.melegaNativeConfigured
-          ? 'SUBGRAPH_LOADING'
-          : !tokenData?.exists
-            ? 'PAIR_NOT_INDEXED'
-            : !tokenData.txCount && !transactions?.length
-              ? 'NO_EVENTS_INDEXED'
-              : undefined
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData?.exists
+        ? 'PAIR_NOT_INDEXED'
+        : !tokenData.txCount && !transactions?.length
+        ? 'NO_EVENTS_INDEXED'
+        : undefined
 
     const mcapReason: DataReasonCode | undefined = mcapValue ? undefined : 'EXPLORER_SOURCE_MISSING'
     const fdvReason: DataReasonCode | undefined = fdvValue ? undefined : 'EXPLORER_SOURCE_MISSING'
@@ -411,7 +466,10 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'transactions',
         label: '24H Trades',
-        value: indexedTradeValue ?? (useCanonicalIndexerStats ? undefined : tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
+        value:
+          indexedTradeValue ??
+          externalTrades ??
+          (useCanonicalIndexerStats ? undefined : tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
         change: txChange?.text,
         changePositive: txChange?.positive,
         reasonCode: tradesReason,
@@ -419,22 +477,35 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'holders',
         label: 'Holders',
-        value: !tokenAddress
-          ? RUNTIME_UNAVAILABLE_LABEL
-          : resolveHolderMetric(holderCount, holderLoading).display,
+        value: !tokenAddress ? RUNTIME_UNAVAILABLE_LABEL : resolveHolderMetric(holderCount, holderLoading).display,
         reasonCode: !tokenAddress
           ? 'DATA_SOURCE_NOT_CONFIGURED'
           : holderLoading
-            ? undefined
-            : holderCount?.status === 'ready'
-              ? undefined
-              : 'EXPLORER_SOURCE_MISSING',
+          ? undefined
+          : holderCount?.status === 'ready'
+          ? undefined
+          : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured, reserveLiquidityUsd, useDurableIndexer, isMarcoRoute, pairState])
+  }, [
+    tokenData,
+    publicMarket,
+    tokenAddress,
+    holderCount,
+    holderLoading,
+    indexerMetrics24h,
+    transactions,
+    subgraphReport.melegaNativeConfigured,
+    reserveLiquidityUsd,
+    useDurableIndexer,
+    isMarcoRoute,
+    pairState,
+    onChainFdvUsd,
+    externalDex,
+  ])
 
   const pairPrice = useMemo(() => {
-    const onChain = marcoOnChainPrice?.toNumber()
+    const onChain = marcoPairMarket?.priceUsd
     if (isMarcoRoute && onChain && onChain > 0) {
       const marcoChange = computeValid24hPriceChange(indexerCandles)
       return {
@@ -448,6 +519,17 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         value: tokenData.priceUSD,
         change24h: tokenData.priceUSDChange,
         formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+      }
+    }
+    if (externalDex?.priceUsd != null && externalDex.priceUsd > 0) {
+      return {
+        value: externalDex.priceUsd,
+        change24h: externalDex.priceChange24h ?? undefined,
+        formatted: `$${
+          externalDex.priceUsd < 0.01
+            ? externalDex.priceUsd.toLocaleString('en-US', { maximumSignificantDigits: 8 })
+            : externalDex.priceUsd.toLocaleString('en-US', { maximumFractionDigits: 6 })
+        }`,
       }
     }
     const close = indexerMetrics24h?.lastClose
@@ -469,16 +551,25 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       }
     }
     return undefined
-  }, [tokenData, indexerMetrics24h, effectiveBnbUsd, marcoOnChainPrice, isMarcoRoute, indexerCandles])
+  }, [
+    tokenData,
+    indexerMetrics24h,
+    effectiveBnbUsd,
+    marcoPairMarket?.priceUsd,
+    isMarcoRoute,
+    indexerCandles,
+    externalDex,
+  ])
 
   const missingReason = useMemo((): TradeDataMissingReason => {
     if (useDurableIndexer && (transactions?.length || indexerCandles.length > 0)) return null
+    if (externalDex?.primaryPairAddress) return null
     if (tokenData === undefined) return null
     if (!tokenAddress) return 'route_not_configured'
     if (!tokenData.exists) return 'pair_not_indexed'
     if (!transactions?.length && !tokenData.volumeUSD) return 'subgraph_empty'
     return null
-  }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length])
+  }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length, externalDex?.primaryPairAddress])
 
   const missingReasonDetail = useMemo((): string | undefined => {
     if (missingReason === 'pair_not_indexed') return 'MARCO/WBNB pair not indexed in Melega subgraph'
@@ -492,23 +583,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   }, [missingReason, useDurableIndexer])
 
   const chartUnavailableDetail = useMemo((): string | undefined => {
+    if (externalDex?.primaryPairAddress) return undefined
     if (missingReason === 'pair_not_indexed') {
       return `Reason: Pair not indexed · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
     }
     if (missingReason === 'subgraph_empty') {
-      return `Reason: ${indexerState.reason ?? 'No indexed candles or swaps'} · Source: ${indexerState.source} · Indexer: ${indexerState.indexer}`
+      return `Reason: ${indexerState.reason ?? 'No indexed candles or swaps'} · Source: ${
+        indexerState.source
+      } · Indexer: ${indexerState.indexer}`
     }
     if (missingReason === 'route_not_configured') {
       return 'Reason: Output token route not configured · Source: trade-runtime'
     }
     if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
-      return `Reason: ${indexerState.reason ?? 'Chart data unavailable'} · Source: ${indexerState.source} · Indexer: ${indexerState.indexer}`
+      return `Reason: ${indexerState.reason ?? 'Chart data unavailable'} · Source: ${indexerState.source} · Indexer: ${
+        indexerState.indexer
+      }`
     }
     if (tokenData === undefined) {
       return `Reason: Token metrics loading · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
     }
     return undefined
-  }, [missingReason, indexerState, tokenData])
+  }, [missingReason, indexerState, tokenData, externalDex?.primaryPairAddress])
 
   const machine = useMemo((): TradeDataMachinePayload => {
     const reasonCodes: Partial<Record<string, DataReasonCode>> = {}
@@ -521,15 +617,10 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       schemaVersion: '1.0.0',
       module: 'trade',
       subgraphTransactions:
-        indexerState.status === 'loading'
-          ? 'loading'
-          : transactions && transactions.length > 0
-            ? 'ready'
-            : 'empty',
+        indexerState.status === 'loading' ? 'loading' : transactions && transactions.length > 0 ? 'ready' : 'empty',
       subgraphEndpoint: indexerState.configuredEndpoint,
       subgraphBlocker: indexerState.blockerCode,
-      tokenMetrics:
-        tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
+      tokenMetrics: tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
       dataSources: useDurableIndexer
         ? ['bsc-durable-indexer', 'on-chain-multicall', 'presence-registry']
@@ -541,7 +632,17 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       ...holderMachine,
       timestamp: new Date().toISOString(),
     }
-  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState, holderCount, subgraphReport, useDurableIndexer])
+  }, [
+    transactions,
+    tokenData,
+    pairStats,
+    missingReason,
+    missingReasonDetail,
+    indexerState,
+    holderCount,
+    subgraphReport,
+    useDurableIndexer,
+  ])
 
   const isIndexingSwaps = isActivityIndexing && recentSwaps.length === 0
   const isIndexingMetrics =
@@ -585,15 +686,13 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   ])
 
   const reconciliationStatus = tradeReconciliation.status
-  const reconciliationBlocked = reconciliationStatus === 'inconsistent'
-
-  const gatedPairStats = reconciliationBlocked ? [] : pairStats
-  const gatedRecentSwaps = reconciliationBlocked ? [] : recentSwaps
 
   return {
-    recentSwaps: gatedRecentSwaps,
-    pairStats: gatedPairStats,
-    pairPrice: reconciliationBlocked ? undefined : pairPrice,
+    // Reconciliation is a diagnostic signal, not permission to erase independently
+    // indexed facts. A temporary source mismatch must never blank the whole Trade UI.
+    recentSwaps,
+    pairStats,
+    pairPrice,
     machine: {
       ...machine,
       status: reconciliationStatus,
@@ -610,30 +709,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     reconciliationStatus,
     tradeReconciliation,
     swapEmptyReason:
-      reconciliationStatus === 'inconsistent'
-        ? 'DATA_INCONSISTENT'
+      recentSwaps.length > 0
+        ? undefined
         : reconciliationStatus === 'syncing'
-          ? 'INDEXER_SYNCING'
-          : reconciliationStatus === 'unavailable'
-            ? 'NO_EVENTS_INDEXED'
-            : !isActivityIndexing && recentSwaps.length === 0
-          ? indexerState.status === 'error' || indexerState.status === 'unavailable'
-            ? 'DATA_SOURCE_NOT_CONFIGURED'
-            : 'NO_EVENTS_INDEXED'
-          : undefined,
+        ? 'INDEXER_SYNCING'
+        : reconciliationStatus === 'unavailable'
+        ? 'NO_EVENTS_INDEXED'
+        : !isActivityIndexing && recentSwaps.length === 0
+        ? indexerState.status === 'error' || indexerState.status === 'unavailable'
+          ? 'DATA_SOURCE_NOT_CONFIGURED'
+          : 'NO_EVENTS_INDEXED'
+        : undefined,
     swapDiagnostic:
       reconciliationStatus === 'inconsistent'
         ? {
             ...indexerState,
-            reason: 'Trade metrics contradict indexed swap events — reconciliation gate blocked partial display.',
+            reason: 'Indexer sources are reconciling. Independently verified metrics remain visible.',
           }
         : !isActivityIndexing && recentSwaps.length === 0
-          ? indexerState
-          : undefined,
-    chartUnavailableDetail:
-      reconciliationStatus === 'inconsistent'
-        ? 'Reason: Indexed trade count and recent swaps could not be reconciled · Source: bsc-durable-indexer'
-        : chartUnavailableDetail,
+        ? indexerState
+        : undefined,
+    chartUnavailableDetail,
+    primaryPairAddress: externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined),
     indexerState,
     tokenExists: tokenData?.exists,
   }

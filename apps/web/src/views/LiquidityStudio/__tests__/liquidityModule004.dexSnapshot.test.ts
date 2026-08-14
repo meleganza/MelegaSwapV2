@@ -41,8 +41,8 @@ describe('LIQUIDITY_MODULE_004 DEX Snapshot', () => {
     expect(snap).toContain('useProtocolDataSWR')
     expect(snap).toContain('Awaiting Indexer')
     expect(snap).toContain('24H Volume')
-    expect(snap).toContain('Indexed Pools')
-    expect(snap).toContain('Indexed Tokens')
+    // Final polish densified KPIs to DEX TVL / 24H Volume with Indexed hints (no separate pool/token counters).
+    expect(snap).toContain('Indexed')
     expect(snap).toContain('Last Sync')
     expect(snap).not.toContain('$58.74M')
     expect(snap).not.toContain('sparkline')

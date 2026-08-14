@@ -1,8 +1,0 @@
-{
-  "configuredUniqueSousIds": 241,
-  "registrySmartChefPools": 241,
-  "registryActiveSmartChef": 1,
-  "historicalSmartChefFactory": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
-  "classification": "staking pools (SmartChef) distinct from AMM Factory pairs",
-  "homeKpi": "rewarding if >0 else configured allPools.length"
-}

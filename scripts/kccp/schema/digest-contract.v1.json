@@ -1,0 +1,15 @@
+{
+  "protocol_version": "kiri:kccp/v1",
+  "digest_contract": {
+    "algorithm": "KCCP-CANONICAL-JSON-SHA256/v1",
+    "excluded_top_level_fields": ["digest_sha256", "signature"],
+    "canonicalization": "Sorted-key canonical JSON (recursive lexicographic key sort, no whitespace, undefined values dropped, null preserved).",
+    "hash": "SHA-256 over the canonical UTF-8 bytes, lowercase hex encoded.",
+    "header": "x-kccp-content-digest",
+    "body_field": "digest_sha256",
+    "hmac_input": "METHOD\\nPATH\\nTIMESTAMP\\nIDEMPOTENCY_KEY\\nCONTENT_DIGEST",
+    "hmac_header": "x-kccp-signature",
+    "body_signature_field": "signature (reserved for artifact signature; NOT the request HMAC)",
+    "version": "v1"
+  }
+}

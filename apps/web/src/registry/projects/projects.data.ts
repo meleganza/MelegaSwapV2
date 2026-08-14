@@ -29,6 +29,20 @@ const MARCO_BASE = {
   ref: 'token://8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
 } as const
 
+const MARCO_ARB = {
+  chainId: 42161,
+  address: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+  symbol: 'MARCO',
+  ref: 'token://42161/0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+} as const
+
+const MARCO_AVAX = {
+  chainId: 43114,
+  address: '0x8C880e839f3CAcf60F11612087BAbd3307A33720',
+  symbol: 'MARCO',
+  ref: 'token://43114/0x8C880e839f3CAcf60F11612087BAbd3307A33720',
+} as const
+
 /**
  * Canonical MARCO crypto-project / token identity.
  * Distinct immutable projectId from Melega DEX.
@@ -53,7 +67,7 @@ const marco: StaticProjectRecord = {
   isCanonical: true,
   mvpStatic: true,
   sectorTags: ['DeFi', 'Utility Token'],
-  supportedChains: [56, 1, 137, 8453],
+  supportedChains: [56, 1, 137, 8453, 42161, 43114],
   websiteUrl: 'https://www.melega.finance',
   docsUrl: 'https://www.melega.finance/about',
   spaceProfileUrl: 'https://melega.space/',
@@ -63,7 +77,7 @@ const marco: StaticProjectRecord = {
     { type: 'instagram', url: 'https://www.instagram.com/melega.finance/' },
   ],
   resources: {
-    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_BASE],
+    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_BASE, MARCO_ARB, MARCO_AVAX],
     liquidityPools: [],
     farms: [],
     stakingPools: [],
@@ -82,9 +96,19 @@ const marco: StaticProjectRecord = {
     labs: { status: 'planned', notes: 'Labs experiments — Phase 2' },
     aiReport: { status: 'planned', notes: 'AI verification pipeline not live in MVP' },
     machineManifest: { status: 'live', notes: 'Static JSON at /registry/projects/marco.json' },
-    treasuryCompatible: { status: 'planned', notes: 'MARCO fee SKUs — Treasury Runtime Phase 2' },
+    treasuryCompatible: {
+      status: 'planned',
+      notes: 'MARCO fee SKUs settle to the canonical Melega Treasury Wallet',
+    },
   },
-  primaryTokenRefs: [MARCO_BSC.ref, MARCO_ETH.ref, MARCO_POLYGON.ref, MARCO_BASE.ref],
+  primaryTokenRefs: [
+    MARCO_BSC.ref,
+    MARCO_ETH.ref,
+    MARCO_POLYGON.ref,
+    MARCO_BASE.ref,
+    MARCO_ARB.ref,
+    MARCO_AVAX.ref,
+  ],
   relatedProjectSlugs: ['melega-dex'],
   deepLinks: {
     swap: '/trade?chain=bsc&inputCurrency=BNB&outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b',
@@ -152,7 +176,10 @@ const melegaDex: StaticProjectRecord = {
     labs: { status: 'planned', notes: 'Labs experiments — Phase 2' },
     aiReport: { status: 'planned', notes: 'AI verification pipeline not live in MVP' },
     machineManifest: { status: 'live', notes: 'Static JSON at /registry/projects/melega-dex.json' },
-    treasuryCompatible: { status: 'planned', notes: 'Treasury Runtime Phase 2' },
+    treasuryCompatible: {
+      status: 'planned',
+      notes: 'Fee SKUs settle to the canonical Melega Treasury Wallet',
+    },
   },
   primaryTokenRefs: [],
   relatedProjectSlugs: ['marco'],

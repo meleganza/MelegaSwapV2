@@ -6,9 +6,9 @@ import { useProvider } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
-const REFRESH_BLOCK_INTERVAL = 6000
+const DEFAULT_REFRESH_BLOCK_INTERVAL = 12000
 
-export const usePollBlockNumber = () => {
+export const usePollBlockNumber = (refreshInterval = DEFAULT_REFRESH_BLOCK_INTERVAL) => {
   const { cache, mutate } = useSWRConfig()
   const { chainId, provider } = useActiveWeb3React()
 
@@ -23,7 +23,11 @@ export const usePollBlockNumber = () => {
       return blockNumber
     },
     {
-      refreshInterval: REFRESH_BLOCK_INTERVAL,
+      refreshInterval,
+      refreshWhenHidden: false,
+      refreshWhenOffline: false,
+      revalidateOnFocus: true,
+      dedupingInterval: Math.min(refreshInterval, 5000),
     },
   )
 
@@ -67,7 +71,9 @@ export const useChainCurrentBlock = (chainId: number): number => {
       : undefined,
     activeChainId !== chainId
       ? {
-          refreshInterval: REFRESH_BLOCK_INTERVAL,
+          refreshInterval: DEFAULT_REFRESH_BLOCK_INTERVAL,
+          refreshWhenHidden: false,
+          refreshWhenOffline: false,
         }
       : undefined,
   )

@@ -19,8 +19,7 @@ const Module = styled.section`
   width: 100%;
   max-width: ${poolsOverviewKpis.contentMax};
   height: ${poolsOverviewKpis.moduleH};
-  /* Parent Content gap is 32px; negative margin yields 16px after Hero. */
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   font-family: ${typography.fontFamily.body};
   min-width: 0;
@@ -46,7 +45,7 @@ const Grid = styled.div`
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(6, ${poolsOverviewKpis.cardW});
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   column-gap: ${poolsOverviewKpis.cardGap};
   align-items: stretch;
   min-width: 0;
@@ -64,7 +63,7 @@ const Grid = styled.div`
 `
 
 const Card = styled.article`
-  width: ${poolsOverviewKpis.cardW};
+  width: 100%;
   height: ${poolsOverviewKpis.cardH};
   box-sizing: border-box;
   padding: ${poolsOverviewKpis.cardPad};
@@ -76,10 +75,6 @@ const Card = styled.article`
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
-
-  @media (max-width: ${poolsOverviewKpis.tabletBreak}) {
-    width: 100%;
-  }
 
   @media (max-width: ${poolsOverviewKpis.mobileBreak}) {
     width: 100%;
@@ -130,17 +125,6 @@ const Value = styled.div`
   line-height: ${poolsOverviewKpis.valueLine};
   font-weight: 750;
   color: ${poolsOverviewKpis.valueColor};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const Support = styled.div`
-  margin-top: 4px;
-  font-size: ${poolsOverviewKpis.supportSize};
-  line-height: ${poolsOverviewKpis.supportLine};
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.48);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,7 +215,6 @@ function KpiCardView({ model, loading }: { model: PoolsOverviewKpiCardModel; loa
         </Top>
         <div aria-hidden="true">
           <SkeletonBlock style={{ width: '62%', height: 22, marginTop: 10 }} />
-          <SkeletonBlock style={{ width: '48%', height: 10, marginTop: 10 }} />
         </div>
       </Card>
     )
@@ -254,7 +237,6 @@ function KpiCardView({ model, loading }: { model: PoolsOverviewKpiCardModel; loa
       </Top>
       <div>
         <Value>{model.value}</Value>
-        <Support>{model.supporting}</Support>
       </div>
     </Card>
   )

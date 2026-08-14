@@ -80,7 +80,7 @@ contract DryRunDeployLiquidityBuildingV1 is Script {
         require(factory.treasuryFeeSink() == address(sink), "sink");
         require(authorizer.signingAuthority() == localAuthority, "authority");
         require(sink.treasuryReceiver() == localReceiver, "receiver");
-        require(factory.successFeeBps() == 500, "fee");
+        require(factory.successFeeBps() == 1000, "fee");
         require(factory.initialFinalityDepth() == 15, "finality");
 
         console2.log("localAuthorizer", address(authorizer));
@@ -97,7 +97,7 @@ contract DryRunDeployLiquidityBuildingV1 is Script {
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,

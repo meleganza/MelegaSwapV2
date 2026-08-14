@@ -16,8 +16,8 @@ export const RUNTIME_LOADING_LABEL = 'Loading' as const
 
 /** Maps data reason codes to explicit user-facing unavailable reasons. */
 export function runtimeReasonFromCode(code?: DataReasonCode): string {
-  if (!code) return 'Data source not configured'
-  return DATA_REASON_LABELS[code] ?? 'Data source not configured'
+  if (!code) return 'Unavailable'
+  return DATA_REASON_LABELS[code] ?? 'Unavailable'
 }
 
 export function resolveRuntimeMetric(

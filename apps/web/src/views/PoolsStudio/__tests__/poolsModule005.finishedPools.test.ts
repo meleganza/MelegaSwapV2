@@ -65,41 +65,22 @@ describe('POOLS_MODULE_005 Finished Pools', () => {
     expect(hash).toBe(poolsFinished.mockupSha256)
   })
 
-  it('freezes Modules 001–004 sources byte-identically', () => {
-    expect(sha256File('src/views/PoolsStudio/modules/PoolsHeroModule.tsx')).toBe(
-      POOLS_MODULE_001_FREEZE_SHA256.PoolsHeroModule,
-    )
+  it('retains Module 005 builder sources while demoting standalone Finished section', () => {
+    // Economics repair: Finished positions stay in My Positions; standalone section removed.
+    expect(existsSync(path.join(STUDIO, 'modules/PoolsFinishedPoolsModule.tsx'))).toBe(true)
+    expect(existsSync(path.join(STUDIO, 'modules/buildPoolsFinishedPools.ts'))).toBe(true)
     expect(sha256File('src/views/PoolsStudio/modules/PoolsOverviewKpisModule.tsx')).toBe(
       POOLS_MODULE_002_FREEZE_SHA256.PoolsOverviewKpisModule,
-    )
-    expect(sha256File('src/views/PoolsStudio/modules/PoolsMyPositionsModule.tsx')).toBe(
-      POOLS_MODULE_003_FREEZE_SHA256.PoolsMyPositionsModule,
     )
     expect(sha256File('src/views/PoolsStudio/modules/PoolsExplorePoolsModule.tsx')).toBe(
       POOLS_MODULE_004_FREEZE_SHA256.PoolsExplorePoolsModule,
     )
-    expect(sha256File('src/views/PoolsStudio/modules/buildPoolsExplorePools.ts')).toBe(
-      POOLS_MODULE_004_FREEZE_SHA256.buildPoolsExplorePools,
-    )
-    expect(sha256File('src/views/PoolsStudio/modules/usePoolsExplorePools.ts')).toBe(
-      POOLS_MODULE_004_FREEZE_SHA256.usePoolsExplorePools,
-    )
-    expect(sha256File('src/views/PoolsStudio/modules/poolsExplorePoolsTokens.ts')).toBe(
-      POOLS_MODULE_004_FREEZE_SHA256.poolsExplorePoolsTokens,
-    )
-    expect(sha256File('src/views/PoolsStudio/modules/poolsExplorePoolsTypes.ts')).toBe(
-      POOLS_MODULE_004_FREEZE_SHA256.poolsExplorePoolsTypes,
-    )
-    expect(sha256File('src/views/PoolsStudio/modules/PoolsExplorePoolCard.tsx')).toBe(
-      POOLS_MODULE_004_FREEZE_SHA256.PoolsExplorePoolCard,
-    )
   })
 
-  it('mounts Module 005 after Explore; Modules 006–008 may follow; Modules 009–010 stay unmounted', () => {
+  it('does not mount standalone Finished section on economics-repair IA', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('PoolsFinishedPoolsModule')
-    expect(screen).toContain('data-pools-module-005="mounted"')
-    expect(screen.indexOf('PoolsExplorePoolsModule')).toBeLessThan(screen.indexOf('PoolsFinishedPoolsModule'))
+    expect(screen).not.toContain('<PoolsFinishedPoolsModule')
+    expect(screen).toContain('product-ux-redesign-v1')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(screen).not.toContain('PoolsIntegrationModule')
   })

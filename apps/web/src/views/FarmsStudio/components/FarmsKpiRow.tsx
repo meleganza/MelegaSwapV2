@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 import {
@@ -85,7 +84,8 @@ function MiniSparkline({ points }: { points: number[] }) {
 }
 
 function formatKpiDisplayValue(id: string, raw: string, gold?: boolean): string {
-  if (isUnavailableFarmMetric(raw)) return RUNTIME_UNAVAILABLE_LABEL
+  // Consumer honesty (Global Data Truth): uncertified KPIs render as "—", never "Unavailable".
+  if (isUnavailableFarmMetric(raw)) return '—'
   if (id === 'rewards') return formatCompactDisplay(stripTokenSymbol(raw))
   if (gold) return raw
   return formatCompactDisplay(raw)
@@ -122,7 +122,7 @@ export const FarmsKpiRow: React.FC = () => {
         kpis.map((kpi) => {
           const label = kpi.id === 'rewards' ? MARCO_EMITS_TODAY_LABEL : kpi.label
           const displayValue = formatKpiDisplayValue(kpi.id, kpi.value, kpi.gold)
-          const emissionUnavailable = kpi.id === 'rewards' && displayValue === RUNTIME_UNAVAILABLE_LABEL
+          const emissionUnavailable = kpi.id === 'rewards' && isUnavailableFarmMetric(kpi.value)
 
           return (
             <FsKpiCard key={kpi.id} data-fs-kpi-card>

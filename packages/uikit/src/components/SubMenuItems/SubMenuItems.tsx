@@ -1,7 +1,7 @@
 import { AtomBox } from "@pancakeswap/ui/components/AtomBox";
-import { useIsomorphicLayoutEffect } from "framer-motion";
 import debounce from "lodash/debounce";
 import React, { useCallback, useRef } from "react";
+import { useIsomorphicEffect } from "../../hooks/useIsomorphicEffect";
 import { Box } from "../Box";
 import { DropdownMenuItemType } from "../DropdownMenu/types";
 import MenuItem from "../MenuItem/MenuItem";
@@ -36,7 +36,7 @@ const SubMenuItems: React.FC<React.PropsWithChildren<SubMenuItemsProps>> = ({
     else chevronRightRef.current.classList.remove("show");
   }, []);
 
-  useIsomorphicLayoutEffect(() => {
+  useIsomorphicEffect(() => {
     layerController();
   }, [layerController]);
 

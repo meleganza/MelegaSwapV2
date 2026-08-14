@@ -16,33 +16,48 @@ const Shell = styled.div`
 
 const Panel = styled.div`
   flex: 1;
-  padding: 18px;
+  padding: 16px;
   background: ${tradeColors.panelGradient};
   border: 1px solid ${tradeColors.border};
   border-radius: 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
+  min-height: 0;
+  box-sizing: border-box;
 `
 
-const Title = styled.h2`
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+`
+
+const Title = styled.h3`
   margin: 0;
-  font-size: 28px;
+  font-size: 16px;
   font-weight: 800;
   color: #ffffff;
 `
 
-const Sub = styled.p`
-  margin: 0;
-  font-size: 13px;
-  color: ${tradeColors.muted};
+const Live = styled.span<{ $online: boolean }>`
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: ${({ $online }) => ($online ? 'rgba(0,230,118,.1)' : 'rgba(255,82,82,.1)')};
+  color: ${({ $online }) => ($online ? tradeColors.green : tradeColors.red)};
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 `
 
 const Line = styled.div<{ $best?: boolean }>`
-  padding: 14px 16px;
+  padding: 11px 12px;
   border-radius: 12px;
-  border: 1px solid ${({ $best }) => ($best ? 'rgba(244,197,66,0.45)' : tradeColors.border)};
-  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid ${tradeColors.border};
+  background: ${({ $best }) =>
+    $best ? 'linear-gradient(90deg, rgba(34, 197, 94, 0.055), rgba(0, 0, 0, 0.22) 34%)' : 'rgba(0, 0, 0, 0.22)'};
 `
 
 const LineTop = styled.div`
@@ -50,11 +65,11 @@ const LineTop = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 `
 
 const LineName = styled.div`
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #ffffff;
 `
@@ -72,14 +87,14 @@ const Metrics = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  font-size: 12px;
+  font-size: 10px;
   color: ${tradeColors.muted};
 `
 
 const MetricVal = styled.span`
   display: block;
   margin-top: 2px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff;
 `
@@ -88,7 +103,7 @@ const Note = styled.p`
   margin: 0;
   font-size: 12px;
   color: ${tradeColors.muted};
-  line-height: 1.5;
+  line-height: 1.35;
 `
 
 export const TradeRouterPanel: React.FC = () => {
@@ -107,8 +122,10 @@ export const TradeRouterPanel: React.FC = () => {
   return (
     <Shell data-trade-router-panel>
       <Panel>
-        <Title>MelegaSwap Router</Title>
-        <Sub>Live route comparison from SmartSwap runtime. No fabricated execution times.</Sub>
+        <Header>
+          <Title>Available routes</Title>
+          <Live $online={routerOnline}>{routerOnline ? 'Router live' : 'Unavailable'}</Live>
+        </Header>
         {lines.map((line) => (
           <Line key={line.id} $best={line.best} data-trade-router-line>
             <LineTop>
@@ -135,7 +152,7 @@ export const TradeRouterPanel: React.FC = () => {
           </Line>
         ))}
         <Note>
-          Router status: {routerStatus.status}. Enter a swap amount on SmartSwap to refresh route quotes.
+          {hasAmount ? `Live comparison · ${routerStatus.status}` : 'Enter an amount to compare executable quotes.'}
         </Note>
       </Panel>
     </Shell>

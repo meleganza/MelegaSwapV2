@@ -126,7 +126,7 @@ contract LB007AtomicExecutionEngine is Test {
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,
@@ -233,14 +233,14 @@ contract LB007AtomicExecutionEngine is Test {
         assertEq(project.balanceOf(relayer), relayerProjectBefore);
         assertEq(quote.balanceOf(relayer), relayerQuoteBefore);
         assertEq(quote.balanceOf(address(sink)), sinkBefore);
-        assertEq(quote.balanceOf(address(treasuryReceiver)) - recvBefore, G * 500 / 10_000);
+        assertEq(quote.balanceOf(address(treasuryReceiver)) - recvBefore, G * 1000 / 10_000);
         assertEq(pair.balanceOf(owner) - lpBefore, lp);
 
         ILiquidityBuildingProgramV1.ProgramView memory v = LiquidityBuildingProgramV1(program).getProgramView();
         assertEq(v.remainingBudget + v.tokensSold + v.tokensMatched + v.withdrawnUnusedBudget, v.totalDepositedBudget);
         assertEq(v.executionCount, 1);
         assertEq(v.grossQuoteAcquired, G);
-        assertEq(v.totalFeePaid, G * 500 / 10_000);
+        assertEq(v.totalFeePaid, G * 1000 / 10_000);
         assertTrue(LiquidityBuildingProgramV1(program).usedExecutionDigest(execId));
         assertTrue(LiquidityBuildingProgramV1(program).executedEpoch(_baseIntent(G).epochId));
         assertEq(project.allowance(program, address(router)), 0);

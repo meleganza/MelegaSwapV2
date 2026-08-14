@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "identity": {
+    "repository_root": "/Users/marcomelega/Projects/MelegaSwapV2",
+    "repository_code": "MelegaSwapV2",
+    "product_code": "DEX",
+    "organ_code": "dex",
+    "producer": "MelegaSwapV2",
+    "producer_type": "repository",
+    "branch": "main",
+    "head": "c444e8b7654f271cf5328027a9b073d733c22380",
+    "dirty": true,
+    "dirty_entry_count": 85
+  },
+  "credential_status": "configured",
+  "integration_package_status": "present",
+  "repository_state_submission": {
+    "http_status": 200,
+    "state_contract_id": "a7c8fb50-4b94-4563-a7b6-6956355fcee3",
+    "digest_sha256": "92ce85e91dd8c3290f13eb9402af3f701eff3646fcb367133c99c6c0d26cbcfe",
+    "timestamp": "2026-07-14T12:23:40.431Z",
+    "acknowledgement": {
+      "ok": true
+    }
+  },
+  "mission_result_submission": {
+    "http_status": 200,
+    "result_pk": null,
+    "digest_sha256": "66a40985816dd4bd426c26c13772aa184f7fcaf7b7d6605ba90e91931c68e430",
+    "timestamp": "2026-07-14T12:23:41.102Z",
+    "acknowledgement": {
+      "ok": true
+    }
+  },
+  "readback": {
+    "lifecycle_state": "RECONCILIATION_PENDING",
+    "connection_health": "receiving_updates",
+    "verification_level": "repository_verified",
+    "last_state_contract_id": "fbaa6777-eb56-495a-b4bb-28d11268c4bd",
+    "last_state_at": "2026-07-14T12:23:40.009+00:00",
+    "last_commit_sha": "c444e8b7654f271cf5328027a9b073d733c22380",
+    "first_submission_at": "2026-07-14T12:23:40.009+00:00",
+    "last_mission_result_at": "2026-07-14T12:23:40.747+00:00",
+    "current_mission_code": "ACT-CONNECT-MelegaSwapV2"
+  },
+  "reconciliation_candidates": [],
+  "local_validation": {
+    "ok": true,
+    "validation": {
+      "ok": true,
+      "errors": []
+    },
+    "placeholder_scan": {
+      "ok": true,
+      "hits": []
+    },
+    "null_scan": {
+      "ok": true,
+      "hits": []
+    },
+    "digest_algorithm": "KCCP-CANONICAL-JSON-SHA256/v1",
+    "digest_sha256": "92ce85e91dd8c3290f13eb9402af3f701eff3646fcb367133c99c6c0d26cbcfe",
+    "state_contract_id": "a7c8fb50-4b94-4563-a7b6-6956355fcee3"
+  },
+  "founder_approval_required": true,
+  "approved_by_agent": false
+}

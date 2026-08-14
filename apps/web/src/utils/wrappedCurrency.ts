@@ -13,6 +13,7 @@ export function wrappedCurrencyAmount(
 }
 
 export function unwrappedToken(token: Token): Currency {
-  if (token.equals(WNATIVE[token.chainId])) return Native.onChain(token.chainId)
+  const wnative = WNATIVE[token.chainId]
+  if (wnative && token.equals(wnative)) return Native.onChain(token.chainId)
   return token
 }

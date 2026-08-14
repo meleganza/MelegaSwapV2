@@ -47,7 +47,9 @@ export function retry<T>(
         }
         break
       } catch (error) {
-        console.error(error)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Retryable request failed', error)
+        }
         if (completed) {
           break
         }

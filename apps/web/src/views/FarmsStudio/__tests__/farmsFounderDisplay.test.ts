@@ -6,13 +6,13 @@ import {
   stripTokenSymbol,
 } from '../farmsStudioDisplay'
 import { farmsTypography } from '../farmsStudioTokens'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
 describe('R763 farms founder display', () => {
   it('never treats fake zero emission as available', () => {
     expect(isUnavailableFarmMetric('0 MARCO')).toBe(true)
     expect(isUnavailableFarmMetric('—')).toBe(true)
-    expect(displayFarmMetric('0 MARCO')).toBe(RUNTIME_UNAVAILABLE_LABEL)
+    expect(displayFarmMetric('0 MARCO')).toBe('—')
+    expect(displayFarmMetric('Unavailable')).toBe('—')
   })
 
   it('strips duplicate MARCO suffix from emission values', () => {

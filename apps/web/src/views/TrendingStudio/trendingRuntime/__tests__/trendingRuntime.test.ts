@@ -46,7 +46,7 @@ describe('trendingRuntime', () => {
 
   it('maps registry project to trending card with provenance and links', () => {
     const card = mapProjectToTrendingCard(projects[0], 1)
-    expect(card.projectHref).toMatch(/^\/projects\//)
+    expect(card.projectHref).toMatch(/^\/@/)
     expect(card.signalLabel).not.toBe('Strong Buy')
     expect(card.holders).toBe('Unavailable')
   })

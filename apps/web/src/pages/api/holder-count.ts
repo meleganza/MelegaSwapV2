@@ -22,18 +22,13 @@ const handler: NextApiHandler = async (req, res) => {
   const { chainId, address } = parsed.data
   const keyInfo = resolveBscScanApiKey()
 
-  if (!keyInfo.apiKey) {
-    return res.status(503).json({
-      status: 'unavailable',
-      reason: 'Source not configured',
-      source: 'unavailable',
-      diagnostic: 'Set BSCSCAN_API_KEY in Vercel Production (server-side secret) and redeploy',
-      envSource: keyInfo.source,
-      checkedAt: new Date().toISOString(),
-    })
-  }
-
   const result = await fetchHolderCount(chainId, address, keyInfo.apiKey)
+
+  if (result.status === 'ready') {
+    res.setHeader('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
+  } else {
+    res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120')
+  }
 
   return res.status(result.status === 'ready' ? 200 : 502).json({
     ...result,

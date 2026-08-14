@@ -13,7 +13,7 @@ export const LB_CHAIN_ID = 56
 export const LB_FINALITY_DEPTH = 15
 export const LB_STRATEGY_CEILING_BPS = 5000
 export const LB_BPS = 10_000
-export const LB_SUCCESS_FEE_BPS = 500
+export const LB_SUCCESS_FEE_BPS = 1000
 export const LB_FEE_NUMERATOR = 9975
 export const LB_FEE_DENOMINATOR = 10_000
 

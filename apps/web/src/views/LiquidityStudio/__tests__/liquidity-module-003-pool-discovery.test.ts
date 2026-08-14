@@ -65,17 +65,19 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(liquidityPoolDiscovery.contentMax).toBe('1376px')
     expect(liquidityPoolDiscovery.headerH).toBe('48px')
     expect(liquidityPoolDiscovery.columnGap).toBe('12px')
-    expect(liquidityPoolDiscovery.cardMinH).toBe('158px')
+    expect(liquidityPoolDiscovery.cardMinH).toBe('188px')
     expect(liquidityPoolDiscovery.cardPad).toBe('14px')
     expect(liquidityPoolDiscovery.ctaH).toBe('40px')
     expect(liquidityPoolDiscovery.desktopColumns).toBe(5)
     expect(liquidityPoolDiscovery.wideColumns).toBe(6)
 
     const mod = load('modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(mod).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+    expect(mod).toContain("'repeat(5, minmax(0, 1fr))'")
     expect(mod).toContain('min-width: 1920px')
     expect(mod).toContain('repeat(3, minmax(0, 1fr))')
     expect(mod).toContain('repeat(2, minmax(0, 1fr))')
+    expect(mod).toContain('const pageIncrement = 10')
+    expect(liquidityPoolDiscovery.pageSize).toBe(10)
   })
 
   it('ships locked Explore Pools copy and empty / unavailable honesty', () => {
@@ -152,6 +154,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
       'tvl',
     )
     expect(byTvl[0].tvlUsd).toBe(99)
+    expect(byTvl.map((card) => card.tvlUsd)).toEqual([99, 10])
   })
 
   it('uses address-based logo resolver and /add CTA without execution', () => {
@@ -179,16 +182,11 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
 
   it('mounts Module 003 (Explore) at the bottom after Insights', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityPoolDiscoveryModule')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-003="mounted"')
-    const hero = page.indexOf('<LiquidityHeroModule')
-    const actions = page.indexOf('<LiquidityActionsModule')
-    const insights = page.indexOf('<LiquidityInsightsModule')
-    const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
-    expect(hero).toBeLessThan(actions)
-    expect(actions).toBeLessThan(insights)
-    expect(insights).toBeLessThan(discovery)
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-003="mounted"')
+    // V3 supersedes Explore on primary page; discovery module retained offline
+    expect(page).not.toContain('LiquidityPoolDiscoveryModule')
   })
 
   it('does not invent pool databases or fake metric literals in module sources', () => {

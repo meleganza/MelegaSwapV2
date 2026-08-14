@@ -1,22 +1,21 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
+import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
-import TradePageHeader from './components/TradePageHeader'
-import TradeTabBar from './components/TradeTabBar'
+import TradeSwapHero from './components/TradeSwapHero'
 import TradeCockpit from './TradeCockpit'
 import TradeCenterPanel from './TradeCenterPanel'
-import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
+import TradeRouterPanel from './components/TradeRouterPanel'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import useTradeTerminalData from './useTradeTerminalData'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
-import { TradeUiProvider } from './TradeUiContext'
-import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
+import { tradeColors, tradeLayout } from './tradeTokens'
 
 const Root = styled.div`
   color: ${tradeColors.text};
@@ -39,41 +38,45 @@ const Content = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: ${tradeLayout.sectionGap};
+  /* Home desktop content rhythm; intentionally local to the Swap page shell. */
+  gap: 20px;
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${tradeLayout.mobileBottomPad};
+    padding: 16px 0 ${tradeLayout.mobileBottomPad};
+    gap: 14px;
   }
 `
 
-const PageGrid = styled.div`
+const TopGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
-  align-items: stretch;
+  align-items: start;
   min-width: 0;
 
-  @media (min-width: 1100px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, ${tradeLayout.centerWidth}) ${tradeLayout.rightRailWidth};
-    grid-template-areas:
-      'cockpit center right'
-      'swaps swaps right';
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, ${tradeLayout.cockpitWidth});
+    grid-template-areas: 'center cockpit';
   }
 
-  @media (max-width: 1099px) and (min-width: 768px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, 1fr);
-    grid-template-areas:
-      'cockpit center'
-      'right right'
-      'swaps swaps';
-  }
-
-  @media (max-width: 767px) {
+  @media (max-width: 899px) {
     grid-template-columns: 1fr;
     grid-template-areas:
       'cockpit'
-      'center'
-      'right'
-      'swaps';
+      'center';
+  }
+`
+
+const BottomGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
+  grid-auto-rows: ${tradeLayout.tradeTerminalRecentSwapsHeight};
+  gap: ${tradeLayout.columnGap};
+  min-width: 0;
+  align-items: stretch;
+
+  @media (max-width: 899px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
   }
 `
 
@@ -89,29 +92,32 @@ const stretchColumn = `
   }
 `
 
+const LeftWorkspace = styled.div`
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  gap: ${tradeLayout.verticalRhythm};
+  min-width: 0;
+  min-height: 0;
+  align-self: start;
+`
+
 const AreaCockpit = styled.div`
   grid-area: cockpit;
-  ${stretchColumn}
-`
-
-const AreaCenter = styled.div`
-  grid-area: center;
-  ${stretchColumn}
-`
-
-const AreaRight = styled.div`
-  grid-area: right;
-  ${stretchColumn}
-  align-self: stretch;
+  min-width: 0;
+  align-self: start;
 `
 
 const AreaSwaps = styled.div`
-  grid-area: swaps;
-  min-width: 0;
+  ${stretchColumn}
+`
+
+const AreaRoutes = styled.div`
+  ${stretchColumn}
 `
 
 export const TradeTerminalScreen: React.FC = () => {
-  const [mode, setMode] = useState<TradeMode>('smartswap')
+  const [productAction, setProductAction] = React.useState<SmartSwapProductAction>('swap')
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -122,48 +128,65 @@ export const TradeTerminalScreen: React.FC = () => {
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
 
-  const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } =
-    useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  // Market/indexer reads are intentionally created once for the whole terminal.
+  // TradeCenterPanel used to create a second identical runtime (SWR, multicall,
+  // holder and candle subscriptions), which made route entry especially heavy in Firefox.
+  const tradeData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId, inputCurrencyId)
+  const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } = tradeData
 
   return (
-    <Root data-trade-terminal-screen="true" data-r200-premium="true">
+    <Root data-trade-terminal-screen="true" data-trade-one-page-workspace="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
-      <TradeUiProvider value={{ mode, setMode, helpOpen: false, setHelpOpen: () => undefined }}>
       <Content>
-        <TradePageHeader />
-        <TradeTabBar active={mode} onChange={setMode} />
+        <TradeSwapHero />
         <TradeRuntimeProvider>
-          <PageGrid>
+          <TopGrid>
             <AreaCockpit>
-              <TradeCockpit mode={mode} />
+              <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
             </AreaCockpit>
-            <AreaCenter>
+            <LeftWorkspace>
               <TradeCenterPanel
+                data={tradeData}
                 inputSymbol={inputSymbol}
                 outputSymbol={outputSymbol}
                 inputCurrencyId={inputCurrencyId}
                 outputCurrencyId={outputCurrencyId}
               />
-            </AreaCenter>
-            <AreaRight>
-              <TradeRightRail />
-            </AreaRight>
-            <AreaSwaps>
-              <TradeRecentSwaps
-                rows={recentSwaps}
-                isIndexing={isIndexing}
-                swapEmptyReason={swapEmptyReason}
-                missingReason={missingReason}
-                missingReasonDetail={missingReasonDetail}
-                swapDiagnostic={swapDiagnostic}
-              />
-            </AreaSwaps>
-          </PageGrid>
+              {productAction === 'bridge' ? (
+                <AreaSwaps data-bridge-recent-swaps="true">
+                  <TradeRecentSwaps
+                    rows={recentSwaps}
+                    isIndexing={isIndexing}
+                    swapEmptyReason={swapEmptyReason}
+                    missingReason={missingReason}
+                    missingReasonDetail={missingReasonDetail}
+                    swapDiagnostic={swapDiagnostic}
+                  />
+                </AreaSwaps>
+              ) : null}
+            </LeftWorkspace>
+          </TopGrid>
+          {productAction === 'swap' ? (
+            <BottomGrid>
+              <AreaSwaps>
+                <TradeRecentSwaps
+                  rows={recentSwaps}
+                  isIndexing={isIndexing}
+                  swapEmptyReason={swapEmptyReason}
+                  missingReason={missingReason}
+                  missingReasonDetail={missingReasonDetail}
+                  swapDiagnostic={swapDiagnostic}
+                />
+              </AreaSwaps>
+              <AreaRoutes>
+                <TradeRouterPanel />
+              </AreaRoutes>
+            </BottomGrid>
+          ) : null}
         </TradeRuntimeProvider>
       </Content>
-      </TradeUiProvider>
     </Root>
   )
 }

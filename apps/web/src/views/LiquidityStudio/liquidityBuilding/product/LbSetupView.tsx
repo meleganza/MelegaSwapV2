@@ -5,6 +5,7 @@ import type { Currency } from '@pancakeswap/sdk'
 import type { LiquidityBuildingCardState } from '../useLiquidityBuildingCard'
 import { DECISION_FREQUENCY_OPTIONS, LB_UX } from '../uxCopy'
 import { lb } from './lbProductTokens'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
 const Layout = styled.div`
   display: grid;
@@ -267,19 +268,6 @@ const StrategyTitle = styled.div`
   color: ${lb.text};
   display: flex;
   align-items: center;
-`
-
-const RecBadge = styled.span`
-  margin-left: 7px;
-  height: 18px;
-  padding: 0 7px;
-  border-radius: 999px;
-  background: ${lb.gold};
-  color: ${lb.ink};
-  font-size: 8px;
-  line-height: 18px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
 `
 
 const StrategyDesc = styled.p`
@@ -587,7 +575,7 @@ export function LbSetupView({
                   value={card.draft.tokenBudget}
                   onChange={(e) => {
                     setTouched((t) => ({ ...t, budget: true }))
-                    card.setBudget(e.target.value)
+                    card.setBudget(sanitizeDecimalInput(e.target.value))
                   }}
                   aria-required
                 />
@@ -636,9 +624,7 @@ export function LbSetupView({
                       <Check size={12} color={lb.ink} strokeWidth={2.2} />
                     </StrategyCheck>
                   ) : null}
-                  <StrategyTitle>
-                    Full AI <RecBadge>RECOMMENDED</RecBadge>
-                  </StrategyTitle>
+                  <StrategyTitle>Full AI</StrategyTitle>
                   <StrategyDesc>Melega chooses the operating range within fixed safety limits.</StrategyDesc>
                 </StrategyCard>
                 <StrategyCard
@@ -681,8 +667,8 @@ export function LbSetupView({
             </Section>
 
             <Section>
-              <SectionTitle>Decision frequency</SectionTitle>
-              <SectionDesc>How often Melega evaluates market conditions.</SectionDesc>
+              <SectionTitle>Frequency</SectionTitle>
+              <SectionDesc>Interval used to measure effective net buys after sells before a liquidity decision.</SectionDesc>
               <FreqGrid>
                 {DECISION_FREQUENCY_OPTIONS.map((opt) => (
                   <FreqBtn

@@ -45,7 +45,7 @@ export const PROJECT_TREASURY_RECORDS: RegistryTreasuryRecord[] = [
     disclosureLevel: 'PUBLIC_DECLARED',
     lifecycle: 'ACTIVE',
     summary:
-      'Treasury Intake collector registered for BNB Testnet in the Treasury Runtime registry (active_testnet). Disclosure only — no balances.',
+      'Treasury Intake collector registered for BNB Testnet (disclosure only — no balances). Mainnet fees settle to the canonical Melega Treasury Wallet.',
     evidenceClaimTypes: [],
     provenanceSourceClass: 'MELEGA_VERIFIED',
     relatedSectionIds: ['ecosystem', 'developer'],
@@ -81,7 +81,7 @@ export const PROJECT_TREASURY_RECORDS: RegistryTreasuryRecord[] = [
     disclosureLevel: 'PARTIAL',
     lifecycle: 'PLANNED',
     summary:
-      'Project capability treasuryCompatible is planned (MARCO fee SKUs / Treasury Runtime Phase 2). No certified mainnet treasury wallet is registered on the Project Page.',
+      'Project capability treasuryCompatible is planned (MARCO fee SKUs). Canonical Melega Treasury Wallet is the fee destination — no Treasury Runtime authority.',
     evidenceClaimTypes: [],
     provenanceSourceClass: 'PROJECT_ATTESTED',
     relatedSectionIds: ['ecosystem', 'trust'],
@@ -171,8 +171,8 @@ export const PROJECT_GOVERNANCE_RESOURCES: RegistryGovernanceResourceRecord[] = 
     stableKey: 'melega-dex.gov.res.treasury-registry',
     projectSlug: 'melega-dex',
     kind: 'REGISTRY',
-    title: 'Treasury Runtime registry',
-    summary: 'Machine-readable Treasury Intake chain status and collector disclosure (read-only).',
+    title: 'Melega Treasury Wallet registry',
+    summary: 'Machine-readable treasury intake disclosure (read-only). DEX fees settle to the canonical Melega Treasury Wallet.',
     url: null,
     route: '/registry/treasury/index.json',
     lifecycle: 'ACTIVE',

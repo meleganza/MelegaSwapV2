@@ -39,10 +39,10 @@ export type StrategyMode = 'FULL_AI' | 'DYNAMIC_RANGE'
 export type EpochSeconds = 300 | 900 | 1800 | 3600
 
 export const EPOCH_OPTIONS: { label: string; seconds: EpochSeconds; default?: boolean }[] = [
-  { label: '5 minutes', seconds: 300, default: true },
-  { label: '15 minutes', seconds: 900 },
-  { label: '30 minutes', seconds: 1800 },
-  { label: '1 hour', seconds: 3600 },
+  { label: '5m', seconds: 300, default: true },
+  { label: '15m', seconds: 900 },
+  { label: '30m', seconds: 1800 },
+  { label: '1h', seconds: 3600 },
 ]
 
 export type SetupDraft = {
@@ -53,6 +53,12 @@ export type SetupDraft = {
   minimumRateBps: string
   maximumRateBps: string
   epochSeconds: EpochSeconds
+  /** Founder UX — quote market preference (WBNB / USDT / USDC). */
+  quoteAssetKey: 'WBNB' | 'USDT' | 'USDC'
+  /** Founder UX — strategy preset label (maps to strategy + range). */
+  strategyPreset: 'CONSERVATIVE' | 'BALANCED' | 'AI_OPTIMIZED' | 'AGGRESSIVE'
+  /** Founder UX — liquidity goal (display / review; not a fee input). */
+  liquidityGoal: 'STEADY' | 'DEPTH' | 'LAUNCH'
 }
 
 export const EMPTY_SETUP_DRAFT: SetupDraft = {
@@ -63,6 +69,9 @@ export const EMPTY_SETUP_DRAFT: SetupDraft = {
   minimumRateBps: '',
   maximumRateBps: '',
   epochSeconds: 300,
+  quoteAssetKey: 'WBNB',
+  strategyPreset: 'AI_OPTIMIZED',
+  liquidityGoal: 'STEADY',
 }
 
 export type ActivationGateSummary = {

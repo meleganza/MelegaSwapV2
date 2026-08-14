@@ -19,9 +19,8 @@ export interface MarcoBridgeService {
 
 function assertReady(request: MarcoBridgeQuoteRequest) {
   const route = planMarcoBridgeRoute(request.from, request.to)
-  if (route.kind !== 'direct') {
+  if (route.kind !== 'direct')
     throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'This route requires a BNB intermediate step.')
-  }
   if (!validateBridgeAmount(request.amount)) throw new MarcoBridgeError('QUOTE_FAILED', 'Enter a valid MARCO amount.')
   const destination = MARCO_WAVE1_NETWORKS[request.to]
   if (!isValidMarcoDestination(request.destinationWallet, destination.walletFamily)) {
@@ -37,8 +36,8 @@ function assertReady(request: MarcoBridgeQuoteRequest) {
 }
 
 /**
- * Fail-closed adapter. No fabricated quote or transaction can escape while
- * canonical identities and the approved transport are unavailable.
+ * Fail-closed production adapter. A live quote/submit transport is deliberately not
+ * selected until activation imports the canonical MMN artifact and approved API endpoint.
  */
 export const marcoBridgeService: MarcoBridgeService = {
   async quote(request) {

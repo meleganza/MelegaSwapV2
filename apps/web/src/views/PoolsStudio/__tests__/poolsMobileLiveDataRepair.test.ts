@@ -46,13 +46,13 @@ describe('DEX_V1_POOLS_MOBILE_LIVE_DATA_REPAIR', () => {
     expect(header).not.toContain('build-studio?intent=staking-pool')
   })
 
-  it('Trending ribbon uses truthful Live label when ranking empty and no hardcoded 0.00036', () => {
+  it('Trending ribbon uses truthful Top Movers empty label and no hardcoded 0.00036', () => {
     const ribbon = readFileSync(path.join(ROOT, 'views/HomeTrade/TrendingRibbon.tsx'), 'utf8')
-    expect(ribbon).toContain('Live on Melega DEX')
-    expect(ribbon).toContain('Trending on Melega DEX')
+    expect(ribbon).toContain('TOP MOVERS')
+    expect(ribbon).toContain('No verified 24h movers yet')
     expect(ribbon).not.toContain('0.00036')
     const rankings = readFileSync(path.join(ROOT, 'views/HomeTrade/useDexTrendingRankings.ts'), 'utf8')
     expect(rankings).not.toContain('0.00036')
-    expect(rankings).toContain("secondary: priceLabel || '—'")
+    expect(rankings).toContain('secondary: priceLabel')
   })
 })

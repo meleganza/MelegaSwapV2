@@ -91,7 +91,7 @@ function resolvePositionStatus(card: PoolPreviewCard, poolStatus: PoolsWalletPos
     return { status: 'WITHDRAW_ONLY', label: 'Withdraw' }
   }
   if (poolStatus === 'ENDED' && !stakedPos && Boolean(card.pendingReward?.gt(0))) {
-    return { status: 'ENDED', label: 'Ended' }
+    return { status: 'ENDED', label: 'Finished' }
   }
   if (poolStatus === 'ACTIVE' || poolStatus === 'INDEXING') {
     if (stakedPos || Boolean(card.pendingReward?.gt(0))) {
@@ -198,11 +198,11 @@ function buildActions(
     }
     if (actions.length < 2 && hasRaw) {
       actions.push({
-        kind: 'manage',
-        label: 'Manage',
+        kind: 'withdraw',
+        label: 'Withdraw',
         modalAction: 'unstake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Withdraw ${stakeSymbol} from finished pool`,
       })
     }
     return actions.slice(0, 2)
@@ -230,20 +230,20 @@ function buildActions(
       })
       actions.push({
         kind: 'manage',
-        label: 'Manage',
+        label: 'Stake More',
         modalAction: 'stake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Stake more ${stakeSymbol} into pool`,
       })
       return actions.slice(0, 2)
     }
     if (hasPrincipal && hasRaw) {
       actions.push({
         kind: 'manage',
-        label: 'Manage',
+        label: 'Stake More',
         modalAction: 'stake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Stake more ${stakeSymbol} into pool`,
       })
       return actions
     }
@@ -293,7 +293,7 @@ export function cardToPoolsWalletPosition(
     claimNum != null && rewardPrice && rewardPrice > 0 ? claimNum * rewardPrice : null
 
   const poolStatus = resolvePoolStatus(card)
-  let { status, label } = resolvePositionStatus(card, poolStatus)
+  const { status, label } = resolvePositionStatus(card, poolStatus)
 
   const partialReasons: string[] = []
   if (!claimReadOk) partialReasons.push('Reward unavailable')
@@ -304,10 +304,8 @@ export function cardToPoolsWalletPosition(
     // unlock optional — do not force partial
   }
 
-  if (partialReasons.length > 0 && status === 'ACTIVE') {
-    status = 'PARTIAL'
-    label = 'Partial'
-  }
+  // Missing valuation/reward enrichment must never downgrade a confirmed
+  // wallet position or hide its available on-chain actions.
 
   const { unlockLine, lockType } = resolveUnlockLine(card, status)
   const sousKey = card.sousId != null ? String(card.sousId) : card.id

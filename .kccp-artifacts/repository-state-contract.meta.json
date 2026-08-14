@@ -1,0 +1,19 @@
+{
+  "schema": "kiri:kccp/v1/repository-state-contract.v1",
+  "protocol_version": "kiri:kccp/v1",
+  "state_contract_id": "a7c8fb50-4b94-4563-a7b6-6956355fcee3",
+  "idempotency_key": "14c545e96d01885d943084d23684f092",
+  "digest_sha256": "92ce85e91dd8c3290f13eb9402af3f701eff3646fcb367133c99c6c0d26cbcfe",
+  "generated_at": "2026-07-14T12:23:38.880Z",
+  "validation": {
+    "ok": true,
+    "errors": []
+  },
+  "placeholder_scan": {
+    "ok": true,
+    "hits": []
+  },
+  "mode": "dry_run",
+  "submit_path": "/api/public/build/kccp/v1/state",
+  "base_url": "https://melega.ai"
+}

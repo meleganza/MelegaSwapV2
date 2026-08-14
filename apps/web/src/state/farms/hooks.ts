@@ -9,6 +9,7 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from '@pancakeswap/sdk'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { getMasterchefContract } from 'utils/contractHelpers'
+import { getMasterChefAddress } from 'utils/addressHelpers'
 import { useFastRefreshEffect } from 'hooks/useRefreshEffect'
 import { featureFarmApiAtom, useFeatureFlag } from 'hooks/useFeatureFlag'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
@@ -27,7 +28,8 @@ import {
 
 export function useFarmsLength() {
   const { chainId } = useActiveChainId()
-  return useSWRImmutable(chainId ? ['farmsLength', chainId] : null, async () => {
+  const masterChef = chainId ? getMasterChefAddress(chainId) : ''
+  return useSWRImmutable(chainId && masterChef ? ['farmsLength', chainId] : null, async () => {
     const mc = getMasterchefContract(undefined, chainId)
     return (await mc.poolLength()).toNumber()
   })
@@ -47,9 +49,10 @@ export const usePollFarmsWithUserData = () => {
   // const chainId = ChainId.ARBITRUM
 
   useSWRImmutable(
-    chainId ? ['publicFarmData', chainId] : null,
+    chainId && getMasterChefAddress(chainId) ? ['publicFarmData', chainId] : null,
     async () => {
       const farmsConfig = await getFarmConfig(chainId)
+      if (!farmsConfig?.length) return
       const pids = farmsConfig.map((farmToFetch) => farmToFetch.pid)
       dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: farmFlag }))
     },
@@ -66,9 +69,10 @@ export const usePollFarmsWithUserData = () => {
 
   useSWRImmutable(
     // account && chainId && !isProxyContractLoading ? name : null,
-    account && chainId && name,
+    account && chainId && getMasterChefAddress(chainId) ? name : null,
     async () => {
       const farmsConfig = await getFarmConfig(chainId)
+      if (!farmsConfig?.length) return
       const pids = farmsConfig.map((farmToFetch) => farmToFetch.pid)
       // const params = proxyCreated ? { account, pids, proxyAddress, chainId } : { account, pids, chainId }
       const params = { account, pids, chainId }
@@ -108,7 +112,9 @@ export const usePollCoreFarmData = () => {
 
   useFastRefreshEffect(() => {
     if (chainId && farmFlag !== 'api') {
-      dispatch(fetchFarmsPublicDataAsync({ pids: coreFarmPIDs[chainId], chainId, flag: farmFlag }))
+      const pids = coreFarmPIDs[chainId]
+      if (!pids?.length) return
+      dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: farmFlag }))
     }
   }, [dispatch, chainId, farmFlag])
 }

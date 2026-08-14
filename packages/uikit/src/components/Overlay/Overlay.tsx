@@ -26,8 +26,12 @@ const StyledOverlay = styled(Box)<{ isUnmounting?: boolean }>`
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color: ${({ theme }) => `${theme.colors.text99}`};
-  z-index: 20;
+  /* Neutral dim — theme text99 reads purple/pink and looked like an orphan overlay when content failed. */
+  background-color: rgba(2, 3, 4, 0.74);
+  backdrop-filter: blur(8px) saturate(115%);
+  -webkit-backdrop-filter: blur(8px) saturate(115%);
+  /* Stay below modal content siblings (theme.zIndices.modal). Hardcoded 20 covered dialogs. */
+  z-index: 0;
   will-change: opacity;
   animation: ${mountAnimation} 350ms ease forwards;
   ${({ isUnmounting }) =>
@@ -35,6 +39,10 @@ const StyledOverlay = styled(Box)<{ isUnmounting?: boolean }>`
     css`
       animation: ${unmountAnimation} 350ms ease forwards;
     `}
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 0.01ms !important;
+  }
 `;
 
 const BodyLock = () => {

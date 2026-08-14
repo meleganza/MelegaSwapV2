@@ -1,10 +1,14 @@
+import dynamic from 'next/dynamic'
+import { NextPage } from 'next'
 import { CHAIN_IDS } from 'utils/wagmi'
-import UserWorkspaceConsole from 'views/UserWorkspace/UserWorkspaceConsole'
 
-const PortfolioPage = () => <UserWorkspaceConsole />
+const PortfolioStudioScreen = dynamic(() => import('views/PortfolioStudio/PortfolioStudioScreen'), {
+  ssr: false,
+})
+
+const PortfolioPage: NextPage = () => <PortfolioStudioScreen />
 
 PortfolioPage.chains = CHAIN_IDS
-PortfolioPage.pure = true
 PortfolioPage.isShowScrollToTopButton = false
 
 export default PortfolioPage

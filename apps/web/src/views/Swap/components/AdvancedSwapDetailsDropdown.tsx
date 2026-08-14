@@ -10,7 +10,9 @@ import { AdvancedSwapDetails, AdvancedSwapDetailsProps } from './AdvancedSwapDet
 
 const Shell = styled.div`
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -59,15 +61,24 @@ const Panel = styled.div<{ $open: boolean }>`
 const PanelInner = styled.div`
   overflow: hidden;
   min-height: 0;
+  min-width: 0;
 `
 
 const PanelBody = styled.div`
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding-bottom: 12px;
   border-radius: ${tokens.radiusSm};
   max-height: min(60vh, 480px);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+
+  &,
+  & * {
+    overflow-wrap: anywhere;
+  }
 `
 
 export default function AdvancedSwapDetailsDropdown({

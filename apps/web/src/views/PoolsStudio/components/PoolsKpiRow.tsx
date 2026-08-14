@@ -70,10 +70,12 @@ const KpiLabel = styled.span`
   font-family: Inter, sans-serif;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 1.6px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.56);
-  line-height: 1.2;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
 `
 
 const KpiValue = styled.span<{ $green?: boolean; $center?: boolean }>`
@@ -98,10 +100,10 @@ const KpiSecondary = styled.span`
 `
 
 const KPI_LABELS: Record<string, string> = {
-  tvl: 'Total Value Locked',
-  active: 'Pools Discovered',
-  budget: 'Pools Rewarding',
-  highestApr: 'Highest Sustainable APR',
+  tvl: 'Total TVL',
+  active: 'Pools Found',
+  budget: 'Rewarding',
+  highestApr: 'Top Sust. APR',
   featured: 'Featured Pool',
 }
 

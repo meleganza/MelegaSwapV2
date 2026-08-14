@@ -87,9 +87,9 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
       'harvestable',
     ])
     expect(farmsOverviewKpis.moduleW).toBe('1376px')
-    expect(farmsOverviewKpis.moduleH).toBe('112px')
+    expect(farmsOverviewKpis.moduleH).toBe('96px')
     expect(farmsOverviewKpis.cardW).toBe('216px')
-    expect(farmsOverviewKpis.cardH).toBe('112px')
+    expect(farmsOverviewKpis.cardH).toBe('96px')
     expect(farmsOverviewKpis.cardGap).toBe('16px')
     expect(216 * 6 + 16 * 5).toBe(1376)
   })
@@ -129,8 +129,18 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
       cakePriceUsd: 0,
     })
     const farmers = vm.cards.find((c) => c.id === 'activeFarmers')!
-    expect(farmers.value).toBe('—')
-    expect(farmers.supporting).toContain('Unique wallet data unavailable')
+    expect(farmers.value).toMatch(/Unavailable|Indexing|—/)
+    expect(farmers.supporting).toMatch(/Unique wallets that participated in Melega DEX farms/)
+
+    const farmersLive = buildFarmsOverviewKpisFromParts({
+      previewCards: [farmCard({ status: 'live' })],
+      farmsLoading: false,
+      userDataLoaded: false,
+      cakePriceUsd: 1,
+      uniqueFarmersCount: 42,
+    }).cards.find((c) => c.id === 'activeFarmers')!
+    expect(farmersLive.value).toBe('42')
+    expect(farmersLive.supporting).toMatch(/Unique wallets that participated in Melega DEX farms/)
     expect(vm.diagnostics.activeFarmersCount).toBeNull()
   })
 

@@ -5,6 +5,7 @@ import {
   checkIsStableSwap,
   getMultiChainQueryEndPointWithStableSwap,
   MultiChainName,
+  multiChainQueryEndPoint,
   multiChainTokenBlackList,
 } from '../../constant'
 import { useGetChainName } from '../../hooks'
@@ -20,6 +21,10 @@ interface TopPoolsResponse {
  */
 const fetchTopPools = async (chainName: MultiChainName, timestamp24hAgo: number): Promise<string[]> => {
   const isStableSwap = checkIsStableSwap()
+  // An empty GraphQL endpoint is a deliberate fail-closed state while the
+  // Melega subgraph is not deployed. GraphQLClient otherwise resolves it to
+  // the current page and generates a noisy POST / 405 on every visit.
+  if (!isStableSwap && !multiChainQueryEndPoint[chainName]) return []
   const firstCount = isStableSwap ? 100 : 30
   let whereCondition =
     chainName === 'BSC'
@@ -53,7 +58,7 @@ const fetchTopPools = async (chainName: MultiChainName, timestamp24hAgo: number)
 /**
  * Fetch top addresses by volume
  */
-const useTopPoolAddresses = (): string[] => {
+const useTopPoolAddresses = (enabled = true): string[] => {
   const [topPoolAddresses, setTopPoolAddresses] = useState([])
   const [timestamp24hAgo] = getDeltaTimestamps()
   const chainName = useGetChainName()
@@ -63,10 +68,10 @@ const useTopPoolAddresses = (): string[] => {
       const addresses = await fetchTopPools(chainName, timestamp24hAgo)
       setTopPoolAddresses(addresses)
     }
-    if (topPoolAddresses.length === 0) {
+    if (enabled && topPoolAddresses.length === 0) {
       fetch()
     }
-  }, [topPoolAddresses, timestamp24hAgo, chainName])
+  }, [enabled, topPoolAddresses, timestamp24hAgo, chainName])
 
   return topPoolAddresses
 }

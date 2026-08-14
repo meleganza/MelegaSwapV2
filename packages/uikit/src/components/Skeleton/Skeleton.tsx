@@ -1,15 +1,8 @@
-import { AnimatePresence, domAnimation, LazyMotion, m as Motion } from "framer-motion";
-import React, { useRef } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import { layout, space, borderRadius } from "styled-system";
 import { animation as ANIMATION, SkeletonProps, SkeletonV2Props, variant as VARIANT } from "./types";
-import {
-  appearAnimation,
-  disappearAnimation,
-  animationVariants,
-  animationMap,
-  animationHandler,
-} from "../../util/animationToolkit";
+import { appearAnimation } from "../../util/animationToolkit";
 
 const waves = keyframes`
    from {
@@ -32,15 +25,15 @@ const pulse = keyframes`
   }
 `;
 
-const AnimationWrapper = styled(Motion.div)`
+const AnimationWrapper = styled.div`
   position: relative;
   will-change: opacity;
   opacity: 0;
-  &.appear {
-    animation: ${appearAnimation} 0.3s ease-in-out forwards;
-  }
-  &.disappear {
-    animation: ${disappearAnimation} 0.3s ease-in-out forwards;
+  animation: ${appearAnimation} 0.3s ease-in-out forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
   }
 `;
 
@@ -112,43 +105,18 @@ export const SkeletonV2: React.FC<React.PropsWithChildren<SkeletonV2Props>> = ({
   ml,
   ...props
 }) => {
-  const animationRef = useRef<HTMLDivElement>(null);
-  const skeletonRef = useRef<HTMLDivElement>(null);
   return (
     <SkeletonWrapper width={width} height={height} mr={mr} ml={ml} {...wrapperProps}>
-      <LazyMotion features={domAnimation}>
-        <AnimatePresence>
-          {isDataReady && (
-            <AnimationWrapper
-              key="content"
-              ref={animationRef}
-              onAnimationStart={() => animationHandler(animationRef.current)}
-              {...animationMap}
-              variants={animationVariants}
-              transition={{ duration: 0.3 }}
-            >
-              {children}
-            </AnimationWrapper>
+      {isDataReady ? <AnimationWrapper key="content">{children}</AnimationWrapper> : null}
+      {!isDataReady ? (
+        <AnimationWrapper key="skeleton" style={{ position: "absolute", top: skeletonTop, left: skeletonLeft }}>
+          {animation === ANIMATION.WAVES ? (
+            <Waves variant={variant} {...props} width={width} height={height} />
+          ) : (
+            <Pulse variant={variant} {...props} width={width} height={height} />
           )}
-          {!isDataReady && (
-            <AnimationWrapper
-              key="skeleton"
-              style={{ position: "absolute", top: skeletonTop, left: skeletonLeft }}
-              ref={skeletonRef}
-              onAnimationStart={() => animationHandler(skeletonRef.current)}
-              {...animationMap}
-              variants={animationVariants}
-              transition={{ duration: 0.3 }}
-            >
-              {animation === ANIMATION.WAVES ? (
-                <Waves variant={variant} {...props} width={width} height={height} />
-              ) : (
-                <Pulse variant={variant} {...props} width={width} height={height} />
-              )}
-            </AnimationWrapper>
-          )}
-        </AnimatePresence>
-      </LazyMotion>
+        </AnimationWrapper>
+      ) : null}
     </SkeletonWrapper>
   );
 };

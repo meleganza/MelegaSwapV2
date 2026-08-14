@@ -60,7 +60,14 @@ const Grid = styled.div`
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Founder mobile: keep 2×2 at 390/430; only collapse below ~360. */
   @media (max-width: ${liquidityMarketSnapshot.mobileBreak}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 10px;
+    row-gap: 10px;
+  }
+
+  @media (max-width: 359px) {
     grid-template-columns: 1fr;
   }
 `
@@ -78,6 +85,12 @@ const Card = styled.article`
   flex-direction: column;
   gap: 8px;
   min-width: 0;
+
+  @media (max-width: ${liquidityMarketSnapshot.mobileBreak}) {
+    min-height: 108px;
+    padding: 12px;
+    gap: 6px;
+  }
 `
 
 const Label = styled.div`
@@ -97,6 +110,11 @@ const Value = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: ${liquidityMarketSnapshot.mobileBreak}) {
+    font-size: 20px;
+    line-height: 24px;
+  }
 `
 
 const Support = styled.div`
@@ -105,6 +123,15 @@ const Support = styled.div`
   line-height: 16px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
+
+  @media (max-width: ${liquidityMarketSnapshot.mobileBreak}) {
+    font-size: 11px;
+    line-height: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 `
 
 const Skeleton = styled.div`
@@ -176,7 +203,7 @@ export const LiquidityInsightsModule: React.FC = () => {
       },
       {
         id: 'active-markets',
-        label: 'Active Markets',
+        label: 'Markets',
         value: active?.value ?? '—',
         supporting: active?.state === 'available' ? 'Active tradeable / funded pools' : active?.supporting ?? '—',
         state: active?.state ?? 'unavailable',

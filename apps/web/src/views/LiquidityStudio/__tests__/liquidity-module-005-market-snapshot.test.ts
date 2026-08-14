@@ -141,14 +141,12 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
 
   it('reuses Module 005 snapshot hook inside Liquidity Insights (four-card surface)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityInsightsModule')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-005="mounted"')
-    const insights = readFileSync(path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'), 'utf8')
-    expect(insights).toContain('useLiquidityMarketSnapshot')
-    expect(insights).not.toContain('LiquidityMarketSnapshotModule')
-    expect(insights).toContain('Liquidity Insights')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-005="mounted"')
+    expect(shell).toContain('useLiquidityMarketSnapshot')
   })
+
 
   it('records ownership, plan certification, and evidence', () => {
     const map = readFileSync(path.join(WEB, 'docs/runtime/LIQUIDITY_MODULE_OWNERSHIP_MAP.md'), 'utf8')

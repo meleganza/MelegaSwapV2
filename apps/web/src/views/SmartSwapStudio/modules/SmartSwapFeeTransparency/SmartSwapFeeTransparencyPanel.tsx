@@ -1,10 +1,11 @@
 /**
  * Smart Swap Module 004 — Fee Transparency (compact card).
- * No fee mutation, Treasury execution, or KERL authority.
+ * Displays proven fee facts only. No external settlement-runtime or KERL authority claims.
  */
 
 import styled from 'styled-components'
 import type { SmartSwapFeeTransparency } from 'lib/smart-swap-fee-transparency'
+import { DEX_ECONOMIC_AUTHORITY } from 'config/dexEconomicAuthority'
 
 const UNAVAILABLE = '—'
 
@@ -61,26 +62,28 @@ const Note = styled.p`
   color: #9ca3af;
 `
 
-/** Compact fee rows: Protocol Fee → Treasury Runtime → KERL. */
+/** Compact fee rows for public swap details: Protocol fee (+ gas/execution). No treasury wallet. */
 function compactFeeRows(model: SmartSwapFeeTransparency): Array<{ label: string; value: string }> {
   const protocol =
     model.flowSteps.find((s) => /protocol fee/i.test(s.label))?.value ||
-    model.unavailableReason ||
+    model.protocolFee.label ||
     UNAVAILABLE
-  const treasury =
-    model.flowSteps.find((s) => /destination|treasury/i.test(s.label))?.value ||
-    model.treasuryDestination ||
-    'Treasury Runtime'
-  const kerl =
-    model.flowSteps.find((s) => /attribution|kerl/i.test(s.label))?.value ||
-    model.economicAttribution ||
-    'KERL'
+  const execution =
+    model.flowSteps.find((s) => /execution/i.test(s.label))?.value ||
+    DEX_ECONOMIC_AUTHORITY.executionModel
 
-  return [
-    { label: 'Protocol Fee', value: protocol },
-    { label: 'Treasury Runtime', value: treasury },
-    { label: 'KERL attribution', value: kerl },
+  const estimatedGas = model.flowSteps.find((s) => /estimated gas/i.test(s.label))?.value
+  const rows = [
+    ...(estimatedGas ? [{ label: 'Estimated gas', value: estimatedGas }] : []),
+    { label: 'Protocol fee', value: protocol },
+    // Fee destination (treasury wallet) omitted from public swap details pre-transaction.
+    { label: 'Execution', value: execution },
   ]
+  return rows
+}
+
+function publicFlowSteps(model: SmartSwapFeeTransparency) {
+  return model.flowSteps.filter((s) => !/fee destination|destination/i.test(s.label))
 }
 
 export type SmartSwapFeeTransparencyPanelProps = {
@@ -124,11 +127,21 @@ export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartS
       <Title>Fee transparency</Title>
 
       {showUnavailableCopy &&
-      !model.flowSteps.some((s) => s.label === 'Protocol fee' && s.value !== 'Fee information unavailable') ? (
-        <Note role="status">{model.unavailableReason ?? 'Fee information unavailable'}</Note>
+      !model.flowSteps.some((s) => s.label === 'Protocol fee' && s.value !== 'Fee information unavailable' && s.value !== UNAVAILABLE) ? (
+        <>
+          <Flow aria-label="Fee transparency flow">
+            {compactFeeRows(model).map((step) => (
+              <Step key={step.label}>
+                <Label>{step.label}</Label>
+                <Value>{step.value || UNAVAILABLE}</Value>
+              </Step>
+            ))}
+          </Flow>
+          {model.unavailableReason ? <Note role="status">{model.unavailableReason}</Note> : null}
+        </>
       ) : (
         <Flow aria-label="Fee transparency flow">
-          {model.flowSteps.map((step, i) => (
+          {publicFlowSteps(model).map((step, i) => (
             <Step key={`${step.label}-${i}`}>
               <Label>{step.label}</Label>
               <Value>{step.value || UNAVAILABLE}</Value>

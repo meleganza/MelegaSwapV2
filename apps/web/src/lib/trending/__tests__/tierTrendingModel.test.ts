@@ -12,10 +12,10 @@ import {
 } from '../tierTrendingModel'
 
 describe('tierTrendingModel', () => {
-  it('accepts READY and EMPTY_VERIFIED tier statuses', () => {
+  it('accepts READY, EMPTY_VERIFIED, and SYNCING tier statuses with factual activity', () => {
     expect(isTrendingTierStatus('READY')).toBe(true)
     expect(isTrendingTierStatus('EMPTY_VERIFIED')).toBe(true)
-    expect(isTrendingTierStatus('SYNCING')).toBe(false)
+    expect(isTrendingTierStatus('SYNCING')).toBe(true)
     expect(isTrendingTierStatus('NOT_STARTED')).toBe(false)
   })
 

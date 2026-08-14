@@ -1,0 +1,15 @@
+{
+  "publicPageEntries": 80,
+  "commonRuntimeGzipKb": 505,
+  "poolsHeroAssetKb": 40,
+  "routesGzipKb": {
+    "/": 860,
+    "/swap": 905,
+    "/liquidity-studio": 685,
+    "/pools": 735,
+    "/farms": 732,
+    "/projects": 648,
+    "/project-hq/[slug]": 722,
+    "/list": 100
+  }
+}

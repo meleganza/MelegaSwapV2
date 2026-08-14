@@ -1,10 +1,16 @@
-import dynamic from 'next/dynamic'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { NextPage } from 'next'
 
-const PassportScreen = dynamic(() => import('views/Passport/PassportScreen'), { ssr: false })
+/** Legacy /passport → Portfolio Studio at /portfolio. */
+const PassportRedirectPage: NextPage = () => {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/portfolio')
+  }, [router])
+  return null
+}
 
-const PassportPage: NextPage = () => <PassportScreen />
+PassportRedirectPage.chains = []
 
-PassportPage.chains = []
-
-export default PassportPage
+export default PassportRedirectPage

@@ -1,11 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ds001Layout } from 'design-system/melega/tokens/ds001'
+import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import SafeTrendingRibbon from 'views/CommandCenter/components/SafeTrendingRibbon'
+import BoostProjectLauncher from './BoostProjectLauncher'
 
 const TRENDING_BAR_DESKTOP_H = '44px'
-const TRENDING_BAR_MOBILE_H = '40px'
-const MOBILE_HEADER_H = '60px'
+const TRENDING_BAR_MOBILE_H = '36px'
+const MOBILE_HEADER_H = '56px'
 
 /**
  * Shared global Trending Bar — sits directly beneath the fixed header.
@@ -17,20 +19,22 @@ const Bar = styled.div`
   right: 0;
   top: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
   height: ${TRENDING_BAR_MOBILE_H};
-  z-index: 94;
+  z-index: ${melegaZIndex.chromeTicker};
   width: 100%;
   background: #0a0a0a;
   border-top: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   box-sizing: border-box;
   overflow: hidden;
+  overflow-x: hidden;
+  max-width: 100vw;
   display: flex;
   align-items: center;
 
   @media (min-width: 1024px) {
     top: ${ds001Layout.headerHeight};
     height: ${TRENDING_BAR_DESKTOP_H};
-    z-index: ${Number(ds001Layout.headerZIndex) - 1};
+    z-index: ${melegaZIndex.chromeTicker};
   }
 `
 
@@ -53,6 +57,8 @@ const Inner = styled.div`
   /* Lock MelegaTicker to shell geometry without a second ticker implementation */
   [data-melega-ticker] {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 100% !important;
     min-height: 0 !important;
     max-height: 100% !important;
@@ -63,18 +69,34 @@ const Inner = styled.div`
     overflow: hidden;
   }
 
-  @media (max-width: 1023px) {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
+  /* Horizontal scroll stays inside the ticker track, never the document */
+  [data-melega-ticker] [data-melega-ticker-track],
+  [data-melega-ticker] > div {
+    max-width: 100%;
+    min-width: 0;
   }
+`
+
+const TickerSlot = styled.div`
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+`
+
+const ActionSlot = styled.div`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-left: 10px;
+  margin-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 `
 
 export const MELEGA_TRENDING_BAR_DESKTOP_HEIGHT = TRENDING_BAR_DESKTOP_H
@@ -83,7 +105,12 @@ export const MELEGA_TRENDING_BAR_MOBILE_HEIGHT = TRENDING_BAR_MOBILE_H
 export const GlobalTrendingBar: React.FC = () => (
   <Bar data-melega-global-trending-bar data-testid="melega-global-trending-bar">
     <Inner>
-      <SafeTrendingRibbon />
+      <TickerSlot>
+        <SafeTrendingRibbon />
+      </TickerSlot>
+      <ActionSlot>
+        <BoostProjectLauncher />
+      </ActionSlot>
     </Inner>
   </Bar>
 )

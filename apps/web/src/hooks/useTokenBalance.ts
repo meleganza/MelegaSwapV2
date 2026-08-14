@@ -74,10 +74,8 @@ export const useGetBnbBalance = () => {
 
 export const useGetCakeBalance = () => {
   const { chainId } = useActiveChainId()
-  // if (chainId === ChainId.ETHEREUM)
-  //   return { balance: undefined, fetchStatus: undefined}
-  // const tokenAddress = chainId ? CAKE[chainId].address : CAKE[ChainId.ARBITRUM].address
-  const { balance, fetchStatus } = useTokenBalance(CAKE[chainId].address)
+  const cakeAddress = chainId != null ? CAKE[chainId]?.address : undefined
+  const { balance, fetchStatus } = useTokenBalance(cakeAddress || CAKE[ChainId.BSC].address)
 
   // TODO: Remove ethers conversion once useTokenBalance is converted to ethers.BigNumber
   return { balance: EthersBigNumber.from(balance.toString()), fetchStatus }

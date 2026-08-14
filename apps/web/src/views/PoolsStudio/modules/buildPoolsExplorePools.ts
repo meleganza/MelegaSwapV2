@@ -1,10 +1,14 @@
 /**
  * POOLS_MODULE_004 — pure Explore Pools builder.
  * ACTIVE stakeable SmartChef pools only. No Farms / AMM / Finished.
+ * Multichain: cards carry their own chainId; filter by chain without cross-chain merge.
  */
 
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { poolIdentity } from 'lib/data-truth/globalYieldInventory'
+import { resolvePoolTvlUsd } from 'lib/data-truth/yieldMetricHelpers'
+import { getBlockExploreLink } from 'utils'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import type {
@@ -12,6 +16,7 @@ import type {
   PoolsExploreLockType,
   PoolsExplorePoolCardModel,
   PoolsExplorePoolsViewModel,
+  PoolsExplorePrimaryAction,
   PoolsExploreSort,
   PoolsExploreStatus,
 } from './poolsExplorePoolsTypes'
@@ -21,12 +26,18 @@ const HIGH_APR_THRESHOLD = 20
 export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
   if (!card.rawPool) return false
   if (card.id.startsWith('amm-')) return false
-  if (card.status === 'ended' || card.displayStatus === 'ENDED') return false
-  if (card.status !== 'live' && card.displayStatus !== 'LIVE') return false
-  // Currently enterable today
-  if (card.cta !== 'stake') return false
   if (card.discoveryClass === 'invalid_contract') return false
-  return true
+  // Membership must not flicker when CTA briefly leaves 'stake' during reload.
+  // Stake button enablement is decided separately via stakeEnabled.
+  if (card.cta === 'none') return false
+  const lifecycleLive = Boolean(card.lifecycle?.active || card.lifecycle?.rewarding)
+  // Prefer status/display LIVE; also accept factual lifecycle for open-ended emission pools
+  // that classification already counts as active/rewarding.
+  if (card.status === 'live' || card.displayStatus === 'LIVE' || lifecycleLive) {
+    if (card.status === 'ended' && card.displayStatus === 'ENDED' && !lifecycleLive) return false
+    return true
+  }
+  return false
 }
 
 export function resolveExploreLockType(card: PoolPreviewCard): PoolsExploreLockType {
@@ -44,10 +55,7 @@ export function resolveExploreLockType(card: PoolPreviewCard): PoolsExploreLockT
 }
 
 function parseTvlUsd(card: PoolPreviewCard): number {
-  const pool = card.rawPool
-  if (pool?.totalStaked && pool.stakingToken?.decimals && pool.stakingTokenPrice && pool.stakingTokenPrice > 0) {
-    return getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * pool.stakingTokenPrice
-  }
+  if (card.rawPool) return resolvePoolTvlUsd(card.rawPool)
   const fromLabel = Number(String(card.tvl || '').replace(/[^0-9.]/g, ''))
   if (String(card.tvl || '').includes('M')) return fromLabel * 1_000_000
   if (String(card.tvl || '').includes('K')) return fromLabel * 1_000
@@ -109,10 +117,48 @@ function resolveTvl(card: PoolPreviewCard): {
   return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
 }
 
+/** Participants = wallet census only; never substitute totalStaked or transaction count. */
 function resolveParticipants(card: PoolPreviewCard): string {
-  const p = card.participants
-  if (!p || p === '—' || p === RUNTIME_UNAVAILABLE_LABEL) return '—'
-  return p
+  if (card.participantsSource === 'participant_index_pending') return 'Indexing…'
+  if (card.participantsSource !== 'smartchef_event_index' && card.participantsSource !== 'indexed_wallet_census') {
+    return 'Indexing…'
+  }
+  const value = String(card.participants ?? '').replace(/,/g, '').trim()
+  const count = Number(value)
+  return Number.isInteger(count) && count >= 0 ? Number(count).toLocaleString('en-US') : 'Indexing…'
+}
+
+function truthLabel(value?: string | null): string {
+  if (!value || value === RUNTIME_UNAVAILABLE_LABEL || value === 'Unavailable' || /nan/i.test(value)) return '—'
+  return value
+}
+
+/** Remaining = remaining reward duration only — never mix with reward inventory. */
+function resolveRemaining(card: PoolPreviewCard): string {
+  return truthLabel(card.estimatedDuration || card.analyzePreview?.emissionEndEstimate || null)
+}
+
+/** Rewards left = remaining reward inventory when factual. */
+function resolveRewardsLeft(card: PoolPreviewCard): string {
+  return truthLabel(card.remainingRewards || card.analyzePreview?.remainingRewards || null)
+}
+
+/** Duration = lock model / schedule label — not remaining countdown. */
+function resolveDurationDisplay(card: PoolPreviewCard, lock: PoolsExploreLockType): string {
+  if (lock === 'Flexible') return 'Flexible'
+  const ends = truthLabel(card.analyzePreview?.emissionEndEstimate || null)
+  if (ends !== '—') return ends
+  if (lock !== 'Custom') return lock
+  return truthLabel(card.estimatedDuration || null)
+}
+
+function resolveEmission(card: PoolPreviewCard): string {
+  return truthLabel(
+    card.dailyRewards ||
+      card.estimatedDailyReward ||
+      card.analyzePreview?.dailyEmission ||
+      card.analyzePreview?.emission,
+  )
 }
 
 function buildDescription(card: PoolPreviewCard, lock: PoolsExploreLockType): string {
@@ -122,8 +168,41 @@ function buildDescription(card: PoolPreviewCard, lock: PoolsExploreLockType): st
   return `${lock} ${stake} staking earning ${reward}.`
 }
 
-export function cardToExploreModel(card: PoolPreviewCard, chainId: number): PoolsExplorePoolCardModel | null {
+function resolvePoolChainId(card: PoolPreviewCard, fallbackChainId: number): number {
+  const fromId = String(card.id ?? '')
+  const m = fromId.match(/^(\d+):/)
+  if (m) return Number(m[1])
+  const fromStake = card.rawPool?.stakingToken?.chainId
+  if (typeof fromStake === 'number' && Number.isFinite(fromStake)) return fromStake
+  const fromEarn = card.rawPool?.earningToken?.chainId
+  if (typeof fromEarn === 'number' && Number.isFinite(fromEarn)) return fromEarn
+  return fallbackChainId
+}
+
+function resolvePrimaryAction(input: {
+  depositEnabled: boolean
+  account?: string | null
+  poolChainMatchesWallet: boolean
+}): PoolsExplorePrimaryAction {
+  if (!input.depositEnabled) return 'Unavailable'
+  if (!input.account) return 'Connect Wallet'
+  if (!input.poolChainMatchesWallet) return 'Switch Network'
+  return 'Stake'
+}
+
+export function cardToExploreModel(
+  card: PoolPreviewCard,
+  chainId: number,
+  opts?: {
+    account?: string | null
+    walletChainId?: number
+  },
+): PoolsExplorePoolCardModel | null {
   if (!isActiveStakeableExplorePool(card)) return null
+
+  const poolChainId = resolvePoolChainId(card, chainId)
+  const walletChainId = opts?.walletChainId ?? chainId
+  const poolChainMatchesWallet = walletChainId === poolChainId
 
   const apr = resolveApr(card)
   const tvl = resolveTvl(card)
@@ -139,17 +218,40 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     statusLabel = 'Partial'
   }
 
-  const stakeSymbol = card.stakeToken || card.tokens?.[0] || 'TOKEN'
-  const rewardSymbol = card.rewardToken || 'REWARD'
+  const stakeSymbol =
+    (card.stakeToken || card.tokens?.[0] || card.rawPool?.stakingToken?.symbol || 'TOKEN').trim() || 'TOKEN'
+  const rewardSymbol =
+    (card.rewardToken || card.rawPool?.earningToken?.symbol || 'REWARD').trim() || 'REWARD'
   const isLp =
     Boolean(card.rawPool?.stakingToken?.symbol?.includes('LP')) ||
     /lp/i.test(stakeSymbol) ||
     Boolean(card.poolTypeLabel?.toLowerCase().includes('lp'))
 
-  const stakeEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+  const depositEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+  const primaryAction = resolvePrimaryAction({
+    depositEnabled,
+    account: opts?.account,
+    poolChainMatchesWallet,
+  })
+  const stakeEnabled = primaryAction === 'Stake' || primaryAction === 'Switch Network' || primaryAction === 'Connect Wallet'
+
+  const contractAddress =
+    card.contractAddress ||
+    (typeof (card.rawPool as any)?.contractAddress === 'object'
+      ? (card.rawPool as any).contractAddress?.[poolChainId]
+      : null) ||
+    null
+  const normalizedAddr = contractAddress && /^0x[a-fA-F0-9]{40}$/.test(contractAddress) ? contractAddress : null
+  const identity =
+    normalizedAddr != null
+      ? poolIdentity(poolChainId, normalizedAddr)
+      : card.id?.includes(':')
+        ? card.id
+        : `${poolChainId}:${card.id}`
 
   return {
-    poolId: card.id,
+    poolId: identity,
+    chainId: poolChainId,
     title: card.name,
     description: buildDescription(card, lockType),
     status,
@@ -159,21 +261,29 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     tvlDisplay: tvl.display,
     tvlSupport: tvl.support,
     participantsDisplay: resolveParticipants(card),
+    remainingDisplay: resolveRemaining(card),
+    rewardsLeftDisplay: resolveRewardsLeft(card),
+    emissionDisplay: resolveEmission(card),
+    durationDisplay: resolveDurationDisplay(card, lockType),
     lockType,
     stakeToken: {
       symbol: stakeSymbol,
       address: card.stakeContractAddress || card.rawPool?.stakingToken?.address || null,
-      chainId,
+      chainId: poolChainId,
     },
     rewardToken: {
       symbol: rewardSymbol,
       address: card.rewardContractAddress || card.rawPool?.earningToken?.address || null,
-      chainId,
+      chainId: poolChainId,
     },
     stakeEnabled,
-    stakeLabel: stakeEnabled ? 'Stake' : 'Unavailable',
-    // No canonical /pools/[id] detail route — omit Details per Architecture.
+    stakeLabel: primaryAction,
+    primaryAction,
     detailsHref: null,
+    contractAddress: normalizedAddr,
+    contractExplorerUrl: normalizedAddr
+      ? getBlockExploreLink(normalizedAddr, 'address', poolChainId)
+      : card.explorerUrl || null,
     sourceCard: card,
     sortApr: apr.sort,
     sortTvl: tvl.sort,
@@ -184,6 +294,14 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     isLocked: lockType !== 'Flexible',
     partialReasons,
   }
+}
+
+export function dedupeExplorePools(pools: PoolsExplorePoolCardModel[]): PoolsExplorePoolCardModel[] {
+  const byId = new Map<string, PoolsExplorePoolCardModel>()
+  for (const p of pools) {
+    if (!byId.has(p.poolId)) byId.set(p.poolId, p)
+  }
+  return [...byId.values()]
 }
 
 export function filterExplorePools(
@@ -253,10 +371,13 @@ export function buildPoolsExplorePoolsViewModel(input: {
   portfolioPools: PoolPreviewCard[]
   poolsLoading: boolean
   chainId: number
+  account?: string | null
+  walletChainId?: number
   filter: PoolsExploreFilter
   sort: PoolsExploreSort
   search: string
   sourcesFailed?: boolean
+  chainFilter?: 'all' | number
 }): PoolsExplorePoolsViewModel {
   if (input.poolsLoading && !input.portfolioPools.length) {
     return {
@@ -284,9 +405,19 @@ export function buildPoolsExplorePoolsViewModel(input: {
     }
   }
 
-  const built = input.portfolioPools
-    .map((c) => cardToExploreModel(c, input.chainId))
-    .filter((p): p is PoolsExplorePoolCardModel => Boolean(p))
+  const built = dedupeExplorePools(
+    input.portfolioPools
+      .map((c) =>
+        cardToExploreModel(c, input.chainId, {
+          account: input.account,
+          walletChainId: input.walletChainId ?? input.chainId,
+        }),
+      )
+      .filter((p): p is PoolsExplorePoolCardModel => Boolean(p)),
+  ).filter((p) => {
+    if (input.chainFilter == null || input.chainFilter === 'all') return true
+    return p.chainId === input.chainFilter
+  })
 
   if (!built.length) {
     return {
@@ -303,7 +434,6 @@ export function buildPoolsExplorePoolsViewModel(input: {
 
   let list = filterExplorePools(built, input.filter)
   list = searchExplorePools(list, input.search)
-  // Highest TVL / Newest filters already sorted; still apply explicit sort unless filter owns order
   if (input.filter !== 'Highest TVL' && input.filter !== 'Newest') {
     list = sortExplorePools(list, input.sort)
   }
@@ -317,7 +447,7 @@ export function buildPoolsExplorePoolsViewModel(input: {
     filter: input.filter,
     sort: input.sort,
     search: input.search,
-    disclosure: anyPartial ? 'Some pool metrics are temporarily unavailable.' : null,
+    disclosure: null,
     liveRegion: `${list.length} active staking pool${list.length === 1 ? '' : 's'}`,
   }
 }

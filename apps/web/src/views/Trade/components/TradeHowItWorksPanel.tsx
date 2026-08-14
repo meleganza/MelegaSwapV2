@@ -83,15 +83,15 @@ export const TradeHowItWorksPanel: React.FC<Props> = ({ open, onClose }) => {
       <Panel data-trade-how-it-works-panel onClick={(e) => e.stopPropagation()} role="dialog">
         <Title>How Trade works</Title>
         <Sub>
-          Melega Trade routes swaps through live SmartSwap and MelegaSwap V2 quotes. Settlement references are handed
-          off to Treasury Runtime after confirmation — the DEX never computes settlement truth.
+          Melega Trade routes swaps through live SmartSwap and MelegaSwap V2 quotes. Execution is a non-custodial
+          wallet transaction. No external settlement runtime is required for swap readiness.
         </Sub>
         <List>
           <li>Connect wallet and select input/output tokens on SmartSwap.</li>
           <li>Approve the input token when prompted.</li>
           <li>Review route, price impact, and minimum received.</li>
           <li>Confirm swap — receipt appears in History tab.</li>
-          <li>Check Settlement Status in the right rail for treasury handoff state.</li>
+          <li>Review History for confirmed swap receipts.</li>
           <li>Use the Router tab to compare SmartSwap vs V2 route availability.</li>
         </List>
         <Note>Limit orders are not live yet. The Limit Orders tab explains what is coming.</Note>

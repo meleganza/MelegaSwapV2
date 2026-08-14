@@ -1,4 +1,4 @@
-export type HolderCountSource = 'bscscan' | 'unavailable'
+export type HolderCountSource = 'binplorer' | 'bscscan' | 'unavailable'
 
 export type HolderCountResult =
   | {

@@ -43,7 +43,9 @@ export default function useBUSDPrice(currency?: Currency): Price<Currency, Curre
   const [[bnbPairState, bnbPair], [busdPairState, busdPair], [busdBnbPairState, busdBnbPair]] = usePairs(tokenPairs)
 
   return useMemo(() => {
-    if (!currency || !wrapped || !chainId || !wnative) {
+    // PREPARING / incomplete chain registries (e.g. Avalanche) may lack USDT.
+    // Token.equals(undefined) throws: Cannot read properties of undefined (reading 'isToken')
+    if (!currency || !wrapped || !chainId || !wnative || !stable) {
       return undefined
     }
 
@@ -169,8 +171,18 @@ export const useBUSDCakeAmount = (amount: number): number | undefined => {
 export const useCakeBusdPrice = (
   { forceMainnet } = { forceMainnet: false },
 ): Price<ERC20Token, ERC20Token> | undefined => {
-  const { chainId } = useActiveChainId()
-  return usePriceByPairs(chainId == 56 ? USDT[chainId] : USDC[chainId], CAKE[chainId])
+  const { chainId: activeChainId } = useActiveChainId()
+  const chainId = forceMainnet ? ChainId.BSC : activeChainId
+  const cake = chainId != null ? CAKE[chainId] : undefined
+  // Prefer USDT on BSC; elsewhere USDC with USDT fallback (Avalanche has both).
+  const quote =
+    chainId == null
+      ? undefined
+      : chainId === ChainId.BSC
+        ? USDT[ChainId.BSC]
+        : USDC[chainId] ?? USDT[chainId]
+  // Always call hook; missing PREPARING-chain tokens resolve to undefined price without throw
+  return usePriceByPairs(quote, cake)
 }
 
 // @Note: only fetch from one pair

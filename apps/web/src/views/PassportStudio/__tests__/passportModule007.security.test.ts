@@ -169,13 +169,13 @@ describe('PASSPORT_MODULE_007 Security', () => {
     expect(prod.rows[3].badge).toBe('Unavailable')
   })
 
-  it('mounts Module 007 in bottom grid', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportBottomGrid')
-    expect(screen).toContain('data-passport-module-007')
-    const grid = load('PassportBottomGrid.tsx')
-    expect(grid).toContain('PassportSecurity')
-    expect(grid).not.toContain('passport-security-reserve')
+  it('mounts Module 007 in bottom grid (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportSecurity.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
   it('zero production mock security scores', () => {

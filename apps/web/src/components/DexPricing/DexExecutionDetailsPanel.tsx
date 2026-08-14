@@ -15,6 +15,9 @@ import {
  */
 const Panel = styled.div`
   margin: 10px 16px 0;
+  min-width: 0;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
@@ -29,10 +32,13 @@ const Header = styled.div`
   padding: 10px 14px;
   color: #b8b8b8;
   font-size: 13px;
+  min-width: 0;
+  box-sizing: border-box;
 `
 
 const Section = styled.div`
   padding: 0 14px 12px;
+  min-width: 0;
 `
 
 const SectionTitle = styled(Text)`

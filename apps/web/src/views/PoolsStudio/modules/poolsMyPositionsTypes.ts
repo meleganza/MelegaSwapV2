@@ -26,6 +26,7 @@ export type PoolsPositionActionLabel =
   | 'Withdraw'
   | 'Withdrawing…'
   | 'Manage'
+  | 'Stake More'
   | 'Emergency Withdraw'
   | 'Connect Wallet'
   | 'Switch Network'
@@ -69,7 +70,7 @@ export interface PoolsWalletPosition {
   lockType: 'flexible' | 'locked' | 'ended' | 'emergency' | 'unknown' | null
   poolStatus: 'ACTIVE' | 'ENDED' | 'INDEXING' | 'UNAVAILABLE'
   positionStatus: PoolsPositionStatus
-  statusLabel: 'Active' | 'Ended' | 'Withdraw' | 'Emergency' | 'Partial' | 'Unavailable'
+  statusLabel: 'Active' | 'Finished' | 'Ended' | 'Withdraw' | 'Emergency' | 'Partial' | 'Unavailable'
   actions: PoolsPositionAction[]
   source: 'smartchef' | 'historical' | 'vault'
   freshness: PoolsPositionFreshness

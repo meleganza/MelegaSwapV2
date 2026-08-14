@@ -219,7 +219,7 @@ export const findNotIndexedRelationships = (): QueryResultItem[] => {
       displayName: 'Registry graph treasury attribution',
       href: '/graph',
       status: 'not_indexed',
-      notes: 'Treasury SKU attribution — Treasury Runtime Phase 2',
+      notes: 'Treasury SKU attribution — Melega Treasury Wallet',
     })
   }
 

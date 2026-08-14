@@ -12,24 +12,12 @@ function load(rel: string) {
 }
 
 describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
-  it('orders Hero → Actions workspace → Positions → Insights → Explore', () => {
+  it('orders V3 shell (tabs supersede V1 stacked modules)', () => {
     const page = load('src/pages/liquidity.tsx')
-    const order = [
-      'LiquidityHeroModule',
-      'LiquidityActionsModule',
-      'LiquidityMyPositionsModule',
-      'LiquidityInsightsModule',
-      'LiquidityPoolDiscoveryModule',
-    ]
-    let prev = -1
-    for (const name of order) {
-      const idx = page.indexOf(`<${name}`)
-      expect(idx, name).toBeGreaterThan(prev)
-      prev = idx
-    }
-    expect(page).not.toContain('<LiquidityAddModule')
-    expect(page).toContain('data-liquidity-ia="provider-first-v1"')
-    expect(page).toContain('LiquidityRuntimeProvider')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    expect(page).not.toContain('LiquidityHeroModule')
+    expect(page).not.toContain('LiquidityActionsModule')
+    expect(page).toContain("from 'views/LiquidityStudio/v3/LiquidityStudioV3Shell'")
   })
 
   it('Actions workspace embeds expanded forms (not nav-only cards)', () => {
@@ -38,23 +26,23 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     expect(actions).toContain('embedded')
     expect(actions).toContain('LiquidityBuildingCard')
     expect(actions).toContain('forceExpanded')
-    expect(actions).toContain('liquidity-actions-ai-new-badge')
+    expect(actions).toContain('liquidity-actions-ai-beta-badge')
+    expect(actions).toContain('BNB Chain only')
     expect(actions).not.toContain('JourneySteps')
   })
 
-  it('Hero keeps a single Add Liquidity CTA into the form anchor', () => {
-    const hero = load('src/views/LiquidityStudio/modules/LiquidityHeroModule.tsx')
-    const tokens = load('src/views/LiquidityStudio/modules/liquidityHeroTokens.ts')
-    expect(hero).toContain('liquidity-hero-cta-add')
-    expect(hero).not.toContain('liquidity-hero-journeys')
-    expect(tokens).toContain("addLiquidityHref: '#add-liquidity'")
+  it('V3 hero exposes Add Liquidity + My Positions + AI entry', () => {
+    const shell = load('src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx')
+    expect(shell).toContain('liquidity-v3-hero-add')
+    expect(shell).toContain('liquidity-v3-hero-positions')
+    expect(shell).toContain('liquidity-v3-hero-ai')
   })
 
   it('Explore Pools uses dense card geometry for market browsing', () => {
     const tokens = load('src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts')
     const card = load('src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx')
     const module = load('src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(tokens).toContain("cardMinH: '158px'")
+    expect(tokens).toContain("cardMinH: '188px'")
     expect(tokens).toContain('desktopColumns: 5')
     expect(tokens).toContain('wideColumns: 6')
     expect(card).toContain('data-discovery-density="compact"')
@@ -72,7 +60,7 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     expect(insights).toContain('data-liquidity-insights="four-cards"')
     expect(insights).toContain('Total Liquidity')
     expect(insights).toContain('24H Volume')
-    expect(insights).toContain('Active Markets')
+    expect(insights).toContain("label: 'Markets'")
     expect(insights).toContain('Liquidity Activity')
   })
 })

@@ -75,8 +75,8 @@ export function minReceivedLabel(tradeInfo: TradeInfo | null | undefined): strin
 export function estimatedGasLabel(gasPriceWei: string, gasUnits = 220_000): string | undefined {
   if (!gasPriceWei || gasPriceWei === '0') return undefined
   try {
-    const cost = (BigInt(gasPriceWei) * BigInt(gasUnits)) / BigInt(1e18)
-    const asNum = Number(cost) / 1e18
+    const costWei = BigInt(gasPriceWei) * BigInt(gasUnits)
+    const asNum = Number(costWei) / 1e18
     if (!Number.isFinite(asNum) || asNum <= 0) return undefined
     return `~${asNum < 0.001 ? asNum.toFixed(6) : asNum.toFixed(4)} BNB`
   } catch {

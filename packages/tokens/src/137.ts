@@ -8,7 +8,7 @@ export const polygonTokens = {
   wbtc: WBTC_POLYGON,
   dai: DAI_POLYGON,
   syrup: new ERC20Token(
-    ChainId.BASE,
+    ChainId.POLYGON,
     '0x83A2af056bd05758d5BC704a6Cc7166769E9c939',
     18,
     'MRT',

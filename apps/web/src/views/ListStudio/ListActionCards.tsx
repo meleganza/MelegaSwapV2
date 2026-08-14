@@ -48,11 +48,12 @@ const CARDS: CardDef[] = [
     intent: 'create-token',
     title: 'Create Token',
     description: 'Launch your own token with a simple and secure creation flow.',
-    cta: 'Create Token',
+    cta: LIST_CREATE_TOKEN_AVAILABLE ? 'Create Token' : 'Review readiness',
     accent: 'gold',
     Icon: Box,
-    available: LIST_CREATE_TOKEN_AVAILABLE,
-    disabledCta: 'Coming Soon',
+    // Card opens the workspace; deploy remains blocked until factory certification.
+    available: true,
+    disabledCta: 'Review readiness',
   },
   {
     intent: 'claim-project',
@@ -592,9 +593,15 @@ export const ListActionCards: React.FC = () => {
 
   useEffect(() => {
     if (!listIntent) return
-    placeholderRef.current?.focus({ preventScroll: false })
-    placeholderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    // Visually connect Import / Claim / Create / AI into the workspace below.
+    const workspace = document.querySelector<HTMLElement>('[data-testid="list-workspace"]')
+    workspace?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    placeholderRef.current?.focus({ preventScroll: true })
   }, [listIntent])
+
+  const onSelect = (intent: ListIntent) => {
+    setListIntent(intent)
+  }
 
   return (
     <>
@@ -604,7 +611,7 @@ export const ListActionCards: React.FC = () => {
             key={def.intent}
             def={def}
             selected={listIntent === def.intent}
-            onSelect={setListIntent}
+            onSelect={onSelect}
           />
         ))}
       </Row>
@@ -621,8 +628,8 @@ export const ListActionCards: React.FC = () => {
             <strong>{INTENT_LABEL[listIntent]}</strong>
             {' — '}
             {listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE
-              ? 'Token creation is not available yet on this page.'
-              : 'Inline flow will open here. You remain on /list.'}
+              ? 'Create Token readiness is open below — deploy remains blocked until a certified factory is bound.'
+              : 'Continue in the workspace below. You remain on /list.'}
           </>
         ) : (
           'Select a path above to continue. Forms open on this page — no separate route.'

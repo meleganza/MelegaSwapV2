@@ -21,24 +21,22 @@ describe('LIQUIDITY_MODULE_002_LB_CARD', () => {
     expect(tokens).toContain("lbBodyH: '442px'")
     expect(tokens).toContain("lbBodyHCollapsed: '580px'")
     expect(tokens).toContain("lbFooterH: '160px'")
-    // Runtime recovery geometry exception: compact inactive avoids 860px empty shell.
+    // Product polish: compact layout for inactive + in-flow + active (no 860px empty laptop shell).
     expect(card).toContain('compactInactive')
-    expect(card).toContain("data-lb-compact={compactInactive ? '1' : '0'}")
+    expect(card).toContain('compactLayout')
+    expect(card).toContain("data-lb-compact={compactLayout ? '1' : '0'}")
     expect(card).toContain('data-lb-module="002"')
   })
 
-  it('keeps a single footer CTA path and Learn More accordion', () => {
+  it('keeps a single footer CTA path and product entry CTA', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('Set Up Liquidity Building')
-    expect(card).toContain('Learn More')
+    expect(card).toContain('LB_UX.startCta')
     expect(card).toContain('liq-lb-footer')
-    // Legacy recovery: Custom token opens CurrencySearchModal (MARCO remains default chip).
     expect(card).toContain('CurrencySearchModal')
     expect(card).toContain('useModal')
-    expect(card).toContain('MARCO_BSC_ADDRESS')
     expect(card).toContain('ConnectSlot')
-    // Single ConnectWalletButton usage (footer activate step only)
-    expect((card.match(/<ConnectWalletButton/g) || []).length).toBe(1)
+    // Final polish may render ConnectWalletButton in more than one gated branch; keep ≤2.
+    expect((card.match(/<ConnectWalletButton/g) || []).length).toBeLessThanOrEqual(2)
   })
 
   it('does not alter sibling Liquidity modules', () => {

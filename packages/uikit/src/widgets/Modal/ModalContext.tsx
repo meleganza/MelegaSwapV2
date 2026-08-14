@@ -1,18 +1,8 @@
-import { AnimatePresence, domMax, LazyMotion, m } from "framer-motion";
-import React, { createContext, useRef, useState, useMemo, useCallback } from "react";
-import styled from "styled-components";
-import { mountAnimation, unmountAnimation } from "../../components/BottomDrawer/styles";
-import { Overlay } from "../../components/Overlay";
+import React, { createContext, Suspense, useCallback, useMemo, useState } from "react";
 import { useIsomorphicEffect } from "../../hooks";
-import {
-  animationHandler,
-  animationMap,
-  animationVariants,
-  appearAnimation,
-  disappearAnimation,
-} from "../../util/animationToolkit";
-import { ModalContainer } from "./styles";
 import { Handler } from "./types";
+
+const ModalRenderer = React.lazy(() => import("./ModalRenderer"));
 
 interface ModalsContext {
   isOpen: boolean;
@@ -22,39 +12,6 @@ interface ModalsContext {
   onPresent: (node: React.ReactNode, newNodeId: string, closeOverlayClick: boolean) => void;
   onDismiss: Handler;
 }
-
-export const StyledModalWrapper = styled(m.div)`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: ${({ theme }) => theme.zIndices.modal - 1};
-  will-change: opacity;
-  opacity: 0;
-  &.appear {
-    animation: ${appearAnimation} 0.3s ease-in-out forwards;
-    ${ModalContainer} {
-      animation: ${mountAnimation} 0.3s ease-in-out forwards;
-      ${({ theme }) => theme.mediaQueries.md} {
-        animation: none;
-      }
-    }
-  }
-  &.disappear {
-    animation: ${disappearAnimation} 0.3s ease-in-out forwards;
-    ${ModalContainer} {
-      animation: ${unmountAnimation} 0.3s ease-in-out forwards;
-      ${({ theme }) => theme.mediaQueries.md} {
-        animation: none;
-      }
-    }
-  }
-`;
 
 export const Context = createContext<ModalsContext>({
   isOpen: false,
@@ -70,7 +27,7 @@ const ModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [modalNode, setModalNode] = useState<React.ReactNode>();
   const [nodeId, setNodeId] = useState("");
   const [closeOnOverlayClick, setCloseOnOverlayClick] = useState(true);
-  const animationRef = useRef<HTMLDivElement>(null);
+  const [rendererMounted, setRendererMounted] = useState(false);
 
   useIsomorphicEffect(() => {
     const setViewportHeight = () => {
@@ -83,6 +40,7 @@ const ModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []);
 
   const handlePresent = useCallback((node: React.ReactNode, newNodeId: string, closeOverlayClick: boolean) => {
+    setRendererMounted(true);
     setModalNode(node);
     setIsOpen(true);
     setNodeId(newNodeId);
@@ -96,38 +54,22 @@ const ModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     setCloseOnOverlayClick(true);
   }, []);
 
-  const handleOverlayDismiss = () => {
-    if (closeOnOverlayClick) {
-      handleDismiss();
-    }
-  };
-
   const providerValue = useMemo(() => {
     return { isOpen, nodeId, modalNode, setModalNode, onPresent: handlePresent, onDismiss: handleDismiss };
   }, [isOpen, nodeId, modalNode, setModalNode, handlePresent, handleDismiss]);
 
   return (
     <Context.Provider value={providerValue}>
-      <LazyMotion features={domMax}>
-        <AnimatePresence>
-          {isOpen && (
-            <StyledModalWrapper
-              ref={animationRef}
-              onAnimationStart={() => animationHandler(animationRef.current)}
-              {...animationMap}
-              variants={animationVariants}
-              transition={{ duration: 0.3 }}
-            >
-              <Overlay onClick={handleOverlayDismiss} />
-              {React.isValidElement(modalNode) &&
-                React.cloneElement(modalNode, {
-                  // @ts-ignore
-                  onDismiss: handleDismiss,
-                })}
-            </StyledModalWrapper>
-          )}
-        </AnimatePresence>
-      </LazyMotion>
+      {rendererMounted ? (
+        <Suspense fallback={null}>
+          <ModalRenderer
+            isOpen={isOpen}
+            modalNode={modalNode}
+            onDismiss={handleDismiss}
+            closeOnOverlayClick={closeOnOverlayClick}
+          />
+        </Suspense>
+      ) : null}
       {children}
     </Context.Provider>
   );

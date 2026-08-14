@@ -66,11 +66,34 @@ const MelegaUIKitOverrides = createGlobalStyle`
 
   /* Cards */
   [class*='Card'],
-  [class*='card'] {
+  [class*='card'],
+  [data-premium-surface='true'] {
     border: 1px solid ${tokens.border} !important;
     border-radius: ${tokens.radius} !important;
-    background: ${tokens.surface} !important;
-    box-shadow: none !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.025), transparent 42%),
+      ${tokens.surface} !important;
+    box-shadow: ${tokens.shadowCard} !important;
+  }
+
+  a[class*='Card'],
+  button[class*='Card'],
+  [class*='Card'][role='button'],
+  [data-premium-interactive='true'] {
+    transition:
+      transform ${tokens.transition},
+      border-color ${tokens.transition},
+      background ${tokens.transition},
+      box-shadow ${tokens.transition} !important;
+  }
+
+  a[class*='Card']:hover,
+  button[class*='Card']:hover,
+  [class*='Card'][role='button']:hover,
+  [data-premium-interactive='true']:hover {
+    transform: translateY(-2px);
+    border-color: ${tokens.borderStrong} !important;
+    box-shadow: ${tokens.shadowElevated} !important;
   }
 
   /* Primary buttons */
@@ -79,7 +102,11 @@ const MelegaUIKitOverrides = createGlobalStyle`
     border-radius: ${tokens.radiusSm} !important;
     font-family: ${tokens.fontBody} !important;
     font-weight: 600 !important;
-    transition: opacity ${tokens.transition}, border-color ${tokens.transition} !important;
+    transition:
+      transform ${tokens.transition},
+      background ${tokens.transition},
+      border-color ${tokens.transition},
+      box-shadow ${tokens.transition} !important;
   }
 
   button[class*='pancake-button--primary'],
@@ -87,6 +114,12 @@ const MelegaUIKitOverrides = createGlobalStyle`
     background: ${tokens.gold} !important;
     color: ${tokens.bg} !important;
     border: 1px solid ${tokens.gold} !important;
+    box-shadow: 0 10px 28px rgba(244, 196, 48, 0.14) !important;
+  }
+
+  button[class*='pancake-button']:hover,
+  a[class*='pancake-button']:hover {
+    transform: translateY(-1px);
   }
 
   button[class*='pancake-button--secondary'],
@@ -112,15 +145,20 @@ const MelegaUIKitOverrides = createGlobalStyle`
   textarea:focus {
     border-color: ${tokens.borderGold} !important;
     outline: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.1) !important;
   }
 
   /* Modals */
   [role='dialog'],
   [class*='Modal'] {
-    background: ${tokens.surface} !important;
-    border: 1px solid ${tokens.border} !important;
-    border-radius: ${tokens.radius} !important;
+    background:
+      radial-gradient(circle at 10% -12%, rgba(244, 196, 48, 0.09), transparent 18rem),
+      ${tokens.surfaceGlass} !important;
+    border: 1px solid ${tokens.borderStrong} !important;
+    border-radius: ${tokens.radiusLg} !important;
+    box-shadow: ${tokens.shadowElevated} !important;
+    backdrop-filter: blur(20px) saturate(125%);
+    -webkit-backdrop-filter: blur(20px) saturate(125%);
   }
 
   /* Subnav */

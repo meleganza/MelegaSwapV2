@@ -1,7 +1,0 @@
-{
-  "disconnectedShowsNoFakePositions": true,
-  "singleRuntimeProvider": true,
-  "noSecondWalletScanner": true,
-  "manageRemoveViaRuntime": true,
-  "pass": true
-}

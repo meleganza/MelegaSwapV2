@@ -15,7 +15,7 @@ export const liquidityPoolDiscovery = {
   rowGap: '12px',
   /** Dense market browse — readable card footprint. */
   cardW: '100%',
-  cardMinH: '158px',
+  cardMinH: '188px',
   cardRadius: '10px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
@@ -36,7 +36,7 @@ export const liquidityPoolDiscovery = {
   chainId: 56,
 
   /** Visible page size — factory inventory may be larger; no invented rows. */
-  pageSize: 18,
+  pageSize: 10,
   skeletonCount: 12,
   /** 5 cols ≥1440 content; 6 at 1920 when readable. */
   desktopColumns: 5,
@@ -59,23 +59,17 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
   unavailable: 'Pool discovery is temporarily unavailable.',
   loadingLabel: 'Loading pools…',
   metricTvl: 'TVL',
-  metricVolume: 'Volume',
+  metricVolume: '24H Volume',
   metricFees: 'Fees',
   metricUnavailable: '—',
   statusActive: 'Active',
   statusUnavailable: 'Unavailable',
-  cta: 'Add',
+  cta: 'Add Liquidity',
   filters: {
     all: 'All',
-    myTokens: 'My Tokens',
-    popular: 'Popular',
-    newest: 'Newest',
   },
   sorts: {
-    market: 'Market quality',
-    tvl: 'Highest TVL',
-    volume: 'Highest Volume',
-    newest: 'Newest',
+    tvl: 'Sort by liquidity',
   },
 } as const
 
@@ -84,7 +78,7 @@ export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
 
 /** Frozen Module 001 / 002 source SHAs. */
 export const LIQUIDITY_MODULE_001_002_FREEZE = {
-  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
-  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  liquidityActionsTokens: '492fc8041d088721054d8b80f5ed39bf2dd9bd28a879fe1275437f6270fc38d2',
+  LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
+  LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
+  liquidityActionsTokens: '2913c12cc629f7eda2ca85ac1762ab5a760eedec6c09a7c776833b86b7fd6c54',
 } as const

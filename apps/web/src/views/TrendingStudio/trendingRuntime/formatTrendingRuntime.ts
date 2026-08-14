@@ -1,5 +1,6 @@
 import { CHAIN_LABELS } from 'registry/projects/constants'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { buildAiSummary } from 'views/ProjectsStudio/projectsRuntime/buildAiSummary'
 import { buildOnChainMetrics } from 'views/ProjectsStudio/projectsRuntime/onChainMetrics'
 import { buildProjectRating } from 'views/ProjectsStudio/projectsRuntime/buildProjectRating'
@@ -97,9 +98,13 @@ export function mapTierRankedAssetToTrendingCard(
     growthPositive: change?.positive,
     sparkline: [],
     provenance: 'Indexer · Tier Metrics',
-    projectHref: project ? `/@${project.slug}/` : '/projects',
+    projectHref: resolveCanonicalProjectHref({
+      slug: project?.slug,
+      chainId: asset.chainId,
+      address: asset.address,
+    }),
     radarHref: asset.address ? `/radar?contract=${asset.address}` : undefined,
-    tradeHref: asset.address ? `/swap?outputCurrency=${asset.address}` : '/trade',
+    tradeHref: asset.address ? `/swap?outputCurrency=${asset.address}` : '/swap',
   }
 }
 
@@ -198,9 +203,13 @@ export function mapProjectToTrendingCard(
     growthPositive: undefined,
     sparkline: [],
     provenance: provenanceLabel(project),
-    projectHref: `/@${project.slug}/`,
+    projectHref: resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId: project.supportedChains?.[0] ?? 56,
+      address: addr,
+    }),
     radarHref: addr ? `/radar?contract=${addr}` : undefined,
-    tradeHref: addr ? `/swap?outputCurrency=${addr}` : '/trade',
+    tradeHref: addr ? `/swap?outputCurrency=${addr}` : '/swap',
   }
 }
 

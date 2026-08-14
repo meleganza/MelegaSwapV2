@@ -6,9 +6,11 @@
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { auditFarmProvenance } from 'lib/data-truth/yieldProvenanceAudit'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import { formatUsd } from '../farmsRuntime/formatFarmsRuntime'
+import { resolveFarmLiquidityUsd } from 'lib/data-truth/yieldMetricHelpers'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type {
   ExploreFarmViewModel,
@@ -23,6 +25,18 @@ import type {
 const HIGH_APR_THRESHOLD = 20
 const NATIVE_WRAPPER_SYMBOLS = new Set(['WBNB', 'BNB'])
 const WBNB_BSC = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+
+let _excludedFarmIds: Set<string> | null = null
+function excludedFarmIdentities(): Set<string> {
+  if (!_excludedFarmIds) {
+    _excludedFarmIds = new Set(
+      auditFarmProvenance()
+        .rows.filter((r) => r.verdict === 'exclude')
+        .map((r) => r.identity),
+    )
+  }
+  return _excludedFarmIds
+}
 
 type RawFarm = NonNullable<FarmPreviewCard['rawFarm']> & {
   earningToken?: { symbol?: string; name?: string; address?: string; decimals?: number }
@@ -111,16 +125,19 @@ function resolveTvl(card: FarmPreviewCard): {
   sort: number
   available: boolean
 } {
-  const liq = card.rawFarm?.liquidity?.toNumber?.()
-  if (liq != null && Number.isFinite(liq) && liq > 0) {
+  const liq = card.rawFarm ? resolveFarmLiquidityUsd(card.rawFarm) : 0
+  if (liq > 0) {
     return { display: formatUsd(liq), state: 'Live', sort: liq, available: true }
   }
   const label = card.tvl || card.liquidity
-  if (!label || label === '—' || label === RUNTIME_UNAVAILABLE_LABEL || label === '$0' || label === '$0.00') {
-    return { display: '—', state: 'TVL unavailable', sort: 0, available: false }
-  }
-  // Label present but no verified USD number — partial valuation disclosure.
-  if (liq != null && Number.isFinite(liq) && liq === 0) {
+  if (
+    !label ||
+    label === '—' ||
+    label === 'Unavailable' ||
+    label === RUNTIME_UNAVAILABLE_LABEL ||
+    label === '$0' ||
+    label === '$0.00'
+  ) {
     return { display: '—', state: 'TVL unavailable', sort: 0, available: false }
   }
   return { display: '—', state: 'Partial valuation', sort: 0, available: false }
@@ -209,20 +226,30 @@ function resolvePrimaryAction(input: {
   depositEnabled: boolean
   status: FarmsExploreStatus
   account?: string | null
-  chainSupported: boolean
+  farmChainMatchesWallet: boolean
   allowance: FarmsExploreAllowanceState
 }): FarmsExplorePrimaryAction {
   if (!input.depositEnabled || input.status === 'UNAVAILABLE') return 'Farm Unavailable'
   if (!input.account) return 'Connect Wallet'
-  if (!input.chainSupported) return 'Switch Network'
+  if (!input.farmChainMatchesWallet) return 'Switch Network'
   if (input.allowance === 'Approval required') return 'Approve LP'
   return 'Stake LP'
+}
+
+function resolveFarmChainId(card: FarmPreviewCard, fallbackChainId: number): number {
+  const fromToken = card.rawFarm?.token?.chainId
+  if (typeof fromToken === 'number' && Number.isFinite(fromToken)) return fromToken
+  const fromId = String(card.id ?? '')
+  const m = fromId.match(/^(\d+):/)
+  if (m) return Number(m[1])
+  return fallbackChainId
 }
 
 export function cardToExploreFarmModel(
   card: FarmPreviewCard,
   opts: {
     chainId: number
+    walletChainId?: number
     account?: string | null
     userDataLoaded: boolean
     chainSupported: boolean
@@ -231,11 +258,14 @@ export function cardToExploreFarmModel(
 ): ExploreFarmViewModel | null {
   if (!isActiveStakeableExploreFarm(card)) return null
   const raw = card.rawFarm as RawFarm
+  const farmChainId = resolveFarmChainId(card, opts.chainId)
+  const walletChainId = opts.walletChainId ?? opts.chainId
+  const farmChainMatchesWallet = walletChainId === farmChainId && opts.chainSupported
   const pid = card.pid ?? raw.pid ?? null
   const apr = resolveApr(card)
   const tvl = resolveTvl(card)
-  const wallet = resolveWalletLp(card, opts)
-  const allowance = resolveAllowance(card, opts)
+  const wallet = resolveWalletLp(card, { ...opts, chainId: farmChainId })
+  const allowance = resolveAllowance(card, { ...opts, chainId: farmChainId })
   const newest = resolveNewest(card)
   const multiplier = resolveMultiplier(card)
   const rewardRate = resolveRewardRate(card)
@@ -243,7 +273,12 @@ export function cardToExploreFarmModel(
   const partialReasons: string[] = []
   if (!apr.available) partialReasons.push('APR unavailable')
   if (!tvl.available) partialReasons.push(tvl.state)
-  if (opts.account && opts.userDataLoaded && wallet.state === 'unavailable') {
+  if (
+    opts.account &&
+    opts.userDataLoaded &&
+    farmChainMatchesWallet &&
+    wallet.state === 'unavailable'
+  ) {
     partialReasons.push('LP balance unavailable')
   }
 
@@ -261,42 +296,44 @@ export function cardToExploreFarmModel(
   const s1 = raw.quoteToken?.symbol ?? card.tokens?.[1] ?? '?'
   const rewardSym = raw.earningToken?.symbol ?? card.rewardToken ?? 'MARCO'
   const title = `${s0} / ${s1} LP`
+  const masterChef =
+    raw.masterChefAddress ?? opts.masterChefAddress ?? null
   const primaryAction = resolvePrimaryAction({
     depositEnabled: stakeEnabled,
     status,
     account: opts.account,
-    chainSupported: opts.chainSupported,
+    farmChainMatchesWallet,
     allowance: allowance.state,
   })
 
   return {
-    farmId: card.id,
+    farmId: card.id.includes(':') ? card.id : `${farmChainId}:${(masterChef || 'unknown').toLowerCase()}:${pid}`,
     pid: typeof pid === 'number' ? pid : null,
-    masterbuilder: opts.masterChefAddress ?? raw.masterChefAddress ?? null,
-    chainId: opts.chainId,
+    masterbuilder: masterChef,
+    chainId: farmChainId,
     lpToken: {
       symbol: `${s0}/${s1} LP`,
       name: raw.lpSymbol ?? card.lpLabel ?? null,
       address: normalizeAddr(raw.lpAddress),
-      chainId: opts.chainId,
+      chainId: farmChainId,
     },
     token0: {
       symbol: s0,
       name: raw.token?.name ?? null,
       address: normalizeAddr(raw.token?.address),
-      chainId: opts.chainId,
+      chainId: farmChainId,
     },
     token1: {
       symbol: s1,
       name: raw.quoteToken?.name ?? null,
       address: normalizeAddr(raw.quoteToken?.address),
-      chainId: opts.chainId,
+      chainId: farmChainId,
     },
     rewardToken: {
       symbol: rewardSym,
       name: raw.earningToken?.name ?? null,
       address: normalizeAddr(raw.earningToken?.address),
-      chainId: opts.chainId,
+      chainId: farmChainId,
     },
     status,
     statusLabel,
@@ -309,16 +346,20 @@ export function cardToExploreFarmModel(
     tvlState: tvl.state,
     multiplier,
     rewardRate,
-    totalStaked: card.participants && !isUnavailableFarmMetric(card.participants) ? card.participants : null,
+    totalStaked: null,
     userWalletLpBalance: wallet.display,
     userWalletLpBalanceState: wallet.state,
     allowanceState: allowance.state,
-    source: 'portfolioFarms → FarmWithStakedValue',
-    freshness: partialReasons.length ? 'partial' : 'live',
+    source: farmChainMatchesWallet
+      ? 'portfolioFarms → FarmWithStakedValue'
+      : 'globalYieldInventory → configured farm',
+    freshness: partialReasons.length ? 'partial' : farmChainMatchesWallet ? 'live' : 'partial',
     partialData: partialReasons.length > 0,
     partialReasons,
     errorState: null,
-    provenance: 'canonical Farms runtime previewCards / portfolioFarms',
+    provenance: farmChainMatchesWallet
+      ? 'canonical Farms runtime previewCards / portfolioFarms'
+      : `multichain config inventory · chain ${farmChainId}`,
     title,
     earnLine: `Earn ${rewardSym}`,
     primaryAction,
@@ -338,24 +379,67 @@ export function cardToExploreFarmModel(
     isNativePair: isNativePair(raw),
     hasWalletLp: wallet.hasLp,
     isApproved: allowance.approved,
+    volume24h: resolveFarmVolume24h(card),
+    fees24h: resolveFarmFees24h(card),
+    rewardsRemaining: '—',
+    rewardDuration: resolveFarmDuration(card, multiplier),
+    participants: resolveFarmParticipants(card),
   }
 }
 
-/** Stable dedupe: first pid wins; then first LP address wins. */
+/** Participants = unique wallet census only. Never LP supply / emissions / token amounts. */
+function resolveFarmParticipants(card: FarmPreviewCard): string {
+  if (card.participantsSource === 'participant_index_pending') return 'Indexing…'
+  if (card.participantsSource !== 'masterchef_event_index' && card.participantsSource !== 'indexed_wallet_census') {
+    return 'Indexing…'
+  }
+  const value = String(card.participants ?? '').replace(/,/g, '').trim()
+  const count = Number(value)
+  return Number.isInteger(count) && count >= 0 ? Number(count).toLocaleString('en-US') : 'Indexing…'
+}
+
+/**
+ * Factual duration for MasterChef farms:
+ * - Live with positive multiplier → Ongoing (continuous emission schedule)
+ * - Otherwise uncertified → —
+ * Never invent calendar ends from unrelated timestamps.
+ */
+function resolveFarmDuration(card: FarmPreviewCard, multiplier: string | null): string {
+  if (card.status === 'live' && multiplier) return 'Ongoing'
+  if (card.status === 'finished') return 'Ended'
+  return '—'
+}
+
+/**
+ * Remaining time vs Rewards left are separate fields.
+ * MasterChef farms do not expose a certified remaining-budget clock here → —
+ */
+function resolveFarmRemaining(): string {
+  return '—'
+}
+
+/**
+ * 24H volume / fees for farms come only from certified LP/pair market rows.
+ * FarmPreviewCard does not currently carry certified pair volume — never invent from TVL/emissions.
+ */
+function resolveFarmVolume24h(_card: FarmPreviewCard): string {
+  return '—'
+}
+
+function resolveFarmFees24h(_card: FarmPreviewCard): string {
+  return '—'
+}
+
+/** Stable dedupe by canonical identity chainId + masterChef + pid (never symbol-only). */
 export function dedupeExploreFarms(farms: ExploreFarmViewModel[]): ExploreFarmViewModel[] {
-  const byPid = new Set<number>()
-  const byLp = new Set<string>()
+  const seen = new Set<string>()
   const out: ExploreFarmViewModel[] = []
   for (const farm of farms) {
-    if (farm.pid != null) {
-      if (byPid.has(farm.pid)) continue
-      byPid.add(farm.pid)
-    }
-    const lp = farm.lpToken.address
-    if (lp) {
-      if (byLp.has(lp)) continue
-      byLp.add(lp)
-    }
+    const key =
+      farm.farmId ||
+      `${farm.chainId}:${(farm.masterbuilder || 'unknown').toLowerCase()}:${farm.pid ?? 'x'}:${farm.lpToken.address ?? ''}`
+    if (seen.has(key)) continue
+    seen.add(key)
     out.push(farm)
   }
   return out
@@ -390,18 +474,6 @@ export function sortExploreFarms(farms: ExploreFarmViewModel[], sort: FarmsExplo
           a.sortNewestAvailable,
           b.sortNewestAvailable,
           b.sortNewest - a.sortNewest,
-          a.farmId,
-          b.farmId,
-        ),
-      )
-    case 'Alphabetical':
-      return list.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle) || a.farmId.localeCompare(b.farmId))
-    case 'Wallet LP Balance':
-      return list.sort((a, b) =>
-        compareWithUnavailableLast(
-          a.sortWalletLpAvailable,
-          b.sortWalletLpAvailable,
-          b.sortWalletLp - a.sortWalletLp,
           a.farmId,
           b.farmId,
         ),
@@ -499,6 +571,8 @@ export function buildFarmsExploreFarmsViewModel(input: {
   sourcesFailed?: boolean
   previous?: ExploreFarmViewModel[] | null
   previousChainId?: number | null
+  /** When set, only farms on this chainId are kept ('all' = every LIVE chain). */
+  chainFilter?: 'all' | number
 }): FarmsExploreFarmsViewModel {
   const pageSize = farmsExplore.initialLimit
   const visibleLimit = Math.max(pageSize, input.visibleLimit ?? pageSize)
@@ -565,11 +639,13 @@ export function buildFarmsExploreFarmsViewModel(input: {
     }
   }
 
+  const excluded = excludedFarmIdentities()
   const built = dedupeExploreFarms(
     input.portfolioFarms
       .map((c) =>
         cardToExploreFarmModel(c, {
           chainId: input.chainId,
+          walletChainId: input.chainId,
           account: input.account,
           userDataLoaded: input.userDataLoaded,
           chainSupported,
@@ -578,6 +654,16 @@ export function buildFarmsExploreFarmsViewModel(input: {
       )
       .filter((f): f is ExploreFarmViewModel => Boolean(f)),
   )
+    .filter((f) => {
+      if (excluded.has(f.farmId)) return false
+      const mc = (f.masterbuilder || '').toLowerCase()
+      if (f.pid != null && mc && excluded.has(`${f.chainId}:${mc}:${f.pid}`)) return false
+      return true
+    })
+    .filter((f) => {
+      if (input.chainFilter == null || input.chainFilter === 'all') return true
+      return f.chainId === input.chainFilter
+    })
 
   if (!built.length) {
     return {
@@ -611,10 +697,12 @@ export function buildFarmsExploreFarmsViewModel(input: {
 
   const anyPartial = list.some((f) => f.status === 'PARTIAL')
   const disclosures: string[] = []
-  if (anyPartial) disclosures.push('Some farm metrics are temporarily unavailable.')
   if (walletFilterPending) disclosures.push('Wallet filters apply after LP balance reads complete.')
 
-  const visibleFarms = list.slice(0, visibleLimit)
+  // Keep the complete inventory queryable, but never mount every farm card at
+  // once. Rendering a large multichain inventory was blocking route changes on
+  // lower-power browsers. Search, filters and Load More still expose all rows.
+  const visibleFarms = list.slice(0, Math.max(visibleLimit, 0))
 
   return {
     state: anyPartial ? 'partial' : 'ready',
@@ -629,8 +717,8 @@ export function buildFarmsExploreFarmsViewModel(input: {
     visibleLimit,
     hasMore: list.length > visibleLimit,
     disclosure: disclosures.length ? disclosures.join(' ') : null,
-    liveRegion: `${list.length} active farm${list.length === 1 ? '' : 's'}`,
-    source: 'portfolioFarms',
+    liveRegion: `${list.length} active farm${list.length === 1 ? '' : 's'} across LIVE chains`,
+    source: 'globalYieldInventory + portfolioFarms',
     freshness: anyPartial ? 'partial' : 'live',
   }
 }

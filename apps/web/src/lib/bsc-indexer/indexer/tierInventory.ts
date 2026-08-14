@@ -47,7 +47,8 @@ function bscUsdc() {
   return '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
 }
 function bscCake() {
-  return '0x0e09fabb73bd3ade97a6a8b0c9fc88498c148c6b'
+  // PancakeSwap CAKE on BSC (canonical tokenlist / Melega registry).
+  return '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
 }
 
 async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {

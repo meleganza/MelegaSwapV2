@@ -32,8 +32,7 @@ function readMarcoFromEnv(chainId: number): string | undefined {
   return value && value.startsWith('0x') ? value : undefined
 }
 
-function readStaticDevFallback(chainId: number): string | undefined {
-  if (process.env.NODE_ENV === 'production') return undefined
+function readStaticConfigMarco(chainId: number): string | undefined {
   const address = contracts.marco?.[chainId as keyof typeof contracts.marco]
   return typeof address === 'string' && address.startsWith('0x') ? address : undefined
 }
@@ -43,7 +42,8 @@ function readStaticDevFallback(chainId: number): string | undefined {
  * 1. Treasury Runtime Registry (via smart-router chain profile asset ref — same addresses as KERL assets today)
  * 2. KERL Registry (asset registry)
  * 3. Environment
- * 4. Static dev fallback (non-production only)
+ * 4. Static contracts.ts map (canonical web config — required for Base LIVE without inventing addresses)
+ * 5. Static dev fallback (non-production only — legacy alias of contracts map)
  */
 export function resolveMarcoToken(chainId: number): ResolvedMarcoToken {
   const chainName = CHAIN_NAMES[chainId] ?? `Chain ${chainId}`
@@ -100,17 +100,17 @@ export function resolveMarcoToken(chainId: number): ResolvedMarcoToken {
     }
   }
 
-  const staticAddress = readStaticDevFallback(chainId)
-  if (staticAddress) {
+  const staticConfig = readStaticConfigMarco(chainId)
+  if (staticConfig) {
     return {
       chainId,
       chainName,
-      marcoTokenAddress: staticAddress,
+      marcoTokenAddress: staticConfig,
       status: 'active',
       resolution: {
-        source: 'static-dev',
+        source: 'static-config',
         policyRef: D87_PRICING_REF,
-        lastVerifiedAt: '2026-06-26',
+        lastVerifiedAt: '2026-08-03',
       },
     }
   }

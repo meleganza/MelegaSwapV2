@@ -54,7 +54,8 @@ describe('projectsRuntime', () => {
     expect(card.status).toBe('pending')
     expect(card.registryTier).toBe('pending')
     expect(card.radarHref).toContain('/radar?contract=')
-    expect(card.projectHref).toContain('/import-existing-token')
+    expect(card.projectHref).toContain('/token/')
+    expect(card.importHref).toContain('/import-existing-token')
   })
 
   it('exposes runtime error catalog', () => {
@@ -65,19 +66,19 @@ describe('projectsRuntime', () => {
 
   it('aggregateKpis uses reason subline for holders without explorer source', () => {
     const kpis = aggregateKpis([project], 0, {
-      display: 'Waiting for explorer',
+      display: 'Unavailable',
       reasonCode: 'EXPLORER_SOURCE_MISSING',
     })
     const holders = kpis.find((k) => k.id === 'holders')
-    expect(holders?.value).toBe('Waiting for explorer')
+    expect(holders?.value).toBe('Unavailable')
     expect(holders?.value).not.toBe('—')
-    expect(holders?.subline).toBe('Waiting for explorer')
+    expect(holders?.subline).toBe('Unavailable')
     expect(holders?.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
   })
 
   it('buildOnChainMetrics includes machine-readable reason codes', () => {
     const metrics = buildOnChainMetrics(project, buildProjectLiveMetrics(project))
     expect(metrics.reasonCodes?.holders).toBe('EXPLORER_SOURCE_MISSING')
-    expect(metrics.liquidity).toBe('—')
+    expect(metrics.holders).toBe('Unavailable')
   })
 })

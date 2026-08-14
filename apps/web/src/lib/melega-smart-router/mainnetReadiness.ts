@@ -26,9 +26,9 @@ export function buildMainnetReadinessMatrix(chainId = 56): ReadinessRow[] {
     },
     {
       id: 'wrapper_contract',
-      label: 'Wrapper contract',
-      level: 'BLOCKED',
-      reason: 'Solidity not deployed — Phase 2 spec only',
+      label: 'Atomic gas-fee wrapper contract',
+      level: 'PARTIAL',
+      reason: 'Source, deployment script and atomic rollback tests complete; external review and deployment pending',
     },
     {
       id: 'treasury_registry',
@@ -69,9 +69,9 @@ export function buildMainnetReadinessMatrix(chainId = 56): ReadinessRow[] {
     },
     {
       id: 'treasury_runtime',
-      label: 'Treasury Runtime',
-      level: 'PARTIAL',
-      reason: 'Handoff receipt path live; FSC-01 settlement external',
+      label: 'Fee beneficiary',
+      level: 'READY',
+      reason: 'DECOMMISSIONED — canonical beneficiary MELEGA TREASURY WALLET per dexEconomicAuthority',
     },
     {
       id: 'pancake_integration',
@@ -91,7 +91,7 @@ export function buildMainnetReadinessMatrix(chainId = 56): ReadinessRow[] {
       id: 'target_wrapper',
       label: `Phase 2 target ${MELEGA_SMART_ROUTER_PHASE.target}`,
       level: 'PARTIAL',
-      reason: 'Specification + ABI draft complete; deployment pending',
+      reason: 'MelegaGasFeeSmartRouterWrapper implementation complete; deployment address not published',
     },
     {
       id: 'swap_ui',
@@ -121,7 +121,7 @@ export function buildMainnetReadinessMatrix(chainId = 56): ReadinessRow[] {
       id: 'audit',
       label: 'Audit',
       level: 'BLOCKED',
-      reason: 'No wrapper contract to audit yet',
+      reason: 'Independent review of MelegaGasFeeSmartRouterWrapper not completed',
     },
     {
       id: 'mainnet_deployment',

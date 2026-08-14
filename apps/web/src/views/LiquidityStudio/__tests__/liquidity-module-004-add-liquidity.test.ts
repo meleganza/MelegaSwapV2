@@ -33,24 +33,19 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     )
   })
 
-  it('locks desktop geometry 1376 container / 900+24+424 panels', () => {
+  it('locks denser desktop geometry with a compact preview rail', () => {
     expect(liquidityAdd.contentMax).toBe('1376px')
-    expect(liquidityAdd.mainW).toBe('900px')
-    expect(liquidityAdd.sideW).toBe('424px')
-    expect(liquidityAdd.columnGap).toBe('24px')
-    const panelSum =
-      parseInt(liquidityAdd.mainW, 10) +
-      parseInt(liquidityAdd.columnGap, 10) +
-      parseInt(liquidityAdd.sideW, 10)
-    // Mission panel contract (900 + 24 + 424); remaining width is page/chrome margin inside 1376.
-    expect(panelSum).toBe(1348)
-    expect(parseInt(liquidityAdd.contentMax, 10) - panelSum).toBe(28)
+    expect(liquidityAdd.mainW).toBe('68%')
+    expect(liquidityAdd.sideW).toBe('32%')
+    expect(liquidityAdd.columnGap).toBe('16px')
+    expect(liquidityAdd.cardPad).toBe('16px')
 
     const mod = load('modules/LiquidityAddModule.tsx')
-    // Standalone geometry retained; Actions IA embeds via embedded-stack.
-    expect(mod).toContain("'900-24-424'")
-    expect(mod).toContain("'embedded-stack'")
+    expect(mod).toContain("'single-card-horizontal'")
+    expect(mod).toContain("'single-card-compact'")
+    expect(mod).toContain('data-liquidity-preview="integrated"')
     expect(mod).toContain('grid-template-columns: 1fr')
+    expect(mod).toContain("'minmax(0, 1.55fr) minmax(280px, 0.72fr)'")
   })
 
   it('consumes existing mint runtime and slippage settings — no second engine', () => {
@@ -68,7 +63,9 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     expect(mod).not.toContain('useRouterContract')
 
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityRuntimeProvider')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    expect(shell).toContain('LiquidityRuntimeProvider')
   })
 
   it('maps wallet / approve / add / error CTA states without dead labels', () => {
@@ -144,12 +141,13 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     expect(mod).not.toMatch(/guaranteed|risk-free|earn \$/i)
     expect(mod).toContain('liquidity-add-preview-panel')
     expect(mod).toContain('liquidity-add-form-panel')
+    expect(mod).not.toContain('LIQUIDITY_ADD_COPY.previewFee')
   })
 
   it('supports token0/token1 seed query and anchor id', () => {
     expect(liquidityAdd.anchorId).toBe('add-liquidity')
     const mod = load('modules/LiquidityAddModule.tsx')
-    expect(mod).toContain("id={liquidityAdd.anchorId}")
+    expect(mod).toContain('id={liquidityAdd.anchorId}')
     expect(mod).toContain('router.query.token0')
     expect(mod).toContain('router.query.token1')
     expect(mod).toContain('setCurrencyA')
@@ -158,12 +156,12 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
 
   it('mounts Module 004 inside Actions workspace (IA primary surface)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-004="mounted"')
-    expect(page).toContain('LiquidityActionsModule')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-004="mounted"')
+    expect(shell).toContain('LiquidityAddModule')
     const actions = readFileSync(path.join(STUDIO, 'modules/LiquidityActionsModule.tsx'), 'utf8')
     expect(actions).toContain('<LiquidityAddModule embedded')
-    expect(actions.indexOf('LiquidityAddModule')).toBeGreaterThan(-1)
   })
 
   it('does not modify forbidden execution surfaces in this mission', () => {
@@ -182,9 +180,7 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     const map = readFileSync(path.join(WEB, 'docs/runtime/LIQUIDITY_MODULE_OWNERSHIP_MAP.md'), 'utf8')
     expect(map).toContain('LiquidityAddModule.tsx')
     expect(map).toContain('liquidity-module-004-add-liquidity')
-    expect(LIQUIDITY_MODULE_PLAN.find((m) => m.id === '004-add-liquidity')?.phase).toBe(
-      'certified-by-this-mission',
-    )
+    expect(LIQUIDITY_MODULE_PLAN.find((m) => m.id === '004-add-liquidity')?.phase).toBe('certified-by-this-mission')
     const evidence = path.join(WEB, 'docs/runtime/liquidity-module-004-add-liquidity')
     expect(existsSync(evidence)).toBe(true)
     expect(existsSync(path.join(WEB, 'docs/runtime/LIQUIDITY_MODULE_004_ADD_LIQUIDITY_REPORT.md'))).toBe(true)

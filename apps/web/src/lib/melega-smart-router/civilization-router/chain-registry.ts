@@ -1,5 +1,6 @@
 import { readKerlMarcoToken, getKerlRegistryVersion, readKerlTreasuryCollector } from '../registry/kerlRegistry'
 import { readTreasuryRuntimeCollector, getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'
+import { resolveTreasuryCollector } from '../registry/resolveTreasuryCollector'
 import { readSmartRouterChainProfile, getSmartRouterRegistryVersion } from '../registry/smartRouterRegistry'
 import { getUnderlyingRouterEntry } from '../underlyingRouterRegistry'
 import type { ChainRegistryEntry, CivilizationRouteType } from './types'
@@ -21,9 +22,9 @@ function readEnvAddress(key: string | undefined): string | null {
 }
 
 /**
- * Phase 6 — canonical registry resolution order:
+ * Phase 6 — canonical registry resolution order (Treasury Runtime decommissioned):
  * 1. KERL Registry
- * 2. Treasury Runtime Registry
+ * 2. Treasury Registry (/registry/treasury/index.json)
  * 3. Smart Router Registry
  * 4. env fallback (development only)
  */
@@ -71,7 +72,7 @@ export function getKerlIntegrationStatus() {
     registryVersion: getKerlRegistryVersion(),
     mode: 'read-only-static-json',
     writable: false,
-    resolutionOrder: ['KERL Registry', 'Treasury Runtime Registry', 'Smart Router Registry', 'env (dev only)'],
+    resolutionOrder: ['KERL Registry', 'Treasury Registry', 'Smart Router Registry', 'env (dev only)'],
     treasuryCollectorPublished: false,
     marcoChainsIndexed: [56, 97, 1, 137, 8453],
   }
@@ -84,11 +85,9 @@ export function buildChainRegistryEntry(chainId: number): ChainRegistryEntry {
   const kerlMarco = readKerlMarcoToken(chainId)
   const runtimeMarco = kerlMarco.available ? kerlMarco.marcoTokenAddress ?? null : null
 
-  const runtimeCollector = readTreasuryRuntimeCollector(chainId)
+  const resolvedCollector = resolveTreasuryCollector(chainId)
   const collectorAddress =
-    (runtimeCollector.available ? runtimeCollector.collectorAddress ?? null : null) ??
-    profile?.treasuryCollector ??
-    null
+    resolvedCollector.collectorAddress ?? profile?.treasuryCollector ?? null
 
   const wrapperAddress = profile?.wrapperAddress ?? null
   const underlyingRouter = router.routerAddress ?? profile?.executionRouter ?? null

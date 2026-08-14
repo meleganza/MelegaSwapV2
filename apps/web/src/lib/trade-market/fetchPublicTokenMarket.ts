@@ -25,21 +25,31 @@ interface CoinGeckoTokenResponse {
 export async function fetchCoinGeckoBscToken(address: string): Promise<PublicTokenMarketSnapshot | null> {
   const normalized = address.toLowerCase()
   try {
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/binance-smart-chain/contract/${normalized}`,
-      { headers: { accept: 'application/json' } },
-    )
+    const res = await fetch(`https://api.coingecko.com/api/v3/coins/binance-smart-chain/contract/${normalized}`, {
+      headers: { accept: 'application/json' },
+    })
     if (!res.ok) return null
     const json = (await res.json()) as CoinGeckoTokenResponse
     const md = json.market_data
     if (!md) return null
+    const priceUsd = md.current_price?.usd
+    const totalSupply = md.total_supply
+    const computedFdv =
+      priceUsd != null &&
+      Number.isFinite(priceUsd) &&
+      priceUsd > 0 &&
+      totalSupply != null &&
+      Number.isFinite(totalSupply) &&
+      totalSupply > 0
+        ? priceUsd * totalSupply
+        : undefined
     return {
-      priceUsd: md.current_price?.usd,
+      priceUsd,
       marketCapUsd: md.market_cap?.usd,
-      fdvUsd: md.fully_diluted_valuation?.usd,
+      fdvUsd: md.fully_diluted_valuation?.usd ?? computedFdv,
       volume24hUsd: md.total_volume?.usd,
       circulatingSupply: md.circulating_supply,
-      totalSupply: md.total_supply,
+      totalSupply,
       source: 'coingecko',
     }
   } catch {

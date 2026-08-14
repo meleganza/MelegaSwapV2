@@ -7,6 +7,12 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { getBlockExploreLink, getBlockExploreName } from 'utils'
+import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsMyPositions } from './poolsMyPositionsTokens'
 import type { PoolsPositionAction, PoolsWalletPosition } from './poolsMyPositionsTypes'
 
@@ -109,7 +115,7 @@ const StatusBadge = styled.span<{ $tone: string }>`
     if ($tone === 'Withdraw') return '#F4C430'
     if ($tone === 'Emergency') return '#FF8A65'
     if ($tone === 'Partial') return '#E0B85A'
-    if ($tone === 'Ended') return '#B39DDB'
+    if ($tone === 'Finished' || $tone === 'Ended') return '#FF6B6B'
     return 'rgba(255,255,255,0.55)'
   }};
   background: ${({ $tone }) => {
@@ -117,7 +123,7 @@ const StatusBadge = styled.span<{ $tone: string }>`
     if ($tone === 'Withdraw') return 'rgba(244,196,48,0.14)'
     if ($tone === 'Emergency') return 'rgba(255,138,101,0.14)'
     if ($tone === 'Partial') return 'rgba(224,184,90,0.12)'
-    if ($tone === 'Ended') return 'rgba(179,157,219,0.12)'
+    if ($tone === 'Finished' || $tone === 'Ended') return 'rgba(255,107,107,0.14)'
     return 'rgba(255,255,255,0.06)'
   }};
 `
@@ -190,9 +196,16 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? poolsMyPositions.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
 
   &:focus-visible {
     outline: ${poolsMyPositions.focusRing};
@@ -206,16 +219,9 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
 
   @media (max-width: ${poolsMyPositions.mobileBreak}) {
     flex: 1 1 calc(50% - 4px);
-    min-width: 142px;
+    min-width: 0;
     min-height: ${poolsMyPositions.touchMin};
   }
-`
-
-const PartialNote = styled.p`
-  margin: 0;
-  font-size: 10px;
-  line-height: 14px;
-  color: rgba(224, 184, 90, 0.9);
 `
 
 function actionBusyLabel(kind: PoolsPositionAction['kind'], base: PoolsPositionAction['label']): string {
@@ -228,15 +234,29 @@ export const PoolsMyPositionCard: React.FC<{
   position: PoolsWalletPosition
 }> = ({ position }) => {
   const { requestModal } = usePoolsRuntime()
+  const { chainId: walletChainId } = useActiveChainId()
+  const { switchNetworkAsync } = useSwitchNetwork()
   const [busyKind, setBusyKind] = useState<PoolsPositionAction['kind'] | null>(null)
   const [txNote, setTxNote] = useState<string | null>(null)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
+  const [pendingAction, setPendingAction] = useState<PoolsPositionAction | null>(null)
+  const contractAddress = resolvePoolContractAddress({
+    contractAddress: position.poolContract || position.sourceCard.contractAddress,
+    explorerUrl: position.sourceCard.explorerUrl,
+    contractExplorerUrl: position.sourceCard.analyzePreview?.contractExplorerUrl,
+  })
+  const contractUrl =
+    (contractAddress && getBlockExploreLink(contractAddress, 'address', position.chainId)) ||
+    poolBscScanContractUrl(contractAddress)
+  const explorerName = getBlockExploreName(position.chainId)
 
   const sameToken =
     position.stakeToken.symbol &&
     position.rewardToken.symbol &&
     position.stakeToken.symbol === position.rewardToken.symbol
 
-  const onAction = (action: PoolsPositionAction) => {
+  const runAction = (action: PoolsPositionAction) => {
     if (!action.enabled || !action.modalAction) return
     setBusyKind(action.kind)
     setTxNote(`Opening ${action.label}…`)
@@ -249,6 +269,32 @@ export const PoolsMyPositionCard: React.FC<{
         setBusyKind(null)
         setTxNote(null)
       }, 1200)
+    }
+  }
+
+  const onAction = (action: PoolsPositionAction) => {
+    if (!action.enabled || !action.modalAction) return
+    if (walletChainId != null && walletChainId !== position.chainId) {
+      setPendingAction(action)
+      setSwitchOpen(true)
+      return
+    }
+    runAction(action)
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    try {
+      await switchNetworkAsync?.(position.chainId)
+      setSwitchOpen(false)
+      const next = pendingAction
+      setPendingAction(null)
+      if (next) window.setTimeout(() => runAction(next), 400)
+    } catch {
+      setPendingAction(null)
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -284,9 +330,12 @@ export const PoolsMyPositionCard: React.FC<{
             <Subtitle>{position.subtitle}</Subtitle>
           </IdentityText>
         </Identity>
-        <StatusBadge $tone={position.statusLabel} aria-label={`Status ${position.statusLabel}`}>
-          {position.statusLabel}
-        </StatusBadge>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <MelegaExploreChainBadge chainId={position.chainId} />
+          <StatusBadge $tone={position.statusLabel} aria-label={`Status ${position.statusLabel}`}>
+            {position.statusLabel}
+          </StatusBadge>
+        </div>
       </Header>
 
       <span
@@ -321,31 +370,49 @@ export const PoolsMyPositionCard: React.FC<{
           ) : null}
         </Metric>
         {position.unlockLine ? <Unlock>{position.unlockLine}</Unlock> : null}
-        {position.partialReasons.map((r) => (
-          <PartialNote key={r}>{r}</PartialNote>
-        ))}
       </Metrics>
 
-      {position.actions.length > 0 ? (
-        <Actions>
-          {position.actions.map((action, idx) => {
-            const busy = busyKind === action.kind
-            const label = busy ? actionBusyLabel(action.kind, action.label) : action.label
-            return (
-              <ActionButton
-                key={`${action.kind}-${action.label}`}
-                type="button"
-                $primary={idx === 0}
-                disabled={!action.enabled || busy}
-                aria-label={action.accessibleName}
-                onClick={() => onAction(action)}
-              >
-                {label}
-              </ActionButton>
-            )
-          })}
-        </Actions>
-      ) : null}
+      <Actions>
+        {position.actions.map((action, idx) => {
+          const busy = busyKind === action.kind
+          const label = busy ? actionBusyLabel(action.kind, action.label) : action.label
+          return (
+            <ActionButton
+              key={`${action.kind}-${action.label}`}
+              type="button"
+              $primary={idx === 0}
+              disabled={!action.enabled || busy}
+              aria-label={action.accessibleName}
+              onClick={() => onAction(action)}
+            >
+              {label}
+            </ActionButton>
+          )
+        })}
+        {contractUrl ? (
+          <ActionButton
+            type="button"
+            data-testid="pools-position-view-contract"
+            data-ps-view-contract
+            aria-label={`View contract for ${position.title} on ${explorerName}`}
+            onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
+          >
+            {explorerName} ↗
+          </ActionButton>
+        ) : null}
+      </Actions>
+
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={position.chainId}
+        productLabel="This pool"
+        busy={switching}
+        onCancel={() => {
+          setPendingAction(null)
+          setSwitchOpen(false)
+        }}
+        onConfirm={onConfirmSwitch}
+      />
 
       <span
         aria-live="polite"

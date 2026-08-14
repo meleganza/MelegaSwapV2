@@ -17,7 +17,7 @@ export const SMART_SWAP_AI_ASSISTANCE_OWNERSHIP = {
   engines: {
     routesQuotesExecution: 'Smart Swap Engine / SmartSwapForm',
     fees: 'Canonical fee engine',
-    settlement: 'Treasury Runtime',
+    settlement: 'NONE',
     economicAttribution: 'KERL',
   },
   principle: 'AI is an assistant — optional, non-blocking, explanation only',

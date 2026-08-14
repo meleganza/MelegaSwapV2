@@ -228,8 +228,8 @@ describe('LB-ACT-003 activation simplification', () => {
     }
   })
 
-  it('13. success fee remains 500 bps', () => {
-    expect(LB_SUCCESS_FEE_BPS).toBe(500)
+  it('13. success fee remains 1000 bps', () => {
+    expect(LB_SUCCESS_FEE_BPS).toBe(1000)
   })
 
   it('15. treasuryAuthorizationReference is provenance only (format/nonzero), not a live ticket', () => {

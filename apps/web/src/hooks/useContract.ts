@@ -33,6 +33,7 @@ import { useSigner } from 'wagmi'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
 import { ChainId, WNATIVE } from '@pancakeswap/sdk'
+import { CAKE } from '@pancakeswap/tokens'
 import { ERC20_BYTES32_ABI } from 'config/abi/erc20'
 import ERC20_ABI from 'config/abi/erc20.json'
 import IPancakePairABI from 'config/abi/IPancakePair.json'
@@ -66,16 +67,22 @@ export const useERC20 = (address: string, withSignerIfPossible = true) => {
   return useMemo(() => getBep20Contract(address, providerOrSigner), [address, providerOrSigner])
 }
 
-export const useCake = (): { reader: Cake; signer: Cake } => {
+export const useCake = (): { reader: Cake; signer: Cake } | { reader: null; signer: null } => {
   const providerOrSigner = useProviderOrSigner(true, true)
   const { chainId } = useActiveChainId()
-  return useMemo(
-    () => ({
-      reader: getCakeContract(null, chainId),
-      signer: getCakeContract(providerOrSigner, chainId),
-    }),
-    [providerOrSigner, chainId],
-  )
+  return useMemo(() => {
+    if (chainId != null && !CAKE[chainId]?.address) {
+      return { reader: null, signer: null }
+    }
+    try {
+      return {
+        reader: getCakeContract(null, chainId),
+        signer: getCakeContract(providerOrSigner, chainId),
+      }
+    } catch {
+      return { reader: null, signer: null }
+    }
+  }, [providerOrSigner, chainId])
 }
 
 export const useMasterchef = (withSignerIfPossible = true, chainId: number) => {

@@ -1,8 +1,11 @@
 import type { MarcoBridgeNetwork, MarcoBridgeNetworkId, MarcoBridgeRoute } from './types'
 
 /**
- * Bridge configuration deliberately fails closed until the certified identities,
- * endpoints and explicit public activation gate are imported.
+ * The single consumer-side source of truth for MARCO Wave-1.
+ *
+ * Protocol identities intentionally remain null until the certified MMN artifact is
+ * imported during the explicit public-activation gate. The UI therefore fails closed
+ * and cannot fabricate a quote or submit a transaction from incomplete configuration.
  */
 export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwork> = {
   bnb: {

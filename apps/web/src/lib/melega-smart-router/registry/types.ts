@@ -1,10 +1,12 @@
 import type { RegistryStatus } from '../types'
 
 export type RegistryResolutionSource =
+  | 'dex-economic-authority'
   | 'treasury-runtime'
   | 'kerl'
   | 'env'
   | 'static-dev'
+  | 'static-config'
 
 export interface RegistryResolutionMeta {
   source: RegistryResolutionSource

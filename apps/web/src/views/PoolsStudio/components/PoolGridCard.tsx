@@ -520,10 +520,11 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               type="button"
               onClick={() => window.open(explorerUrl, '_blank', 'noopener,noreferrer')}
               data-ps-bscscan-btn
+              data-ps-view-contract
               data-ps-explorer-url={explorerUrl}
-              aria-label="View contract on BscScan"
+              aria-label="View SmartChef contract on BscScan"
             >
-              BscScan
+              BscScan ↗
             </ChipBtn>
           </PrimaryExplorerRow>
         ) : null}

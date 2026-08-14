@@ -130,20 +130,25 @@ describe('FARMS_ARCHITECTURE_000 Mockup Lock', () => {
 
   it('keeps Architecture 000 freeze: no ArchitectureShell cutover; legacy body retained under modular stack', () => {
     const screen = readFileSync(path.join(WEB, 'src/views/FarmsStudio/FarmsStudioScreen.tsx'), 'utf8')
-    // Modules 001–008 may mount; Integration 009 owns full modular shell cutover.
-    expect(screen).toContain('FarmsYieldAdvisorModule')
-    expect(screen).toContain('FarmsAnalyticsModule')
-    expect(screen).toContain('FarmsVisualPolishModule')
+    // Modules 001–004, 006–008 may mount; Integration 009 owns full modular shell cutover.
+            expect(screen).toContain('FarmsVisualPolishModule')
     expect(screen).not.toContain('AIYieldAdvisorPanel')
-    expect(screen).toContain('FeaturedFarmPanel')
+    // Featured Farm is compact in Hero (legacy bottom FeaturedFarmPanel unmounted).
+    expect(screen).toContain('data-farms-ia="product-ux-redesign-v1"')
     expect(screen).toContain('FarmsMyFarmsModule')
     expect(screen).not.toContain('FarmsArchitectureShell')
     expect(screen).toContain('data-farms-module-003="mounted"')
-    expect(screen).toContain('data-farms-module-006="mounted"')
-    expect(screen).toContain('data-farms-module-007="mounted"')
+    expect(screen).toContain('data-farms-module-006="unmounted"')
+    expect(screen).toContain('data-farms-module-007="unmounted"')
     expect(screen).toContain('data-farms-module-008="mounted"')
     for (const id of ['009', '010']) {
       expect(screen).not.toContain(`data-farms-module="${id}"`)
     }
-  })
+    // Module 005 (standalone Finished Farms) unmounted — finished positions now surface inline within My Farms.
+    expect(screen).not.toContain('FarmsFinishedFarmsModule')
+    expect(screen).toContain('data-farms-module-005="unmounted"')
+    // Create Farm workspace is present in modal IA.
+    expect(screen).toContain('create-farm-modal')
+    expect(screen).toContain('CreateFarmWorkspace')
+          })
 })

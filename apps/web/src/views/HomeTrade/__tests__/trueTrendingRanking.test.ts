@@ -9,19 +9,21 @@ import {
 
 const trendingSrc = readFileSync(join(__dirname, '../useDexTrendingRankings.ts'), 'utf8')
 
-describe('SMART_SWAP_TRUE_TRENDING_REPAIR', () => {
-  it('removes tradeablePair / lastVerified discovery fill', () => {
-    expect(trendingSrc).not.toMatch(/tradeablePair/)
-    expect(trendingSrc).not.toMatch(/lastVerifiedTs/)
-    expect(trendingSrc).toMatch(/hasTrendingSwapActivity/)
-    expect(trendingSrc).toMatch(/uniqueTraders/)
+describe('WAVE_04A_TOP_MOVERS_MULTI_SOURCE', () => {
+  it('ranks from pair index + external tracked prices + CoinGecko — not swap-only', () => {
+    expect(trendingSrc).toMatch(/fetchCoinGeckoTokenQuotes/)
+    expect(trendingSrc).toMatch(/pairIndex/)
+    expect(trendingSrc).toMatch(/externalTrackedPrice/)
+    expect(trendingSrc).toMatch(/coingecko/)
     expect(trendingSrc).toMatch(/TRENDING_DEX_FACTORY/)
-    expect(trendingSrc).toMatch(/TRENDING_DEX_ROUTER/)
     expect(trendingSrc).toMatch(/MELEGA_FACTORY_BSC/)
-    expect(trendingSrc).toMatch(/MELEGA_ROUTER_BSC/)
+    expect(trendingSrc).not.toMatch(/toPrecision\(/)
+    expect(trendingSrc).toMatch(/formatTickerPriceUsd/)
+    expect(trendingSrc).toMatch(/Never fabricate/)
+    expect(trendingSrc).toMatch(/hasExternalChange/)
   })
 
-  it('ranks only swap-active assets — idle indexed tokens excluded', () => {
+  it('still ranks swap-active assets ahead when comparing volumes', () => {
     const assets: TierRankedAsset[] = [
       {
         symbol: 'TRUMPET',
@@ -35,7 +37,7 @@ describe('SMART_SWAP_TRUE_TRENDING_REPAIR', () => {
         liquidityScore: 999,
         tradeCount24h: 0,
         lastActivityTs: 1_700_000_000,
-        rankingSignals: ['tradeablePair'],
+        rankingSignals: ['pairIndex'],
       },
       {
         symbol: 'MARCO',

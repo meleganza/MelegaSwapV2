@@ -1,3 +1,5 @@
+import { RECOVERY_CAPABILITIES } from 'config/constants/recoveryCapabilities'
+
 /** LIST_MODULE_001 — List page hero geometry + color tokens. */
 export const listOne = {
   pageBg: '#050505',
@@ -122,17 +124,17 @@ export const listOne = {
   howTabletGapY: '20px',
   howTabletStepMinH: '88px',
 
-  /* MODULE_005 — unified list workspace (001–004 locks unchanged) */
-  workspaceTop: '24px',
+  /* MODULE_005 — unified list workspace (founder-final denser shell) */
+  workspaceTop: '8px',
   workspaceW: '1376px',
-  workspaceH: '920px',
+  workspaceH: 'auto',
+  workspaceMinH: '560px',
   workspacePadX: '24px',
-  /* 11+11 vertical + 1+1 border = 24; keeps header+body+footer at 896 inside 920 */
-  workspacePadY: '11px',
+  workspacePadY: '12px',
   workspaceRadius: '16px',
-  workspaceHeaderH: '64px',
-  workspaceBodyH: '760px',
-  workspaceFooterH: '72px',
+  workspaceHeaderH: '56px',
+  workspaceBodyH: 'auto',
+  workspaceFooterH: '64px',
   workspaceBg: '#101010',
 
   /* MODULE_006 — premium workspace internals (001–005 outer locks unchanged) */
@@ -162,12 +164,7 @@ export const listOne = {
 export const LIST_HERO_BG = '/images/list/list-hero-background.png'
 export const LIST_HERO_ART = '/images/list/list-hero-artwork.png'
 
-export type ListIntent =
-  | 'import-token'
-  | 'create-token'
-  | 'claim-project'
-  | 'create-project'
-  | 'ai-assistant'
+export type ListIntent = 'import-token' | 'create-token' | 'claim-project' | 'create-project' | 'ai-assistant'
 
 export const LIST_INTENTS: readonly ListIntent[] = [
   'import-token',
@@ -177,5 +174,5 @@ export const LIST_INTENTS: readonly ListIntent[] = [
   'ai-assistant',
 ] as const
 
-/** Create Token factory is not certified-operational on List — honest Coming Soon. */
-export const LIST_CREATE_TOKEN_AVAILABLE = false
+/** Create Token is unlocked only through the canonical, receipt-verified BNB factory path. */
+export const LIST_CREATE_TOKEN_AVAILABLE = RECOVERY_CAPABILITIES.createTokenExecution

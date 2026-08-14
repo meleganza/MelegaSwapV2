@@ -10,6 +10,14 @@ import { FEATURED_PAIR_SLUG } from './v2/paths'
 import { MARCO_WBNB_PAIR_BSC } from './constants'
 import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from './founderWbnbPairs'
+import {
+  fullyDilutedValueUsd,
+  quoteVolumeToUsd,
+  tokenUsdFromWbnbQuote,
+} from './usdValuation'
+import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { fetchBnbUsd as fetchBnbUsdShared } from 'lib/market-data/bnbUsd'
+import { rpcCall } from './rpc/chunkedLogs'
 
 export { FOUNDER_WBNB_PAIR_ADDRESSES }
 
@@ -23,6 +31,8 @@ export type FeaturedMarketStatus =
   | 'NO_RECENT_TRADES'
   | 'UNAVAILABLE'
 
+export type FeaturedCapLabel = 'Market Cap' | 'Fully Diluted Value' | 'Unavailable'
+
 export type FeaturedMarketRow = {
   slug: string
   symbol: string
@@ -30,13 +40,56 @@ export type FeaturedMarketRow = {
   pairAddress?: string
   status: FeaturedMarketStatus
   latestPriceQuote?: number
+  /** Primary human-facing USD price when BNB/USD is available. */
+  latestPriceUsd?: number
   changePct?: number
   periodLabel: '24H' | string
   volume24hQuote?: number
+  volume24hUsd?: number
+  /** Approximate WBNB-side liquidity (2× quote reserve when pair is token/WBNB). */
+  liquidityQuote?: number
+  liquidityUsd?: number
+  /** Market cap in WBNB when circulating supply is known — omitted when unavailable. */
+  marketCapQuote?: number
+  marketCapUsd?: number
+  /** Honest label — never call FDV “Market Cap”. */
+  marketCapLabel?: FeaturedCapLabel
+  bnbUsd?: number
   tradeCount24h?: number
   lastTradeTimestamp?: number
   quoteSymbol: 'WBNB'
   source: 'melega-dex-index' | 'melega-factory-reserves' | 'none'
+}
+
+async function fetchBnbUsd(): Promise<number | undefined> {
+  const { usd } = await fetchBnbUsdShared()
+  return usd
+}
+
+/** On-chain totalSupply → human units using tokenlist decimals (default 18). */
+async function fetchTotalSupplyHuman(tokenAddress: string): Promise<number | undefined> {
+  try {
+    const addr = tokenAddress.toLowerCase()
+    const entry = ((defaultTokenList.tokens ?? []) as Array<{
+      chainId?: number
+      address?: string
+      decimals?: number
+    }>).find((t) => t.chainId === 56 && t.address?.toLowerCase() === addr)
+    const decimals = entry?.decimals ?? 18
+    // totalSupply() selector
+    const raw = await rpcCall<string>('eth_call', [{ to: addr, data: '0x18160ddd' }, 'latest'])
+    if (!raw || raw === '0x') return undefined
+    const supply = BigInt(raw)
+    if (supply <= 0n) return undefined
+    const denom = 10n ** BigInt(decimals)
+    // Keep precision for large supplies via string split
+    const whole = supply / denom
+    const frac = supply % denom
+    const human = Number(whole) + Number(frac) / Number(denom)
+    return Number.isFinite(human) && human > 0 ? human : undefined
+  } catch {
+    return undefined
+  }
 }
 
 function pairSlug(pairAddress: string, token0: string, token1: string): string {
@@ -59,6 +112,23 @@ function reservePriceTokenInWbnb(params: {
   if (!(r0 > 0) || !(r1 > 0)) return undefined
   if (token === t0 && t1 === WBNB) return r1 / r0
   if (token === t1 && t0 === WBNB) return r0 / r1
+  return undefined
+}
+
+/** Token/WBNB pair liquidity ≈ 2 × WBNB reserve (honest AMM approximation). */
+function liquidityQuoteWbnb(params: {
+  token0: string
+  token1: string
+  reserve0: string
+  reserve1: string
+}): number | undefined {
+  const t0 = params.token0.toLowerCase()
+  const t1 = params.token1.toLowerCase()
+  const r0 = Number(params.reserve0) / 1e18
+  const r1 = Number(params.reserve1) / 1e18
+  if (!(r0 > 0) || !(r1 > 0)) return undefined
+  if (t0 === WBNB) return r0 * 2
+  if (t1 === WBNB) return r1 * 2
   return undefined
 }
 
@@ -90,9 +160,10 @@ export async function buildFeaturedProjectMarkets(): Promise<{
   generatedAt: string
   chainId: 56
   rows: FeaturedMarketRow[]
+  bnbUsd?: number
 }> {
   const projects = resolveFounderFeaturedProjects()
-  const { registry } = await resolveOnchainRegistry()
+  const [{ registry }, bnbUsd] = await Promise.all([resolveOnchainRegistry(), fetchBnbUsd()])
   const pairs = registry?.amm?.pairs ?? []
   const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
   const rows: FeaturedMarketRow[] = []
@@ -180,6 +251,32 @@ export async function buildFeaturedProjectMarkets(): Promise<{
     const lag = health?.indexingLag ?? 0
     if (status === 'LIVE' && lag > 5_000) status = 'STALE'
 
+    const liquidityQuote = liquidityQuoteWbnb({
+      token0: pair.token0,
+      token1: pair.token1,
+      reserve0: pair.reserve0,
+      reserve1: pair.reserve1,
+    })
+
+    const latestPriceUsd =
+      latestPriceQuote != null && bnbUsd != null
+        ? tokenUsdFromWbnbQuote(latestPriceQuote, bnbUsd)
+        : undefined
+    const volume24hUsd =
+      volume24hQuote > 0 && bnbUsd != null ? quoteVolumeToUsd(volume24hQuote, bnbUsd) : undefined
+    const liquidityUsd =
+      liquidityQuote != null && liquidityQuote > 0 && bnbUsd != null
+        ? quoteVolumeToUsd(liquidityQuote, bnbUsd)
+        : undefined
+
+    const supplyHuman = await fetchTotalSupplyHuman(project.address)
+    const marketCapUsd =
+      supplyHuman != null && latestPriceUsd != null
+        ? fullyDilutedValueUsd(supplyHuman, latestPriceUsd)
+        : undefined
+    const marketCapLabel: FeaturedCapLabel =
+      marketCapUsd != null ? 'Fully Diluted Value' : 'Unavailable'
+
     rows.push({
       slug: project.slug,
       symbol: project.symbol,
@@ -187,15 +284,24 @@ export async function buildFeaturedProjectMarkets(): Promise<{
       pairAddress: pair.pairAddress.toLowerCase(),
       status,
       latestPriceQuote,
+      latestPriceUsd,
       changePct: change?.pct,
       periodLabel,
       volume24hQuote: volume24hQuote > 0 ? volume24hQuote : undefined,
-      tradeCount24h: recentSwaps.length || undefined,
+      volume24hUsd,
+      liquidityQuote: liquidityQuote != null && liquidityQuote > 0 ? liquidityQuote : undefined,
+      liquidityUsd,
+      marketCapUsd,
+      marketCapLabel,
+      bnbUsd,
+      // Zero is factual information: keep it so every consumer can distinguish
+      // a confirmed empty 24H window from an unavailable observation.
+      tradeCount24h: recentSwaps.length,
       lastTradeTimestamp: lastTradeTimestamp || undefined,
       quoteSymbol: 'WBNB',
       source,
     })
   }
 
-  return { generatedAt: new Date().toISOString(), chainId: 56, rows }
+  return { generatedAt: new Date().toISOString(), chainId: 56, rows, bnbUsd }
 }

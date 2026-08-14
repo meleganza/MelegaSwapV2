@@ -1,12 +1,13 @@
 import { ChainId } from '@pancakeswap/sdk'
 import { atom, useAtomValue } from 'jotai'
 import { useRouter } from 'next/router'
-import { useDeferredValue } from 'react'
+import { useDeferredValue, useEffect } from 'react'
 import { isChainSupported } from 'utils/wagmi'
-import { useNetwork } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { getChainId } from 'config/chains'
 import { useSessionChainId } from './useSessionChainId'
-[]
+import { useWalletChainId } from './useWalletChainId'
+
 const queryChainIdAtom = atom(-1) // -1 unload, 0 no chainId on query
 
 queryChainIdAtom.onMount = (set) => {
@@ -46,16 +47,33 @@ export function useLocalNetworkChain() {
 export const useActiveChainId = () => {
   const localChainId = useLocalNetworkChain()
   const queryChainId = useAtomValue(queryChainIdAtom)
+  const [, setSessionChainId] = useSessionChainId()
 
   const { chain } = useNetwork()
+  const { isConnected } = useAccount()
+  const walletChainId = useWalletChainId()
 
-  const chainId = localChainId ?? chain?.id ?? (queryChainId >= 0 ? ChainId.BSC : undefined)
+  // Connected wallet chain is source of truth (fixes stale session / wagmi useChainId = provider default).
+  const walletTruth =
+    isConnected && walletChainId != null && isChainSupported(walletChainId) ? walletChainId : null
 
-  const isNotMatched = useDeferredValue(chain && localChainId && chain.id !== localChainId)
+  const chainId =
+    walletTruth ?? localChainId ?? chain?.id ?? (queryChainId >= 0 ? ChainId.BSC : undefined)
+
+  // Keep session atom aligned so URL/local cache cannot resurrect a stale chain after MetaMask switch.
+  useEffect(() => {
+    if (walletTruth != null && walletTruth !== localChainId) {
+      setSessionChainId(walletTruth)
+    }
+  }, [walletTruth, localChainId, setSessionChainId])
+
+  const isNotMatched = useDeferredValue(
+    Boolean(isConnected && walletTruth != null && localChainId != null && walletTruth !== localChainId),
+  )
 
   return {
     chainId,
-    isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
+    isWrongNetwork: (chain?.unsupported ?? false) && !walletTruth,
     isNotMatched,
   }
 }

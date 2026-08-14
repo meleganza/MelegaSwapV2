@@ -17,12 +17,13 @@ import { useTranslation } from '@pancakeswap/localization'
 import useAuth from 'hooks/useAuth'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { ChainLogo } from 'components/Logo/ChainLogo'
+import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 // import NextLink from 'next/link'
 
 // import { useProfile } from 'state/profile/hooks'
 
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
-import { formatBigNumber } from '@pancakeswap/utils/formatBalance'
+import { formatWeiToDecimal } from 'utils/safeBigInt'
 import { useBalance } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
@@ -109,7 +110,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
             {!nativeBalance.isFetched ? (
               <Skeleton height="22px" width="60px" />
             ) : (
-              <Text>{formatBigNumber(nativeBalance.data.value, 6)}</Text>
+              <Text>{formatWeiToDecimal(nativeBalance.data?.value, 6)}</Text>
             )}
           </Flex>
           {wNativeBalance.gt(0) && (
@@ -126,34 +127,33 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
           )}
         </Box>
       )} */}
-      {chain && <Box mb="8px">
+      {chain && <Box mb="8px" data-testid="wallet-info-chain">
         <Flex justifyContent="space-between" alignItems="center" mb="8px">
-          <Flex borderRadius="16px" pl="4px" pr="8px" py="2px">
+          <Flex borderRadius="16px" pl="4px" pr="8px" py="2px" alignItems="center" title={headerChainTitle(chain.id)}>
               <ChainLogo chainId={chain.id} />
-              <Text color="primary" ml="4px">
-                {chain.name}
+              <Text color="primary" ml="4px" fontWeight={700}>
+                {headerChainLabel(chain.id)}
+              </Text>
+              <Text color="textSubtle" ml="8px" fontSize="12px">
+                {t('Connected')}
               </Text>
           </Flex>
           <LinkExternal href={getBlockExploreLink(account, 'address', chainId)}>
             {getBlockExploreName(chainId)}
           </LinkExternal>
         </Flex>
+        <Flex alignItems="center" justifyContent="space-between" mb="6px">
+          <Text color="textSubtle" fontSize="12px">{t('Address')}</Text>
+          <Text fontSize="13px" fontWeight={600}>{accountEllipsis}</Text>
+        </Flex>
         <Flex alignItems="center" justifyContent="space-between">
           <Text color="primary">{native.symbol} {t('Balance')}</Text>
           {!nativeBalance.isFetched ? (
             <Skeleton height="22px" width="60px" />
           ) : (
-            <Text>{formatBigNumber(nativeBalance?.data?.value, 6)}</Text>
+            <Text>{formatWeiToDecimal(nativeBalance?.data?.value, 6)}</Text>
           )}
         </Flex>
-        {/* {chainId !== ChainId.ETHEREUM && <Flex alignItems="center" justifyContent="space-between">
-          <Text color="primary">{t('MARCO Balance')}</Text>
-          {cakeFetchStatus !== FetchStatus.Fetched ? (
-            <Skeleton height="22px" width="60px" />
-          ) : (
-            <Text>{formatBigNumber(cakeBalance, 3)}</Text>
-          )}
-        </Flex>} */}
       </Box>}
       <Button variant="secondary" width="100%" minHeight={48} onClick={handleLogout} my="12px">
         {t('Disconnect Wallet')}

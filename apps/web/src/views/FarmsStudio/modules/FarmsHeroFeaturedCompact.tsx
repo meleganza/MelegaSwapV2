@@ -1,5 +1,6 @@
 /**
- * Compact Featured Farm for Hero right column (not the legacy giant bottom card).
+ * Compact Featured Farm for Hero right column.
+ * Shown only when a factual eligible farm exists.
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -50,6 +51,36 @@ const Apr = styled.span`
   font-weight: 750;
 `
 
+const Links = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+`
+
+const Link = styled.a`
+  color: rgba(244, 196, 48, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+const StakeBtn = styled.button`
+  appearance: none;
+  cursor: pointer;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.16);
+  color: #f4c430;
+  font-size: 12px;
+  font-weight: 700;
+`
+
 const Empty = styled.p`
   margin: 0;
   font-size: 12px;
@@ -57,17 +88,22 @@ const Empty = styled.p`
 `
 
 export const FarmsHeroFeaturedCompact: React.FC = () => {
-  const { featured } = useFarmsRuntime()
-  if (!featured) {
+  const { featured, requestModal } = useFarmsRuntime()
+  if (!featured?.card) {
     return (
       <Card data-testid="farms-hero-featured-compact" data-featured="empty">
         <Eyebrow>Featured Farm</Eyebrow>
-        <Empty>No rewarding farm available</Empty>
+        <Empty>No eligible active farm with measurable TVL and sustainable APR.</Empty>
       </Card>
     )
   }
+  const card = featured.card
+  const farmUrl = card.masterChefExplorerUrl
+  const lpUrl = card.explorerUrl
+  const canStake = card.cta === 'stake' || card.status === 'live'
+
   return (
-    <Card data-testid="farms-hero-featured-compact" data-featured="ready">
+    <Card data-testid="farms-hero-featured-compact" data-featured="ready" data-farm-pid={card.pid ?? undefined}>
       <Eyebrow>Featured Farm</Eyebrow>
       <Pair title={featured.pair}>{featured.pair}</Pair>
       <Meta>
@@ -75,6 +111,27 @@ export const FarmsHeroFeaturedCompact: React.FC = () => {
         {featured.tvl ? <span>TVL {featured.tvl}</span> : null}
         {featured.rewardToken ? <span>Earn {featured.rewardToken}</span> : null}
       </Meta>
+      <Links>
+        {canStake ? (
+          <StakeBtn
+            type="button"
+            data-testid="farms-featured-stake"
+            onClick={() => requestModal(card, 'stake')}
+          >
+            Stake
+          </StakeBtn>
+        ) : null}
+        {farmUrl ? (
+          <Link href={farmUrl} target="_blank" rel="noopener noreferrer" data-testid="farms-featured-farm-contract">
+            Farm Contract ↗
+          </Link>
+        ) : null}
+        {lpUrl ? (
+          <Link href={lpUrl} target="_blank" rel="noopener noreferrer" data-testid="farms-featured-lp-contract">
+            LP Contract ↗
+          </Link>
+        ) : null}
+      </Links>
     </Card>
   )
 }

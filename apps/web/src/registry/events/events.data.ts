@@ -6,7 +6,7 @@ import { StaticEventRecord } from './types'
 
 const treasuryPlaceholder = () => ({
   status: 'not_indexed' as const,
-  notes: 'Treasury SKU attribution — Treasury Runtime Phase 2',
+  notes: 'Treasury SKU attribution — beneficiary MELEGA TREASURY WALLET',
 })
 
 const buildEvents = (): StaticEventRecord[] => {

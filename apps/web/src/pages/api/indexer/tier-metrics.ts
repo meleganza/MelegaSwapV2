@@ -13,6 +13,7 @@ import {
   resolveTierPairStatus,
 } from 'lib/bsc-indexer/indexer/tierPairStatus'
 import type { TierMetricStatus } from 'lib/bsc-indexer/types'
+import { wbnbVolumeFromPairSides } from 'lib/market-volume/canonical24hVolume'
 
 const SECONDS_24H = 86_400
 
@@ -34,7 +35,12 @@ const handler: NextApiHandler = async (req, res) => {
     token1: string
     tier: string
     status: TierPairStatus
+    /** @deprecated token1 raw volume — do not treat as WBNB unless token1 is WBNB */
     volume24hQuote: number
+    volume24hBase: number
+    /** Canonical WBNB-side 24H volume for USD valuation */
+    volume24hWbnb: number
+    volumePriced: boolean
     tradeCount24h: number
     priceChange24h?: number
     candleCount: number
@@ -59,6 +65,13 @@ const handler: NextApiHandler = async (req, res) => {
       const recentEvents = events.filter((e) => e.blockTimestamp >= cutoff)
       const recentCandles = candles.filter((c) => c.bucketTimestamp >= cutoff)
       const volume24hQuote = recentCandles.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
+      const volume24hBase = recentCandles.reduce((sum, c) => sum + (c.baseVolume ?? 0), 0)
+      const { wbnbVolume, priced } = wbnbVolumeFromPairSides({
+        token0: watch.token0,
+        token1: watch.token1,
+        baseVolume: volume24hBase,
+        quoteVolume: volume24hQuote,
+      })
       const tradeCount24h =
         recentEvents.filter((e) => e.eventType === 'Swap').length ||
         recentCandles.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
@@ -67,7 +80,11 @@ const handler: NextApiHandler = async (req, res) => {
       const priceChange24h = changeResult?.pct
 
       const hasSignal =
-        volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
+        wbnbVolume > 0 ||
+        volume24hQuote > 0 ||
+        tradeCount24h > 0 ||
+        changeResult != null ||
+        recentCandles.length >= 2
 
       const coverageRanges = checkpoint?.coverageRanges ?? []
       const bootstrapStart = checkpoint?.bootstrapStartBlock ?? 0
@@ -96,6 +113,9 @@ const handler: NextApiHandler = async (req, res) => {
         tier: watch.tier,
         status,
         volume24hQuote,
+        volume24hBase,
+        volume24hWbnb: wbnbVolume,
+        volumePriced: priced,
         tradeCount24h,
         priceChange24h,
         candleCount: candles.length,
@@ -111,6 +131,9 @@ const handler: NextApiHandler = async (req, res) => {
         tier: watch.tier,
         status: 'INVALID_PAIR',
         volume24hQuote: 0,
+        volume24hBase: 0,
+        volume24hWbnb: 0,
+        volumePriced: false,
         tradeCount24h: 0,
         candleCount: 0,
         eventCount24h: 0,
@@ -123,6 +146,7 @@ const handler: NextApiHandler = async (req, res) => {
     generatedAt: new Date().toISOString(),
     tier1Count: inventory.tier1.length,
     tier2Count: inventory.tier2.length,
+    volumeMethodology: 'wbnb-side-notional-once · rolling-24h · candle-aggregated',
     rows,
   })
 }

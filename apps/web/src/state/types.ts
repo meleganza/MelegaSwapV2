@@ -6,7 +6,7 @@ import { SerializedCapitalState } from '@pancakeswap/capital'
 import { SerializedFarmsState } from '@pancakeswap/farms'
 import { Token } from '@pancakeswap/sdk'
 import { SerializedWrappedToken } from '@pancakeswap/token-lists'
-import { Pool } from '@pancakeswap/uikit'
+import type { Pool } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
 import { CampaignType, FarmConfig, FetchStatus, LotteryStatus, LotteryTicket, Team, TranslatableText } from 'config/constants/types'
 
@@ -638,4 +638,3 @@ export interface State {
   pottery: PotteryState
 }
 export { Pool }
-

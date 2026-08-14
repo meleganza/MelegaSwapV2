@@ -62,7 +62,11 @@ export type SettlementHandoffStatus =
   | 'SETTLEMENT_DUPLICATE'
   | 'SETTLEMENT_REJECTED'
 
-export type TreasuryRuntimeEndpointStatus = 'available' | 'unavailable' | 'not_configured'
+export type TreasuryRuntimeEndpointStatus =
+  | 'available'
+  | 'unavailable'
+  | 'not_configured'
+  | 'decommissioned'
 
 export interface TreasurySettlementResponse {
   ok?: boolean

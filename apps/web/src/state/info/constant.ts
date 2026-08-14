@@ -69,4 +69,5 @@ export const getMultiChainQueryEndPointWithStableSwap = (chainName: MultiChainNa
   return multiChainQueryClient[chainName]
 }
 
-export const checkIsStableSwap = () => window.location.href.includes('stableSwap')
+export const checkIsStableSwap = () =>
+  typeof window !== 'undefined' && window.location.href.includes('stableSwap')

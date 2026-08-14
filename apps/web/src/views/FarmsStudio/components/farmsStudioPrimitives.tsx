@@ -164,10 +164,12 @@ export const FsKpiCard = styled.div`
 export const FsKpiLabel = styled.span`
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: ${farmsStudioColors.muted};
-  line-height: 1;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
 `
 
 export const FsKpiValue = styled.span<{ $gold?: boolean }>`

@@ -67,31 +67,33 @@ const Inner = styled.div`
   box-sizing: border-box;
 `
 
-/** LEFT title · CENTER tabs · RIGHT pair/live/actions — one row on desktop. */
+/** Folder tabs on the left, contextual actions on the right. */
 const Header = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  column-gap: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  column-gap: 12px;
   row-gap: 8px;
   flex-shrink: 0;
-  margin-bottom: 8px;
-  min-height: 40px;
+  margin-bottom: 0;
+  min-height: 43px;
 
   @media (max-width: 430px) {
-    grid-template-columns: 1fr;
+    align-items: center;
+    flex-wrap: wrap;
   }
 `
 
 const Left = styled.div`
   display: inline-flex;
   align-items: center;
-  grid-column: 1;
+  min-width: 0;
+  flex: 1;
 `
 
 const Center = styled.div`
   justify-self: center;
-  width: min(180px, 100%);
+  width: min(220px, 100%);
   min-width: 132px;
   grid-column: 2;
 
@@ -107,13 +109,11 @@ const Right = styled.div`
   align-items: center;
   gap: 8px;
   justify-self: end;
-  grid-column: 3;
   flex-wrap: nowrap;
 
   @media (max-width: 430px) {
     justify-self: stretch;
     justify-content: space-between;
-    grid-column: 1;
     flex-wrap: wrap;
   }
 `
@@ -164,6 +164,8 @@ const Body = styled.div`
   min-height: 0;
   display: flex;
   flex-direction: column;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   .home-trade-swap {
     flex: 1;
@@ -182,11 +184,21 @@ export const HomeSwapPanelShell: React.FC<HomeSwapPanelShellProps> = ({
   children,
   ...rest
 }) => (
-  <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell data-final-pixel-align="true" {...rest}>
+  <Shell
+    className="home-swap-cockpit"
+    data-home-swap-panel
+    data-home-swap-shell
+    data-final-pixel-align="true"
+    {...rest}
+  >
     <Inner>
-      <Header data-home-swap-header data-single-header-row="true" data-header-zones="3">
+      <Header data-home-swap-header data-single-header-row="true" data-header-zones="2">
         <Left data-header-left>{headerLeading}</Left>
-        {headerCenter ? <Center data-header-center data-trade-mode-selector-slot>{headerCenter}</Center> : null}
+        {headerCenter ? (
+          <Center data-header-center data-trade-mode-selector-slot>
+            {headerCenter}
+          </Center>
+        ) : null}
         <Right data-header-right>
           {pairIndicator ? <PairSlot>{pairIndicator}</PairSlot> : null}
           {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}

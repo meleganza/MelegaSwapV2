@@ -1,6 +1,16 @@
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 
-const UNAVAILABLE_MARKERS = new Set(['—', '-', '0 MARCO', '0', 'No live pool'])
+const UNAVAILABLE_MARKERS = new Set([
+  '—',
+  '-',
+  '0 MARCO',
+  '0',
+  'No live pool',
+  METRIC_STATUS.UNAVAILABLE,
+  APR_UNAVAILABLE_LABEL,
+  RUNTIME_UNAVAILABLE_LABEL,
+])
 
 export const isUnavailableFarmMetric = (value?: string | null): boolean => {
   if (value === undefined || value === null) return true
@@ -8,11 +18,12 @@ export const isUnavailableFarmMetric = (value?: string | null): boolean => {
   if (!trimmed) return true
   if (UNAVAILABLE_MARKERS.has(trimmed)) return true
   if (/^0(\.0+)?\s*marco$/i.test(trimmed)) return true
+  if (/^apr\s+unavailable$/i.test(trimmed)) return true
   return false
 }
 
 export const displayFarmMetric = (value?: string | null): string => {
-  if (isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
+  if (isUnavailableFarmMetric(value)) return '—'
   return value!.trim()
 }
 

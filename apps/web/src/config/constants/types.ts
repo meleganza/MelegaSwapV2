@@ -1,8 +1,8 @@
 import type { FarmConfigBaseProps, SerializedFarmConfig } from '@pancakeswap/farms'
-import { ChainId, Currency, Trade, TradeType } from '@pancakeswap/sdk'
-import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
+import type { ChainId, Currency, Trade, TradeType } from '@pancakeswap/sdk'
+import type { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import BigNumber from 'bignumber.js'
-import { StableTrade } from 'views/Swap/StableSwap/hooks/useStableTradeExactIn'
+import type { StableTrade } from 'views/Swap/StableSwap/hooks/useStableTradeExactIn'
 // a list of tokens by chain
 export type ChainMap<T> = {
   readonly [chainId in ChainId]?: T
@@ -28,7 +28,6 @@ export enum PoolIds {
   poolBasic = 'poolBasic',
   poolUnlimited = 'poolUnlimited',
 }
-
 
 export type IfoStatus = 'idle' | 'coming_soon' | 'live' | 'finished'
 
@@ -257,8 +256,8 @@ export enum FetchStatus {
   Fetching = 'FETCHING',
   Fetched = 'FETCHED',
   Failed = 'FAILED',
-  NOT_FETCHED = "NOT_FETCHED",
-  SUCCESS = "SUCCESS",
+  NOT_FETCHED = 'NOT_FETCHED',
+  SUCCESS = 'SUCCESS',
 }
 
 export const isV2SwapOrStableSwap = (trade: ITrade): trade is V2TradeAndStableSwap => {

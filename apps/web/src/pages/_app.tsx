@@ -1,9 +1,11 @@
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import type { NextPageWithLayout } from './_app-types'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 
-const FullMyApp = dynamic(() => import('./_app-full'), { ssr: true })
+// Render the approved shell on the server so the first response is useful HTML.
+// Wallet and polling effects remain client-only inside the runtime tree.
+const FullMyApp = dynamic(() => import('app-runtime/FullMyApp'), { ssr: true })
 
 export default function App(props: AppProps) {
   const Component = props.Component as NextPageWithLayout

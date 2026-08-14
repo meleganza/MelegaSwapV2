@@ -30,6 +30,8 @@ describe('DS001.2 global header shell contracts', () => {
     expect(shell).not.toMatch(/<MelegaSidebar[\s/>]/)
     expect(shell).toContain('MELEGA_APP_HEADER_HEIGHT')
     expect(shell).toContain('ds001Layout.contentMaxWidth')
+    expect(shell).toContain('MyMelegaProvider')
+    expect(shell).toContain('MyMelegaDrawer')
   })
 
   it('Liquidity deep-link destinations including Liquidity Building remain available', () => {
@@ -50,28 +52,18 @@ describe('DS001.2 global header shell contracts', () => {
 
   it('Farms and Pools deep-link destinations remain live', () => {
     expect(FARMS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual(['/farms', '/farms?view=my', '/farms?view=explore'])
-    expect(POOLS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual([
-      '/pools',
-      '/pools?view=positions',
-      '/pools?view=explore',
-    ])
+    expect(POOLS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual(['/pools', '/pools?view=positions', '/pools?view=explore'])
     expect(POOLS_DROPDOWN_ITEMS.some((i) => /My Pools/i.test(i.label))).toBe(false)
   })
 
-  it('primary navigation is the Complete UX Rebuild IA (no top-level Trade/Projects)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'List',
-      'Passport',
-    ])
+  it('primary navigation exposes every core DEX funnel in one click (Portfolio secondary)', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
   it('secondary surfaces remain available via More overflow destinations', () => {
     expect(MORE_DROPDOWN_ITEMS.map((i) => i.label)).toEqual([
-      'Trending',
+      'Trending Projects',
       'DEX Intelligence',
       'Identity Hub',
       'Identity Console',

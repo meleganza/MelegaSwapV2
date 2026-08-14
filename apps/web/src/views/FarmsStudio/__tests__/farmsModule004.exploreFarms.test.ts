@@ -110,13 +110,12 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(sha('src/views/FarmsStudio/modules/farmsMyFarmsTypes.ts')).toBe(FARMS_MODULE_003_FREEZE_SHA256.farmsMyFarmsTypes)
   })
 
-  it('locks desktop card geometry 446×268 with 19px gaps filling 1376', () => {
-    expect(446 * 3 + 19 * 2).toBe(1376)
-    expect(farmsExplore.cardW).toBe('446px')
+  it('locks denser desktop card geometry for 4-up founder layout', () => {
+    expect(farmsExplore.cardW).toBe('328px')
     expect(farmsExplore.cardH).toBe('268px')
-    expect(farmsExplore.cardGapX).toBe('19px')
-    expect(farmsExplore.cardGapY).toBe('18px')
-    expect(farmsExplore.initialLimit).toBe(9)
+    expect(farmsExplore.cardGapX).toBe('12px')
+    expect(farmsExplore.cardGapY).toBe('12px')
+    expect(farmsExplore.initialLimit).toBe(8)
   })
 
   it('mounts Module 004 after My Farms, supersedes legacy grid, omits 009–010', () => {
@@ -285,24 +284,24 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       filter: 'All',
       sort: 'Highest Sustainable APR',
       search: '',
-      visibleLimit: 9,
+      visibleLimit: 8,
     })
     expect(vm.totalActive).toBe(12)
-    expect(vm.visibleFarms).toHaveLength(9)
+    expect(vm.visibleFarms).toHaveLength(8)
     expect(vm.hasMore).toBe(true)
 
-    const more = buildFarmsExploreFarmsViewModel({
+    const filtered = buildFarmsExploreFarmsViewModel({
       portfolioFarms: cards,
       farmsLoading: false,
       chainId: 56,
       userDataLoaded: true,
-      filter: 'All',
+      filter: 'High APR',
       sort: 'Highest Sustainable APR',
       search: '',
-      visibleLimit: 18,
+      visibleLimit: 8,
     })
-    expect(more.visibleFarms).toHaveLength(12)
-    expect(more.hasMore).toBe(false)
+    expect(filtered.visibleFarms.length).toBeLessThanOrEqual(8)
+    expect(filtered.hasMore).toBe(filtered.farms.length > 8)
 
     const dupPid = makeCard({ pid: 1, id: 'farm-1-dup' })
     const dupLp = makeCard({
@@ -321,7 +320,8 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
         .map((c) => cardToExploreFarmModel(c, { chainId: 56, userDataLoaded: true, chainSupported: true }))
         .filter(Boolean) as ExploreFarmViewModel[],
     )
-    expect(deduped).toHaveLength(1)
+    // Canonical identity is chainId+masterChef+pid — pid1 dup collapses; pid99 remains.
+    expect(deduped).toHaveLength(2)
   })
 
   it('searches symbols, names, addresses, farm id and pid exactly for addresses', () => {
@@ -351,7 +351,7 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(searchExploreFarms(farms, 'Wrapped BNB').map((f) => f.pid)).toEqual([2])
     expect(searchExploreFarms(farms, '0x1111111111111111111111111111111111111111')).toHaveLength(1)
     expect(searchExploreFarms(farms, '0xEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')).toHaveLength(1)
-    expect(searchExploreFarms(farms, 'farm-2')).toHaveLength(1)
+    expect(searchExploreFarms(farms, b.farmId)).toHaveLength(1)
     expect(searchExploreFarms(farms, '2')).toHaveLength(1)
     // Partial address must not fuzzy-match
     expect(searchExploreFarms(farms, '0x111111')).toHaveLength(0)
@@ -494,5 +494,6 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(src).not.toContain('fixtureFarm')
     expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('data-reward-token')
     expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('MelegaTokenAvatar')
+    expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('MelegaExploreChainBadge')
   })
 })

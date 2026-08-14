@@ -100,6 +100,7 @@ describe('normalizeTreasuryIntakePayload', () => {
 
     expect(fetchImpl).not.toHaveBeenCalled()
     expect(result.reference.settlementStatus).toBe('SETTLEMENT_REJECTED')
+    expect(result.reference.treasuryRuntimeEndpointStatus).toBe('decommissioned')
     expect(result.response?.machine_code).toBe('INVALID_RECEIPT')
   })
 })
@@ -132,118 +133,43 @@ describe('submitSettlementHandoff', () => {
     clearSettlementReferenceStore()
   })
 
-  it('sends normalized Treasury intake payload accepted by mock Treasury intake', async () => {
+  it('never issues HTTP requests — Treasury Runtime is decommissioned', async () => {
     const payload = buildPayload()
-    const fetchImpl = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        ok: true,
-        authority: 'treasury_runtime',
-        schema: 'melega.settlement-event.v1',
-        settlement: { settlement_id: 'stl_56_abc123' },
-      }),
-    })
+    const fetchImpl = vi.fn()
 
     const result = await submitSettlementHandoff(payload, {
       fetchImpl,
-      endpoint: 'https://treasury.test/api/public/treasury/settlement-events',
+      endpoint: 'https://treasury.melega.ai/api/public/treasury/settlement-events',
       sleep: async () => {},
     })
 
-    expect(fetchImpl).toHaveBeenCalledTimes(1)
-    const body = JSON.parse(String(fetchImpl.mock.calls[0][1]?.body))
-    expect(body.chain).toBe('56')
-    expect(body.asset).toBe('MARCO')
-    expect(body.amount).toBe(1)
-    expect(body.fee).toBe(0.0025)
-    expect(result.reference.settlementStatus).toBe('SETTLEMENT_ACCEPTED')
-    expect(result.reference.settlementId).toBe('stl_56_abc123')
-    expect(getSettlementReference(56, payload.transactionHash)?.settlementId).toBe('stl_56_abc123')
-  })
-
-  it('tolerates DUPLICATE_SETTLEMENT without failing handoff', async () => {
-    const payload = buildPayload()
-    const fetchImpl = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        settlement_id: 'settlement:56:0xabc',
-        status: 'duplicate',
-        machine_code: 'DUPLICATE_SETTLEMENT',
-      }),
-    })
-
-    const result = await submitSettlementHandoff(payload, {
-      fetchImpl,
-      endpoint: 'https://treasury.test/api/public/treasury/settlement-events',
-      sleep: async () => {},
-    })
-
-    expect(result.reference.settlementStatus).toBe('SETTLEMENT_DUPLICATE')
-    expect(result.reference.machineCode).toBe('DUPLICATE_SETTLEMENT')
-  })
-
-  it('marks SETTLEMENT_PENDING when Treasury Runtime is unavailable', async () => {
-    const payload = buildPayload()
-    const fetchImpl = vi.fn().mockRejectedValue(new Error('network down'))
-
-    const result = await submitSettlementHandoff(payload, {
-      fetchImpl,
-      endpoint: 'https://treasury.test/api/public/treasury/settlement-events',
-      sleep: async () => {},
-    })
-
+    expect(fetchImpl).not.toHaveBeenCalled()
     expect(result.reference.settlementStatus).toBe('SETTLEMENT_PENDING')
-    expect(result.reference.treasuryRuntimeEndpointStatus).toBe('unavailable')
-    expect(fetchImpl).toHaveBeenCalledTimes(3)
+    expect(result.reference.treasuryRuntimeEndpointStatus).toBe('decommissioned')
+    expect(result.response?.machine_code).toBe('TREASURY_RUNTIME_DECOMMISSIONED')
+    expect(getSettlementReference(56, payload.transactionHash)?.treasuryRuntimeEndpointStatus).toBe(
+      'decommissioned',
+    )
   })
 
-  it('exposes machine code when settlement is rejected', async () => {
-    const payload = buildPayload()
-    const fetchImpl = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 400,
-      json: async () => ({
-        status: 'rejected',
-        machine_code: 'INVALID_RECEIPT',
-        reason: 'Missing evidence',
-      }),
-    })
-
-    const result = await submitSettlementHandoff(payload, {
-      fetchImpl,
-      endpoint: 'https://treasury.test/api/public/treasury/settlement-events',
-      sleep: async () => {},
-    })
-
+  it('still rejects invalid local receipts without networking', async () => {
+    const payload = {
+      ...buildPayload(),
+      fee: '',
+    }
+    const fetchImpl = vi.fn()
+    const result = await submitSettlementHandoff(payload, { fetchImpl })
+    expect(fetchImpl).not.toHaveBeenCalled()
     expect(result.reference.settlementStatus).toBe('SETTLEMENT_REJECTED')
-    expect(result.reference.machineCode).toBe('INVALID_RECEIPT')
-    expect(result.reference.reason).toBe('Missing evidence')
   })
 
-  it('does not compute waterfall amounts in outbound normalized payload', async () => {
+  it('does not own waterfall fields on the execution receipt', () => {
     const payload = buildPayload()
-    const fetchImpl = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ ok: true, settlement: { settlement_id: 'stl_56_1' } }),
-    })
-
-    await submitSettlementHandoff(payload, {
-      fetchImpl,
-      endpoint: 'https://treasury.test/api/public/treasury/settlement-events',
-      sleep: async () => {},
-    })
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0][1]?.body))
-    expect(typeof body.fee).toBe('number')
-    expect(typeof body.chain).toBe('string')
-    expect(typeof body.asset).toBe('string')
-    expect(body).not.toHaveProperty('lp_amount')
-    expect(body).not.toHaveProperty('treasury_amount')
-    expect(body).not.toHaveProperty('buyback_amount')
-    expect(body).not.toHaveProperty('referral_amount')
-    expect(body).not.toHaveProperty('settlement_id')
+    assertPayloadDoesNotOwnSettlement(payload as unknown as Record<string, unknown>)
+    expect(payload).not.toHaveProperty('lp_amount')
+    expect(payload).not.toHaveProperty('treasury_amount')
+    expect(payload).not.toHaveProperty('buyback_amount')
+    expect(payload).not.toHaveProperty('referral_amount')
+    expect(payload).not.toHaveProperty('settlement_id')
   })
 })

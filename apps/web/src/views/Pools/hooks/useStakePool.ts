@@ -39,23 +39,26 @@ const useStakePool = (sousId: number, isUsingBnb = false) => {
   const masterChefContract = useMasterchef(undefined, chainId)
   const sousChefContract = useSousChef(sousId, chainId)
   const gasPrice = useGasPrice()
-  
+
   const handleStake = useCallback(
     async (amount: string, decimals: any) => {
+      if (!account) throw new Error('Wallet not connected')
+      if (!chainId) throw new Error('Pool network unavailable')
+
       let tx
       if (sousId === 0) {
         // const amount_ = amount.mul(BIG_TEN)
         tx = await stakeFarm(masterChefContract, 0, amount, gasPrice)
       } else if (isUsingBnb) {
-        tx = await sousStakeBnb(sousChefContract, amount)
+        tx = await sousStakeBnb(sousChefContract, amount, gasPrice)
       } else {
-        return sousStake(sousChefContract, amount, gasPrice, decimals)
+        tx = await sousStake(sousChefContract, amount, gasPrice, decimals)
       }
       dispatch(updateUserStakedBalance({ sousId, account, chainId }))
       dispatch(updateUserBalance({ sousId, account, chainId }))
       return tx
     },
-    [account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId],
+    [account, chainId, dispatch, gasPrice, isUsingBnb, masterChefContract, sousChefContract, sousId],
   )
 
   return { onStake: handleStake }

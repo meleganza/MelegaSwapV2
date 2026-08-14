@@ -5,7 +5,7 @@ import { studioConstitutionLayout } from 'design-system/melega/tokens/studioCons
 export const tradeLayout = {
   ...premiumStudioLayout,
   ...studioConstitutionLayout,
-  cockpitWidth: '360px',
+  cockpitWidth: '420px',
   centerWidth: '520px',
   rightRailWidth: '300px',
   columnGap: '16px',
@@ -14,10 +14,11 @@ export const tradeLayout = {
   rightRailRadius: premiumStudioLayout.cardRadius,
   rightRailPadding: '14px',
   chartPanelHeight: 'auto',
-  chartAreaHeight: '280px',
+  chartAreaHeight: '255px',
   recentSwapsHeight: '260px',
-  swapRowHeight: '52px',
-  swapTableHeadHeight: '36px',
+  tradeTerminalRecentSwapsHeight: '304px',
+  swapRowHeight: '42px',
+  swapTableHeadHeight: '32px',
   statCardMinHeight: '108px',
   statValueMinHeight: '28px',
   executionInputGap: '12px',
@@ -44,8 +45,8 @@ export const tradeTypography = {
 export type TradeMode = 'smartswap' | 'router' | 'limit' | 'history'
 
 export const TRADE_TABS: { id: TradeMode; label: string; icon?: 'lightning' }[] = [
-  { id: 'smartswap', label: 'SmartSwap', icon: 'lightning' },
-  { id: 'router', label: 'MelegaSwap Router' },
+  { id: 'smartswap', label: 'Swap', icon: 'lightning' },
+  { id: 'router', label: 'Routes' },
   { id: 'history', label: 'History' },
 ]
 

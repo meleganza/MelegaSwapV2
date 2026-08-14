@@ -24,7 +24,7 @@ const sousEmergencyUnstake = (sousChefContract: any, gasPrice: string) => {
 const useUnstakePool = (sousId: number, enableEmergencyWithdraw = false, chainId?: number) => {
   const sousChefContract = sousId === 0 ? useMasterchef(undefined, chainId) : useSousChef(sousId, chainId)
   const gasPrice = useGasPrice()
-  
+
   const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
       if (sousId === 0) {
@@ -35,7 +35,7 @@ const useUnstakePool = (sousId: number, enableEmergencyWithdraw = false, chainId
 
       return sousUnstake(sousChefContract, amount, decimals, gasPrice)
     },
-    [enableEmergencyWithdraw, sousChefContract, gasPrice],
+    [enableEmergencyWithdraw, gasPrice, sousChefContract, sousId],
   )
 
   return { onUnstake: handleUnstake }

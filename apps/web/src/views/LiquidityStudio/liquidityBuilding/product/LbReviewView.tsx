@@ -290,7 +290,7 @@ export function LbReviewView({
               ['Decision Frequency', card.decisionFrequencyLabel],
               ['Destination Pair', destination],
               ['LP Owner', LB_UX.lpOwnedByOwner],
-              ['Success Fee', '5% on quote acquired'],
+              ['Success Fee', `${(card.successFeeBps / 100).toFixed(0)}% on quote acquired`],
               ['Environment', envLabel(chain?.id)],
             ].map(([label, value, support]) => (
               <Item key={label as string}>
@@ -323,7 +323,7 @@ export function LbReviewView({
             </Item>
             <Item>
               <ItemLabel>Success Fee</ItemLabel>
-              <ItemValue>5%</ItemValue>
+              <ItemValue>{(card.successFeeBps / 100).toFixed(0)}%</ItemValue>
               <ItemSupport>Applies only to quote assets actually acquired</ItemSupport>
             </Item>
           </Grid>
@@ -366,7 +366,7 @@ export function LbReviewView({
                   onOpenStatus()
                   return
                 }
-                card.requestDepositAndActivate()
+                void card.requestDepositAndActivate()
               }}
             >
               {primaryLabel}

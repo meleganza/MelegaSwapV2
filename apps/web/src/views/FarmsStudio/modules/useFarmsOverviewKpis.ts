@@ -6,6 +6,7 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useMasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { buildFarmsOverviewKpisFromParts } from './buildFarmsOverviewKpis'
+import { useUniqueFarmersCount } from './useUniqueFarmersCount'
 import type { FarmsOverviewKpisViewModel } from './farmsOverviewKpisTypes'
 
 export { buildFarmsOverviewKpisFromParts } from './buildFarmsOverviewKpis'
@@ -14,6 +15,7 @@ export function useFarmsOverviewKpis(): FarmsOverviewKpisViewModel {
   const runtime = useFarmsRuntime()
   const cakePrice = usePriceCakeBusd()
   const emission = useMasterChefEmission()
+  const uniqueFarmers = useUniqueFarmersCount()
 
   return useMemo(() => {
     const previewCards = runtime.portfolioFarms?.length ? runtime.portfolioFarms : runtime.farms
@@ -27,6 +29,8 @@ export function useFarmsOverviewKpis(): FarmsOverviewKpisViewModel {
       cakePriceUsd: cakePrice?.toNumber?.() ?? 0,
       emissionPerDay: emissionReady ? emission.perDay : null,
       emissionPerDayLabel: emissionReady ? emission.perDayLabel || `${emission.perDay} MARCO` : null,
+      uniqueFarmersCount: uniqueFarmers.count,
+      uniqueFarmersLoading: uniqueFarmers.loading,
     })
-  }, [runtime, cakePrice, emission])
+  }, [runtime, cakePrice, emission, uniqueFarmers.count, uniqueFarmers.loading])
 }

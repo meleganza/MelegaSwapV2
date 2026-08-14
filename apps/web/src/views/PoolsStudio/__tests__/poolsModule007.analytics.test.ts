@@ -97,11 +97,10 @@ describe('POOLS_MODULE_007 Analytics', () => {
     )
   })
 
-  it('mounts Module 007 after Reward Advisor; Module 008 may follow; Modules 009–010 stay unmounted', () => {
+  it('marks Module 007 unmounted on product UX redesign screen; Modules 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('PoolsAnalyticsModule')
-    expect(screen).toContain('data-pools-module-007="mounted"')
-    expect(screen.indexOf('PoolsRewardAdvisorModule')).toBeLessThan(screen.indexOf('PoolsAnalyticsModule'))
+    expect(screen).not.toContain('<PoolsAnalyticsModule')
+    expect(screen).toContain('data-pools-module-007="unmounted"')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(screen).not.toContain('PoolsIntegrationModule')
   })

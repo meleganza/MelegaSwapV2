@@ -10,14 +10,14 @@ export const liquidityAdd = {
 
   contentMax: '1376px',
   gapAfterDiscovery: '16px',
-  columnGap: '24px',
-  mainW: '900px',
-  sideW: '424px',
+  columnGap: '16px',
+  mainW: '68%',
+  sideW: '32%',
 
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
-  cardPad: '24px',
+  cardPad: '16px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -26,7 +26,7 @@ export const liquidityAdd = {
   dim: 'rgba(255,255,255,0.45)',
   danger: '#F87171',
 
-  ctaH: '48px',
+  ctaH: '44px',
   ctaRadius: '10px',
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
@@ -57,7 +57,6 @@ export const LIQUIDITY_ADD_COPY = {
   previewDeposited: 'Deposited assets',
   previewLp: 'LP tokens received',
   previewShare: 'Share after deposit',
-  previewFee: 'Fee tier',
   emptyMetric: '—',
   skeletonLabel: 'Loading add liquidity…',
   securityNote: 'Non-custodial. You confirm every transaction in your wallet.',
@@ -77,7 +76,7 @@ export type LiquidityAddCtaState =
 
 /** Frozen Modules 001–003 source SHAs. */
 export const LIQUIDITY_MODULE_001_003_FREEZE = {
-  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
-  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
+  LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
+  LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
+  LiquidityPoolDiscoveryModule: '895dd9e14a4ca47a4685014ebe8a5b61a08f0faf633fad081778806054335c5c',
 } as const

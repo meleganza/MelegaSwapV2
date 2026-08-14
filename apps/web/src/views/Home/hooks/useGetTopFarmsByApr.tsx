@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { ChainId } from '@pancakeswap/sdk'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
-import { fetchFarmsPublicDataAsync, nonArchivedFarms } from 'state/farms'
-import { getFarmApr } from 'utils/apr'
+import { fetchFarmsPublicDataAsync } from 'state/farms'
 import BigNumber from 'bignumber.js'
-import { orderBy } from 'lodash'
 import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
-import { Farm } from 'state/types'
+import { getFarmConfig } from '@pancakeswap/farms/constants'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { getMasterChefAddress } from 'utils/addressHelpers'
+import { getFarmApr } from 'utils/apr'
+import isArchivedPid from 'utils/farmHelpers'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -22,24 +22,39 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
   const { chainId } = useActiveChainId()
   const { data: farms, regularCakePerBlock } = useFarms()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
-  const [topFarms, setTopFarms] = useState<FarmWithStakedValue[]>([null, null, null, null, null])
+  const [topFarms, setTopFarms] = useState<FarmWithStakedValue[]>([])
   const cakePriceBusd = usePriceCakeBusd()
 
   useEffect(() => {
+    setFetchStatus(FetchStatus.NOT_FETCHED)
+    setTopFarms([])
+  }, [chainId])
+
+  useEffect(() => {
     const fetchFarmData = async () => {
+      if (!chainId || !getMasterChefAddress(chainId)) {
+        setFetchStatus(FetchStatus.SUCCESS)
+        setTopFarms([])
+        return
+      }
       setFetchStatus(FetchStatus.FETCHING)
-      const activeFarms = nonArchivedFarms?.filter(
-        (farm) => farm.quoteToken !== farm.token && farm.pid !== 0 && farm.multiplier !== '0X',
-      )
       try {
+        const farmsConfig = await getFarmConfig(chainId)
+        const activeFarms = (farmsConfig ?? []).filter(
+          (farm) =>
+            farm.pid !== 0 &&
+            !isArchivedPid(farm.pid) &&
+            String(farm.multiplier ?? '1X').toUpperCase() !== '0X',
+        )
+        if (activeFarms.length === 0) {
+          setFetchStatus(FetchStatus.SUCCESS)
+          setTopFarms([])
+          return
+        }
         await dispatch(
           fetchFarmsPublicDataAsync({
             pids: activeFarms.map((farm) => farm.pid),
-            chainId:
-              chainId === 1 ? ChainId.ETHEREUM
-                : chainId === 56 ? ChainId.BSC
-                  : chainId === 137 ? ChainId.POLYGON
-                    : ChainId.BASE,
+            chainId,
             flag: 'pkg',
           }),
         )
@@ -53,39 +68,52 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
     if (isIntersecting && fetchStatus === FetchStatus.NOT_FETCHED) {
       fetchFarmData()
     }
-  }, [dispatch, setFetchStatus, fetchStatus, topFarms, isIntersecting, chainId])
+  }, [dispatch, fetchStatus, isIntersecting, chainId])
 
   useEffect(() => {
     const getTopFarmsByApr = (farmsState: DeserializedFarm[]) => {
-      const farmsWithPrices = farmsState.filter((farm) => farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) // FIME: Property 'busdPrice' does not exist on type 'Token'
+      if (!chainId) return
+      const farmsWithPrices = farmsState.filter(
+        (farm) =>
+          farm.pid !== 0 &&
+          !isArchivedPid(farm.pid) &&
+          String(farm.multiplier ?? '1X').toUpperCase() !== '0X' &&
+          farm.lpTotalInQuoteToken &&
+          farm.quoteTokenPriceBusd,
+      )
       const farmsWithApr: FarmWithStakedValue[] = farmsWithPrices.map((farm) => {
-        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd) // FIXME: Property 'busdPrice' does not exist on type 'Token'
-        const ChainID =
-          chainId === 1 ? ChainId.ETHEREUM
-            : chainId === 56 ? ChainId.BSC
-              : chainId === 137 ? ChainId.POLYGON
-                : ChainId.BASE
-                
+        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(
-          ChainID,
+          chainId,
           new BigNumber(farm.poolWeight),
           cakePriceBusd,
           totalLiquidity,
           farm.lpAddress,
           regularCakePerBlock,
         )
-        return { ...farm, apr: cakeRewardsApr, lpRewardsApr }
+        // Attach liquidity so Home TVL (farm.liquidity) can display factual USD —
+        // mirrors FarmsStudio enrichFarmsWithApr. Never invent: only when both inputs exist.
+        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
 
-      const sortedByApr = orderBy(farmsWithApr, (farm) => farm.apr + farm.lpRewardsApr, 'desc')
-      setTopFarms(sortedByApr.slice(0, 5))
+      const sortedByTruth = [...farmsWithApr]
+        .filter((farm) => (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0) > 0)
+        .sort((a, b) => {
+        const tvlA = a.liquidity?.toNumber?.() ?? 0
+        const tvlB = b.liquidity?.toNumber?.() ?? 0
+        const aprA = (a.apr ?? 0) + (a.lpRewardsApr ?? 0)
+        const aprB = (b.apr ?? 0) + (b.lpRewardsApr ?? 0)
+        const volA = a.lpRewardsApr && a.lpRewardsApr > 0 ? a.lpRewardsApr : 0
+        const volB = b.lpRewardsApr && b.lpRewardsApr > 0 ? b.lpRewardsApr : 0
+          return aprB - aprA || tvlB - tvlA || volB - volA || a.pid - b.pid
+        })
+      setTopFarms(sortedByTruth.slice(0, 5))
     }
 
-    if (fetchStatus === FetchStatus.SUCCESS && !topFarms[0]) {
-      getTopFarmsByApr(farms) // FIXME: Argument of type 'DeserializedFarm[]' is not assignable to parameter of type 'Farm[]'
+    if (fetchStatus === FetchStatus.SUCCESS && farms?.length) {
+      getTopFarmsByApr(farms)
     }
-
-  }, [setTopFarms, farms, fetchStatus, cakePriceBusd, regularCakePerBlock, topFarms, chainId])
+  }, [farms, fetchStatus, cakePriceBusd, regularCakePerBlock, chainId])
 
   return { topFarms, fetchStatus }
 }

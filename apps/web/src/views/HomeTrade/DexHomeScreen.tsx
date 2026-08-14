@@ -3,7 +3,7 @@
  * Visual SSOT: approved dark Home mockup. Zero fabricated metrics.
  */
 import React, { useMemo, useRef } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
@@ -11,25 +11,42 @@ import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { TrendingUp, Sprout, Droplets, Sparkles, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
-import useHomeTradeData from './useHomeTradeData'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { HomeTradeDataProvider, useHomeCriticalData } from './HomeTradeDataContext'
+import { buildHomeNewListings } from './buildHomeNewListings'
+import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
-import { MelegaDexFooter } from './MelegaDexFooter'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import {
   uxRebuildColors,
   uxRebuildFont,
+  uxRebuildDisplayFont,
   uxRebuildLayout,
+  uxRebuildMotion,
   uxRebuildRadius,
   uxRebuildShadow,
 } from 'design-system/melega/tokens/uxRebuild'
 
+const ambientDrift = keyframes`
+  0%, 100% { opacity: 0.45; transform: translate3d(0, 0, 0) scale(1); }
+  50% { opacity: 0.72; transform: translate3d(-2%, 2%, 0) scale(1.06); }
+`
+
+const surfaceIn = keyframes`
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+`
+
 const Root = styled.div`
   color: ${uxRebuildColors.text};
   font-family: ${uxRebuildFont};
-  background: ${uxRebuildColors.pageBg};
+  background: radial-gradient(circle at 78% 8%, rgba(221, 185, 47, 0.055), transparent 24%),
+    radial-gradient(circle at 12% 42%, rgba(44, 92, 255, 0.035), transparent 30%), ${uxRebuildColors.pageBg};
   min-width: 0;
   overflow-x: hidden;
+
+  font-variant-numeric: tabular-nums;
 `
 
 const Content = styled.div`
@@ -45,8 +62,8 @@ const Content = styled.div`
 
   @media (max-width: 767px) {
     width: 100%;
-    padding: 12px 16px 32px;
-    gap: 16px;
+    padding: 10px 0 24px;
+    gap: 14px;
   }
 `
 
@@ -54,14 +71,26 @@ const Hero = styled.section`
   display: grid;
   grid-template-columns: minmax(0, 56%) minmax(0, 44%);
   gap: 24px;
-  min-height: 356px;
+  min-height: 332px;
   align-items: stretch;
   position: relative;
-  border-radius: ${uxRebuildRadius.hero};
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 110%, rgba(221, 185, 47, 0.14), transparent 60%),
-    linear-gradient(180deg, #0a0a0a 0%, ${uxRebuildColors.pageBg} 100%);
-  overflow: hidden;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 460px;
+    height: 460px;
+    right: 4%;
+    top: -290px;
+    border-radius: 50%;
+    background: rgba(221, 185, 47, 0.18);
+    filter: blur(90px);
+    pointer-events: none;
+    animation: ${ambientDrift} 12s ease-in-out infinite;
+  }
 
   @media (max-width: 1199px) {
     grid-template-columns: minmax(0, 55%) minmax(0, 45%);
@@ -74,7 +103,7 @@ const Hero = styled.section`
 `
 
 const HeroLeft = styled.div`
-  padding: 20px 8px;
+  padding: 24px 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -118,6 +147,8 @@ const Headline = styled.h1`
   margin: 16px 0 0;
   max-width: 580px;
   font-weight: 750;
+  font-family: ${uxRebuildDisplayFont};
+  letter-spacing: -0.045em;
 `
 
 const HeadlineLine1 = styled.span`
@@ -172,9 +203,17 @@ const PrimaryCta = styled.button`
   font-weight: 650;
   cursor: pointer;
   box-shadow: ${uxRebuildShadow.goldCta};
+  transition: transform ${uxRebuildMotion.standard}, background ${uxRebuildMotion.standard},
+    border-color ${uxRebuildMotion.standard}, box-shadow ${uxRebuildMotion.standard};
 
   &:hover {
     background: ${uxRebuildColors.goldHover};
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(221, 185, 47, 0.22);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.985);
   }
 `
 
@@ -191,11 +230,11 @@ const Trust = styled.p`
 
 const SwapWrap = styled.div`
   width: 100%;
-  border-radius: 18px;
-  border: 1px solid #242424;
-  background: rgba(16, 16, 16, 0.96);
-  box-shadow: ${uxRebuildShadow.elevated};
-  padding: 18px;
+  border-radius: 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
   box-sizing: border-box;
   min-height: 332px;
 
@@ -224,10 +263,17 @@ const KpiCard = styled.div`
   min-height: 76px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: ${uxRebuildColors.card};
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.024), transparent 45%), ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+  min-width: 0;
+  animation: ${surfaceIn} ${uxRebuildMotion.reveal} both;
+
+  @media (max-width: 767px) {
+    min-height: 96px;
+    padding: 10px 12px;
+  }
 `
 
 const KpiLabel = styled.div`
@@ -245,6 +291,18 @@ const KpiValue = styled.div`
   line-height: 27px;
   font-weight: 700;
   color: ${uxRebuildColors.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  font-family: ${uxRebuildDisplayFont};
+  letter-spacing: -0.025em;
+
+  @media (max-width: 767px) {
+    margin-top: 6px;
+    font-size: 17px;
+    line-height: 22px;
+  }
 `
 
 const Discovery = styled.section`
@@ -265,10 +323,16 @@ const DiscCard = styled.section`
   min-height: 300px;
   padding: 18px 16px;
   border-radius: ${uxRebuildRadius.card};
-  background: ${uxRebuildColors.card};
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.024), transparent 42%), ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+  animation: ${surfaceIn} ${uxRebuildMotion.reveal} both;
+
+  @media (max-width: 767px) {
+    min-height: 0;
+    padding: 12px;
+  }
 `
 
 const DiscIcon = styled.span`
@@ -276,6 +340,7 @@ const DiscIcon = styled.span`
   height: 28px;
   border-radius: 8px;
   background: rgba(221, 185, 47, 0.12);
+  border: 1px solid rgba(221, 185, 47, 0.18);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -311,6 +376,12 @@ const ViewAll = styled(Link)`
   color: ${uxRebuildColors.gold};
   text-decoration: none;
   white-space: nowrap;
+  transition: color ${uxRebuildMotion.fast}, transform ${uxRebuildMotion.fast};
+
+  &:hover {
+    color: ${uxRebuildColors.goldHover};
+    transform: translateX(2px);
+  }
 `
 
 const DiscRow = styled(Link)`
@@ -323,9 +394,21 @@ const DiscRow = styled(Link)`
   align-items: center;
   text-decoration: none;
   color: inherit;
+  border-radius: 10px;
+  transition: background ${uxRebuildMotion.fast}, transform ${uxRebuildMotion.fast};
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.035);
+    transform: translateX(2px);
+  }
 
   &:first-of-type {
     border-top: 0;
+  }
+
+  @media (max-width: 767px) {
+    min-height: 48px;
+    padding: 8px 0;
   }
 `
 
@@ -354,11 +437,11 @@ const RowMeta = styled.div`
   color: ${uxRebuildColors.muted};
 `
 
-const RowMetric = styled.div`
+const RowMetric = styled.div<{ $tone?: 'up' | 'down' | 'flat' }>`
   text-align: right;
   font-size: 13px;
   font-weight: 600;
-  color: ${uxRebuildColors.text};
+  color: ${({ $tone }) => ($tone === 'up' ? '#00e676' : $tone === 'down' ? '#ff5252' : uxRebuildColors.text)};
 `
 
 const GoldMetric = styled(RowMetric)`
@@ -374,15 +457,13 @@ const EmptyRow = styled.div`
 
 const NA = '—'
 
-export const DexHomeScreen: React.FC = () => {
+const DexHomeScreenContent: React.FC = () => {
   const router = useRouter()
   const swapRef = useRef<HTMLDivElement>(null)
   const discoveryRef = useRef<HTMLElement>(null)
-  const data = useHomeTradeData()
-  const projectCount = useMemo(
-    () => getAllProjects().filter((p) => p.registryStatus === 'listed' && p.slug !== 'melega-dex').length,
-    [],
-  )
+  const data = useHomeCriticalData()
+  const listedProjects = useMemo(() => measureListedProjectsCount(), [])
+  const projectCount = listedProjects.finalCount
 
   const focusProjects =
     router.query.focus === 'projects' || router.query.view === 'projects' || router.asPath.includes('#projects')
@@ -413,120 +494,97 @@ export const DexHomeScreen: React.FC = () => {
       byLabel['rewarding pools'] ||
       data.liveEconomyMetrics.find((m) => /pool/i.test(m.label))?.value ||
       NA
-    const markets =
-      byId.liquidPairs ||
-      byId.markets ||
-      byLabel['liquid pairs'] ||
-      byLabel.markets ||
-      NA
+    const markets = byId.liquidPairs || byId.markets || byLabel['liquid pairs'] || byLabel.markets || NA
     const volumeValue = volCard?.value ?? NA
-    const compact = (v: string) => (/not available/i.test(v) ? NA : v)
+    const compact = (v: string) => {
+      if (/not available/i.test(v)) return '—'
+      if (v === '0' || v === NA) return v === '0' ? '0' : '—'
+      return v === 'Unavailable' ? '—' : v
+    }
+    const honestCount = (v: string | number | undefined) => {
+      const n = Number(v)
+      if (Number.isFinite(n) && n > 0) return String(n)
+      if (v === '0' || n === 0) return '0'
+      return '—'
+    }
+    const tvlValue = tvlCard?.value ? compact(tvlCard.value) : data.marketCards.length === 0 ? 'Data syncing' : '—'
+    const volValue = volCard?.value ? compact(volumeValue) : '—'
     return [
       {
         label: 'TVL',
-        value: compact(tvlCard?.value ?? NA),
+        value: tvlValue,
         title: 'Canonical Melega DEX liquidity TVL (factual farm/liquidity sources).',
       },
       {
         label: '24H Volume',
-        value: compact(volumeValue),
+        value: volValue,
         title: 'Aggregate factual Melega DEX swap volume over the last 24 hours (USD when valuation is supported).',
       },
       {
         label: 'Listed Projects',
-        value: projectCount > 0 ? String(projectCount) : NA,
-        title: 'Unique canonical Project Pages / listed ecosystem projects (not raw token count).',
+        value: projectCount > 0 ? String(projectCount) : '—',
+        title: listedProjects.provenance,
       },
       {
         label: 'Active Farms',
-        value: compact(String(farms)),
-        title: 'Canonical currently farmable MasterBuilder farms.',
+        value: honestCount(farms),
+        title: 'LIVE farm configurations across supported chains (runtime when loaded, else certified inventory).',
       },
       {
         label: 'Active Pools',
-        value: compact(String(pools)),
-        title: 'Canonical currently active SmartChef staking pools (not historical totals).',
+        value: honestCount(pools),
+        title:
+          'LIVE SmartChef pool configurations across supported chains (runtime when loaded, else certified inventory).',
       },
       {
-        label: 'MARKETS',
-        value: compact(String(markets)),
+        label: 'Markets',
+        value: honestCount(markets),
         title: 'Unique tradeable Factory pairs / markets from canonical Factory indexing.',
       },
     ]
-  }, [data.liveEconomyMetrics, data.marketCards, projectCount])
+  }, [data.liveEconomyMetrics, data.marketCards, data.marketCards.length, projectCount, listedProjects.provenance])
 
+  // Exact prefix of the shared Top Movers snapshot (same snapshotId as ticker).
   const trendingRows = useMemo(() => {
-    const assets = data.indexedRibbonAssets ?? []
-    const seen = new Set<string>()
-    const rows: Array<{
-      id: string
-      rank: number
-      name: string
-      meta: string
-      metric?: string
-      href: string
-    }> = []
-    ;(data.trendingTickerItems ?? []).forEach((item, idx) => {
-      const asset = assets[idx]
-      const key = (asset?.address || asset?.slug || item.primary || item.id || '').toLowerCase()
-      if (!key || seen.has(key)) return
-      seen.add(key)
-      const slug = asset?.slug
-      const move = item.accent?.trim()
-      rows.push({
-        id: item.id ?? `trend-${idx}`,
-        rank: rows.length + 1,
-        name: item.primary ?? asset?.symbol ?? 'Token',
-        meta: asset?.displayName ?? asset?.symbol ?? '',
-        metric: move || undefined,
-        href: asset?.address
-          ? `/swap?outputCurrency=${asset.address}`
-          : slug
-            ? `/@${slug}`
-            : '/trade',
-      })
+    const entries = data.homeTopMoversEntries ?? []
+    const ribbon = data.indexedRibbonAssets ?? []
+    return entries.map((entry, idx) => {
+      const move = entry.changeLabel?.trim()
+      const positive = entry.accentPositive
+      const tone: 'up' | 'down' | 'flat' = positive === true ? 'up' : positive === false ? 'down' : 'flat'
+      const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : ''
+      const ribbonMatch = ribbon.find(
+        (a) =>
+          (entry.address && a.address?.toLowerCase() === entry.address.toLowerCase()) ||
+          a.symbol?.toUpperCase() === entry.symbol?.toUpperCase(),
+      )
+      const chainId = entry.chainId ?? ribbonMatch?.chainId ?? 56
+      return {
+        id: entry.id ?? `trend-${idx}`,
+        rank: idx + 1,
+        name: entry.symbol,
+        address: entry.address,
+        chainId,
+        meta: entry.address ? `${entry.address.slice(0, 6)}…${entry.address.slice(-4)}` : entry.symbol,
+        metric: move ? `${arrow}${move}` : undefined,
+        tone,
+        srLabel: tone === 'up' ? `Up ${move}` : tone === 'down' ? `Down ${move}` : move || 'Unchanged',
+        href: entry.href,
+      }
     })
-    return rows.slice(0, 10)
-  }, [data.trendingTickerItems, data.indexedRibbonAssets])
+  }, [data.homeTopMoversEntries, data.indexedRibbonAssets])
 
   const farmRows = (data.farmRows ?? []).slice(0, 5)
   const poolRows = (data.poolRows ?? []).slice(0, 5)
 
-  const newListings = useMemo(() => {
-    return getAllProjects()
-      .filter((p) => p.slug && p.slug !== 'melega-dex')
-      .slice(0, 5)
-      .map((p) => ({
-        id: p.slug,
-        name: p.displayName || p.slug,
-        meta: p.resources?.tokens?.[0]?.symbol || p.slug,
-        href: `/@${p.slug}`,
-        metric: 'Indexed',
-      }))
-  }, [])
-
-  const scrollToSwap = () => {
-    const root = swapRef.current
-    root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    // Focus the on-page terminal input — no second Swap surface.
-    window.setTimeout(() => {
-      const input =
-        root?.querySelector<HTMLElement>('.home-trade-swap input.token-amount-input') ||
-        root?.querySelector<HTMLElement>('.home-trade-swap input') ||
-        root?.querySelector<HTMLElement>('[data-home-swap-panel] input')
-      input?.focus({ preventScroll: true })
-    }, 280)
-  }
+  const newListings = useMemo(() => buildHomeNewListings(5), [])
 
   return (
     <Root data-dex-home-screen data-ux-rebuild-home>
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <DataSurfaceErrorBoundary
-          surface="Homepage"
-          userReason="Homepage market modules are temporarily unavailable."
-        >
+        <DataSurfaceErrorBoundary surface="Homepage" userReason="Homepage market modules are temporarily unavailable.">
           <Hero data-home-section="hero">
             <HeroLeft>
               <Badge>AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS</Badge>
@@ -538,9 +596,20 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
-                {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
-                <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
-                  Swap
+                <PrimaryCta type="button" data-testid="dex-home-list-project" onClick={() => void router.push('/list')}>
+                  List Your Project
+                </PrimaryCta>
+                <PrimaryCta
+                  type="button"
+                  data-testid="dex-home-open-trending"
+                  onClick={() => void router.push('/projects?sort=trending')}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(244,196,48,0.45)',
+                    color: uxRebuildColors.gold,
+                  }}
+                >
+                  Explore Trending Projects
                 </PrimaryCta>
               </CtaRow>
               <Trust>
@@ -566,27 +635,38 @@ export const DexHomeScreen: React.FC = () => {
           </KpiRail>
 
           <Discovery ref={discoveryRef} id="projects" data-testid="dex-home-discovery" data-home-section="discovery">
-            <DiscCard>
+            <DiscCard
+              data-top-movers-snapshot-id={data.topMoversSnapshotId}
+              data-top-movers-surface="home-card"
+              data-top-movers-prefix={data.topMoversPrefixResult}
+            >
               <DiscHead>
                 <DiscIcon>
                   <TrendingUp size={14} color={uxRebuildColors.gold} aria-hidden />
                 </DiscIcon>
-                <DiscTitle>Trending Projects</DiscTitle>
-                <ViewAll href="/trending">
+                <DiscTitle>Top Movers</DiscTitle>
+                <ViewAll href="/projects?sort=trending">
                   View all <ArrowRight size={12} style={{ display: 'inline' }} />
                 </ViewAll>
               </DiscHead>
               {trendingRows.length === 0 ? (
-                <EmptyRow>No verified listings yet</EmptyRow>
+                <EmptyRow>No verified 24h movers yet</EmptyRow>
               ) : (
                 trendingRows.map((row) => (
-                  <DiscRow key={row.id} href={row.href}>
+                  <DiscRow key={row.id} href={row.href} data-testid="home-top-mover-row" data-mover-symbol={row.name}>
                     <Rank>{row.rank}</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        <MelegaExploreChainBadge chainId={row.chainId} />
+                      </RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric ?? ''}</RowMetric>
+                    <RowMetric $tone={row.tone} aria-label={row.srLabel} data-tone={row.tone}>
+                      {row.metric ?? ''}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}
@@ -601,16 +681,31 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
               {farmRows.length === 0 ? (
-                <EmptyRow>No farm rows with live APR/TVL yet — open Farms for full inventory</EmptyRow>
+                <EmptyRow>Open Farms for the full LIVE inventory.</EmptyRow>
               ) : (
                 farmRows.map((row) => (
-                  <DiscRow key={row.id} href={row.href || '/farms'}>
+                  <DiscRow key={row.id} href={row.href || '/farms'} style={{ position: 'relative' }}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
-                      <RowMeta>{row.tvl ? `TVL ${row.tvl}` : 'TVL not available'}</RowMeta>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        {(row.tokenSymbols ?? []).slice(0, 2).map((sym, i) => (
+                          <MelegaTokenAvatar
+                            key={`${row.id}-tok-${i}`}
+                            symbol={sym}
+                            address={row.tokenAddresses?.[i]}
+                            chainId={row.chainId ?? 56}
+                            size={18}
+                            radius="circle"
+                          />
+                        ))}
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
+                      </RowName>
+                      <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
                     </RowMain>
-                    <GoldMetric>{row.apr ? `${row.apr}` : NA}</GoldMetric>
+                    <GoldMetric>{row.apr || '—'}</GoldMetric>
                   </DiscRow>
                 ))
               )}
@@ -625,16 +720,36 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
               {poolRows.length === 0 ? (
-                <EmptyRow>No staking-pool rows hydrated yet — open Pools for configured inventory</EmptyRow>
+                <EmptyRow>Open Pools for the full LIVE inventory.</EmptyRow>
               ) : (
                 poolRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/pools'}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
-                      <RowMeta>{row.tvl ? `TVL ${row.tvl}` : 'TVL not available'}</RowMeta>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        {(row.tokenSymbols ?? []).slice(0, 2).map((sym, i) => (
+                          <MelegaTokenAvatar
+                            key={`${row.id}-tok-${i}`}
+                            symbol={sym}
+                            address={row.tokenAddresses?.[i]}
+                            chainId={row.chainId ?? 56}
+                            size={18}
+                            radius="circle"
+                          />
+                        ))}
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
+                      </RowName>
+                      <RowMeta>{`TVL ${row.tvl || '—'}`}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.apr ? row.apr : NA}</RowMetric>
+                    <RowMetric
+                      title={row.aprUnavailable ? 'APR awaits a verified staking and reward-token price.' : undefined}
+                      aria-label={row.apr ? `APR ${row.apr}` : 'APR pricing pending'}
+                    >
+                      {row.apr || 'Pricing pending'}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}
@@ -655,10 +770,26 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
-                      <RowMeta>{row.meta}</RowMeta>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        <MelegaTokenAvatar
+                          symbol={row.symbol}
+                          name={row.name}
+                          address={row.address}
+                          chainId={row.chainId}
+                          logoURI={row.logoUrl}
+                          size={18}
+                          radius="circle"
+                        />
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        <MelegaExploreChainBadge chainId={row.chainId} />
+                      </RowName>
+                      <RowMeta>{row.symbol}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric}</RowMetric>
+                    <RowMetric data-listing-timestamp={row.listingTimestamp ?? row.listedAt ?? undefined}>
+                      {row.metric}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}
@@ -666,12 +797,16 @@ export const DexHomeScreen: React.FC = () => {
           </Discovery>
 
           <ExploreMelegaEcosystem />
-
-          <MelegaDexFooter />
         </DataSurfaceErrorBoundary>
       </Content>
     </Root>
   )
 }
+
+export const DexHomeScreen: React.FC = () => (
+  <HomeTradeDataProvider>
+    <DexHomeScreenContent />
+  </HomeTradeDataProvider>
+)
 
 export default DexHomeScreen

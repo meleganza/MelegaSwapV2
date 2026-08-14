@@ -70,27 +70,26 @@ describe('PASSPORT_V1 Final Integration', () => {
     expect(passportOne.contentMax).toBe('1376px')
   })
 
-  it('mounts modules 001–007 in PassportScreen with independent failure isolation', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
+  it('retains modules 001–007 as library adapters; /passport mounts Passport V1 only', () => {
     const order = [
-      'PassportHeroIdentityModule',
-      'PassportPortfolioOverview',
-      'PassportAssets',
-      'PassportProjects',
-      'PassportLiquidity',
-      'PassportBottomGrid',
+      'PassportHeroIdentityModule.tsx',
+      'PassportPortfolioOverview.tsx',
+      'PassportAssets.tsx',
+      'PassportProjects.tsx',
+      'PassportLiquidity.tsx',
+      'PassportBottomGrid.tsx',
+      'PassportSecurity.tsx',
     ]
-    let last = -1
     for (const name of order) {
-      const idx = screen.indexOf(name)
-      expect(idx).toBeGreaterThan(last)
-      last = idx
+      expect(existsSync(path.join(ROOT, name))).toBe(true)
     }
-    for (const n of ['001', '002', '003', '004', '005', '006', '007']) {
-      expect(screen).toContain(`data-passport-module-${n}`)
-    }
-    expect(screen).toContain('CommandCenterScreen')
-    expect(screen).not.toContain('PassportArchitectureShell')
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    expect(page).not.toContain('PassportScreen')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild="zero-rebuild-v1"')
+    expect(v1).not.toContain('PassportArchitectureShell')
+    expect(v1).not.toContain('CommandCenterScreen')
   })
 
   it('validates production deep-link destinations exist as pages', () => {

@@ -13,6 +13,7 @@ import { useAccount, useBalance } from 'wagmi'
 import { useState, useCallback } from 'react'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
+import { weiLte } from 'utils/safeBigInt'
 import WalletInfo from './WalletInfo'
 import WalletTransactions from './WalletTransactions'
 import WalletWrongNetwork from './WalletWrongNetwork'
@@ -72,7 +73,8 @@ const WalletModal: React.FC<React.PropsWithChildren<WalletModalProps>> = ({
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { data, isFetched } = useBalance({ address: account })
-  const hasLowNativeBalance = isFetched && data && data.value.lte(LOW_NATIVE_BALANCE)
+  // wagmi returns bigint — never call ethers BigNumber .lte on it (crashes post-connect).
+  const hasLowNativeBalance = Boolean(isFetched && data && weiLte(data.value, LOW_NATIVE_BALANCE))
 
   const handleClick = useCallback((newIndex: number) => {
     setView(newIndex)

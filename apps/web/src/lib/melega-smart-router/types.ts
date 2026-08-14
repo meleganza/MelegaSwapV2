@@ -17,6 +17,7 @@ export type SmartRouterBlockCode =
 export type RegistryStatus = 'active' | 'planned' | 'missing'
 
 export type RegistrySource =
+  | 'dex-economic-authority'
   | 'treasury-runtime'
   | 'kerl'
   | 'env'

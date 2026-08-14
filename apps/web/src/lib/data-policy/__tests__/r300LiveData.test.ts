@@ -46,19 +46,21 @@ describe('R300 placeholder audit', () => {
 })
 
 describe('R300 reason code UI mapping', () => {
-  it('maps trade subgraph loading to Waiting for indexing', () => {
-    expect(tradeUiReasonLabel('SUBGRAPH_LOADING')).toBe(UI_REASON_LABELS.waitingForIndexing)
+  it('maps trade subgraph loading to Unavailable', () => {
+    expect(tradeUiReasonLabel('SUBGRAPH_LOADING')).toBe(UI_REASON_LABELS.unavailable)
   })
 
-  it('maps explorer missing to Waiting for explorer', () => {
-    expect(tradeUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe(UI_REASON_LABELS.waitingForExplorer)
-    expect(projectUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe(UI_REASON_LABELS.waitingForExplorer)
-    expect(metricUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe('Waiting for explorer')
+  it('maps explorer missing to Unavailable (never Waiting explorer)', () => {
+    expect(tradeUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe(UI_REASON_LABELS.unavailable)
+    expect(projectUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe(UI_REASON_LABELS.unavailable)
+    expect(metricUiReasonLabel('EXPLORER_SOURCE_MISSING')).toBe('Unavailable')
   })
 
-  it('never exposes raw machine codes in UI labels', () => {
+  it('never exposes raw machine codes or legacy diagnostic phrases in UI labels', () => {
     expect(tradeUiReasonLabel('PAIR_NOT_INDEXED')).not.toContain('PAIR_NOT_INDEXED')
-    expect(metricUiReasonLabel('NO_EVENTS_INDEXED')).toBe('No recent activity yet')
+    expect(metricUiReasonLabel('NO_EVENTS_INDEXED')).toBe('Unavailable')
+    expect(UI_REASON_LABELS.sourceNotConfigured).toBe('Unavailable')
+    expect(UI_REASON_LABELS.waitingForExplorer).toBe('Unavailable')
   })
 })
 

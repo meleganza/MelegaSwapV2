@@ -125,7 +125,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
   const settlementMetadata = useTradeSettlementMetadata()
   const [allowedSlippage] = useUserSlippageTolerance()
   const [isStableSwapByDefault] = useStableSwapByDefault()
-  const gasPrice = useGasPrice()
+  const gasPrice = useGasPrice(chainId)
   const tokenMap = useAtomValue(combinedTokenMapFromOfficialsUrlsAtom)
   const [watchlistTokens] = useWatchlistTokens()
 

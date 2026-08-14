@@ -9,7 +9,7 @@ import type { TradePairStat } from './useTradeTerminalData'
 const Shell = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${tradeLayout.sectionGap};
+  gap: ${tradeLayout.verticalRhythm};
   min-width: 0;
   width: 100%;
   height: 100%;
@@ -27,6 +27,7 @@ const STAT_LABELS: Record<string, string> = {
 }
 
 export interface TradeCenterPanelProps {
+  data: ReturnType<typeof useTradeTerminalData>
   inputSymbol: string
   outputSymbol: string
   inputCurrencyId?: string
@@ -34,20 +35,17 @@ export interface TradeCenterPanelProps {
 }
 
 export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
+  data,
   inputSymbol,
   outputSymbol,
   inputCurrencyId,
   outputCurrencyId,
 }) => {
-  const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail, isIndexingMetrics, reconciliationStatus } =
-    useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail, isIndexingMetrics } = data
 
   const orderedStats = useMemo((): TradePairStat[] => {
-    if (reconciliationStatus === 'inconsistent' || reconciliationStatus === 'unavailable') return []
     const priceChange =
-      pairPrice?.change24h != null &&
-      Number.isFinite(pairPrice.change24h) &&
-      Math.abs(pairPrice.change24h) > 0.0001
+      pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h) && Math.abs(pairPrice.change24h) > 0.0001
         ? {
             text: `${pairPrice.change24h >= 0 ? '+' : ''}${pairPrice.change24h.toFixed(2)}%`,
             positive: pairPrice.change24h >= 0,
@@ -60,23 +58,26 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
       value: pairPrice?.formatted,
       change: priceChange?.text,
       changePositive: priceChange?.positive,
-      reasonCode: isIndexingMetrics
-        ? 'SUBGRAPH_LOADING'
-        : pairPrice?.formatted
-          ? undefined
-          : 'NO_EVENTS_INDEXED',
+      reasonCode: isIndexingMetrics ? 'SUBGRAPH_LOADING' : pairPrice?.formatted ? undefined : 'NO_EVENTS_INDEXED',
     }
 
     const byId = Object.fromEntries(pairStats.map((stat) => [stat.id, stat]))
     const merged = TRADE_STAT_ORDER.map((id) => {
       if (id === 'price') return priceStat
       const stat = byId[id]
-      if (!stat) return null
+      if (!stat) {
+        return {
+          id,
+          label: STAT_LABELS[id] ?? id,
+          value: undefined,
+          reasonCode: isIndexingMetrics ? 'SUBGRAPH_LOADING' : 'NO_EVENTS_INDEXED',
+        } satisfies TradePairStat
+      }
       return { ...stat, label: STAT_LABELS[id] ?? stat.label }
-    }).filter((stat): stat is TradePairStat => stat != null)
+    })
 
     return merged
-  }, [pairStats, pairPrice, isIndexingMetrics, reconciliationStatus])
+  }, [pairStats, pairPrice, isIndexingMetrics])
 
   return (
     <Shell data-trade-center-panel>
@@ -87,17 +88,10 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
         outputCurrencyId={inputCurrencyId}
         priceUsd={pairPrice?.value}
         change24h={pairPrice?.change24h}
-        chartEmptyReason={
-          reconciliationStatus === 'inconsistent'
-            ? 'data_inconsistent'
-            : missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)
-        }
-        chartEmptyDetail={
-          reconciliationStatus === 'inconsistent'
-            ? chartUnavailableDetail ?? 'Trade metrics could not be reconciled with indexed swap events.'
-            : chartUnavailableDetail ?? missingReasonDetail
-        }
+        chartEmptyReason={missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)}
+        chartEmptyDetail={chartUnavailableDetail ?? missingReasonDetail}
         isIndexingMetrics={isIndexingMetrics}
+        pairAddress={data.primaryPairAddress}
       />
       <TradePairStats stats={orderedStats} />
     </Shell>

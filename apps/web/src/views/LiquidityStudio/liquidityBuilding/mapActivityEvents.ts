@@ -107,8 +107,9 @@ export function activityFromLatestExecution(input: {
     lpMinted?: { toString(): string } | string
     successTimestamp?: number | { toString(): string }
   } | null
-}): LbActivityItem[] {
-  if (!input.executionCount || input.executionCount <= 0 || !input.latest?.executionId) {
+} | null | undefined): LbActivityItem[] {
+  // Null-safe: production passed raw latestExecution (or undefined) and crashed on .executionCount.
+  if (!input || !input.executionCount || input.executionCount <= 0 || !input.latest?.executionId) {
     return []
   }
   const id = String(input.latest.executionId)

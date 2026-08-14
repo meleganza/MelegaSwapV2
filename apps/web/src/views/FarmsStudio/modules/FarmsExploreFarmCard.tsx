@@ -2,21 +2,36 @@
  * FARMS_MODULE_004 — Explore farm card (446×268 desktop).
  */
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { YieldActivitySparkline } from 'components/YieldActivitySparkline'
+import { truthDash } from 'lib/data-truth'
+import { GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { getBlockExploreLink } from 'utils'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type { ExploreFarmViewModel } from './farmsExploreFarmsTypes'
+import { useFarmPairAnalytics } from './useFarmPairAnalytics'
+
+function formatCompactUsd(value: number | null): string | null {
+  if (value == null || !Number.isFinite(value) || value < 0) return null
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
+  return `$${value.toFixed(2)}`
+}
 
 const Card = styled.article`
   position: relative;
   width: 100%;
   max-width: ${farmsExplore.cardW};
-  height: ${farmsExplore.cardH};
+  height: auto;
+  min-height: ${farmsExplore.cardH};
   box-sizing: border-box;
   padding: ${farmsExplore.cardPad};
   border-radius: ${farmsExplore.cardRadius};
@@ -25,8 +40,10 @@ const Card = styled.article`
   box-shadow: ${farmsExplore.cardShadow};
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* Founder amendment P0-6: tighter vertical rhythm for denser grids. */
+  gap: 8px;
   min-width: 0;
+  overflow: hidden;
   font-family: ${typography.fontFamily.body};
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 
@@ -69,6 +86,7 @@ const Identity = styled.div`
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex: 1;
 `
 
 const Logos = styled.div`
@@ -123,6 +141,9 @@ const Badges = styled.div`
   align-items: flex-end;
   gap: 6px;
   flex-shrink: 0;
+  /* Reserved chrome column — multiplier never overlaps metrics/identity. */
+  min-width: 72px;
+  max-width: 96px;
 `
 
 const Status = styled.span<{ $tone: string }>`
@@ -143,31 +164,20 @@ const Status = styled.span<{ $tone: string }>`
         : 'rgba(255,255,255,0.06)'};
 `
 
-const MultiBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  color: ${farmsExplore.gold};
-  background: rgba(244, 196, 48, 0.12);
-`
-
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 10px;
   flex: 1;
   min-width: 0;
 `
 
 const Metric = styled.div`
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px;
 `
 
 const MetricLabel = styled.span`
@@ -177,19 +187,21 @@ const MetricLabel = styled.span`
 `
 
 const MetricValue = styled.span`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 700;
   color: #f5f5f5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 `
 
 const MetricSupport = styled.span`
+  grid-column: 1 / -1;
   font-size: 10px;
-  line-height: 13px;
-  color: rgba(255, 255, 255, 0.45);
+  line-height: 12px;
+  color: rgba(255, 255, 255, 0.42);
 `
 
 const WalletLine = styled.p`
@@ -202,24 +214,61 @@ const WalletLine = styled.p`
   text-overflow: ellipsis;
 `
 
+const ContractLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-width: 0;
+`
+
+const ContractLink = styled.a`
+  color: rgba(244, 196, 48, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: ${farmsExplore.focusRing};
+    outline-offset: ${farmsExplore.focusOffset};
+  }
+`
+
 const Actions = styled.div`
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-top: auto;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  > * {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
 `
 
 const Btn = styled.button<{ $primary?: boolean }>`
   appearance: none;
   cursor: pointer;
-  flex: 1 1 0;
-  min-height: ${farmsExplore.touchMin};
-  height: 40px;
-  border-radius: 10px;
+  min-height: 36px;
+  height: 36px;
+  border-radius: 9px;
   border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? farmsExplore.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 
   &:focus-visible {
@@ -233,14 +282,41 @@ const Btn = styled.button<{ $primary?: boolean }>`
   }
 `
 
+const LinkBtn = styled.a<{ $primary?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-family: ${typography.fontFamily.body};
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: ${farmsExplore.focusRing};
+    outline-offset: ${farmsExplore.focusOffset};
+  }
+`
+
 const ConnectWrap = styled.div`
-  flex: 1 1 0;
+  grid-column: 1 / -1;
   min-width: 0;
   & > button {
     width: 100%;
-    min-height: ${farmsExplore.touchMin};
-    height: 40px;
+    min-height: 36px;
+    height: 36px;
   }
+`
+
+const ActivityPulse = styled.span<{ $tone: 'live' | 'partial' | 'neutral' }>`
+  display: none;
 `
 
 const VisuallyHidden = styled.span`
@@ -266,18 +342,32 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
   const { requestModal } = useFarmsRuntime()
   const { switchNetworkAsync } = useSwitchNetwork()
   const [busy, setBusy] = useState<'approve' | 'stake' | null>(null)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
+  const pendingActionRef = useRef<'approve' | 'stake' | null>(null)
+  const pairAnalytics = useFarmPairAnalytics(farm.chainId, farm.lpToken.address)
+  const indexedVolume = formatCompactUsd(pairAnalytics.volume24hUsd)
+  const farmVolume = indexedVolume ?? truthDash(farm.volume24h)
+  const farmParticipants = truthDash(farm.participants)
 
   const accessibleName = `Stake ${farm.token0.symbol} ${farm.token1.symbol} LP in farm earning ${farm.rewardToken.symbol}`
   const logoDesc = `${farm.token0.symbol} and ${farm.token1.symbol} LP earning ${farm.rewardToken.symbol}`
 
+  const resumeStake = () => {
+    const next = pendingActionRef.current ?? 'stake'
+    pendingActionRef.current = null
+    setBusy(next)
+    try {
+      requestModal(farm.sourceCard, 'stake')
+    } finally {
+      window.setTimeout(() => setBusy(null), 1200)
+    }
+  }
+
   const onPrimary = async () => {
     if (farm.primaryAction === 'Farm Unavailable') return
     if (farm.primaryAction === 'Switch Network') {
-      try {
-        await switchNetworkAsync?.(farm.chainId)
-      } catch {
-        /* user rejected — keep card stable */
-      }
+      setSwitchOpen(true)
       return
     }
     if (farm.primaryAction === 'Approve LP' || farm.primaryAction === 'Stake LP') {
@@ -287,6 +377,23 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       } finally {
         window.setTimeout(() => setBusy(null), 1200)
       }
+    }
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    pendingActionRef.current = 'stake'
+    try {
+      await switchNetworkAsync?.(farm.chainId)
+      setSwitchOpen(false)
+      // Preserve selected farm — reopen stake after switch when wallet lands on target.
+      window.setTimeout(() => resumeStake(), 400)
+    } catch {
+      pendingActionRef.current = null
+      /* user rejected — keep card + dialog cancel path */
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -339,31 +446,48 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             <Earn>{farm.earnLine}</Earn>
           </TextCol>
         </Identity>
-        <Badges>
+        <Badges data-testid="farms-explore-badges">
+          <MelegaExploreChainBadge chainId={farm.chainId} />
           <Status $tone={farm.statusLabel} aria-label={`Status ${farm.statusLabel}`}>
             {farm.statusLabel}
           </Status>
-          {farm.multiplier ? <MultiBadge aria-label={`${farm.multiplier} multiplier`}>{farm.multiplier}</MultiBadge> : null}
         </Badges>
       </Header>
 
       <VisuallyHidden>{logoDesc}</VisuallyHidden>
 
-      <Metrics>
+      <Metrics data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
         <Metric>
           <MetricLabel>{farm.aprLabel}</MetricLabel>
-          <MetricValue>{farm.apr}</MetricValue>
-          <MetricSupport>{farm.aprState === 'Live' ? 'Live' : farm.aprState}</MetricSupport>
+          <MetricValue>{truthDash(farm.apr)}</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>TVL</MetricLabel>
-          <MetricValue>{farm.tvl}</MetricValue>
-          {farm.tvlState !== 'Live' ? <MetricSupport>{farm.tvlState}</MetricSupport> : null}
+          <MetricValue>{truthDash(farm.tvl)}</MetricValue>
+        </Metric>
+        <Metric data-testid="farms-explore-multiplier-slot">
+          <MetricLabel>Multiplier</MetricLabel>
+          <MetricValue>{farm.multiplier || '—'}</MetricValue>
+        </Metric>
+        {farmVolume !== '—' ? (
+          <Metric>
+            <MetricLabel>24H Vol</MetricLabel>
+            <MetricValue>{farmVolume}</MetricValue>
+          </Metric>
+        ) : null}
+        {farmParticipants !== '—' ? (
+          <Metric>
+            <MetricLabel>Participants</MetricLabel>
+            <MetricValue>{farmParticipants}</MetricValue>
+          </Metric>
+        ) : null}
+        <Metric>
+          <MetricLabel>Duration</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardDuration)}</MetricValue>
         </Metric>
         <Metric>
-          <MetricLabel>Rewards</MetricLabel>
-          <MetricValue>{farm.rewardToken.symbol}</MetricValue>
-          {farm.rewardRate ? <MetricSupport>{farm.rewardRate}</MetricSupport> : null}
+          <MetricLabel>Rewards / day</MetricLabel>
+          <MetricValue>{truthDash(farm.rewardRate)}</MetricValue>
         </Metric>
       </Metrics>
 
@@ -374,7 +498,13 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           : ''}
       </WalletLine>
 
-      <Actions>
+      <YieldActivitySparkline
+        series={pairAnalytics.closes}
+        loading={pairAnalytics.status === 'loading'}
+        testId="farms-explore-activity-spark"
+      />
+
+      <Actions data-testid="farms-explore-actions">
         {farm.primaryAction === 'Connect Wallet' ? (
           <ConnectWrap>
             <ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton>
@@ -385,25 +515,64 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             $primary
             disabled={farm.primaryAction === 'Farm Unavailable' || busy != null}
             aria-label={accessibleName}
+            data-testid="farms-explore-stake"
             onClick={() => {
               void onPrimary()
             }}
           >
-            {primaryLabel}
+            {farm.primaryAction === 'Switch Network'
+              ? 'Switch Network'
+              : farm.primaryAction === 'Approve LP'
+                ? 'Approve LP'
+                : farm.primaryAction === 'Farm Unavailable'
+                  ? 'Unavailable'
+                  : primaryLabel.includes('Stake')
+                    ? 'Stake'
+                    : primaryLabel}
           </Btn>
         )}
-        {farm.detailsHref ? (
-          <Btn
-            type="button"
-            aria-label={`Details for ${farm.title}`}
-            onClick={() => {
-              window.location.href = farm.detailsHref!
-            }}
+        {farm.masterbuilder ? (
+          <LinkBtn
+            href={getBlockExploreLink(farm.masterbuilder, 'address', farm.chainId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-view-farm"
           >
-            Details
+            View Farm
+          </LinkBtn>
+        ) : (
+          <Btn type="button" disabled data-testid="farms-explore-view-farm">
+            View Farm
           </Btn>
-        ) : null}
+        )}
+        {farm.lpToken?.address ? (
+          <LinkBtn
+            href={getBlockExploreLink(farm.lpToken.address, 'address', farm.chainId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-view-lp"
+          >
+            View LP
+          </LinkBtn>
+        ) : (
+          <Btn type="button" disabled data-testid="farms-explore-view-lp">
+            View LP
+          </Btn>
+        )}
       </Actions>
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={farm.chainId}
+        productLabel={`This farm is on ${chainDisplayName(farm.chainId)}. Switch network to continue?`}
+        busy={switching}
+        onCancel={() => {
+          pendingActionRef.current = null
+          setSwitchOpen(false)
+        }}
+        onConfirm={() => {
+          void onConfirmSwitch()
+        }}
+      />
     </Card>
   )
 }

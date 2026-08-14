@@ -14,10 +14,10 @@ const CHAIN56 = path.join(ROOT, 'deployments/liquidity-building/chain-56')
 const VALIDATOR = path.join(ROOT, 'deployments/liquidity-building/validate-lb-v1-inputs-core.mjs')
 
 describe('LB018 contract deployment binding', () => {
-  it('frontend binding remains all-null — no placeholders', () => {
-    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
-    expect(LB_DEPLOYED_ADDRESSES.lbAuthorizer).toBeNull()
-    expect(LB_DEPLOYED_ADDRESSES.lbFeeSink).toBeNull()
+  it('frontend binding is mainnet-bound — no placeholders / null core addresses', () => {
+    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBe('0xB9f3e3020141157C215902acC1fDF65e49bE4e82')
+    expect(LB_DEPLOYED_ADDRESSES.lbAuthorizer).toBe('0xA0c48D603BD07A012666b003Bd8089aA3dD49471')
+    expect(LB_DEPLOYED_ADDRESSES.lbFeeSink).toBe('0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF')
     expect(LB_DEPLOYED_ADDRESSES.programAddress).toBeNull()
     expect(isDeployedAddress(ZERO_ADDRESS)).toBe(false)
   })
@@ -74,11 +74,13 @@ describe('LB018 contract deployment binding', () => {
     }
   })
 
-  it('deployment validator remains BLOCKED; no activation bypass', async () => {
+  it('contracts DEPLOYED; activation gates remain fail-closed (no mutating bypass)', async () => {
     const inputs = JSON.parse(readFileSync(path.join(CHAIN56, 'LiquidityBuildingV1.inputs.json'), 'utf8'))
-    expect(inputs.deploymentReadinessState).toBe('BLOCKED')
-    expect(inputs.authorizer?.address ?? null).toBeNull()
-    expect(inputs.treasury?.receiverAddress ?? null).toBeNull()
+    expect(inputs.deploymentReadinessState).toBe('DEPLOYED')
+    expect(inputs.activationAuthorized).toBe(false)
+    expect(inputs.factory?.address).toBe('0xB9f3e3020141157C215902acC1fDF65e49bE4e82')
+    expect(inputs.authorizer?.address).toBe('0xA0c48D603BD07A012666b003Bd8089aA3dD49471')
+    expect(inputs.treasury?.receiverAddress).toBe('0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5')
     expect(inputs.quotePolicies).toEqual([])
 
     const { validateDeploymentInputs } = await import(/* @vite-ignore */ `file://${VALIDATOR}`)

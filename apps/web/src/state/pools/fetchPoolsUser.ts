@@ -1,4 +1,4 @@
-import poolsConfig, { livePools1, livePools8453, livePools137 } from 'config/constants/pools'
+import poolsConfig, { livePools1, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
 import masterChef from 'config/abi/masterchef.json'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'

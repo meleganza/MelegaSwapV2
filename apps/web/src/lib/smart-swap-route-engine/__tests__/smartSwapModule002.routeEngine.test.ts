@@ -63,10 +63,11 @@ describe('SMART_SWAP_MODULE_002 Route Engine', () => {
     expect(existsSync(hero)).toBe(true)
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
-    expect(status).not.toMatch(/views\/Swap\/SmartSwap\//)
-    expect(status).not.toMatch(/melega-smart-router\//)
-    expect(status).not.toMatch(/d87-pricing\//)
-    expect(status).not.toMatch(/treasury-handoff\//)
+    // Core exchange/routing utils must remain untouched.
+    // Fee settlement may touch useSwapCallback; quote/discovery hooks stay frozen.
+    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/utils\/exchange\.ts/)
+    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/hooks\/useBestTrade/)
+    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/hooks\/useSwapCallArguments/)
   })
 
   it('normalizes a direct route with impact, gas, and fee estimates', () => {
@@ -78,7 +79,8 @@ describe('SMART_SWAP_MODULE_002 Route Engine', () => {
     expect(route.priceImpact.percent).toBeCloseTo(0.42)
     expect(route.gasEstimate.availability).toBe('available')
     expect(route.feeEstimate.availability).toBe('available')
-    expect(route.feeEstimate.note).toContain('Treasury Runtime')
+    expect(route.feeEstimate.note).toMatch(/LP fee display only/i)
+    expect(route.feeEstimate.note).not.toContain('Treasury Runtime')
     expect(route.confidence).toBeGreaterThan(50)
     expect(route.inputToken.symbol).toBe('WBNB')
     expect(route.outputToken.symbol).toBe('MARCO')

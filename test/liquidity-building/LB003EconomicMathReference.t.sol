@@ -17,7 +17,7 @@ import { Test } from "forge-std/Test.sol";
 library LB003Math {
     uint256 internal constant FEE_NUMERATOR = 9975;
     uint256 internal constant FEE_DENOMINATOR = 10000;
-    uint256 internal constant MELEGA_SUCCESS_FEE_BPS = 500;
+    uint256 internal constant MELEGA_SUCCESS_FEE_BPS = 1000;
     uint256 internal constant BPS = 10_000;
     uint256 internal constant RATE_SCALE = 10_000;
     uint256 internal constant MINIMUM_LIQUIDITY = 1000;
@@ -193,7 +193,7 @@ contract LB003EconomicMathReference is Test {
     function test_constants_melegaFeeCoefficients() public pure {
         assertEq(LB003Math.FEE_NUMERATOR, 9975);
         assertEq(LB003Math.FEE_DENOMINATOR, 10000);
-        assertEq(LB003Math.MELEGA_SUCCESS_FEE_BPS, 500);
+        assertEq(LB003Math.MELEGA_SUCCESS_FEE_BPS, 1000);
         assertEq(LB003Math.MINIMUM_LIQUIDITY, 1000);
     }
 
@@ -226,15 +226,15 @@ contract LB003EconomicMathReference is Test {
         uint256 out = LB003Math.getAmountOut(dx, X6, Y6);
         assertTrue(out > 0 && out < Y6);
         uint256 fee = LB003Math.melegaFee(out);
-        assertTrue(fee <= (out * 500) / 10000);
+        assertTrue(fee <= (out * 1000) / 10000);
     }
 
     function test_quote18Decimals_feeFloor() public pure {
         uint256 G = 1e18;
-        assertEq(LB003Math.melegaFee(G), G * 500 / 10000);
+        assertEq(LB003Math.melegaFee(G), G * 1000 / 10000);
         assertEq(LB003Math.melegaFee(1), 0); // rounds down
-        assertEq(LB003Math.melegaFee(19), 0);
-        assertEq(LB003Math.melegaFee(20), 1);
+        assertEq(LB003Math.melegaFee(9), 0);
+        assertEq(LB003Math.melegaFee(10), 1);
     }
 
     function test_smallAndLargeReserves() public pure {
@@ -392,11 +392,11 @@ contract LB003EconomicMathReference is Test {
         assertTrue(uneconomic);
     }
 
-    function test_quoteConservation_and_feeNeverAbove5pct() public pure {
+    function test_quoteConservation_and_feeNeverAbove10pct() public pure {
         uint256 G = 1234567890123456789;
         (uint256 fee, uint256 N) = LB003Math.netQuote(G);
         assertEq(fee + N, G);
-        assertTrue(fee * 20 <= G); // fee <= 5%
+        assertTrue(fee * 10 <= G); // fee <= 10%
         assertTrue(N <= G);
     }
 
@@ -462,7 +462,7 @@ contract LB003EconomicMathReference is Test {
         G = bound(G, 0, type(uint128).max);
         (uint256 fee, uint256 N) = LB003Math.netQuote(G);
         assertEq(fee + N, G);
-        assertTrue(fee <= G / 20 || G < 20);
+        assertTrue(fee <= G / 10 || G < 10);
         assertTrue(N <= G);
     }
 

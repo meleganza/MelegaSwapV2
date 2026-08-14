@@ -155,7 +155,7 @@ contract LB006AuthorityTreasuryBoundaries is Test {
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,
@@ -845,7 +845,7 @@ contract LB006AuthorityTreasuryBoundaries is Test {
 
         // 86 immutables unchanged
         assertEq(factory.melegaFactory(), address(melegaFactory));
-        assertEq(factory.successFeeBps(), 500);
+        assertEq(factory.successFeeBps(), 1000);
 
         // 88 custody still works
         project.mint(owner, 100 ether);

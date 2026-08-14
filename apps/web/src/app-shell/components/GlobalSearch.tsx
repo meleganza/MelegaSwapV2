@@ -1,23 +1,37 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { MelegaSearchBar, colors, typography } from 'design-system/melega'
-import {
-  buildGlobalSearchIndex,
-  globalSearchCategoryLabel,
-  searchGlobal,
-  type GlobalSearchResult,
-} from 'lib/global-search'
+import { MelegaSearchBar } from 'design-system/melega/components/SearchBar'
+import { colors } from 'design-system/melega/tokens/colors'
+import { typography } from 'design-system/melega/tokens/typography'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import type { GlobalSearchCategory, GlobalSearchEntry, GlobalSearchResult } from 'lib/global-search/types'
+
+type GlobalSearchRuntime = {
+  index: GlobalSearchEntry[]
+  search: (index: GlobalSearchEntry[], query: string) => GlobalSearchResult[]
+  categoryLabel: (category: GlobalSearchCategory) => string
+}
+
+let globalSearchRuntimePromise: Promise<GlobalSearchRuntime> | null = null
+
+function loadGlobalSearchRuntime(): Promise<GlobalSearchRuntime> {
+  if (!globalSearchRuntimePromise) {
+    globalSearchRuntimePromise = import('lib/global-search').then((runtime) => ({
+      index: runtime.buildGlobalSearchIndex(),
+      search: runtime.searchGlobal,
+      categoryLabel: runtime.globalSearchCategoryLabel,
+    }))
+  }
+  return globalSearchRuntimePromise
+}
 
 const Root = styled.div`
   position: relative;
-  width: clamp(190px, 18vw, 300px);
+  width: 100%;
   max-width: 100%;
-  flex-shrink: 1;
-
-  @media (max-width: 1279px) {
-    width: clamp(180px, 16vw, 210px);
-  }
+  flex: 1 1 auto;
+  min-width: 0;
 
   @media (max-width: 1023px) {
     width: 100%;
@@ -29,8 +43,9 @@ const Dropdown = styled.div`
   top: calc(100% + 8px);
   left: 0;
   right: 0;
+  min-width: min(360px, 92vw);
   z-index: 200;
-  max-height: 420px;
+  max-height: 460px;
   overflow: auto;
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -39,17 +54,13 @@ const Dropdown = styled.div`
   padding: 8px;
 `
 
-const ResultButton = styled.button<{ $active?: boolean }>`
+const ResultRow = styled.div<{ $active?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  gap: 8px;
   width: 100%;
-  border: none;
   border-radius: 10px;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
+  padding: 10px 10px 8px;
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.12)' : 'transparent')};
   color: ${colors.textPrimary};
   font-family: ${typography.fontFamily.body};
@@ -59,25 +70,108 @@ const ResultButton = styled.button<{ $active?: boolean }>`
   }
 `
 
+const ResultMain = styled.a`
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+`
+
+const LogoWrap = styled.span`
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+`
+
+const TextCol = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`
+
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+`
+
 const ResultLabel = styled.span`
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Verified = styled.span`
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #6ddc8c;
+  letter-spacing: 0.02em;
 `
 
 const ResultMeta = styled.span`
   font-size: 12px;
   color: #8f8f8f;
   line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const CategoryTag = styled.span`
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #F4C430;
+  color: #f4c430;
+`
+
+const Actions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 38px;
+`
+
+const ActionBtn = styled.a`
+  appearance: none;
+  cursor: pointer;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+
+  &:hover {
+    border-color: rgba(244, 196, 48, 0.4);
+    color: #f4c430;
+  }
 `
 
 const EmptyState = styled.div`
@@ -88,23 +182,32 @@ const EmptyState = styled.div`
 `
 
 const GlobalSearch: React.FC = () => {
-  const router = useRouter()
   const rootRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [searchRuntime, setSearchRuntime] = useState<GlobalSearchRuntime | null>(null)
+  const [isSearchLoading, setIsSearchLoading] = useState(false)
 
-  const index = useMemo(() => buildGlobalSearchIndex(), [])
-  const results = useMemo(() => searchGlobal(index, query), [index, query])
+  const ensureSearchRuntime = useCallback(() => {
+    if (searchRuntime) return Promise.resolve(searchRuntime)
+    setIsSearchLoading(true)
+    return loadGlobalSearchRuntime().then((runtime) => {
+      setSearchRuntime(runtime)
+      setIsSearchLoading(false)
+      return runtime
+    })
+  }, [searchRuntime])
 
-  const navigateTo = useCallback(
-    (result: GlobalSearchResult) => {
-      setOpen(false)
-      setQuery('')
-      void router.push(result.href)
-    },
-    [router],
+  const results = useMemo(
+    () => (searchRuntime ? searchRuntime.search(searchRuntime.index, query) : []),
+    [query, searchRuntime],
   )
+
+  const closeSearch = useCallback(() => {
+    setOpen(false)
+    setQuery('')
+  }, [])
 
   const showDropdown = open && query.trim().length > 0
 
@@ -119,11 +222,12 @@ const GlobalSearch: React.FC = () => {
         const input = rootRef.current?.querySelector('input')
         input?.focus()
         setOpen(true)
+        void ensureSearchRuntime()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [ensureSearchRuntime])
 
   useEffect(() => {
     if (!showDropdown) return undefined
@@ -156,7 +260,10 @@ const GlobalSearch: React.FC = () => {
     if (event.key === 'Enter') {
       event.preventDefault()
       const target = results[activeIndex] ?? results[0]
-      if (target) navigateTo(target)
+      if (target) {
+        closeSearch()
+        window.location.assign(target.href)
+      }
     }
   }
 
@@ -168,29 +275,70 @@ const GlobalSearch: React.FC = () => {
         onChange={(value) => {
           setQuery(value)
           setOpen(true)
+          void ensureSearchRuntime()
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true)
+          void ensureSearchRuntime()
+        }}
         onKeyDown={handleKeyDown}
       />
       {showDropdown && (
         <Dropdown data-global-search-dropdown role="listbox" aria-label="Search results">
-          {results.length === 0 ? (
+          {isSearchLoading ? (
+            <EmptyState data-global-search-loading>Preparing search…</EmptyState>
+          ) : results.length === 0 ? (
             <EmptyState data-global-search-empty>No results found</EmptyState>
           ) : (
-            results.map((result, index) => (
-              <ResultButton
+            results.map((result: GlobalSearchResult, index) => (
+              <ResultRow
                 key={result.id}
-                type="button"
                 data-global-search-result
                 data-result-id={result.id}
+                data-result-chain={result.chainId ?? undefined}
+                data-result-address={result.address ?? undefined}
                 $active={index === activeIndex}
                 onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => navigateTo(result)}
               >
-                <ResultLabel>{result.label}</ResultLabel>
-                {result.subtitle && <ResultMeta>{result.subtitle}</ResultMeta>}
-                <CategoryTag>{globalSearchCategoryLabel(result.category)}</CategoryTag>
-              </ResultButton>
+                <ResultMain href={result.href} onClick={closeSearch}>
+                  <LogoWrap aria-hidden>
+                    <MelegaTokenAvatar
+                      name={result.label}
+                      symbol={result.label}
+                      size={28}
+                      address={result.address ?? undefined}
+                      chainId={result.chainId ?? undefined}
+                      logoURI={result.logoUrl ?? undefined}
+                      radius="circle"
+                    />
+                  </LogoWrap>
+                  <TextCol>
+                    <TitleRow>
+                      <ResultLabel>{result.label}</ResultLabel>
+                      {result.chainId != null ? <MelegaExploreChainBadge chainId={result.chainId} /> : null}
+                      {result.verified ? <Verified>Verified</Verified> : null}
+                    </TitleRow>
+                    {result.subtitle ? <ResultMeta>{result.subtitle}</ResultMeta> : null}
+                    <CategoryTag>{searchRuntime?.categoryLabel(result.category) ?? result.category}</CategoryTag>
+                  </TextCol>
+                </ResultMain>
+                {result.actions && result.actions.length > 0 ? (
+                  <Actions data-global-search-actions>
+                    {result.actions.map((action) => (
+                      <ActionBtn
+                        key={`${result.id}-${action.label}`}
+                        href={action.href}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          closeSearch()
+                        }}
+                      >
+                        {action.label}
+                      </ActionBtn>
+                    ))}
+                  </Actions>
+                ) : null}
+              </ResultRow>
             ))
           )}
         </Dropdown>

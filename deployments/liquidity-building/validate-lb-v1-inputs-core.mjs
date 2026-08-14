@@ -62,8 +62,8 @@ export function validateDeploymentInputs(doc, opts = {}) {
   if (!doc.compiler?.viaIR) reasons.push('compiler.viaIR required');
   if (doc.compiler?.optimizerRuns !== 200) reasons.push('optimizerRuns must be 200');
 
-  if (doc.protocolParameters?.successFeeBps !== 500) {
-    reasons.push('successFeeBps must be 500');
+  if (doc.protocolParameters?.successFeeBps !== 1000) {
+    reasons.push('successFeeBps must be 1000');
   }
   if (!doc.protocolParameters?.initialFinalityDepth || doc.protocolParameters.initialFinalityDepth < 1) {
     reasons.push('initialFinalityDepth must be non-zero');

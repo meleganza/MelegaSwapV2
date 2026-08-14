@@ -36,10 +36,11 @@ export const TradeMarketPanel: React.FC<TradeMarketPanelProps> = ({
   inputCurrencyId,
   outputCurrencyId,
 }) => {
-  const { recentSwaps, pairStats, pairPrice } = useTradeTerminalData(
+  const { recentSwaps, pairStats, pairPrice, primaryPairAddress } = useTradeTerminalData(
     inputSymbol,
     outputSymbol,
     outputCurrencyId,
+    inputCurrencyId,
   )
 
   return (
@@ -51,6 +52,7 @@ export const TradeMarketPanel: React.FC<TradeMarketPanelProps> = ({
         outputCurrencyId={outputCurrencyId}
         priceUsd={pairPrice?.value}
         change24h={pairPrice?.change24h}
+        pairAddress={primaryPairAddress}
       />
       <TradePairStats stats={pairStats} />
       <LowerGrid>

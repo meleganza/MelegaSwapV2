@@ -171,13 +171,8 @@ describe('PASSPORT_MODULE_001 Hero Identity', () => {
       'PassportHeroIdentityModule.tsx',
       'PassportHeroCopy.tsx',
       'PassportIdentityCard.tsx',
-      'PassportScreen.tsx',
     ]
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    const blob = `${files
-      .filter((f) => f !== 'PassportScreen.tsx')
-      .map((f) => load(f))
-      .join('\n')}\n${screen}`
+    const blob = files.map((f) => load(f)).join('\n')
     expect(blob).toContain('MARCO Passport')
     expect(blob).toContain('MARCO PASSPORT')
     expect(blob).toContain('Your identity.')
@@ -200,7 +195,6 @@ describe('PASSPORT_MODULE_001 Hero Identity', () => {
       .join('\n')
     expect(heroOwned).not.toContain('ConnectWalletButton')
     expect(heroOwned).not.toContain('Connect Wallet')
-    // Production path never defaults verification to verified
     expect(buildPassportHeroIdentityViewModel({ address: null }).verificationState).not.toBe('verified')
     expect(
       buildPassportHeroIdentityViewModel({
@@ -209,21 +203,20 @@ describe('PASSPORT_MODULE_001 Hero Identity', () => {
     ).not.toBe('verified')
   })
 
-  it('Hero does not embed Connect Wallet; route still uses PassportScreen', () => {
+  it('Hero library omits Connect Wallet; /passport mounts Passport V1', () => {
     const hero = load('PassportHeroCopy.tsx')
     expect(hero).not.toContain('ConnectWallet')
     expect(hero).not.toContain('Connect Wallet')
     const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
-    expect(page).toContain('views/Passport/PassportScreen')
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportHeroIdentityModule')
-    expect(screen).toContain('CommandCenterScreen')
-    expect(screen).toContain('passport-guest-bridge')
+    expect(page).toContain('views/Passport/v1/PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild="zero-rebuild-v1"')
+    expect(v1).not.toContain('CommandCenterScreen')
   })
 
-  it('does not mount ArchitectureShell on live Passport screen', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).not.toContain('PassportArchitectureShell')
+  it('does not mount ArchitectureShell on Passport V1', () => {
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
   it('zero production mock identity / mockup money values', () => {

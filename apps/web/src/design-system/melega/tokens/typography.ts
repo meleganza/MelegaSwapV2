@@ -1,13 +1,8 @@
 /**
  * Melega DEX design system — typography tokens.
- * Backed by DS001.1 (Sora → Inter → system-ui). Legacy size keys snap to scale.
+ * Backed by DS001.1 (Melega Relative display + Inter product UI). Legacy size keys snap to scale.
  */
-import {
-  ds001FontFamily,
-  ds001FontSize,
-  ds001FontWeight,
-  ds001TypeRoles,
-} from './ds001/typography'
+import { ds001FontFamily, ds001FontSize, ds001FontWeight, ds001TypeRoles } from './ds001/typography'
 
 export const fontFamily = {
   body: ds001FontFamily.body,

@@ -43,7 +43,7 @@ export interface ExecutionPolicy {
   exactInput: 'supported'
   exactOutput: 'blocked'
   feeOnTransfer: 'blocked'
-  settlementLayer: 'treasury-runtime'
+  settlementLayer: 'decommissioned' | 'treasury-runtime'
 }
 
 export interface CompliancePolicy {

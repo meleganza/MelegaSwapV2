@@ -1,6 +1,6 @@
 import memoize from 'lodash/memoize'
-import { ContextApi } from '@pancakeswap/localization'
-import { PageMeta } from './types'
+import type { ContextApi } from '@pancakeswap/localization'
+import type { PageMeta } from './types'
 import { ASSET_CDN } from './endpoints'
 
 export const DEFAULT_META: PageMeta = {

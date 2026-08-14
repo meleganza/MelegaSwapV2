@@ -107,7 +107,7 @@ const responsiveProperties = defineProperties({
       '75': 75,
       '99': 99,
       '100': 100,
-      modal: 100,
+      modal: 1200,
       auto: 'auto',
     },
     borderTop: {

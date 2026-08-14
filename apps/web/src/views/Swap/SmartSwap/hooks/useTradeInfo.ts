@@ -72,7 +72,8 @@ export function useTradeInfo({
     if (!trade && !v2Trade) {
       return null
     }
-    const smartRouterAvailable = useSmartRouter && !!trade
+    const smartRouterAvailable =
+      useSmartRouter && !!trade && Boolean(SMART_ROUTER_ADDRESS[chainId])
     const fallbackV2 = !smartRouterAvailable || trade?.route.routeType === RouteType.V2
 
     if (fallbackV2) {

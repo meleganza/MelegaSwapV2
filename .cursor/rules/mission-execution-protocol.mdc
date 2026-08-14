@@ -1,0 +1,45 @@
+---
+description: Auto-commit and push protocol for Mission 29+ when all safety criteria pass
+alwaysApply: true
+---
+
+# Mission Execution Protocol (Mission 29+)
+
+After implementing a mission, auto-commit and push **only if ALL** conditions are true:
+
+1. Tests passed
+2. `next build` passed
+3. Forbidden files untouched (`exchange.ts`, `contracts.ts`, router, wallet, swap, farms, pools, MasterChef, NFT, token lists)
+4. No unrelated files changed
+5. Working tree contains only mission-scoped files
+6. No blockchain writes added
+7. No router/contracts/wallet/swap/farms/pools/NFT logic modified
+8. Mission output includes required manifest, if specified
+9. Branch name is mission-specific (`missionXX-<short-kebab-title>`)
+10. No merge and no PR created
+
+## When all conditions pass — do automatically (no manual approval wait)
+
+1. Create or switch to the dedicated mission branch
+2. Commit **only** mission-scoped files
+3. Push to origin
+4. Return final report
+
+**Commit message:** `Mission XX: <Mission Title>`
+
+## Final report must include
+
+- branch
+- commit hash
+- push status
+- files committed
+- tests/build result
+- forbidden files untouched confirmation
+- remaining uncommitted files
+- Vercel status if available
+
+## If ANY condition fails
+
+- Do **not** commit
+- Do **not** push
+- Return the blocker and wait for instruction

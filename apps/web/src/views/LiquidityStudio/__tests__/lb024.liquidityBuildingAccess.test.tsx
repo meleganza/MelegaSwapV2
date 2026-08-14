@@ -58,7 +58,7 @@ describe('LB024 Liquidity Building access', () => {
   it('5. Setup remains accessible while external gates are blocked', () => {
     expect(PANEL_SRC).toMatch(/card\.startSetup/)
     expect(PANEL_SRC).toMatch(/lb-setup-view/)
-    expect(LB_UX.startCta).toBe('Set Up Liquidity Building')
+    expect(LB_UX.startCta).toBe('Create Liquidity Program')
   })
 
   it('6. Production activation stays disabled while activationAuthorized=false', () => {
@@ -73,7 +73,7 @@ describe('LB024 Liquidity Building access', () => {
   })
 
   it('7. Activation Pending renders truthfully', () => {
-    expect(LB_UX.activationPendingBadge).toBe('Activation Pending')
+    expect(LB_UX.activationPendingBadge).toBe('Almost ready')
     expect(PANEL_SRC).toMatch(/lb-blocked-banner|lb-review-activation-pending/)
     expect(PANEL_SRC).not.toMatch(/\bKMS\b|\bBC003S\b|\bHSM\b/)
   })

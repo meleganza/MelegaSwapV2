@@ -1,11 +1,12 @@
 /**
  * POOLS_MODULE_003 — wallet-scoped positions hook.
- * Composes shared portfolioPools; retains last-good on transient failure.
- * Module-level cache survives remount / navigation for the same chain+wallet.
+ * Multichain: retains last-good per chain+wallet and unions for display.
+ * One chain failure must not blank other chains' cached positions.
  */
 
 import { useEffect, useMemo, useRef } from 'react'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { unionPositionsByWallet } from 'lib/data-truth/multichainPositions'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolsWalletPositionsViewModel } from './buildPoolsWalletPositions'
 import type { PoolsMyPositionsViewModel, PoolsWalletPosition } from './poolsMyPositionsTypes'
@@ -38,6 +39,18 @@ function writeLastGood(entry: LastGoodEntry): void {
   lastGoodByScope.set(key, entry)
 }
 
+function collectWalletCaches(wallet: string | null): Map<number, PoolsWalletPosition[]> {
+  const out = new Map<number, PoolsWalletPosition[]>()
+  if (!wallet) return out
+  const w = wallet.toLowerCase()
+  for (const entry of lastGoodByScope.values()) {
+    if (entry.wallet.toLowerCase() !== w) continue
+    if (!entry.positions.length) continue
+    out.set(entry.chainId, entry.positions)
+  }
+  return out
+}
+
 /** Test / diagnostics helper — do not use in product UI. */
 export function __poolsWalletPositionsCacheSizeForTests(): number {
   return lastGoodByScope.size
@@ -53,7 +66,6 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
   const account = runtime.account ?? null
   const chainId = activeChainId ?? runtime.machine?.chainId ?? null
 
-  // Synchronous scope identity — wallet/chain change invalidates only the old commit path.
   const scopeKey = `${account?.toLowerCase() ?? ''}:${chainId ?? ''}`
   if (scopeKey !== lastScopeKeyRef.current) {
     lastScopeKeyRef.current = scopeKey
@@ -64,7 +76,6 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
 
   useEffect(() => {
     return () => {
-      // Cancel in-flight commit path on unmount; do NOT clear module last-good cache.
       abortRef.current?.abort()
     }
   }, [])
@@ -89,7 +100,6 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
       sourcesFailed: runtime.phase === 'error',
     })
 
-    // Stale generation or aborted scope must not commit into the cache.
     if (signal?.aborted || vm.generation !== generationRef.current) {
       return vm
     }
@@ -100,7 +110,6 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
       chainId != null
     ) {
       if (vm.state === 'empty') {
-        // Never replace a non-empty last-good with a transient empty response.
         if (!cached?.positions.length) {
           writeLastGood({ wallet: account, chainId, positions: [], generation, updatedAt: Date.now() })
         }
@@ -115,14 +124,21 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
       }
     }
 
-    return vm
-  }, [
-    account,
-    chainId,
-    runtime.portfolioPools,
-    runtime.userDataLoaded,
-    runtime.phase,
-  ])
+    const aggregated = unionPositionsByWallet(vm.positions, collectWalletCaches(account), chainId)
+    const hasCrossChain = aggregated.length > vm.positions.length
+    if (!hasCrossChain) return vm
+
+    return {
+      ...vm,
+      positions: aggregated,
+      visiblePositions: aggregated.slice(0, vm.visiblePositions.length || aggregated.length),
+      totalCount: aggregated.length,
+      showCountBadge: aggregated.length > 0,
+      liveRegion: `${aggregated.length} pool position${aggregated.length === 1 ? '' : 's'} across chains`,
+      moduleDisclosure: vm.moduleDisclosure || 'Showing positions from all LIVE chains with known data.',
+      state: aggregated.length ? (vm.state === 'empty' ? 'ready' : vm.state) : vm.state,
+    }
+  }, [account, chainId, runtime.portfolioPools, runtime.userDataLoaded, runtime.phase])
 }
 
 export { buildPoolsWalletPositionsViewModel }

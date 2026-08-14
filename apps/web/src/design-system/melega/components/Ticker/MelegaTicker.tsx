@@ -36,6 +36,8 @@ const Strip = styled.div<{
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 48px;
   border-top: 1px solid rgba(244, 196, 48, 0.1);
   border-bottom: 1px solid rgba(244, 196, 48, 0.1);
@@ -57,10 +59,20 @@ const Strip = styled.div<{
 const TrackWrap = styled.div`
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   cursor: grab;
   display: flex;
   align-items: center;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 
   &:active {
     cursor: grabbing;
@@ -73,7 +85,7 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 40s linear infinite;
+  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 52s linear infinite;
   animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
 
   @media (prefers-reduced-motion: reduce) {
@@ -265,6 +277,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
       </AnchorWrap>
       <TrackWrap
+        data-melega-ticker-track
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}

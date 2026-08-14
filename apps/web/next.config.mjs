@@ -3,6 +3,13 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
 import BundleAnalyzer from '@next/bundle-analyzer'
 import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const webRoot = path.dirname(fileURLToPath(import.meta.url))
+const localTokensPackage = path.resolve(webRoot, '../../packages/tokens')
+const localUiWalletsPackage = path.resolve(webRoot, '../../packages/ui-wallets')
+const localUikitPackage = path.resolve(webRoot, '../../packages/uikit')
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -37,6 +44,9 @@ const config = {
   },
   experimental: {
     scrollRestoration: true,
+    // The lockfile pins Next 13.0.7, where workspace transpilation still lives
+    // under `experimental`. Keeping it here also makes Vercel transpile the
+    // source aliases below instead of trying to parse them as published JS.
     transpilePackages: [
       '@pancakeswap/ui',
       '@pancakeswap/uikit',
@@ -116,26 +126,80 @@ const config = {
   },
   async redirects() {
     return [
-      // UX Rebuild: Trade landing consolidates into Home Instant Swap
+      // Performance cleanup: retire obsolete consumer surfaces instead of
+      // mounting the legacy React Router compatibility runtime in every app.
+      {
+        source: '/ilo/:path*',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/nft/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/nftmarket/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/viewNFTs/:path*',
+        destination: '/projects',
+        permanent: true,
+      },
+      // The approved contract-first List workspace replaces the old import
+      // console, launch interstitial and generic Build Studio consumer pages.
+      {
+        source: '/import-existing-token',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/launch',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/build-studio',
+        destination: '/list',
+        permanent: true,
+      },
+      {
+        source: '/farms/history/:path*',
+        destination: '/farms?view=my',
+        permanent: true,
+      },
+      {
+        source: '/pools/history/:path*',
+        destination: '/pools?view=my',
+        permanent: true,
+      },
+      // Founder P0: /trade is the Swap shell (preserve query string).
       {
         source: '/trade',
-        destination: '/?focus=swap',
+        destination: '/swap',
         permanent: false,
       },
       {
         source: '/trade/',
-        destination: '/?focus=swap',
-        permanent: false,
-      },
-      // UX Rebuild: Projects directory consolidates into Home discovery
-      {
-        source: '/projects',
-        destination: '/?focus=projects',
+        destination: '/swap',
         permanent: false,
       },
       {
-        source: '/projects/',
-        destination: '/?focus=projects',
+        source: '/trade/:path*',
+        destination: '/swap/:path*',
+        permanent: false,
+      },
+      // Trending is a ranking layer inside Projects (honest public destination).
+      {
+        source: '/trending',
+        destination: '/projects?sort=trending',
+        permanent: false,
+      },
+      {
+        source: '/trending/',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       // PP001: legacy project detail → canonical `/@{slug}`
@@ -166,7 +230,7 @@ const config = {
       },
       {
         source: '/farms/archived',
-        destination: '/farms/history',
+        destination: '/farms?view=my',
         permanent: true,
       },
       {
@@ -186,7 +250,7 @@ const config = {
       },
       {
         source: '/nfts',
-        destination: '/collectibles',
+        destination: '/projects',
         permanent: true,
       },
       {
@@ -220,6 +284,18 @@ const config = {
         permanent: false,
       },
     ]
+  },
+  webpack(webpackConfig) {
+    // Recovery Wave 2: never bundle a workspace package through a stale
+    // worktree symlink. A foreign @pancakeswap/tokens copy duplicated SDK,
+    // JSBI, decimal and BN modules in every canonical route.
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      '@pancakeswap/tokens': localTokensPackage,
+      '@pancakeswap/ui-wallets': localUiWalletsPackage,
+      '@pancakeswap/uikit': localUikitPackage,
+    }
+    return webpackConfig
   },
   // webpack: (webpackConfig, { webpack }) => {
   //   // tree shake sentry tracing

@@ -24,6 +24,8 @@ export type DiscoveryPoolMetrics = {
   tvlUsd?: number | null
   volumeUsd?: number | null
   feesUsd?: number | null
+  /** Factual LP APR when subgraph provides lpApr7d (>0). */
+  aprPct?: number | null
 }
 
 const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
@@ -84,9 +86,13 @@ export type DiscoveryPoolCardModel = {
   tvlLabel: string
   volumeLabel: string
   feesLabel: string
+  aprLabel: string
+  liquidityLabel: string
+  reservesLabel: string
   tvlUsd: number | null
   volumeUsd: number | null
   feesUsd: number | null
+  aprPct: number | null
   metricSourceNote?: string
   lastVerified?: string
   addHref: string
@@ -102,13 +108,29 @@ export function isResolvedDiscoverySymbol(symbol: string): boolean {
  * Resolve a human token symbol for discovery cards.
  * Never returns a contract address as the primary label.
  */
-export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
+function shortAddressLabel(address: string): string {
+  const a = address.trim()
+  if (!/^0x[a-fA-F0-9]{40}$/.test(a)) return 'Token'
+  return `${a.slice(0, 6)}…${a.slice(-4)}`
+}
+
+/**
+ * Resolve a human token symbol for discovery cards.
+ * Order: pair metadata → canonical registry → asset index → short address.
+ * Never invent cross-chain metadata; only return "Unknown" when address is invalid.
+ */
+export function resolveDiscoverySymbol(address: string, pairSymbol?: string, chainId = MELEGA_CHAIN_ID): string {
   const trimmed = pairSymbol?.trim()
-  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…')) return trimmed
-  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
-  if (canonical?.symbol && !/^0x/i.test(canonical.symbol)) return canonical.symbol
+  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…') && trimmed.toLowerCase() !== 'unknown') {
+    return trimmed
+  }
+  const canonical = lookupCanonicalToken(chainId, address)
+  if (canonical?.symbol && !/^0x/i.test(canonical.symbol) && canonical.symbol.toLowerCase() !== 'unknown') {
+    return canonical.symbol
+  }
   const fromAssets = ASSET_SYMBOL_BY_ADDRESS.get(address.toLowerCase())
-  if (fromAssets) return fromAssets
+  if (fromAssets && fromAssets.toLowerCase() !== 'unknown') return fromAssets
+  if (/^0x[a-fA-F0-9]{40}$/.test(address.trim())) return shortAddressLabel(address)
   return 'Unknown'
 }
 
@@ -205,6 +227,16 @@ export function toDiscoveryCard(
     feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
     '24h fees source: Info subgraph unavailable for this pair',
   )
+  const aprPct =
+    metrics?.aprPct != null && Number.isFinite(metrics.aprPct) && metrics.aprPct > 0 ? metrics.aprPct : null
+  const aprLabel =
+    aprPct != null ? `${aprPct >= 100 ? aprPct.toFixed(0) : aprPct.toFixed(2)}%` : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
+  const r0 = Number(pair.reserve0 ?? '0')
+  const r1 = Number(pair.reserve1 ?? '0')
+  const reservesLabel =
+    Number.isFinite(r0) && Number.isFinite(r1) && (r0 > 0 || r1 > 0)
+      ? `${r0 > 0 ? r0.toPrecision(4) : '0'} / ${r1 > 0 ? r1.toPrecision(4) : '0'}`
+      : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
   const qualityScore =
     (resolved.active ? 1_000_000 : 0) +
     (identityResolved ? 100_000 : 0) +
@@ -227,10 +259,16 @@ export function toDiscoveryCard(
     tvlLabel: tvl.label,
     volumeLabel: volume.label,
     feesLabel: fees.label,
+    aprLabel,
+    liquidityLabel: tvl.label,
+    reservesLabel,
     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
-    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
+    aprPct,
+    metricSourceNote: [tvl.note, volume.note, fees.note, aprPct == null ? 'APR: subgraph lpApr7d unavailable' : null]
+      .filter(Boolean)
+      .join(' · ') || undefined,
     lastVerified: pair.lastVerified,
     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
     classification: pair.classification,
@@ -317,7 +355,24 @@ export function sortDiscoveryCards(
 }
 
 export function searchDiscoveryPairs(pairs: ClassifiedAmmPair[], query: string): ClassifiedAmmPair[] {
-  return searchPairs(pairs, query)
+  const q = query.trim().toLowerCase()
+  if (!q) return pairs
+  // Resolve address→symbol before matching — ClassifiedAmmPair often lacks symbol0/1.
+  return pairs.filter((p) => {
+    if (
+      p.pairAddress?.toLowerCase().includes(q) ||
+      p.token0?.toLowerCase().includes(q) ||
+      p.token1?.toLowerCase().includes(q) ||
+      p.symbol0?.toLowerCase().includes(q) ||
+      p.symbol1?.toLowerCase().includes(q)
+    ) {
+      return true
+    }
+    const s0 = resolveDiscoverySymbol(p.token0 ?? '', p.symbol0).toLowerCase()
+    const s1 = resolveDiscoverySymbol(p.token1 ?? '', p.symbol1).toLowerCase()
+    const pairName = `${s0}/${s1}`
+    return s0.includes(q) || s1.includes(q) || pairName.includes(q)
+  })
 }
 
 /** Which filter chips are factual for the current dataset. */

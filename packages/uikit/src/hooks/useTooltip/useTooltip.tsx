@@ -1,4 +1,3 @@
-import { AnimatePresence, Variants, LazyMotion, domAnimation } from "framer-motion";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
@@ -8,18 +7,6 @@ import getPortalRoot from "../../util/getPortalRoot";
 import isTouchDevice from "../../util/isTouchDevice";
 import { Arrow, StyledTooltip } from "./StyledTooltip";
 import { TooltipOptions, TooltipRefs } from "./types";
-
-const animationVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-};
-
-const animationMap = {
-  initial: "initial",
-  animate: "animate",
-  exit: "exit",
-};
 
 const invertTheme = (currentTheme: DefaultTheme) => {
   if (currentTheme.isDark) {
@@ -32,7 +19,7 @@ const useTooltip = (content: React.ReactNode, options?: TooltipOptions): Tooltip
   const { isDark } = useTheme();
   const {
     placement = "auto",
-      trigger = "hover",
+    trigger = "hover",
     arrowPadding = 16,
     tooltipPadding = { left: 16, right: 16 },
     tooltipOffset = [0, 10],
@@ -205,9 +192,6 @@ const useTooltip = (content: React.ReactNode, options?: TooltipOptions): Tooltip
   const tooltip = (
     <StyledTooltip
       data-theme={isDark ? "dark" : "light"}
-      {...animationMap}
-      variants={animationVariants}
-      transition={{ duration: 0.3 }}
       ref={setTooltipElement}
       style={styles.popper}
       {...attributes.popper}
@@ -217,18 +201,14 @@ const useTooltip = (content: React.ReactNode, options?: TooltipOptions): Tooltip
     </StyledTooltip>
   );
 
-  const AnimatedTooltip = (
-    <LazyMotion features={domAnimation}>
-      <AnimatePresence>{visible && tooltip}</AnimatePresence>
-    </LazyMotion>
-  );
+  const visibleTooltip = visible ? tooltip : null;
 
   const portal = getPortalRoot();
-  const tooltipInPortal = portal ? createPortal(AnimatedTooltip, portal) : null;
+  const tooltipInPortal = portal ? createPortal(visibleTooltip, portal) : null;
 
   return {
     targetRef: setTargetElement,
-    tooltip: tooltipInPortal ?? AnimatedTooltip,
+    tooltip: tooltipInPortal ?? visibleTooltip,
     tooltipVisible: visible,
   };
 };

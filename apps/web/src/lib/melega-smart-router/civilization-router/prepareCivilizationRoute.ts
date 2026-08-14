@@ -180,14 +180,14 @@ export function prepareCivilizationRoute(input: CivilizationRouteInput): Civiliz
       return blocked(
         input,
         'NARRATIVE_TRADE_BLOCKED_BY_MISSING_ROUTER_CONTRACT',
-        'Narrative trade requires deployed Melega Smart Router Wrapper and Treasury Runtime intake — not executable.',
+        'Narrative trade requires deployed Melega Smart Router Wrapper — not executable.',
       )
 
     case 'AI_SERVICE':
       return blocked(
         input,
         'AI_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT',
-        'AI service routing requires deployed wrapper and Treasury Runtime settlement — not executable.',
+        'AI service routing requires deployed wrapper and published settlement schema — not executable.',
       )
 
     case 'MARKETPLACE_SERVICE':
@@ -201,21 +201,21 @@ export function prepareCivilizationRoute(input: CivilizationRouteInput): Civiliz
       return blocked(
         input,
         'MARKETPLACE_SETTLEMENT_BLOCKED_BY_MISSING_ROUTER_CONTRACT',
-        'Marketplace settlement is owned by Treasury Runtime — Smart Router prepares handoff only.',
+        'Marketplace settlement schema not published — Smart Router prepares handoff metadata only.',
       )
 
     case 'TREASURY_TRANSFER':
       return blocked(
         input,
         'TREASURY_TRANSFER_BLOCKED_BY_MISSING_RUNTIME',
-        'Treasury transfer settlement is owned by Treasury Runtime — no local execution.',
+        'Treasury transfer settlement schema not published — no local execution.',
       )
 
     case 'REFERRAL':
       return blocked(
         input,
         'REFERRAL_BLOCKED_BY_MISSING_RUNTIME',
-        'Referral settlement is owned by Treasury Runtime (SRD-01) — Smart Router never splits locally.',
+        'Referral settlement schema not published (SRD-01) — Smart Router never splits locally.',
       )
 
     case 'INTERNAL_ROUTING':

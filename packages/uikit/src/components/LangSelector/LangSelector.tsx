@@ -26,27 +26,41 @@ const LangSelector: React.FC<React.PropsWithChildren<Props>> = ({
   setLang,
   dropdownPosition = "top",
   buttonScale = "md",
-}) => (
-  <Dropdown
-    position={dropdownPosition}
-    target={
-      <Button scale={buttonScale} variant="text" startIcon={<LanguageIcon color={color} width="24px" />}>
-        {currentLang && <Text color={color}>{currentLang.toUpperCase()}</Text>}
-      </Button>
-    }
-  >
-    {langs.map((lang) => (
-      <MenuButton
-        key={lang.locale}
-        fullWidth
-        onClick={() => setLang(lang)}
-        // Safari fix
-        style={{ minHeight: "32px", height: "auto" }}
+}) => {
+  // The full language list is sizeable and this selector is present on every
+  // route. Mount it only after the user shows intent to open the menu.
+  const [menuMounted, setMenuMounted] = React.useState(false);
+
+  return (
+    <div
+      onPointerEnter={() => setMenuMounted(true)}
+      onFocusCapture={() => setMenuMounted(true)}
+      onClick={() => setMenuMounted(true)}
+    >
+      <Dropdown
+        position={dropdownPosition}
+        target={
+          <Button scale={buttonScale} variant="text" startIcon={<LanguageIcon color={color} width="24px" />}>
+            {currentLang && <Text color={color}>{currentLang.toUpperCase()}</Text>}
+          </Button>
+        }
       >
-        {lang.language}
-      </MenuButton>
-    ))}
-  </Dropdown>
-);
+        {menuMounted
+          ? langs.map((lang) => (
+              <MenuButton
+                key={lang.locale}
+                fullWidth
+                onClick={() => setLang(lang)}
+                // Safari fix
+                style={{ minHeight: "32px", height: "auto" }}
+              >
+                {lang.language}
+              </MenuButton>
+            ))
+          : null}
+      </Dropdown>
+    </div>
+  );
+};
 
 export default React.memo(LangSelector, (prev, next) => prev.currentLang === next.currentLang);

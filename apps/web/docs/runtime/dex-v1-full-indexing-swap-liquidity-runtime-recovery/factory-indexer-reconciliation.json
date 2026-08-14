@@ -1,9 +1,0 @@
-{
-  "factoryAllPairsLength": 516,
-  "onDiskRegistryPairs": 516,
-  "apiPageSizeCap": 100,
-  "match": true,
-  "status": "COMPLETE",
-  "discrepancy": null,
-  "explanation": "On-disk registry equals live Factory allPairsLength"
-}

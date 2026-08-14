@@ -71,7 +71,7 @@ describe('FSC-01 constitution consumption', () => {
   it('loads treasury runtime split policy without local DEX splits', () => {
     const fsc = getFsc01Constitution()
     expect(fsc.policyRef).toBe(FSC_01_POLICY_REF)
-    expect(fsc.owner).toBe('Treasury Runtime')
+    expect(fsc.owner).toBe('MELEGA TREASURY WALLET')
     expect(fsc.splits.map((s) => s.percent)).toEqual([52.5, 22.5, 10, 10, 5])
     expect(fsc.splits.find((s) => s.destination === 'referral_distribution')?.referralSpec).toBe('SRD-01')
   })

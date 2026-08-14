@@ -9,23 +9,29 @@ const ERC20_ABI = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
   'function decimals() view returns (uint8)',
+  'function totalSupply() view returns (uint256)',
 ]
 
 const RPC_BY_CHAIN: Record<number, string[]> = {
-  56: [
-    process.env.BSC_RPC_URL,
-    process.env.BSC_RPC_FALLBACK_URL,
-    ...BSC_RPC_URLS,
-  ].filter((u): u is string => Boolean(u && u.trim())),
+  56: [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL, ...BSC_RPC_URLS].filter((u): u is string =>
+    Boolean(u && u.trim()),
+  ),
   1: [process.env.ETH_RPC_URL, 'https://ethereum.publicnode.com'].filter((u): u is string => Boolean(u && u.trim())),
   137: [process.env.POLYGON_RPC_URL, 'https://polygon-rpc.com'].filter((u): u is string => Boolean(u && u.trim())),
   8453: [process.env.BASE_RPC_URL, 'https://mainnet.base.org'].filter((u): u is string => Boolean(u && u.trim())),
+}
+
+/** Canonical read-only RPC resolution shared by project identity and ownership proof. */
+export function getProjectRpcUrls(chainId: number): string[] {
+  return RPC_BY_CHAIN[chainId] ?? []
 }
 
 export interface Erc20OnChainIdentity {
   name: string | null
   symbol: string | null
   decimals: number | null
+  totalSupplyRaw: string | null
+  totalSupplyFormatted: string | null
   verifiedDeployment: boolean
   explorerUrl: string | null
   reasonUnavailable: string | null
@@ -45,7 +51,10 @@ function sanitizeMeta(raw: unknown, max = 64): string | null {
   return cleaned.slice(0, max)
 }
 
-async function withProvider<T>(urls: string[], fn: (provider: ethers.providers.JsonRpcProvider) => Promise<T>): Promise<T> {
+async function withProvider<T>(
+  urls: string[],
+  fn: (provider: ethers.providers.JsonRpcProvider) => Promise<T>,
+): Promise<T> {
   let lastError: unknown
   for (const url of urls) {
     try {
@@ -58,10 +67,7 @@ async function withProvider<T>(urls: string[], fn: (provider: ethers.providers.J
   throw lastError instanceof Error ? lastError : new Error('RPC unavailable')
 }
 
-export async function fetchErc20OnChainIdentity(
-  chainId: number,
-  contract: string,
-): Promise<Erc20OnChainIdentity> {
+export async function fetchErc20OnChainIdentity(chainId: number, contract: string): Promise<Erc20OnChainIdentity> {
   const address = contract.trim()
   const explorerBase = EXPLORER_BY_CHAIN[chainId]
   const explorerUrl = explorerBase ? `${explorerBase}${address}` : null
@@ -72,6 +78,8 @@ export async function fetchErc20OnChainIdentity(
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: 'Contract address is not a valid EVM address.',
@@ -83,6 +91,8 @@ export async function fetchErc20OnChainIdentity(
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: `No RPC endpoints configured for chain ${chainId}.`,
@@ -97,6 +107,8 @@ export async function fetchErc20OnChainIdentity(
           name: null,
           symbol: null,
           decimals: null,
+          totalSupplyRaw: null,
+          totalSupplyFormatted: null,
           verifiedDeployment: false,
           explorerUrl,
           reasonUnavailable: 'No contract bytecode at this address on the selected chain (not deployed).',
@@ -107,6 +119,8 @@ export async function fetchErc20OnChainIdentity(
       let name: string | null = null
       let symbol: string | null = null
       let decimals: number | null = null
+      let totalSupplyRaw: string | null = null
+      let totalSupplyFormatted: string | null = null
       const failures: string[] = []
 
       try {
@@ -126,15 +140,26 @@ export async function fetchErc20OnChainIdentity(
       } catch {
         failures.push('decimals()')
       }
+      try {
+        const supply = await token.totalSupply()
+        totalSupplyRaw = supply.toString()
+        if (decimals != null) totalSupplyFormatted = ethers.utils.formatUnits(supply, decimals)
+      } catch {
+        failures.push('totalSupply()')
+      }
 
       if (!name && !symbol) {
         return {
           name: null,
           symbol: null,
           decimals,
+          totalSupplyRaw,
+          totalSupplyFormatted,
           verifiedDeployment: true,
           explorerUrl,
-          reasonUnavailable: `Contract is deployed but ERC-20 metadata is unreadable (${failures.join(', ') || 'name/symbol failed'}).`,
+          reasonUnavailable: `Contract is deployed but ERC-20 metadata is unreadable (${
+            failures.join(', ') || 'name/symbol failed'
+          }).`,
         }
       }
 
@@ -142,6 +167,8 @@ export async function fetchErc20OnChainIdentity(
         name,
         symbol,
         decimals,
+        totalSupplyRaw,
+        totalSupplyFormatted,
         verifiedDeployment: true,
         explorerUrl,
         reasonUnavailable: null,
@@ -152,6 +179,8 @@ export async function fetchErc20OnChainIdentity(
       name: null,
       symbol: null,
       decimals: null,
+      totalSupplyRaw: null,
+      totalSupplyFormatted: null,
       verifiedDeployment: false,
       explorerUrl,
       reasonUnavailable: `RPC read failed for chain ${chainId}. Retry or verify the contract on the explorer.`,

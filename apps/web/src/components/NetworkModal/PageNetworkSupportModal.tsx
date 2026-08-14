@@ -1,5 +1,4 @@
 import { Button, Modal, Text, Grid, Message, MessageText } from '@pancakeswap/uikit'
-import { ChainId } from '@pancakeswap/sdk'
 // import Image from 'next/image'
 import { useSwitchNetwork, useSwitchNetworkLocal } from 'hooks/useSwitchNetwork'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -12,7 +11,7 @@ import { useMenuItems } from 'components/Menu/hooks/useMenuItems'
 import { getActiveMenuItem, getActiveSubMenuItem } from 'components/Menu/utils'
 import { useRouter } from 'next/router'
 import useAuth from 'hooks/useAuth'
-import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useActiveChainId, useLocalNetworkChain } from 'hooks/useActiveChainId'
 
 export function PageNetworkSupportModal() {
   const { t } = useTranslation()
@@ -20,9 +19,14 @@ export function PageNetworkSupportModal() {
   const switchNetworkLocal = useSwitchNetworkLocal()
   const { isConnected } = useWeb3React()
   const { isWrongNetwork, chainId } = useActiveChainId()
+  const localChainId = useLocalNetworkChain()
   const { logout } = useAuth()
 
   const foundChain = useMemo(() => chains.find((c) => c.id === chainId), [chainId])
+  const targetChain = useMemo(
+    () => chains.find((c) => c.id === (localChainId || chainId)) ?? foundChain,
+    [localChainId, chainId, foundChain],
+  )
   const historyManager = useHistory()
 
   const lastValidPath = historyManager?.history?.find((h) => ['/swap', 'liquidity', '/', '/info'].includes(h))
@@ -43,7 +47,7 @@ export function PageNetworkSupportModal() {
   return (
     <Modal title={title || t('Check your network')} hideCloseButton >
       <Grid style={{ gap: '16px' }} maxWidth="360px">
-        <Text bold>{t('It’s ShimmerEVM only feature')}</Text>
+        <Text bold>{t('Check your network')}</Text>
 
         {/* {image && (
           <Box mx="auto" my="8px" position="relative" width="100%" minHeight="250px">
@@ -51,17 +55,24 @@ export function PageNetworkSupportModal() {
           </Box>
         )} */}
         <Text small>
-          {t(
-            'Our all features are currently available only on ShimmerEVM! Come over and join the community in the fun!',
-          )}
+          {t('This feature is available on a different network. Switch to continue.')}
         </Text>
         {canSwitch ? (
           <Button
             variant={foundChain && lastValidPath ? 'secondary' : 'primary'}
             isLoading={isLoading}
-            onClick={() => (isWrongNetwork ? switchNetworkLocal(ChainId.BSC) : switchNetworkAsync(ChainId.BSC))}
+            onClick={() => {
+              // Prefer local/session chain — never hard-force BSC as error fallback.
+              const preferred = targetChain?.id ?? localChainId
+              if (!preferred) return
+              if (isWrongNetwork) {
+                switchNetworkLocal(preferred)
+              } else {
+                void switchNetworkAsync(preferred)
+              }
+            }}
           >
-            {t('Switch to %chain%', { chain: 'ShimmerEVM' })}
+            {t('Switch to %chain%', { chain: targetChain?.name ?? 'supported network' })}
           </Button>
         ) : (
           <Message variant="danger">

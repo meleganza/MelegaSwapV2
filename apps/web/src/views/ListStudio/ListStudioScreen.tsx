@@ -1,17 +1,13 @@
-/**
- * List Studio — MODULE_001–005 introductory rails + unified workspace.
- * Workflow content stays inside ListWorkspace (no separate routes).
- */
 import React from 'react'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { ListPageHero } from './ListPageHero'
-import { ListActionCards } from './ListActionCards'
-import { ListWhyBuildRail } from './ListWhyBuildRail'
-import { ListHowItWorks } from './ListHowItWorks'
-import { ListWorkspace } from './ListWorkspace'
 import { listOne } from './listTokens'
+import { useListIntent } from './useListIntent'
+import { ListContractFirstFunnel } from './ListContractFirstFunnel'
+
+const ListWorkspace = dynamic(() => import('./ListWorkspace').then((module) => module.ListWorkspace), { ssr: false })
 
 const Root = styled.div`
   color: ${uxRebuildColors.text};
@@ -23,67 +19,61 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  /*
-   * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
-   * Fill to 1376 — required for Hero 1376×360 with 32px side margins.
-   *
-   * Flex order: Hero → Cards → Why → How → Workspace
-   * Module 002 placeholder is visually retired (display:none) so MODULE_005
-   * owns the workspace surface without editing ListActionCards.tsx.
-   */
   max-width: ${listOne.contentMax};
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
-  padding-bottom: 48px;
-  display: flex;
-  flex-direction: column;
-
-  & > [data-testid='list-one-page-header'] {
-    order: 1;
-  }
-
-  & > [data-testid='list-action-cards'] {
-    order: 2;
-  }
-
-  & > [data-testid='list-why-build'] {
-    order: 3;
-  }
-
-  & > [data-testid='list-how-it-works'] {
-    order: 4;
-  }
-
-  & > [data-testid='list-workspace'] {
-    order: 5;
-  }
-
-  & > [data-testid='list-intent-placeholder'] {
-    order: 6;
-    display: none !important;
-  }
+  padding: 24px 0 52px;
 
   @media (max-width: 767px) {
     width: 100%;
-    /* Shell pads ~12px; add 4px → ~16px page inset (358 @ 390) */
     padding: 0 4px 40px;
   }
 `
 
+const ModalBackdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.76);
+  backdrop-filter: blur(12px);
+`
+
+const ModalSurface = styled.div`
+  width: min(1120px, 100%);
+  max-height: min(860px, calc(100vh - 36px));
+  overflow: auto;
+  border-radius: 18px;
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.7);
+
+  & [data-testid='list-workspace'] {
+    width: 100%;
+    max-width: none;
+    min-height: min(720px, calc(100vh - 36px));
+    margin: 0;
+  }
+`
+
 export const ListStudioScreen: React.FC = () => {
+  const { listIntent } = useListIntent()
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="005">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-concept="list-your-project">
       <PageMeta />
       <Content data-testid="list-one-content">
-        <ListPageHero />
-        <ListActionCards />
-        <ListWhyBuildRail />
-        <ListHowItWorks />
-        <ListWorkspace />
+        <ListContractFirstFunnel />
       </Content>
+      {listIntent ? (
+        <ModalBackdrop data-testid="list-adaptive-modal" role="presentation">
+          <ModalSurface role="dialog" aria-modal="true" aria-label="Melega DEX listing flow">
+            <ListWorkspace />
+          </ModalSurface>
+        </ModalBackdrop>
+      ) : null}
     </Root>
   )
 }

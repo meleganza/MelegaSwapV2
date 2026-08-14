@@ -1,0 +1,53 @@
+{
+  "status": 200,
+  "body": {
+    "protocol_version": "kiri:kccp/v1",
+    "data": {
+      "id": "4a075b7d-2076-4d4d-bb3c-ebd0eee0047d",
+      "repository_code": "MelegaSwapV2",
+      "product_code": "DEX",
+      "organ_code": "dex",
+      "repository_name": "MelegaSwapV2",
+      "repository_url": null,
+      "hosting_platform": null,
+      "connection_method": "kccp/v1",
+      "default_branch": "main",
+      "producer_identity": "MelegaSwapV2",
+      "allowed_scopes": [
+        "kccp:state",
+        "kccp:events",
+        "kccp:mission-results",
+        "kccp:runtime-state"
+      ],
+      "credential_status": "configured",
+      "connection_health": "receiving_updates",
+      "verification_level": "repository_verified",
+      "last_state_contract_id": "fbaa6777-eb56-495a-b4bb-28d11268c4bd",
+      "last_state_at": "2026-07-14T12:23:40.009+00:00",
+      "last_commit_sha": "c444e8b7654f271cf5328027a9b073d733c22380",
+      "last_successful_sync_at": "2026-07-14T12:23:40.747+00:00",
+      "last_failed_sync_at": null,
+      "freshness_seconds": null,
+      "next_required_action": "Founder review required to approve connection",
+      "notes": null,
+      "created_at": "2026-07-13T11:24:36.147627+00:00",
+      "updated_at": "2026-07-14T12:23:41.043055+00:00",
+      "lifecycle_state": "RECONCILIATION_PENDING",
+      "first_submission_at": "2026-07-14T12:23:40.009+00:00",
+      "last_event_at": null,
+      "last_mission_result_at": "2026-07-14T12:23:40.747+00:00",
+      "last_runtime_state_at": null,
+      "failure_count": 0,
+      "last_failure_class": null,
+      "expected_next_heartbeat_at": null,
+      "current_mission_code": "ACT-CONNECT-MelegaSwapV2",
+      "first_mission_result_at": "2026-07-14T12:23:40.747+00:00",
+      "connection_approved_at": null,
+      "connection_approved_by": null,
+      "connection_disconnected_at": null,
+      "connection_disconnected_by": null,
+      "last_founder_decision_at": null,
+      "last_founder_decision": null
+    }
+  }
+}

@@ -3,6 +3,9 @@ import type { PendingProjectRecord } from 'registry/projects/pending/types'
 import { formatPendingReviewStatusLabel } from 'registry/projects/pending/updatePendingReview'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { StaticProjectRecord } from 'registry/projects/types'
+import type { DexAssetRecord } from 'lib/dex-asset-index'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { FOUNDER_FEATURED_SLUGS } from 'views/HomeTrade/featuredProjectsCatalog'
 import type {
   MetricTone,
   ProjectPreviewCard,
@@ -21,6 +24,7 @@ import { buildOnChainMetrics } from './onChainMetrics'
 import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
 import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 
+const FEATURED_SLUG_SET = new Set<string>(FOUNDER_FEATURED_SLUGS)
 const EMPTY = '—'
 
 function shortAddress(address?: string): string {
@@ -29,10 +33,72 @@ function shortAddress(address?: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
+function chainLabel(chainId: number): string {
+  const label = CHAIN_LABELS[chainId] ?? `Chain ${chainId}`
+  if (label === 'BSC') return 'BSC'
+  return label.replace('Ethereum', 'ETH')
+}
+
+/** Indexed DEX asset without a claimed Project Page — temporary address destination. */
+export function mapIndexedAssetToPreviewCard(asset: DexAssetRecord, rank: number): ProjectPreviewCard | null {
+  if (!asset.address) return null
+  if (asset.symbol.includes('-') || asset.symbol.includes('/')) return null
+  const slug = asset.registrySlug
+  const featured = FEATURED_SLUG_SET.has(slug)
+  const verified = asset.status === 'canonical' || asset.sources.includes('registry')
+  const projectHref = resolveCanonicalProjectHref({
+    slug,
+    chainId: asset.chainId,
+    address: asset.address,
+  })
+  const chainId = asset.chainId
+  return {
+    id: `indexed-${asset.chainId}-${asset.address.toLowerCase()}`,
+    rank,
+    name: asset.name?.trim() || asset.symbol,
+    slug: slug || asset.address.toLowerCase(),
+    symbol: asset.symbol,
+    category: asset.sources.includes('farm')
+      ? 'Farm'
+      : asset.sources.includes('pool')
+        ? 'Pool'
+        : asset.sources.includes('token-list')
+          ? 'Listed'
+          : 'Indexed',
+    chains: [chainLabel(asset.chainId)],
+    chainId,
+    status: verified ? 'verified' : asset.status === 'listed' ? 'new' : 'community',
+    verified,
+    featured,
+    rankingLayer: featured ? 'featured' : null,
+    listedAtMs: null,
+    logoURI: asset.logo ?? null,
+    rating: verified ? 70 : 40,
+    ratingTier: verified ? 'active' : 'emerging',
+    aiSummary: 'Indexed Melega DEX listing.',
+    metrics: [
+      { label: 'Liquidity', value: EMPTY, tone: 'gray' },
+      { label: 'Volume', value: EMPTY, tone: 'gray' },
+      { label: 'Holders', value: EMPTY, tone: 'gray' },
+      { label: 'Age', value: EMPTY, tone: 'gray' },
+    ],
+    aiConfidence: '—',
+    melegaRating: verified ? 'Verified' : 'Indexed',
+    risk: '—',
+    riskTone: 'gray',
+    website: '—',
+    contract: shortAddress(asset.address),
+    contractAddress: asset.address,
+    tradeHref: `/swap?outputCurrency=${asset.address}&chain=${chainId}&source=projects-directory`,
+    projectHref,
+    registryTier: slug ? 'canonical' : undefined,
+  }
+}
+
 function chainBadges(project: StaticProjectRecord): string[] {
   return project.supportedChains.map((id) => {
     const label = CHAIN_LABELS[id] ?? `Chain ${id}`
-    if (label === 'BSC') return 'BNB'
+    if (label === 'BSC') return 'BSC'
     return label.replace('Ethereum', 'ETH')
   })
 }
@@ -88,6 +154,16 @@ export function mapProjectToPreviewCard(
   const symbol = token?.symbol ?? project.tickers[0]
   const muted = (value: string) => value === EMPTY
 
+  const featured = FEATURED_SLUG_SET.has(project.slug)
+  const verified =
+    project.verificationStatus === 'observed' || project.trustBadges.includes('canonical')
+  const status = projectStatus(project)
+  const chainId = token?.chainId ?? project.supportedChains[0]
+  const listedAtMs = (() => {
+    const t = Date.parse(project.asOf)
+    return Number.isFinite(t) ? t : null
+  })()
+
   return {
     id: project.slug,
     rank,
@@ -95,8 +171,15 @@ export function mapProjectToPreviewCard(
     slug: project.slug,
     symbol,
     category: project.sectorTags.slice(0, 2).join(' · ') || 'DeFi',
+    sectorTags: project.sectorTags,
     chains: chainBadges(project),
-    status: projectStatus(project),
+    chainId,
+    status,
+    verified,
+    featured,
+    rankingLayer: featured ? 'featured' : null,
+    listedAtMs,
+    logoURI: project.logoUrl ?? null,
     rating: rating.score,
     ratingTier: rating.tier,
     aiSummary: buildAiSummary(project),
@@ -121,16 +204,20 @@ export function mapProjectToPreviewCard(
           : '—',
     contractAddress: token?.address,
     tradeHref: token?.address
-      ? `/swap?outputCurrency=${token.address}`
-      : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
+      ? `/swap?outputCurrency=${token.address}&chain=${chainId}&source=projects-directory`
+      : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
-    projectHref: `/@${project.slug}/`,
+    projectHref: resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId,
+      address: token?.address,
+    }),
   }
 }
 
 function pendingChainBadge(chainId: number): string {
   const label = CHAIN_LABELS[chainId]
-  if (label === 'BSC') return 'BNB'
+  if (label === 'BSC') return 'BSC'
   return label?.replace('Ethereum', 'ETH') ?? `Chain ${chainId}`
 }
 
@@ -147,7 +234,12 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     symbol,
     category: 'Pending Review',
     chains: [pendingChainBadge(pending.chain)],
+    chainId: pending.chain,
     status: 'pending',
+    listedAtMs: (() => {
+      const t = Date.parse(pending.updated_at || pending.created_at || '')
+      return Number.isFinite(t) ? t : null
+    })(),
     rating: score,
     ratingTier: score >= 70 ? 'active' : 'emerging',
     aiSummary: `Pending registry profile — ${formatPendingReviewStatusLabel(pending.status)}. Awaiting canonical promotion.`,
@@ -166,9 +258,12 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     website: '—',
     contract: shortAddress(pending.contract),
     contractAddress: pending.contract,
-    tradeHref: `/swap?outputCurrency=${pending.contract}`,
+    tradeHref: `/swap?outputCurrency=${pending.contract}&chain=${pending.chain}&source=projects-directory`,
     radarHref: `/radar?contract=${pending.contract}`,
-    projectHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
+    projectHref: resolveCanonicalProjectHref({
+      chainId: pending.chain,
+      address: pending.contract,
+    }),
     registryTier: 'pending',
     pendingId: pending.id,
     reviewStatus: formatPendingReviewStatusLabel(pending.status),
@@ -282,7 +377,11 @@ export function buildFeaturedProject(
     contractAddress: token?.address,
     spaceUrl: project.spaceProfileUrl,
     tradeHref: project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
-    projectHref: `/@${project.slug}/`,
+    projectHref: resolveCanonicalProjectHref({
+      slug: project.slug,
+      chainId: token?.chainId ?? project.supportedChains?.[0] ?? 56,
+      address: token?.address,
+    }),
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     price,
     priceChange,
@@ -438,26 +537,90 @@ export function filterProjectsByChip(
 
   switch (chip) {
     case 'AI Verified':
-      return cards.filter((c) => {
-        const p = projectBySlug.get(c.slug)
-        return p?.trustBadges.includes('canonical')
-      })
+    case 'Verified':
+      return cards.filter((c) => c.verified || projectBySlug.get(c.slug)?.trustBadges.includes('canonical'))
+    case 'Featured':
+      return cards.filter((c) => c.featured || c.rankingLayer === 'featured')
+    case 'Boosted':
+      return cards.filter((c) => c.boosted === true || c.rankingLayer === 'boosted')
     case 'Trending':
-      return cards.filter((c) => c.rating >= 70)
+      // Ranking layer applied by runtime (organic movers first). Chip alone does not invent movers.
+      return [...cards].sort((a, b) => {
+        const aRank = a.rankingLayer === 'organic' ? 0 : a.featured ? 1 : a.boosted ? 2 : 3
+        const bRank = b.rankingLayer === 'organic' ? 0 : b.featured ? 1 : b.boosted ? 2 : 3
+        if (aRank !== bRank) return aRank - bRank
+        const aPct = Math.abs(a.change24hPct ?? 0)
+        const bPct = Math.abs(b.change24hPct ?? 0)
+        if (aPct !== bPct) return bPct - aPct
+        return b.rating - a.rating
+      })
+    case 'New':
+    case 'New Listings':
+    case 'Recently Listed':
+    case 'Newest':
+      return cards.filter((c) => c.status === 'new' || c.registryTier === 'pending').length
+        ? [...cards]
+            .filter((c) => c.status === 'new' || c.registryTier === 'pending')
+            .sort((a, b) => (b.listedAtMs ?? 0) - (a.listedAtMs ?? 0))
+        : [...cards].sort((a, b) => (b.listedAtMs ?? 0) - (a.listedAtMs ?? 0))
     case 'BNB':
-      return cards.filter((c) => c.chains.includes('BNB'))
+    case 'BSC':
+      return cards.filter((c) => c.chains.includes('BNB') || c.chains.includes('BSC') || c.chainId === 56)
     case 'Ethereum':
-      return cards.filter((c) => c.chains.includes('ETH') || c.chains.includes('Ethereum'))
+      return cards.filter(
+        (c) => c.chains.includes('ETH') || c.chains.includes('Ethereum') || c.chainId === 1,
+      )
     case 'Base':
-      return cards.filter((c) => c.chains.includes('Base'))
+      return cards.filter((c) => c.chains.includes('Base') || c.chainId === 8453)
     case 'Polygon':
-      return cards.filter((c) => c.chains.includes('Polygon'))
+      return cards.filter((c) => c.chains.includes('Polygon') || c.chainId === 137)
+    case 'Arbitrum':
+      return cards.filter(
+        (c) => c.chains.includes('Arbitrum') || c.chains.includes('ARB') || c.chainId === 42161,
+      )
+    case 'Avalanche':
+      return cards.filter(
+        (c) => c.chains.includes('Avalanche') || c.chains.includes('AVAX') || c.chainId === 43114,
+      )
     case 'Highest Rated':
       return [...cards].sort((a, b) => b.rating - a.rating)
-    case 'Newest':
-      return [...cards].sort((a, b) => b.rank - a.rank)
-    case 'Recently Listed':
-      return cards
+    case 'Highest Liquidity':
+    case 'Liquidity':
+      return [...cards].sort((a, b) => {
+        const num = (c: ProjectPreviewCard) => {
+          const raw = c.metrics.find((m) => m.label === 'Liquidity')?.value
+          if (!raw || raw === '—' || raw === 'Unavailable') return 0
+          const cleaned = raw.replace(/[$,\s]/g, '').toUpperCase()
+          const mult = cleaned.endsWith('B') ? 1e9 : cleaned.endsWith('M') ? 1e6 : cleaned.endsWith('K') ? 1e3 : 1
+          const n = parseFloat(cleaned)
+          return Number.isFinite(n) ? n * mult : 0
+        }
+        return num(b) - num(a)
+      })
+    case 'Volume':
+      return [...cards].sort((a, b) => {
+        const num = (c: ProjectPreviewCard) => {
+          const raw = c.metrics.find((m) => m.label === 'Volume' || m.label === 'Volume 24h')?.value
+          if (!raw || raw === '—' || raw === 'Unavailable') return 0
+          const cleaned = raw.replace(/[$,\s]/g, '').toUpperCase()
+          const mult = cleaned.endsWith('B') ? 1e9 : cleaned.endsWith('M') ? 1e6 : cleaned.endsWith('K') ? 1e3 : 1
+          const n = parseFloat(cleaned)
+          return Number.isFinite(n) ? n * mult : 0
+        }
+        return num(b) - num(a)
+      })
+    case 'Holders':
+      return [...cards].sort((a, b) => {
+        const num = (c: ProjectPreviewCard) => {
+          const raw = c.metrics.find((m) => m.label === 'Holders')?.value
+          if (!raw || raw === '—' || raw === 'Unavailable') return 0
+          const n = parseFloat(raw.replace(/[,\s]/g, ''))
+          return Number.isFinite(n) ? n : 0
+        }
+        return num(b) - num(a)
+      })
+    case 'Price Change':
+      return [...cards].sort((a, b) => Math.abs(b.change24hPct ?? 0) - Math.abs(a.change24hPct ?? 0))
     default:
       return cards.filter((c) => {
         const p = projectBySlug.get(c.slug)

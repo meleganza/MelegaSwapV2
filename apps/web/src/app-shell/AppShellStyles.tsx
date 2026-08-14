@@ -39,12 +39,14 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     height: 40px;
   }
 
+  /* Compact chain pill — must not overlap search / language / wallet */
   [data-melega-app-shell] .melega-shell-network button,
   [data-melega-app-shell] .melega-shell-network [role='button'] {
     height: 40px !important;
-    min-width: 176px !important;
-    max-width: 210px !important;
-    padding: 0 12px !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 78px !important;
+    padding: 0 8px !important;
     border-radius: 10px !important;
     background: transparent !important;
     border: 1px solid transparent !important;
@@ -57,7 +59,8 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 9px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
   }
 
   [data-melega-app-shell] .melega-shell-network button:hover,
@@ -76,7 +79,9 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   @media (max-width: 1279px) {
     [data-melega-app-shell] .melega-shell-network button,
     [data-melega-app-shell] .melega-shell-network [role='button'] {
-      min-width: 88px !important;
+      min-width: 0 !important;
+      max-width: 72px !important;
+      padding: 0 6px !important;
     }
   }
 

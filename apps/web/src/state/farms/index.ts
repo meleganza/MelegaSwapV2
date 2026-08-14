@@ -110,7 +110,10 @@ export const fetchFarmsPublicDataAsync = createAsyncThunk<
       await dispatch(fetchInitialFarmsData({ chainId }))
     }
     const chain = chains.find((c) => c.id === chainId)
-    if (!chain || !farmFetcher.isChainSupported(chain.id)) throw new Error('chain not supported')
+    if (!chain || !farmFetcher.isChainSupported(chain.id)) {
+      // PREPARING / non-farm chains (e.g. Avalanche) — soft-skip, never throw into the UI
+      return [[], 0, 0]
+    }
     try {
       return fetchFarmPublicDataOld({ pids, chainId })
     } catch (error) {

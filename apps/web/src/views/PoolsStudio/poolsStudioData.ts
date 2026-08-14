@@ -82,6 +82,11 @@ export interface PoolPreviewCard {
   rewardBadge?: 'Official' | 'Partner' | 'Community'
   visualType?: string
   tvl: string
+  /** Swap volume when indexed — Unavailable when not certified for SmartChef pools. */
+  volume24h?: string
+  /** Protocol fees when indexed — Unavailable when not certified. */
+  fees?: string
+  chainId?: number
   rewardToken: string
   dailyRewards: string
   estimatedDailyReward?: string
@@ -91,6 +96,8 @@ export interface PoolPreviewCard {
   rewardBudgetUsd?: string
   estimatedDuration?: string
   participants: string
+  /** Only a wallet-census index may certify the participant count. */
+  participantsSource?: 'smartchef_event_index' | 'indexed_wallet_census' | 'participant_index_pending'
   lockPeriod?: string
   cooldown?: string
   poolSafetyRisk?: 'Very Low' | 'Low' | 'Medium' | 'High'

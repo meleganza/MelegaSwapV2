@@ -7,6 +7,7 @@ import { loadTierPairInventory } from './tierInventory'
 import { runTierPairSync } from './tierPairSync'
 import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
+import { LB_PROGRAM_SYNC_MIN_REMAINING_MS, syncLbProgramInventory } from 'lib/liquidity-builder-indexer'
 import { isBootstrapWindowComplete } from './bootstrapWindow'
 import {
   resolveOrchestratorStageMode,
@@ -29,6 +30,7 @@ export interface IndexerRunReport {
   tier1Job: Awaited<ReturnType<typeof runTierPairSync>> | null
   tier2Job: Awaited<ReturnType<typeof runTierPairSync>> | null
   protocolActivity: Awaited<ReturnType<typeof syncProtocolActivityRecent>> | null
+  lbPrograms: Awaited<ReturnType<typeof syncLbProgramInventory>> | null
   cursorsBefore: Record<string, number | null>
   cursorsAfter: Record<string, number | null>
   nextWorkItem: string
@@ -95,22 +97,50 @@ export async function runIndexerOrchestrator(
     deadline.markStage('protocol-activity')
   }
 
+  if (!deadline.shouldStop() && deadline.remainingMs() > LB_PROGRAM_SYNC_MIN_REMAINING_MS) {
+    try {
+      lbPrograms = await syncLbProgramInventory({ deadline })
+      addedEvents += lbPrograms.added ?? 0
+      deadline.markStage('lb-programs')
+    } catch {
+      lbPrograms = {
+        ok: false,
+        reason: 'LB_SYNC_ERROR',
+        added: 0,
+        scannedBlocks: 0,
+        factoryLogs: 0,
+        programLogs: 0,
+        feeLogs: 0,
+        programCount: 0,
+      }
+    }
+  }
+
   if (tierStagesEligible && !deadline.shouldStop()) {
     const inventory = await loadTierPairInventory()
     const scheduler = await loadTierSchedulerState()
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
     const tier2Candidates = inventory.tier2
 
-    const tier1Pick = pickRotatingPair(tier1Candidates, scheduler.tier1RotationIndex)
-    if (tier1Pick.pair) {
+    // Wave 03: sync ALL Tier-1 founder/core pairs each cron (not one rotate) so Top Movers
+    // can accumulate ≥2 observations beyond MARCO. Cap by remaining deadline.
+    const FOUNDER_TIER1_BATCH = Math.min(tier1Candidates.length, 6)
+    for (let i = 0; i < FOUNDER_TIER1_BATCH && !deadline.shouldStop(); i += 1) {
+      const idx = (scheduler.tier1RotationIndex + i) % Math.max(1, tier1Candidates.length)
+      const pair = tier1Candidates[idx]
+      if (!pair) continue
       const tier1Deadline = resolveStageDeadline(deadline, stageMode)
-      tier1Job = await runTierPairSync(tier1Pick.pair, tier1Deadline)
-      addedEvents += tier1Job.addedEvents
+      const job = await runTierPairSync(pair, tier1Deadline)
+      tier1Job = job
+      addedEvents += job.addedEvents
       pairJobsProcessed += 1
-      scheduler.tier1RotationIndex = tier1Pick.nextIndex
-      scheduler.lastProviderResult = tier1Job.health.providerUsed
-      cursorsAfter[tier1Pick.pair.slug] = tier1Job.checkpoint.gapFillCursor ?? null
+      scheduler.lastProviderResult = job.health.providerUsed
+      cursorsAfter[pair.slug] = job.checkpoint.gapFillCursor ?? null
       deadline.markStage('tier1-sync')
+    }
+    if (tier1Candidates.length > 0) {
+      scheduler.tier1RotationIndex =
+        (scheduler.tier1RotationIndex + FOUNDER_TIER1_BATCH) % tier1Candidates.length
     }
 
     if (!deadline.shouldStop()) {
@@ -160,6 +190,7 @@ export async function runIndexerOrchestrator(
     tier1Job,
     tier2Job,
     protocolActivity,
+    lbPrograms,
     cursorsBefore,
     cursorsAfter,
     nextWorkItem,

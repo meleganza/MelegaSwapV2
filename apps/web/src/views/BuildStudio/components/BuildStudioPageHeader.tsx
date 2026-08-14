@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import styled from 'styled-components'
 import {
   MelegaStudioOutlineBtn,
@@ -40,7 +40,7 @@ export const BuildStudioPageHeader: React.FC = () => {
             </MelegaStudioOutlineBtn>
             <MelegaStudioPrimaryBtn
               as={Link}
-              to="/import-existing-token"
+              href="/import-existing-token"
               data-bs-hero-import
               style={{ textDecoration: 'none' }}
             >

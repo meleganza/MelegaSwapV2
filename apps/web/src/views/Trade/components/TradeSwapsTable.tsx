@@ -17,8 +17,8 @@ const Panel = styled.section<{ $empty?: boolean }>`
   border-radius: ${tradeLayout.cardRadius};
   padding: ${tradeLayout.cardPadding};
   box-sizing: border-box;
-  height: ${({ $empty }) => ($empty ? '132px' : tradeLayout.recentSwapsHeight)};
-  min-height: ${({ $empty }) => ($empty ? '132px' : tradeLayout.recentSwapsHeight)};
+  height: ${({ $empty }) => ($empty ? '132px' : '100%')};
+  min-height: ${({ $empty }) => ($empty ? '132px' : tradeLayout.tradeTerminalRecentSwapsHeight)};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -61,7 +61,7 @@ const Th = styled.th`
   top: 0;
   z-index: 1;
   height: ${tradeLayout.swapTableHeadHeight};
-  padding: 0 10px;
+  padding: 0 9px;
   text-align: left;
   font-size: ${tradeTypography.tableHead.size};
   font-weight: ${tradeTypography.tableHead.weight};
@@ -74,7 +74,7 @@ const Th = styled.th`
 
 const Td = styled.td`
   height: ${tradeLayout.swapRowHeight};
-  padding: 0 10px;
+  padding: 0 9px;
   font-size: ${tradeTypography.tableCell.size};
   font-weight: ${tradeTypography.tableCell.weight};
   line-height: ${tradeTypography.tableCell.lineHeight};
@@ -114,6 +114,21 @@ const ExplorerLink = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`
+
+const DirectionBadge = styled.span<{ $buy: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 7px;
+  background: ${({ $buy }) => ($buy ? 'rgba(0, 230, 118, 0.09)' : 'rgba(255, 82, 82, 0.09)')};
+  color: ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.red)};
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
 `
 
 const EmptyState = styled.div`
@@ -164,7 +179,7 @@ const SkeletonBar = styled.span<{ $w?: string }>`
   animation: ${shimmer} 1.6s ease-in-out infinite;
 `
 
-const SKELETON_ROWS = 3
+const SKELETON_ROWS = 5
 
 export interface TradeSwapsTableProps {
   rows: TradeSwapRow[]
@@ -216,6 +231,7 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
               <tr>
                 <Th style={{ width: '72px' }}>Time</Th>
                 <Th>Pair</Th>
+                <Th style={{ width: '64px' }}>Side</Th>
                 <Th>Amount</Th>
                 <Th style={{ width: '96px' }}>Wallet</Th>
                 <Th style={{ width: '56px' }}>Tx</Th>
@@ -233,6 +249,9 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
                       </TokenIcons>
                       {row.token0Symbol}/{row.token1Symbol}
                     </PairCell>
+                  </Td>
+                  <Td>
+                    <DirectionBadge $buy={row.direction === 'buy'}>{row.direction}</DirectionBadge>
                   </Td>
                   <Td title={row.amountReason}>{row.amount}</Td>
                   <MutedCell>{row.wallet}</MutedCell>

@@ -28,19 +28,14 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(page).toContain('data-pixel-main-row="860"')
   })
 
-  it('left LB card uses fixed header/wizard/body/footer heights', () => {
+  it('left LB card retains main-row height tokens (final polish densified header)', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
+    const tokens = load('onePage/onePageTokens.ts')
     expect(card).toContain('liqOne.mainRowH')
-    expect(card).toContain('liqOne.lbHeaderExpanded')
-    expect(card).toContain('liqOne.lbHeaderCollapsed')
-    expect(card).toContain('liqOne.lbWizardH')
-    expect(card).toContain('liqOne.lbBodyH')
-    expect(card).toContain('liqOne.lbFooterH')
-    expect(card).toContain('overflow: hidden')
-    // Certified runtime recovery adds compactInactive shell; expanded heights remain 580/442.
-    expect(card).toMatch(
-      /data-pixel-lb-body=\{compactInactive \? 'auto' : heroCollapsed \? '580' : '442'\}/,
-    )
+    // Header expanded/collapsed tokens remain in onePageTokens for layout parity.
+    expect(tokens).toContain('lbHeaderExpanded')
+    expect(tokens).toContain('lbHeaderCollapsed')
+    expect(tokens).toContain('lbWizardH')
     expect(card).not.toContain('Back to Liquidity Studio')
     expect(card).not.toContain('View Pools')
     expect(card).not.toContain('View Old Liquidity')
@@ -108,9 +103,10 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(edu).toContain('liqOne.educationH')
   })
 
-  it('wizard steps stay in-card without navigation routes', () => {
+  it('single-surface builder stays in-card without navigation routes', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain("['Setup', 'Budget', 'Strategy', 'Review', 'Activate']")
+    expect(card).toContain('data-lb-single-surface')
+    expect(card).not.toContain('WIZARD_STEPS')
     expect(card).not.toContain("router.push('/liquidity-studio?view=building&step=")
     expect(card).toContain('useLiquidityBuildingCard')
   })

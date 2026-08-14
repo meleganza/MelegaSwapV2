@@ -26,8 +26,8 @@ const Grid = styled.div`
 `
 
 const QUICK_ACTIONS = [
-  { id: 'swap', label: 'Swap', href: '/trade' },
-  { id: 'liquidity', label: 'Liquidity', href: '/liquidity-studio' },
+  { id: 'swap', label: 'Swap', href: '/swap' },
+  { id: 'liquidity', label: 'Liquidity', href: '/liquidity' },
   { id: 'pools', label: 'Pools', href: '/pools' },
   { id: 'farms', label: 'Farms', href: '/farms' },
   { id: 'projects', label: 'Projects', href: '/projects' },

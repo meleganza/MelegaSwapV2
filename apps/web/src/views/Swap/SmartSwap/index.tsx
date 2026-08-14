@@ -51,9 +51,10 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 
-export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: Currency) => void }> = ({
-  handleOutputSelect,
-}) => {
+export const SmartSwapForm: React.FC<{
+  handleOutputSelect: (newCurrencyOutput: Currency) => void
+  executionPreview?: React.ReactNode
+}> = ({ handleOutputSelect, executionPreview }) => {
   const { isAccessTokenSupported } = useContext(SwapFeaturesContext)
   const { t } = useTranslation()
   const { refreshBlockNumber, isLoading } = useRefreshBlockNumberID()
@@ -103,6 +104,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
   const {
     trade: tradeWithStableSwap,
     currencyBalances,
+    currencyBalanceLoading,
     parsedAmount,
     inputError: stableSwapInputError,
   } = useDerivedSwapInfoWithStableSwap(independentField, typedValue, inputCurrency, outputCurrency, recipient)
@@ -254,7 +256,10 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             value={formattedAmounts[Field.INPUT]}
             showMaxButton
             maxAmount={maxAmountInput}
+            balanceOverride={currencyBalances[Field.INPUT]}
+            balanceLoading={currencyBalanceLoading[Field.INPUT]}
             showQuickInputButton
+            compactWalletControls
             currency={currencies[Field.INPUT]}
             onUserInput={handleTypeInput}
             onPercentInput={handlePercentInput}
@@ -296,9 +301,12 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
             label={independentField === Field.INPUT && !showWrap && tradeInfo ? t('To (estimated)') : t('To')}
             showMaxButton={false}
             currency={currencies[Field.OUTPUT]}
+            balanceOverride={currencyBalances[Field.OUTPUT]}
+            balanceLoading={currencyBalanceLoading[Field.OUTPUT]}
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}
             id="swap-currency-output"
+            compactWalletControls
             showCommonBases
             disabled={smartRouterOn}
             showBUSD={!!tokenMap[chainId]?.[outputCurrencyId] || outputCurrencyId === NATIVE[chainId]?.symbol}
@@ -365,6 +373,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
               onSlippageClick={onPresentSettingsModal}
             />
           )}
+          {executionPreview}
           {!swapIsUnsupported ? (
             !showWrap &&
             tradeInfo && (

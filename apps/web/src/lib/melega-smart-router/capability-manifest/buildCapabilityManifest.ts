@@ -78,14 +78,14 @@ export function buildCapabilityManifest(chainId?: number): CapabilityManifest {
         'TREASURY_HANDOFF',
         collectorReady ? 'supported' : 'planned',
         collectorReady
-          ? 'DEX forwards gross protocol fee metadata to Treasury Runtime post-confirmation.'
-          : 'Treasury collector not yet published in Runtime registry.',
+          ? 'Protocol fee metadata references canonical MELEGA TREASURY WALLET beneficiary.'
+          : 'Treasury collector not yet published in registry.',
         '2.5.0',
       ),
       entry(
         'REGISTRY_LOOKUP',
         'supported',
-        'MARCO, collector, and execution router resolved via Runtime → KERL → env waterfall.',
+        'MARCO, collector, and execution router resolved via KERL → registry → env waterfall.',
         '2.5.0',
       ),
       entry(

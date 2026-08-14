@@ -14,14 +14,16 @@ describe('Instant vs Smart composition', () => {
     expect(moduleSrc).toMatch(/isSmart \? \(/)
   })
 
-  it('Instant does not render Route/Fee/AI intel stack', () => {
+  it('Instant does not render Route/Metrics/AI intel stack; Fee panel removed', () => {
     expect(moduleSrc).toMatch(/\{isSmart \? \(/)
     expect(moduleSrc).toMatch(/SmartSwapVisualRoute/)
-    expect(moduleSrc).toMatch(/SmartSwapFeeTransparencyPanel/)
-    // Route/Fee/AI gated behind isSmart
+    expect(moduleSrc).not.toMatch(/SmartSwapFeeTransparencyPanel/)
+    expect(moduleSrc).toMatch(/data-execution-model-note/)
+    // Route/Metrics/AI gated behind isSmart
     const smartBlock = moduleSrc.slice(moduleSrc.indexOf('{isSmart ?'), moduleSrc.indexOf(') : null}'))
     expect(smartBlock).toMatch(/SmartSwapVisualRoute/)
     expect(smartBlock).toMatch(/AI Insight/)
+    expect(smartBlock).not.toMatch(/SmartSwapFeeTransparencyPanel/)
   })
 
   it('always renders a single Details accordion', () => {
@@ -30,14 +32,10 @@ describe('Instant vs Smart composition', () => {
     expect(moduleSrc).not.toMatch(/Show details/)
   })
 
-  it('Trade cockpit passes experience mode and mounts intel after form', () => {
-    expect(cockpitSrc).toMatch(/mode=\{experience\}/)
-    expect(cockpitSrc).toMatch(/SmartSwapExecutionPreviewModule/)
-    expect(cockpitSrc).toMatch(/data-swap-form-column/)
-  })
-
-  it('Home panel passes experience mode', () => {
+  it('Trade cockpit remains a form surface; Home mounts the shared intel stack', () => {
+    expect(cockpitSrc).toMatch(/SmartSwapForm|SwapForm/)
     expect(homeSrc).toMatch(/mode=\{experience\}/)
+    expect(homeSrc).toMatch(/SmartSwapExecutionPreviewModule/)
   })
 
   it('documents Melega Factory/Router trending roots', () => {

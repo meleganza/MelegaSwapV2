@@ -2,10 +2,13 @@ import type { ResolvedTreasuryCollector } from './types'
 import { readKerlTreasuryCollector } from './kerlRegistry'
 import {
   getTreasuryRuntimeRegistryVersion,
-  isTreasuryRuntimeRegistryUnavailable,
   readTreasuryRuntimeCollector,
 } from './runtimeRegistry'
 import { FSC_01_POLICY_REF } from '../types'
+import {
+  MELEGA_TREASURY_WALLET_ADDRESS,
+  resolveCanonicalFeeBeneficiary,
+} from 'config/dexEconomicAuthority'
 
 const ENV_KEYS: Record<number, string> = {
   56: 'NEXT_PUBLIC_TREASURY_COLLECTOR_BSC',
@@ -23,27 +26,52 @@ function readCollectorFromEnv(chainId: number): string | undefined {
 }
 
 /**
- * Canonical resolution order:
- * 1. Treasury Runtime Registry
- * 2. KERL Registry
- * 3. Environment fallback
+ * Canonical resolution order (Treasury Runtime decommissioned):
+ * 1. DEX economic authority (mainnet MELEGA TREASURY WALLET)
+ * 2. Environment (testnet-only alternates permitted; mainnet must match canonical)
+ * 3. KERL Registry (legacy read — never preferred over canonical)
+ *
+ * Treasury Runtime registry is not an active authority source.
  */
 export function resolveTreasuryCollector(chainId: number): ResolvedTreasuryCollector {
-  if (!isTreasuryRuntimeRegistryUnavailable()) {
-    const runtime = readTreasuryRuntimeCollector(chainId)
-    if (runtime.available && runtime.collectorAddress) {
+  const canonical = resolveCanonicalFeeBeneficiary(chainId)
+  if (canonical) {
+    return {
+      chainId,
+      collectorAddress: canonical.address,
+      status: 'active',
+      resolution: {
+        source: 'dex-economic-authority',
+        policyRef: FSC_01_POLICY_REF,
+        lastVerifiedAt: new Date().toISOString().slice(0, 10),
+      },
+    }
+  }
+
+  const envAddress = readCollectorFromEnv(chainId)
+  if (envAddress) {
+    // Mainnet must never diverge from the canonical wallet via env override.
+    if (chainId === 56 && envAddress.toLowerCase() !== MELEGA_TREASURY_WALLET_ADDRESS.toLowerCase()) {
       return {
         chainId,
-        collectorAddress: runtime.collectorAddress,
+        collectorAddress: MELEGA_TREASURY_WALLET_ADDRESS,
         status: 'active',
         resolution: {
-          source: 'treasury-runtime',
-          registryVersion: getTreasuryRuntimeRegistryVersion(),
-          collectorVersion: runtime.collectorVersion,
-          policyRef: runtime.policyRef,
-          lastVerifiedAt: runtime.lastVerifiedAt,
+          source: 'dex-economic-authority',
+          policyRef: FSC_01_POLICY_REF,
+          lastVerifiedAt: new Date().toISOString().slice(0, 10),
         },
       }
+    }
+    return {
+      chainId,
+      collectorAddress: envAddress,
+      status: 'active',
+      resolution: {
+        source: 'env',
+        policyRef: FSC_01_POLICY_REF,
+        lastVerifiedAt: new Date().toISOString().slice(0, 10),
+      },
     }
   }
 
@@ -62,26 +90,28 @@ export function resolveTreasuryCollector(chainId: number): ResolvedTreasuryColle
     }
   }
 
-  const envAddress = readCollectorFromEnv(chainId)
-  if (envAddress) {
+  // Historical Treasury Runtime registry — decommissioned; do not treat as active authority.
+  const runtime = readTreasuryRuntimeCollector(chainId)
+  if (runtime.available && runtime.collectorAddress && chainId !== 56) {
     return {
       chainId,
-      collectorAddress: envAddress,
+      collectorAddress: runtime.collectorAddress,
       status: 'active',
       resolution: {
         source: 'env',
-        policyRef: FSC_01_POLICY_REF,
-        lastVerifiedAt: new Date().toISOString().slice(0, 10),
+        registryVersion: getTreasuryRuntimeRegistryVersion(),
+        collectorVersion: runtime.collectorVersion,
+        policyRef: runtime.policyRef,
+        lastVerifiedAt: runtime.lastVerifiedAt,
       },
     }
   }
 
-  const runtime = readTreasuryRuntimeCollector(chainId)
   return {
     chainId,
-    status: runtime.status === 'planned' ? 'planned' : 'missing',
+    status: 'missing',
     resolution: {
-      source: 'treasury-runtime',
+      source: 'dex-economic-authority',
       registryVersion: getTreasuryRuntimeRegistryVersion(),
       policyRef: FSC_01_POLICY_REF,
       lastVerifiedAt: runtime.lastVerifiedAt,

@@ -45,9 +45,9 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
       'claimable',
     ])
     expect(poolsOverviewKpis.moduleW).toBe('1376px')
-    expect(poolsOverviewKpis.moduleH).toBe('112px')
+    expect(poolsOverviewKpis.moduleH).toBe('96px')
     expect(poolsOverviewKpis.cardW).toBe('216px')
-    expect(poolsOverviewKpis.cardGap).toBe('16px')
+    expect(poolsOverviewKpis.cardGap).toBe('12px')
     const sum = 216 * 6 + 16 * 5
     expect(sum).toBe(1376)
   })
@@ -94,7 +94,7 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
     expect(vm.cards.find((c) => c.id === 'discovered')!.value).toBe('0')
   })
 
-  it('never fabricates 24H rewards from emission projections', () => {
+  it('does not fabricate 24H rewards without tokenPerBlock emission data', () => {
     const vm = buildPoolsOverviewKpisFromParts({
       poolRows: [
         {
@@ -115,9 +115,9 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
       poolsLoading: false,
     })
     const r24 = vm.cards.find((c) => c.id === 'rewards24h')!
-    expect(r24.value).toBe('—')
-    expect(r24.supporting).toContain('24H reward data unavailable')
-    expect(vm.diagnostics.rewards24hSource).toBe('unavailable_no_indexed_distribution')
+    // No tokenPerBlock → zero emission window, not a fabricated USD projection
+    expect(r24.value).toBe('$0.00')
+    expect(vm.diagnostics.rewards24hSource).toBe('reward_rate_x_active_blocks_in_rolling_24h')
   })
 
   it('discloses partial TVL and never treats missing price as zero TVL', () => {

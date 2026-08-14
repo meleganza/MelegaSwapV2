@@ -99,7 +99,8 @@ describe('DS001.4 Liquidity Building experience', () => {
 
   it('6. Full AI is the default strategy', () => {
     expect(EMPTY_SETUP_DRAFT.strategy).toBe('FULL_AI')
-    expect(SETUP).toMatch(/RECOMMENDED/)
+    // Wave 03: RECOMMENDED badge removed from setup (parent already labels AI Builder).
+    expect(SETUP).not.toMatch(/RECOMMENDED/)
     expect(SETUP).toMatch(/lb-strategy-full-ai/)
   })
 
@@ -111,10 +112,10 @@ describe('DS001.4 Liquidity Building experience', () => {
   it('8. Decision Frequency uses only supported values', () => {
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.seconds)).toEqual([300, 900, 1800, 3600])
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.label)).toEqual([
-      '5 minutes',
-      '15 minutes',
-      '30 minutes',
-      '1 hour',
+      '5m',
+      '15m',
+      '30m',
+      '1h',
     ])
   })
 
@@ -251,6 +252,6 @@ describe('DS001.4 Liquidity Building experience', () => {
     expect(HEADER).toMatch(/MelegaAppShell|header|72/)
     expect(HOME).toMatch(/data-testid="ls-cta-liquidity-building"/)
     expect(HOME).toMatch(/Add Liquidity/)
-    expect(LB_UX.productName).toBe('Liquidity Building')
+    expect(LB_UX.productName).toBe('Liquidity Builder')
   })
 })

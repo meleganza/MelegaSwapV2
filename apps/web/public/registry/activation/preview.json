@@ -114,10 +114,10 @@
     },
     {
       "stage_id": "treasury_runtime",
-      "label": "Treasury Runtime",
-      "status": "PLANNED",
-      "summary": "Treasury Runtime — Phase 2",
-      "notes": "No treasury amounts indexed",
+      "label": "Fee Beneficiary",
+      "status": "READY",
+      "summary": "MELEGA TREASURY WALLET — direct beneficiary",
+      "notes": "Runtime decommissioned — no treasury amounts indexed",
       "machine_surface": "manifest://melega/platform/treasury-runtime@0.2.0"
     },
     {

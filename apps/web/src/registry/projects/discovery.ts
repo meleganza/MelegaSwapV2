@@ -120,6 +120,8 @@ export const DISCOVERY_CHAIN_CHIPS: { chainId: number; label: string }[] = [
   { chainId: 1, label: 'Ethereum' },
   { chainId: 137, label: 'Polygon' },
   { chainId: 8453, label: 'Base' },
+  { chainId: 42161, label: 'Arbitrum' },
+  { chainId: 43114, label: 'Avalanche' },
 ]
 
 export type TreasuryFilter = 'any' | 'live' | 'partial_or_live' | 'planned' | 'none'

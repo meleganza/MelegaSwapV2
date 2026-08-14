@@ -5,8 +5,9 @@ import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
 import { getAllVenues } from 'registry/venues/getAllVenues'
 import { LEGACY_BSC_MASTER_CHEF } from 'registry/venues/constants'
 import { SURFACE_MAP_RECORDS } from 'lib/surface-map/surface-map'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
-import type { GlobalSearchCategory, GlobalSearchEntry } from './types'
+import type { GlobalSearchAction, GlobalSearchCategory, GlobalSearchEntry } from './types'
 
 const CATEGORY_LABELS: Record<GlobalSearchCategory, string> = {
   page: 'Page',
@@ -28,6 +29,8 @@ const entry = (
     partial.label,
     partial.subtitle,
     partial.category,
+    partial.address,
+    partial.chainId != null ? String(partial.chainId) : '',
     ...(partial.keywords ?? []),
   ]
     .filter(Boolean)
@@ -36,6 +39,38 @@ const entry = (
 
   const { keywords: _keywords, ...rest } = partial
   return { ...rest, searchableText: haystack }
+}
+
+function tokenActions(address: string, projectHref?: string | null): GlobalSearchAction[] {
+  const actions: GlobalSearchAction[] = [
+    { label: 'Trade', href: `/swap?outputCurrency=${address}` },
+  ]
+  if (projectHref) actions.push({ label: 'Open Project', href: projectHref })
+  actions.push({ label: 'Add Wallet', href: `/portfolio?addToken=${address}` })
+  return actions
+}
+
+function projectActions(slug: string): GlobalSearchAction[] {
+  return [
+    { label: 'Open Project', href: `/@${slug}/` },
+    { label: 'Buy Token', href: `/swap?project=${slug}` },
+    { label: 'Farm', href: `/farms?project=${slug}` },
+    { label: 'Pool', href: `/pools?project=${slug}` },
+  ]
+}
+
+function poolActions(href: string): GlobalSearchAction[] {
+  return [
+    { label: 'View Pool', href },
+    { label: 'Stake', href: href.includes('?') ? `${href}&action=stake` : `${href}?action=stake` },
+  ]
+}
+
+function farmActions(href: string): GlobalSearchAction[] {
+  return [
+    { label: 'View Farm', href },
+    { label: 'Stake', href: href.includes('?') ? `${href}&action=stake` : `${href}?action=stake` },
+  ]
 }
 
 /** Static search corpus — nav, registry, venues, tokens, surfaces. */
@@ -87,6 +122,7 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
   getAllProjects()
     .map(enrichProject)
     .forEach((project) => {
+      const chainId = project.supportedChains?.[0] ?? null
       items.push(
         entry({
           id: `project-${project.slug}`,
@@ -94,6 +130,13 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
           subtitle: project.tagline ?? project.description,
           href: `/@${project.slug}/`,
           category: 'project',
+          chainId,
+          address: null,
+          verified: Boolean(
+            project.trustBadges?.includes('canonical') || project.trustBadges?.includes('observed'),
+          ),
+          logoUrl: project.logoUrl ?? null,
+          actions: projectActions(project.slug),
           keywords: [
             project.slug,
             project.searchableText,
@@ -116,13 +159,23 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
       venue.deepLinks?.swap ??
       (category === 'farm' ? '/farms' : category === 'pool' ? '/pools' : '/radar')
 
+    const identityId =
+      venue.contractAddress != null
+        ? `${category}-${venue.chainId}-${venue.contractAddress.toLowerCase()}`
+        : `venue-${venue.slug}`
+
     items.push(
       entry({
-        id: `venue-${venue.slug}`,
+        id: identityId,
         label: venue.displayName,
         subtitle: venue.description,
         href,
         category,
+        chainId: venue.chainId,
+        address: venue.contractAddress ?? null,
+        verified: venue.trust?.badges?.includes('verified') || venue.trust?.verificationStatus === 'verified',
+        actions:
+          category === 'farm' ? farmActions(href) : category === 'pool' ? poolActions(href) : undefined,
         keywords: [
           venue.slug,
           venue.venueType,
@@ -140,11 +193,14 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
     if (venue.contractAddress) {
       items.push(
         entry({
-          id: `contract-${venue.slug}`,
+          id: `contract-${venue.chainId}-${venue.contractAddress.toLowerCase()}`,
           label: venue.contractAddress,
           subtitle: venue.displayName,
           href,
           category: 'contract',
+          chainId: venue.chainId,
+          address: venue.contractAddress,
+          verified: venue.trust?.badges?.includes('verified') || venue.trust?.verificationStatus === 'verified',
           keywords: [venue.slug, venue.displayName, 'masterchef', 'master chef'],
         }),
       )
@@ -174,15 +230,40 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
   })
 
   buildDexTokenIndex().forEach((token) => {
-    const href = `/trade?inputCurrency=${token.address}`
+    const projectHref = resolveCanonicalProjectHref({
+      slug: token.registryProject?.slug,
+      chainId: token.chainId,
+      address: token.address,
+    })
+    const href = projectHref
+    const chainLabel =
+      token.chainId === 56
+        ? 'BSC'
+        : token.chainId === 1
+          ? 'Ethereum'
+          : token.chainId === 8453
+            ? 'Base'
+            : token.chainId === 137
+              ? 'Polygon'
+              : token.chainId === 42161
+                ? 'Arbitrum'
+                : token.chainId === 43114
+                  ? 'Avalanche'
+                  : `Chain ${token.chainId}`
     items.push(
       entry({
-        id: `token-${token.chainId}-${token.address}`,
-        label: token.symbol,
+        id: `token-${token.chainId}-${token.address.toLowerCase()}`,
+        label: `${token.symbol} — ${chainLabel}`,
         subtitle: token.registryProject?.displayName ?? 'DEX token',
         href,
         category: 'token',
-        keywords: [token.address, token.sources.join(' '), String(token.chainId)],
+        chainId: token.chainId,
+        address: token.address,
+        logoUrl: token.logo ?? null,
+        verified: Boolean(token.registryProject),
+        actions: tokenActions(token.address, projectHref),
+        keywords: [token.symbol, token.address, token.sources.join(' '), String(token.chainId), chainLabel],
+        scoreBoost: token.chainId === 56 ? 4 : 0,
       }),
     )
   })
@@ -194,6 +275,9 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
       subtitle: 'Legacy farm staking on Melega DEX',
       href: '/farms',
       category: 'farm',
+      chainId: 56,
+      address: LEGACY_BSC_MASTER_CHEF,
+      actions: farmActions('/farms'),
       keywords: ['master', 'masterchef', 'master chef', 'chef', LEGACY_BSC_MASTER_CHEF],
       scoreBoost: 3,
     }),

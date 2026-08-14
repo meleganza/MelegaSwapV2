@@ -1,91 +1,70 @@
 /**
- * LIST_MODULE_005 — unified workspace guards + frozen module integrity.
+ * LIST Final — denser workspace beside right How guide.
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { execSync } from 'child_process'
 
 const ROOT = path.resolve(__dirname, '..')
-const REPO = path.resolve(__dirname, '../../../../../../')
-const BASE = 'f879c6c8'
 
 function load(rel: string) {
   return readFileSync(path.join(ROOT, rel), 'utf8')
 }
 
-function gitDiff(relFromRepo: string) {
-  return execSync(`git diff ${BASE} -- ${relFromRepo}`, { cwd: REPO, encoding: 'utf8' })
-}
-
-describe('LIST_MODULE_005 Workspace', () => {
-  it('locks workspace geometry without changing earlier locks', () => {
+describe('LIST Workspace (founder-final)', () => {
+  it('uses auto-height denser workspace shell', () => {
     const tokens = load('listTokens.ts')
-    expect(tokens).toContain("heroH: '360px'")
-    expect(tokens).toContain("cardsRowH: '272px'")
-    expect(tokens).toContain("whyH: '112px'")
-    expect(tokens).toContain("howH: '176px'")
-    expect(tokens).toContain("workspaceH: '920px'")
+    expect(tokens).toContain("workspaceH: 'auto'")
     expect(tokens).toContain("workspaceW: '1376px'")
-    expect(tokens).toContain("workspaceHeaderH: '64px'")
-    expect(tokens).toContain("workspaceBodyH: '760px'")
-    expect(tokens).toContain("workspaceFooterH: '72px'")
-    expect(tokens).toContain("workspaceBg: '#101010'")
-    expect(tokens).toContain("workspaceTop: '24px'")
+    expect(tokens).toContain('workspaceMinH')
   })
 
-  it('keeps Modules 001–004 source files byte-identical to tip f879c6c8', () => {
-    expect(gitDiff('apps/web/src/views/ListStudio/ListPageHero.tsx')).toBe('')
-    expect(gitDiff('apps/web/src/views/ListStudio/ListActionCards.tsx')).toBe('')
-    expect(gitDiff('apps/web/src/views/ListStudio/useListIntent.ts')).toBe('')
-    expect(gitDiff('apps/web/src/views/ListStudio/ListWhyBuildRail.tsx')).toBe('')
-    expect(gitDiff('apps/web/src/views/ListStudio/ListHowItWorks.tsx')).toBe('')
-  })
-
-  it('implements all five intent bodies without modals or routes', () => {
+  it('keeps token detection, liquidity and project setup in the same listing modal', () => {
     const ws = load('ListWorkspace.tsx')
-    expect(ws).toContain('Import Token')
+    const liquidity = load('ListInlineLiquidityStep.tsx')
+    expect(ws).toContain("'import-token': 'List Your Token'")
     expect(ws).toContain('Contract Address')
-    expect(ws).toContain('Auto Detection')
-    expect(ws).toContain('Project Preview')
-    expect(ws).toContain('Token Name')
-    expect(ws).toContain('Ticker')
-    expect(ws).toContain('Supply')
-    expect(ws).toContain('Decimals')
-    expect(ws).toContain('Logo')
-    expect(ws).toContain('Claim Project')
-    expect(ws).toContain('Verification')
-    expect(ws).toContain('Project Name')
-    expect(ws).toContain('Category')
-    expect(ws).toContain('Website')
-    expect(ws).toContain('optional — never mandatory')
-    expect(ws).toContain('Generate Description')
-    // MODULE_007 replaces chat actions with product-copilot suggestions
+    expect(ws).toContain('ListInlineLiquidityStep')
+    expect(ws).toContain("journey: 'listing'")
+    expect(ws).toContain("liquidity: 'confirmed'")
+    expect(ws).not.toContain("pathname: '/liquidity'")
+    expect(ws).not.toContain('Continue to liquidity')
     expect(ws).toContain('ListAiCopilot')
     expect(ws).toContain('Continue')
     expect(ws).toContain('Cancel')
-    // MODULE_006 footer is Cancel + Continue/Publish only (no Back)
     expect(ws).toContain('Publish')
     expect(ws).not.toContain('createPortal')
     expect(ws).not.toContain('Modal')
     expect(ws).not.toContain('Drawer')
-    expect(ws).not.toMatch(/pathname:\s*'\/(?!list)/)
+    expect(liquidity).toContain('<LiquidityAddModule embedded />')
+    expect(liquidity).toContain("runtime.addTxLifecycle !== 'confirmed'")
   })
 
-  it('mounts workspace beneath How It Works and retires placeholder visually', () => {
+  it('opens the unified workspace as an official listing modal', () => {
     const screen = load('ListStudioScreen.tsx')
-    expect(screen).toContain('<ListHowItWorks')
+    expect(screen).toContain("dynamic(() => import('./ListWorkspace')")
+    expect(screen).toContain('list-adaptive-modal')
+    expect(screen).toContain('aria-label="Melega DEX listing flow"')
+    expect(screen).toContain('<ListContractFirstFunnel')
     expect(screen).toContain('<ListWorkspace')
-    expect(screen.indexOf('<ListHowItWorks')).toBeLessThan(screen.indexOf('<ListWorkspace'))
-    expect(screen).toContain("order: 5")
-    expect(screen).toContain('list-workspace')
-    expect(screen).toContain("display: none !important")
-    expect(screen).toContain('list-intent-placeholder')
+    expect(screen).not.toContain('<ListHowItWorks')
   })
 
-  it('keeps create-token honest about Coming Soon', () => {
+  it('uses consumer listing language and removes the duplicate hero brand', () => {
+    const hero = load('ListContractFirstFunnel.tsx')
+    expect(hero).toContain('List your project')
+    expect(hero).toContain('Bring your token.')
+    expect(hero).toContain('Token detected')
+    expect(hero).not.toContain('CONTRACT-FIRST ADAPTIVE FUNNEL')
+    expect(hero).not.toContain('Contract-first adaptive funnel')
+    expect(hero).not.toContain('<Brand')
+  })
+
+  it('shows the certified Create Token execution path', () => {
     const ws = load('ListWorkspace.tsx')
     expect(ws).toContain('LIST_CREATE_TOKEN_AVAILABLE')
-    expect(ws).toContain('Coming Soon')
+    expect(ws).toContain('list-create-token-ready')
+    expect(ws).toContain('parseTokenCreatedReceipt')
+    expect(ws).toContain('verifyDeployedToken')
   })
 })

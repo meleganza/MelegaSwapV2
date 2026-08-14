@@ -47,6 +47,6 @@ export function explainTreasurySelection(chainId: number) {
     reason:
       collector.collectorAddress
         ? `Collector resolved from ${collector.source} registry for chain ${chainId}.`
-        : 'Treasury Runtime collector not yet published — swaps blocked until publication.',
+        : 'Treasury collector not yet published in registry — swap readiness may be blocked.',
   }
 }

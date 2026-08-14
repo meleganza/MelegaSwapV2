@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import styled from 'styled-components'
 
 const Title = styled.h3`
@@ -36,7 +36,7 @@ export const PoolHealthGuide: React.FC<{ compact?: boolean }> = () => (
       Pool Health scores reward budget, remaining emission, contract activity, and APR sustainability. Higher scores
       indicate stronger staking lanes.
     </Text>
-    <LearnLink to="/pools#pool-health">Learn more →</LearnLink>
+    <LearnLink href="/pools#pool-health">Learn more →</LearnLink>
   </div>
 )
 

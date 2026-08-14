@@ -1,11 +1,34 @@
 /**
- * FARMS_MODULE_001 — decorative LP farming artwork (local SVG).
- * Communicates LP Pair → Farm → Reward Token. No fake rates / balances / counts.
- * Distinct from the Pools hero staking-platform composition.
+ * FARMS_MODULE_001 — animated LP farming artwork (CSS/SVG only).
+ * Sequence: LP pair → farm module → MARCO rewards. Respects prefers-reduced-motion.
+ * Logos: canonical local /images/56/tokens assets with deterministic initial fallback.
  */
-import React from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react'
+import styled, { keyframes } from 'styled-components'
 import { farmsHero } from './farmsHeroTokens'
+
+const MARCO_ADDR = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
+const WBNB_ADDR = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+const MARCO_LOGO = `/images/56/tokens/${MARCO_ADDR}.png`
+const WBNB_LOGO = `/images/56/tokens/${WBNB_ADDR}.png`
+
+const drift = keyframes`
+  0% { transform: translateX(0); opacity: 0.85; }
+  45% { transform: translateX(52px); opacity: 1; }
+  55% { transform: translateX(52px); opacity: 1; }
+  100% { transform: translateX(0); opacity: 0.85; }
+`
+
+const pulseFarm = keyframes`
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.0); }
+  50% { box-shadow: 0 0 18px 2px rgba(244, 196, 48, 0.22); }
+`
+
+const emit = keyframes`
+  0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(54px, -18px) scale(1); opacity: 0; }
+`
 
 const Frame = styled.div`
   width: ${farmsHero.artworkBoxW};
@@ -17,6 +40,7 @@ const Frame = styled.div`
   justify-content: center;
   pointer-events: none;
   flex: 0 0 auto;
+  overflow: hidden;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: min(100%, ${farmsHero.mobileArtworkMaxW});
@@ -40,93 +64,268 @@ const Glow = styled.div`
   }
 `
 
-const Svg = styled.svg`
+const Stage = styled.div`
+  position: relative;
   width: 94%;
   height: 94%;
-  display: block;
-  overflow: visible;
+  display: grid;
+  grid-template-columns: 1fr 1.05fr 1fr;
+  align-items: end;
+  gap: 8px;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    gap: 4px;
+  }
 `
+
+const Col = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  height: 100%;
+`
+
+/** Fixed icon row height keeps LP Pair / Farm / MARCO Rewards logos on a shared centerline. */
+const IconRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 78px;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    height: 64px;
+  }
+`
+
+const Label = styled.span`
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: system-ui, sans-serif;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    margin-top: 6px;
+    font-size: 10px;
+  }
+`
+
+const PairTrack = styled.div`
+  position: relative;
+  width: 96px;
+  /** Matches the 40px token logos exactly so IconRow centers the drift track on the shared centerline. */
+  height: 40px;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    width: 80px;
+    height: 40px;
+  }
+`
+
+const PairMoving = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  will-change: transform;
+  animation: ${drift} 5.6s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    left: 18px;
+  }
+`
+
+const TokenImg = styled.img<{ $size: number; $offset?: boolean }>`
+  width: ${(p) => p.$size}px;
+  height: ${(p) => p.$size}px;
+  border-radius: 999px;
+  border: 2px solid rgba(244, 196, 48, 0.65);
+  background: #141414;
+  object-fit: cover;
+  margin-left: ${(p) => (p.$offset ? '-12px' : '0')};
+  display: block;
+`
+
+const TokenFallback = styled.span<{ $size: number; $offset?: boolean; $accent?: string }>`
+  width: ${(p) => p.$size}px;
+  height: ${(p) => p.$size}px;
+  border-radius: 999px;
+  border: 2px solid ${(p) => p.$accent || 'rgba(244, 196, 48, 0.65)'};
+  background: #141414;
+  margin-left: ${(p) => (p.$offset ? '-12px' : '0')};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${(p) => Math.max(10, Math.round(p.$size * 0.38))}px;
+  font-weight: 800;
+  color: #f4c430;
+  font-family: system-ui, sans-serif;
+`
+
+const FarmModule = styled.div`
+  width: 78px;
+  height: 78px;
+  border-radius: 16px;
+  border: 2px solid #f4c430;
+  background: linear-gradient(160deg, #1a1a1a 0%, #101010 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: ${pulseFarm} 3.2s ease-in-out infinite;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`
+
+const FarmInner = styled.div`
+  width: 44px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0f0f0f;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 2px;
+    background: #22c55e;
+    transform: translate(-50%, -50%);
+  }
+  &::after {
+    width: 2px;
+    height: 16px;
+  }
+`
+
+const RewardStage = styled.div`
+  position: relative;
+  width: 108px;
+  height: 86px;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    width: 88px;
+    height: 72px;
+  }
+`
+
+/** Centered on RewardStage's own midpoint via transform (no magic offsets to drift out of alignment). */
+const MarcoCoreWrap = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+`
+
+const SparkWrap = styled.div<{ $delay: string; $x: string; $y: string }>`
+  position: absolute;
+  left: 42px;
+  top: 28px;
+  opacity: 0;
+  animation: ${emit} 2.8s ease-out infinite;
+  animation-delay: ${(p) => p.$delay};
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.85;
+    transform: translate(${(p) => p.$x}, ${(p) => p.$y});
+  }
+`
+
+function TokenMark({
+  src,
+  initial,
+  size,
+  offset,
+  accent,
+}: {
+  src: string
+  initial: string
+  size: number
+  offset?: boolean
+  accent?: string
+}) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return (
+      <TokenFallback $size={size} $offset={offset} $accent={accent} aria-hidden>
+        {initial}
+      </TokenFallback>
+    )
+  }
+  return (
+    <TokenImg
+      src={src}
+      alt=""
+      $size={size}
+      $offset={offset}
+      loading="eager"
+      decoding="async"
+      onError={() => setFailed(true)}
+      data-token-logo-src={src}
+    />
+  )
+}
 
 export const FarmsHeroArtwork: React.FC = () => (
   <Frame data-testid="farms-hero-artwork" data-farms-hero-artwork aria-hidden="true">
     <Glow />
-    <Svg viewBox="0 0 480 230" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Stage 1 — LP Pair (overlapping token discs) */}
-      <circle cx="96" cy="115" r="34" fill="#1A1A1A" stroke="#F4C430" strokeWidth="2" />
-      <circle cx="96" cy="115" r="14" fill="#F4C430" opacity="0.9" />
-      <circle cx="132" cy="115" r="34" fill="#141414" stroke="rgba(59,130,246,0.75)" strokeWidth="2" />
-      <circle cx="132" cy="115" r="14" fill="#3B82F6" opacity="0.9" />
-      <text
-        x="114"
-        y="178"
-        textAnchor="middle"
-        fill="rgba(255,255,255,0.55)"
-        fontSize="11"
-        fontFamily="system-ui,sans-serif"
-      >
-        LP Pair
-      </text>
-
-      {/* Arrow LP → Farm */}
-      <path
-        d="M178 115 H214"
-        stroke="rgba(244,196,48,0.65)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M208 108 L218 115 L208 122" stroke="rgba(244,196,48,0.65)" strokeWidth="2" fill="none" />
-
-      {/* Stage 2 — Farm vault */}
-      <rect x="228" y="78" width="72" height="74" rx="14" fill="#161616" stroke="#F4C430" strokeWidth="2" />
-      <rect x="242" y="94" width="44" height="28" rx="6" fill="#0F0F0F" stroke="rgba(255,255,255,0.12)" />
-      <path
-        d="M250 122 H278 M264 108 V136"
-        stroke="#22C55E"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        opacity="0.85"
-      />
-      <ellipse cx="264" cy="158" rx="28" ry="6" fill="rgba(244,196,48,0.18)" />
-      <text
-        x="264"
-        y="178"
-        textAnchor="middle"
-        fill="rgba(255,255,255,0.55)"
-        fontSize="11"
-        fontFamily="system-ui,sans-serif"
-      >
-        Farm
-      </text>
-
-      {/* Arrow Farm → Reward */}
-      <path
-        d="M310 115 H346"
-        stroke="rgba(34,197,94,0.7)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M340 108 L350 115 L340 122" stroke="rgba(34,197,94,0.7)" strokeWidth="2" fill="none" />
-
-      {/* Stage 3 — Reward token */}
-      <circle cx="390" cy="115" r="36" fill="#121212" stroke="#22C55E" strokeWidth="2" />
-      <circle cx="390" cy="115" r="18" fill="rgba(34,197,94,0.35)" stroke="#22C55E" strokeWidth="1.5" />
-      <path
-        d="M390 100 V130 M378 115 H402"
-        stroke="#F4C430"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <text
-        x="390"
-        y="178"
-        textAnchor="middle"
-        fill="rgba(255,255,255,0.55)"
-        fontSize="11"
-        fontFamily="system-ui,sans-serif"
-      >
-        Reward Token
-      </text>
-    </Svg>
+    <Stage>
+      <Col>
+        <IconRow>
+          <PairTrack>
+            <PairMoving>
+              <TokenMark src={MARCO_LOGO} initial="M" size={40} />
+              <TokenMark src={WBNB_LOGO} initial="B" size={40} offset />
+            </PairMoving>
+          </PairTrack>
+        </IconRow>
+        <Label>LP Pair</Label>
+      </Col>
+      <Col>
+        <IconRow>
+          <FarmModule>
+            <FarmInner />
+          </FarmModule>
+        </IconRow>
+        <Label>Farm</Label>
+      </Col>
+      <Col>
+        <IconRow>
+          <RewardStage>
+            <MarcoCoreWrap>
+              <TokenMark src={MARCO_LOGO} initial="M" size={40} accent="#22c55e" />
+            </MarcoCoreWrap>
+            <SparkWrap $delay="0s" $x="48px" $y="-20px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+            <SparkWrap $delay="0.7s" $x="56px" $y="8px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+            <SparkWrap $delay="1.4s" $x="40px" $y="22px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+          </RewardStage>
+        </IconRow>
+        <Label>MARCO Rewards</Label>
+      </Col>
+    </Stage>
   </Frame>
 )
 

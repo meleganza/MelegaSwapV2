@@ -19,11 +19,9 @@ export type FarmsExploreFilter =
   | 'Stakeable Now'
 
 export type FarmsExploreSort =
-  | 'Highest Sustainable APR'
   | 'Highest TVL'
+  | 'Highest Sustainable APR'
   | 'Newest'
-  | 'Alphabetical'
-  | 'Wallet LP Balance'
 
 export type FarmsExploreAllowanceState = 'Approval required' | 'Approved' | 'Unavailable' | 'Disconnected'
 
@@ -94,6 +92,12 @@ export interface ExploreFarmViewModel {
   isNativePair: boolean
   hasWalletLp: boolean
   isApproved: boolean
+  /** Compact analytics — uncertified → "—" via truthDash */
+  volume24h: string
+  fees24h: string
+  rewardsRemaining: string
+  rewardDuration: string
+  participants: string
 }
 
 export type FarmsExploreModuleState = 'loading' | 'ready' | 'empty' | 'partial' | 'unavailable' | 'stale'

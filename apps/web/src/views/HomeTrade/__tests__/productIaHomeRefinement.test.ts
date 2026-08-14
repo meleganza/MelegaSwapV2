@@ -22,7 +22,7 @@ describe('Product IA refinement — Home', () => {
     expect(home).toContain('ExploreMelegaEcosystem')
     expect(home).toContain("label: 'Listed Projects'")
     expect(home).toContain("label: '24H Volume'")
-    expect(home).toContain("label: 'MARKETS'")
+    expect(home).toContain("label: 'Markets'")
     expect(home).toContain("label: 'Active Farms'")
     expect(home).toContain("label: 'Active Pools'")
     expect(home).not.toContain("label: 'Indexed Tokens'")
@@ -35,6 +35,24 @@ describe('Product IA refinement — Home', () => {
     expect(featured).toContain('useFeaturedProjectMarkets')
     expect(featured).toContain('Trade')
     expect(featured).toContain('View Project')
+    expect(featured).toContain('MelegaExploreChainBadge')
+    expect(featured).toContain('FeaturedMiniSpark')
+    expect(featured).toContain('halo')
+    expect(featured).toContain('rgba(255, 255, 255, 0.1)')
+    expect(featured).toContain('repeat(4, minmax(0, 1fr))')
+    expect(featured).toContain('Never 2×2')
+    expect(featured).toContain('Liquidity')
+    expect(featured).toContain('Volume')
+    expect(featured).toContain('Mkt Cap')
+    expect(featured).not.toContain('toExponential')
+    const markets = load('useFeaturedProjectMarkets.ts')
+    expect(markets).not.toContain('toExponential')
+    expect(markets).toContain('formatHumanDecimal')
+    expect(markets).toContain('Price updating')
+    expect(markets).not.toContain('No 24H baseline')
+    expect(markets).not.toContain('No recent swaps')
+    expect(markets).toContain('tradeCount24h: row.tradeCount24h')
+    expect(markets).toContain('<0.000001')
     const resolved = resolveFounderFeaturedProjects()
     expect(resolved).toHaveLength(4)
     expect(FOUNDER_FEATURED_SLUGS).toEqual(['mm72', 'eyed', 'young-degens', 'blion'])
@@ -48,18 +66,21 @@ describe('Product IA refinement — Home', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
     const destinations = load('ecosystemDestinations.ts')
     expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
-    for (const name of ['PASSPORT', 'SMARTDROP', 'LABS', 'SPACE', 'RADAR', 'MAIORA']) {
+    for (const name of ['PASSPORT', 'SMARTDROP', 'BLACK', 'SPACE', 'MAIORA']) {
       expect(destinations).toContain(name)
     }
   })
 
-  it('Top Movers ranking prefers abs% then swaps then volume; no activity-only fallback', () => {
+  it('Top Movers ranking prefers abs% then swaps then volume; ranks full indexed universe', () => {
     const rankings = load('useDexTrendingRankings.ts')
     expect(rankings).toContain('volume24h')
     expect(rankings).toContain('tradeCount24h')
     expect(rankings).toContain('Never fabricate')
     expect(rankings).toContain('computeChangeFromObservations')
+    expect(rankings).toContain('getCanonicalIndexedAssets')
+    expect(rankings).toContain('indexedUniverse')
     expect(rankings).not.toContain('return rankTierAssets(active')
+    expect(rankings).not.toContain('.slice(0, 120)')
   })
 
   it('Featured mounts above KPI rail in DexHomeScreen', () => {

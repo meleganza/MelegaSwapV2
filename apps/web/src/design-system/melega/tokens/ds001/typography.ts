@@ -1,12 +1,11 @@
 /**
  * DS001.1 — Global Design System · Typography foundations.
- * Font: Sora → Inter → system-ui. Never use sizes outside this scale.
+ * Local-first premium pairing: Melega Relative for display, Inter for product UI.
  */
 export const ds001FontFamily = {
-  sans: '"Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-  /** Display uses the same family — Orbitron is retired by DS001.1. */
-  display: '"Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-  body: '"Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+  sans: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  display: '"Melega Relative", "Inter", system-ui, sans-serif',
+  body: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 } as const
 
 export const ds001TypeRoles = {

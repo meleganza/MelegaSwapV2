@@ -33,7 +33,7 @@ export const liquidityMarketSnapshot = {
 export const LIQUIDITY_MARKET_SNAPSHOT_COPY = {
   title: 'Market Snapshot',
   description: 'Current state of Melega liquidity — factual ecosystem visibility only.',
-  unavailable: 'Data unavailable',
+  unavailable: '—',
   unavailableExplain: 'No verified source for this metric.',
   loading: 'Loading…',
   emptyMetric: '—',
@@ -54,8 +54,8 @@ export type LiquiditySnapshotCardState = 'loading' | 'available' | 'unavailable'
 
 /** Frozen Modules 001–004 source SHAs. */
 export const LIQUIDITY_MODULE_001_004_FREEZE = {
-  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
-  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
-  LiquidityAddModule: 'e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c',
+  LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
+  LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
+  LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
+  LiquidityAddModule: '10111db6247476457ec6e6f385b4202f22e2ebe11588c83be498d19e69a3b535',
 } as const

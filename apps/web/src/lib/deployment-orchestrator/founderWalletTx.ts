@@ -1,0 +1,244 @@
+/**
+ * Browser-wallet deploy helpers — estimateGas + eth_sendTransaction only.
+ * No server signer. No automatic broadcast outside explicit Founder click.
+ */
+
+export type EthereumProvider = {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+  on?: (event: string, handler: (...args: unknown[]) => void) => void
+  removeListener?: (event: string, handler: (...args: unknown[]) => void) => void
+}
+
+export type DeployTxRequest = {
+  from: string
+  data: string
+  value: '0x0'
+  /** Absent for contract creation */
+  to?: undefined
+  gas?: string
+}
+
+export function getBrowserEthereum(): EthereumProvider | null {
+  if (typeof window === 'undefined') return null
+  const eth = (window as unknown as { ethereum?: EthereumProvider }).ethereum
+  return eth?.request ? eth : null
+}
+
+/** Prefer an injected/connector provider; fall back to window.ethereum. */
+export function resolveWalletProvider(preferred?: EthereumProvider | null): EthereumProvider | null {
+  if (preferred?.request) return preferred
+  return getBrowserEthereum()
+}
+
+export function buildContractCreationRequest(input: {
+  from: string
+  data: string
+  gasUnits?: bigint | null
+}): DeployTxRequest {
+  if (!input.data?.startsWith('0x') || input.data.length < 4) {
+    throw new Error('Missing certified creation payload')
+  }
+  const req: DeployTxRequest = {
+    from: input.from,
+    data: input.data,
+    value: '0x0',
+  }
+  if (input.gasUnits != null && input.gasUnits > 0n) {
+    req.gas = `0x${input.gasUnits.toString(16)}`
+  }
+  return req
+}
+
+export async function walletGetGasPrice(eth: EthereumProvider): Promise<bigint> {
+  const gp = await eth.request({ method: 'eth_gasPrice', params: [] })
+  if (typeof gp !== 'string' || !gp.startsWith('0x')) throw new Error('eth_gasPrice failed')
+  return BigInt(gp)
+}
+
+export async function walletEstimateDeployGas(
+  eth: EthereumProvider,
+  from: string,
+  data: string,
+): Promise<bigint> {
+  const est = await eth.request({
+    method: 'eth_estimateGas',
+    params: [{ from, data, value: '0x0' }],
+  })
+  if (typeof est !== 'string' || !est.startsWith('0x')) throw new Error('eth_estimateGas failed')
+  return BigInt(est)
+}
+
+export async function walletGetTransactionReceipt(
+  eth: EthereumProvider,
+  txHash: string,
+): Promise<{
+  contractAddress?: string | null
+  status?: string | number | null
+  from?: string | null
+  blockNumber?: string | number | null
+  gasUsed?: string | number | null
+} | null> {
+  const receipt = await eth.request({
+    method: 'eth_getTransactionReceipt',
+    params: [txHash],
+  })
+  if (!receipt || typeof receipt !== 'object') return null
+  return receipt as {
+    contractAddress?: string | null
+    status?: string | number | null
+    from?: string | null
+    blockNumber?: string | number | null
+    gasUsed?: string | number | null
+  }
+}
+
+export async function walletGetTransaction(
+  eth: EthereumProvider,
+  txHash: string,
+): Promise<{ nonce?: string | number | null; from?: string | null; hash?: string } | null> {
+  const tx = await eth.request({
+    method: 'eth_getTransactionByHash',
+    params: [txHash],
+  })
+  if (!tx || typeof tx !== 'object') return null
+  return tx as { nonce?: string | number | null; from?: string | null; hash?: string }
+}
+
+export async function walletEthCall(
+  eth: EthereumProvider,
+  to: string,
+  data: string,
+): Promise<string> {
+  const result = await eth.request({
+    method: 'eth_call',
+    params: [{ to, data }, 'latest'],
+  })
+  if (typeof result !== 'string' || !result.startsWith('0x')) throw new Error('eth_call failed')
+  return result
+}
+
+export async function walletGetCode(eth: EthereumProvider, address: string): Promise<string> {
+  const code = await eth.request({
+    method: 'eth_getCode',
+    params: [address, 'latest'],
+  })
+  if (typeof code !== 'string' || !code.startsWith('0x')) throw new Error('eth_getCode failed')
+  return code
+}
+
+/** Request wallet switch to a target chain (e.g. Avalanche 43114). Does not broadcast. */
+export async function walletSwitchChain(eth: EthereumProvider, chainId: number): Promise<void> {
+  const hex = `0x${chainId.toString(16)}`
+  try {
+    await eth.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: hex }],
+    })
+  } catch (err) {
+    const code = (err as { code?: number })?.code
+    // 4902 = chain not added
+    if (code === 4902 && chainId === 43114) {
+      await eth.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: hex,
+            chainName: 'Avalanche C-Chain',
+            nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
+            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+            blockExplorerUrls: ['https://snowtrace.io'],
+          },
+        ],
+      })
+      return
+    }
+    throw err
+  }
+}
+
+export async function walletSendDeployTransaction(
+  eth: EthereumProvider,
+  from: string,
+  data: string,
+  gasUnits?: bigint | null,
+): Promise<string> {
+  const tx = buildContractCreationRequest({ from, data, gasUnits })
+  // Contract creation: no `to` field.
+  const params: Record<string, string> = {
+    from: tx.from,
+    data: tx.data,
+    value: tx.value,
+  }
+  if (tx.gas) params.gas = tx.gas
+  const hash = await eth.request({
+    method: 'eth_sendTransaction',
+    params: [params],
+  })
+  if (typeof hash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
+    throw new Error('eth_sendTransaction did not return a transaction hash')
+  }
+  return hash
+}
+
+/** Generic wallet call (approve / addLiquidity / swap). Founder-signed only. */
+export async function walletSendCallTransaction(
+  eth: EthereumProvider,
+  input: {
+    from: string
+    to: string
+    data: string
+    valueWei?: bigint
+    gasUnits?: bigint | null
+  },
+): Promise<string> {
+  const params: Record<string, string> = {
+    from: input.from,
+    to: input.to,
+    data: input.data,
+    value: `0x${(input.valueWei ?? 0n).toString(16)}`,
+  }
+  if (input.gasUnits != null && input.gasUnits > 0n) {
+    params.gas = `0x${input.gasUnits.toString(16)}`
+  }
+  const hash = await eth.request({
+    method: 'eth_sendTransaction',
+    params: [params],
+  })
+  if (typeof hash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
+    throw new Error('eth_sendTransaction did not return a transaction hash')
+  }
+  return hash
+}
+
+export function isUserRejectedError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err)
+  const code = (err as { code?: number })?.code
+  return code === 4001 || /user rejected|denied|rejected the request/i.test(msg)
+}
+
+/** Test-only mock: never used for mainnet broadcast in automated tests. */
+export function createMockEthereum(opts?: {
+  gasPriceWei?: bigint
+  estimateGasWei?: bigint
+  rejectSend?: boolean
+  onSend?: (params: Record<string, string>) => void
+}): EthereumProvider {
+  return {
+    async request({ method, params }) {
+      if (method === 'eth_gasPrice') return `0x${(opts?.gasPriceWei ?? 3_000_000_000n).toString(16)}`
+      if (method === 'eth_estimateGas') return `0x${(opts?.estimateGasWei ?? 2_500_000n).toString(16)}`
+      if (method === 'eth_sendTransaction') {
+        if (opts?.rejectSend) {
+          const e = new Error('User rejected the request.') as Error & { code: number }
+          e.code = 4001
+          throw e
+        }
+        const tx = (params?.[0] || {}) as Record<string, string>
+        opts?.onSend?.(tx)
+        if (tx.to) throw new Error('Contract creation must not set to')
+        return `0x${'ab'.repeat(32)}`
+      }
+      throw new Error(`Unsupported mock method ${method}`)
+    },
+  }
+}

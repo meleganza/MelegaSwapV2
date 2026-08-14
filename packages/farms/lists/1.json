@@ -1,0 +1,107 @@
+[
+  {
+    "pid": 0,
+    "lpSymbol": "MARCO",
+    "lpAddress": "0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+    "token": {
+      "address": "0x816ddF4e751dfE6A5e65837F721C5fD971108eDE",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "MRT",
+      "name": "MARCO Reward Token",
+      "projectLink": "https://melega.finance/"
+    },
+    "quoteToken": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "projectLink": "https://weth.io"
+    },
+    "isTokenOnly": true
+  },
+  {
+    "pid": 1,
+    "lpSymbol": "MARCO-WETH LP",
+    "lpAddress": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "token": {
+      "address": "0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "MELEGA",
+      "projectLink": "https://melega.finance/"
+    },
+    "quoteToken": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "projectLink": "https://weth.io"
+    }
+  },
+  {
+    "pid": 2,
+    "lpSymbol": "USDC-WETH LP",
+    "lpAddress": "0x15F6b6B609Cc2e3d8E4a355c76C99B3956954664",
+    "token": {
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "chainId": 1,
+      "decimals": 6,
+      "symbol": "USDC",
+      "name": "USD Coin"
+    },
+    "quoteToken": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "projectLink": "https://weth.io"
+    }
+  },
+  {
+    "pid": 3,
+    "lpSymbol": "LOCO-WETH LP",
+    "lpAddress": "0x2ee39e16735B194006739C79785EF6F20ADBB007",
+    "token": {
+      "address": "0x3F6bd76e4D5289D63F72ef46Dfb53048985f9bA8",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "LOCO",
+      "name": "LOCO",
+      "projectLink": "https://locotoken.fun/"
+    },
+    "quoteToken": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "projectLink": "https://weth.io"
+    }
+  },
+  {
+    "pid": 4,
+    "lpSymbol": "RKIT-WETH LP",
+    "lpAddress": "0xD3871eDa34472Dd428B24d9A5051f9665D73E1C5",
+    "token": {
+      "address": "0xbcBf0609abDb86c00f71c9D471905D3C1981B835",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "RKIT",
+      "name": "Rawkit",
+      "projectLink": "http://www.rawkit.xyz/"
+    },
+    "quoteToken": {
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chainId": 1,
+      "decimals": 18,
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "projectLink": "https://weth.io"
+    }
+  }
+]

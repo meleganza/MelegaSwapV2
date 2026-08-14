@@ -82,7 +82,10 @@ export const TrendingStudioPageHeader: React.FC = () => {
       </Left>
       <Right>
         <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/projects')}>
-          ✦ AI Discovery Engine
+          Open Projects
+        </TrGhostBtn>
+        <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/trade')}>
+          Buy Token
         </TrGhostBtn>
         <LivePill>Tier metrics live</LivePill>
       </Right>

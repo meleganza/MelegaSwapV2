@@ -7,6 +7,11 @@ export type GlobalSearchCategory =
   | 'contract'
   | 'collectible'
 
+export type GlobalSearchAction = {
+  label: string
+  href: string
+}
+
 export interface GlobalSearchEntry {
   id: string
   label: string
@@ -16,6 +21,12 @@ export interface GlobalSearchEntry {
   /** Lowercase haystack for matching (label, aliases, addresses, etc.). */
   searchableText: string
   scoreBoost?: number
+  /** Canonical identity — never merge same symbol across chains. */
+  chainId?: number | null
+  address?: string | null
+  logoUrl?: string | null
+  verified?: boolean
+  actions?: GlobalSearchAction[]
 }
 
 export interface GlobalSearchResult extends GlobalSearchEntry {

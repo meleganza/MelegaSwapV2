@@ -217,7 +217,7 @@ export function cardToFinishedFarmPosition(
   const s0 = token0?.symbol ?? card.tokens?.[0] ?? '?'
   const s1 = token1?.symbol ?? card.tokens?.[1] ?? '?'
   const rs = reward?.symbol ?? card.rewardToken ?? 'REWARD'
-  const stakeDecimals = raw.lpToken?.decimals ?? token0?.decimals ?? 18
+  const stakeDecimals = raw.lpToken?.decimals ?? 18
   const rewardDecimals = reward?.decimals ?? 18
   const hasStake = Boolean(card.userStaked?.gt(0))
   const hasPending = Boolean(card.pendingReward?.gt(0))

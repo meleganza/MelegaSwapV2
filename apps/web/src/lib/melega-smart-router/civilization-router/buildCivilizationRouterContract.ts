@@ -1,5 +1,6 @@
 import wrapperAbi from '../wrapper/MelegaSmartRouterWrapper.abi.json'
-import { MELEGA_SMART_ROUTER_ADAPTER_VERSION, MELEGA_SMART_ROUTER_ARCHITECTURE, MELEGA_SMART_ROUTER_PHASE } from '../types'
+import { MELEGA_SMART_ROUTER_ADAPTER_VERSION } from '../execution-manifest/types'
+import { MELEGA_SMART_ROUTER_ARCHITECTURE, MELEGA_SMART_ROUTER_PHASE } from '../types'
 import { WRAPPER_SPEC_VERSION } from '../wrapper/spec'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
 import { getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'
@@ -55,8 +56,8 @@ export function buildCivilizationRouterContract(asOf = new Date().toISOString().
     },
     supportedRouteTypes: buildRouteTypeMatrix(),
     treasuryRouting: getTreasuryRuntimeIntegrationStatus(),
-    D90: { status: 'NOT_DEFINED_IN_DEX', owner: 'Treasury Runtime', required: true },
-    D99: { status: 'NOT_DEFINED_IN_DEX', owner: 'Treasury Runtime', required: true },
+    D90: { status: 'NOT_DEFINED_IN_DEX', owner: 'NONE', required: false },
+    D99: { status: 'NOT_DEFINED_IN_DEX', owner: 'NONE', required: false },
     KERLVersion: getKerlRegistryVersion(),
     KERLIntegration: getKerlIntegrationStatus(),
     TreasuryRuntimeVersion: getTreasuryRuntimeRegistryVersion(),

@@ -74,6 +74,6 @@ export const CERTIFIED_LB_DEPLOYMENT_SNAPSHOT: {
 } = {
   chainId: 56,
   runtimeVersion: 'LiquidityBuildingV1',
-  deploymentReadinessState: 'BLOCKED',
+  deploymentReadinessState: 'DEPLOYED',
   sourcePath: 'deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json',
 }

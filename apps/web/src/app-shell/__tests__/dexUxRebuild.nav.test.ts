@@ -10,15 +10,9 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header is Home · Liquidity · Farms · Pools · List · Passport', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'List',
-      'Passport',
-    ])
+  it('primary header exposes Swap and the other core funnels directly (Portfolio via My Melega)', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Trade')).toBe(false)
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Projects')).toBe(false)
     const list = GLOBAL_HEADER_NAV.find((i) => i.id === 'list')
@@ -29,33 +23,29 @@ describe('DEX UX Rebuild navigation', () => {
     }
   })
 
-  it('mobile bottom nav matches canonical destinations', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual([
-      'Home',
-      'Liquidity',
-      'Farms',
-      'Pools',
-      'Passport',
-    ])
+  it('mobile bottom nav exposes the five core DEX funnels in one tap', () => {
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools'])
+    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/swap')
   })
 
-  it('Home nav active state covers Trade aliases and Project Pages (Discover parent)', () => {
+  it('Home nav active state is only Discover (/) — not Swap or Project Pages', () => {
     const home = GLOBAL_HEADER_NAV.find((i) => i.id === 'home')
     expect(home?.kind).toBe('link')
     if (home?.kind !== 'link') return
     expect(home.match('/')).toBe(true)
-    expect(home.match('/swap')).toBe(true)
-    expect(home.match('/project-hq/marco')).toBe(true)
-    expect(home.match('/@marco')).toBe(true)
-    expect(home.match('/@marco/')).toBe(true)
+    expect(home.match('/swap')).toBe(false)
+    expect(home.match('/project-hq/marco')).toBe(false)
+    expect(home.match('/@marco')).toBe(false)
+    expect(home.match('/@marco/')).toBe(false)
     expect(home.match('/passport')).toBe(false)
     expect(home.match('/list')).toBe(false)
     expect(home.match('/liquidity-studio')).toBe(false)
 
     const bottomHome = shellBottomNavItems.find((i) => i.id === 'home')
-    expect(bottomHome?.match('/swap')).toBe(true)
-    expect(bottomHome?.match('/project-hq/marco')).toBe(true)
-    expect(bottomHome?.match('/@marco/')).toBe(true)
+    expect(bottomHome?.match('/')).toBe(true)
+    expect(bottomHome?.match('/swap')).toBe(false)
+    expect(bottomHome?.match('/project-hq/marco')).toBe(false)
+    expect(bottomHome?.match('/@marco/')).toBe(false)
     expect(bottomHome?.match('/passport')).toBe(false)
   })
 
@@ -65,31 +55,32 @@ describe('DEX UX Rebuild navigation', () => {
     )
   })
 
-  it('Home uses DexHomeScreen and Instant Swap reuses HomeSwapPanel', () => {
+  it('Home uses DexHomeScreen and on-page Swap reuses HomeSwapPanel', () => {
     const home = readFileSync(path.join(ROOT, 'views/HomeTrade/HomeTradeScreen.tsx'), 'utf8')
     const dex = readFileSync(path.join(ROOT, 'views/HomeTrade/DexHomeScreen.tsx'), 'utf8')
     expect(home).toMatch(/DexHomeScreen/)
     expect(dex).toMatch(/HomeSwapPanel/)
-    expect(dex).toMatch(/Instant Swap/)
+    expect(dex).toMatch(/dex-home-instant-swap|dex-home-start-trading/)
+    expect(dex).not.toMatch(/home-investor-journey|JourneyGuideRail|PageNextAction|Founder Path/)
     expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 
-  it('redirects consolidate trade and projects into Home', () => {
+  it('redirects /trade to /swap; trending into Projects discovery', () => {
     const cfg = readFileSync(path.join(ROOT, '../next.config.mjs'), 'utf8')
     expect(cfg).toMatch(/source:\s*'\/trade'/)
-    expect(cfg).toMatch(/destination:\s*'\/\?focus=swap'/)
-    expect(cfg).toMatch(/source:\s*'\/projects'/)
-    expect(cfg).toMatch(/destination:\s*'\/\?focus=projects'/)
+    expect(cfg).toMatch(/destination:\s*'\/swap'/)
+    expect(cfg).not.toMatch(/destination:\s*'\/\?focus=swap'/)
+    expect(cfg).toMatch(/source:\s*'\/trending'/)
+    expect(cfg).toMatch(/destination:\s*'\/projects\?sort=trending'/)
+    expect(cfg).not.toMatch(/destination:\s*'\/\?focus=projects'/)
   })
 
   it('List and Passport routes exist', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
-    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/PassportScreen/)
-    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(
-      /ListPageHero/,
-    )
-    expect(readFileSync(path.join(ROOT, 'views/Passport/PassportScreen.tsx'), 'utf8')).toMatch(
-      /MARCO Passport/,
+    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/\/portfolio|PassportRedirect/)
+    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(/ListPageHero/)
+    expect(readFileSync(path.join(ROOT, 'pages/portfolio/index.tsx'), 'utf8')).toMatch(
+      /PortfolioStudio|PassportV1Shell|Portfolio/,
     )
   })
 
@@ -102,14 +93,8 @@ describe('DEX UX Rebuild navigation', () => {
   })
 
   it('Farms and Pools drop Open Project Page chrome clutter', () => {
-    const farms = readFileSync(
-      path.join(ROOT, 'views/FarmsStudio/components/FarmsStudioPageHeader.tsx'),
-      'utf8',
-    )
-    const pools = readFileSync(
-      path.join(ROOT, 'views/PoolsStudio/components/PoolsStudioPageHeader.tsx'),
-      'utf8',
-    )
+    const farms = readFileSync(path.join(ROOT, 'views/FarmsStudio/components/FarmsStudioPageHeader.tsx'), 'utf8')
+    const pools = readFileSync(path.join(ROOT, 'views/PoolsStudio/components/PoolsStudioPageHeader.tsx'), 'utf8')
     expect(farms).not.toMatch(/Open Project Page/)
     expect(pools).not.toMatch(/Open Project Page/)
     expect(farms).toMatch(/Earn rewards from active Melega DEX farms/)

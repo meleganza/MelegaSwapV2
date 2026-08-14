@@ -70,14 +70,19 @@ export const farmsHero = {
   howFarmingWorksHref: null as string | null,
   howFarmingWorksRendered: false,
 
-  mobileTitleSize: '42px',
-  mobileTitleLine: '46px',
-  mobileArtworkMaxW: '326px',
-  mobileArtworkMaxH: '190px',
+  mobileTitleSize: '36px',
+  mobileTitleLine: '40px',
+  mobileArtworkMaxW: '300px',
+  mobileArtworkMaxH: '148px',
   mobileTrustW: '326px',
   mobileContentW: '358px',
   mobile430ContentW: '398px',
-  mobileHeroMaxH: '650px',
+  mobileHeroMaxH: '520px',
+  mobileDescSize: '14px',
+  mobileDescLine: '20px',
+  mobileGapAfterTitle: '10px',
+  mobileGapBeforeActions: '14px',
+  mobileColumnGap: '12px',
 
   tabletBreak: '1199px',
   mobileBreak: '767px',
@@ -86,8 +91,11 @@ export const farmsHero = {
 export const FARMS_HERO_COPY = {
   title: 'Farms',
   description: 'Stake LP tokens.\nEarn farming rewards.\nGrow liquidity.',
-  primaryCta: 'Explore Farms',
-  secondaryCta: 'How Farming Works',
+  primaryCta: 'Create Farm',
+  secondaryCta: 'Explore Farms',
+  createFarmHref: '/farms?create=1',
+  exploreFarmsHref: '#explore-farms',
+  exploreFarmsLegacyFallback: '/farms#explore-farms',
   trustTitle: 'Why Farm on Melega DEX?',
   trustItems: [
     {

@@ -27,8 +27,8 @@ const Hero = styled.div`
   grid-template-columns: ${liquidityHero.leftW} ${liquidityHero.artworkW} ${liquidityHero.trustW};
   grid-template-areas: 'left artwork trust';
   column-gap: ${liquidityHero.columnGap};
-  align-items: stretch;
-  overflow: hidden;
+  align-items: center;
+  overflow: visible;
 
   @media (max-width: ${liquidityHero.tabletBreak}) {
     min-height: 0;

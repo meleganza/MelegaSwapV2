@@ -13,6 +13,7 @@ const SLUG_BY_CHAIN: Record<number, string> = {
   1: 'marco-ethereum',
   137: 'marco-polygon',
   8453: 'marco-base',
+  42161: 'marco-arbitrum',
 }
 
 const buildMarcoCapabilities = (): AssetCapabilities => ({
@@ -26,7 +27,7 @@ const buildMarcoCapabilities = (): AssetCapabilities => ({
   radar: { status: 'planned', notes: 'Radar incident feed — Phase 2' },
   space: { status: 'partial', notes: 'Community link only; bind not live' },
   labs: { status: 'planned', notes: 'Labs experiments — Phase 2' },
-  treasury: { status: 'planned', notes: 'MARCO fee SKUs — Treasury Runtime Phase 2' },
+  treasury: { status: 'planned', notes: 'MARCO fee SKUs — beneficiary MELEGA TREASURY WALLET' },
 })
 
 const tokenRefToAsset = (token: TokenRef, projectSlug: string, projectUpi: string): StaticAssetRecord => {

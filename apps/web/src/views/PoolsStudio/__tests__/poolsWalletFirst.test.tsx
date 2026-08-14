@@ -83,7 +83,7 @@ describe('R791E.4 poolsWalletFirst', () => {
     }
     render(<YourPoolsSection />)
     expect(screen.getByTestId('ps-pools-disconnected')).toHaveTextContent(
-      'Connect wallet to view pools.',
+      'Connect wallet to view your pool positions.',
     )
   })
 
@@ -152,7 +152,7 @@ describe('R791E.4 poolsWalletFirst', () => {
       setPoolTab: vi.fn(),
     }
     render(<YourPoolsSection />)
-    expect(screen.getByTestId('ps-pools-empty')).toHaveTextContent('No pool positions found.')
+    expect(screen.getByTestId('ps-pools-empty')).toHaveTextContent('No pool positions found for this wallet.')
   })
 
   it('TEST 7: My Pools view', () => {

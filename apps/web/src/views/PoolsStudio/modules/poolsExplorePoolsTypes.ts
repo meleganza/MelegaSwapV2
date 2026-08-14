@@ -27,8 +27,11 @@ export type PoolsExploreLockType =
   | '365 Days'
   | 'Custom'
 
+export type PoolsExplorePrimaryAction = 'Stake' | 'Unavailable' | 'Connect Wallet' | 'Switch Network'
+
 export interface PoolsExplorePoolCardModel {
   poolId: string
+  chainId: number
   title: string
   description: string
   status: PoolsExploreStatus
@@ -37,13 +40,25 @@ export interface PoolsExplorePoolCardModel {
   aprSupport: string | null
   tvlDisplay: string
   tvlSupport: string | null
+  /** Always — unless a truthful wallet census exists (none today). */
   participantsDisplay: string
+  /** Remaining reward duration (not reward inventory). */
+  remainingDisplay: string
+  /** Remaining reward inventory when factual. */
+  rewardsLeftDisplay: string
+  emissionDisplay: string
+  /** Lock / schedule label (Flexible, 30 Days, Ends date, …). */
+  durationDisplay: string
   lockType: PoolsExploreLockType
   stakeToken: { symbol: string; address: string | null; chainId: number | null }
   rewardToken: { symbol: string; address: string | null; chainId: number | null }
   stakeEnabled: boolean
-  stakeLabel: 'Stake' | 'Unavailable'
+  stakeLabel: PoolsExplorePrimaryAction
+  primaryAction: PoolsExplorePrimaryAction
   detailsHref: string | null
+  /** SmartChef / staking contract — required for visible View Contract CTA. */
+  contractAddress: string | null
+  contractExplorerUrl: string | null
   sourceCard: PoolPreviewCard
   sortApr: number
   sortTvl: number

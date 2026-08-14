@@ -86,7 +86,7 @@ contract LB005CoreContracts is Test {
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,
@@ -124,7 +124,7 @@ contract LB005CoreContracts is Test {
         assertEq(factory.deploymentChainId(), block.chainid);
         assertEq(factory.implementation(), address(impl));
         assertEq(factory.melegaFactory(), address(melegaFactory));
-        assertEq(factory.successFeeBps(), 500);
+        assertEq(factory.successFeeBps(), 1000);
         assertEq(factory.strategyCeilingBps(), 5000);
         assertEq(factory.initialFinalityDepth(), 15);
         assertTrue(factory.isQuoteEnabled(address(quote)));

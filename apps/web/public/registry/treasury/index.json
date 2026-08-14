@@ -1,20 +1,26 @@
 {
-  "registryVersion": "1.1.0",
+  "registryVersion": "1.2.0",
   "schema": "melega.treasury-runtime-registry.v1",
   "policyRef": "FSC-01",
-  "source": "treasury-runtime-read-model",
-  "asOf": "2026-07-09",
-  "disclaimer": "Treasury Runtime owns collector truth. DEX consumes read-only. Synced from treasury.melega.ai.",
+  "source": "dex-economic-authority",
+  "asOf": "2026-07-15",
+  "disclaimer": "Treasury Runtime is DECOMMISSIONED. It has no authority in Melega DEX. Mainnet beneficiary is MELEGA TREASURY WALLET via apps/web/src/config/dexEconomicAuthority.ts.",
+  "treasuryRuntime": {
+    "status": "DECOMMISSIONED",
+    "authority": "NONE",
+    "runtime_dependency": false,
+    "replacement_beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
   "chains": {
     "56": {
       "chainId": 56,
       "chainName": "BNB Chain",
-      "status": "planned",
-      "collector": null,
-      "collectorVersion": null,
+      "status": "active",
+      "collector": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "collectorVersion": "dex-economic-authority-v1",
       "policyRef": "FSC-01",
-      "lastVerification": "2026-06-28",
-      "notes": "Treasury Runtime collector publication pending for BNB Chain mainnet."
+      "lastVerification": "2026-07-15",
+      "notes": "Canonical MELEGA TREASURY WALLET. Not a Treasury Runtime service."
     },
     "97": {
       "chainId": 97,
@@ -24,7 +30,7 @@
       "collectorVersion": "1.0.0",
       "policyRef": "FSC-01",
       "lastVerification": "2026-07-09",
-      "notes": "Treasury Intake active_testnet — Treasury Runtime R751/R752B. Source: treasury.melega.ai/registry/treasury/index.json"
+      "notes": "Testnet-only collector (historical). Not authoritative for mainnet."
     }
   }
 }

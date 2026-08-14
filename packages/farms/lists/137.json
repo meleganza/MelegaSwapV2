@@ -1,0 +1,846 @@
+[
+  {
+    "pid": 0,
+    "lpSymbol": "MARCO",
+    "lpAddress": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+    "token": {
+      "address": "0x83A2af056bd05758d5BC704a6Cc7166769E9c939",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MRT",
+      "name": "MARCO Reward Token",
+      "projectLink": "https://melega.finance/"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    },
+    "isTokenOnly": true
+  },
+  {
+    "pid": 1,
+    "lpSymbol": "MARCO-MATIC LP",
+    "lpAddress": "0xD072576d3FD16f7112d11E4c7DA394939eC8c970",
+    "token": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 2,
+    "lpSymbol": "USDT-MATIC LP",
+    "lpAddress": "0x762a784E1906E5d630d8C46883eA03c0cbF486A8",
+    "token": {
+      "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "chainId": 137,
+      "decimals": 6,
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "projectLink": "https://tether.to/"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 3,
+    "lpSymbol": "XOXO-MATIC LP",
+    "lpAddress": "0xf2ae6b639145FFEe1bf465637ADcc19E08b6B730",
+    "token": {
+      "address": "0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "XOXO",
+      "name": "XOXO"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 4,
+    "lpSymbol": "4DC-MATIC LP",
+    "lpAddress": "0xEeE9111131e4Af0aB9f2795c8CD3658f06908eB2",
+    "token": {
+      "address": "0x07287971C67c5FD87B9421D17e12162f2b952Cc5",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "4DC",
+      "name": "4DC"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 5,
+    "lpSymbol": "XOXO-MARCO LP",
+    "lpAddress": "0x4462dd71Bc23CBFc2d70E563aDae7f67a349aE10",
+    "token": {
+      "address": "0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "XOXO",
+      "name": "XOXO"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 6,
+    "lpSymbol": "BEAR-MATIC LP",
+    "lpAddress": "0x9a6e64F48215d4B95701E1212CAae27d4c72435e",
+    "token": {
+      "address": "0x9f673304965ce717a068f2361bDBf0e81443038d",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "BEAR",
+      "name": "TEDDY"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 7,
+    "lpSymbol": "BEAR-MARCO LP",
+    "lpAddress": "0xd338F96B0ebCD4eF2D88e827245B3B97076E14a0",
+    "token": {
+      "address": "0x9f673304965ce717a068f2361bDBf0e81443038d",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "BEAR",
+      "name": "TEDDY"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 8,
+    "lpSymbol": "NEXO-MATIC LP",
+    "lpAddress": "0x9227564906f2b7EfF4A7e8eDEbf6b85Ba7641BB3",
+    "token": {
+      "address": "0x41b3966B4FF7b427969ddf5da3627d6AEAE9a48E",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "NEXO",
+      "name": "Nexo"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 9,
+    "lpSymbol": "NEXO-MARCO LP",
+    "lpAddress": "0xc79B303D3f979Dc7CFf9B352181083838A5FeFAD",
+    "token": {
+      "address": "0x41b3966B4FF7b427969ddf5da3627d6AEAE9a48E",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "NEXO",
+      "name": "Nexo"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 10,
+    "lpSymbol": "ENJ-MATIC LP",
+    "lpAddress": "0xd77ed37727c0c20630e6f78143f96cc184a0d4e3",
+    "token": {
+      "address": "0xE17d93138442c6Ea22Fc55758FCe6FD765D07Acd",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "ENJ",
+      "name": "Enjincoin"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 11,
+    "lpSymbol": "ENJ-MARCO LP",
+    "lpAddress": "0x4eb413c031246ece4c42cbbc2678572abdfaa7d8",
+    "token": {
+      "address": "0xE17d93138442c6Ea22Fc55758FCe6FD765D07Acd",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "ENJ",
+      "name": "Enjincoin"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 12,
+    "lpSymbol": "CRO-MATIC LP",
+    "lpAddress": "0x78BF55F37Ae30f8e040A61faC72F9A1Afc974c58",
+    "token": {
+      "address": "0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C",
+      "chainId": 137,
+      "decimals": 8,
+      "symbol": "CRO",
+      "name": "Cronos"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 13,
+    "lpSymbol": "CRO-MARCO LP",
+    "lpAddress": "0xD11a1D727f219BaaB4e899dc4e3735D0Bbb6EA62",
+    "token": {
+      "address": "0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C",
+      "chainId": 137,
+      "decimals": 8,
+      "symbol": "CRO",
+      "name": "Cronos"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 14,
+    "lpSymbol": "IXT-MATIC LP",
+    "lpAddress": "0xa80dEe386f6C5baB4bF5500d6C345c823f19a093",
+    "token": {
+      "address": "0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "IXT",
+      "name": "PlanetIX"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 15,
+    "lpSymbol": "IXT-MARCO LP",
+    "lpAddress": "0x1E8D9EFf8eC1424D7702c26633073611Bbabd75F",
+    "token": {
+      "address": "0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "IXT",
+      "name": "PlanetIX"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 16,
+    "lpSymbol": "STG-MATIC LP",
+    "lpAddress": "0xc60F31B238D66F352d000c1344a78BBB29fd28d8",
+    "token": {
+      "address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "STG",
+      "name": "StargateToken"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 17,
+    "lpSymbol": "STG-MARCO LP",
+    "lpAddress": "0x910Fe103cDECC081098434AdDE7da451693c63DD",
+    "token": {
+      "address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "STG",
+      "name": "StargateToken"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 18,
+    "lpSymbol": "Polydoge-MATIC LP",
+    "lpAddress": "0xc1651b8fb3456C2143Da769f2684cf1d13d128Ba",
+    "token": {
+      "address": "0x8A953CfE442c5E8855cc6c61b1293FA648BAE472",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "Polydoge",
+      "name": "Polydoge"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 19,
+    "lpSymbol": "Polydoge-MARCO LP",
+    "lpAddress": "0x08957CbE099986eC8E03b82ca8Be1721B0b58b7f",
+    "token": {
+      "address": "0x8A953CfE442c5E8855cc6c61b1293FA648BAE472",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "Polydoge",
+      "name": "Polydoge"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 20,
+    "lpSymbol": "SAND-MATIC LP",
+    "lpAddress": "0xe1D6bE06aA61e649FA033c2cE081D5A74462cAFb",
+    "token": {
+      "address": "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "SAND",
+      "name": "SAND"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 21,
+    "lpSymbol": "SAND-MARCO LP",
+    "lpAddress": "0x532E02d9202FA96A3dF2C2B6e7F8158206dE648F",
+    "token": {
+      "address": "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "SAND",
+      "name": "SAND"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 22,
+    "lpSymbol": "ELON-MATIC LP",
+    "lpAddress": "0xE9b32669CE4f72dC9d1dE24b96A520944E2ecAEa",
+    "token": {
+      "address": "0xE0339c80fFDE91F3e20494Df88d4206D86024cdF",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "ELON",
+      "name": "Dogelon"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 23,
+    "lpSymbol": "ELON-MARCO LP",
+    "lpAddress": "0x06950179Ed7484f21c60B89e4019CdB308865B1A",
+    "token": {
+      "address": "0xE0339c80fFDE91F3e20494Df88d4206D86024cdF",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "ELON",
+      "name": "Dogelon"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 24,
+    "lpSymbol": "NAKA-MATIC LP",
+    "lpAddress": "0x96f0f4512c695ac6c8Cf4438276F58DB7dF82F95",
+    "token": {
+      "address": "0x311434160D7537be358930def317AfB606C0D737",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "NAKA",
+      "name": "Nakamoto Games"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 25,
+    "lpSymbol": "NAKA-MARCO LP",
+    "lpAddress": "0x1839967a4f067F2A5561E19C5d2aAD163c10B1e7",
+    "token": {
+      "address": "0x311434160D7537be358930def317AfB606C0D737",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "NAKA",
+      "name": "Nakamoto Games"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 26,
+    "lpSymbol": "DIMO-MATIC LP",
+    "lpAddress": "0x43Fb2e79a4B7555fa2eeE041bfdb3B3E2eaFA96a",
+    "token": {
+      "address": "0xE261D618a959aFfFd53168Cd07D12E37B26761db",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "DIMO",
+      "name": "Dimo"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 27,
+    "lpSymbol": "DIMO-MARCO LP",
+    "lpAddress": "0x5a298100100a38897aa4738Fd209b99484184b8d",
+    "token": {
+      "address": "0xE261D618a959aFfFd53168Cd07D12E37B26761db",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "DIMO",
+      "name": "Dimo"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 28,
+    "lpSymbol": "TRUMP-MATIC LP",
+    "lpAddress": "0xCE53E7aF43E5e4C374B809667574DD7e538FAC92",
+    "token": {
+      "address": "0x5D71Eb13f59FfcBcEC79a676c43BCB2440242e47",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "TRUMP",
+      "name": "OFFICIAL TRUMP"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 29,
+    "lpSymbol": "TRUMP-MARCO LP",
+    "lpAddress": "0xC623a255cE56D2af91aE414F125269d725192E00",
+    "token": {
+      "address": "0x5D71Eb13f59FfcBcEC79a676c43BCB2440242e47",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "TRUMP",
+      "name": "OFFICIAL TRUMP"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 30,
+    "lpSymbol": "MELANIA-MATIC LP",
+    "lpAddress": "0x374f259b3f1D7C7236f042EA9c90a022f709841A",
+    "token": {
+      "address": "0x00849e5eCDe4927a0Eb7213793B5D26C5562c185",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MELANIA",
+      "name": "Melania Meme"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 31,
+    "lpSymbol": "JONKY-MATIC LP",
+    "lpAddress": "0x8f72447bC997982Bb4AD8884D202fF2b685Aef52",
+    "token": {
+      "address": "0x580C887178A6dcFc323afB8D204651125BAc6712",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "JONKY",
+      "name": "Call me Jonky"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 32,
+    "lpSymbol": "JONKY-MARCO LP",
+    "lpAddress": "0xEB85472486a4227555726449ebF973640596c3Eb",
+    "token": {
+      "address": "0x580C887178A6dcFc323afB8D204651125BAc6712",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "JONKY",
+      "name": "Call me Jonky"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 33,
+    "lpSymbol": "MEGA-MATIC LP",
+    "lpAddress": "0xfc1d66593Ea8D428CaB4b6aa65b57fa3F56667c0",
+    "token": {
+      "address": "0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MEGA",
+      "name": "M.E.G.A."
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 34,
+    "lpSymbol": "MEGA-MARCO LP",
+    "lpAddress": "0x31Ea1c7EfA9f853eB51b06B5640F6D8466C0be45",
+    "token": {
+      "address": "0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MEGA",
+      "name": "M.E.G.A."
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 35,
+    "lpSymbol": "PM-MATIC LP",
+    "lpAddress": "0x4f7CBF02bF7B67A68771D46891AAdFb8b2B8F80c",
+    "token": {
+      "address": "0xe5ba666e81fE2c351999Cf98B9a0AA15d384bE8e",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "PM",
+      "name": "Positive Mind"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 36,
+    "lpSymbol": "PM-MARCO LP",
+    "lpAddress": "0x689372694586d85ebB7DFA27B5f2a92D58Db4C97",
+    "token": {
+      "address": "0xe5ba666e81fE2c351999Cf98B9a0AA15d384bE8e",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "PM",
+      "name": "Positive Mind"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 37,
+    "lpSymbol": "KONG-MATIC LP",
+    "lpAddress": "0xEe437aEEeA33aED4FF22b525120e1dAd0C9E2411",
+    "token": {
+      "address": "0x9e5f008F477797654D4c34b19A77478dD9664814",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "KONG",
+      "name": "KONG"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 38,
+    "lpSymbol": "KONG-MARCO LP",
+    "lpAddress": "0x1173530Ee7Da912518e03062DE2499f8E4bA6aAd",
+    "token": {
+      "address": "0x9e5f008F477797654D4c34b19A77478dD9664814",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "KONG",
+      "name": "KONG"
+    },
+    "quoteToken": {
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "MARCO",
+      "name": "Meleta Token",
+      "projectLink": " https://www.melegaswap.finance/marco-token"
+    }
+  },
+  {
+    "pid": 39,
+    "lpSymbol": "CSN-MATIC LP",
+    "lpAddress": "0x24440A667910A85Bc8f08b4168e1f0130b801F85",
+    "token": {
+      "address": "0x17A13A4ABA33fB0ca76CeC97580CDadd9df18738",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "CSN",
+      "name": "Crypto Smart Network"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 40,
+    "lpSymbol": "VTR-MATIC LP",
+    "lpAddress": "0x0007B57Dd0edA94d3fd793d0240c87cc514A0F18",
+    "token": {
+      "address": "0xd47bD26496DC8f902512851244d67910b64d4727",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "VTR",
+      "name": "VaultRise"
+    },
+    "quoteToken": {
+      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "WMATIC",
+      "name": "Wrapped Matic",
+      "projectLink": "https://polygon.technology/"
+    }
+  },
+  {
+    "pid": 41,
+    "lpSymbol": "VTR-USDT LP",
+    "lpAddress": "0x5D71BeE591cD7f904aE27E74496441BFdA18a47b",
+    "token": {
+      "address": "0xd47bD26496DC8f902512851244d67910b64d4727",
+      "chainId": 137,
+      "decimals": 18,
+      "symbol": "VTR",
+      "name": "VaultRise"
+    },
+    "quoteToken": {
+      "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "chainId": 137,
+      "decimals": 6,
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "projectLink": "https://tether.to/"
+    }
+  }
+]

@@ -1,16 +1,12 @@
 import { useMemo } from 'react'
-import useSWR from 'swr'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
-import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { formatHomeActivityRows } from './formatHomeActivity'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
-import useBUSDPrice from 'hooks/useBUSDPrice'
-import { WBNB } from '@pancakeswap/sdk'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
@@ -26,7 +22,8 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { FetchStatus } from 'config/constants/types'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
-import { getAprData } from 'views/Pools/helpers'
+import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
+import { useCanonicalMarketSnapshot } from 'lib/market-data'
 import {
   formatFarmTrendingLabel,
   formatPoolMetaLabel,
@@ -34,7 +31,28 @@ import {
   formatPoolTrendingLabel,
   POOL_APR_UNAVAILABLE_REASON,
 } from './formatTrendingLabels'
-import useDexTrendingRankings from './useDexTrendingRankings'
+import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
+import {
+  countLiveActiveFarmConfigs,
+  countLivePoolConfigs,
+  liveInventoryProvenance,
+} from 'lib/data-truth/liveInventoryCounts'
+import isArchivedPid from 'utils/farmHelpers'
+import {
+  farmPairLabel,
+  formatFarmTvlDisplay,
+  formatYieldUsd,
+  poolPairLabel,
+  resolveFarmAprPercent,
+  resolveFarmChainId,
+  resolveFarmLiquidityUsd,
+  resolvePoolAprPercent,
+  resolvePoolChainId,
+  resolvePoolFeesDisplay,
+  resolvePoolRewardToken,
+  resolvePoolTvlUsd,
+  resolvePoolVolumeDisplay,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 export interface RibbonItem {
   id: string
@@ -59,7 +77,18 @@ export interface EarnRow {
   name: string
   apr?: string
   tvl?: string
+  rewards?: string
+  /** Pool volume when indexed — Unavailable for SmartChef when not certified. */
+  volume?: string
+  /** Pool fees when known (e.g. 0% deposit). */
+  fees?: string
   href: string
+  chainId?: number
+  /** Token symbols for logos (pair / stake→earn). */
+  tokenSymbols?: string[]
+  tokenAddresses?: string[]
+  /** True when APR cannot be certified — UI shows APR unavailable. */
+  aprUnavailable?: boolean
 }
 
 export interface ActivityRow {
@@ -138,27 +167,16 @@ const sanitizeRibbonText = (value?: string): string | undefined => {
   return trimmed
 }
 
-const farmApr = (farm: FarmWithStakedValue): number | undefined => {
-  const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  return apr > 0 ? apr : undefined
-}
+const farmApr = (farm: FarmWithStakedValue): number | undefined => resolveFarmAprPercent(farm)
 
-const farmTvl = (farm: FarmWithStakedValue): string | undefined => {
-  if (!farm.liquidity?.gt(0)) return undefined
-  return formatUsd(farm.liquidity.toNumber())
-}
+const farmTvl = (farm: FarmWithStakedValue): string | undefined => formatFarmTvlDisplay(farm)
 
-const poolTvl = (pool: Pool.DeserializedPool<Token>): string | undefined => {
-  if (!pool.totalStaked?.gt(0) || !pool.stakingToken) return undefined
-  const bal = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-  return bal > 0 ? formatUsd(bal * (pool.stakingTokenPrice ?? 0)) : undefined
-}
+const farmTvlUsd = (farm: FarmWithStakedValue): number => resolveFarmLiquidityUsd(farm)
 
-const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => {
-  if (pool.apr && pool.apr > 0) return pool.apr
-  const { apr } = getAprData(pool, 0)
-  return apr > 0 ? apr : undefined
-}
+const poolTvl = (pool: Pool.DeserializedPool<Token>, hints?: { marcoUsd?: number }): string | undefined =>
+  formatYieldUsd(resolvePoolTvlUsd(pool, hints))
+
+const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => resolvePoolAprPercent(pool)
 
 export const useHomeTradeData = () => {
   const {
@@ -178,7 +196,6 @@ export const useHomeTradeData = () => {
   } = useProtocolActivityFeed()
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
-  const wbnbPrice = useBUSDPrice(WBNB[56])
   const { chainId } = useActiveChainId()
   usePollFarmsWithUserData()
   const { data: allFarms = [] } = useFarms()
@@ -190,20 +207,8 @@ export const useHomeTradeData = () => {
     pageSize: 24,
   })
   const currentBlock = useCurrentBlock()
-  const { data: tierVolumeQuote } = useSWR(
-    'home-kpi-tier-volume-quote',
-    async () => {
-      try {
-        const res = await fetch('/api/indexer/tier-metrics')
-        if (!res.ok) return 0
-        const json = (await res.json()) as { rows?: Array<{ volume24hQuote?: number }> }
-        return (json.rows ?? []).reduce((sum, row) => sum + (Number(row.volume24hQuote) || 0), 0)
-      } catch {
-        return 0
-      }
-    },
-    { revalidateOnFocus: false, dedupingInterval: 120_000 },
-  )
+  /** Certified protocol volume — do not independently re-sum tier-metrics on Home. */
+  const marketSnapshot = useCanonicalMarketSnapshot()
 
   const indexedTransactions = useMemo(
     () =>
@@ -259,7 +264,8 @@ export const useHomeTradeData = () => {
     return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
   }, [recentTransactions])
 
-  const dexTrending = useDexTrendingRankings()
+  // Shared Top Movers snapshot (same instance as global ticker).
+  const dexTrending = useTopMoversSnapshot()
 
   const catalogRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
     return getTradeSurfaceAssets()
@@ -288,21 +294,9 @@ export const useHomeTradeData = () => {
   }, [dexTrending.indexedRibbonAssets, catalogRibbonAssets])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
-    // Real movers from Swap-indexed ranking (swap count → volume → recency).
-    if (dexTrending.items.length > 0) {
-      return dexTrending.items
-    }
-
-    // Sparse fallback: never emit "Price unavailable" — omit secondary price noise.
-    return catalogRibbonAssets.slice(0, 10).map(
-      (asset) =>
-        ({
-          id: `trade-asset-${asset.slug}`,
-          primary: asset.symbol,
-          href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
-        }) satisfies MelegaTickerItem,
-    )
-  }, [dexTrending.items, catalogRibbonAssets])
+    // Exact shared snapshot entries — Home card must prefix-slice these.
+    return dexTrending.tickerItems
+  }, [dexTrending.tickerItems])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -325,7 +319,7 @@ export const useHomeTradeData = () => {
         title: 'Latest swap',
         subtitle: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
         meta: time,
-        href: '/trade',
+        href: '/swap',
         icon: 'swap',
       })
     }
@@ -395,12 +389,9 @@ export const useHomeTradeData = () => {
       })
     }
 
-    // Volume: prefer tier-metrics quote volume × WBNB USD; never label swap-count as dollar volume.
-    const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+    // Volume: certified canonical market snapshot (WBNB-side · rolling 24H).
     const tierUsd =
-      tierVolumeQuote != null && tierVolumeQuote > 0 && bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0
-        ? tierVolumeQuote * bnbUsd
-        : 0
+      marketSnapshot.volume24hUsd != null && marketSnapshot.volume24hUsd > 0 ? marketSnapshot.volume24hUsd : 0
     const swapUsd = recentTransactions
       .filter((tx) => tx.type === TransactionType.SWAP)
       .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
@@ -410,8 +401,11 @@ export const useHomeTradeData = () => {
         id: 'volume-24h',
         label: '24H Volume',
         value: volLabel,
-        meta: tierUsd > 0 ? 'Indexed Melega DEX Swap volume · 24H' : 'Partial · USD-valued indexed swaps',
-        href: '/trade',
+        meta:
+          tierUsd > 0
+            ? `Certified market snapshot · ${marketSnapshot.status ?? 'LIVE'}`
+            : 'Partial · USD-valued indexed swaps',
+        href: '/swap',
       })
     }
 
@@ -444,60 +438,131 @@ export const useHomeTradeData = () => {
       })
     }
 
-    const topLiquidityPair = [...tradeablePairs]
-      .sort((a, b) => {
-        const scoreA = BigInt(a.reserve0 ?? '0') + BigInt(a.reserve1 ?? '0')
-        const scoreB = BigInt(b.reserve0 ?? '0') + BigInt(b.reserve1 ?? '0')
-        return scoreB > scoreA ? 1 : scoreB < scoreA ? -1 : 0
-      })[0]
+    const topLiquidityPair = [...tradeablePairs].sort((a, b) => {
+      const scoreA = BigInt(a.reserve0 ?? '0') + BigInt(a.reserve1 ?? '0')
+      const scoreB = BigInt(b.reserve0 ?? '0') + BigInt(b.reserve1 ?? '0')
+      return scoreB > scoreA ? 1 : scoreB < scoreA ? -1 : 0
+    })[0]
 
     if (topLiquidityPair?.symbol0 && topLiquidityPair?.symbol1) {
       cards.push({
         id: 'highest-liquidity',
         label: 'Highest Liquidity Pair',
         value: `${topLiquidityPair.symbol0} / ${topLiquidityPair.symbol1}`,
-        href: '/trade',
+        href: '/swap',
       })
     }
 
     return cards.slice(0, 5)
-  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions, tierVolumeQuote, wbnbPrice])
+  }, [
+    farms,
+    allFarms,
+    allPools,
+    currentBlock,
+    tradeablePairs,
+    recentTransactions,
+    marketSnapshot.volume24hUsd,
+    marketSnapshot.status,
+  ])
 
   const farmRows = useMemo((): EarnRow[] => {
-    return farms
-      .filter((f) => f.pid !== 0)
-      .slice(0, 5)
+    // Active, factual farms only. Home ranking is APR descending as required.
+    const ranked = topFarms
+      .filter((f) => f.pid !== 0 && !isArchivedPid(f.pid) && (farmApr(f) ?? 0) > 0)
       .map((farm) => {
         const apr = farmApr(farm)
         const tvl = farmTvl(farm)
+        const tvlUsd = farmTvlUsd(farm)
+        const volumeProxy = farm.lpRewardsApr && farm.lpRewardsApr > 0 ? farm.lpRewardsApr : 0
+        const mult = Number.parseFloat(String(farm.multiplier ?? '0').replace(/x/i, ''))
+        const activity = Number.isFinite(mult) ? mult : 0
+        const farmChain = resolveFarmChainId(farm, chainId)
+        const token0 = farm.token?.symbol
+        const token1 = farm.quoteToken?.symbol
         return {
-          id: `farm-${farm.pid}`,
-          name: farm.lpSymbol ?? 'Farm',
-          apr: apr ? `${apr.toFixed(2)}%` : undefined,
-          tvl,
+          id: `farm-${farmChain}-${farm.pid}`,
+          name: farmPairLabel(farm),
+          apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
+          aprUnavailable: !(apr && apr > 0),
+          tvl: tvl || undefined,
           href: '/farms',
+          chainId: farmChain,
+          tokenSymbols: [token0, token1].filter(Boolean) as string[],
+          tokenAddresses: [farm.token?.address, farm.quoteToken?.address].filter(Boolean) as string[],
+          sortTvl: tvlUsd,
+          sortApr: apr ?? -1,
+          sortVolume: volumeProxy,
+          sortActivity: activity,
         }
       })
-  }, [farms])
+      .sort((a, b) => b.sortApr - a.sortApr || b.sortTvl - a.sortTvl || a.id.localeCompare(b.id))
+      .slice(0, 5)
+      .map(({ sortTvl: _t, sortApr: _a, sortVolume: _v, sortActivity: _act, ...row }) => row)
+
+    return ranked
+  }, [topFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
-    // Prefer rewarding pools; fall back to configured staking pools so Home is not empty.
-    const source = pools.length > 0 ? pools : allPools
-    return source
-      .slice(0, 5)
+    // Prefer factual TVL/rewards even when APR cannot be certified. Rank: TVL → volume → fees → APR.
+    // Shared resolvePoolTvlUsd (stake × trusted price) — same helper as useGetTopPoolsByApr.
+    const marcoUsd = marcoPrice?.toNumber?.()
+    const hints = { marcoUsd: marcoUsd && marcoUsd > 0 ? marcoUsd : undefined }
+    const source = topPools.filter(Boolean)
+    const ranked = source
       .map((pool) => {
         const aprValue = poolApr(pool)
-        const apr = aprValue ? `${aprValue.toFixed(2)}%` : undefined
-        const tvl = poolTvl(pool)
-        return {
-          id: `pool-${pool.sousId}`,
-          name: pool.stakingToken?.symbol ? `${pool.stakingToken.symbol} Staking` : 'Pool',
-          apr,
-          tvl,
-          href: '/pools',
-        }
+        const tvlUsd = resolvePoolTvlUsd(pool, hints)
+        const life = derivePoolLifecycle(pool, currentBlock)
+        const eligibility = evaluateTopPoolsAprEligibility({
+          rewarding: life.rewarding,
+          emissionActive: life.rewarding,
+          apr: aprValue,
+          tvlUsd,
+          rewardPriceUsd: pool.earningTokenPrice ?? null,
+          stakePriceUsd: pool.stakingTokenPrice ?? hints.marcoUsd ?? null,
+        })
+        const volumeUsd = 0
+        const feesUsd = 0
+        return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
       })
-  }, [pools, allPools])
+      // Certified economics only — same membership spirit as Pools Studio Explore.
+      .filter((row) => !row.pool.isFinished && row.aprValue != null && row.aprValue > 0)
+      .sort((a, b) =>
+        (b.aprValue ?? 0) - (a.aprValue ?? 0) ||
+        b.tvlUsd - a.tvlUsd ||
+        (a.pool.contractAddress || a.pool.sousId || '')
+          .toString()
+          .toLowerCase()
+          .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
+      )
+      .slice(0, 5)
+
+    const toEarnRow = (pool: Pool.DeserializedPool<Token>, tvlUsd: number, aprValue?: number): EarnRow => {
+      const stake = pool.stakingToken?.symbol
+      const earn = resolvePoolRewardToken(pool)
+      const poolChain = resolvePoolChainId(pool, chainId)
+      const showApr = aprValue != null && aprValue > 0
+      return {
+        id: `pool-${poolChain}-${pool.sousId}`,
+        name: poolPairLabel(pool),
+        apr: showApr ? `${aprValue.toFixed(2)}%` : undefined,
+        aprUnavailable: !showApr,
+        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool, hints),
+        volume: resolvePoolVolumeDisplay(pool),
+        fees: resolvePoolFeesDisplay(pool),
+        href: '/pools',
+        chainId: poolChain,
+        tokenSymbols: [stake, earn].filter(Boolean) as string[],
+        tokenAddresses: [pool.stakingToken?.address, pool.earningToken?.address].filter(Boolean) as string[],
+      }
+    }
+
+    const fromRuntime: EarnRow[] =
+      ranked.length > 0 ? ranked.map(({ pool, aprValue, tvlUsd }) => toEarnRow(pool, tvlUsd, aprValue)) : []
+
+    // Never pad with inventory-only names (labels without certified TVL/APR).
+    return fromRuntime
+  }, [topPools, currentBlock, chainId, marcoPrice])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 
@@ -537,11 +602,8 @@ export const useHomeTradeData = () => {
   ])
 
   const isTrendingIndexing = useMemo(() => {
-    const farmsLoading =
-      farmsFetchStatus === 'fetching' ||
-      farmsFetchStatus === 'not-fetched'
-    const poolsLoading =
-      poolsFetchStatus === FetchStatus.Fetching || poolsFetchStatus === FetchStatus.Idle
+    const farmsLoading = farmsFetchStatus === 'fetching' || farmsFetchStatus === 'not-fetched'
+    const poolsLoading = poolsFetchStatus === FetchStatus.Fetching || poolsFetchStatus === FetchStatus.Idle
     return farmsLoading || poolsLoading || indexerState.status === 'loading'
   }, [farmsFetchStatus, poolsFetchStatus, indexerState.status])
 
@@ -576,15 +638,23 @@ export const useHomeTradeData = () => {
   const marcoPriceLabel = useMemo(() => canonicalMarco.label, [canonicalMarco.label])
 
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
-    const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
+    const runtimeFarmCount = allFarms.filter(
+      (f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X',
+    ).length
+    const configFarmCount = countLiveActiveFarmConfigs()
+    // Prefer runtime when loaded; otherwise factual LIVE config inventory (never false zero).
+    const activeFarmCount = runtimeFarmCount > 0 ? runtimeFarmCount : configFarmCount
+
     const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
-    // Active SmartChef pools only — never substitute historical inventory totals.
-    const activePoolCount =
+    const runtimePoolCount =
       poolReconciliation.active > 0
         ? poolReconciliation.active
         : poolReconciliation.rewarding > 0
-          ? poolReconciliation.rewarding
-          : 0
+        ? poolReconciliation.rewarding
+        : 0
+    const configPoolCount = countLivePoolConfigs()
+    const activePoolCount = runtimePoolCount > 0 ? runtimePoolCount : configPoolCount
+    const provenance = liveInventoryProvenance()
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
       return {
@@ -601,11 +671,17 @@ export const useHomeTradeData = () => {
     }
 
     return [
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
+      {
+        ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
+        source: runtimeFarmCount > 0 ? 'runtime-farms' : provenance.farmsSource,
+        asOf: provenance.asOf,
+      },
       {
         ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(activePoolCount))),
         id: 'activePools',
         label: 'Active Pools',
+        source: runtimePoolCount > 0 ? 'runtime-pools' : provenance.poolsSource,
+        asOf: provenance.asOf,
       },
       {
         ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),
@@ -632,18 +708,16 @@ export const useHomeTradeData = () => {
       return indexerState.reason ?? 'Indexing recent swaps'
     }
     return 'No indexed Factory/Router swap activity in ranking window'
-  }, [
-    trendingTickerItems.length,
-    dexTrending.trendingEmpty,
-    dexTrending.isLoading,
-    indexerState,
-  ])
+  }, [trendingTickerItems.length, dexTrending.trendingEmpty, dexTrending.isLoading, indexerState])
 
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 
   return {
     ribbonItems,
     trendingTickerItems,
+    homeTopMoversEntries: dexTrending.homeEntries,
+    topMoversSnapshotId: dexTrending.snapshot.snapshotId,
+    topMoversPrefixResult: dexTrending.prefixResult,
     indexedRibbonAssets,
     marketCards,
     farmRows,

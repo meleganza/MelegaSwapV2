@@ -109,11 +109,11 @@ describe('LB-ACT-004 production convergence', () => {
     expect(INVALID_VAULT.toLowerCase()).toBe('0xb2d57b1a40e61aab3f88361228e1188e0fb6a21c')
   })
 
-  it('fee economics remain fixed at 500 bps', () => {
-    expect(LB_SUCCESS_FEE_BPS).toBe(500)
+  it('fee economics remain fixed at 1000 bps', () => {
+    expect(LB_SUCCESS_FEE_BPS).toBe(1000)
     const gross = 10_000n
     const fee = (gross * BigInt(LB_SUCCESS_FEE_BPS)) / 10_000n
-    expect(fee).toBe(500n)
+    expect(fee).toBe(1000n)
   })
 
   it('finality policy is deterministic depth 15 on chain 56', () => {

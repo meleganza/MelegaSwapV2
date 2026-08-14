@@ -286,6 +286,23 @@ function buildEvidence(project: StaticProjectRecord, conflicts: string[]): Canon
     freshness: 'unknown',
   })
 
+  for (const attestation of project.attestations ?? []) {
+    const provider = sanitizePlainText(attestation.provider, 120) || 'Unknown provider'
+    const reference = attestation.reference?.trim() || provider
+    evidence.push({
+      evidenceType: `${attestation.type}_attestation`,
+      sourceType: attestation.source === 'melega-space' ? 'MELEGA_VERIFIED' : 'PROJECT_ATTESTED',
+      reference,
+      status: attestation.status,
+      observedAt: attestation.observedAt ?? project.asOf,
+      updatedAt: attestation.observedAt ?? project.asOf,
+      freshness: attestation.status === 'expired' ? 'stale' : 'current',
+      provider,
+      sourceUrl: attestation.reference?.trim() || undefined,
+      sourceScope: attestation.source,
+    })
+  }
+
   return evidence
 }
 

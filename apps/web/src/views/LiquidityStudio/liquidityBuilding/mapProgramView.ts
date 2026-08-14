@@ -1,5 +1,6 @@
 import type { ProgramMetrics } from './uxCopy'
 import type { ProgramStatus } from './programStatus'
+import { formatLbTokenAmount } from './formatLbAmount'
 
 /** On-chain Lifecycle enum order from LBTypes. */
 export enum OnChainLifecycle {
@@ -68,12 +69,25 @@ export function lifecycleToProgramStatus(lifecycle: number | undefined | null): 
   }
 }
 
+export type MapProgramViewOptions = {
+  /** Project token decimals (default 18). */
+  decimals?: number
+  /** Project token symbol for product labels. */
+  projectSymbol?: string | null
+  /** Quote asset symbol for quote-side amounts. */
+  quoteSymbol?: string | null
+}
+
 /**
  * Map ProgramView → dashboard metrics.
  * Never invent display values — null when missing.
  * Zero executions → executionCount 0 is real; liquidity labels stay null until matched/added > 0.
+ * Amounts are human-formatted (never raw wei in product labels).
  */
-export function mapProgramViewToMetrics(view: ProgramViewLike | null | undefined): ProgramMetrics {
+export function mapProgramViewToMetrics(
+  view: ProgramViewLike | null | undefined,
+  options: MapProgramViewOptions = {},
+): ProgramMetrics {
   if (!view) {
     return {
       liquidityBuiltLabel: null,
@@ -82,6 +96,10 @@ export function mapProgramViewToMetrics(view: ProgramViewLike | null | undefined
       lpPositionLabel: null,
     }
   }
+
+  const decimals = options.decimals ?? 18
+  const projectSymbol = options.projectSymbol ?? null
+  const quoteSymbol = options.quoteSymbol ?? null
 
   const tokensMatched = asString(view.tokensMatched)
   const quoteAdded = asString(view.totalQuoteAdded)
@@ -93,14 +111,19 @@ export function mapProgramViewToMetrics(view: ProgramViewLike | null | undefined
   const quoteOk = quoteAdded != null && quoteAdded !== '0'
   const lpOk = lpMinted != null && lpMinted !== '0'
 
+  const matchedLabel = formatLbTokenAmount(tokensMatched, decimals, projectSymbol)
+  const quoteLabel = formatLbTokenAmount(quoteAdded, decimals, quoteSymbol)
+  const remainingLabel = formatLbTokenAmount(remaining, decimals, projectSymbol)
+  const lpLabel = formatLbTokenAmount(lpMinted, decimals, null)
+
   return {
     liquidityBuiltLabel:
       matchedOk || quoteOk
-        ? `Matched ${tokensMatched ?? '0'} · Quote added ${quoteAdded ?? '0'}`
+        ? `Matched ${matchedLabel ?? '0'} · Quote added ${quoteLabel ?? '0'}`
         : null,
-    budgetRemainingLabel: remaining,
+    budgetRemainingLabel: remainingLabel,
     executionCount: executions,
-    lpPositionLabel: lpOk ? `${lpMinted} LP` : null,
+    lpPositionLabel: lpOk ? `${lpLabel ?? lpMinted} LP` : null,
   }
 }
 
@@ -151,8 +174,9 @@ export function emptyProgramSnapshot(): ProgramReadSnapshot {
 export function snapshotFromProgramView(
   programAddress: string,
   view: ProgramViewLike,
+  options: MapProgramViewOptions = {},
 ): ProgramReadSnapshot {
-  const metrics = mapProgramViewToMetrics(view)
+  const metrics = mapProgramViewToMetrics(view, options)
   return {
     available: true,
     programAddress,
@@ -166,6 +190,7 @@ export function snapshotFromProgramView(
     lpRecipient: view.lpRecipient ?? null,
     strategyMode: view.strategy?.mode ?? null,
     epochDurationSeconds: view.epochDurationSeconds ?? null,
+    // Keep raw for Advanced Details; product UI formats via formatLbTokenAmount.
     tokensSold: asString(view.tokensSold),
     tokensMatched: asString(view.tokensMatched),
     grossQuoteAcquired: asString(view.grossQuoteAcquired),

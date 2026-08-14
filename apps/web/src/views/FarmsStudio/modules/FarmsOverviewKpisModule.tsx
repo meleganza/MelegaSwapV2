@@ -19,11 +19,15 @@ const Module = styled.section`
   width: 100%;
   max-width: ${farmsOverviewKpis.contentMax};
   height: ${farmsOverviewKpis.moduleH};
-  /* Parent Content gap is 32px; negative margin yields 16px after Hero. */
-  margin-top: -16px;
+  /* Keep dedicated vertical space — never pull My Farms over KPIs. */
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
   box-sizing: border-box;
   font-family: ${typography.fontFamily.body};
   min-width: 0;
+  overflow: visible;
 
   @media (max-width: ${farmsOverviewKpis.tabletBreak}) {
     height: auto;
@@ -120,12 +124,12 @@ const Label = styled.div`
   font-size: ${farmsOverviewKpis.labelSize};
   line-height: ${farmsOverviewKpis.labelLine};
   font-weight: 650;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: ${farmsOverviewKpis.labelColor};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
   min-width: 0;
 `
 
@@ -221,7 +225,11 @@ function KpiIcon({ id }: { id: string }) {
 }
 
 function KpiCardView({ model }: { model: FarmsOverviewKpiCardModel }) {
-  if (model.state === 'loading') {
+  // Founder amendment P0-4: Active Farmers has a factual "Indexing…" value while the
+  // durable participant index catches up — show that text, not a skeleton pulse
+  // forever. Other cards without a factual interim value keep the skeleton.
+  const hasFactualLoadingValue = model.id === 'activeFarmers' && Boolean(model.value) && model.value !== '—'
+  if (model.state === 'loading' && !hasFactualLoadingValue) {
     return (
       <Card
         data-testid={`farms-kpi-${model.id}`}

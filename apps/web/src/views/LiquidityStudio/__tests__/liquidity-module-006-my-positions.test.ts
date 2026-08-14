@@ -68,14 +68,13 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
     expect(formatPoolShare({ toFixed: () => '1.25' })).toBe('1.25%')
   })
 
-  it('ships empty / disconnected copy and Explore Pools CTA', () => {
+  it('ships empty / disconnected copy and Add Liquidity CTA', () => {
     expect(LIQUIDITY_MY_POSITIONS_COPY.emptyConnected).toBe('No liquidity positions yet.')
     expect(LIQUIDITY_MY_POSITIONS_COPY.emptyDisconnected).toBe('Connect wallet to view positions.')
-    expect(LIQUIDITY_MY_POSITIONS_COPY.explorePools).toBe('Explore Pools')
     const mod = load('modules/LiquidityMyPositionsModule.tsx')
     expect(mod).toContain('liquidity-my-positions-disconnected')
     expect(mod).toContain('liquidity-my-positions-empty')
-    expect(mod).toContain('liquidity-my-positions-explore')
+    expect(mod).toContain('liquidity-my-positions-empty-add')
     expect(mod).toContain('ConnectWalletButton')
   })
 
@@ -86,10 +85,10 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
     expect(mod).toContain('address={token1.address}')
     expect(mod).toContain('useLiquidityRuntime')
     expect(mod).toContain('useLiquidityPositionDetails')
-    expect(mod).toContain('openRemoveModal')
     expect(mod).toContain("setMode('Remove Liquidity')")
     expect(mod).toContain("setMode('Add Liquidity')")
     expect(mod).toContain('setSelectedPositionId')
+    expect(mod).toContain('ChainSwitchConfirmDialog')
     expect(mod).not.toContain('useLiquidityPositions()')
     expect(mod).not.toContain('addLiquidityETH')
     expect(mod).not.toContain('MasterChef')
@@ -98,33 +97,26 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
 
   it('shares one LiquidityRuntimeProvider with Module 004 (no nested second host)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityRuntimeProvider')
-    // Add form is composed inside Actions (IA provider-first workspace).
-    expect(page).toContain('LiquidityActionsModule')
-    expect(page).toContain('LiquidityMyPositionsModule')
-    // Single JSX host on the page (import + comment may also mention the symbol).
-    expect((page.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
-    expect((page.match(/<\/LiquidityRuntimeProvider>/g) || []).length).toBe(1)
-
-    const actions = load('modules/LiquidityActionsModule.tsx')
-    expect(actions).toContain('LiquidityAddModule')
-    expect(actions).not.toContain('LiquidityRuntimeProvider')
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('LiquidityRuntimeProvider')
+    expect(shell).toContain('LiquidityMyPositionsModule')
+    expect(shell).toContain('LiquidityAddModule')
+    expect((shell.match(/<LiquidityRuntimeProvider(?:\s[^>]*)?>/g) || []).length).toBe(1)
+    expect((shell.match(/<\/LiquidityRuntimeProvider>/g) || []).length).toBe(1)
     const add = load('modules/LiquidityAddModule.tsx')
     expect(add).not.toContain('LiquidityRuntimeProvider')
     const positions = load('modules/LiquidityMyPositionsModule.tsx')
     expect(positions).not.toContain('LiquidityRuntimeProvider')
   })
 
-  it('mounts Module 006 after Actions workspace and before Insights', () => {
+  it('V3 shell mounts positions panel via tabs', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).toContain('data-liquidity-module-006="mounted"')
-    const actions = page.indexOf('<LiquidityActionsModule')
-    const mine = page.indexOf('<LiquidityMyPositionsModule')
-    const insights = page.indexOf('<LiquidityInsightsModule')
-    expect(actions).toBeGreaterThan(-1)
-    expect(mine).toBeGreaterThan(actions)
-    expect(insights).toBeGreaterThan(mine)
+    expect(page).toContain('LiquidityStudioV3Shell')
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(shell).toContain('data-liquidity-module-006="mounted"')
+    expect(shell).toContain('liquidity-v3-panel-positions')
+    expect(shell).toContain('LiquidityMyPositionsModule')
   })
 
   it('records ownership, plan certification, and evidence', () => {

@@ -1,0 +1,16 @@
+# Local recovery worktrees and generated artifacts are never part of the deploy source.
+MelegaSwapV2-*
+recovery/
+docs/
+apps/web/docs/
+
+# Vercel installs and builds from the committed workspace manifests.
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+coverage/
+*.log
+
+# This monorepo is Yarn-managed; a local npm lock must not change Vercel detection.
+package-lock.json

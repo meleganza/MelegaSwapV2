@@ -1,0 +1,12 @@
+{
+  "repository_root": "/Users/marcomelega/Projects/MelegaSwapV2",
+  "repository_code": "MelegaSwapV2",
+  "product_code": "DEX",
+  "organ_code": "dex",
+  "producer": "MelegaSwapV2",
+  "producer_type": "repository",
+  "branch": "main",
+  "head": "c444e8b7654f271cf5328027a9b073d733c22380",
+  "dirty": true,
+  "dirty_entry_count": 85
+}

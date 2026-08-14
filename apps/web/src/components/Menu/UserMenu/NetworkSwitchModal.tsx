@@ -1,157 +1,245 @@
-// import { parseUnits } from '@ethersproject/units'
-import { AtomBox } from '@pancakeswap/ui/components/AtomBox'
-import { UserMenuItemProps } from '@pancakeswap/uikit/src/widgets/Menu/components/UserMenu/types'
-import {
-  // ButtonMenu,
-  // ButtonMenuItem,
-  // CloseIcon,
-  Heading,
-  // IconButton,
-  // InjectedModalProps,
-  // ModalBody,
-  // ModalContainer,
-  // ModalHeader as UIKitModalHeader,
-  // ModalTitle,
-  ModalV2,
-  ModalWrapper,
-  Text,
-  ModalV2Props,
-  Flex,
-  Grid,
-  // Box,
-} from '@pancakeswap/uikit'
-// import { useAccount, useBalance } from 'wagmi'
-// import { useState, useCallback } from 'react'
+import React, { useState } from 'react'
+import { Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
+// Direct import avoids the design-system barrel loading GlobalHeader again
+// while GlobalHeader is still evaluating the wallet/network menu.
+import { MelegaModal } from 'design-system/melega/components/Modal'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
+import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
 import { ChainLogo } from 'components/Logo/ChainLogo'
+import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 
-// const ModalHeader = styled(UIKitModalHeader)`
-//   // background: ${({ theme }) => theme.colors.gradientBubblegum};
-// `
-
-const StyleGrid = styled(Grid)`
-  grid-template-columns: auto auto auto auto auto;
-  @media screen and (max-width: 900px) {
-    grid-template-columns: auto auto auto;
-  }
-  @media screen and (max-width: 550px) {
-    grid-template-columns: auto auto;
-  }
-  // gap: 20px;
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 6px 10px;
 `
 
-export const UserMenuItem = styled.button<{ active: boolean }>`
-  align-items: center;
-  border: 0;
-  background: ${({ theme, active }) => active ? theme.colors.backgroundAltBlur : "transparent"};
-  color: ${({ theme }) => theme.colors.textSubtle};
-  cursor: pointer;
+const Section = styled.section`
   display: flex;
-  font-size: 16px;
-  // height: 72px;
-  justify-content: space-between;
-  outline: 0;
-  padding: 16px 0;
-  width: 150px;
-  border-radius: 8px;
+  flex-direction: column;
+  gap: 8px;
+`
 
-  &:is(button) {
-    cursor: "pointer";
+const SectionLabel = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 4px;
+`
+
+const SectionTitle = styled(Text)`
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSubtle};
+`
+
+const SectionHint = styled(Text)`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textSubtle};
+  opacity: 0.8;
+`
+
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+`
+
+const ChainCard = styled.button<{ $active: boolean }>`
+  appearance: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1px solid ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.55)' : theme.colors.cardBorder)};
+  background: ${({ theme, $active }) => ($active ? 'rgba(221, 185, 47, 0.12)' : 'rgba(255,255,255,0.03)')};
+  box-shadow: ${({ $active }) =>
+    $active ? 'inset 0 0 0 1px rgba(221, 185, 47, 0.22), 0 8px 18px rgba(0,0,0,0.32)' : '0 4px 12px rgba(0,0,0,0.22)'};
+  cursor: pointer;
+  text-align: left;
+  min-height: 48px;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.tertiary};
+    border-color: rgba(221, 185, 47, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
   }
 
   &:active:not(:disabled) {
-    opacity: 0.85;
-    transform: translateY(1px);
+    transform: translateY(0);
   }
-`;
+`
 
-interface NetworkSwitchModalProps<T = unknown> extends ModalV2Props {
-  switchNetwork: (x: number) => void;
-  chainId: number;
+const ChainMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+`
+
+const ChainName = styled(Text)<{ $active: boolean }>`
+  font-size: 12px;
+  font-weight: ${({ $active }) => ($active ? 700 : 600)};
+  color: ${({ theme, $active }) => ($active ? '#DDB92F' : theme.colors.text)};
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${({ $tone }) => ($tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : '#8a6a1a')};
+  background: ${({ $tone }) =>
+    $tone === 'live'
+      ? 'rgba(34, 160, 80, 0.14)'
+      : $tone === 'active'
+      ? 'rgba(221, 185, 47, 0.16)'
+      : 'rgba(200, 150, 40, 0.16)'};
+`
+
+const SwitchError = styled.div`
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(240, 80, 80, 0.35);
+  background: rgba(240, 80, 80, 0.08);
+  color: #ffb4b4;
+  font-size: 12px;
+  line-height: 1.4;
+`
+
+type NetworkSwitchModalProps = {
+  isOpen: boolean
+  onDismiss?: () => void
+  switchNetwork: (chainId: number) => void
+  chainId: number
 }
 
-// export function WalletModalV2<T = unknown>(props: WalletModalV2Props<T>)
-
-export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T>) {
-  const { switchNetwork, chainId, ...rest } = props
+export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }: NetworkSwitchModalProps) {
   const { t } = useTranslation()
-  const visibleChains = filterMelegaVisibleSwitcherChains(chains)
-  // const [view, setView] = useState(initialView)
-  // const { t } = useTranslation()
-  // const { address: account } = useAccount()
-  // const { data, isFetched } = useBalance({ address: account })
+  const liveChains = filterMelegaVisibleSwitcherChains(chains)
+  const preparing = getMelegaPreparingChains()
+  const [error, setError] = useState<string | null>(null)
 
-  // const handleClick = () => {chain.id !== chainId && switchNetwork(chain.id); props.onDismiss();}
-
+  const safePick = (next: number) => {
+    setError(null)
+    try {
+      if (next !== chainId) {
+        switchNetwork(next)
+        onDismiss?.()
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('Network switch was cancelled.'))
+    }
+  }
 
   return (
-    // <ModalContainer title={t('Welcome!')} $minWidth="360px">
-    //   <ModalHeader>
-    //     <ModalTitle>
-    //       <Heading>{t('Select Network')}</Heading>
-    //     </ModalTitle>
-    //     <IconButton scale="sm" variant="text" onClick={onDismiss}>
-    //       <CloseIcon width="20px" color="text" />
-    //     </IconButton>
-    //   </ModalHeader>
-    //   <ModalBody p="8px" width="100%">
+    <MelegaModal
+      open={isOpen}
+      onClose={() => onDismiss?.()}
+      title={t('Switch Network')}
+      subtitle={t('Choose a supported network. No redirect.')}
+      size="sm"
+      testId="network-switch-modal"
+      ariaLabel={t('Switch Network')}
+    >
+      <Body>
+        <Section data-testid="network-switch-live">
+          <SectionLabel>
+            <SectionTitle>{t('LIVE')}</SectionTitle>
+            <SectionHint>{t('Trading ready')}</SectionHint>
+          </SectionLabel>
+          <CardGrid>
+            {liveChains.map((chain) => {
+              const active = chainId === chain.id
+              return (
+                <ChainCard
+                  key={`live-${chain.id}`}
+                  type="button"
+                  $active={active}
+                  data-testid={`network-card-${chain.id}`}
+                  data-active={active ? 'true' : 'false'}
+                  title={headerChainTitle(chain.id)}
+                  onClick={() => safePick(chain.id)}
+                >
+                  <ChainLogo chainId={chain.id} width={22} height={22} />
+                  <ChainMeta>
+                    <ChainName $active={active}>{headerChainLabel(chain.id)}</ChainName>
+                    <StatusPill $tone={active ? 'active' : 'live'}>{active ? t('Active') : t('LIVE')}</StatusPill>
+                  </ChainMeta>
+                </ChainCard>
+              )
+            })}
+          </CardGrid>
+        </Section>
 
-    //   {chains
-    //     .filter((chain) => !chain.testnet || chain.id === chainId)
-    //     .map((chain) => (
-    //       <UserMenuItem
-    //         key={chain.id}
-    //         style={{ justifyContent: 'flex-start' }}
-    //         onClick={() => chain.id !== chainId && switchNetwork(chain.id)}
-    //       >
-    //         <ChainLogo chainId={chain.id} />
-    //         <Text color={chain.id === chainId ? 'secondary' : 'text'} bold={chain.id === chainId} pl="12px">
-    //           {chain.name}
-    //         </Text>
-    //       </UserMenuItem>
-    //     ))}
-    //   </ModalBody>
-    // </ModalContainer>
-    <ModalV2 closeOnOverlayClick {...rest}>
-      <ModalWrapper onDismiss={props.onDismiss} style={{ overflow: 'visible', border: 'none', maxWidth: "360px" }}>
-        <AtomBox position="relative">
-          <AtomBox py="32px" px="24px">
-            <Heading color="text" as="h4" pb="36px">
-              {t('Switch Network')}
-            </Heading>
-            <StyleGrid>
-              {visibleChains.map((chain) => (
-                  <Flex
-                    key={`network-flex-${chain.id}`}
-                    justifyContent="center"
+        {preparing.length > 0 ? (
+          <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
+            <SectionLabel>
+              <SectionTitle>{t('PREPARING')}</SectionTitle>
+              <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
+            </SectionLabel>
+            <CardGrid>
+              {preparing.map((row) => {
+                const active = chainId === row.chainId
+                return (
+                  <ChainCard
+                    key={`preparing-${row.chainId}`}
+                    type="button"
+                    $active={active}
+                    data-testid={`network-card-${row.chainId}`}
+                    data-active={active ? 'true' : 'false'}
+                    data-status="PREPARING"
+                    title={row.name}
+                    onClick={() => safePick(row.chainId)}
                   >
-                    <UserMenuItem
-                      key={`network-${chain.id}`}
-                      active={chainId === chain.id}
-                      style={{ flexDirection: 'column', justifyContent: 'flex-start' }}
-                      onClick={() => { if (chain.id !== chainId) { switchNetwork(chain.id); props.onDismiss(); } }}
-                    >
-                      <ChainLogo chainId={chain.id} width={36} height={36} />
-                      <Text fontSize={16} color={chain.id === chainId ? 'secondary' : 'text'} bold={chain.id === chainId} mt="10px">
-                        {chain.name}
-                      </Text>
-                    </UserMenuItem>
-                  </Flex>
+                    <ChainLogo chainId={row.chainId} width={22} height={22} />
+                    <ChainMeta>
+                      <ChainName $active={active}>{headerChainLabel(row.chainId)}</ChainName>
+                      <StatusPill $tone={active ? 'active' : 'preparing'}>
+                        {active ? t('Active') : t('PREPARING')}
+                      </StatusPill>
+                    </ChainMeta>
+                  </ChainCard>
                 )
-                )}
-            </StyleGrid>
-          </AtomBox>
-        </AtomBox>
-      </ModalWrapper>
-    </ModalV2>
+              })}
+            </CardGrid>
+          </Section>
+        ) : (
+          <div data-testid="network-switch-preparing" data-network-switch-coming-soon hidden aria-hidden />
+        )}
+
+        {error ? (
+          <SwitchError data-testid="network-switch-error" role="alert">
+            {error}
+          </SwitchError>
+        ) : null}
+      </Body>
+    </MelegaModal>
   )
 }
-
-// export default NetworkSwitchModal

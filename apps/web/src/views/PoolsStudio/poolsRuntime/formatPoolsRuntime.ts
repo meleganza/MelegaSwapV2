@@ -15,6 +15,12 @@ import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
 import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
+import {
+  resolvePoolChainId,
+  resolvePoolFeesDisplay,
+  resolvePoolTvlUsd,
+  resolvePoolVolumeDisplay,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 const BLOCKS_PER_DAY = 28800
 
@@ -62,7 +68,6 @@ export function getPoolTypeLabel(pool: Pool.DeserializedPool<Token>): string {
 export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
   if (pool.vaultKey === VaultKey.CakeVault) return 'MARCO Locked'
   if (pool.vaultKey === VaultKey.CakeFlexibleSideVault) return 'MARCO Flexible'
-  if (pool.sousId === 0 && !pool.vaultKey) return 'MARCO Staking'
   if (pool.stakingToken?.symbol && pool.earningToken?.symbol) {
     return `${pool.stakingToken.symbol} → ${pool.earningToken.symbol}`
   }
@@ -203,8 +208,8 @@ export function mapPoolToPreviewCard(
   if (!pool?.earningToken?.decimals || !pool?.stakingToken?.decimals) return null
 
   const { apr } = getAprData(pool, performanceFee)
+  const tvlUsd = resolvePoolTvlUsd(pool)
   const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-  const tvlUsd = staked * (pool.stakingTokenPrice || 0)
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   const status = poolStatus(pool, currentBlock)
   const aprDisplay = displayPoolApr(pool, apr, status, currentBlock)
@@ -286,7 +291,10 @@ export function mapPoolToPreviewCard(
     rewardBadge: getRewardBadge(pool),
     visualType: getPoolVisualType(pool),
     tvl: formatUsd(tvlUsd),
-    rewardToken: pool.earningToken.symbol ?? '—',
+    volume24h: resolvePoolVolumeDisplay(pool),
+    fees: resolvePoolFeesDisplay(pool),
+    chainId: resolvePoolChainId(pool),
+    rewardToken: pool.earningToken.symbol ?? RUNTIME_UNAVAILABLE_LABEL,
     dailyRewards:
       perBlock.gt(0) ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
     estimatedDailyReward: getEstimatedDailyReward(pool),
@@ -309,7 +317,9 @@ export function mapPoolToPreviewCard(
     explorerUrl: contract.explorerUrl,
     stakeExplorerUrl: getTokenExplorerUrl(stakeAddr),
     rewardExplorerUrl: getTokenExplorerUrl(rewardAddr),
-    participants: staked > 0 ? formatTokenAmount(pool.totalStaked, pool.stakingToken.decimals) : '—',
+    // totalStaked is a token amount, never a wallet census. Keep unavailable until
+    // a per-pool participant index exists so Featured and Explore cards cannot mislabel it.
+    participants: '—',
     cta: status === 'ended' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawPool: pool,
@@ -339,8 +349,7 @@ export function aggregateKpis(
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
     const lc = derivePoolLifecycle(pool, currentBlock)
-    const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-    totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
+    totalStakedUsd += resolvePoolTvlUsd(pool)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
     const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
     if (perBlock.gt(0) && lc.rewarding) {
@@ -435,12 +444,34 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
   return listUsablePools(cards)
 }
 
+function parseCardTvlUsd(card: PoolPreviewCard): number {
+  if (card.rawPool) return resolvePoolTvlUsd(card.rawPool)
+  const label = String(card.tvl || '')
+  const n = Number(label.replace(/[^0-9.]/g, ''))
+  if (!Number.isFinite(n)) return 0
+  if (/m/i.test(label)) return n * 1_000_000
+  if (/k/i.test(label)) return n * 1_000
+  return n
+}
+
+/** Featured = highest-TVL active SmartChef pool (factual). Never invents TVL. */
 export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
-  const rewarding = listRewardingPools(cards)
-  if (!rewarding.length) return undefined
-  return [...rewarding].sort((a, b) => {
-    const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
-    if (aprDiff !== 0) return aprDiff
+  const active = cards.filter((p) => {
+    if (!p.rawPool) return false
+    if (p.id.startsWith('amm-')) return false
+    if (p.status === 'ended' || p.displayStatus === 'ENDED') return false
+    if (p.discoveryClass === 'invalid_contract') return false
+    return (
+      Boolean(p.lifecycle?.active) ||
+      Boolean(p.lifecycle?.rewarding) ||
+      p.status === 'live' ||
+      p.displayStatus === 'LIVE'
+    )
+  })
+  if (!active.length) return undefined
+  return [...active].sort((a, b) => {
+    const tvlDiff = parseCardTvlUsd(b) - parseCardTvlUsd(a)
+    if (tvlDiff !== 0) return tvlDiff
     return (b.aprExact ?? 0) - (a.aprExact ?? 0)
   })[0]
 }

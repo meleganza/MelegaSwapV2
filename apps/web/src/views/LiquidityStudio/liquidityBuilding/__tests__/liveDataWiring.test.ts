@@ -104,8 +104,8 @@ describe('LB017 live data wiring', () => {
     ).toHaveLength(1)
   })
 
-  it('deployed addresses remain null — no placeholders', () => {
-    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
+  it('deployed addresses are bound without placeholders; programAddress stays owner-lookup null', () => {
+    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBeTruthy()
     expect(LB_DEPLOYED_ADDRESSES.programAddress).toBeNull()
     expect(isDeployedAddress(null)).toBe(false)
     expect(isDeployedAddress(ZERO_ADDRESS)).toBe(false)
@@ -123,7 +123,7 @@ describe('LB017 live data wiring', () => {
   })
 
   it('empty activity copy is honest', () => {
-    expect(LB_UX.emptyNoProgram).toBe('No liquidity executions yet.')
-    expect(LB_UX.programUnavailable).toMatch(/unavailable until Liquidity Building contracts are deployed/i)
+    expect(LB_UX.emptyNoProgram).toBe('No liquidity growth yet.')
+    expect(LB_UX.programUnavailable).toMatch(/not ready on BNB Smart Chain/i)
   })
 })

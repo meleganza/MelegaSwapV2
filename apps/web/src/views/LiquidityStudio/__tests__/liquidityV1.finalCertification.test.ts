@@ -52,34 +52,19 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     }
   })
 
-  it('mounts Modules in provider-first IA order on /liquidity', () => {
+  it('mounts V3 shell with module markers on /liquidity', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    // Polish injects first (CSS layer); product order is Hero → Actions → Positions → Insights → Explore
-    expect(page.indexOf('LiquidityVisualPolishModule')).toBeGreaterThan(-1)
-    const order = [
-      'LiquidityHeroModule',
-      'LiquidityActionsModule',
-      'LiquidityMyPositionsModule',
-      'LiquidityInsightsModule',
-      'LiquidityPoolDiscoveryModule',
-    ]
-    let prev = -1
-    for (const name of order) {
-      const idx = page.indexOf(`<${name}`)
-      expect(idx, name).toBeGreaterThan(-1)
-      expect(idx).toBeGreaterThan(prev)
-      prev = idx
-    }
+    const shell = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx'), 'utf8')
+    expect(page).toContain('LiquidityStudioV3Shell')
     for (let n = 1; n <= 8; n++) {
       const id = String(n).padStart(3, '0')
-      expect(page).toContain(`data-liquidity-module-${id}="mounted"`)
+      expect(shell).toContain(`data-liquidity-module-${id}="mounted"`)
     }
-    expect(page).toContain('data-liquidity-studio-screen')
-    expect(page).toContain('data-liquidity-architecture="000"')
-    expect(page).toContain('data-liquidity-ia="provider-first-v1"')
-    expect(page).toContain('LiquidityRuntimeProvider')
-    expect((page.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
+    expect(shell).toContain('data-liquidity-studio-screen')
+    expect(shell).toContain('data-liquidity-architecture="000"')
+    expect(shell).toContain('LiquidityRuntimeProvider')
+    expect((shell.match(/<LiquidityRuntimeProvider(?:\s[^>]*)?>/g) || []).length).toBe(1)
+    expect(shell).toContain('data-liquidity-ia="v3-tabs"')
     expect(page).not.toContain('data-liquidity-module-009')
   })
 
@@ -107,10 +92,10 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     expect(hero).toContain("addLiquidityHref: '#add-liquidity'")
     expect(actions).toContain("manualHref: '/add'")
     expect(actions).toContain("aiBuilderHref: '/liquidity-studio'")
-    expect(positions).toContain('openRemoveModal')
     expect(positions).toContain("setMode('Remove Liquidity')")
     expect(positions).toContain("setMode('Add Liquidity')")
     expect(positions).toContain('setSelectedPositionId')
+    expect(positions).toContain('ChainSwitchConfirmDialog')
   })
 
   it('shared runtime boundaries remain single-owner (no nested providers / duplicate scanners)', () => {
@@ -138,8 +123,8 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     const analytics = readFileSync(path.join(STUDIO, 'modules/buildLiquidityAnalytics.ts'), 'utf8')
     const snapTokens = readFileSync(path.join(STUDIO, 'modules/liquidityMarketSnapshotTokens.ts'), 'utf8')
     const anTokens = readFileSync(path.join(STUDIO, 'modules/liquidityAnalyticsTokens.ts'), 'utf8')
-    expect(snapTokens).toContain("unavailable: 'Data unavailable'")
-    expect(anTokens).toContain("unavailable: 'Data unavailable'")
+    expect(snapTokens).toContain("unavailable: '—'")
+    expect(anTokens).toContain("unavailable: '—'")
     expect(snapshot + analytics + snapTokens + anTokens).not.toMatch(/Awaiting Indexer/i)
     expect(analytics).toContain('TransactionType.MINT')
     expect(analytics).toContain('TransactionType.BURN')

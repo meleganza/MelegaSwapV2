@@ -17,17 +17,20 @@ import {
 } from '../uxCopy'
 
 describe('LB016 Liquidity Building UX freeze', () => {
-  it('initial card copy is frozen', () => {
-    expect(LB_UX.entryLead).toMatch(/token reserve/i)
-    expect(LB_UX.entryLead).toMatch(/protocol-owned liquidity/i)
-    expect(LB_UX.startCta).toBe('Set Up Liquidity Building')
-    expect(LB_UX.entryTitle).toBe('Build lasting liquidity automatically')
+  it('initial card copy is founder-plain (no infra jargon)', () => {
+    expect(LB_UX.entryLead).toBe('Create an automated liquidity growth program for your token.')
+    expect(LB_UX.entryTitle).toBe('Create an automated liquidity growth program for your token.')
+    expect(LB_UX.startCta).toBe('Create Liquidity Program')
     expect(LB_UX.aiBadge).toBe('AI Powered')
+    expect(LB_UX.reserveLabel).toBe('Token Reserve')
+    expect(LB_UX.quoteAssetLabel).toBe('Pair with')
+    expect(LB_UX.tokenToGrowLabel).toBe('Project token')
+    expect(LB_UX.entryLead).not.toMatch(/KMS|Treasury|BC003S/i)
   })
 
-  it('blocked state uses Activation Pending — not infra jargon', () => {
-    expect(LB_UX.activationPendingTitle).toBe('Liquidity Building Ready')
-    expect(LB_UX.activationPendingBadge).toBe('Activation Pending')
+  it('blocked state uses plain readiness — not infra jargon', () => {
+    expect(LB_UX.activationPendingTitle).toBe('Liquidity Builder Ready')
+    expect(LB_UX.activationPendingBadge).toBe('Almost ready')
     expect(LB_UX.readinessContracts).toBe('Contracts')
     expect(LB_UX.readinessRuntime).toBe('Runtime')
     expect(LB_UX.activationPendingBody).not.toMatch(/KMS|Treasury|BC003S/i)
@@ -36,15 +39,15 @@ describe('LB016 Liquidity Building UX freeze', () => {
     expect(panel).not.toMatch(/\bKMS\b|\bBC003S\b/)
   })
 
-  it('setup flow uses Decision Frequency and Full AI default', () => {
+  it('setup flow uses check frequency and Full AI / AI Optimized default', () => {
     expect(EMPTY_SETUP_DRAFT.strategy).toBe('FULL_AI')
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.label)).toEqual([
-      '5 minutes',
-      '15 minutes',
-      '30 minutes',
-      '1 hour',
+      '5m',
+      '15m',
+      '30m',
+      '1h',
     ])
-    expect(LB_UX.decisionFrequencyLabel).toBe('Decision Frequency')
+    expect(LB_UX.decisionFrequencyLabel).toBe('Check frequency')
     expect(LB_UX.strategyFullAiTag).toBe('Recommended')
     expect(LB_UX.strategyRangeTag).toBe('Advanced')
     expect(setupDraftReadyForReview({ ...EMPTY_SETUP_DRAFT, tokenAddress: '0x1', tokenSymbol: 'T', tokenBudget: '10' })).toBe(
@@ -52,8 +55,8 @@ describe('LB016 Liquidity Building UX freeze', () => {
     )
   })
 
-  it('review CTA is Deposit Budget & Activate and stays blocked without gates', () => {
-    expect(LB_UX.reviewCta).toBe('Deposit Budget & Activate')
+  it('review CTA is Activate Liquidity Program and stays blocked without gates', () => {
+    expect(LB_UX.reviewCta).toBe('Activate Liquidity Program')
     const gate = canSubmitMutatingAction({
       walletConnected: true,
       correctChain: true,
@@ -93,9 +96,9 @@ describe('LB016 Liquidity Building UX freeze', () => {
   it('panel source has no mock metrics / fake activity / unavailable misleading CTA labels when gated', () => {
     const panel = readFileSync(path.join(__dirname, '../../components/LiquidityBuildingPanel.tsx'), 'utf8')
     expect(panel).toMatch(/data-lb016/)
-    expect(panel).toMatch(/Deposit Budget & Activate|Activation Required|LB_UX\.reviewCta|LB_UX\.activationRequired/)
+    expect(panel).toMatch(/Activate Liquidity Program|Activation Required|LB_UX\.reviewCta|LB_UX\.activationRequired/)
     expect(panel).not.toMatch(/fake APY|simulated earnings|mock activity feed/i)
-    expect(panel).toMatch(/Decision Frequency|decisionFrequencyLabel/)
+    expect(panel).toMatch(/Check frequency|decisionFrequencyLabel|Decision Frequency/)
     expect(panel).toMatch(/lb-setup-view/)
     expect(panel).toMatch(/lb-review-view/)
   })

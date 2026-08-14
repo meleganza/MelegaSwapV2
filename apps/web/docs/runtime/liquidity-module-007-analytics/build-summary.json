@@ -1,5 +1,0 @@
-{
-  "missionId": "LIQUIDITY_MODULE_007_ANALYTICS",
-  "command": "yarn next build",
-  "status": "passed"
-}

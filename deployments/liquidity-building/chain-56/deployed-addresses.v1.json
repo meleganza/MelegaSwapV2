@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
+  "chainId": 56,
+  "network": "bsc-mainnet",
+  "status": "ALL_SIX_DEPLOYED_VALIDATED_BOUND",
+  "mainnetDeployExecuted": true,
+  "addresses": {
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "lbFactory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "lbAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+    "lbFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "lbProgramImplementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+    "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+    "programAddress": null
+  },
+  "deployments": {
+    "LiquidityBuildingExecutionMathV1": {
+      "address": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+      "transactionHash": "0x04c394f9e480b9d4fb8b79657348fc5c3c5aa16e1e1479caad5f540521950cbd",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "address": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+      "transactionHash": "0x17770c7f9390f1a02d08ef9d9d439192b3e4ef11a7850feb95900d510564a9c5",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0xf9eecf584d14ea113933331a465e8f8bb426bc2cacbb44edb295b469f2fe0b3b",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "governor": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    },
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "address": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+      "transactionHash": "0xd81e1a4172eb6a9a662d9f6a229fd6656b4fd59e63038fc18ae0145590383790",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0x653a5051cc669a0803a9c78a33fefd81f556c22a63c9343fa2ce9d3b9bc2460d",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "signingAuthority": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "authorityType": 1
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "address": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+      "transactionHash": "0x14d7e29da9da96b701062d37ef04cf8a213595b506df86e61e2be1430ea9fa98",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0x06ddf617a98e57e973d1c8ebda8246cd029ae214184deb8873b14ae0de9fbb19",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "treasuryReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5"
+    },
+    "LiquidityBuildingProgramV1": {
+      "address": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+      "transactionHash": "0xd04fd0d7b7e4844c6723173cdb74261f862e05f3ee0a5944b759d1347768285e",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0xd810940146b89f2a619feb1d25d552ea7dd6a317224caf18f1899821d6b0e243",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "linkedLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f"
+    },
+    "LiquidityBuildingFactoryV1": {
+      "address": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+      "transactionHash": "0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0x67d1d01154989e15eace4760ce5493b1377a7965ef04ff5f205fc04ca757dcb2",
+      "certifiedTemplateRuntimeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "implementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+      "executionAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+      "treasuryFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+      "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+      "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "successFeeBps": 1000,
+      "feeChain": "FeeSink → FeeReceiver → MELEGA TREASURY WALLET",
+      "note": "Step 6 of 6 — verified on BNB mainnet; all permanent LB contracts DEPLOYED · VALIDATED · BOUND."
+    }
+  },
+  "note": "All six Liquidity Builder permanent contracts validated and bound on BNB mainnet. Frontend syncs from this artifact only."
+}

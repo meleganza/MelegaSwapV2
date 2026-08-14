@@ -1,5 +1,0 @@
-{
-  "removed": "Liquidity ticker accent pseudo-item",
-  "kept": "historical token lists, contract addresses, registry JSON",
-  "fixtures": "test-only / NEXT_PUBLIC flags / localhost inject"
-}

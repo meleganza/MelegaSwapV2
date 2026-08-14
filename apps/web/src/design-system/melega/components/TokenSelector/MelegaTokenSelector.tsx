@@ -3,11 +3,14 @@ import styled from 'styled-components'
 import { colors, typography, spacing, radius, animation } from '../../tokens'
 import { focusRing, layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
+import type { SuggestionKind } from 'lib/monetization/sponsorship'
 
 export interface MelegaTokenSelectorProps extends MelegaLayoutProps {
   symbol: string
   icon?: React.ReactNode
   onClick?: () => void
+  /** Optional commercial placement label — Featured / Trending / Sponsored */
+  placementKind?: SuggestionKind
 }
 
 const Btn = styled.button<{
@@ -65,6 +68,14 @@ const IconSlot = styled.span`
   }
 `
 
+const Placement = styled.span<{ $kind: SuggestionKind }>`
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 750;
+  color: ${({ $kind }) =>
+    $kind === 'featured' ? colors.gold : $kind === 'trending' ? '#7dd3fc' : '#c4b5fd'};
+`
+
 export const MelegaTokenSelector: React.FC<MelegaTokenSelectorProps> = ({
   symbol,
   icon,
@@ -74,6 +85,7 @@ export const MelegaTokenSelector: React.FC<MelegaTokenSelectorProps> = ({
   padding,
   margin,
   radius: radiusToken,
+  placementKind,
 }) => (
   <Btn
     type="button"
@@ -84,10 +96,16 @@ export const MelegaTokenSelector: React.FC<MelegaTokenSelectorProps> = ({
     $margin={margin}
     $radius={radiusToken}
     disabled={disabled || loading}
-    aria-label={`Select token ${symbol}`}
+    aria-label={`Select token ${symbol}${placementKind ? ` · ${placementKind}` : ''}`}
+    data-placement-kind={placementKind || undefined}
   >
     {icon && <IconSlot>{icon}</IconSlot>}
     {loading ? '…' : symbol}
+    {placementKind && !loading ? (
+      <Placement $kind={placementKind} data-testid={`token-selector-label-${placementKind}`}>
+        {placementKind === 'featured' ? 'Featured' : placementKind === 'trending' ? 'Trending' : 'Sponsored'}
+      </Placement>
+    ) : null}
   </Btn>
 )
 

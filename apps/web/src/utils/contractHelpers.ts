@@ -2,7 +2,7 @@ import type { Signer } from '@ethersproject/abstract-signer'
 import type { Provider } from '@ethersproject/providers'
 import { provider } from 'utils/wagmi'
 import { Contract } from '@ethersproject/contracts'
-import poolsConfig, { livePools8453, livePools137, livePools1 } from 'config/constants/pools'
+import poolsConfig, { livePools8453, livePools137, livePools42161, livePools43114, livePools1 } from 'config/constants/pools'
 import { PoolCategory } from 'config/constants/types'
 import { CAKE } from '@pancakeswap/tokens'
 
@@ -108,9 +108,19 @@ export const getLpContract = (address: string, signer?: Signer | Provider, chain
 }
 
 export const getCakeContract = (signer?: Signer | Provider, chainId?: number) => {
+  const cake = chainId != null ? CAKE[chainId] : CAKE[ChainId.BSC]
+  if (!cake?.address) {
+    // PREPARING / unsupported fee-token chains must not throw during shell render
+    return getContract({
+      abi: cakeAbi,
+      address: CAKE[ChainId.BSC].address,
+      chainId: ChainId.BSC,
+      signer,
+    }) as Cake
+  }
   return getContract({
     abi: cakeAbi,
-    address: chainId ? CAKE[chainId].address : CAKE[ChainId.BSC].address,
+    address: cake.address,
     chainId,
     signer,
   }) as Cake
@@ -151,7 +161,9 @@ export const getSouschefContract = (id: number, signer?: Signer | Provider, chai
     chainId === 1 ? livePools1
       : chainId === 137 ? livePools137
         : chainId === 8453 ? livePools8453
-          : poolsConfig
+          : chainId === 42161 ? livePools42161
+            : chainId === 43114 ? livePools43114
+              : poolsConfig
           
   const config = pools.find((pool) => pool.sousId === id)
   const abi = config?.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef

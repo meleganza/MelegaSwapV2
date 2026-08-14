@@ -230,8 +230,8 @@ describe('POOLS_MODULE_003 My Positions', () => {
     expect(vm.positions).toHaveLength(4)
     expect(vm.positions[0].positionStatus).toBe('EMERGENCY')
     expect(vm.positions[1].positionStatus).toBe('WITHDRAW_ONLY')
-    expect(vm.visiblePositions).toHaveLength(3)
-    expect(vm.showViewAll).toBe(true)
+    expect(vm.visiblePositions).toHaveLength(4)
+    expect(vm.showViewAll).toBe(false)
     expect(vm.showCountBadge).toBe(true)
     expect(vm.totalCount).toBe(4)
   })
@@ -503,7 +503,7 @@ describe('POOLS_MODULE_003 My Positions', () => {
     expect(poolsMyPositions.cardGap).toBe('18px')
     expect(poolsMyPositions.headerH).toBe('60px')
     expect(poolsMyPositions.contentW).toBe('900px')
-    expect(poolsMyPositions.maxVisibleDesktop).toBe(3)
+    expect(poolsMyPositions.maxVisibleDesktop).toBe(4)
   })
 
   it('module sources avoid production mock position fixtures', () => {

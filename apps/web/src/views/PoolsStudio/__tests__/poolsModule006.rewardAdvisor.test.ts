@@ -148,11 +148,12 @@ describe('POOLS_MODULE_006 Reward Advisor', () => {
     )
   })
 
-  it('mounts Module 006 after Finished; Modules 007–008 may follow; Modules 009–010 stay unmounted', () => {
+  it('founder IA demotes Reward Advisor and Analytics; 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('PoolsRewardAdvisorModule')
-    expect(screen).toContain('data-pools-module-006="mounted"')
-    expect(screen.indexOf('PoolsFinishedPoolsModule')).toBeLessThan(screen.indexOf('PoolsRewardAdvisorModule'))
+    expect(screen).not.toContain('<PoolsRewardAdvisorModule')
+    expect(screen).not.toContain('<PoolsAnalyticsModule')
+    expect(screen).toContain('data-pools-module-006="unmounted"')
+    expect(screen).toContain('data-pools-module-007="unmounted"')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(screen).not.toContain('PoolsIntegrationModule')
     expect(screen).not.toContain('PoolsTrendingModule')

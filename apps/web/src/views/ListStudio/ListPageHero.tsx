@@ -1,85 +1,83 @@
 /**
- * LIST_MODULE_001_HERO — pixel-locked List page hero.
- * Desktop 1376×360. Mobile 358×auto. Founder background + artwork only.
+ * LIST Wave 04A hero — premium Melega orbit animation (no corrupted artwork, no KPI cards).
+ * 3D Melega logo with orbiting BNB + USDT on a dark gold field.
  */
 import React from 'react'
-import styled from 'styled-components'
-import { TrendingUp, Users, Droplets, Globe } from 'lucide-react'
-import { LIST_HERO_ART, LIST_HERO_BG, listOne } from './listTokens'
-import { formatListHeroStat, useListHeroStats } from './useListHeroStats'
+import styled, { keyframes } from 'styled-components'
+import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
+import { listOne } from './listTokens'
+
+const spinY = keyframes`
+  0% { transform: rotateY(0deg) rotateX(8deg); }
+  100% { transform: rotateY(360deg) rotateX(8deg); }
+`
+
+const orbitA = keyframes`
+  0% { transform: rotate(0deg) translateX(108px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(108px) rotate(-360deg); }
+`
+
+const orbitB = keyframes`
+  0% { transform: rotate(180deg) translateX(132px) rotate(-180deg); }
+  100% { transform: rotate(540deg) translateX(132px) rotate(-540deg); }
+`
+
+const pulse = keyframes`
+  0%, 100% { opacity: 0.45; transform: scale(0.96); }
+  50% { opacity: 0.85; transform: scale(1.04); }
+`
 
 const Hero = styled.section`
   position: relative;
   width: 100%;
   max-width: ${listOne.contentMax};
-  height: ${listOne.heroH};
+  min-height: 280px;
   margin: ${listOne.heroTop} 0 0;
   box-sizing: border-box;
   overflow: hidden;
-  background-color: ${listOne.card};
-  background-image: url('${LIST_HERO_BG}');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: right center;
+  border-radius: 18px;
+  border: 1px solid rgba(244, 196, 48, 0.18);
+  background:
+    radial-gradient(ellipse 70% 60% at 70% 45%, rgba(244, 196, 48, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, rgba(244, 196, 48, 0.08) 0%, transparent 50%),
+    linear-gradient(145deg, #0c0c0c 0%, #14110a 45%, #0a0a0a 100%);
   font-family: ${listOne.font};
   display: grid;
-  grid-template-columns: ${listOne.leftPct}fr ${listOne.rightPct}fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    'text art'
-    'stats art';
-  column-gap: ${listOne.colGap};
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   align-items: center;
-  padding: 20px 28px 20px 32px;
+  column-gap: 24px;
+  padding: 28px 32px;
 
   @media (max-width: 767px) {
-    width: 100%;
-    max-width: none;
-    height: auto;
     min-height: 0;
     margin-top: ${listOne.heroTopMobile};
-    padding: 24px 16px 20px;
+    padding: 22px 16px 20px;
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-      'text'
-      'art'
-      'stats';
-    row-gap: 20px;
-    background-position: center top;
-    background-size: cover;
+    row-gap: 18px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+    }
   }
 `
 
 const Left = styled.div`
-  grid-area: text;
   position: relative;
   z-index: 1;
   min-width: 0;
-  max-width: 100%;
-  align-self: end;
-
-  @media (max-width: 767px) {
-    align-self: start;
-  }
 `
 
 const Title = styled.h1`
   margin: 0;
-  width: ${listOne.headlineW};
-  max-width: 100%;
+  max-width: 520px;
   font-family: ${listOne.font};
-  font-size: ${listOne.headlineSize};
-  line-height: ${listOne.headlineLh};
-  font-weight: ${listOne.headlineWeight};
+  font-size: clamp(34px, 4.2vw, 52px);
+  line-height: 1.08;
+  font-weight: 750;
   letter-spacing: -0.02em;
   color: ${listOne.text};
-
-  @media (max-width: 767px) {
-    width: 100%;
-    font-size: 34px;
-    line-height: 40px;
-  }
 `
 
 const Gold = styled.span`
@@ -87,163 +85,127 @@ const Gold = styled.span`
 `
 
 const Description = styled.p`
-  margin: ${listOne.descTop} 0 0;
-  width: ${listOne.descW};
-  max-width: 100%;
-  font-size: ${listOne.descSize};
-  line-height: ${listOne.descLh};
+  margin: 16px 0 0;
+  max-width: 460px;
+  font-size: 15px;
+  line-height: 22px;
   font-weight: 400;
   color: ${listOne.secondary};
-
-  @media (max-width: 767px) {
-    width: 100%;
-    font-size: 15px;
-    line-height: 22px;
-  }
 `
 
-const Stats = styled.div`
-  grid-area: stats;
-  margin-top: 28px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: ${listOne.statGap};
-  width: max-content;
-  max-width: 100%;
-  align-self: start;
-
-  @media (max-width: 767px) {
-    margin-top: 0;
-    width: 100%;
-    max-width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-`
-
-const StatCard = styled.div`
-  width: ${listOne.statW};
-  height: ${listOne.statH};
-  box-sizing: border-box;
-  border-radius: 12px;
-  border: 1px solid ${listOne.border};
-  background: rgba(21, 21, 21, 0.92);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  padding: 0 12px;
-  flex-shrink: 0;
-
-  @media (max-width: 767px) {
-    width: 100%;
-    height: ${listOne.statH};
-  }
-`
-
-const StatIcon = styled.span`
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgba(242, 200, 76, 0.1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: ${listOne.gold};
-
-  svg {
-    display: block;
-    width: 16px;
-    height: 16px;
-  }
-`
-
-const StatText = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`
-
-const StatValue = styled.span`
-  font-size: 18px;
-  line-height: 22px;
-  font-weight: 700;
-  color: ${listOne.text};
-  letter-spacing: -0.01em;
-`
-
-const StatLabel = styled.span`
-  font-size: 11px;
-  line-height: 14px;
-  font-weight: 500;
-  color: ${listOne.muted};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const Right = styled.div`
-  grid-area: art;
+const Stage = styled.div`
   position: relative;
   z-index: 1;
-  min-width: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 767px) {
-    height: auto;
-    min-height: 220px;
-  }
-`
-
-const ArtFrame = styled.div`
-  width: ${listOne.artW};
-  height: ${listOne.artH};
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-
-  @media (max-width: 767px) {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 560 / 320;
-  }
-`
-
-const ArtImg = styled.img`
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  user-select: none;
+  max-width: 360px;
+  height: 240px;
+  margin: 0 auto;
+  perspective: 720px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 767px) {
+    height: 200px;
+    max-width: 280px;
+  }
+`
+
+const Glow = styled.div`
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 196, 48, 0.35) 0%, transparent 68%);
+  animation: ${pulse} 3.2s ease-in-out infinite;
   pointer-events: none;
 `
 
-const STAT_META = [
-  { key: 'listedTokens' as const, label: 'Listed Tokens', Icon: TrendingUp },
-  { key: 'projects' as const, label: 'Projects', Icon: Users },
-  { key: 'marketCap' as const, label: 'Total Market Cap', Icon: Droplets },
-  { key: 'networks' as const, label: 'Networks', Icon: Globe },
-]
+const LogoCore = styled.div`
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  animation: ${spinY} 14s linear infinite;
+  box-shadow:
+    0 0 0 1px rgba(244, 196, 48, 0.35),
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    0 0 36px rgba(244, 196, 48, 0.22);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 767px) {
+    width: 96px;
+    height: 96px;
+  }
+`
+
+/** Full-bleed canonical WBNB art — padded home/trade/BNB.png reads too small in orbit. */
+export const LIST_HERO_BNB_LOGO = '/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png'
+export const LIST_HERO_USDT_LOGO = '/images/56/tokens/0x55d398326f99059fF775485246999027B3197955.png'
+export const LIST_HERO_BNB_ORBIT_PX = 44
+export const LIST_HERO_BNB_IMG_PX = 36
+
+const Orbiter = styled.div<{ $variant: 'bnb' | 'usdt' }>`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: ${({ $variant }) => ($variant === 'bnb' ? '44px' : '36px')};
+  height: ${({ $variant }) => ($variant === 'bnb' ? '44px' : '36px')};
+  margin: ${({ $variant }) => ($variant === 'bnb' ? '-22px 0 0 -22px' : '-18px 0 0 -18px')};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: ${({ $variant }) => ($variant === 'bnb' ? orbitA : orbitB)}
+    ${({ $variant }) => ($variant === 'bnb' ? '9s' : '12s')} linear infinite;
+  background: ${({ $variant }) =>
+    $variant === 'bnb' ? 'rgba(243, 186, 47, 0.16)' : 'rgba(38, 161, 123, 0.16)'};
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.35),
+    0 0 12px
+      ${({ $variant }) =>
+        $variant === 'bnb' ? 'rgba(243, 186, 47, 0.45)' : 'rgba(38, 161, 123, 0.4)'};
+  z-index: 2;
+
+  img {
+    width: ${({ $variant }) => ($variant === 'bnb' ? '36px' : '28px')};
+    height: ${({ $variant }) => ($variant === 'bnb' ? '36px' : '28px')};
+    object-fit: cover;
+    display: block;
+    background: transparent;
+  }
+`
+
+const Ring = styled.div`
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed rgba(244, 196, 48, 0.22);
+  pointer-events: none;
+
+  @media (max-width: 767px) {
+    width: 180px;
+    height: 180px;
+  }
+`
 
 export const ListPageHero: React.FC = () => {
-  const stats = useListHeroStats()
-
   return (
     <Hero
       data-testid="list-one-page-header"
       data-list-hero="true"
-      data-hero-bg={LIST_HERO_BG}
-      data-pixel-hero="1376x360"
+      data-list-hero-variant="melega-orbit"
       aria-label="List"
     >
       <Left data-testid="list-hero-text">
@@ -259,31 +221,25 @@ export const ListPageHero: React.FC = () => {
         </Description>
       </Left>
 
-      <Stats data-testid="list-hero-stats">
-        {STAT_META.map(({ key, label, Icon }) => (
-          <StatCard key={key} data-testid={`list-hero-stat-${key}`} data-pixel-stat="120x72">
-            <StatIcon aria-hidden>
-              <Icon strokeWidth={1.75} />
-            </StatIcon>
-            <StatText>
-              <StatValue>{formatListHeroStat(stats[key])}</StatValue>
-              <StatLabel>{label}</StatLabel>
-            </StatText>
-          </StatCard>
-        ))}
-      </Stats>
-
-      <Right data-testid="list-hero-art-col">
-        <ArtFrame data-testid="list-hero-art-frame" data-pixel-art="560x320">
-          <ArtImg
-            src={LIST_HERO_ART}
+      <Stage data-testid="list-hero-orbit" aria-hidden>
+        <Glow />
+        <Ring />
+        <LogoCore data-testid="list-hero-melega-logo">
+          <img src={MELEGA_LOGO_URI} alt="" draggable={false} />
+        </LogoCore>
+        <Orbiter $variant="bnb" data-testid="list-hero-orbit-bnb" aria-label="BNB">
+          <img
+            src={LIST_HERO_BNB_LOGO}
             alt=""
-            data-testid="list-hero-artwork"
-            data-hero-art={LIST_HERO_ART}
             draggable={false}
+            width={LIST_HERO_BNB_IMG_PX}
+            height={LIST_HERO_BNB_IMG_PX}
           />
-        </ArtFrame>
-      </Right>
+        </Orbiter>
+        <Orbiter $variant="usdt" data-testid="list-hero-orbit-usdt" aria-label="USDT">
+          <img src={LIST_HERO_USDT_LOGO} alt="" draggable={false} width={28} height={28} />
+        </Orbiter>
+      </Stage>
     </Hero>
   )
 }

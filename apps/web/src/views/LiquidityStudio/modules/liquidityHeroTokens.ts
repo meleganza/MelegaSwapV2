@@ -85,22 +85,22 @@ export const LIQUIDITY_HERO_COPY = {
   trustItems: [
     {
       id: 'ownership',
-      title: 'Non-custodial Ownership',
+      title: 'Non-custodial ownership',
       body: 'Your LP positions remain yours.',
     },
     {
       id: 'pools',
-      title: 'Transparent Pools',
+      title: 'Transparent pools',
       body: 'Participate in on-chain liquidity pools.',
     },
     {
       id: 'fees',
-      title: 'Earn Fees',
+      title: 'Earn fees',
       body: 'Liquidity providers receive applicable fees.',
     },
     {
       id: 'ecosystem',
-      title: 'Open Ecosystem',
+      title: 'Open ecosystem',
       body: 'Support markets across Melega DEX.',
     },
   ],

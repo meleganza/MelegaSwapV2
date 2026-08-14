@@ -80,18 +80,21 @@ describe('PASSPORT_MODULE_003 Assets', () => {
     expect(blob).toContain('Quick Actions')
   })
 
-  it('mounts Module 003 on PassportScreen with 001–002 preserved', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportHeroIdentityModule')
-    expect(screen).toContain('PassportPortfolioOverview')
-    expect(screen).toContain('PassportAssets')
-    expect(screen).toContain('CommandCenterScreen')
-    expect(screen).toContain('data-passport-module-003')
+  it('mounts Module 003 on PassportScreen with 001–002 preserved (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportAssets.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
-  it('Module 003 remains mounted without ArchitectureShell', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('data-passport-module-003')
-    expect(screen).not.toContain('PassportArchitectureShell')
+  it('Module 003 remains mounted without ArchitectureShell (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportAssets.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 })

@@ -1,3 +1,4 @@
+import { MELEGA_TREASURY_WALLET_LABEL } from 'config/dexEconomicAuthority'
 import { KRMP_TESTNET_CHAIN_ID } from './registry'
 
 /** True when KERL owns routing authority — DEX must not discover routes. */
@@ -40,8 +41,8 @@ export function buildKrmpAuthorityMatrix(chainId: number): AuthorityMatrixRow[] 
     },
     {
       domain: 'settlement',
-      constitutionalOwner: 'Treasury Runtime',
-      actualOwner: 'Treasury Runtime',
+      constitutionalOwner: MELEGA_TREASURY_WALLET_LABEL,
+      actualOwner: 'DECOMMISSIONED',
       compliant: true,
     },
     {

@@ -1,6 +1,6 @@
 import { Currency, CurrencyAmount, JSBI, Native, Token } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import ERC20_INTERFACE from 'config/abi/erc20'
 import { useAllTokens } from 'hooks/Tokens'
 import { useMulticallContract } from 'hooks/useContract'
@@ -134,6 +134,37 @@ export function useCurrencyBalance(account?: string, currency?: Currency): Curre
     account,
     useMemo(() => [currency], [currency]),
   )[0]
+}
+
+/**
+ * Direct wallet balance used by the execution-critical Swap form.
+ * The legacy multicall balance remains available as a fallback, but a stalled
+ * global block subscription must not leave the connected wallet on "Loading".
+ */
+export function useLiveCurrencyBalance(account?: string, currency?: Currency): {
+  balance?: CurrencyAmount<Currency>
+  loading: boolean
+  error: boolean
+} {
+  const enabled = Boolean(account && currency)
+  const query = useBalance({
+    address: account as `0x${string}` | undefined,
+    chainId: currency?.chainId,
+    token: currency?.isToken ? (currency.address as `0x${string}`) : undefined,
+    enabled,
+    watch: true,
+  })
+
+  const balance = useMemo(() => {
+    if (!currency || !query.data) return undefined
+    return CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(query.data.value.toString()))
+  }, [currency, query.data])
+
+  return {
+    balance,
+    loading: Boolean(enabled && !balance && (query.isLoading || query.isFetching)),
+    error: Boolean(enabled && query.isError),
+  }
 }
 
 // mimics useAllBalances

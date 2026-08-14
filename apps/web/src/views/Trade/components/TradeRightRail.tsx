@@ -118,8 +118,7 @@ const Rank = styled.span<{ $rank?: number }>`
   font-size: 11px;
   font-weight: 800;
   color: ${({ $rank }) => ($rank === 1 ? tradeColors.goldBright : '#6b8cff')};
-  background: ${({ $rank }) =>
-    $rank === 1 ? 'rgba(244, 197, 66, 0.12)' : 'rgba(107, 140, 255, 0.1)'};
+  background: ${({ $rank }) => ($rank === 1 ? 'rgba(244, 197, 66, 0.12)' : 'rgba(107, 140, 255, 0.1)')};
 `
 
 const RouteMeta = styled.div`
@@ -317,7 +316,7 @@ export const TradeRightRail: React.FC = () => {
   const outputCurrency = useCurrency(outputCurrencyId)
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
-  const terminalData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const terminalData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId, inputCurrencyId)
   const surfaceMachine = useMemo(
     () =>
       buildTradeSurfaceMachinePayload({
@@ -331,21 +330,13 @@ export const TradeRightRail: React.FC = () => {
         hasSubgraphTx: terminalData.recentSwaps.length > 0,
         hasPairPrices: Boolean(terminalData.pairPrice?.value),
         routeConfigured: Boolean(outputCurrencyId || terminalData.canonicalOutputAddress),
-        chartStatus: terminalData.pairPrice?.value
-          ? 'indexed'
-          : terminalData.isIndexingMetrics
-            ? 'loading'
-            : 'empty',
+        chartStatus: terminalData.pairPrice?.value ? 'indexed' : terminalData.isIndexingMetrics ? 'loading' : 'empty',
         statsStatus: terminalData.isIndexingMetrics
           ? 'loading'
           : terminalData.tokenExists === false
-            ? 'missing'
-            : 'ready',
-        swapsStatus: terminalData.isIndexing
-          ? 'loading'
-          : terminalData.recentSwaps.length > 0
-            ? 'ready'
-            : 'empty',
+          ? 'missing'
+          : 'ready',
+        swapsStatus: terminalData.isIndexing ? 'loading' : terminalData.recentSwaps.length > 0 ? 'ready' : 'empty',
       }),
     [machine, terminalData, inputSymbol, outputSymbol, outputCurrencyId],
   )
@@ -366,9 +357,7 @@ export const TradeRightRail: React.FC = () => {
             <LiveBadge>Live</LiveBadge>
           </PanelHead>
           {phase === 'routing' && <EmptyLine>Routing…</EmptyLine>}
-          {phase !== 'routing' && routeEntries.length === 0 && (
-            <EmptyLine>Enter amount to compare routes</EmptyLine>
-          )}
+          {phase !== 'routing' && routeEntries.length === 0 && <EmptyLine>Enter amount to compare routes</EmptyLine>}
           {routeEntries.map((entry) => (
             <RouteEntry key={entry.rank}>
               <Rank $rank={entry.rank}>{entry.rank}</Rank>
@@ -465,9 +454,7 @@ export const TradeRightRail: React.FC = () => {
           <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
             {machineOpen ? 'Hide technical details' : 'Show technical details'}
           </MachineToggle>
-          {machineOpen && (
-            <MachinePre data-trade-machine-json>{JSON.stringify(surfaceMachine, null, 2)}</MachinePre>
-          )}
+          {machineOpen && <MachinePre data-trade-machine-json>{JSON.stringify(surfaceMachine, null, 2)}</MachinePre>}
         </Panel>
       </TopPanels>
 

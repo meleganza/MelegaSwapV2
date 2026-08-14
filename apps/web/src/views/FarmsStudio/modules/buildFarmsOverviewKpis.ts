@@ -75,6 +75,9 @@ export function buildFarmsOverviewKpisFromParts(input: {
   cakePriceUsd: number
   emissionPerDay?: number | null
   emissionPerDayLabel?: string | null
+  /** Unique MasterChef Deposit wallets (active + finished). Null = unavailable. */
+  uniqueFarmersCount?: number | null
+  uniqueFarmersLoading?: boolean
 }): FarmsOverviewKpisViewModel {
   const fetchedAt = new Date().toISOString()
   const { previewCards, farmsLoading, account, userDataLoaded, cakePriceUsd } = input
@@ -146,15 +149,36 @@ export function buildFarmsOverviewKpisFromParts(input: {
     )
   }
 
-  // —— Active Farmers — no unique-wallet index (never estimate / never use LP supply) ——
-  const activeFarmersCard = card(
-    'activeFarmers',
-    '—',
-    'Unique wallet data unavailable',
-    'unavailable',
-    'unavailable',
-    'No factual Deposit/Withdraw unique-wallet index; participants/LP supply must not be used as farmers',
-  )
+  // —— Active Farmers = unique MasterChef participants (durable event index; never invent 0) ——
+  let activeFarmersCard: FarmsOverviewKpiCardModel
+  if (input.uniqueFarmersLoading && (input.uniqueFarmersCount == null || input.uniqueFarmersCount < 0)) {
+    activeFarmersCard = card(
+      'activeFarmers',
+      'Indexing…',
+      'Unique wallets that participated in Melega DEX farms',
+      'loading',
+      'loading',
+      'MasterChef Deposit/Withdraw/EmergencyWithdraw index in progress',
+    )
+  } else if (input.uniqueFarmersCount != null && Number.isFinite(input.uniqueFarmersCount)) {
+    activeFarmersCard = card(
+      'activeFarmers',
+      String(input.uniqueFarmersCount),
+      'Unique wallets that participated in Melega DEX farms',
+      input.uniqueFarmersCount === 0 ? 'zero' : 'available',
+      'live',
+      'MasterChef event participant index · never LP supply',
+    )
+  } else {
+    activeFarmersCard = card(
+      'activeFarmers',
+      '—',
+      'Unique wallets that participated in Melega DEX farms',
+      'unavailable',
+      'unavailable',
+      'MasterChef participant index not ready',
+    )
+  }
 
   // —— 24H Rewards — MasterChef dexTokenPerBlock × blocksPerDay (emitted amount) ——
   const emissionPerDay = input.emissionPerDay ?? null
@@ -290,8 +314,18 @@ export function buildFarmsOverviewKpisFromParts(input: {
       valuedFarmCount,
       farmUniverseCount: universe,
       activeFarmCount: lpCards.length > 0 || !farmsLoading ? activeCards.length : null,
-      activeFarmersCount: null,
-      activeFarmersState: 'unavailable',
+      activeFarmersCount:
+        input.uniqueFarmersCount != null && Number.isFinite(input.uniqueFarmersCount)
+          ? input.uniqueFarmersCount
+          : null,
+      activeFarmersState:
+        input.uniqueFarmersLoading
+          ? 'loading'
+          : input.uniqueFarmersCount != null
+            ? input.uniqueFarmersCount === 0
+              ? 'zero'
+              : 'available'
+            : 'unavailable',
       rewards24hUsd: emissionUsd,
       rewards24hState: emissionPerDay != null && emissionPerDay > 0 ? 'available' : 'unavailable',
       rewards24hSource:
@@ -308,7 +342,10 @@ export function buildFarmsOverviewKpisFromParts(input: {
       provenance: {
         tvl: 'farm.liquidity (LP farms only; pid 0 excluded; Pools excluded)',
         activeFarms: 'live/indexing LP farms with non-zero multiplier',
-        activeFarmers: 'none — unique wallet index unavailable',
+        activeFarmers:
+          input.uniqueFarmersCount != null
+            ? 'MasterChef Deposit/Withdraw/EmergencyWithdraw participant index'
+            : 'none — unique wallet index unavailable',
         rewards24h: 'none — indexed 24H distribution not available; emission not used',
         sustainableApr: 'listRewardingFarms + positive liquidity + live status',
         harvestable: 'userData.earnings × cakePriceBusd',

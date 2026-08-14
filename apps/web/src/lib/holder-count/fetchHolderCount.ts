@@ -1,8 +1,11 @@
 import type { HolderCountResult } from './types'
 
-/** Etherscan API V2 unified endpoint — BscScan V1 returns NOTOK as of 2025. */
+/** BNB Chain token index. The API key is optional; `freekey` is the documented fallback. */
+const BINPLORER_API_URL = 'https://api.binplorer.com'
+/** Legacy fallback. Etherscan V2 requires a paid multichain plan for BNB Chain. */
 const ETHERSCAN_V2_URL = 'https://api.etherscan.io/v2/api'
 const BSC_CHAIN_ID = 56
+const REQUEST_TIMEOUT_MS = 8_000
 
 function unavailable(reason: string, diagnostic: string): HolderCountResult {
   return {
@@ -25,21 +28,49 @@ export async function fetchHolderCount(
   }
 
   if (chainId !== BSC_CHAIN_ID) {
-    return unavailable(
-      'Source not configured',
-      `Holder count provider is not configured for chain ${chainId}`,
-    )
-  }
-
-  const apiKey = apiKeyOverride ?? process.env.BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSAN_API_KEY
-  if (!apiKey) {
-    return unavailable(
-      'Source not configured',
-      'Set BSCSCAN_API_KEY in Vercel Production (server-side) and redeploy',
-    )
+    return unavailable('Unavailable', `Holder count provider is not configured for chain ${chainId}`)
   }
 
   try {
+    const binplorerApiKey = process.env.BINPLORER_API_KEY?.trim() || 'freekey'
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    const binplorerResponse = await fetch(
+      `${BINPLORER_API_URL}/getTokenInfo/${normalized}?apiKey=${encodeURIComponent(binplorerApiKey)}`,
+      {
+        headers: { accept: 'application/json' },
+        signal: controller.signal,
+      },
+    ).finally(() => clearTimeout(timeout))
+
+    if (binplorerResponse.ok) {
+      const json = (await binplorerResponse.json()) as {
+        holdersCount?: number | string
+        error?: { code?: number; message?: string }
+      }
+      const count = Number(json.holdersCount)
+      if (Number.isSafeInteger(count) && count >= 0) {
+        return {
+          status: 'ready',
+          count,
+          source: 'binplorer',
+          checkedAt: new Date().toISOString(),
+        }
+      }
+    }
+
+    const apiKey =
+      apiKeyOverride ??
+      process.env.BSCSCAN_API_KEY ??
+      process.env.NEXT_PUBLIC_BSCSCAN_API_KEY ??
+      process.env.NEXT_PUBLIC_BSCSAN_API_KEY
+    if (!apiKey) {
+      return unavailable(
+        'Holder index returned no count',
+        `Binplorer HTTP ${binplorerResponse.status}; no legacy explorer key configured`,
+      )
+    }
+
     const params = new URLSearchParams({
       chainid: String(BSC_CHAIN_ID),
       module: 'token',
@@ -47,9 +78,12 @@ export async function fetchHolderCount(
       contractaddress: normalized,
       apikey: apiKey,
     })
+    const legacyController = new AbortController()
+    const legacyTimeout = setTimeout(() => legacyController.abort(), REQUEST_TIMEOUT_MS)
     const res = await fetch(`${ETHERSCAN_V2_URL}?${params.toString()}`, {
       headers: { accept: 'application/json' },
-    })
+      signal: legacyController.signal,
+    }).finally(() => clearTimeout(legacyTimeout))
     if (!res.ok) {
       return unavailable('Explorer request failed', `Etherscan V2 HTTP ${res.status}`)
     }
@@ -73,7 +107,7 @@ export async function fetchHolderCount(
     )
   } catch (error) {
     return unavailable(
-      'Explorer request failed',
+      'Holder index request failed',
       error instanceof Error ? error.message : 'Network error while fetching holder count',
     )
   }

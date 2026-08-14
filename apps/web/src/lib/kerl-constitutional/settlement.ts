@@ -17,7 +17,7 @@ export function isKerlConstitutionalHandoff(context: SwapHandoffContext): boolea
 
 /**
  * KERL produces settlement receipt from DEX execution receipt.
- * Constitutional path: ExecutionReceipt → KERL Settlement Receipt → Treasury Runtime.
+ * Constitutional path: ExecutionReceipt → KERL Settlement Receipt → handoff no-op (Treasury Runtime decommissioned).
  */
 export function buildKerlSettlementReceipt(input: {
   executionReceipt: ExecutionReceiptPayload
@@ -45,8 +45,8 @@ export function buildKerlSettlementReceipt(input: {
 }
 
 /**
- * Submits settlement through KERL attestation layer before Treasury Runtime intake.
- * Direct DEX → Treasury path is rejected for constitutional handoffs.
+ * Submits settlement through KERL attestation layer; submitSettlementHandoff is a no-op.
+ * Treasury Runtime intake is decommissioned — canonical beneficiary is MELEGA TREASURY WALLET.
  */
 export async function submitKerlSettlementHandoff(
   executionReceipt: ExecutionReceiptPayload,

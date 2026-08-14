@@ -140,6 +140,23 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(vm.pools[0].stakeEnabled).toBe(true)
   })
 
+  it('wires Remaining duration / Rewards left / Emission and marks Participants as indexing', () => {
+    const model = cardToExploreModel(
+      makeCard({
+        id: 'econ-1',
+        estimatedDuration: '12d 4h',
+        remainingRewards: '12.5K ASTER',
+        dailyRewards: '240 ASTER',
+        participants: '1.2K',
+      }),
+      56,
+    )!
+    expect(model.remainingDisplay).toBe('12d 4h')
+    expect(model.rewardsLeftDisplay).toBe('12.5K ASTER')
+    expect(model.emissionDisplay).toBe('240 ASTER')
+    expect(model.participantsDisplay).toBe('Indexing…')
+  })
+
   it('shows unavailable APR / TVL honestly without $0 fallback', () => {
     const noApr = cardToExploreModel(
       makeCard({
@@ -221,10 +238,10 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     )!
     const pools = [a, b]
     expect(filterExplorePools(pools, 'Flexible')).toHaveLength(1)
-    expect(filterExplorePools(pools, 'LP')[0].poolId).toBe('sous-2')
-    expect(filterExplorePools(pools, 'High APR')[0].poolId).toBe('sous-2')
+    expect(filterExplorePools(pools, 'LP')[0].poolId).toBe('56:sous-2')
+    expect(filterExplorePools(pools, 'High APR')[0].poolId).toBe('56:sous-2')
     expect(sortExplorePools(pools, 'Alphabetical')[0].title).toBe('Alpha Pool')
-    expect(sortExplorePools(pools, 'Highest APR')[0].poolId).toBe('sous-2')
+    expect(sortExplorePools(pools, 'Highest APR')[0].poolId).toBe('56:sous-2')
     expect(searchExplorePools(pools, 'beta')).toHaveLength(1)
     expect(searchExplorePools(pools, '0xlp')).toHaveLength(1)
   })
@@ -253,10 +270,39 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(empty.state).toBe('empty')
   })
 
+  it('All filter returns the complete inventory without a hard card limit', () => {
+    const cards = Array.from({ length: 15 }, (_, i) =>
+      makeCard({
+        id: `sous-${i + 1}`,
+        name: `Pool ${i + 1}`,
+        sousId: i + 1,
+        status: 'live',
+        displayStatus: 'LIVE',
+        cta: 'stake',
+      }),
+    )
+    const vm = buildPoolsExplorePoolsViewModel({
+      portfolioPools: cards,
+      poolsLoading: false,
+      chainId: 56,
+      filter: 'All',
+      sort: 'Highest APR',
+      search: '',
+    })
+    expect(vm.pools).toHaveLength(15)
+    expect(vm.totalActive).toBe(15)
+  })
+
+  it('explore pool cards render explicit chain badges', () => {
+    const card = readFileSync(path.join(MODULES, 'PoolsExplorePoolCard.tsx'), 'utf8')
+    expect(card).toContain('MelegaExploreChainBadge')
+    expect(card).toContain('stakeToken.chainId')
+  })
+
   it('desktop geometry tokens match 430×248 / 18 gap / 3 columns', () => {
-    expect(poolsExplore.cardW).toBe('430px')
-    expect(poolsExplore.cardH).toBe('248px')
-    expect(poolsExplore.cardGap).toBe('18px')
+    expect(poolsExplore.cardW).toBe('328px')
+    expect(poolsExplore.cardH).toBe('268px')
+    expect(poolsExplore.cardGap).toBe('12px')
     expect(poolsExplore.contentMax).toBe('1376px')
   })
 
