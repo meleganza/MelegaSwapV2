@@ -24,7 +24,7 @@ describe('Founder amendment P0-9 — Explore Pools density grid', () => {
     expect(grid).toContain('grid-template-columns: repeat(1, minmax(0, 1fr));')
     expect(grid).toMatch(/min-width: \$\{poolsExplore\.smallTabletBreak\}\)\s*\{\s*grid-template-columns: repeat\(2/)
     expect(grid).toMatch(/min-width: \$\{poolsExplore\.tabletPortraitBreak\}\)\s*\{\s*grid-template-columns: repeat\(3/)
-    expect(grid).toMatch(/min-width: 1500px\)\s*\{\s*grid-template-columns: repeat\(4/)
+    expect(grid).toMatch(/min-width: \$\{poolsExplore\.desktopBreak\}\)\s*\{\s*grid-template-columns: repeat\(4/)
     expect(grid).toMatch(/min-width: \$\{poolsExplore\.ultraWideBreak\}\)\s*\{\s*grid-template-columns: repeat\(4/)
   })
 

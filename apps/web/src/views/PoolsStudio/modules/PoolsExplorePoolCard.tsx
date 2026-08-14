@@ -23,7 +23,7 @@ const Card = styled.article`
   width: 100%;
   max-width: none;
   height: auto;
-  min-height: 304px;
+  min-height: 286px;
   box-sizing: border-box;
   padding: ${poolsExplore.cardPad};
   border-radius: ${poolsExplore.cardRadius};
@@ -154,6 +154,7 @@ const Actions = styled.div`
   display: flex;
   gap: 8px;
   margin-top: auto;
+  min-width: 0;
 `
 
 const Btn = styled.button<{ $primary?: boolean }>`

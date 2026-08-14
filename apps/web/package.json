@@ -10,7 +10,7 @@
     "lb:manifest:certify": "node scripts/generate-lb-certified-manifest.mjs --certify",
     "generate:lb-certified": "yarn lb:manifest:generate",
     "verify:lb-certified": "yarn lb:manifest:check",
-    "prebuild": "yarn lb:manifest:check",
+    "prebuild": "yarn lb:manifest:check && node scripts/pools-current-participants-snapshot.mjs",
     "build": "next build",
     "start": "next start",
     "test": "LC_ALL=\"en_US.UTF-8\" vitest --run",

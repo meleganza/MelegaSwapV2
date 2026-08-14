@@ -300,7 +300,7 @@ const Grid = styled.ul`
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  @media (min-width: 1500px) {
+  @media (min-width: ${poolsExplore.desktopBreak}) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
@@ -375,10 +375,9 @@ const List = styled.div`
 
 const ListHeader = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
-      72px,
-      0.7fr
-    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
+  grid-template-columns:
+    minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr)
+    minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
   gap: 8px;
   padding: 0 14px 6px;
   font-size: 10px;
@@ -395,10 +394,9 @@ const ListHeader = styled.div`
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
-      72px,
-      0.7fr
-    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
+  grid-template-columns:
+    minmax(140px, 1.6fr) 72px minmax(80px, 0.9fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr)
+    minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(140px, 1fr);
   gap: 8px;
   align-items: center;
   padding: 12px 14px;
