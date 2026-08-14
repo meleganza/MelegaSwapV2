@@ -109,8 +109,15 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
 
   it('renders Melega Score as a compact hero badge with repository-owned criteria', () => {
     expect(shell).toContain('<ScoreBadgeWrap')
+    expect(shell).toContain('<ScoreDonut')
+    expect(shell).toContain('<ScoreBadgeCopy>')
+    expect(shell).toContain('<ScoreMeter')
     expect(shell).toContain('project-v7-score-details')
     expect(shell).toContain('readinessDocument.components.map')
+    expect(shell).toContain('${ScoreBadgeWrap}:hover &')
+    expect(shell).toContain('${ScoreBadge}:focus-visible + &')
+    expect(shell).toContain('display: none')
+    expect(shell).not.toContain('onClick={() => setScoreOpen(true)}')
     expect(shell).not.toContain('<ScoreGauge')
   })
 

@@ -343,56 +343,101 @@ const ScoreBadgeWrap = styled.span`
   z-index: 30;
 `
 const ScoreBadge = styled.button`
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(244, 196, 48, 0.5);
-  background: radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.1), transparent 36%), #060606;
+  min-width: 158px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 14px 3px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 196, 48, 0.42);
+  background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.08), transparent 45%),
+    linear-gradient(145deg, rgba(16, 16, 16, 0.99), rgba(5, 5, 5, 0.99));
   color: #fff;
-  box-shadow: inset 0 0 0 3px #111, 0 5px 18px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025), 0 7px 22px rgba(0, 0, 0, 0.52);
   cursor: help;
-  font-size: 13px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-
-  &::before {
-    content: 'M';
-    position: absolute;
-    top: 5px;
-    color: ${pp.gold};
-    font-size: 6px;
-    letter-spacing: -0.08em;
-  }
-
-  span {
-    transform: translateY(3px);
-  }
 
   &:focus-visible {
     outline: 2px solid ${pp.gold};
     outline-offset: 2px;
   }
 `
-const ScorePopover = styled.div<{ $open?: boolean }>`
+const ScoreDonut = styled.span<{ $score: number }>`
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    ${pp.gold} 0deg,
+    ${pp.gold} ${({ $score }) => Math.max(0, Math.min(100, $score)) * 3.6}deg,
+    rgba(255, 255, 255, 0.12) ${({ $score }) => Math.max(0, Math.min(100, $score)) * 3.6}deg,
+    rgba(255, 255, 255, 0.12) 360deg
+  );
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: inherit;
+    background: #090909;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  strong {
+    position: relative;
+    z-index: 1;
+  }
+`
+const ScoreBadgeCopy = styled.span`
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  line-height: 1;
+
+  small {
+    color: ${pp.gold};
+    font-size: 7px;
+    font-weight: 850;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  strong {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+`
+const ScorePopover = styled.div`
+  display: none;
   position: absolute;
   top: calc(100% + 9px);
   right: 0;
   z-index: 50;
-  width: min(340px, calc(100vw - 34px));
-  padding: 13px;
-  border: 1px solid rgba(244, 196, 48, 0.35);
-  border-radius: 12px;
-  background: rgba(8, 8, 8, 0.98);
-  box-shadow: 0 20px 58px rgba(0, 0, 0, 0.72), 0 0 28px rgba(244, 196, 48, 0.08);
-  opacity: ${({ $open }) => ($open ? 1 : 0)};
-  visibility: ${({ $open }) => ($open ? 'visible' : 'hidden')};
-  transform: translateY(${({ $open }) => ($open ? '0' : '-5px')});
-  transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
-  pointer-events: ${({ $open }) => ($open ? 'auto' : 'none')};
+  width: min(420px, calc(100vw - 34px));
+  padding: 20px 22px 16px;
+  border: 1px solid rgba(244, 196, 48, 0.4);
+  border-radius: 14px;
+  background: radial-gradient(circle at 80% 0%, rgba(244, 196, 48, 0.06), transparent 36%), rgba(8, 8, 8, 0.985);
+  box-shadow: 0 24px 66px rgba(0, 0, 0, 0.78), 0 0 30px rgba(244, 196, 48, 0.08);
+  pointer-events: none;
+
+  ${ScoreBadgeWrap}:hover &,
+  ${ScoreBadge}:focus-visible + & {
+    display: block;
+  }
 
   @media (max-width: 560px) {
     position: fixed;
@@ -403,24 +448,107 @@ const ScorePopover = styled.div<{ $open?: boolean }>`
     width: auto;
   }
 `
+const ScorePopoverHead = styled.div`
+  display: grid;
+  gap: 8px;
+  padding: 0 2px 16px;
+  border-bottom: 1px solid rgba(244, 196, 48, 0.55);
+`
+const ScorePopoverEyebrow = styled.span`
+  color: ${pp.gold};
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+`
+const ScorePopoverSummary = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+
+  strong {
+    color: #fff;
+    font-size: 27px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
+  }
+
+  strong span {
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+
+  em {
+    color: ${pp.gold};
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 850;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+`
 const ScoreCriterion = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: minmax(100px, 0.82fr) minmax(110px, 1.18fr) 52px;
+  gap: 12px;
   align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
-  color: rgba(255, 255, 255, 0.74);
-  font-size: 10px;
+  min-height: 45px;
+  padding: 8px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 11px;
 
   &:last-child {
     border-bottom: 0;
   }
 
   strong {
-    color: ${pp.gold};
+    color: #fff;
+    text-align: right;
     font-variant-numeric: tabular-nums;
   }
+
+  @media (max-width: 420px) {
+    grid-template-columns: minmax(88px, 0.8fr) minmax(84px, 1fr) 48px;
+    gap: 8px;
+  }
+`
+const ScoreMeter = styled.span<{ $progress: number }>`
+  position: relative;
+  height: 7px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.13);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: ${({ $progress }) => Math.max(0, Math.min(100, $progress))}%;
+    background: linear-gradient(90deg, #b88b24, #f4c430);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(10% - 2px),
+      rgba(4, 4, 4, 0.9) calc(10% - 2px),
+      rgba(4, 4, 4, 0.9) 10%
+    );
+  }
+`
+const ScorePopoverFoot = styled.p`
+  margin: 12px 2px 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(244, 196, 48, 0.55);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 9px;
+  line-height: 1.45;
 `
 const IconRow = styled.div`
   display: flex;
@@ -1036,7 +1164,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const [tradeReady, setTradeReady] = useState(false)
   const [belowFold, setBelowFold] = useState(false)
   const [chartHistory, setChartHistory] = useState<boolean | null>(null)
-  const [scoreOpen, setScoreOpen] = useState(false)
 
   const selected =
     deployments.find((d) => d.chainId === selectedChainId) ??
@@ -1336,40 +1463,39 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                         {item.label}
                       </HeroTrustBadge>
                     ))}
-                    <ScoreBadgeWrap
-                      onMouseEnter={() => setScoreOpen(true)}
-                      onMouseLeave={() => setScoreOpen(false)}
-                      onFocus={() => setScoreOpen(true)}
-                      onBlur={(event) => {
-                        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setScoreOpen(false)
-                      }}
-                      data-testid="project-v7-score"
-                    >
+                    <ScoreBadgeWrap data-testid="project-v7-score">
                       <ScoreBadge
                         type="button"
-                        aria-label="Open Melega Score criteria"
-                        aria-expanded={scoreOpen}
-                        onClick={() => setScoreOpen(true)}
+                        aria-label={`Melega Score ${
+                          typeof score === 'number' ? Math.round(score) : 'unavailable'
+                        } out of 100, ${scoreBand}`}
+                        aria-describedby="project-v7-score-details"
                         data-testid="project-v7-score-open"
                       >
-                        <span>{typeof score === 'number' ? Math.round(score) : '—'}</span>
+                        <ScoreDonut $score={typeof score === 'number' ? score : 0}>
+                          <strong>{typeof score === 'number' ? Math.round(score) : '—'}</strong>
+                        </ScoreDonut>
+                        <ScoreBadgeCopy>
+                          <small>Melega Score</small>
+                          <strong>{scoreBand}</strong>
+                        </ScoreBadgeCopy>
                       </ScoreBadge>
-                      <ScorePopover $open={scoreOpen} role="tooltip" data-testid="project-v7-score-details">
-                        <Row style={{ alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
-                          <BandTitle>Melega Score</BandTitle>
-                          <strong style={{ color: pp.gold, fontSize: 16 }}>
-                            {typeof score === 'number' ? `${Math.round(score)}/100` : '—'}
-                          </strong>
-                        </Row>
-                        <Muted style={{ margin: '5px 0 8px', fontSize: 10 }}>
-                          {scoreBand} · measured {scoreMeasured} ago. One deterministic readiness method based on the
-                          registered evidence below; it is not an audit or investment rating.
-                        </Muted>
+                      <ScorePopover id="project-v7-score-details" role="tooltip" data-testid="project-v7-score-details">
+                        <ScorePopoverHead>
+                          <ScorePopoverEyebrow>Melega Score</ScorePopoverEyebrow>
+                          <ScorePopoverSummary>
+                            <strong>
+                              {typeof score === 'number' ? Math.round(score) : '—'} <span>/ 100</span>
+                            </strong>
+                            <em>{scoreBand}</em>
+                          </ScorePopoverSummary>
+                        </ScorePopoverHead>
                         {readinessDocument?.components?.length ? (
                           <div data-testid="project-v7-score-components">
                             {readinessDocument.components.map((component) => (
                               <ScoreCriterion key={component.componentId}>
                                 <span>{component.label}</span>
+                                <ScoreMeter $progress={component.normalizedPercentage} aria-hidden />
                                 <strong>
                                   {scorePoints(component.achievedPoints)}/{scorePoints(component.maxPoints)}
                                 </strong>
@@ -1381,6 +1507,10 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                             Score criteria unavailable for this project.
                           </Muted>
                         )}
+                        <ScorePopoverFoot>
+                          Measured {scoreMeasured} ago · Informational readiness indicator. Not an audit, investment
+                          rating or guarantee.
+                        </ScorePopoverFoot>
                       </ScorePopover>
                     </ScoreBadgeWrap>
                   </Row>
@@ -1698,15 +1828,13 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   <strong>{dash(market.holders)}</strong>
                 </HolderDonut>
                 <HolderLegend data-testid="project-v7-holders-dist">
-                  {['Pools', 'Smart contracts', 'Team', 'Top 100 holders', 'Wallet holders'].map(
-                    (category, index) => (
-                      <HolderLegendRow key={category}>
-                        <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
-                        <span>{category}</span>
-                        <strong>—</strong>
-                      </HolderLegendRow>
-                    ),
-                  )}
+                  {['Pools', 'Smart contracts', 'Team', 'Top 100 holders', 'Wallet holders'].map((category, index) => (
+                    <HolderLegendRow key={category}>
+                      <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
+                      <span>{category}</span>
+                      <strong>—</strong>
+                    </HolderLegendRow>
+                  ))}
                 </HolderLegend>
               </HolderDonutWrap>
               <Muted style={{ margin: 0, fontSize: 10 }}>
