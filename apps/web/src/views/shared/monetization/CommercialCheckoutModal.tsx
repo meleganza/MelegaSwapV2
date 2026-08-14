@@ -329,7 +329,6 @@ const Identity = styled.div`
 `
 
 const IdentityChip = styled.div`
-  margin: 0 0 12px auto;
   width: fit-content;
   max-width: 100%;
   display: grid;
@@ -1132,6 +1131,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       onClose={onClose}
       title="Boost Your Project"
       steps={modalSteps}
+      headerAccessory={
+        step !== 'project' && detected ? (
+          <IdentityChip data-testid="commercial-project-identity-compact">
+            <ProjectLogo project={detected} compact />
+            <div>
+              <strong>{detected.name}</strong>
+              <Meta>${detected.symbol}</Meta>
+            </div>
+          </IdentityChip>
+        ) : null
+      }
       size="lg"
       footer={footer}
       testId="commercial-checkout-modal"
@@ -1141,15 +1151,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     >
       <Grid $serviceWide={step === 'service' || step === 'project'}>
         <Stack>
-          {step !== 'project' && detected ? (
-            <IdentityChip data-testid="commercial-project-identity-compact">
-              <ProjectLogo project={detected} compact />
-              <div>
-                <strong>{detected.name}</strong>
-                <Meta>${detected.symbol}</Meta>
-              </div>
-            </IdentityChip>
-          ) : null}
           {step === 'project' ? (
             <div data-testid="commercial-step-project">
               <Label>Token address</Label>

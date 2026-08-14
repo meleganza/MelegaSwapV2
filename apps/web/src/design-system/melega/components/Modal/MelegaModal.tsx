@@ -117,6 +117,15 @@ const Header = styled.header`
   background: linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(14, 14, 14, 0.96));
 `
 
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+`
+
 const BrandRow = styled.div`
   display: flex;
   align-items: flex-start;
@@ -274,6 +283,8 @@ export type MelegaModalProps = {
   footer?: React.ReactNode
   /** Optional step chips under the subtitle. */
   steps?: MelegaModalStep[]
+  /** Optional contextual identity or action aligned opposite the modal brand. */
+  headerAccessory?: React.ReactNode
   size?: MelegaModalSize
   showBrand?: boolean
   hideHeader?: boolean
@@ -305,6 +316,7 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
   children,
   footer,
   steps,
+  headerAccessory,
   size = 'md',
   showBrand = true,
   hideHeader = false,
@@ -433,16 +445,21 @@ export const MelegaModal: React.FC<MelegaModalProps> = ({
                 ) : null}
               </TitleBlock>
             </BrandRow>
-            {showClose ? (
-              <CloseBtn
-                type="button"
-                aria-label={closeLabel}
-                data-testid={closeTestId}
-                data-melega-modal-close="true"
-                onClick={requestClose}
-              >
-                ×
-              </CloseBtn>
+            {headerAccessory || showClose ? (
+              <HeaderActions data-melega-modal-header-actions="true">
+                {headerAccessory}
+                {showClose ? (
+                  <CloseBtn
+                    type="button"
+                    aria-label={closeLabel}
+                    data-testid={closeTestId}
+                    data-melega-modal-close="true"
+                    onClick={requestClose}
+                  >
+                    ×
+                  </CloseBtn>
+                ) : null}
+              </HeaderActions>
             ) : null}
           </Header>
         ) : showClose && hideHeader ? (
