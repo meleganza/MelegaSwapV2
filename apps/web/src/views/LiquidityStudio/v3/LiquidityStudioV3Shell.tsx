@@ -78,7 +78,8 @@ const Page = styled.div`
 const Hero = styled.section<{ $builder?: boolean }>`
   position: relative;
   height: 216px;
-  padding: 20px;
+  box-sizing: border-box;
+  padding: 16px 20px;
   overflow: hidden;
   border: 1px solid rgba(221, 185, 47, 0.22);
   border-radius: 18px;
@@ -86,7 +87,7 @@ const Hero = styled.section<{ $builder?: boolean }>`
     linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
   display: grid;
-  grid-template-columns: minmax(300px, 0.44fr) minmax(0, 0.56fr);
+  grid-template-columns: minmax(300px, 0.48fr) minmax(0, 0.52fr);
   column-gap: 20px;
   align-items: center;
   min-width: 0;
@@ -169,7 +170,7 @@ const HeroSub = styled.p`
 
 const HeroActions = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
   margin-top: 14px;
@@ -680,8 +681,6 @@ const LiquidityV3Body: React.FC = () => {
     scrollToSection('liquidity-builder')
   }, [setMode, scrollToSection])
 
-  const goExplore = useCallback(() => scrollToSection('liquidity-explore'), [scrollToSection])
-
   const snapCells = useMemo(
     () => [
       { label: LIQ_V3_COPY.snapshot.total, value: cardValue(snapshot.cards, 'tvl') },
@@ -711,9 +710,6 @@ const LiquidityV3Body: React.FC = () => {
             <Btn $ghost type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai">
               {LIQ_V3_COPY.aiEntry}
               <ExclusiveBadge>BETA</ExclusiveBadge>
-            </Btn>
-            <Btn $ghost type="button" onClick={goExplore} data-testid="liquidity-v3-explore-pools">
-              Explore pools ↓
             </Btn>
           </HeroActions>
         </HeroCopy>

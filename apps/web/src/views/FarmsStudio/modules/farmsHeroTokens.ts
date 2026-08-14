@@ -90,7 +90,7 @@ export const farmsHero = {
 
 export const FARMS_HERO_COPY = {
   title: 'Farms',
-  description: 'Stake LP tokens.\nEarn farming rewards.\nGrow liquidity.',
+  description: 'Stake LP tokens and earn farming rewards.\nGrow liquidity across Melega DEX.',
   primaryCta: 'Create Farm',
   secondaryCta: 'Explore Farms',
   createFarmHref: '/farms?create=1',

@@ -20,7 +20,7 @@ const Module = styled.section`
   overflow: hidden;
   font-family: ${typography.fontFamily.body};
   color: ${farmsHero.titleColor};
-  padding: 20px;
+  padding: 16px 20px;
   background: radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
     linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
   border: 1px solid rgba(221, 185, 47, 0.22);
@@ -248,11 +248,13 @@ const ArtCol = styled.div`
 
 const TrustCol = styled.div`
   width: 100%;
+  height: 100%;
   max-height: 176px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+  align-self: center;
   gap: 12px;
   min-width: 0;
 

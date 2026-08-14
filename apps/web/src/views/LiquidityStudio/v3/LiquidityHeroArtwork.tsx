@@ -34,31 +34,35 @@ const particleFloat = keyframes`
 
 const Frame = styled.div`
   position: relative;
-  width: min(100%, 560px);
-  height: 190px;
-  justify-self: center;
+  width: calc(100% + 56px);
+  max-width: none;
+  height: calc(100% + 32px);
+  margin: -16px -20px -16px -36px;
+  justify-self: stretch;
+  align-self: stretch;
   overflow: hidden;
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse 82% 82% at 58% 50%, #000 52%, rgba(0, 0, 0, 0.88) 68%, transparent 100%);
-  mask-image: radial-gradient(ellipse 82% 82% at 58% 50%, #000 52%, rgba(0, 0, 0, 0.88) 68%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 7%, #000 20%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 7%, #000 20%, #000 100%);
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    width: min(100%, 360px);
-    height: 154px;
+    width: calc(100% + 16px);
+    height: calc(100% + 32px);
+    margin: -16px -16px -16px 0;
     align-self: center;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
   display: block;
   object-fit: cover;
-  object-position: 68% center;
+  object-position: 64% center;
   transform-origin: 58% 50%;
   animation: ${depthParallax} 18s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;

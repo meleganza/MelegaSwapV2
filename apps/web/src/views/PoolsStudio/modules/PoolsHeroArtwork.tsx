@@ -36,30 +36,32 @@ const particleFloat = keyframes`
 `
 
 const Frame = styled.div`
-  width: min(100%, 520px);
-  height: 176px;
-  max-width: 100%;
+  width: calc(100% + 88px);
+  height: calc(100% + 32px);
+  max-width: none;
+  margin: -16px -44px;
   position: relative;
   flex: 0 0 auto;
   overflow: hidden;
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  /* Feather the raster into the existing hero instead of rendering a framed card. */
-  -webkit-mask-image: radial-gradient(ellipse 84% 86% at 55% 50%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
-  mask-image: radial-gradient(ellipse 84% 86% at 55% 50%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
+  /* Extend under the hero crop and feather only the lateral joins. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
 
   @media (max-width: ${poolsHero.mobileBreak}) {
-    width: min(100%, ${poolsHero.mobileArtworkMaxW});
-    height: 154px;
+    width: calc(100% + 24px);
+    height: calc(100% + 32px);
+    margin: -16px -12px;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: -9%;
-  width: 118%;
-  height: 118%;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
   display: block;
   object-fit: cover;
   object-position: 65% center;

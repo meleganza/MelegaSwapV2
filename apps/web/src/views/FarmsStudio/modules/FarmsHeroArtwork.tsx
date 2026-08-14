@@ -10,8 +10,8 @@ import { farmsHero } from './farmsHeroTokens'
 const FARMS_HERO_ARTWORK = '/images/yield/marco-farms-terraced-yield-hero.jpg'
 
 const harvestRise = keyframes`
-  0%, 100% { transform: scale(1.02) translate3d(0, 1.8%, 0); }
-  50% { transform: scale(1.055) translate3d(0, -1.8%, 0); }
+  0%, 100% { transform: scale(1.06) translate3d(0, 1.4%, 0); }
+  50% { transform: scale(1.1) translate3d(0, -1.4%, 0); }
 `
 
 const glowBreath = keyframes`
@@ -37,31 +37,33 @@ const particleFloat = keyframes`
 `
 
 const Frame = styled.div`
-  width: min(100%, 540px);
-  height: 176px;
-  max-width: 100%;
+  width: calc(100% + 80px);
+  height: calc(100% + 32px);
+  max-width: none;
+  margin: -16px -40px;
   position: relative;
   flex: 0 0 auto;
   overflow: hidden;
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse 86% 88% at 50% 54%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
-  mask-image: radial-gradient(ellipse 86% 88% at 50% 54%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
 
   @media (max-width: ${farmsHero.mobileBreak}) {
-    width: min(100%, ${farmsHero.mobileArtworkMaxW});
-    height: 154px;
+    width: calc(100% + 24px);
+    height: calc(100% + 32px);
+    margin: -16px -12px;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   transform-origin: 50% 56%;
   animation: ${harvestRise} 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
@@ -69,7 +71,7 @@ const Artwork = styled.img`
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    transform: scale(1.02);
+    transform: scale(1.06);
     will-change: auto;
   }
 `
