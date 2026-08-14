@@ -26,6 +26,9 @@ export type ProjectDexPairBreakdown = {
   pairAddress: string
   dexId: string
   label: string
+  baseTokenAddress: string | null
+  quoteTokenAddress: string | null
+  counterpartAddress: string | null
   liquidityUsd: number | null
   liquiditySharePct: number | null
 }
@@ -118,6 +121,14 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[], projectAddress
         pairAddress: row.pairAddress!,
         dexId: row.dexId!,
         label: [projectSymbol, counterpart].filter(Boolean).join(' / ') || row.pairAddress!,
+        baseTokenAddress: baseAddress ?? null,
+        quoteTokenAddress: quoteAddress ?? null,
+        counterpartAddress:
+          normalizedProject && baseAddress === normalizedProject
+            ? quoteAddress ?? null
+            : normalizedProject && quoteAddress === normalizedProject
+            ? baseAddress ?? null
+            : null,
         liquidityUsd,
         liquiditySharePct:
           liquidityUsd != null && totalPairLiquidity > 0 ? (liquidityUsd / totalPairLiquidity) * 100 : null,

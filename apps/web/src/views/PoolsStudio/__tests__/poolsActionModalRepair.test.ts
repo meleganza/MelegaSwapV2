@@ -26,6 +26,16 @@ describe('Pools/Farms action modal repair', () => {
     expect(src).toContain('StakeModalPlaceholder')
   })
 
+  it('resolves stake capacity from the live wallet balance before opening the modal', () => {
+    const host = readFileSync(path.join(STUDIO, 'poolsRuntime/PoolsActionHost.tsx'), 'utf8')
+    const modal = readFileSync(path.join(STUDIO, '../Pools/components/Modals/StakeModal.tsx'), 'utf8')
+
+    expect(host).toContain('useLiveCurrencyBalance')
+    expect(host).toContain('if (!stakeBalanceResolved) return')
+    expect(modal).toContain('userDataStakingTokenBalance={stakingTokenBalance}')
+    expect(modal).not.toContain('userDataStakingTokenBalance={userData.stakingTokenBalance}')
+  })
+
   it('FarmsActionHost opens Harvest confirmation dialog instead of auto-executing', () => {
     const host = readFileSync(path.join(STUDIO, '../FarmsStudio/farmsRuntime/FarmsActionHost.tsx'), 'utf8')
     const harvest = readFileSync(path.join(STUDIO, '../FarmsStudio/farmsRuntime/FarmHarvestConfirmModal.tsx'), 'utf8')

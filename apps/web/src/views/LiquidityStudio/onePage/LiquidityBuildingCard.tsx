@@ -34,6 +34,7 @@ import { formatLbTokenAmount } from '../liquidityBuilding/formatLbAmount'
 import type { ActivateProgressPhase } from '../liquidityBuilding/founderActivateFlow'
 import { useLbOwnerPrograms } from '../liquidityBuilding/useLbOwnerPrograms'
 import { useLbProgramDetail } from '../liquidityBuilding/useLbProgramDetail'
+import { useMelegaPairDetection } from '../liquidityBuilding/useMelegaPairDetection'
 import { LbPortfolioHome } from '../liquidityBuilding/product/LbPortfolioHome'
 import { programFromQuery, stepFromQuery } from '../liquidityBuilding/liquidityBuildingStep'
 import {
@@ -575,6 +576,49 @@ const PairSelector = styled.button`
   color: ${liqOne.text};
   font: 750 15px/20px ${liqOne.font};
   cursor: pointer;
+`
+
+const PairPickerShell = styled.div`
+  position: relative;
+`
+
+const PairPickerMenu = styled.div`
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid ${liqOne.borderStrong};
+  border-radius: 10px;
+  background: #0b0c0d;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.5);
+`
+
+const PairPickerOption = styled.button<{ $selected: boolean }>`
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid ${({ $selected }) => ($selected ? 'rgba(221, 185, 47, 0.7)' : liqOne.borderDefault)};
+  border-radius: 8px;
+  background: ${({ $selected }) => ($selected ? 'rgba(221, 185, 47, 0.1)' : liqOne.elevated)};
+  color: ${liqOne.text};
+  font: 750 13px/18px ${liqOne.font};
+  text-align: left;
+  cursor: pointer;
+`
+
+const PairPickerStatus = styled.span<{ $active: boolean }>`
+  color: ${({ $active }) => ($active ? '#6fdca3' : liqOne.muted)};
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
 `
 
 const OrDivider = styled.div`
@@ -1198,6 +1242,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const [activateHint, setActivateHint] = useState<string | null>(null)
   const [builderStep, setBuilderStep] = useState<BuilderStep>(1)
   const [addressInput, setAddressInput] = useState('')
+  const [pairPickerOpen, setPairPickerOpen] = useState(false)
 
   const returnToPortfolio = () => {
     setSetupStarted(false)
@@ -1275,6 +1320,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   ])
 
   const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
+  const wbnbPair = useMelegaPairDetection(selectedProjectToken, 'WBNB')
+  const usdtPair = useMelegaPairDetection(selectedProjectToken, 'USDT')
+  const usdcPair = useMelegaPairDetection(selectedProjectToken, 'USDC')
   const defaultMarcoCurrency = useCurrency(MARCO_BSC_ADDRESS)
   const pastedAddress = isAddress(addressInput) || undefined
   const pastedCurrency = useCurrency(pastedAddress)
@@ -1345,6 +1393,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const tokenReady = setupTokenResolved(card.draft)
   const budgetReady = setupBudgetPositive(card.draft)
   const pair = card.pairDetection
+  const supportedPairs = [wbnbPair, usdtPair, usdcPair]
   const pairReady = Boolean(tokenReady && pair.available && !pair.loading)
   const listingStatus = !tokenReady
     ? LB_UX.listingNone
@@ -1772,7 +1821,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     const selectedTokenLabel = card.draft.tokenSymbol || LB_UX.tokenSearchCta
     const marketPair =
       card.draft.tokenSymbol && pair.quoteSymbol
-        ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
+        ? `${pair.quoteSymbol === 'WBNB' ? 'BNB' : pair.quoteSymbol} / ${card.draft.tokenSymbol}`
         : '—'
 
     return (
@@ -1798,10 +1847,54 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         <ApprovedBuilderGrid data-testid="liq-lb-approved-mockup">
           <ApprovedBuilderPane>
             <ApprovedLabel>Select liquidity pair</ApprovedLabel>
-            <PairSelector type="button" onClick={onPresentCustomToken} data-testid="lb-approved-pair-select">
-              <span>BNB / {card.draft.tokenSymbol || 'MARCO'} {pair.available ? '· Active' : ''}</span>
-              <span aria-hidden>⌄</span>
-            </PairSelector>
+            <PairPickerShell>
+              <PairSelector
+                type="button"
+                onClick={() => {
+                  if (!tokenReady) {
+                    onPresentCustomToken()
+                    return
+                  }
+                  setPairPickerOpen((open) => !open)
+                }}
+                aria-expanded={pairPickerOpen}
+                data-testid="lb-approved-pair-select"
+              >
+                <span>
+                  {pair.quoteSymbol === 'WBNB' ? 'BNB' : pair.quoteSymbol} / {card.draft.tokenSymbol || 'Select token'}{' '}
+                  {pair.loading ? '· Checking…' : pair.available ? '· Active' : '· Not found'}
+                </span>
+                <span aria-hidden>⌄</span>
+              </PairSelector>
+              {pairPickerOpen && tokenReady ? (
+                <PairPickerMenu role="listbox" aria-label="Available liquidity pairs" data-testid="lb-pair-picker-menu">
+                  {supportedPairs.map((candidate) => {
+                    const quoteLabel = candidate.quoteSymbol === 'WBNB' ? 'BNB' : candidate.quoteSymbol
+                    const selected = card.draft.quoteAssetKey === candidate.quoteKey
+                    return (
+                      <PairPickerOption
+                        key={candidate.quoteKey}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        $selected={selected}
+                        onClick={() => {
+                          card.setQuoteAssetKey(candidate.quoteKey)
+                          setPairPickerOpen(false)
+                          setStepError(null)
+                        }}
+                        data-testid={`lb-pair-option-${candidate.quoteKey.toLowerCase()}`}
+                      >
+                        <span>{quoteLabel} / {card.draft.tokenSymbol}</span>
+                        <PairPickerStatus $active={candidate.available}>
+                          {candidate.loading ? 'Checking…' : candidate.available ? 'Active' : 'Not found'}
+                        </PairPickerStatus>
+                      </PairPickerOption>
+                    )
+                  })}
+                </PairPickerMenu>
+              ) : null}
+            </PairPickerShell>
             <OrDivider>OR</OrDivider>
             <ApprovedPairLink href="#liquidity-add" data-testid="lb-approved-create-pair">
               ＋ Create pair with Add Liquidity
@@ -1878,10 +1971,10 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <PreviewStatus $ready={executionReady}>{executionReady ? 'Ready' : 'Setup'}</PreviewStatus>
             </PreviewHeading>
             <PreviewGraph aria-hidden />
-            <PreviewRow>
-              <PreviewKey>Pair</PreviewKey>
-              <PreviewValue>BNB / {card.draft.tokenSymbol || 'MARCO'}</PreviewValue>
-            </PreviewRow>
+              <PreviewRow>
+                <PreviewKey>Pair</PreviewKey>
+                <PreviewValue>{marketPair}</PreviewValue>
+              </PreviewRow>
             <PreviewRow>
               <PreviewKey>Reserve</PreviewKey>
               <PreviewValue>
