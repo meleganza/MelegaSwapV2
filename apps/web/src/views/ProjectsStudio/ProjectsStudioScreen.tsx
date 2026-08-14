@@ -31,11 +31,12 @@ const Content = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  /* Home desktop content rhythm; intentionally local to Projects. */
+  gap: 20px;
 
   @media (max-width: 767px) {
-    padding: 12px 16px ${projectsStudioLayout.mobileBottomPad};
-    gap: 12px;
+    padding: 12px 0 ${projectsStudioLayout.mobileBottomPad};
+    gap: 14px;
   }
 `
 

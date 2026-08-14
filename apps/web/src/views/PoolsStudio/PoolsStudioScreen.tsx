@@ -32,21 +32,22 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${poolsHero.contentMax};
+  /* Home shell: 1380px border box with a 32px desktop content inset. */
+  max-width: 1380px;
   width: 100%;
   margin: ${poolsHero.topAfterTrending} auto 0;
-  padding: 0 0 ${poolsStudioLayout.contentPaddingBottom};
+  padding: 0 32px ${poolsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 
   @media (max-width: 767px) {
     margin-top: 12px;
-    padding: 0 4px ${poolsStudioLayout.mobileBottomPad};
-    gap: 12px;
+    padding: 0 0 ${poolsStudioLayout.mobileBottomPad};
+    gap: 14px;
   }
 `
 

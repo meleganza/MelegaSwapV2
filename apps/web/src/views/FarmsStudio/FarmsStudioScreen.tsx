@@ -31,10 +31,11 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${farmsHero.contentMax};
+  /* Home shell: 1380px border box with a 32px desktop content inset. */
+  max-width: 1380px;
   width: 100%;
   margin: ${farmsHero.topAfterTrending} auto 0;
-  padding: 0 0 ${farmsStudioLayout.contentPaddingBottom};
+  padding: 0 32px ${farmsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -44,8 +45,8 @@ const Content = styled.div`
 
   @media (max-width: 767px) {
     margin-top: 16px;
-    padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
-    gap: 16px;
+    padding: 0 0 ${farmsStudioLayout.mobileBottomPad};
+    gap: 14px;
   }
 `
 

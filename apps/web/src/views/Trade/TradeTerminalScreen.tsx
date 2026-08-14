@@ -38,10 +38,12 @@ const Content = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: ${tradeLayout.verticalRhythm};
+  /* Home desktop content rhythm; intentionally local to the Swap page shell. */
+  gap: 20px;
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${tradeLayout.mobileBottomPad};
+    padding: 16px 0 ${tradeLayout.mobileBottomPad};
+    gap: 14px;
   }
 `
 

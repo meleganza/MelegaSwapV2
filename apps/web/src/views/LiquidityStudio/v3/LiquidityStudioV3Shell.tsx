@@ -45,15 +45,17 @@ const Page = styled.div`
   overflow-x: hidden;
   background: ${liqV3.pageBg};
   box-sizing: border-box;
-  padding: ${liqV3.pagePadY} 12px 40px;
-  max-width: ${liqV3.contentMax};
+  padding: ${liqV3.pagePadY} 0 40px;
+  /* Home shell geometry; component surfaces retain their own locked padding. */
+  max-width: 1380px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: ${liqV3.pageGap};
+  gap: 14px;
 
   @media (min-width: 768px) {
-    padding: ${liqV3.pagePadY} 0 48px;
+    padding: ${liqV3.pagePadY} 32px 48px;
+    gap: 20px;
   }
 `
 

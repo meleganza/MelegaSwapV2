@@ -62,6 +62,26 @@ import {
 
 const dash = (v?: string | null) => truthDash(v)
 
+const CanonicalPage = styled(Page)`
+  /* Home shell geometry, scoped to the canonical Project Page only. */
+  max-width: 1380px;
+  padding-left: 0;
+  padding-right: 0;
+
+  > [data-project-section] {
+    margin-bottom: 14px;
+  }
+
+  @media (min-width: 768px) {
+    padding-left: 32px;
+    padding-right: 32px;
+
+    > [data-project-section] {
+      margin-bottom: 20px;
+    }
+  }
+`
+
 function compactUsd(value?: number | null): string {
   if (value == null || !Number.isFinite(value)) return '—'
   return new Intl.NumberFormat('en-US', {
@@ -1196,7 +1216,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   ).filter(([, value]) => value !== '—')
 
   return (
-    <Page
+    <CanonicalPage
       id="project-page-v7"
       data-testid="project-page-v7"
       data-project-page="v7"
@@ -1767,7 +1787,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
         initialService={checkoutService}
         identityReady
       />
-    </Page>
+    </CanonicalPage>
   )
 }
 
