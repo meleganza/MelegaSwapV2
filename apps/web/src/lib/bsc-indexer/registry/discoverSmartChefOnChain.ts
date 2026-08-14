@@ -14,10 +14,17 @@ const SEL = {
   syrup: '0x86a952c4',
   rewardToken: '0xf7c618c1',
   balanceOf: '0x70a08231',
+  owner: '0x8da5cb5b',
+  allPoolsLength: '0xefde4e64',
+  allPools: '0x41d1de97',
 } as const
 
 function encodeAddress(addr: string): string {
   return addr.toLowerCase().replace('0x', '').padStart(64, '0')
+}
+
+function encodeUint(value: number): string {
+  return Math.max(0, Math.floor(value)).toString(16).padStart(64, '0')
 }
 
 function decodeAddress(hex: string): string {
@@ -27,7 +34,7 @@ function decodeAddress(hex: string): string {
 
 function decodeUint(hex: string): bigint {
   const normalized = hex.startsWith('0x') ? hex : `0x${hex}`
-  if (normalized === '0x' || normalized.length <= 2) return 0n
+  if (normalized === '0x' || normalized.length <= 2) return BigInt(0)
   return BigInt(normalized)
 }
 
@@ -84,6 +91,38 @@ function loadCandidateAddresses(): string[] {
   return [...set]
 }
 
+/**
+ * Public Pool Adapter discovery is rooted in the live legacy-factory owner.
+ * Before activation the owner is the Founder EOA and this returns no entries.
+ * After activation the adapter's enumerable pool registry becomes authoritative.
+ */
+async function loadAdapterPoolAddresses(rpcUrls?: string[]): Promise<string[]> {
+  const ownerRaw = await ethCall(MELEGA_SMARTCHEF_FACTORY_BSC, SEL.owner, rpcUrls)
+  if (!ownerRaw) return []
+  const adapter = decodeAddress(ownerRaw)
+  if (adapter === '0x0000000000000000000000000000000000000000') return []
+  if (!(await hasBytecode(adapter, rpcUrls))) return []
+  const lengthRaw = await ethCall(adapter, SEL.allPoolsLength, rpcUrls)
+  if (!lengthRaw) return []
+  const count = Number(decodeUint(lengthRaw))
+  if (!Number.isSafeInteger(count) || count <= 0 || count > 10_000) return []
+
+  const pools: string[] = []
+  const chunkSize = 12
+  for (let start = 0; start < count; start += chunkSize) {
+    const indexes = Array.from({ length: Math.min(chunkSize, count - start) }, (_, offset) => start + offset)
+    const rows = await Promise.all(
+      indexes.map((index) => ethCall(adapter, `${SEL.allPools}${encodeUint(index)}`, rpcUrls)),
+    )
+    rows.forEach((raw) => {
+      if (!raw) return
+      const pool = decodeAddress(raw).toLowerCase()
+      if (pool !== '0x0000000000000000000000000000000000000000') pools.push(pool)
+    })
+  }
+  return pools
+}
+
 export interface SmartChefDiscoveryMeta {
   discovered: number
   verified: number
@@ -120,7 +159,7 @@ async function verifyPool(
   const rewardTokenAddr = decodeAddress((await ethCall(contractAddress, SEL.rewardToken, rpcUrls)) ?? '0x')
   const rewardToken = rewardTokenAddr !== '0x0000000000000000000000000000000000000000' ? rewardTokenAddr : undefined
 
-  let rewardBalance = 0n
+  let rewardBalance = BigInt(0)
   if (rewardToken) {
     const balRaw = await ethCall(rewardToken, SEL.balanceOf + encodeAddress(contractAddress), rpcUrls)
     if (balRaw) rewardBalance = decodeUint(balRaw)
@@ -128,10 +167,10 @@ async function verifyPool(
 
   const hasStarted = startBlock === 0 || currentBlock >= startBlock
   const notEnded = endBlock === 0 || currentBlock < endBlock
-  const isActive = hasStarted && notEnded && rewardPerBlock > 0n
+  const isActive = hasStarted && notEnded && rewardPerBlock > BigInt(0)
   // A configured emission is not funding. Keep the pool hidden until the
   // reward token balance is actually present in the SmartChef contract.
-  const isFunded = rewardBalance > 0n
+  const isFunded = rewardBalance > BigInt(0)
   const isRewarding = isActive && isFunded
 
   return {
@@ -158,7 +197,7 @@ export async function discoverSmartChefOnChain(
   currentBlock: number,
   rpcUrls?: string[],
 ): Promise<{ smartChef: OnchainRegistry['smartChef']; meta: SmartChefDiscoveryMeta }> {
-  const candidates = loadCandidateAddresses()
+  const candidates = [...new Set([...loadCandidateAddresses(), ...(await loadAdapterPoolAddresses(rpcUrls))])]
   const pools: OnchainRegistry['smartChef']['pools'] = []
   let verified = 0
   let active = 0
@@ -201,7 +240,7 @@ export async function discoverSmartChefOnChain(
       ended,
       invalid,
       dataSource: 'on-chain-verified-multicall',
-      note: 'SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded.',
+      note: 'Candidates come from the canonical inventory plus the active Public Pool Adapter enumerable registry, then every SmartChef is verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded.',
     },
   }
 }

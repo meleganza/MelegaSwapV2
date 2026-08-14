@@ -1,0 +1,763 @@
+{
+  "schema": "melega.dex.v1.ppfa-certified-bytecode",
+  "version": "1.0.0",
+  "chainId": 56,
+  "artifactVersion": "PublicPoolFactoryAdapterV1",
+  "displayName": "Public Pool Factory Adapter",
+  "contractName": "PublicPoolFactoryAdapterV1",
+  "sourceCommit": "61231ff7353ca840af55b87c51217e12a2af1b3d",
+  "sourceFingerprint": "0x89c8802d538a8e65c2c8af76cc7f0815944aea15583e6f3c3797dabee86a95be",
+  "generatedAt": "2026-08-14T16:37:00.581Z",
+  "deployOrder": [
+    "PublicPoolFactoryAdapterV1"
+  ],
+  "packagePath": "contracts/public-pool-adapter/",
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "legacyFactory": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
+  "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "smartChefInitCodeHash": "0x6a0d0b073d0d328d62f194cf061b2075570cf5d131eeb707cf7db52ae91c3f9b",
+  "activation": [
+    "DEPLOY_ADAPTER",
+    "TRANSFER_LEGACY_FACTORY_OWNERSHIP"
+  ],
+  "authorityModel": "FOUNDER_WALLET_SIGNED",
+  "noKms": true,
+  "noServerSigner": true,
+  "noAutomaticBroadcast": true,
+  "immutableByteRanges": [
+    {
+      "start": 453,
+      "length": 32
+    },
+    {
+      "start": 522,
+      "length": 32
+    },
+    {
+      "start": 690,
+      "length": 32
+    },
+    {
+      "start": 840,
+      "length": 32
+    },
+    {
+      "start": 1744,
+      "length": 32
+    },
+    {
+      "start": 3705,
+      "length": 32
+    },
+    {
+      "start": 4052,
+      "length": 32
+    },
+    {
+      "start": 4211,
+      "length": 32
+    },
+    {
+      "start": 4376,
+      "length": 32
+    },
+    {
+      "start": 4617,
+      "length": 32
+    },
+    {
+      "start": 4664,
+      "length": 32
+    }
+  ],
+  "artifacts": {
+    "PublicPoolFactoryAdapterV1": {
+      "contractName": "PublicPoolFactoryAdapterV1",
+      "creationBytecode": "0x61010034620001e457601f6200151438819003918201601f191683019291906001600160401b03841183851017620001e8578160a09284926040968752833981010312620001e4576200005281620001fc565b906200006160208201620001fc565b906200006f848201620001fc565b60608201519290916001600160a01b038085169291838603620001e45760800151958116918215620001cd57819060018060a01b0319938460015416600155805f54958616175f55828a5195167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e05f80a360017f9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f005516928315918215620001c1575b508115620001b7575b50620001a857508315620001975760805260a05260c05260e05251611302908162000212823960805181818161020a015281816102b201528181610fd40152611209015260a0518181816101c5015281816103480152611118015260c0518181816106d00152610e79015260e05181818161107301526112380152f35b845163d28b1e0560e01b8152600490fd5b63d92e233d60e01b8152600490fd5b9050155f6200011a565b85161591505f62000111565b8751631e4fbdf760e01b81525f6004820152602490fd5b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b51906001600160a01b0382168203620001e45756fe6080806040526004361015610012575f80fd5b5f90813560e01c908162ea2ed11461105c575080630d92b12014610f9d5780631dec590e14610f615780633590ccfd14610f1f57806341d1de9714610ee75780635a55c99614610ea857806361d027b314610e63578063715018a614610e4057806379ba509714610dc257806387612a9d14610d9f5780638da5cb5b14610d785780638fa442c614610d4c578063a21d131c14610cde578063bd12dd6414610cb8578063d733c25c14610239578063da23f4e7146101f4578063dd824066146101af578063e30c397814610186578063efde4e64146101685763f2fde38b146100f9575f80fd5b3461016557602036600319011261016557610112611096565b61011a6112b9565b600180546001600160a01b0319166001600160a01b0392831690811790915582549091167f38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e227008380a380f35b80fd5b50346101655780600319360112610165576020600254604051908152f35b50346101655780600319360112610165576001546040516001600160a01b039091168152602090f35b50346101655780600319360112610165576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b50346101655780600319360112610165576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b5060e03660031901126101655761024e611096565b6102566110ac565b60027f9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f005414610ca65760027f9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f0055604051638da5cb5b60e01b81527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169290602081600481875afa908115610c9b578591610c7c575b506001600160a01b0316308103610c64575060ff60015460a01c16610c52576001600160a01b038116158015610c41575b610c2f576001600160a01b0381811690831614610c1d576001600160a01b038281167f00000000000000000000000000000000000000000000000000000000000000009091161480610c09575b610bf757604435158015610bed575b8015610be1575b8015610bd3575b610bc1576103a060843560a435611298565b606435808202918115918304141715610bad578060443510610b8e57506103c68161110b565b93843403610b6f576103db60843584846111b5565b93843b610b4e57803b15610b4a5781809160e46040518094819363cc8402f560e01b835260018060a01b038916600484015260018060a01b038a1660248401526064356044840152608435606484015260a435608484015260c43560a48401523360c48401525af1801561085957908291610b36575b5050833b15610b1557604051638da5cb5b60e01b81526020816004816001600160a01b0389165afa908115610859578291610af6575b506001600160a01b03163314801590610a94575b8015610a22575b80156109b7575b801561094c575b80156108e1575b8015610876575b610864576040516370a0823160e01b81526001600160a01b0385811660048301526020908290602490829088165afa908115610859578291610827575b506040516323b872dd60e01b8352336004526001600160a01b038681166024526044803590526020908490606490829081908a165af160018451148116156107ff575b8160405283606052156107e157506040516370a0823160e01b81526001600160a01b0386811660048301529091906020908390602490829089165afa80156107d657839061079e575b6105919250611298565b604435810361077e57506001600160a01b0384168152600360209081526040808320805460ff191660011790556004909152812080546001600160a01b031916331790556002546801000000000000000081101561076a578060016105f992016002556110c2565b81546001600160a01b0387811660039390931b92831b921b1916179055846106c9575b506020936040519260018060a01b03168352604435858401526064356040840152608435606084015260a435608084015260c43560a084015260c083015260018060a01b03169060018060a01b038316907f86f6bd6242070c2b566263f4a54f5167b21aedf2041de8a38247bb683d7ef4ce60e03392a460017f9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00556040516001600160a01b039091168152f35b80808080887f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03165af1903d15610764573d9067ffffffffffffffff8211610750576040519161072a601f8201601f191660200184611193565b825260203d92013e5b1561073e575f61061c565b6040516322bdee2b60e01b8152600490fd5b634e487b7160e01b81526041600452602490fd5b50610733565b634e487b7160e01b82526041600452602482fd5b6040516362ae3ab360e11b81526044803560048301526024820192909252fd5b506020823d6020116107ce575b816107b860209383611193565b810103126107ca576105919151610587565b5f80fd5b3d91506107ab565b6040513d85823e3d90fd5b635274afe760e01b81526001600160a01b0385166004820152602490fd5b600181151661081e573d156001600160a01b0387163b1515161661053e565b503d83823e3d90fd5b90506020813d602011610851575b8161084260209383611193565b810103126107ca57515f6104fb565b3d9150610835565b6040513d84823e3d90fd5b6040516301def16f60e11b8152600490fd5b5060405163337f4fc560e11b81526020816004816001600160a01b0389165afa9081156108595782916108af575b5060c43514156104be565b90506020813d6020116108d9575b816108ca60209383611193565b810103126107ca57515f6108a4565b3d91506108bd565b50604051631aed655360e01b81526020816004816001600160a01b0389165afa90811561085957829161091a575b5060a43514156104b7565b90506020813d602011610944575b8161093560209383611193565b810103126107ca57515f61090f565b3d9150610928565b506040516348cd4cb160e01b81526020816004816001600160a01b0389165afa908115610859578291610985575b5060843514156104b0565b90506020813d6020116109af575b816109a060209383611193565b810103126107ca57515f61097a565b3d9150610993565b506040516322b8e72b60e21b81526020816004816001600160a01b0389165afa9081156108595782916109f0575b5060643514156104a9565b90506020813d602011610a1a575b81610a0b60209383611193565b810103126107ca57515f6109e5565b3d91506109fe565b5060405163f7c618c160e01b81526020816004816001600160a01b0389165afa908115610859578291610a65575b506001600160a01b03848116911614156104a2565b610a87915060203d602011610a8d575b610a7f8183611193565b810190611279565b5f610a50565b503d610a75565b5060405163663d131760e11b81526020816004816001600160a01b0389165afa908115610859578291610ad7575b506001600160a01b038381169116141561049b565b610af0915060203d602011610a8d57610a7f8183611193565b5f610ac2565b610b0f915060203d602011610a8d57610a7f8183611193565b5f610487565b604051634476ef0960e01b81526001600160a01b0385166004820152602490fd5b610b3f9061114f565b61016557805f610451565b5080fd5b60405163fb8debc160e01b81526001600160a01b0386166004820152602490fd5b604051637bd9f48360e11b815260048101869052346024820152604490fd5b6044906040519063d1469d6b60e01b8252600482015281356024820152fd5b634e487b7160e01b85526011600452602485fd5b604051631b742d9d60e31b8152600490fd5b5060843560a435111561038e565b50436084351115610387565b5060643515610380565b604051636a1859ab60e11b8152600490fd5b5083546001600160a01b0316331415610371565b604051635c6d7b7360e01b8152600490fd5b60405163d92e233d60e01b8152600490fd5b506001600160a01b03821615610324565b604051631259deb960e21b8152600490fd5b60249060405190636ee98dd360e01b82526004820152fd5b610c95915060203d602011610a8d57610a7f8183611193565b5f6102f3565b6040513d87823e3d90fd5b604051633ee5aeb560e01b8152600490fd5b5034610165578060031936011261016557602060ff60015460a01c166040519015158152f35b503461016557602036600319011261016557600435801515809103610b4a5760207fae839565b74a95bdf72da1e1fd680e746316fe6293600baec220c8ceab210f5891610d296112b9565b6001805460ff60a01b191660a083901b60ff60a01b16179055604051908152a180f35b5034610165576020366003190112610165576020610d70610d6b611096565b61110b565b604051908152f35b5034610165578060031936011261016557546040516001600160a01b039091168152602090f35b503461016557806003193601126101655760206040516703782dace9d900008152f35b50346101655780600319360112610165576001546001600160a01b033381831603610e28576001600160a01b031991821660015582543392811683178455167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e08380a380f35b60405163118cdaa760e01b8152336004820152602490fd5b5034610165578060031936011261016557604051631ef88dcb60e11b8152600490fd5b50346101655780600319360112610165576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b50346101655760203660031901126101655760209060ff906040906001600160a01b03610ed3611096565b168152600384522054166040519015158152f35b5034610165576020366003190112610165576020610f066004356110c2565b905460405160039290921b1c6001600160a01b03168152f35b5034610165576060366003190112610165576020610f4f610f3e611096565b610f466110ac565b604435916111b5565b6040516001600160a01b039091168152f35b5034610165576020366003190112610165576020906001600160a01b039060409082610f8b611096565b16815260048452205416604051908152f35b503461016557602036600319011261016557610fb7611096565b90610fc06112b9565b6001600160a01b03918216918215610c2f577f000000000000000000000000000000000000000000000000000000000000000016803b15610b4a5781809160246040518094819363f2fde38b60e01b83528860048401525af180156108595761104d575b50907f184cbcdded125164296ee2a387b7d526b4bdc73731ef0a42c192549776ef6d708280a280f35b6110569061114f565b5f611024565b905034610b4a5781600319360112610b4a576020907f00000000000000000000000000000000000000000000000000000000000000008152f35b600435906001600160a01b03821682036107ca57565b602435906001600160a01b03821682036107ca57565b6002548110156110f75760025f527f405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace01905f90565b634e487b7160e01b5f52603260045260245ffd5b6001600160a01b039081167f000000000000000000000000000000000000000000000000000000000000000090911603611143575f90565b6703782dace9d9000090565b67ffffffffffffffff811161116357604052565b634e487b7160e01b5f52604160045260245ffd5b6080810190811067ffffffffffffffff82111761116357604052565b90601f8019910116810190811067ffffffffffffffff82111761116357604052565b90916040519060208201926bffffffffffffffffffffffff199485809260601b16855260601b1660348301526048820152604881526111f381611177565b5190209060405191602083019160ff60f81b83527f000000000000000000000000000000000000000000000000000000000000000060601b16602184015260358301527f000000000000000000000000000000000000000000000000000000000000000060558301526055825261126982611177565b905190206001600160a01b031690565b908160209103126107ca57516001600160a01b03811681036107ca5790565b919082039182116112a557565b634e487b7160e01b5f52601160045260245ffd5b5f546001600160a01b03163303610e285756fea264697066735822122016a5a55aeb37dffeb712c62eaae2f5794caf87afc916c0a82c034f666bdf5a3864736f6c63430008140033",
+      "creationBytecodeSha256": "0x8eb8b05ed084160ed89a1fcf7c26b6854b3b38e8618c9f2fc4bb57e2ca590bb7",
+      "expectedRuntimeBytecodeSha256": "0xe576ee1e59c8e5b2b200acc5762fcd7ea7d12d114e1143469fc70e73328d3366",
+      "constructorInputs": [
+        {
+          "name": "initialOwner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "smartChefFactory_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "marcoToken_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "treasury_",
+          "type": "address",
+          "internalType": "address payable"
+        },
+        {
+          "name": "smartChefInitCodeHash_",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "abi": [
+        {
+          "type": "constructor",
+          "inputs": [
+            {
+              "name": "initialOwner",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "smartChefFactory_",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "marcoToken_",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "treasury_",
+              "type": "address",
+              "internalType": "address payable"
+            },
+            {
+              "name": "smartChefInitCodeHash_",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "DEFAULT_CREATION_FEE",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "acceptOwnership",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "allPools",
+          "inputs": [
+            {
+              "name": "index",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "allPoolsLength",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "createPool",
+          "inputs": [
+            {
+              "name": "stakedToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "rewardToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "rewardBudget",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "rewardPerBlock",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "startBlock",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "bonusEndBlock",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "poolLimitPerUser",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "pool",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "creationFeeFor",
+          "inputs": [
+            {
+              "name": "stakedToken",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "creationPaused",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "isAdapterPool",
+          "inputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "marcoToken",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "owner",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "pendingOwner",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "poolCreator",
+          "inputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "predictPoolAddress",
+          "inputs": [
+            {
+              "name": "stakedToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "rewardToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "startBlock",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "predicted",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "releaseLegacyFactoryOwnership",
+          "inputs": [
+            {
+              "name": "newOwner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "renounceOwnership",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "pure"
+        },
+        {
+          "type": "function",
+          "name": "setCreationPaused",
+          "inputs": [
+            {
+              "name": "paused",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "smartChefFactory",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "contract ILegacySmartChefFactory"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "smartChefInitCodeHash",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "transferOwnership",
+          "inputs": [
+            {
+              "name": "newOwner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "treasury",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address",
+              "internalType": "address payable"
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "event",
+          "name": "CreationPauseUpdated",
+          "inputs": [
+            {
+              "name": "paused",
+              "type": "bool",
+              "indexed": false,
+              "internalType": "bool"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "LegacyFactoryOwnershipReleased",
+          "inputs": [
+            {
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "OwnershipTransferStarted",
+          "inputs": [
+            {
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "inputs": [
+            {
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "PoolCreated",
+          "inputs": [
+            {
+              "name": "creator",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "pool",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "stakedToken",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+            },
+            {
+              "name": "rewardToken",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+            },
+            {
+              "name": "rewardBudget",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "rewardPerBlock",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "startBlock",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "bonusEndBlock",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "poolLimitPerUser",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            },
+            {
+              "name": "creationFee",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+            }
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "error",
+          "name": "AdapterNotFactoryOwner",
+          "inputs": [
+            {
+              "name": "currentFactoryOwner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "CreationPaused",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "IdenticalTokens",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "IncorrectCreationFee",
+          "inputs": [
+            {
+              "name": "expected",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "provided",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "InsufficientRewardBudget",
+          "inputs": [
+            {
+              "name": "required",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "provided",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "InvalidSchedule",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "MarcoRewardRequiresOwner",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "OwnableInvalidOwner",
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "OwnableUnauthorizedAccount",
+          "inputs": [
+            {
+              "name": "account",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "OwnershipRenounceDisabled",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "PoolAlreadyExists",
+          "inputs": [
+            {
+              "name": "pool",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "PoolConfigurationMismatch",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "PoolDeploymentFailed",
+          "inputs": [
+            {
+              "name": "predictedPool",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "ReentrancyGuardReentrantCall",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "RewardFundingMismatch",
+          "inputs": [
+            {
+              "name": "expected",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "received",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "SafeERC20FailedOperation",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "address",
+              "internalType": "address"
+            }
+          ]
+        },
+        {
+          "type": "error",
+          "name": "TreasuryForwardFailed",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "ZeroAddress",
+          "inputs": []
+        },
+        {
+          "type": "error",
+          "name": "ZeroInitCodeHash",
+          "inputs": []
+        }
+      ],
+      "creationBytes": 5396,
+      "deployedBytes": 4866
+    }
+  }
+}

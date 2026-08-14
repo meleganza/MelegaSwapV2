@@ -103,6 +103,14 @@ describe('Pools/Farms action modal repair', () => {
     expect(describeCreatePoolFee(true).recipient).toBe(MELEGA_TREASURY_FEE_DESTINATION)
   })
 
+  it('Create Pool executes through the certified public adapter', () => {
+    const cta = readFileSync(path.join(STUDIO, 'components/CreatePoolCta.tsx'), 'utf8')
+    expect(cta).toContain('buildPoolCreationPlan')
+    expect(cta).toContain('executePoolCreation')
+    expect(cta).toContain('MARCO reward pools require the authorized MELEGA DEPLOYER')
+    expect(cta).toContain('Non-MARCO reward pools are permissionless')
+  })
+
   it('Create Farm fee priority rules', () => {
     expect(describeCreateFarmFee({ rewardTokenIsMarco: true, pairContainsMarco: true }).display).toBe('1.00 BNB')
     expect(describeCreateFarmFee({ rewardTokenIsMarco: false, pairContainsMarco: true }).display).toBe('FREE')

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
 import styled, { css, keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
@@ -9,6 +9,9 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { getCanonicalTokenRegistry, type CanonicalTokenRecord } from 'lib/canonical-token-registry'
+import { useWalletChainId } from 'hooks/useWalletChainId'
+import { isUserRejectedError } from 'lib/deployment-orchestrator/founderWalletTx'
+import { buildPoolCreationPlan, executePoolCreation } from 'lib/public-pool-adapter'
 import {
   computeEstimatedApr,
   computeHealthScore,
@@ -17,6 +20,7 @@ import {
   deriveDailyRewards,
   describePoolSchedule,
   describeWizardCreatePoolFee,
+  parseNum,
   type CreatePoolWizardState,
   type WizardStep,
 } from './createPoolWizardState'
@@ -25,7 +29,9 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-type PoolTokenOption = Pick<CanonicalTokenRecord, 'address' | 'chainId' | 'name' | 'logo'> & { symbol: string }
+type PoolTokenOption = Pick<CanonicalTokenRecord, 'address' | 'chainId' | 'name' | 'logo' | 'decimals'> & {
+  symbol: string
+}
 
 const POOL_TOKEN_OPTIONS: PoolTokenOption[] = getCanonicalTokenRegistry()
   .filter((token) => token.chainId === 56 && Boolean(token.address))
@@ -34,6 +40,7 @@ const POOL_TOKEN_OPTIONS: PoolTokenOption[] = getCanonicalTokenRegistry()
     chainId: token.chainId,
     name: token.name,
     logo: token.logo,
+    decimals: token.decimals,
     symbol: token.address.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c' ? 'BNB' : token.symbol,
   }))
   .sort((a, b) => {
@@ -990,9 +997,15 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, selectedAdd
 
 export const CreatePoolCta: React.FC = () => {
   const { address } = useAccount()
+  const { data: signer } = useSigner()
+  const walletChainId = useWalletChainId()
   const [step, setStep] = useState<WizardStep>(1)
   const [animDir, setAnimDir] = useState<'next' | 'prev' | 'none'>('none')
   const [state, setState] = useState<CreatePoolWizardState>(createDefaultWizardState)
+  const [creationPending, setCreationPending] = useState(false)
+  const [creationMessage, setCreationMessage] = useState<string | null>(null)
+  const [createdPool, setCreatedPool] = useState<string | null>(null)
+  const [creationTxHash, setCreationTxHash] = useState<string | null>(null)
 
   const patch = useCallback((partial: Partial<CreatePoolWizardState>) => {
     setState((prev) => {
@@ -1030,6 +1043,68 @@ export const CreatePoolCta: React.FC = () => {
   const rewardConsumptionPct = useMemo(() => computeRewardConsumptionPct(state), [state])
   const schedule = useMemo(() => describePoolSchedule(state), [state])
   const feeInfo = useMemo(() => describeWizardCreatePoolFee(state), [state])
+
+  const createPool = useCallback(async () => {
+    setCreationMessage(null)
+    setCreatedPool(null)
+    setCreationTxHash(null)
+    if (!address || !signer) {
+      setCreationMessage('Connect your wallet to create the pool.')
+      return
+    }
+    if (walletChainId !== 56) {
+      setCreationMessage('Switch your wallet to BNB Smart Chain (56).')
+      return
+    }
+    if (!signer.provider) {
+      setCreationMessage('Wallet provider unavailable.')
+      return
+    }
+    const reward = POOL_TOKEN_OPTIONS.find(
+      (token) => token.address.toLowerCase() === state.rewardTokenAddress.toLowerCase(),
+    )
+    const staked = POOL_TOKEN_OPTIONS.find(
+      (token) => token.address.toLowerCase() === state.stakeTokenAddress.toLowerCase(),
+    )
+    if (!reward || !staked) {
+      setCreationMessage('Select valid stake and reward tokens.')
+      return
+    }
+
+    setCreationPending(true)
+    setCreationMessage('Validating the production Pool Adapter…')
+    try {
+      const plan = await buildPoolCreationPlan(signer.provider, {
+        creator: address,
+        stakedToken: staked.address,
+        rewardToken: reward.address,
+        rewardBudget: state.rewardBudget,
+        rewardDecimals: reward.decimals,
+        durationDays: parseNum(state.emissionDuration),
+        maxStake: state.maxStake,
+        stakedDecimals: staked.decimals,
+        creationFeeBnb: feeInfo.feeBnb,
+      })
+      const result = await executePoolCreation(signer, address, plan, setCreationMessage)
+      setCreatedPool(result.poolAddress)
+      setCreationTxHash(result.creationTxHash)
+      setCreationMessage(
+        result.poolAddress
+          ? `Pool created and funded atomically at ${shortAddr(result.poolAddress)}.`
+          : 'Pool creation confirmed. The indexed address will appear after the next on-chain sync.',
+      )
+    } catch (error) {
+      setCreationMessage(
+        isUserRejectedError(error)
+          ? 'Wallet signature cancelled.'
+          : error instanceof Error
+            ? error.message
+            : 'Pool creation failed.',
+      )
+    } finally {
+      setCreationPending(false)
+    }
+  }, [address, feeInfo.feeBnb, signer, state, walletChainId])
 
   const reviewRows = useMemo(
     () => [
@@ -1387,19 +1462,39 @@ export const CreatePoolCta: React.FC = () => {
                           </ReviewGrid>
                         </ReviewScroll>
                         <StepActions data-ps-create-pool-footer>
-                          <GoldBtn type="button" $wide data-ps-create-pool-btn disabled>
-                            Create Pool
-                          </GoldBtn>
+                          {address ? (
+                            <GoldBtn
+                              type="button"
+                              $wide
+                              data-ps-create-pool-btn
+                              disabled={
+                                creationPending ||
+                                !state.rewardTokenAddress ||
+                                !state.stakeTokenAddress ||
+                                parseNum(state.rewardBudget) <= 0 ||
+                                parseNum(state.emissionDuration) <= 0
+                              }
+                              onClick={() => void createPool()}
+                            >
+                              {creationPending ? 'Confirm in wallet…' : 'Create Pool'}
+                            </GoldBtn>
+                          ) : (
+                            <ConnectWalletButton data-ps-create-pool-connect>Connect Wallet</ConnectWalletButton>
+                          )}
                           <GhostBtn type="button" $review data-ps-wizard-back onClick={goPrev}>
                             ← Back
                           </GhostBtn>
                         </StepActions>
                         <ReadinessNote data-ps-create-pool-readiness-note>
-                          {!state.rewardToken
+                          {creationMessage
+                            ? creationMessage
+                            : !state.rewardToken
                             ? 'Select the reward token before continuing.'
                             : state.rewardToken === 'MARCO'
-                            ? 'MARCO reward pools require the official Melega deployer. The pool becomes visible only after its reward balance is confirmed on-chain.'
-                            : 'The current production factory is owner-gated and has no public deployment adapter. The pool remains blocked and hidden until deployment and reward funding are both confirmed on-chain.'}
+                            ? 'MARCO reward pools require the authorized MELEGA DEPLOYER. Creation and reward funding remain atomic.'
+                            : 'Non-MARCO reward pools are permissionless. Creation and the complete reward-budget deposit execute atomically.'}
+                          {creationTxHash ? ` Transaction: ${creationTxHash.slice(0, 10)}…` : ''}
+                          {createdPool ? ` Pool: ${shortAddr(createdPool)}.` : ''}
                         </ReadinessNote>
                       </>
                     ) : null}

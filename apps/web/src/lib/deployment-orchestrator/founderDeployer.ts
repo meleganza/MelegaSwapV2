@@ -137,3 +137,8 @@ export function assessFounderDeployGates(input: {
 export function userOperationRequiresMelegaDeployer(_operation: 'create_token' | 'create_farm' | 'liquidity_builder'): false {
   return false
 }
+
+/** Only MARCO-reward Pool creation remains a protocol-owner operation. */
+export function poolCreationRequiresMelegaDeployer(rewardTokenIsMarco: boolean): boolean {
+  return rewardTokenIsMarco
+}
