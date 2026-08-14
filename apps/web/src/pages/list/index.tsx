@@ -1,10 +1,9 @@
-import dynamic from 'next/dynamic'
 import { NextPage } from 'next'
-
-const ListScreen = dynamic(() => import('views/ListStudio/ListStudioScreen'), { ssr: false })
+import ListScreen from 'views/ListStudio/ListStudioScreen'
 
 const ListPage: NextPage = () => <ListScreen />
 
 ListPage.chains = []
+ListPage.disablePageSuspense = true
 
 export default ListPage

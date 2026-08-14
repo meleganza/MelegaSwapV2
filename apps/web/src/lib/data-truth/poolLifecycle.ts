@@ -3,7 +3,11 @@ import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
-import { getContractRef, getRemainingRewardsRaw, poolIsLive } from 'views/PoolsStudio/poolsRuntime/formatPoolPresentation'
+import {
+  getContractRef,
+  getRemainingRewardsRaw,
+  poolIsLive,
+} from 'views/PoolsStudio/poolsRuntime/formatPoolPresentation'
 
 export interface PoolLifecycleFlags {
   contractVerified: boolean
@@ -28,10 +32,7 @@ function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBl
 }
 
 /** Machine-readable SmartChef / SousChef lifecycle from on-chain pool state. */
-export function derivePoolLifecycle(
-  pool: Pool.DeserializedPool<Token>,
-  currentBlock: number,
-): PoolLifecycleFlags {
+export function derivePoolLifecycle(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolLifecycleFlags {
   const contract = getContractRef(pool)
   const contractVerified = Boolean(contract.address && contract.address.length >= 10)
   const stakeTokenResolved = Boolean(pool.stakingToken?.symbol && pool.stakingToken?.decimals)
@@ -40,9 +41,7 @@ export function derivePoolLifecycle(
   const rewardPerBlockPositive = perBlock.gt(0)
 
   const staked =
-    pool.totalStaked && pool.stakingToken?.decimals
-      ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-      : 0
+    pool.totalStaked && pool.stakingToken?.decimals ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) : 0
   const totalStakedPositive = staked > 0
 
   const remainingRaw = getRemainingRewardsRaw(pool, currentBlock)
@@ -53,12 +52,7 @@ export function derivePoolLifecycle(
   const bonusEndBlock = Number(pool.bonusEndBlock ?? pool.endBlock)
   // endBlock/bonusEndBlock <= 0 means open-ended emission — never treat as past end.
   const openEnded = !Number.isFinite(bonusEndBlock) || bonusEndBlock <= 0
-  if (
-    !openEnded &&
-    Number.isFinite(bonusEndBlock) &&
-    Number.isFinite(currentBlock) &&
-    currentBlock > bonusEndBlock
-  ) {
+  if (!openEnded && Number.isFinite(bonusEndBlock) && Number.isFinite(currentBlock) && currentBlock > bonusEndBlock) {
     ended = true
   }
   if (pool.sousId !== 0) {
@@ -79,8 +73,9 @@ export function derivePoolLifecycle(
   }
 
   const active = started && !ended && (poolIsLive(pool, currentBlock) || rewardPerBlockPositive)
-  const funded =
-    rewardBalancePositive || (active && rewardPerBlockPositive && openEnded)
+  // Scheduling alone cannot make an empty pool live. A positive on-chain
+  // reward balance is the only honest funding signal.
+  const funded = rewardBalancePositive
   const rewarding = active && rewardPerBlockPositive && funded
   const finished = ended || (!rewardPerBlockPositive && !rewardBalancePositive && started && !openEnded)
 

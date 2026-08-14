@@ -68,14 +68,19 @@ const App = ({ Component, pageProps, clientRuntimeReady }: AppPropsWithLayout) =
   const Layout = Component.Layout || Fragment
   const ShowMenu = Component.mp ? Fragment : Menu
   const isShowScrollToTopButton = Component.isShowScrollToTopButton ?? true
+  const page = Component.disablePageSuspense ? (
+    <Component {...pageProps} />
+  ) : (
+    <SuspenseWithChunkError fallback={null}>
+      <Component {...pageProps} />
+    </SuspenseWithChunkError>
+  )
 
   return (
     <ProductionErrorBoundary>
       <ShowMenu>
         <Layout>
-          <SuspenseWithChunkError fallback={null}>
-            <Component {...pageProps} />
-          </SuspenseWithChunkError>
+          {page}
         </Layout>
       </ShowMenu>
       <ToastListener />

@@ -119,7 +119,12 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
     const snapshot = buildTopMoversSharedSnapshot({
       items: resolved.items,
       fromDurable: resolved.fromDurable,
-      generatedAt: data?.snapshot.generatedAt,
+      // Keep the empty pre-fetch snapshot identical on SSR and first client
+      // render. A fresh timestamp here caused a hydration mismatch that could
+      // crash query-opened client modals such as Claim Project.
+      generatedAt:
+        data?.snapshot.generatedAt ??
+        (durableUpdatedAt ? new Date(durableUpdatedAt).toISOString() : '1970-01-01T00:00:00.000Z'),
       sourceBlock: data?.snapshot.sourceBlock,
     })
     snapshot.entries = snapshot.entries.map((entry) => ({ ...entry, chainId: entry.chainId ?? 56 }))
@@ -151,7 +156,7 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
       indexerScopeNote: resolved.fromDurable ? 'Last-known movers · refreshing…' : data?.indexerScopeNote,
       prefixResult: assertIdenticalPrefix(snapshot.entries, homeEntries),
     }
-  }, [data, durableItems.length, error, resolved])
+  }, [data, durableItems.length, durableUpdatedAt, error, resolved])
 
   return <TopMoversSnapshotContext.Provider value={value}>{children}</TopMoversSnapshotContext.Provider>
 }

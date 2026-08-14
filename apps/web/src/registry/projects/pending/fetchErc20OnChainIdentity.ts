@@ -17,7 +17,12 @@ const RPC_BY_CHAIN: Record<number, string[]> = {
     Boolean(u && u.trim()),
   ),
   1: [process.env.ETH_RPC_URL, 'https://ethereum.publicnode.com'].filter((u): u is string => Boolean(u && u.trim())),
-  137: [process.env.POLYGON_RPC_URL, 'https://polygon-rpc.com'].filter((u): u is string => Boolean(u && u.trim())),
+  137: [
+    process.env.POLYGON_RPC_URL,
+    'https://polygon.drpc.org',
+    'https://polygon-bor-rpc.publicnode.com',
+    'https://1rpc.io/matic',
+  ].filter((u): u is string => Boolean(u && u.trim())),
   8453: [process.env.BASE_RPC_URL, 'https://mainnet.base.org'].filter((u): u is string => Boolean(u && u.trim())),
 }
 
@@ -59,7 +64,10 @@ async function withProvider<T>(
   for (const url of urls) {
     try {
       const provider = new ethers.providers.JsonRpcProvider(url)
-      return await fn(provider)
+      const timeout = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('RPC read timed out')), 7_000)
+      })
+      return await Promise.race([fn(provider), timeout])
     } catch (err) {
       lastError = err
     }

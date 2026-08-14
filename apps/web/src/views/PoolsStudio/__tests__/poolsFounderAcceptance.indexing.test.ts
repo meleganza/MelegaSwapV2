@@ -25,9 +25,9 @@ describe('Pools Founder Acceptance indexing', () => {
     expect(src).toContain('Number.POSITIVE_INFINITY')
   })
 
-  it('classification discovery funds open-ended active pools and counts active⊇rewarding', () => {
+  it('classification requires an on-chain reward balance before a pool is funded', () => {
     const src = readFileSync(path.join(WEB, 'lib/bsc-indexer/registry/discoverSmartChefOnChain.ts'), 'utf8')
-    expect(src).toContain('endBlock === 0 || endBlock > currentBlock')
+    expect(src).toContain('const isFunded = rewardBalance > 0n')
     expect(src).toContain('if (pool.active || pool.rewarding) active += 1')
   })
 

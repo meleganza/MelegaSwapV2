@@ -110,12 +110,11 @@ const ModeRow = styled.div`
 
 const PairStepLayout = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   align-items: stretch;
 
-  > [data-testid='public-farm-pair-mode'],
-  > [data-testid='public-farm-low-liquidity-remediation'] {
+  > * {
     grid-column: 1 / -1;
   }
 
@@ -900,153 +899,153 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                 </ModeBtn>
               </ModeRow>
 
-            {draft.selectionMode === 'search_existing' && (
-              <Panel data-testid="public-farm-pair-search">
-                <Hint>{CREATE_FARM_UX.searchHint}</Hint>
-                <Field>
-                  <Label>Search</Label>
-                  <PairSearchWrap>
-                    <InputBox
-                      ref={pairSearchRef}
-                      value={pairQuery}
-                      onChange={(e) => {
-                        setPairQuery(e.target.value)
-                        setPairDropdownOpen(true)
-                      }}
-                      onFocus={() => setPairDropdownOpen(true)}
-                      placeholder={CREATE_FARM_UX.searchPlaceholder}
-                      aria-label="Search existing pair"
-                      aria-expanded={pairDropdownOpen}
-                      aria-haspopup="listbox"
-                      data-testid="public-farm-pair-query"
-                    />
-                    {pairDropdownOpen && pairDropdownCoords && typeof document !== 'undefined'
-                      ? createPortal(
-                          <PairDropdown
-                            ref={pairDropdownRef}
-                            $top={pairDropdownCoords.top}
-                            $left={pairDropdownCoords.left}
-                            $width={pairDropdownCoords.width}
-                            data-testid="create-farm-pair-dropdown"
-                            role="listbox"
-                            aria-label="Pair search results"
-                          >
-                            <PairDropdownList>
-                              {filteredPairs.slice(0, 12).map((p) => {
-                                const labels = formatFarmPairLabel(p)
-                                const selected = toSelectedPair(p)
-                                const active =
-                                  draft.selectedPair?.pairAddress.toLowerCase() === selected.pairAddress.toLowerCase()
-                                const tvlBnb = estimatePairTvlBnb(p)
-                                const tvlLabel =
-                                  tvlBnb != null && Number.isFinite(tvlBnb) ? `${tvlBnb.toFixed(2)} BNB TVL` : null
-                                return (
-                                  <li key={selected.pairAddress}>
-                                    <PairDropdownItem
-                                      type="button"
-                                      role="option"
-                                      aria-selected={active}
-                                      $active={active}
-                                      data-testid={`public-farm-pair-option-${selected.pairAddress.toLowerCase()}`}
-                                      onClick={() => selectPair(selected)}
-                                    >
-                                      <PairTokenStack>
-                                        <MelegaTokenAvatar
-                                          name={labels.symbol0}
-                                          symbol={labels.symbol0}
-                                          address={p.token0}
-                                          chainId={MELEGA_CHAIN_ID}
-                                          size={28}
-                                          radius="circle"
-                                        />
-                                        <MelegaTokenAvatar
-                                          name={labels.symbol1}
-                                          symbol={labels.symbol1}
-                                          address={p.token1}
-                                          chainId={MELEGA_CHAIN_ID}
-                                          size={28}
-                                          radius="circle"
-                                        />
-                                      </PairTokenStack>
-                                      <PairDropdownMeta>
-                                        <PairDropdownName>
-                                          {labels.symbol0}/{labels.symbol1}
-                                        </PairDropdownName>
-                                        <PairDropdownSub>
-                                          BNB Chain
-                                          {tvlLabel ? ` · ${tvlLabel}` : ''}
-                                        </PairDropdownSub>
-                                      </PairDropdownMeta>
-                                    </PairDropdownItem>
-                                  </li>
-                                )
-                              })}
-                            </PairDropdownList>
-                          </PairDropdown>,
-                          document.body,
-                        )
-                      : null}
-                  </PairSearchWrap>
-                </Field>
-              </Panel>
-            )}
+              {draft.selectionMode === 'search_existing' && (
+                <Panel data-testid="public-farm-pair-search">
+                  <Hint>{CREATE_FARM_UX.searchHint}</Hint>
+                  <Field>
+                    <Label>Search</Label>
+                    <PairSearchWrap>
+                      <InputBox
+                        ref={pairSearchRef}
+                        value={pairQuery}
+                        onChange={(e) => {
+                          setPairQuery(e.target.value)
+                          setPairDropdownOpen(true)
+                        }}
+                        onFocus={() => setPairDropdownOpen(true)}
+                        placeholder={CREATE_FARM_UX.searchPlaceholder}
+                        aria-label="Search existing pair"
+                        aria-expanded={pairDropdownOpen}
+                        aria-haspopup="listbox"
+                        data-testid="public-farm-pair-query"
+                      />
+                      {pairDropdownOpen && pairDropdownCoords && typeof document !== 'undefined'
+                        ? createPortal(
+                            <PairDropdown
+                              ref={pairDropdownRef}
+                              $top={pairDropdownCoords.top}
+                              $left={pairDropdownCoords.left}
+                              $width={pairDropdownCoords.width}
+                              data-testid="create-farm-pair-dropdown"
+                              role="listbox"
+                              aria-label="Pair search results"
+                            >
+                              <PairDropdownList>
+                                {filteredPairs.slice(0, 12).map((p) => {
+                                  const labels = formatFarmPairLabel(p)
+                                  const selected = toSelectedPair(p)
+                                  const active =
+                                    draft.selectedPair?.pairAddress.toLowerCase() === selected.pairAddress.toLowerCase()
+                                  const tvlBnb = estimatePairTvlBnb(p)
+                                  const tvlLabel =
+                                    tvlBnb != null && Number.isFinite(tvlBnb) ? `${tvlBnb.toFixed(2)} BNB TVL` : null
+                                  return (
+                                    <li key={selected.pairAddress}>
+                                      <PairDropdownItem
+                                        type="button"
+                                        role="option"
+                                        aria-selected={active}
+                                        $active={active}
+                                        data-testid={`public-farm-pair-option-${selected.pairAddress.toLowerCase()}`}
+                                        onClick={() => selectPair(selected)}
+                                      >
+                                        <PairTokenStack>
+                                          <MelegaTokenAvatar
+                                            name={labels.symbol0}
+                                            symbol={labels.symbol0}
+                                            address={p.token0}
+                                            chainId={MELEGA_CHAIN_ID}
+                                            size={28}
+                                            radius="circle"
+                                          />
+                                          <MelegaTokenAvatar
+                                            name={labels.symbol1}
+                                            symbol={labels.symbol1}
+                                            address={p.token1}
+                                            chainId={MELEGA_CHAIN_ID}
+                                            size={28}
+                                            radius="circle"
+                                          />
+                                        </PairTokenStack>
+                                        <PairDropdownMeta>
+                                          <PairDropdownName>
+                                            {labels.symbol0}/{labels.symbol1}
+                                          </PairDropdownName>
+                                          <PairDropdownSub>
+                                            BNB Chain
+                                            {tvlLabel ? ` · ${tvlLabel}` : ''}
+                                          </PairDropdownSub>
+                                        </PairDropdownMeta>
+                                      </PairDropdownItem>
+                                    </li>
+                                  )
+                                })}
+                              </PairDropdownList>
+                            </PairDropdown>,
+                            document.body,
+                          )
+                        : null}
+                    </PairSearchWrap>
+                  </Field>
+                </Panel>
+              )}
 
-            {draft.selectedPair && (
-              <Panel data-testid="public-farm-eligibility" data-eligible={eligibility.eligible ? 'true' : 'false'}>
-                <PanelTitle>{CREATE_FARM_UX.pairStatus}</PanelTitle>
-                <StatusLine>
-                  <Check>✓</Check> {CREATE_FARM_UX.pairExists}
-                </StatusLine>
-                <StatusLine>
-                  <Check>✓</Check> {CREATE_FARM_UX.pairIndexed}
-                </StatusLine>
-                <MetricBlock>
-                  <Metric>
-                    <MetricLabel>{CREATE_FARM_UX.tvl}</MetricLabel>
-                    <MetricValue data-testid="public-farm-current-tvl">
-                      {formatBnb(eligibility.currentTvlBnb)}
-                    </MetricValue>
-                  </Metric>
-                  <Metric>
-                    <MetricLabel>{CREATE_FARM_UX.minimumRequired}</MetricLabel>
-                    <MetricValue data-testid="public-farm-minimum-tvl">
-                      {formatBnb(PUBLIC_FARM_MINIMUM_TVL_BNB)}
-                    </MetricValue>
-                  </Metric>
-                </MetricBlock>
-                <StatusLine data-testid="public-farm-pair-status-label">
-                  Status{' '}
-                  <strong>{eligibility.eligible ? CREATE_FARM_UX.statusReady : CREATE_FARM_UX.statusNotReady}</strong>
-                </StatusLine>
-                {!eligibility.eligible && eligibility.missingTvlBnb != null && eligibility.missingTvlBnb > 0 && (
-                  <Hint data-testid="public-farm-missing-tvl">
-                    {CREATE_FARM_UX.youNeed} <strong>{formatBnb(eligibility.missingTvlBnb)}</strong>{' '}
-                    {CREATE_FARM_UX.moreLiquidity}
-                  </Hint>
-                )}
-              </Panel>
-            )}
+              {draft.selectedPair && (
+                <Panel data-testid="public-farm-eligibility" data-eligible={eligibility.eligible ? 'true' : 'false'}>
+                  <PanelTitle>{CREATE_FARM_UX.pairStatus}</PanelTitle>
+                  <StatusLine>
+                    <Check>✓</Check> {CREATE_FARM_UX.pairExists}
+                  </StatusLine>
+                  <StatusLine>
+                    <Check>✓</Check> {CREATE_FARM_UX.pairIndexed}
+                  </StatusLine>
+                  <MetricBlock>
+                    <Metric>
+                      <MetricLabel>{CREATE_FARM_UX.tvl}</MetricLabel>
+                      <MetricValue data-testid="public-farm-current-tvl">
+                        {formatBnb(eligibility.currentTvlBnb)}
+                      </MetricValue>
+                    </Metric>
+                    <Metric>
+                      <MetricLabel>{CREATE_FARM_UX.minimumRequired}</MetricLabel>
+                      <MetricValue data-testid="public-farm-minimum-tvl">
+                        {formatBnb(PUBLIC_FARM_MINIMUM_TVL_BNB)}
+                      </MetricValue>
+                    </Metric>
+                  </MetricBlock>
+                  <StatusLine data-testid="public-farm-pair-status-label">
+                    Status{' '}
+                    <strong>{eligibility.eligible ? CREATE_FARM_UX.statusReady : CREATE_FARM_UX.statusNotReady}</strong>
+                  </StatusLine>
+                  {!eligibility.eligible && eligibility.missingTvlBnb != null && eligibility.missingTvlBnb > 0 && (
+                    <Hint data-testid="public-farm-missing-tvl">
+                      {CREATE_FARM_UX.youNeed} <strong>{formatBnb(eligibility.missingTvlBnb)}</strong>{' '}
+                      {CREATE_FARM_UX.moreLiquidity}
+                    </Hint>
+                  )}
+                </Panel>
+              )}
 
-            {draft.selectedPair && needsLiquidity && (
-              <Remediation
-                data-testid="public-farm-low-liquidity-remediation"
-                data-action={CREATE_FARM_UX.requireLiquidityIncrease}
-                role="status"
-              >
-                <RemediationTitle>{CREATE_FARM_UX.increaseLiquidityRequired}</RemediationTitle>
-                <Hint>
-                  {CREATE_FARM_UX.youNeed} {formatBnb(eligibility.missingTvlBnb)} {CREATE_FARM_UX.moreLiquidity}
-                </Hint>
-                <PrimaryButton
-                  type="button"
-                  $ready
-                  data-testid="public-farm-inline-liquidity-open"
-                  onClick={() => setOpenAcc('liquidity')}
+              {draft.selectedPair && needsLiquidity && (
+                <Remediation
+                  data-testid="public-farm-low-liquidity-remediation"
+                  data-action={CREATE_FARM_UX.requireLiquidityIncrease}
+                  role="status"
                 >
-                  Add liquidity here
-                </PrimaryButton>
-              </Remediation>
-            )}
+                  <RemediationTitle>{CREATE_FARM_UX.increaseLiquidityRequired}</RemediationTitle>
+                  <Hint>
+                    {CREATE_FARM_UX.youNeed} {formatBnb(eligibility.missingTvlBnb)} {CREATE_FARM_UX.moreLiquidity}
+                  </Hint>
+                  <PrimaryButton
+                    type="button"
+                    $ready
+                    data-testid="public-farm-inline-liquidity-open"
+                    onClick={() => setOpenAcc('liquidity')}
+                  >
+                    Add liquidity here
+                  </PrimaryButton>
+                </Remediation>
+              )}
             </PairStepLayout>
           </MelegaAccordionSection>
 

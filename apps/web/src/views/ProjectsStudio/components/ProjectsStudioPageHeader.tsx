@@ -1,80 +1,183 @@
-/**
- * Compact Projects Directory V3 hero — 140–170px desktop.
- * Title: Discover Projects · List Your Project · Claim Project
- */
 import React from 'react'
 import styled from 'styled-components'
-import {
-  MelegaStudioGhostBtn,
-  MelegaStudioPrimaryBtn,
-} from 'design-system/melega'
+import { FeaturedProjectsRail } from 'views/HomeTrade/FeaturedProjectsRail'
+import { CanonicalHeroEyebrow } from 'views/shared/CanonicalHeroEyebrow'
+import { MelegaStudioGhostBtn, MelegaStudioPrimaryBtn } from 'design-system/melega'
 import { PR_FONT_BODY, PR_FONT_DISPLAY, projectsStudioColors } from '../projectsStudioTokens'
 
 /** Claim Project → ownership-gated customize flow (List Studio claim intent). */
 export const CLAIM_PROJECT_HREF = '/list?intent=claim-project'
 
 const Shell = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 140px;
-  max-height: 170px;
-  padding: 12px 0 8px;
+  position: relative;
+  width: 100%;
+  height: 216px;
   box-sizing: border-box;
-  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.3fr) minmax(0, 0.7fr);
+  gap: 20px;
+  align-items: stretch;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(221, 185, 47, 0.22);
+  border-radius: 18px;
+  background: radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
+    linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(244, 196, 48, 0.2) 0 1px, transparent 1.4px);
+    background-size: 52px 52px;
+    opacity: 0.12;
+  }
+
+  @media (max-width: 1099px) {
+    grid-template-columns: minmax(270px, 0.34fr) minmax(0, 0.66fr);
+    gap: 14px;
+    padding: 16px;
+  }
 
   @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    max-height: none;
-    min-height: 0;
-    gap: 12px;
-    padding: 8px 0;
+    height: 224px;
+    grid-template-columns: minmax(150px, 0.42fr) minmax(0, 0.58fr);
+    padding: 16px;
   }
 `
 
 const Left = styled.div`
+  position: relative;
+  z-index: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 0;
+  justify-content: center;
+  padding-left: 12px;
+
+  @media (max-width: 767px) {
+    padding-left: 2px;
+  }
 `
 
 const Title = styled.h1`
-  margin: 0;
+  margin: 6px 0 0;
   font-family: ${PR_FONT_DISPLAY};
-  font-size: 28px;
+  font-size: 46px;
   font-weight: 750;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 52px;
+  letter-spacing: -0.025em;
   color: ${projectsStudioColors.text};
 
   @media (max-width: 767px) {
-    font-size: 24px;
+    font-size: 34px;
+    line-height: 40px;
   }
 `
 
 const Sub = styled.p`
-  margin: 0;
-  max-width: 520px;
+  max-width: 330px;
+  margin: 8px 0 0;
   font-family: ${PR_FONT_BODY};
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 21px;
   color: ${projectsStudioColors.secondary};
+
+  @media (max-width: 767px) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 18px;
+  }
 `
 
 const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  flex-shrink: 0;
+  gap: 8px;
+  margin-top: 12px;
 
   a {
-    height: 40px;
+    height: 34px;
     min-width: 0;
-    padding: 0 16px;
-    font-size: 13px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  @media (max-width: 767px) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    margin-top: 8px;
+
+    a {
+      width: 100%;
+      height: 28px;
+      padding: 0 6px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+  }
+`
+
+const Featured = styled.div`
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  padding: 4px 0;
+
+  & > section {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  & > section > div {
+    height: 100%;
+    min-height: 0;
+    grid-auto-rows: minmax(0, 1fr);
+  }
+
+  & article {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    padding: 8px 10px;
+    gap: 3px;
+  }
+
+  & article > :nth-child(3) {
+    min-height: 8px;
+    height: 8px;
+  }
+
+  & article > :nth-child(4) > div > :first-child {
+    white-space: nowrap;
+    font-size: 8px;
+    line-height: 10px;
+  }
+
+  & article > :last-child a {
+    height: 28px;
+    min-height: 28px;
+  }
+
+  @media (max-width: 1099px) {
+    padding: 3px 0;
+  }
+
+  @media (max-width: 767px) {
+    padding: 2px 0;
   }
 `
 
@@ -82,25 +185,30 @@ export const ProjectsStudioPageHeader: React.FC = () => (
   <Shell
     data-studio-header="projects"
     data-testid="projects-directory-header"
-    data-projects-hero="compact-v3"
+    data-projects-hero="canonical"
+    data-canonical-hero-height="216"
   >
     <Left>
+      <CanonicalHeroEyebrow icon="discover">Melega DEX Discovery</CanonicalHeroEyebrow>
       <Title>Discover Projects</Title>
       <Sub>Explore tokens and projects across Melega DEX.</Sub>
+      <Actions>
+        <MelegaStudioPrimaryBtn as="a" href="/list" style={{ textDecoration: 'none' }} data-testid="projects-list-cta">
+          List Your Project
+        </MelegaStudioPrimaryBtn>
+        <MelegaStudioGhostBtn
+          as="a"
+          href={CLAIM_PROJECT_HREF}
+          style={{ textDecoration: 'none' }}
+          data-testid="projects-claim-cta"
+        >
+          Claim Project
+        </MelegaStudioGhostBtn>
+      </Actions>
     </Left>
-    <Actions>
-      <MelegaStudioPrimaryBtn as="a" href="/list" style={{ textDecoration: 'none' }} data-testid="projects-list-cta">
-        List Your Project
-      </MelegaStudioPrimaryBtn>
-      <MelegaStudioGhostBtn
-        as="a"
-        href={CLAIM_PROJECT_HREF}
-        style={{ textDecoration: 'none' }}
-        data-testid="projects-claim-cta"
-      >
-        Claim Project
-      </MelegaStudioGhostBtn>
-    </Actions>
+    <Featured aria-label="Featured projects">
+      <FeaturedProjectsRail />
+    </Featured>
   </Shell>
 )
 

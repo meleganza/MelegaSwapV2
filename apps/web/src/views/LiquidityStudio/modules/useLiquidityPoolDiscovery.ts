@@ -169,16 +169,21 @@ export function useLiquidityPoolDiscovery(options: {
     const availableFilters = factualFilters(cards, myTokensReady)
     const availableSorts = factualSorts(cards)
     const activeFilter = availableFilters.includes(filter) ? filter : 'all'
-    const activeSort = availableSorts.includes(sort)
-      ? sort
-      : availableSorts.includes('tvl')
-      ? 'tvl'
-      : availableSorts.includes('market')
-      ? 'market'
-      : availableSorts[0] ?? 'tvl'
+    const activeSort =
+      sort === 'tvl'
+        ? 'tvl'
+        : availableSorts.includes(sort)
+        ? sort
+        : availableSorts.includes('tvl')
+        ? 'tvl'
+        : availableSorts.includes('market')
+        ? 'market'
+        : availableSorts[0] ?? 'tvl'
 
     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
-    const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered
+    // Liquidity is the canonical default order even when some pools have no
+    // indexed TVL yet: known values stay descending and unknown values last.
+    const sorted = sortDiscoveryCards(filtered, activeSort)
     const matchedCount = sorted.length
     const visibleCards = sorted.slice(0, Math.max(1, pageSize))
 

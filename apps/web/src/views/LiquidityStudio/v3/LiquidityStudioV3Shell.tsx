@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { GLOBAL_DATA_TRUTH_PIPELINE, truthDash } from 'lib/data-truth'
+import { CanonicalHeroEyebrow } from 'views/shared/CanonicalHeroEyebrow'
 import { LiquidityRuntimeProvider, useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import type { LiquidityStudioMode } from '../liquidityRuntime/useLiquidityMintRuntime'
 import { LiquidityMyPositionsModule } from '../modules/LiquidityMyPositionsModule'
@@ -75,31 +76,42 @@ const Page = styled.div`
 `
 
 const Hero = styled.section<{ $builder?: boolean }>`
-  min-height: 176px;
-  padding: 18px 22px;
-  border: 1px solid rgba(244, 196, 48, 0.14);
+  position: relative;
+  height: 216px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(221, 185, 47, 0.22);
   border-radius: 18px;
-  background: radial-gradient(ellipse 42% 80% at 52% 55%, rgba(244, 196, 48, 0.07) 0%, rgba(8, 8, 8, 0) 70%),
-    radial-gradient(ellipse 36% 70% at 18% 40%, rgba(34, 197, 94, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
-    linear-gradient(145deg, rgba(14, 14, 14, 0.98), rgba(10, 10, 10, 0.96));
+  background: radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
+    linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
-  column-gap: ${liqV3.columnGap};
+  grid-template-columns: minmax(300px, 0.44fr) minmax(0, 0.56fr);
+  column-gap: 20px;
   align-items: center;
   min-width: 0;
 
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(244, 196, 48, 0.2) 0 1px, transparent 1.4px);
+    background-size: 52px 52px;
+    opacity: 0.12;
+  }
+
   @media (max-width: ${liqV3.tabletBreak}) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 20px;
-    row-gap: 14px;
+    grid-template-columns: minmax(270px, 0.48fr) minmax(0, 0.52fr);
+    column-gap: 14px;
+    padding: 16px;
   }
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 18px 16px 12px;
+    height: 224px;
+    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
+    gap: 10px;
+    padding: 16px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -111,6 +123,8 @@ const Hero = styled.section<{ $builder?: boolean }>`
 `
 
 const HeroCopy = styled.div`
+  position: relative;
+  z-index: 1;
   min-width: 0;
   max-width: 100%;
   display: flex;
@@ -123,25 +137,34 @@ const HeroCopy = styled.div`
 `
 
 const HeroTitle = styled.h1<{ $builder?: boolean }>`
-  margin: 0;
-  font-size: ${({ $builder }) => ($builder ? '32px' : liqV3.titleSize)};
-  line-height: ${({ $builder }) => ($builder ? '38px' : liqV3.titleLine)};
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  margin: 6px 0 0;
+  font-size: ${({ $builder }) => ($builder ? '32px' : '46px')};
+  line-height: ${({ $builder }) => ($builder ? '38px' : '52px')};
+  font-weight: 750;
+  letter-spacing: -0.025em;
   color: #f7f7f7;
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    font-size: 42px;
-    line-height: 46px;
+    font-size: 34px;
+    line-height: 40px;
   }
 `
 
 const HeroSub = styled.p`
   margin: 8px 0 0;
-  font-size: ${liqV3.descSize};
-  line-height: ${liqV3.descLine};
+  font-size: 14px;
+  line-height: 21px;
   color: rgba(255, 255, 255, 0.66);
   max-width: 380px;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 18px;
+  }
 `
 
 const HeroActions = styled.div`
@@ -150,6 +173,17 @@ const HeroActions = styled.div`
   gap: 10px;
   align-items: center;
   margin-top: 14px;
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    flex-wrap: nowrap;
+    gap: 7px;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `
 
 const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
@@ -168,6 +202,14 @@ const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
   &:hover:not(:disabled) {
     background: ${({ $primary, $ghost }) =>
       $primary ? liqV3.goldHover : $ghost ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.07)'};
+  }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex: 0 0 auto;
   }
 `
 
@@ -286,14 +328,6 @@ const SectionTitleRow = styled.div`
   align-items: baseline;
   gap: 10px;
   min-width: 0;
-`
-
-const SectionIndex = styled.span`
-  color: ${liqV3.gold};
-  font-size: 18px;
-  line-height: 1;
-  font-weight: 850;
-  font-variant-numeric: tabular-nums;
 `
 
 const SectionTitle = styled.h2`
@@ -568,13 +602,14 @@ function cardValue(cards: ReturnType<typeof useLiquidityMarketSnapshot>['cards']
 const LiquidityV3Body: React.FC = () => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
-  const { mode, setMode, setSelectedPositionId, positions, positionsPhase, pairLabel, noLiquidity } =
+  const { account, mode, setMode, setSelectedPositionId, positions, positionsPhase, pairLabel, noLiquidity } =
     useLiquidityRuntime()
   const snapshot = useLiquidityMarketSnapshot()
   const hydratedRef = React.useRef(false)
   const deferredDeepLinkScrollRef = React.useRef<string | null>(null)
   const removing = isRemoveMode(mode)
   const showFarmNudge = positions.length > 0
+  const showPositionsPanel = !(account && positionsPhase === 'empty')
   const hasSelectedPair = Boolean(pairLabel && !pairLabel.includes('?') && pairLabel !== 'Select pair')
 
   const scrollToSection = useCallback((id: string) => {
@@ -608,22 +643,11 @@ const LiquidityV3Body: React.FC = () => {
     } else {
       setMode('My Positions', { syncUrl: false })
     }
-    if (
-      (view === 'add' || view === 'remove') &&
-      (positionsPhase === 'connecting' || positionsPhase === 'fetching')
-    ) {
+    if ((view === 'add' || view === 'remove') && (positionsPhase === 'connecting' || positionsPhase === 'fetching')) {
       deferredDeepLinkScrollRef.current = target
     }
     scrollToSection(target)
-  }, [
-    router.isReady,
-    router.query.view,
-    router.asPath,
-    setMode,
-    positions.length,
-    positionsPhase,
-    scrollToSection,
-  ])
+  }, [router.isReady, router.query.view, router.asPath, setMode, positions.length, positionsPhase, scrollToSection])
 
   // Wallet positions arrive after the first paint and insert My Liquidity
   // above the editor. Re-anchor once that asynchronous layout shift settles.
@@ -667,40 +691,23 @@ const LiquidityV3Body: React.FC = () => {
   )
 
   const lbSupported = (chainId ?? 56) === 56
-  const addIndex = 2
-  const builderIndex = addIndex + 1
-  const exploreIndex = builderIndex + 1
-  const sectionNumber = (value: number) => String(value).padStart(2, '0')
-
   return (
     <>
       <Hero $builder={false} data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="one-page-compact">
         <HeroCopy>
+          <CanonicalHeroEyebrow icon="liquidity">Melega DEX Liquidity</CanonicalHeroEyebrow>
           <HeroTitle $builder={false}>{LIQ_V3_COPY.title}</HeroTitle>
           <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
           <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
-            <Btn
-              $ghost
-              type="button"
-              onClick={goPositions}
-              data-testid="liquidity-v3-hero-positions"
-            >
-              My Positions
-            </Btn>
-            <Btn
-              $primary
-              type="button"
-              onClick={goAdd}
-              data-testid="liquidity-v3-hero-add"
-            >
+            {showPositionsPanel ? (
+              <Btn $ghost type="button" onClick={goPositions} data-testid="liquidity-v3-hero-positions">
+                My Positions
+              </Btn>
+            ) : null}
+            <Btn $primary type="button" onClick={goAdd} data-testid="liquidity-v3-hero-add">
               {LIQ_V3_COPY.addCta}
             </Btn>
-            <Btn
-              $ghost
-              type="button"
-              onClick={goAi}
-              data-testid="liquidity-v3-hero-ai"
-            >
+            <Btn $ghost type="button" onClick={goAi} data-testid="liquidity-v3-hero-ai">
               {LIQ_V3_COPY.aiEntry}
               <ExclusiveBadge>BETA</ExclusiveBadge>
             </Btn>
@@ -726,13 +733,10 @@ const LiquidityV3Body: React.FC = () => {
         data-liquidity-panels="mounted"
         data-liquidity-navigation="anchors"
       >
-        <Panel
-          id="liquidity-positions"
-          data-testid="liquidity-v3-panel-positions"
-        >
+        {showPositionsPanel ? (
+          <Panel id="liquidity-positions" data-testid="liquidity-v3-panel-positions">
             <SectionHeader>
               <SectionTitleRow>
-                <SectionIndex>01</SectionIndex>
                 <SectionTitle>My Positions</SectionTitle>
               </SectionTitleRow>
               <SectionMeta>Positions found in your connected wallet</SectionMeta>
@@ -753,12 +757,12 @@ const LiquidityV3Body: React.FC = () => {
                 </LinkBtn>
               </FarmNudge>
             ) : null}
-        </Panel>
+          </Panel>
+        ) : null}
 
         <Panel id="liquidity-add" data-testid="liquidity-v3-panel-add">
           <SectionHeader>
             <SectionTitleRow>
-              <SectionIndex>{sectionNumber(addIndex)}</SectionIndex>
               <SectionTitle>Add / Remove Liquidity</SectionTitle>
             </SectionTitleRow>
             <SectionMeta>Choose a pair · Enter amounts · Confirm once</SectionMeta>
@@ -769,12 +773,7 @@ const LiquidityV3Body: React.FC = () => {
                 <ModeButton type="button" $active={!removing} onClick={goAdd} aria-pressed={!removing}>
                   Add
                 </ModeButton>
-                <ModeButton
-                  type="button"
-                  $active={removing}
-                  onClick={goRemove}
-                  aria-pressed={removing}
-                >
+                <ModeButton type="button" $active={removing} onClick={goRemove} aria-pressed={removing}>
                   Remove
                 </ModeButton>
               </ModeSwitch>
@@ -799,7 +798,6 @@ const LiquidityV3Body: React.FC = () => {
         <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
           <SectionHeader>
             <SectionTitleRow>
-              <SectionIndex>{sectionNumber(builderIndex)}</SectionIndex>
               <SectionTitle>
                 AI Liquidity Builder <span data-liquidity-builder-exclusive>BETA</span>
               </SectionTitle>
@@ -823,7 +821,6 @@ const LiquidityV3Body: React.FC = () => {
         <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
           <SectionHeader>
             <SectionTitleRow>
-              <SectionIndex>{sectionNumber(exploreIndex)}</SectionIndex>
               <SectionTitle>Explore Pools</SectionTitle>
             </SectionTitleRow>
             <SectionMeta>Search · Compare · BNB Chain indexed pools</SectionMeta>

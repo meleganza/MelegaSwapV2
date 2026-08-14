@@ -30,6 +30,7 @@ export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
   // Membership must not flicker when CTA briefly leaves 'stake' during reload.
   // Stake button enablement is decided separately via stakeEnabled.
   if (card.cta === 'none') return false
+  if (card.lifecycle && (!card.lifecycle.funded || !card.lifecycle.rewarding)) return false
   const lifecycleLive = Boolean(card.lifecycle?.active || card.lifecycle?.rewarding)
   // Prefer status/display LIVE; also accept factual lifecycle for open-ended emission pools
   // that classification already counts as active/rewarding.
@@ -110,8 +111,8 @@ function resolveTvl(card: PoolPreviewCard): {
       usd >= 1_000_000
         ? `$${(usd / 1_000_000).toFixed(2)}M`
         : usd >= 1_000
-          ? `$${(usd / 1_000).toFixed(1)}K`
-          : `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+        ? `$${(usd / 1_000).toFixed(1)}K`
+        : `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
     return { display, support: null, sort: usd, partial: false, ok: true }
   }
   return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
@@ -123,7 +124,9 @@ function resolveParticipants(card: PoolPreviewCard): string {
   if (card.participantsSource !== 'smartchef_event_index' && card.participantsSource !== 'indexed_wallet_census') {
     return 'Indexing…'
   }
-  const value = String(card.participants ?? '').replace(/,/g, '').trim()
+  const value = String(card.participants ?? '')
+    .replace(/,/g, '')
+    .trim()
   const count = Number(value)
   return Number.isInteger(count) && count >= 0 ? Number(count).toLocaleString('en-US') : 'Indexing…'
 }
@@ -220,8 +223,7 @@ export function cardToExploreModel(
 
   const stakeSymbol =
     (card.stakeToken || card.tokens?.[0] || card.rawPool?.stakingToken?.symbol || 'TOKEN').trim() || 'TOKEN'
-  const rewardSymbol =
-    (card.rewardToken || card.rawPool?.earningToken?.symbol || 'REWARD').trim() || 'REWARD'
+  const rewardSymbol = (card.rewardToken || card.rawPool?.earningToken?.symbol || 'REWARD').trim() || 'REWARD'
   const isLp =
     Boolean(card.rawPool?.stakingToken?.symbol?.includes('LP')) ||
     /lp/i.test(stakeSymbol) ||
@@ -233,7 +235,8 @@ export function cardToExploreModel(
     account: opts?.account,
     poolChainMatchesWallet,
   })
-  const stakeEnabled = primaryAction === 'Stake' || primaryAction === 'Switch Network' || primaryAction === 'Connect Wallet'
+  const stakeEnabled =
+    primaryAction === 'Stake' || primaryAction === 'Switch Network' || primaryAction === 'Connect Wallet'
 
   const contractAddress =
     card.contractAddress ||
@@ -246,8 +249,8 @@ export function cardToExploreModel(
     normalizedAddr != null
       ? poolIdentity(poolChainId, normalizedAddr)
       : card.id?.includes(':')
-        ? card.id
-        : `${poolChainId}:${card.id}`
+      ? card.id
+      : `${poolChainId}:${card.id}`
 
   return {
     poolId: identity,

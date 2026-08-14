@@ -1,12 +1,15 @@
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { STAKING_TEMPLATES } from 'views/BuildStudio/buildStudioData'
 import { describeCreatePoolFee, type CreateFeeDisplay } from 'config/constants/feeSchedule'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 
 export type WizardStep = 1 | 2 | 3 | 4
 
 export type CreatePoolWizardState = {
   rewardToken: string
+  rewardTokenAddress: string
   stakeToken: string
+  stakeTokenAddress: string
   rewardBudget: string
   emissionDuration: string
   dailyRewards: string
@@ -37,13 +40,13 @@ export const CREATE_POOL_FLOW_SECTIONS = [
   'Create',
 ] as const
 
-export const TOKEN_OPTIONS = ['MARCO', 'BNB', 'USDT', 'CAKE', 'ETH'] as const
-
 export function createDefaultWizardState(): CreatePoolWizardState {
   // Empty budget/emission until the user configures — never seed fabricated APR (e.g. 153.3%).
   return {
-    rewardToken: 'MARCO',
+    rewardToken: '',
+    rewardTokenAddress: '',
     stakeToken: premiumUiValue(template.stakeToken),
+    stakeTokenAddress: MARCO_BSC_ADDRESS,
     rewardBudget: '',
     emissionDuration: '',
     dailyRewards: '',
@@ -78,10 +81,7 @@ export function deriveDailyRewards(state: Pick<CreatePoolWizardState, 'rewardBud
 
 export function hasCompletePoolEstimateParams(state: CreatePoolWizardState): boolean {
   return Boolean(
-    state.rewardToken &&
-      state.stakeToken &&
-      parseNum(state.rewardBudget) > 0 &&
-      parseNum(state.emissionDuration) > 0,
+    state.rewardToken && state.stakeToken && parseNum(state.rewardBudget) > 0 && parseNum(state.emissionDuration) > 0,
   )
 }
 

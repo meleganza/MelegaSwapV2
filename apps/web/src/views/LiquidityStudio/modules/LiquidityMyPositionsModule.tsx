@@ -11,16 +11,9 @@ import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwit
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import {
-  useLiquidityPositionDetails,
-  type LiquidityPositionRow,
-} from '../liquidityRuntime/useLiquidityPositions'
+import { useLiquidityPositionDetails, type LiquidityPositionRow } from '../liquidityRuntime/useLiquidityPositions'
 import { useLPApr } from 'state/swap/useLPApr'
-import {
-  formatPoolShare,
-  formatPositionUsd,
-  resolvePositionStatus,
-} from './liquidityMyPositionsModel'
+import { formatPoolShare, formatPositionUsd, resolvePositionStatus } from './liquidityMyPositionsModel'
 import { LIQUIDITY_MY_POSITIONS_COPY, liquidityMyPositions } from './liquidityMyPositionsTokens'
 
 const Shell = styled.section<{ $embedded?: boolean }>`
@@ -251,14 +244,8 @@ const Skeleton = styled.div`
   min-height: 168px;
   border-radius: ${liquidityMyPositions.cardRadius};
   border: ${liquidityMyPositions.cardBorder};
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.07),
-    rgba(255, 255, 255, 0.03)
-  );
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
 `
-
 
 const Toolbar = styled.div`
   margin-top: 14px;
@@ -385,7 +372,9 @@ function PositionCard({
     lpApr?.lpApr7d != null && Number.isFinite(lpApr.lpApr7d)
       ? `${lpApr.lpApr7d >= 100 ? lpApr.lpApr7d.toFixed(0) : lpApr.lpApr7d.toFixed(2)}%`
       : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
-  const lpLabel = row.lpBalance?.greaterThan(0) ? row.lpBalance.toSignificant(6) : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
+  const lpLabel = row.lpBalance?.greaterThan(0)
+    ? row.lpBalance.toSignificant(6)
+    : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const valueLabel = formatPositionUsd(details.usdValue)
   const shareLabel = formatPoolShare(details.poolShare)
   const status = resolvePositionStatus({
@@ -463,7 +452,6 @@ function PositionCard({
   )
 }
 
-
 function PositionListRow({
   row,
   onManage,
@@ -485,8 +473,22 @@ function PositionListRow({
       <ListCell data-testid="liquidity-my-positions-list-pair">
         <ListPair>
           <ListLogos aria-hidden="true">
-            <MelegaTokenAvatar symbol={token0.symbol} name={token0.name} address={token0.address} chainId={positionChainId} size={24} radius="circle" />
-            <MelegaTokenAvatar symbol={token1.symbol} name={token1.name} address={token1.address} chainId={positionChainId} size={24} radius="circle" />
+            <MelegaTokenAvatar
+              symbol={token0.symbol}
+              name={token0.name}
+              address={token0.address}
+              chainId={positionChainId}
+              size={24}
+              radius="circle"
+            />
+            <MelegaTokenAvatar
+              symbol={token1.symbol}
+              name={token1.name}
+              address={token1.address}
+              chainId={positionChainId}
+              size={24}
+              radius="circle"
+            />
           </ListLogos>
           <span>{row.pairLabel}</span>
         </ListPair>
@@ -546,8 +548,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [expanded, setExpanded] = useState(false)
   const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
-  const visiblePositions =
-    expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
+  const visiblePositions = expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
   const canExpand = positions.length > previewMin
 
   const proceedManage = useCallback(
@@ -664,25 +665,12 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
       {positionsPhase === 'error' ? (
         <Empty data-testid="liquidity-my-positions-error">
           <EmptyText>
-            {positionsTimedOut
-              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
-              : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
+            {positionsTimedOut ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
           </EmptyText>
           <EmptyActions>
-            <PrimaryBtn
-              type="button"
-              data-testid="liquidity-my-positions-retry"
-              onClick={() => retryPositions()}
-            >
+            <PrimaryBtn type="button" data-testid="liquidity-my-positions-retry" onClick={() => retryPositions()}>
               {LIQUIDITY_MY_POSITIONS_COPY.retry}
             </PrimaryBtn>
-            <SecondaryBtn
-              type="button"
-              data-testid="liquidity-my-positions-empty-add"
-              onClick={() => setMode('Add Liquidity')}
-            >
-              Add Liquidity
-            </SecondaryBtn>
           </EmptyActions>
         </Empty>
       ) : null}
@@ -732,11 +720,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
           )}
 
           {canExpand ? (
-            <MoreBtn
-              type="button"
-              data-testid="liquidity-my-positions-expand"
-              onClick={() => setExpanded((v) => !v)}
-            >
+            <MoreBtn type="button" data-testid="liquidity-my-positions-expand" onClick={() => setExpanded((v) => !v)}>
               {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
             </MoreBtn>
           ) : null}
@@ -745,9 +729,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
 
       <ChainSwitchConfirmDialog
         open={Boolean(pendingSwitch)}
-        targetChainId={
-          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56
-        }
+        targetChainId={pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56}
         productLabel={`This liquidity position is on ${chainDisplayName(
           pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56,
         )}. Switch network to continue?`}

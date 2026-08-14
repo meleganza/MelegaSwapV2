@@ -118,8 +118,7 @@ async function verifyPool(
   if (stakedToken === '0x0000000000000000000000000000000000000000') stakedToken = undefined
 
   const rewardTokenAddr = decodeAddress((await ethCall(contractAddress, SEL.rewardToken, rpcUrls)) ?? '0x')
-  const rewardToken =
-    rewardTokenAddr !== '0x0000000000000000000000000000000000000000' ? rewardTokenAddr : undefined
+  const rewardToken = rewardTokenAddr !== '0x0000000000000000000000000000000000000000' ? rewardTokenAddr : undefined
 
   let rewardBalance = 0n
   if (rewardToken) {
@@ -130,11 +129,9 @@ async function verifyPool(
   const hasStarted = startBlock === 0 || currentBlock >= startBlock
   const notEnded = endBlock === 0 || currentBlock < endBlock
   const isActive = hasStarted && notEnded && rewardPerBlock > 0n
-  // Open-ended pools (endBlock === 0) with active emission are funded when emitting;
-  // bounded pools remain funded while before bonusEndBlock or when reward balance > 0.
-  const isFunded =
-    rewardBalance > 0n ||
-    (isActive && rewardPerBlock > 0n && (endBlock === 0 || endBlock > currentBlock))
+  // A configured emission is not funding. Keep the pool hidden until the
+  // reward token balance is actually present in the SmartChef contract.
+  const isFunded = rewardBalance > 0n
   const isRewarding = isActive && isFunded
 
   return {
@@ -204,8 +201,7 @@ export async function discoverSmartChefOnChain(
       ended,
       invalid,
       dataSource: 'on-chain-verified-multicall',
-      note:
-        'SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded.',
+      note: 'SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded.',
     },
   }
 }

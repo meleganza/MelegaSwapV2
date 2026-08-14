@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { useAccount, useConnect } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 
 const MARCO_CONNECT_SRC = 'https://marco.melega.ai/widgets/marco-connect.v2.1.js'
@@ -38,6 +39,15 @@ const Host = styled.div`
 
 const Fallback = styled.div<{ $hidden: boolean }>`
   display: ${({ $hidden }) => ($hidden ? 'none' : 'inline-flex')};
+
+  img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 20px;
+  }
 `
 
 export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: string }> = ({
@@ -70,10 +80,11 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     let sdk: MarcoConnectSdk | null = null
     const unsubscribers: Array<() => void> = []
 
+    setFailed(false)
     void loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
       Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
-    ).then(
-      () => {
+    )
+      .then(() => {
         if (cancelled || !hostRef.current) return
         const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
         if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
@@ -86,11 +97,10 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
         const unsubscribe = sdk.on('connect', () => void syncWalletSession())
         if (unsubscribe) unsubscribers.push(unsubscribe)
         setReady(true)
-      },
-      () => {
+      })
+      .catch(() => {
         if (!cancelled) setFailed(true)
-      },
-    )
+      })
 
     return () => {
       cancelled = true
@@ -103,11 +113,20 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   if (address) return null
 
   return (
-    <Root className={className} data-testid="marco-connect" data-marco-connect-ready={ready ? 'true' : 'false'}>
+    <Root
+      className={className}
+      data-testid="marco-connect"
+      data-marco-connect-ready={ready ? 'true' : 'false'}
+      data-marco-connect-provider="official-v2.1"
+    >
       <Host ref={hostRef} />
       <Fallback $hidden={ready && !failed}>
-        <ConnectWalletButton className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}>
-          {size === 'icon' ? 'Connect' : 'Connect Wallet'}
+        <ConnectWalletButton
+          className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
+          aria-label="MARCO Connect"
+        >
+          <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />
+          {size === 'icon' ? 'MARCO' : 'MARCO CONNECT'}
         </ConnectWalletButton>
       </Fallback>
     </Root>

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { FeaturedProjectsRail } from 'views/HomeTrade/FeaturedProjectsRail'
+import { CanonicalHeroEyebrow } from 'views/shared/CanonicalHeroEyebrow'
 import { tradeColors } from '../tradeTokens'
 
 const Hero = styled.section`
@@ -11,8 +12,7 @@ const Hero = styled.section`
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(221, 185, 47, 0.22);
-  background:
-    radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
+  background: radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
     linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
   display: grid;
@@ -56,15 +56,6 @@ const Copy = styled.div`
   @media (max-width: 767px) {
     padding-left: 2px;
   }
-`
-
-const Eyebrow = styled.div`
-  color: ${tradeColors.gold};
-  font-size: 11px;
-  line-height: 16px;
-  font-weight: 750;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 `
 
 const Title = styled.h1`
@@ -159,7 +150,7 @@ const Featured = styled.div`
 export const TradeSwapHero: React.FC = () => (
   <Hero data-testid="trade-swap-hero" data-canonical-hero-height="216">
     <Copy>
-      <Eyebrow>Melega DEX Trading</Eyebrow>
+      <CanonicalHeroEyebrow icon="swap">Melega DEX Trading</CanonicalHeroEyebrow>
       <Title>Swap</Title>
       <Subtitle>Trade through the best available multichain route and discover verified featured markets.</Subtitle>
     </Copy>

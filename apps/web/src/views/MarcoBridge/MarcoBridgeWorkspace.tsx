@@ -5,6 +5,7 @@ import { useAccount, useNetwork } from 'wagmi'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { typography } from 'design-system/melega'
+import { CanonicalHeroEyebrow } from 'views/shared/CanonicalHeroEyebrow'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
@@ -55,34 +56,53 @@ const cinematicDrift = keyframes`
 const Hero = styled.header<{ $embedded?: boolean }>`
   position: relative;
   isolation: isolate;
-  min-height: 260px;
+  width: min(1316px, calc(100vw - 44px));
+  height: 216px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 20px;
   margin-bottom: 18px;
-  padding: 32px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  padding: 20px;
   overflow: hidden;
   border: 1px solid rgba(244, 196, 48, 0.17);
   border-radius: 18px;
   background: #050606;
   h1 {
-    margin: 0;
-    font-size: clamp(34px, 5vw, 58px);
-    line-height: 1;
-    letter-spacing: -0.045em;
+    margin: 6px 0 0;
+    font-size: 46px;
+    line-height: 52px;
+    font-weight: 750;
+    letter-spacing: -0.025em;
   }
   p {
-    margin: 10px 0 0;
+    max-width: 330px;
+    margin: 8px 0 0;
     color: rgba(255, 255, 255, 0.58);
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 21px;
   }
   @media (max-width: 700px) {
-    min-height: 300px;
-    padding: 24px 20px;
-    align-items: start;
-    flex-direction: column;
-    justify-content: flex-end;
+    width: calc(100vw - 24px);
+    height: 224px;
+    padding: 16px;
+    gap: 10px;
+
+    h1 {
+      font-size: 34px;
+      line-height: 40px;
+    }
+
+    p {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 18px;
+    }
   }
 
   ${({ $embedded }) => ($embedded ? 'display: none;' : '')}
@@ -121,6 +141,8 @@ const HeroVeil = styled.div`
 const HeroCopy = styled.div`
   position: relative;
   z-index: 1;
+  min-width: 0;
+  flex: 1 1 auto;
 `
 const Available = styled.div`
   position: relative;
@@ -128,6 +150,20 @@ const Available = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+  max-width: 48%;
+  justify-content: flex-end;
+
+  @media (max-width: 700px) {
+    max-width: 46%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `
 const NetworkPill = styled.span`
   min-height: 30px;
@@ -483,10 +519,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-public-activation={MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}
     >
       <Shell>
-        <Hero $embedded={embedded}>
+        <Hero $embedded={embedded} data-canonical-hero-height="216" data-testid="marco-bridge-hero">
           <HeroArtwork src="/images/bridge/marco-bridge-hero.webp" alt="" aria-hidden="true" />
           <HeroVeil aria-hidden="true" />
           <HeroCopy>
+            <CanonicalHeroEyebrow icon="bridge">Melega DEX Bridge</CanonicalHeroEyebrow>
             <h1>MARCO Bridge</h1>
             <p>Move MARCO across certified networks. One route, one tracked delivery.</p>
           </HeroCopy>

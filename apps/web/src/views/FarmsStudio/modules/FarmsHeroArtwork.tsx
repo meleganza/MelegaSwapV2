@@ -1,33 +1,39 @@
 /**
- * FARMS_MODULE_001 — animated LP farming artwork (CSS/SVG only).
- * Sequence: LP pair → farm module → MARCO rewards. Respects prefers-reduced-motion.
- * Logos: canonical local /images/56/tokens assets with deterministic initial fallback.
+ * FARMS_MODULE_001 — founder-approved MARCO multichain hero artwork.
+ * Asset roles: LP Pair markets (BNB / USDT / USDC / ETH / BTCB) → Farm → Reward Token (MARCO).
+ * Motion is compositor-only and preserves the locked 480×230 artwork box.
  */
-import React, { useState } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { farmsHero } from './farmsHeroTokens'
 
-const MARCO_ADDR = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
-const WBNB_ADDR = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-const MARCO_LOGO = `/images/56/tokens/${MARCO_ADDR}.png`
-const WBNB_LOGO = `/images/56/tokens/${WBNB_ADDR}.png`
+const FARMS_HERO_ARTWORK = '/images/yield/marco-multichain-orbit-hero.webp'
 
-const drift = keyframes`
-  0% { transform: translateX(0); opacity: 0.85; }
-  45% { transform: translateX(52px); opacity: 1; }
-  55% { transform: translateX(52px); opacity: 1; }
-  100% { transform: translateX(0); opacity: 0.85; }
+const cinematicDrift = keyframes`
+  0%, 100% { transform: scale(1.055) translate3d(-0.7%, 0.4%, 0); }
+  50% { transform: scale(1.09) translate3d(1.1%, -0.7%, 0); }
 `
 
-const pulseFarm = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.0); }
-  50% { box-shadow: 0 0 18px 2px rgba(244, 196, 48, 0.22); }
+const glowBreath = keyframes`
+  0%, 100% { opacity: 0.3; transform: translate3d(0, 0, 0) scale(0.96); }
+  50% { opacity: 0.62; transform: translate3d(-1.4%, -0.8%, 0) scale(1.06); }
 `
 
-const emit = keyframes`
-  0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
-  25% { opacity: 1; }
-  100% { transform: translate(54px, -18px) scale(1); opacity: 0; }
+const orbitTurn = keyframes`
+  from { transform: translate3d(-50%, -50%, 0) rotate(-9deg); opacity: 0.18; }
+  50% { opacity: 0.42; }
+  to { transform: translate3d(-50%, -50%, 0) rotate(351deg); opacity: 0.18; }
+`
+
+const lightPass = keyframes`
+  0%, 18% { transform: translate3d(-160%, 0, 0) skewX(-18deg); opacity: 0; }
+  36% { opacity: 0.24; }
+  58%, 100% { transform: translate3d(210%, 0, 0) skewX(-18deg); opacity: 0; }
+`
+
+const particleFloat = keyframes`
+  0%, 100% { transform: translate3d(0, 3px, 0) scale(0.8); opacity: 0.22; }
+  50% { transform: translate3d(7px, -7px, 0) scale(1.12); opacity: 0.68; }
 `
 
 const Frame = styled.div`
@@ -35,12 +41,13 @@ const Frame = styled.div`
   height: ${farmsHero.artworkBoxH};
   max-width: 100%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
   flex: 0 0 auto;
   overflow: hidden;
+  isolation: isolate;
+  contain: paint;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: min(100%, ${farmsHero.mobileArtworkMaxW});
@@ -48,284 +55,107 @@ const Frame = styled.div`
   }
 `
 
+const Artwork = styled.img`
+  position: absolute;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  display: block;
+  object-fit: cover;
+  object-position: 64% center;
+  transform-origin: 64% 50%;
+  animation: ${cinematicDrift} 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transform: scale(1.055);
+    will-change: auto;
+  }
+`
+
+const DepthVeil = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(3, 3, 3, 0.3), rgba(3, 3, 3, 0.02) 46%, rgba(3, 3, 3, 0.08)),
+    radial-gradient(circle at 66% 52%, rgba(244, 196, 48, 0.08), transparent 44%);
+`
+
+const OrbitalGlow = styled.div`
+  position: absolute;
+  left: 66%;
+  top: 53%;
+  width: 74%;
+  height: 54%;
+  z-index: 2;
+  border: 1px solid rgba(255, 211, 77, 0.17);
+  border-left-color: rgba(255, 255, 255, 0.38);
+  border-right-color: rgba(244, 196, 48, 0.03);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 7px rgba(244, 196, 48, 0.15));
+  animation: ${orbitTurn} 21s linear infinite;
+  will-change: transform, opacity;
+`
+
 const Glow = styled.div`
   position: absolute;
-  inset: 10% 14% 6%;
-  background: radial-gradient(
-    ellipse at 50% 58%,
-    rgba(244, 196, 48, 0.2) 0%,
-    rgba(34, 197, 94, 0.08) 42%,
-    rgba(8, 8, 8, 0) 74%
-  );
-  filter: blur(2px);
-
-  @media (prefers-reduced-motion: reduce) {
-    filter: none;
-  }
+  right: 7%;
+  bottom: 4%;
+  width: 60%;
+  height: 60%;
+  z-index: 2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 196, 48, 0.17), transparent 68%);
+  filter: blur(10px);
+  animation: ${glowBreath} 7.2s ease-in-out infinite;
+  will-change: transform, opacity;
 `
 
-const Stage = styled.div`
-  position: relative;
-  width: 94%;
-  height: 94%;
-  display: grid;
-  grid-template-columns: 1fr 1.05fr 1fr;
-  align-items: end;
-  gap: 8px;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    gap: 4px;
-  }
-`
-
-const Col = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 0;
-  height: 100%;
-`
-
-/** Fixed icon row height keeps LP Pair / Farm / MARCO Rewards logos on a shared centerline. */
-const IconRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 78px;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    height: 64px;
-  }
-`
-
-const Label = styled.span`
-  margin-top: 10px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
-  font-family: system-ui, sans-serif;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    margin-top: 6px;
-    font-size: 10px;
-  }
-`
-
-const PairTrack = styled.div`
-  position: relative;
-  width: 96px;
-  /** Matches the 40px token logos exactly so IconRow centers the drift track on the shared centerline. */
-  height: 40px;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    width: 80px;
-    height: 40px;
-  }
-`
-
-const PairMoving = styled.div`
+const LightSweep = styled.div`
   position: absolute;
-  left: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  will-change: transform;
-  animation: ${drift} 5.6s ease-in-out infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-    left: 18px;
-  }
+  top: -22%;
+  bottom: -22%;
+  left: 34%;
+  width: 13%;
+  z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255, 245, 204, 0.42), transparent);
+  filter: blur(9px);
+  animation: ${lightPass} 10.5s ease-in-out infinite;
+  will-change: transform, opacity;
 `
 
-const TokenImg = styled.img<{ $size: number; $offset?: boolean }>`
-  width: ${(p) => p.$size}px;
-  height: ${(p) => p.$size}px;
-  border-radius: 999px;
-  border: 2px solid rgba(244, 196, 48, 0.65);
-  background: #141414;
-  object-fit: cover;
-  margin-left: ${(p) => (p.$offset ? '-12px' : '0')};
-  display: block;
-`
-
-const TokenFallback = styled.span<{ $size: number; $offset?: boolean; $accent?: string }>`
-  width: ${(p) => p.$size}px;
-  height: ${(p) => p.$size}px;
-  border-radius: 999px;
-  border: 2px solid ${(p) => p.$accent || 'rgba(244, 196, 48, 0.65)'};
-  background: #141414;
-  margin-left: ${(p) => (p.$offset ? '-12px' : '0')};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: ${(p) => Math.max(10, Math.round(p.$size * 0.38))}px;
-  font-weight: 800;
-  color: #f4c430;
-  font-family: system-ui, sans-serif;
-`
-
-const FarmModule = styled.div`
-  width: 78px;
-  height: 78px;
-  border-radius: 16px;
-  border: 2px solid #f4c430;
-  background: linear-gradient(160deg, #1a1a1a 0%, #101010 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  animation: ${pulseFarm} 3.2s ease-in-out infinite;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    width: 64px;
-    height: 64px;
-    border-radius: 14px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`
-
-const FarmInner = styled.div`
-  width: 44px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0f0f0f;
-  position: relative;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 16px;
-    height: 2px;
-    background: #22c55e;
-    transform: translate(-50%, -50%);
-  }
-  &::after {
-    width: 2px;
-    height: 16px;
-  }
-`
-
-const RewardStage = styled.div`
-  position: relative;
-  width: 108px;
-  height: 86px;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    width: 88px;
-    height: 72px;
-  }
-`
-
-/** Centered on RewardStage's own midpoint via transform (no magic offsets to drift out of alignment). */
-const MarcoCoreWrap = styled.div`
+const Particle = styled.span<{ $left: string; $top: string; $delay: string; $size: string }>`
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: ${({ $left }) => $left};
+  top: ${({ $top }) => $top};
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  z-index: 4;
+  border-radius: 50%;
+  background: #ffe18a;
+  box-shadow: 0 0 9px rgba(244, 196, 48, 0.62);
+  animation: ${particleFloat} 5.8s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay};
+  will-change: transform, opacity;
 `
-
-const SparkWrap = styled.div<{ $delay: string; $x: string; $y: string }>`
-  position: absolute;
-  left: 42px;
-  top: 28px;
-  opacity: 0;
-  animation: ${emit} 2.8s ease-out infinite;
-  animation-delay: ${(p) => p.$delay};
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-    opacity: 0.85;
-    transform: translate(${(p) => p.$x}, ${(p) => p.$y});
-  }
-`
-
-function TokenMark({
-  src,
-  initial,
-  size,
-  offset,
-  accent,
-}: {
-  src: string
-  initial: string
-  size: number
-  offset?: boolean
-  accent?: string
-}) {
-  const [failed, setFailed] = useState(false)
-  if (failed) {
-    return (
-      <TokenFallback $size={size} $offset={offset} $accent={accent} aria-hidden>
-        {initial}
-      </TokenFallback>
-    )
-  }
-  return (
-    <TokenImg
-      src={src}
-      alt=""
-      $size={size}
-      $offset={offset}
-      loading="eager"
-      decoding="async"
-      onError={() => setFailed(true)}
-      data-token-logo-src={src}
-    />
-  )
-}
 
 export const FarmsHeroArtwork: React.FC = () => (
-  <Frame data-testid="farms-hero-artwork" data-farms-hero-artwork aria-hidden="true">
+  <Frame
+    data-testid="farms-hero-artwork"
+    data-farms-hero-approved-artwork="marco-multichain-orbit"
+    data-farms-hero-animated="true"
+    data-animation-cost="transform-only"
+    aria-hidden="true"
+  >
+    <Artwork src={FARMS_HERO_ARTWORK} alt="" width={1672} height={941} decoding="async" fetchPriority="high" />
+    <DepthVeil />
     <Glow />
-    <Stage>
-      <Col>
-        <IconRow>
-          <PairTrack>
-            <PairMoving>
-              <TokenMark src={MARCO_LOGO} initial="M" size={40} />
-              <TokenMark src={WBNB_LOGO} initial="B" size={40} offset />
-            </PairMoving>
-          </PairTrack>
-        </IconRow>
-        <Label>LP Pair</Label>
-      </Col>
-      <Col>
-        <IconRow>
-          <FarmModule>
-            <FarmInner />
-          </FarmModule>
-        </IconRow>
-        <Label>Farm</Label>
-      </Col>
-      <Col>
-        <IconRow>
-          <RewardStage>
-            <MarcoCoreWrap>
-              <TokenMark src={MARCO_LOGO} initial="M" size={40} accent="#22c55e" />
-            </MarcoCoreWrap>
-            <SparkWrap $delay="0s" $x="48px" $y="-20px">
-              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-            </SparkWrap>
-            <SparkWrap $delay="0.7s" $x="56px" $y="8px">
-              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-            </SparkWrap>
-            <SparkWrap $delay="1.4s" $x="40px" $y="22px">
-              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-            </SparkWrap>
-          </RewardStage>
-        </IconRow>
-        <Label>MARCO Rewards</Label>
-      </Col>
-    </Stage>
+    <OrbitalGlow />
+    <LightSweep />
+    <Particle $left="18%" $top="25%" $delay="-1.2s" $size="3px" />
+    <Particle $left="85%" $top="19%" $delay="-3.7s" $size="4px" />
+    <Particle $left="77%" $top="79%" $delay="-2.4s" $size="3px" />
   </Frame>
 )
 

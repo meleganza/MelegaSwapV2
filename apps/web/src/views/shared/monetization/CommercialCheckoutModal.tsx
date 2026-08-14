@@ -451,6 +451,8 @@ type RegistryDetection = {
     decimals?: number | string
     totalSupplyFormatted?: string | null
     explorerUrl?: string | null
+    verifiedDeployment?: boolean
+    reasonUnavailable?: string | null
   }
   profile?: {
     name?: { value?: string }
@@ -478,15 +480,21 @@ function parseDetectedProject(
   contract: string,
   requestedChain: number,
 ): DetectedProject | null {
-  if (!json?.ok || !json?.onChain) return null
+  if (
+    !json?.ok ||
+    !json?.onChain ||
+    json.onChain.verifiedDeployment !== true ||
+    !String(json.onChain.name ?? '').trim() ||
+    !String(json.onChain.symbol ?? '').trim()
+  ) {
+    return null
+  }
   const canonical = json.tier === 'canonical'
   const project = json.project ?? null
   const dex = json.dex ?? null
   const token = project?.tokens?.find((item) => Number(item.chainId) === requestedChain)
-  const name = String(
-    project?.displayName ?? dex?.name ?? json.onChain.name ?? json.profile?.name?.value ?? 'Detected token',
-  )
-  const symbol = String(token?.symbol ?? dex?.symbol ?? json.onChain.symbol ?? json.profile?.symbol?.value ?? 'TOKEN')
+  const name = String(project?.displayName ?? dex?.name ?? json.onChain.name ?? json.profile?.name?.value).trim()
+  const symbol = String(token?.symbol ?? dex?.symbol ?? json.onChain.symbol ?? json.profile?.symbol?.value).trim()
   return {
     tier: canonical ? 'canonical' : 'pending',
     name,
@@ -597,7 +605,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       const json = (await response.json()) as RegistryDetection
       if (!response.ok) throw new Error(json.reason || json.error || 'TOKEN_DETECTION_FAILED')
       const next = parseDetectedProject(json, contract.trim(), identityChain)
-      if (!next) throw new Error('The token identity could not be resolved.')
+      if (!next)
+        throw new Error(json.onChain?.reasonUnavailable || 'The token identity could not be verified on-chain.')
       setDetected(next)
       setDraft((current) => ({
         ...current,
@@ -1133,11 +1142,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       closeOnBackdrop={!busy}
       closeOnEscape={!busy}
     >
-      <Grid $serviceWide={step === 'service'}>
+      <Grid $serviceWide={step === 'service' || step === 'project'}>
         <Stack>
           {step === 'project' ? (
             <div data-testid="commercial-step-project">
-              <Label>Project contract</Label>
+              <Label>Token address</Label>
               <DetectRow>
                 <Select
                   value={identityChain}
@@ -1159,7 +1168,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     setContract(event.target.value)
                     setDetected(null)
                   }}
-                  placeholder="Paste token contract address (0x…)"
+                  placeholder="Paste the token address (0x...)"
                 />
                 <PrimaryBtn type="button" disabled={detecting} onClick={() => void detectProject()}>
                   {detecting ? 'Detecting…' : 'Detect token'}
@@ -1483,7 +1492,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           ) : null}
           {error ? <Err data-testid="commercial-checkout-error">{error}</Err> : null}
         </Stack>
-        {preview}
+        {step === 'project' ? null : preview}
       </Grid>
     </MelegaModal>
   )

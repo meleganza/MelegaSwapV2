@@ -1,30 +1,35 @@
+/** Founder-approved MARCO multichain artwork for the locked Liquidity hero geometry. */
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
 import { liqV3 } from './liquidityV3Tokens'
 
-const BNB_LOGO = '/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png'
-const USDT_LOGO = '/images/56/tokens/0x55d398326f99059fF775485246999027B3197955.png'
-const USDC_LOGO = '/images/56/tokens/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png'
+const LIQUIDITY_HERO_ARTWORK = '/images/yield/marco-multichain-orbit-hero.webp'
 
-const floatCore = keyframes`
-  0%, 100% { transform: translateY(2px) rotateX(7deg) rotateY(-11deg); }
-  50% { transform: translateY(-5px) rotateX(7deg) rotateY(11deg); }
+const cinematicDrift = keyframes`
+  0%, 100% { transform: scale(1.055) translate3d(-0.7%, 0.4%, 0); }
+  50% { transform: scale(1.09) translate3d(1.1%, -0.7%, 0); }
 `
 
-const orbitOne = keyframes`
-  from { transform: rotate(0deg) translateX(68px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(68px) rotate(-360deg); }
+const glowBreath = keyframes`
+  0%, 100% { opacity: 0.3; transform: translate3d(0, 0, 0) scale(0.96); }
+  50% { opacity: 0.62; transform: translate3d(-1.4%, -0.8%, 0) scale(1.06); }
 `
 
-const orbitTwo = keyframes`
-  from { transform: rotate(120deg) translateX(72px) rotate(-120deg); }
-  to { transform: rotate(480deg) translateX(72px) rotate(-480deg); }
+const orbitTurn = keyframes`
+  from { transform: translate3d(-50%, -50%, 0) rotate(-9deg); opacity: 0.18; }
+  50% { opacity: 0.42; }
+  to { transform: translate3d(-50%, -50%, 0) rotate(351deg); opacity: 0.18; }
 `
 
-const orbitThree = keyframes`
-  from { transform: rotate(240deg) translateX(58px) rotate(-240deg); }
-  to { transform: rotate(600deg) translateX(58px) rotate(-600deg); }
+const lightPass = keyframes`
+  0%, 18% { transform: translate3d(-160%, 0, 0) skewX(-18deg); opacity: 0; }
+  36% { opacity: 0.24; }
+  58%, 100% { transform: translate3d(210%, 0, 0) skewX(-18deg); opacity: 0; }
+`
+
+const particleFloat = keyframes`
+  0%, 100% { transform: translate3d(0, 3px, 0) scale(0.8); opacity: 0.22; }
+  50% { transform: translate3d(7px, -7px, 0) scale(1.12); opacity: 0.68; }
 `
 
 const Frame = styled.div`
@@ -32,138 +37,121 @@ const Frame = styled.div`
   width: min(100%, 390px);
   height: 176px;
   justify-self: end;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 720px;
+  overflow: hidden;
+  isolation: isolate;
+  contain: paint;
   pointer-events: none;
-  contain: layout paint;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
 
   @media (max-width: ${liqV3.mobileBreak}) {
     width: min(100%, 330px);
     height: 144px;
     align-self: center;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none !important;
-    }
-  }
 `
 
-const Depth = styled.div`
+const Artwork = styled.img`
   position: absolute;
-  width: 230px;
-  height: 130px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(244, 196, 48, 0.18) 0%, rgba(244, 196, 48, 0.04) 48%, transparent 72%);
-`
-
-const Ring = styled.div<{ $small?: boolean }>`
-  position: absolute;
-  width: ${({ $small }) => ($small ? '184px' : '260px')};
-  height: ${({ $small }) => ($small ? '86px' : '124px')};
-  border: 1px solid ${({ $small }) => ($small ? 'rgba(34, 197, 94, 0.16)' : 'rgba(244, 196, 48, 0.22)')};
-  border-radius: 50%;
-  transform: rotate(-9deg);
-
-  @media (max-width: ${liqV3.mobileBreak}) {
-    width: ${({ $small }) => ($small ? '154px' : '220px')};
-    height: ${({ $small }) => ($small ? '72px' : '104px')};
-  }
-`
-
-const Core = styled.div`
-  position: relative;
-  z-index: 3;
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  transform-style: preserve-3d;
-  animation: ${floatCore} 5.6s ease-in-out infinite;
-  box-shadow:
-    0 0 0 1px rgba(244, 196, 48, 0.36),
-    9px 12px 0 -5px rgba(98, 73, 4, 0.42),
-    0 20px 34px rgba(0, 0, 0, 0.48),
-    0 0 34px rgba(244, 196, 48, 0.2);
-
-  img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-
-  @media (max-width: ${liqV3.mobileBreak}) {
-    width: 72px;
-    height: 72px;
-  }
-`
-
-const Orbiter = styled.div<{ $asset: 'bnb' | 'usdt' | 'usdc' }>`
-  position: absolute;
-  z-index: 4;
-  top: 50%;
-  left: 50%;
-  width: ${({ $asset }) => ($asset === 'bnb' ? '38px' : '34px')};
-  height: ${({ $asset }) => ($asset === 'bnb' ? '38px' : '34px')};
-  margin: ${({ $asset }) => ($asset === 'bnb' ? '-19px 0 0 -19px' : '-17px 0 0 -17px')};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #101010;
-  border: 1px solid
-    ${({ $asset }) => ($asset === 'bnb' ? 'rgba(243, 186, 47, 0.55)' : 'rgba(38, 161, 123, 0.48)')};
-  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.42);
-  animation: ${({ $asset }) => ($asset === 'bnb' ? orbitOne : $asset === 'usdt' ? orbitTwo : orbitThree)}
-    ${({ $asset }) => ($asset === 'bnb' ? '12s' : $asset === 'usdt' ? '16s' : '10s')} linear infinite;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  display: block;
+  object-fit: cover;
+  object-position: 64% center;
+  transform-origin: 64% 50%;
+  animation: ${cinematicDrift} 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;
 
-  img {
-    width: ${({ $asset }) => ($asset === 'bnb' ? '32px' : '28px')};
-    height: ${({ $asset }) => ($asset === 'bnb' ? '32px' : '28px')};
-    display: block;
-    object-fit: cover;
-    border-radius: 50%;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transform: scale(1.055);
+    will-change: auto;
   }
 `
 
-const Caption = styled.span`
+const DepthVeil = styled.div`
   position: absolute;
-  right: 10px;
-  bottom: 2px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.34);
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(3, 3, 3, 0.3), rgba(3, 3, 3, 0.02) 46%, rgba(3, 3, 3, 0.08)),
+    radial-gradient(circle at 66% 52%, rgba(244, 196, 48, 0.08), transparent 44%);
+`
 
-  @media (max-width: ${liqV3.mobileBreak}) {
-    display: none;
-  }
+const OrbitalGlow = styled.div`
+  position: absolute;
+  left: 66%;
+  top: 53%;
+  width: 74%;
+  height: 54%;
+  z-index: 2;
+  border: 1px solid rgba(255, 211, 77, 0.17);
+  border-left-color: rgba(255, 255, 255, 0.38);
+  border-right-color: rgba(244, 196, 48, 0.03);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 7px rgba(244, 196, 48, 0.15));
+  animation: ${orbitTurn} 21s linear infinite;
+  will-change: transform, opacity;
+`
+
+const Glow = styled.div`
+  position: absolute;
+  right: 7%;
+  bottom: 4%;
+  width: 60%;
+  height: 60%;
+  z-index: 2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 196, 48, 0.17), transparent 68%);
+  filter: blur(10px);
+  animation: ${glowBreath} 7.2s ease-in-out infinite;
+  will-change: transform, opacity;
+`
+
+const LightSweep = styled.div`
+  position: absolute;
+  top: -22%;
+  bottom: -22%;
+  left: 34%;
+  width: 13%;
+  z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255, 245, 204, 0.42), transparent);
+  filter: blur(9px);
+  animation: ${lightPass} 10.5s ease-in-out infinite;
+  will-change: transform, opacity;
+`
+
+const Particle = styled.span<{ $left: string; $top: string; $delay: string; $size: string }>`
+  position: absolute;
+  left: ${({ $left }) => $left};
+  top: ${({ $top }) => $top};
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  z-index: 4;
+  border-radius: 50%;
+  background: #ffe18a;
+  box-shadow: 0 0 9px rgba(244, 196, 48, 0.62);
+  animation: ${particleFloat} 5.8s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay};
+  will-change: transform, opacity;
 `
 
 export const LiquidityHeroArtwork: React.FC = () => (
-  <Frame data-testid="liquidity-hero-artwork" data-animation-cost="transform-only" aria-hidden="true">
-    <Depth />
-    <Ring />
-    <Ring $small />
-    <Core>
-      <img src={MELEGA_LOGO_URI} alt="" draggable={false} width={82} height={82} />
-    </Core>
-    <Orbiter $asset="bnb">
-      <img src={BNB_LOGO} alt="" draggable={false} width={32} height={32} />
-    </Orbiter>
-    <Orbiter $asset="usdt">
-      <img src={USDT_LOGO} alt="" draggable={false} width={28} height={28} />
-    </Orbiter>
-    <Orbiter $asset="usdc">
-      <img src={USDC_LOGO} alt="" draggable={false} width={28} height={28} />
-    </Orbiter>
-    <Caption>Liquidity in motion</Caption>
+  <Frame
+    data-testid="liquidity-hero-artwork"
+    data-liquidity-hero-approved-artwork="marco-multichain-orbit"
+    data-liquidity-hero-animated="true"
+    data-animation-cost="transform-only"
+    aria-hidden="true"
+  >
+    <Artwork src={LIQUIDITY_HERO_ARTWORK} alt="" width={1672} height={941} decoding="async" fetchPriority="high" />
+    <DepthVeil />
+    <Glow />
+    <OrbitalGlow />
+    <LightSweep />
+    <Particle $left="18%" $top="25%" $delay="-1.2s" $size="3px" />
+    <Particle $left="85%" $top="19%" $delay="-3.7s" $size="4px" />
+    <Particle $left="77%" $top="79%" $delay="-2.4s" $size="3px" />
   </Frame>
 )
 

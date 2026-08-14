@@ -10,5 +10,7 @@ export type NextPageWithLayout = NextPage & {
   mp?: boolean
   chains?: number[]
   isShowScrollToTopButton?: true
+  /** Client-updating pages that must not hydrate inside a dehydrated Suspense boundary. */
+  disablePageSuspense?: true
   Meta?: React.FC<any>
 }

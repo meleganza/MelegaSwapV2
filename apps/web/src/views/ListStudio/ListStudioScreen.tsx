@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { startTransition, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
@@ -61,13 +61,22 @@ const ModalSurface = styled.div`
 
 export const ListStudioScreen: React.FC = () => {
   const { listIntent } = useListIntent()
+  const [clientReady, setClientReady] = useState(false)
+
+  useEffect(() => {
+    // The workspace is client-only. Opening it from a query-string intent while
+    // Next is still hydrating used to update the dynamic Suspense boundary
+    // synchronously and crash the Claim Page. Mount it after hydration instead.
+    startTransition(() => setClientReady(true))
+  }, [])
+
   return (
     <Root data-list-studio-screen data-ux-rebuild-list data-list-concept="list-your-project">
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListContractFirstFunnel />
       </Content>
-      {listIntent ? (
+      {clientReady && listIntent ? (
         <ModalBackdrop data-testid="list-adaptive-modal" role="presentation">
           <ModalSurface role="dialog" aria-modal="true" aria-label="Melega DEX listing flow">
             <ListWorkspace />

@@ -8,9 +8,8 @@ import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import { WBNB } from '@pancakeswap/sdk'
+import { getCanonicalTokenRegistry, type CanonicalTokenRecord } from 'lib/canonical-token-registry'
 import {
-  TOKEN_OPTIONS,
   computeEstimatedApr,
   computeHealthScore,
   computeRewardConsumptionPct,
@@ -26,10 +25,22 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-const WIZARD_TOKEN_META: Record<string, { address?: string; chainId: number }> = {
-  MARCO: { address: MARCO_BSC_ADDRESS, chainId: 56 },
-  BNB: { address: WBNB[56].address, chainId: 56 },
-}
+type PoolTokenOption = Pick<CanonicalTokenRecord, 'address' | 'chainId' | 'name' | 'logo'> & { symbol: string }
+
+const POOL_TOKEN_OPTIONS: PoolTokenOption[] = getCanonicalTokenRegistry()
+  .filter((token) => token.chainId === 56 && Boolean(token.address))
+  .map((token) => ({
+    address: token.address,
+    chainId: token.chainId,
+    name: token.name,
+    logo: token.logo,
+    symbol: token.address.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c' ? 'BNB' : token.symbol,
+  }))
+  .sort((a, b) => {
+    if (a.address.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()) return -1
+    if (b.address.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()) return 1
+    return a.symbol.localeCompare(b.symbol)
+  })
 
 const Card = styled.section`
   width: 100%;
@@ -827,34 +838,47 @@ const FooterNote = styled.p`
 type TokenSelectorProps = {
   label: string
   value: string
-  onChange: (v: string) => void
+  selectedAddress: string
+  onChange: (token: PoolTokenOption) => void
 }
 
-const TokenAvatar: React.FC<{ symbol: string }> = ({ symbol }) => {
-  const meta = WIZARD_TOKEN_META[symbol]
+const TokenAvatar: React.FC<{ token: PoolTokenOption }> = ({ token }) => {
   return (
     <MelegaTokenAvatar
-      name={symbol}
-      symbol={symbol}
+      name={token.name}
+      symbol={token.symbol}
       size={32}
-      address={meta?.address}
-      chainId={meta?.chainId ?? 56}
+      address={token.address}
+      chainId={token.chainId}
+      logoURI={token.logo}
       radius="circle"
     />
   )
 }
 
-const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange }) => {
+const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, selectedAddress, onChange }) => {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const wrapRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null)
 
-  const filtered = useMemo(
-    () => TOKEN_OPTIONS.filter((t) => t.toLowerCase().includes(query.trim().toLowerCase())),
-    [query],
+  const selected = useMemo(
+    () =>
+      POOL_TOKEN_OPTIONS.find((token) => token.address.toLowerCase() === selectedAddress.toLowerCase()) ??
+      POOL_TOKEN_OPTIONS.find((token) => token.symbol === value),
+    [selectedAddress, value],
   )
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    return POOL_TOKEN_OPTIONS.filter(
+      (token) =>
+        !needle ||
+        token.symbol.toLowerCase().includes(needle) ||
+        token.name.toLowerCase().includes(needle) ||
+        token.address.toLowerCase().includes(needle),
+    )
+  }, [query])
 
   const syncCoords = useCallback(() => {
     const el = wrapRef.current
@@ -915,7 +939,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
           data-ps-create-token-select
           onClick={() => setOpen((v) => !v)}
         >
-          <TokenAvatar symbol={value} />
+          {selected ? <TokenAvatar token={selected} /> : null}
           <span>{value || 'Select token'}</span>
         </SelectBtn>
         {open && coords && typeof document !== 'undefined'
@@ -939,18 +963,19 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
                 <DropdownList>
                   {filtered.map((token) => (
                     <DropdownItem
-                      key={token}
+                      key={token.address}
                       type="button"
                       role="option"
-                      aria-selected={token === value}
+                      aria-selected={token.address.toLowerCase() === selectedAddress.toLowerCase()}
                       onClick={() => {
                         onChange(token)
                         setOpen(false)
                         setQuery('')
                       }}
                     >
-                      <TokenAvatar symbol={token} />
-                      {token}
+                      <TokenAvatar token={token} />
+                      <span>{token.symbol}</span>
+                      <small>{shortAddr(token.address)}</small>
                     </DropdownItem>
                   ))}
                 </DropdownList>
@@ -1186,12 +1211,16 @@ export const CreatePoolCta: React.FC = () => {
                           <TokenSelector
                             label="Reward Token"
                             value={state.rewardToken}
-                            onChange={(rewardToken) => patch({ rewardToken })}
+                            selectedAddress={state.rewardTokenAddress}
+                            onChange={(token) =>
+                              patch({ rewardToken: token.symbol, rewardTokenAddress: token.address })
+                            }
                           />
                           <TokenSelector
                             label="Stake Token"
                             value={state.stakeToken}
-                            onChange={(stakeToken) => patch({ stakeToken })}
+                            selectedAddress={state.stakeTokenAddress}
+                            onChange={(token) => patch({ stakeToken: token.symbol, stakeTokenAddress: token.address })}
                           />
                         </FieldsGrid>
                         <StepActions data-ps-wizard-actions>
@@ -1234,7 +1263,9 @@ export const CreatePoolCta: React.FC = () => {
                               Daily Reward Emission
                             </Label>
                             <ReadOnlyValue aria-label="Daily Reward Emission in reward tokens per day">
-                              {state.dailyRewards ? `${state.dailyRewards} ${state.rewardToken} / day` : 'Budget ÷ duration'}
+                              {state.dailyRewards
+                                ? `${state.dailyRewards} ${state.rewardToken} / day`
+                                : 'Budget ÷ duration'}
                             </ReadOnlyValue>
                           </Field>
                           <Field data-ps-create-field>
@@ -1364,7 +1395,11 @@ export const CreatePoolCta: React.FC = () => {
                           </GhostBtn>
                         </StepActions>
                         <ReadinessNote data-ps-create-pool-readiness-note>
-                          Final deployment requires the Melega deployer. No Build Studio handoff.
+                          {!state.rewardToken
+                            ? 'Select the reward token before continuing.'
+                            : state.rewardToken === 'MARCO'
+                            ? 'MARCO reward pools require the official Melega deployer. The pool becomes visible only after its reward balance is confirmed on-chain.'
+                            : 'The current production factory is owner-gated and has no public deployment adapter. The pool remains blocked and hidden until deployment and reward funding are both confirmed on-chain.'}
                         </ReadinessNote>
                       </>
                     ) : null}

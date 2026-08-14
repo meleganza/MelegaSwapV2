@@ -5,6 +5,7 @@
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
+import { CanonicalHeroEyebrow } from 'views/shared/CanonicalHeroEyebrow'
 import { PoolsHeroArtwork } from './PoolsHeroArtwork'
 import { PoolsHeroFeaturedCompact } from './PoolsHeroFeaturedCompact'
 import { POOLS_HERO_COPY, poolsHero } from './poolsHeroTokens'
@@ -13,31 +14,38 @@ const Module = styled.section`
   position: relative;
   width: 100%;
   max-width: ${poolsHero.contentMax};
-  height: auto;
-  min-height: ${poolsHero.heroH};
+  height: 216px;
   min-width: 0;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
   font-family: ${typography.fontFamily.body};
   color: ${poolsHero.titleColor};
-  background:
-    radial-gradient(ellipse 42% 80% at 52% 55%, rgba(244, 196, 48, 0.07) 0%, rgba(8, 8, 8, 0) 70%),
-    radial-gradient(ellipse 36% 70% at 18% 40%, rgba(59, 130, 246, 0.05) 0%, rgba(8, 8, 8, 0) 68%),
-    transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
+  padding: 20px;
+  background: radial-gradient(circle at 18% 30%, rgba(244, 196, 48, 0.12), transparent 34%),
+    linear-gradient(105deg, #111006 0%, #090909 43%, #060606 100%);
+  border: 1px solid rgba(221, 185, 47, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(244, 196, 48, 0.2) 0 1px, transparent 1.4px);
+    background-size: 52px 52px;
+    opacity: 0.12;
+  }
 
   @media (max-width: ${poolsHero.tabletBreak}) {
-    height: auto;
-    max-height: none;
+    padding: 16px;
   }
 
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: 100%;
     max-width: none;
-    height: auto;
-    max-height: ${poolsHero.mobileHeroMaxH};
+    height: 224px;
+    max-height: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -49,27 +57,27 @@ const Module = styled.section`
 `
 
 const Inner = styled.div`
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(280px, 1.2fr) minmax(260px, 1.3fr) minmax(280px, 1fr);
-  column-gap: ${poolsHero.columnGap};
+  grid-template-columns: minmax(270px, 0.34fr) minmax(300px, 0.39fr) minmax(240px, 0.27fr);
+  column-gap: 16px;
   align-items: center;
   min-width: 0;
   box-sizing: border-box;
 
   @media (max-width: ${poolsHero.tabletBreak}) {
-    height: auto;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 24px;
-    row-gap: 20px;
+    height: 100%;
+    grid-template-columns: minmax(240px, 0.36fr) minmax(0, 0.37fr) minmax(0, 0.27fr);
+    column-gap: 10px;
   }
 
   @media (max-width: ${poolsHero.mobileBreak}) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
+    gap: 10px;
   }
 `
 
@@ -92,30 +100,39 @@ const Left = styled.div`
 `
 
 const Title = styled.h1`
-  margin: 0;
-  font-size: ${poolsHero.titleSize};
-  line-height: ${poolsHero.titleLine};
-  font-weight: ${poolsHero.titleWeight};
-  letter-spacing: ${poolsHero.titleTracking};
+  margin: 6px 0 0;
+  font-size: 46px;
+  line-height: 52px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
   color: ${poolsHero.titleColor};
 
   @media (max-width: ${poolsHero.mobileBreak}) {
-    font-size: ${poolsHero.mobileTitleSize};
-    line-height: ${poolsHero.mobileTitleLine};
+    font-size: 34px;
+    line-height: 40px;
   }
 `
 
 const Description = styled.p`
-  margin: ${poolsHero.gapAfterTitle} 0 0;
+  margin: 8px 0 0;
   max-width: ${poolsHero.descMaxW};
-  font-size: ${poolsHero.descSize};
-  line-height: ${poolsHero.descLine};
+  font-size: 14px;
+  line-height: 21px;
   font-weight: 400;
   color: ${poolsHero.descColor};
+
+  @media (max-width: ${poolsHero.mobileBreak}) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 18px;
+  }
 `
 
 const Actions = styled.div`
-  margin-top: ${poolsHero.gapBeforeActions};
+  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
   gap: ${poolsHero.ctaGap};
@@ -123,9 +140,10 @@ const Actions = styled.div`
 
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: 100%;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
   }
 `
 
@@ -156,14 +174,19 @@ const PrimaryCta = styled.a`
   }
 
   @media (max-width: ${poolsHero.mobileBreak}) {
-    width: 100%;
-    min-width: 0;
+    width: auto;
+    min-width: 104px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 11px;
   }
 `
 
 const ArtCol = styled.div`
   width: 100%;
   max-width: ${poolsHero.artworkW};
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +194,6 @@ const ArtCol = styled.div`
 
   @media (max-width: ${poolsHero.tabletBreak}) {
     width: 100%;
-    grid-column: 2;
   }
 
   @media (max-width: ${poolsHero.mobileBreak}) {
@@ -183,6 +205,7 @@ const ArtCol = styled.div`
 const TrustCol = styled.div`
   width: 100%;
   max-width: ${poolsHero.trustW};
+  max-height: 176px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -192,13 +215,10 @@ const TrustCol = styled.div`
 
   @media (max-width: ${poolsHero.tabletBreak}) {
     width: 100%;
-    grid-column: 1 / -1;
-    justify-content: stretch;
   }
 
   @media (max-width: ${poolsHero.mobileBreak}) {
-    width: 100%;
-    justify-content: center;
+    display: none;
   }
 `
 
@@ -207,16 +227,12 @@ function scrollToCreatePool() {
   const el = document.getElementById('create-pool')
   if (!el) return false
   const reduce =
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
   return true
 }
 
-export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = ({
-  onRequestCreatePool,
-}) => {
+export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = ({ onRequestCreatePool }) => {
   const onCreatePool = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (onRequestCreatePool) {
@@ -236,19 +252,17 @@ export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = (
       data-testid="pools-hero-module"
       data-pools-module="001"
       data-pools-architecture="000"
-      data-pixel-pools-hero="1376x260"
+      data-pixel-pools-hero="canonical-216"
+      data-canonical-hero-height="216"
       aria-labelledby="pools-hero-title"
     >
       <Inner data-testid="pools-hero-inner">
         <Left data-testid="pools-hero-left">
+          <CanonicalHeroEyebrow icon="pools">Melega DEX Earn</CanonicalHeroEyebrow>
           <Title id="pools-hero-title">{POOLS_HERO_COPY.title}</Title>
           <Description>{POOLS_HERO_COPY.description}</Description>
           <Actions>
-            <PrimaryCta
-              href={poolsHero.createPoolHref}
-              onClick={onCreatePool}
-              data-testid="pools-hero-create-pool"
-            >
+            <PrimaryCta href={poolsHero.createPoolHref} onClick={onCreatePool} data-testid="pools-hero-create-pool">
               {POOLS_HERO_COPY.primaryCta}
             </PrimaryCta>
           </Actions>
