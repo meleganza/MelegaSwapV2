@@ -9,9 +9,9 @@ import { poolsHero } from './poolsHeroTokens'
 
 const POOLS_HERO_ARTWORK = '/images/pools/pools-hero-marco-3d.webp'
 
-const cinematicDrift = keyframes`
-  0%, 100% { transform: scale(1.05) translate3d(-0.8%, 0.3%, 0); }
-  50% { transform: scale(1.085) translate3d(1.2%, -0.8%, 0); }
+const poolSway = keyframes`
+  0%, 100% { transform: scale(1.12) translate3d(-0.8%, 1%, 0) rotate(-0.35deg); }
+  50% { transform: scale(1.16) translate3d(0.8%, -1%, 0) rotate(0.35deg); }
 `
 
 const glowBreath = keyframes`
@@ -19,10 +19,9 @@ const glowBreath = keyframes`
   50% { opacity: 0.65; transform: translate3d(-1.5%, -1%, 0) scale(1.06); }
 `
 
-const orbitTurn = keyframes`
-  from { transform: translate3d(-50%, -50%, 0) rotate(-8deg); opacity: 0.2; }
-  50% { opacity: 0.46; }
-  to { transform: translate3d(-50%, -50%, 0) rotate(352deg); opacity: 0.2; }
+const ringPulse = keyframes`
+  0%, 100% { transform: translate3d(-50%, -50%, 0) scale(0.92); opacity: 0.16; }
+  50% { transform: translate3d(-50%, -50%, 0) scale(1.08); opacity: 0.42; }
 `
 
 const lightPass = keyframes`
@@ -37,8 +36,8 @@ const particleFloat = keyframes`
 `
 
 const Frame = styled.div`
-  width: ${poolsHero.artworkBoxW};
-  height: ${poolsHero.artworkBoxH};
+  width: min(100%, 520px);
+  height: 176px;
   max-width: 100%;
   position: relative;
   flex: 0 0 auto;
@@ -47,30 +46,30 @@ const Frame = styled.div`
   contain: paint;
   pointer-events: none;
   /* Feather the raster into the existing hero instead of rendering a framed card. */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 84% 86% at 55% 50%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
+  mask-image: radial-gradient(ellipse 84% 86% at 55% 50%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
 
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: min(100%, ${poolsHero.mobileArtworkMaxW});
-    height: ${poolsHero.mobileArtworkMaxH};
+    height: 154px;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: -2%;
-  width: 104%;
-  height: 104%;
+  inset: -9%;
+  width: 118%;
+  height: 118%;
   display: block;
   object-fit: cover;
-  object-position: 62% center;
-  transform-origin: 62% 50%;
-  animation: ${cinematicDrift} 13s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  object-position: 65% center;
+  transform-origin: 55% 50%;
+  animation: ${poolSway} 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    transform: scale(1.05);
+    transform: scale(1.12);
     will-change: auto;
   }
 `
@@ -85,17 +84,17 @@ const DepthVeil = styled.div`
 
 const OrbitalGlow = styled.div`
   position: absolute;
-  left: 64%;
-  top: 52%;
-  width: 72%;
-  height: 52%;
+  left: 55%;
+  top: 51%;
+  width: 58%;
+  height: 68%;
   z-index: 2;
   border: 1px solid rgba(255, 211, 77, 0.18);
   border-left-color: rgba(255, 255, 255, 0.4);
   border-right-color: rgba(244, 196, 48, 0.04);
   border-radius: 50%;
   filter: drop-shadow(0 0 7px rgba(244, 196, 48, 0.16));
-  animation: ${orbitTurn} 19s linear infinite;
+  animation: ${ringPulse} 7s ease-in-out infinite;
   will-change: transform, opacity;
 
   @media (prefers-reduced-motion: reduce) {

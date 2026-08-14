@@ -14,7 +14,7 @@ const Shell = styled.header`
   height: 216px;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: minmax(300px, 0.3fr) minmax(0, 0.7fr);
+  grid-template-columns: minmax(360px, 0.34fr) minmax(0, 0.66fr);
   gap: 20px;
   align-items: stretch;
   padding: 20px;
@@ -36,7 +36,7 @@ const Shell = styled.header`
   }
 
   @media (max-width: 1099px) {
-    grid-template-columns: minmax(270px, 0.34fr) minmax(0, 0.66fr);
+    grid-template-columns: minmax(290px, 0.36fr) minmax(0, 0.64fr);
     gap: 14px;
     padding: 16px;
   }
@@ -55,7 +55,7 @@ const Left = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 12px;
+  padding: 0 0 0 12px;
 
   @media (max-width: 767px) {
     padding-left: 2px;
@@ -109,16 +109,17 @@ const Actions = styled.div`
   }
 
   @media (max-width: 767px) {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: nowrap;
     gap: 5px;
     margin-top: 8px;
 
     a {
-      width: 100%;
+      width: auto;
+      flex: 1 1 0;
       height: 28px;
-      padding: 0 6px;
-      font-size: 10px;
+      padding: 0 4px;
+      font-size: 9px;
       white-space: nowrap;
     }
   }
@@ -129,13 +130,15 @@ const Featured = styled.div`
   z-index: 1;
   min-width: 0;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  align-self: center;
+  height: 156px;
   box-sizing: border-box;
   padding: 4px 0;
 
   & > section {
     width: 100%;
-    height: 100%;
+    height: 156px;
     min-height: 0;
     padding: 0;
     margin: 0;
@@ -143,7 +146,7 @@ const Featured = styled.div`
   }
 
   & > section > div {
-    height: 100%;
+    height: 156px;
     min-height: 0;
     grid-auto-rows: minmax(0, 1fr);
   }
@@ -152,8 +155,8 @@ const Featured = styled.div`
     height: 100%;
     max-height: 100%;
     min-height: 0;
-    padding: 8px 10px;
-    gap: 3px;
+    padding: 6px 8px;
+    gap: 2px;
   }
 
   & article > :nth-child(3) {
@@ -173,11 +176,23 @@ const Featured = styled.div`
   }
 
   @media (max-width: 1099px) {
+    height: 150px;
     padding: 3px 0;
+
+    & > section,
+    & > section > div {
+      height: 150px;
+    }
   }
 
   @media (max-width: 767px) {
+    height: 148px;
     padding: 2px 0;
+
+    & > section,
+    & > section > div {
+      height: 148px;
+    }
   }
 `
 

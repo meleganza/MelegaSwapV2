@@ -7,11 +7,11 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { farmsHero } from './farmsHeroTokens'
 
-const FARMS_HERO_ARTWORK = '/images/yield/marco-multichain-orbit-hero.webp'
+const FARMS_HERO_ARTWORK = '/images/yield/marco-farms-terraced-yield-hero.jpg'
 
-const cinematicDrift = keyframes`
-  0%, 100% { transform: scale(1.055) translate3d(-0.7%, 0.4%, 0); }
-  50% { transform: scale(1.09) translate3d(1.1%, -0.7%, 0); }
+const harvestRise = keyframes`
+  0%, 100% { transform: scale(1.02) translate3d(0, 1.8%, 0); }
+  50% { transform: scale(1.055) translate3d(0, -1.8%, 0); }
 `
 
 const glowBreath = keyframes`
@@ -19,10 +19,10 @@ const glowBreath = keyframes`
   50% { opacity: 0.62; transform: translate3d(-1.4%, -0.8%, 0) scale(1.06); }
 `
 
-const orbitTurn = keyframes`
-  from { transform: translate3d(-50%, -50%, 0) rotate(-9deg); opacity: 0.18; }
-  50% { opacity: 0.42; }
-  to { transform: translate3d(-50%, -50%, 0) rotate(351deg); opacity: 0.18; }
+const rewardRise = keyframes`
+  0% { transform: translate3d(0, 16px, 0) scaleY(0.75); opacity: 0; }
+  35% { opacity: 0.45; }
+  100% { transform: translate3d(0, -30px, 0) scaleY(1.18); opacity: 0; }
 `
 
 const lightPass = keyframes`
@@ -37,8 +37,8 @@ const particleFloat = keyframes`
 `
 
 const Frame = styled.div`
-  width: ${farmsHero.artworkBoxW};
-  height: ${farmsHero.artworkBoxH};
+  width: min(100%, 540px);
+  height: 176px;
   max-width: 100%;
   position: relative;
   flex: 0 0 auto;
@@ -46,30 +46,30 @@ const Frame = styled.div`
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 86% 88% at 50% 54%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
+  mask-image: radial-gradient(ellipse 86% 88% at 50% 54%, #000 54%, rgba(0, 0, 0, 0.86) 72%, transparent 100%);
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: min(100%, ${farmsHero.mobileArtworkMaxW});
-    height: ${farmsHero.mobileArtworkMaxH};
+    height: 154px;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: -2%;
-  width: 104%;
-  height: 104%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: block;
-  object-fit: cover;
-  object-position: 64% center;
-  transform-origin: 64% 50%;
-  animation: ${cinematicDrift} 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  object-fit: contain;
+  object-position: center;
+  transform-origin: 50% 56%;
+  animation: ${harvestRise} 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    transform: scale(1.055);
+    transform: scale(1.02);
     will-change: auto;
   }
 `
@@ -79,31 +79,29 @@ const DepthVeil = styled.div`
   inset: 0;
   z-index: 1;
   background: linear-gradient(90deg, rgba(3, 3, 3, 0.3), rgba(3, 3, 3, 0.02) 46%, rgba(3, 3, 3, 0.08)),
-    radial-gradient(circle at 66% 52%, rgba(244, 196, 48, 0.08), transparent 44%);
+    radial-gradient(circle at 50% 54%, rgba(244, 196, 48, 0.1), transparent 48%);
 `
 
-const OrbitalGlow = styled.div`
+const RewardColumn = styled.div`
   position: absolute;
-  left: 66%;
-  top: 53%;
-  width: 74%;
-  height: 54%;
+  left: 44%;
+  top: 8%;
+  width: 12%;
+  height: 58%;
   z-index: 2;
-  border: 1px solid rgba(255, 211, 77, 0.17);
-  border-left-color: rgba(255, 255, 255, 0.38);
-  border-right-color: rgba(244, 196, 48, 0.03);
-  border-radius: 50%;
-  filter: drop-shadow(0 0 7px rgba(244, 196, 48, 0.15));
-  animation: ${orbitTurn} 21s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 224, 126, 0.28), transparent);
+  filter: blur(6px);
+  animation: ${rewardRise} 4.8s ease-out infinite;
   will-change: transform, opacity;
 `
 
 const Glow = styled.div`
   position: absolute;
-  right: 7%;
-  bottom: 4%;
+  left: 20%;
+  right: 20%;
+  bottom: 0;
   width: 60%;
-  height: 60%;
+  height: 48%;
   z-index: 2;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(244, 196, 48, 0.17), transparent 68%);
@@ -143,15 +141,15 @@ const Particle = styled.span<{ $left: string; $top: string; $delay: string; $siz
 export const FarmsHeroArtwork: React.FC = () => (
   <Frame
     data-testid="farms-hero-artwork"
-    data-farms-hero-approved-artwork="marco-multichain-orbit"
+    data-farms-hero-approved-artwork="marco-terraced-yield"
     data-farms-hero-animated="true"
     data-animation-cost="transform-only"
     aria-hidden="true"
   >
-    <Artwork src={FARMS_HERO_ARTWORK} alt="" width={1672} height={941} decoding="async" fetchPriority="high" />
+    <Artwork src={FARMS_HERO_ARTWORK} alt="" width={1919} height={820} decoding="async" fetchPriority="high" />
     <DepthVeil />
     <Glow />
-    <OrbitalGlow />
+    <RewardColumn />
     <LightSweep />
     <Particle $left="18%" $top="25%" $delay="-1.2s" $size="3px" />
     <Particle $left="85%" $top="19%" $delay="-3.7s" $size="4px" />

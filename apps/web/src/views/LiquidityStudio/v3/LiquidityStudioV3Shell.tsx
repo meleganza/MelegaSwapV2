@@ -630,7 +630,7 @@ const LiquidityV3Body: React.FC = () => {
     if (router.asPath.includes('view=') && view === undefined) return
     hydratedRef.current = true
 
-    let target = 'liquidity-positions'
+    let target: string | null = null
     if (view === 'building') {
       setMode('Liquidity Building', { syncUrl: false })
       target = 'liquidity-builder'
@@ -642,11 +642,12 @@ const LiquidityV3Body: React.FC = () => {
       target = 'liquidity-explore'
     } else {
       setMode('My Positions', { syncUrl: false })
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }))
     }
     if ((view === 'add' || view === 'remove') && (positionsPhase === 'connecting' || positionsPhase === 'fetching')) {
       deferredDeepLinkScrollRef.current = target
     }
-    scrollToSection(target)
+    if (target) scrollToSection(target)
   }, [router.isReady, router.query.view, router.asPath, setMode, positions.length, positionsPhase, scrollToSection])
 
   // Wallet positions arrive after the first paint and insert My Liquidity

@@ -150,11 +150,12 @@ const Available = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  max-width: 48%;
-  justify-content: flex-end;
+  max-width: 100%;
+  justify-content: flex-start;
+  margin-top: 12px;
 
   @media (max-width: 700px) {
-    max-width: 46%;
+    max-width: 100%;
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
@@ -526,12 +527,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             <CanonicalHeroEyebrow icon="bridge">Melega DEX Bridge</CanonicalHeroEyebrow>
             <h1>MARCO Bridge</h1>
             <p>Move MARCO across certified networks. One route, one tracked delivery.</p>
+            <Available aria-label="Available on">
+              {networkEntries.map((network) => (
+                <NetworkPill key={network.id}>{network.label}</NetworkPill>
+              ))}
+            </Available>
           </HeroCopy>
-          <Available aria-label="Available on">
-            {networkEntries.map((network) => (
-              <NetworkPill key={network.id}>{network.label}</NetworkPill>
-            ))}
-          </Available>
         </Hero>
         <Workspace $embedded={embedded}>
           <Card $embedded={embedded}>

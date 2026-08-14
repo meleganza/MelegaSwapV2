@@ -5,9 +5,9 @@ import { liqV3 } from './liquidityV3Tokens'
 
 const LIQUIDITY_HERO_ARTWORK = '/images/yield/marco-multichain-orbit-hero.webp'
 
-const cinematicDrift = keyframes`
-  0%, 100% { transform: scale(1.055) translate3d(-0.7%, 0.4%, 0); }
-  50% { transform: scale(1.09) translate3d(1.1%, -0.7%, 0); }
+const depthParallax = keyframes`
+  0%, 100% { transform: scale(1.16) translate3d(-2.4%, 0.8%, 0); }
+  50% { transform: scale(1.22) translate3d(1.2%, -1.1%, 0); }
 `
 
 const glowBreath = keyframes`
@@ -34,38 +34,38 @@ const particleFloat = keyframes`
 
 const Frame = styled.div`
   position: relative;
-  width: min(100%, 390px);
-  height: 176px;
-  justify-self: end;
+  width: min(100%, 560px);
+  height: 190px;
+  justify-self: center;
   overflow: hidden;
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 82% 82% at 58% 50%, #000 52%, rgba(0, 0, 0, 0.88) 68%, transparent 100%);
+  mask-image: radial-gradient(ellipse 82% 82% at 58% 50%, #000 52%, rgba(0, 0, 0, 0.88) 68%, transparent 100%);
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    width: min(100%, 330px);
-    height: 144px;
+    width: min(100%, 360px);
+    height: 154px;
     align-self: center;
   }
 `
 
 const Artwork = styled.img`
   position: absolute;
-  inset: -2%;
-  width: 104%;
-  height: 104%;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
   display: block;
   object-fit: cover;
-  object-position: 64% center;
-  transform-origin: 64% 50%;
-  animation: ${cinematicDrift} 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  object-position: 68% center;
+  transform-origin: 58% 50%;
+  animation: ${depthParallax} 18s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    transform: scale(1.055);
+    transform: scale(1.16);
     will-change: auto;
   }
 `
