@@ -57,6 +57,21 @@ const Page = styled.div`
     padding: ${liqV3.pagePadY} 32px 48px;
     gap: 20px;
   }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    [data-testid='liquidity-add-metrics'] > div {
+      padding: 8px;
+    }
+
+    [data-testid='liquidity-add-metrics'] > div > div:last-child {
+      font-size: 12px;
+      line-height: 16px;
+      white-space: normal;
+      overflow: visible;
+      overflow-wrap: anywhere;
+      text-overflow: clip;
+    }
+  }
 `
 
 const Hero = styled.section<{ $builder?: boolean }>`

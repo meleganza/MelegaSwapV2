@@ -501,12 +501,23 @@ const DexCompactRow = styled.div`
     color: rgba(255, 255, 255, 0.82);
     font-size: 11px;
   }
+
+  @media (max-width: 1100px) {
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    overflow-x: visible;
+    white-space: normal;
+  }
 `
 const DexSourceLink = styled.a`
   margin-left: auto;
   color: ${pp.gold};
   text-decoration: none;
   font-weight: 800;
+
+  @media (max-width: 1100px) {
+    margin-left: 0;
+  }
 `
 const EconomyGrid = styled.div`
   display: grid;

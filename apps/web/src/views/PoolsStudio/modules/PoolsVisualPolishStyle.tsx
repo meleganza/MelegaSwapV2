@@ -130,6 +130,31 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
     color: rgba(245, 245, 245, 0.92);
   }
 
+  /* Mobile-only legibility: KPI labels and values must not be truncated. */
+  @media (max-width: 767px) {
+    ${S} [data-testid^='pools-kpi-'] {
+      height: auto;
+      min-height: 82px;
+    }
+
+    ${S} [data-testid^='pools-kpi-'] > div:first-child > div:last-child {
+      display: -webkit-box;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    ${S} [data-testid^='pools-kpi-'] > div:last-child > div {
+      font-size: 17px;
+      line-height: 21px;
+      white-space: normal;
+      overflow: visible;
+      overflow-wrap: anywhere;
+      text-overflow: clip;
+    }
+  }
+
   /* Reduced motion — kill polish transitions / live pulses inside studio */
   @media (prefers-reduced-motion: reduce) {
     ${S} *,
