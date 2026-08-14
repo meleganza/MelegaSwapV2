@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, startTransition, useContext, useEffect, useState } from 'react'
 import type useHomeTradeData from './useHomeTradeData'
 
 export type HomeCriticalData = Pick<
@@ -44,11 +44,13 @@ export const HomeTradeDataProvider: React.FC<React.PropsWithChildren> = ({ child
     }
 
     if (idleWindow.requestIdleCallback) {
-      const idleHandle = idleWindow.requestIdleCallback(() => setRuntimeReady(true), { timeout: 1800 })
+      const idleHandle = idleWindow.requestIdleCallback(() => startTransition(() => setRuntimeReady(true)), {
+        timeout: 600,
+      })
       return () => idleWindow.cancelIdleCallback?.(idleHandle)
     }
 
-    const timeoutHandle = window.setTimeout(() => setRuntimeReady(true), 500)
+    const timeoutHandle = window.setTimeout(() => startTransition(() => setRuntimeReady(true)), 150)
     return () => window.clearTimeout(timeoutHandle)
   }, [])
 

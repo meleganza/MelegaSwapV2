@@ -7,7 +7,7 @@ import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Script from 'next/script'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, startTransition, useEffect, useState } from 'react'
 import { DefaultSeo } from 'next-seo'
 import PageMeta from 'components/Layout/PageMeta'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -111,11 +111,13 @@ export default function FullMyApp(props: AppProps<{ initialReduxState: any }>) {
     }
 
     if (idleWindow.requestIdleCallback) {
-      const idleHandle = idleWindow.requestIdleCallback(() => setGlobalRuntimeReady(true), { timeout: 1200 })
+      const idleHandle = idleWindow.requestIdleCallback(() => startTransition(() => setGlobalRuntimeReady(true)), {
+        timeout: 1200,
+      })
       return () => idleWindow.cancelIdleCallback?.(idleHandle)
     }
 
-    const timeoutHandle = window.setTimeout(() => setGlobalRuntimeReady(true), 250)
+    const timeoutHandle = window.setTimeout(() => startTransition(() => setGlobalRuntimeReady(true)), 250)
     return () => window.clearTimeout(timeoutHandle)
   }, [])
 

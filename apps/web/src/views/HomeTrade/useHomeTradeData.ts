@@ -16,7 +16,7 @@ import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
 import { derivePoolLifecycle, reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
 import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
 import { useCurrentBlock } from 'state/block/hooks'
-import { usePriceCakeBusd, useFarms, usePollFarmsWithUserData } from 'state/farms/hooks'
+import { usePriceCakeBusd, useFarms } from 'state/farms/hooks'
 import { usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { FetchStatus } from 'config/constants/types'
@@ -197,7 +197,6 @@ export const useHomeTradeData = () => {
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { chainId } = useActiveChainId()
-  usePollFarmsWithUserData()
   const { data: allFarms = [] } = useFarms()
   const { pools: allPools = [] } = usePoolsWithVault(chainId)
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)

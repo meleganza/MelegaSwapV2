@@ -2,7 +2,7 @@
  * Single lightweight Top Movers consumer for ticker, Home and Projects.
  * Expensive indexer aggregation runs server-side once per cache window.
  */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, startTransition, useContext, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
@@ -81,21 +81,35 @@ function durableRankedAssets(entries: TopMoverEntry[]): TierRankedAsset[] {
 }
 
 export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const [clientReady, setClientReady] = useState(false)
   const [durableItems, setDurableItems] = useState<MelegaTickerItem[]>([])
   const [durableUpdatedAt, setDurableUpdatedAt] = useState<number>()
-  const { data, error } = useSWR<TopMoversApiPayload>('/api/market-data/top-movers', fetchTopMoversSnapshot, {
-    revalidateOnFocus: false,
-    refreshWhenHidden: false,
-    refreshInterval: 60_000,
-    dedupingInterval: 55_000,
-    keepPreviousData: true,
-  })
+  const { data, error } = useSWR<TopMoversApiPayload>(
+    clientReady ? '/api/market-data/top-movers' : null,
+    fetchTopMoversSnapshot,
+    {
+      revalidateOnFocus: false,
+      refreshWhenHidden: false,
+      refreshInterval: 60_000,
+      dedupingInterval: 55_000,
+      keepPreviousData: true,
+    },
+  )
+
+  useEffect(() => {
+    // The shell contains lazy Suspense boundaries. Starting SWR in a transition
+    // after the first client commit prevents a fast cache hit from forcing a
+    // boundary to abandon hydration and render the application a second time.
+    startTransition(() => setClientReady(true))
+  }, [])
 
   useEffect(() => {
     const durable = readDurableTrendingSnapshot()
     if (!durable?.items?.length) return
-    setDurableItems(durable.items)
-    setDurableUpdatedAt(durable.updatedAt)
+    startTransition(() => {
+      setDurableItems(durable.items)
+      setDurableUpdatedAt(durable.updatedAt)
+    })
   }, [])
 
   const liveItems = useMemo(() => (data?.snapshot ? entriesToTickerItems(data.snapshot.entries) : []), [data?.snapshot])
@@ -111,8 +125,10 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
     if (!liveItems.length || resolved.fromDurable || resolved.rejectedPartial) return
     if (itemsSignature(liveItems) === itemsSignature(durableItems)) return
     writeDurableTrendingSnapshot(liveItems)
-    setDurableItems(liveItems)
-    setDurableUpdatedAt(Date.now())
+    startTransition(() => {
+      setDurableItems(liveItems)
+      setDurableUpdatedAt(Date.now())
+    })
   }, [liveItems, durableItems, resolved.fromDurable, resolved.rejectedPartial])
 
   const value = useMemo((): TopMoversSnapshotContextValue => {

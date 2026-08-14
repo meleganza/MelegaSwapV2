@@ -54,6 +54,7 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
           alt={alt}
           width={size}
           height={size}
+          decoding="async"
           onError={handleError}
           style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
         />

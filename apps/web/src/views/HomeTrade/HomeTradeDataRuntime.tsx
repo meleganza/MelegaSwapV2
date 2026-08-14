@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { startTransition, useEffect, useMemo } from 'react'
 import useHomeTradeData from './useHomeTradeData'
 import type { HomeCriticalData } from './HomeTradeDataContext'
 
@@ -33,7 +33,9 @@ export const HomeTradeDataRuntime: React.FC<HomeTradeDataRuntimeProps> = ({ onDa
   )
 
   useEffect(() => {
-    onData(criticalData)
+    // Farm/pool and market refreshes must not pre-empt input or the global
+    // compositor-driven ticker. React may interrupt and resume this update.
+    startTransition(() => onData(criticalData))
   }, [criticalData, onData])
 
   return null

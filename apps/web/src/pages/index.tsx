@@ -6,5 +6,9 @@ function IndexPage() {
 }
 
 IndexPage.chains = CHAIN_IDS
+// Home joins live Top Movers and yield data immediately after the first client
+// commit. Hydrating it inside a dehydrated Suspense boundary can force React to
+// discard the server tree and render the full 800KB route twice.
+IndexPage.disablePageSuspense = true
 
 export default IndexPage
