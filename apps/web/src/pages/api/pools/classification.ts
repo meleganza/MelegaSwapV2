@@ -10,6 +10,9 @@ const handler: NextApiHandler = async (req, res) => {
 
   const currentBlock = await getBlockNumber()
   const { smartChef, meta } = await discoverSmartChefOnChain(currentBlock)
+  // This discovery performs several public RPC reads and changes only as new
+  // blocks/pools arrive, so short edge caching removes duplicate cold work.
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
   const rows = smartChef.pools.map((pool) => ({
     address: pool.contractAddress,
     callable: true,

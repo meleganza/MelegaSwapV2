@@ -8,6 +8,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
   const limit = Number(req.query.limit ?? 20)
   const events = await listProtocolActivityEvents(Number.isFinite(limit) ? limit : 20)
+  res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=60')
   return res.status(200).json({ status: 'ready', events, count: events.length })
 }
 

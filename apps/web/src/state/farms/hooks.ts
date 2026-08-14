@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { SLOW_INTERVAL } from 'config/constants'
+import { SLOW_INTERVAL } from 'config/constants/common'
 import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
 import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'

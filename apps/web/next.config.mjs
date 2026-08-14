@@ -41,6 +41,14 @@ const sentryWebpackPluginOptions =
 const config = {
   compiler: {
     styledComponents: true,
+    // Strip diagnostic log/debug/info calls from production bundles. Warnings
+    // and errors remain available for operational troubleshooting.
+    removeConsole:
+      process.env.NODE_ENV === 'production'
+        ? {
+            exclude: ['error', 'warn'],
+          }
+        : false,
   },
   experimental: {
     scrollRestoration: true,
@@ -76,6 +84,7 @@ const config = {
     ignoreBuildErrors: true,
   },
   trailingSlash: true,
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -119,6 +128,33 @@ const config = {
           {
             key: 'Cache-Control',
             value: 'public, immutable, max-age=31536000',
+          },
+        ],
+      },
+      {
+        source: '/fonts/:all*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, immutable, max-age=31536000',
+          },
+        ],
+      },
+      {
+        source: '/banners/:all*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, s-maxage=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/registry/:all*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
           },
         ],
       },

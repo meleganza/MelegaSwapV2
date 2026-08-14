@@ -3,7 +3,7 @@ import { JSBI, Percent, Router, SwapParameters, Trade, TradeType, Currency } fro
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useMemo } from 'react'
 import { BIPS_BASE } from 'config/constants/exchange'
-import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
+import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants/common'
 import { useRouterContract } from 'utils/exchange'
 import useTransactionDeadline from './useTransactionDeadline'
 import { useActiveChainId } from './useActiveChainId'

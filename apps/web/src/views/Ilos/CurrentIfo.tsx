@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ifosConfig } from 'config/constants'
+import ifosConfig from 'config/constants/ifo'
 import useGetPublicIfoData from 'views/Ilos/hooks/v3/useGetPublicIfoData'
 import { useERC20 } from 'hooks/useContract'
 import { useWeb3React } from '@pancakeswap/wagmi'

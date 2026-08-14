@@ -6,7 +6,7 @@ import { Contract, CallOverrides } from '@ethersproject/contracts'
 import { useGasPrice } from 'state/user/hooks'
 import get from 'lodash/get'
 import { addBreadcrumb } from '@sentry/nextjs'
-import { GAS_PRICE_GWEI } from '../state/types'
+import { GAS_PRICE_GWEI } from '../config/constants/gas'
 
 export function useCallWithGasPrice() {
   const gasPrice = useGasPrice()

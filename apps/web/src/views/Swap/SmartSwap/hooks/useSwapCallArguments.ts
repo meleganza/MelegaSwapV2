@@ -11,7 +11,7 @@ import {
   TradeType,
 } from '@pancakeswap/sdk'
 import { isStableSwapPair, Trade, TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
-import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
+import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants/common'
 import { BIPS_BASE } from 'config/constants/exchange'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'

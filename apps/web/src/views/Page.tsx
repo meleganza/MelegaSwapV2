@@ -2,7 +2,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Swap } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { EXCHANGE_HELP_URLS } from 'config/constants'
+import { EXCHANGE_HELP_URLS } from 'config/constants/common'
 
 const Page: React.FC<
   React.PropsWithChildren<{

@@ -1,7 +1,7 @@
 import { useAccount } from 'wagmi'
 import BigNumber from 'bignumber.js'
 import { CAKE, bscTokens } from '@pancakeswap/tokens'
-import { FAST_INTERVAL } from 'config/constants'
+import { FAST_INTERVAL } from 'config/constants/common'
 import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
 import { Zero } from '@ethersproject/constants'
 import { ChainId } from '@pancakeswap/sdk'

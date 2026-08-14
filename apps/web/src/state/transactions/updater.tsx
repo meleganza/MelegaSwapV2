@@ -7,7 +7,7 @@ import { useProvider } from 'wagmi'
 import { poll } from '@ethersproject/web'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import { Box, Text, useToast } from '@pancakeswap/uikit'
-import { FAST_INTERVAL } from 'config/constants'
+import { FAST_INTERVAL } from 'config/constants/common'
 import useSWRImmutable from 'swr/immutable'
 import { useAppDispatch } from '../index'
 import {

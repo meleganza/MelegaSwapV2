@@ -20,31 +20,32 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const advance =
-    req.method === 'POST' ||
-    req.query.advance === '1' ||
-    req.query.advance === 'true'
+  const advance = req.method === 'POST' || req.query.advance === '1' || req.query.advance === 'true'
 
   if (advance) {
+    res.setHeader('Cache-Control', 'no-store')
     const maxBlocks = Math.min(
       2_000_000,
       Math.max(10_000, Number(req.query.maxBlocks ?? req.body?.maxBlocks ?? 500_000) || 500_000),
     )
     await advanceFarmerParticipantIndex({ maxBlocks, chunkSize: 10_000 })
+  } else {
+    // The snapshot is shared public chain state. Let the edge absorb repeated
+    // page loads while revalidating in the background; advancing the index is
+    // deliberately excluded above because it is a mutating operation.
+    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=1800')
   }
 
   const snap = getFarmerParticipantSnapshot()
 
   return res.status(200).json({
     status: snap.status === 'idle' ? 'indexing' : snap.status,
-    uniqueFarmers:
-      snap.primaryCount != null && Number.isFinite(snap.primaryCount) ? snap.primaryCount : null,
+    uniqueFarmers: snap.primaryCount != null && Number.isFinite(snap.primaryCount) ? snap.primaryCount : null,
     uniqueLpFarmers: snap.uniqueLpParticipants > 0 ? snap.uniqueLpParticipants : null,
     historicalParticipants: snap.historicalParticipants > 0 ? snap.historicalParticipants : null,
     currentlyStakedWallets: snap.currentlyStakedWallets,
     observedWallets: snap.uniqueParticipants > 0 ? snap.uniqueParticipants : null,
-    eventCount:
-      snap.depositEventCount + snap.withdrawEventCount + snap.emergencyWithdrawEventCount,
+    eventCount: snap.depositEventCount + snap.withdrawEventCount + snap.emergencyWithdrawEventCount,
     depositEventCount: snap.depositEventCount,
     withdrawEventCount: snap.withdrawEventCount,
     emergencyWithdrawEventCount: snap.emergencyWithdrawEventCount,

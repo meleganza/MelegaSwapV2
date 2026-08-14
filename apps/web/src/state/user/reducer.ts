@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { SerializedWrappedToken } from '@pancakeswap/token-lists'
 import omitBy from 'lodash/omitBy'
-import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants'
+import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants/common'
 import { updateVersion } from '../global/actions'
 import {
   addSerializedPair,
@@ -38,7 +38,7 @@ import {
   updateUserLimitOrderAcceptedWarning,
   setZapDisabled,
 } from './actions'
-import { GAS_PRICE_GWEI } from '../types'
+import { GAS_PRICE_GWEI } from '../../config/constants/gas'
 
 const currentTimestamp = () => new Date().getTime()
 

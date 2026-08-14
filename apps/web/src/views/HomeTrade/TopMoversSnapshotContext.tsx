@@ -97,18 +97,16 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
   )
 
   useEffect(() => {
-    // The shell contains lazy Suspense boundaries. Starting SWR in a transition
-    // after the first client commit prevents a fast cache hit from forcing a
-    // boundary to abandon hydration and render the application a second time.
-    startTransition(() => setClientReady(true))
-  }, [])
-
-  useEffect(() => {
     const durable = readDurableTrendingSnapshot()
-    if (!durable?.items?.length) return
+    // Hydrate the last-known ticker and enable its revalidation in one
+    // transition. This avoids two consecutive shell commits at startup while
+    // preserving the exact same visible data and refresh policy.
     startTransition(() => {
-      setDurableItems(durable.items)
-      setDurableUpdatedAt(durable.updatedAt)
+      if (durable?.items?.length) {
+        setDurableItems(durable.items)
+        setDurableUpdatedAt(durable.updatedAt)
+      }
+      setClientReady(true)
     })
   }, [])
 

@@ -200,7 +200,7 @@ export const useHomeTradeData = () => {
   const { data: allFarms = [] } = useFarms()
   const { pools: allPools = [] } = usePoolsWithVault(chainId)
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
-  const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
+  const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true, farmsFetchStatus === 'success')
   const { total: liquidPairCount, pairs: tradeablePairs } = useAmmPairRegistry({
     classification: 'tradeable',
     pageSize: 24,
@@ -526,13 +526,14 @@ export const useHomeTradeData = () => {
       })
       // Certified economics only — same membership spirit as Pools Studio Explore.
       .filter((row) => !row.pool.isFinished && row.aprValue != null && row.aprValue > 0)
-      .sort((a, b) =>
-        (b.aprValue ?? 0) - (a.aprValue ?? 0) ||
-        b.tvlUsd - a.tvlUsd ||
-        (a.pool.contractAddress || a.pool.sousId || '')
-          .toString()
-          .toLowerCase()
-          .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
+      .sort(
+        (a, b) =>
+          (b.aprValue ?? 0) - (a.aprValue ?? 0) ||
+          b.tvlUsd - a.tvlUsd ||
+          (a.pool.contractAddress || a.pool.sousId || '')
+            .toString()
+            .toLowerCase()
+            .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
       )
       .slice(0, 5)
 

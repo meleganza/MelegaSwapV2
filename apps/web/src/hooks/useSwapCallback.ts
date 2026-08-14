@@ -10,7 +10,7 @@ import { useMemo } from 'react'
 import { useGasPrice } from 'state/user/hooks'
 import { logSwap, logTx } from 'utils/log'
 
-import { INITIAL_ALLOWED_SLIPPAGE } from '../config/constants'
+import { INITIAL_ALLOWED_SLIPPAGE } from '../config/constants/common'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, isAddress } from '../utils'
 import { basisPointsToPercent } from '../utils/exchange'

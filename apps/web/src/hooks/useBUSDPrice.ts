@@ -10,7 +10,7 @@ import {
   WBNB,
   ERC20Token,
 } from '@pancakeswap/sdk'
-import { FAST_INTERVAL } from 'config/constants'
+import { FAST_INTERVAL } from 'config/constants/common'
 import { BUSD, CAKE, USDC, USDT} from '@pancakeswap/tokens'
 import { useMemo } from 'react'
 import useSWR from 'swr'

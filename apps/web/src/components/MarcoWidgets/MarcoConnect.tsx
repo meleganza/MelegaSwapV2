@@ -78,32 +78,48 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     if (!hostRef.current || address) return undefined
     let cancelled = false
     let sdk: MarcoConnectSdk | null = null
+    let idleHandle: number | undefined
+    let timeoutHandle: number | undefined
     const unsubscribers: Array<() => void> = []
 
     setFailed(false)
-    void loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
-      Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
-    )
-      .then(() => {
-        if (cancelled || !hostRef.current) return
-        const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
-        if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
-        sdk = api.mount(hostRef.current, {
-          application: DEFAULT_APPLICATION,
-          theme: 'dark',
-          size,
-          signature: false,
+    const loadWidget = () => {
+      void loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
+        Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
+      )
+        .then(() => {
+          if (cancelled || !hostRef.current) return
+          const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
+          if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
+          sdk = api.mount(hostRef.current, {
+            application: DEFAULT_APPLICATION,
+            theme: 'dark',
+            size,
+            signature: false,
+          })
+          const unsubscribe = sdk.on('connect', () => void syncWalletSession())
+          if (unsubscribe) unsubscribers.push(unsubscribe)
+          setReady(true)
         })
-        const unsubscribe = sdk.on('connect', () => void syncWalletSession())
-        if (unsubscribe) unsubscribers.push(unsubscribe)
-        setReady(true)
-      })
-      .catch(() => {
-        if (!cancelled) setFailed(true)
-      })
+        .catch(() => {
+          if (!cancelled) setFailed(true)
+        })
+    }
+
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+      cancelIdleCallback?: (handle: number) => void
+    }
+    if (idleWindow.requestIdleCallback) {
+      idleHandle = idleWindow.requestIdleCallback(loadWidget, { timeout: 1500 })
+    } else {
+      timeoutHandle = window.setTimeout(loadWidget, 250)
+    }
 
     return () => {
       cancelled = true
+      if (idleHandle != null) idleWindow.cancelIdleCallback?.(idleHandle)
+      if (timeoutHandle != null) window.clearTimeout(timeoutHandle)
       unsubscribers.forEach((unsubscribe) => unsubscribe())
       sdk?.destroy()
       hostRef.current?.replaceChildren()

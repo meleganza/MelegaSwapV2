@@ -49,7 +49,7 @@ import {
   setZapDisabled,
   updateUserBondsViewMode,
 } from '../actions'
-import { GAS_PRICE_GWEI } from '../../types'
+import { GAS_PRICE_GWEI } from 'config/constants/gas'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 export function useAudioModeManager(): [boolean, () => void] {

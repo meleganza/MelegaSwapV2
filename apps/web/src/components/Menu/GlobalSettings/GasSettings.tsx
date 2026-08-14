@@ -1,7 +1,7 @@
 import { Flex, Button, Text, QuestionHelper } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useGasPriceManager } from 'state/user/hooks'
-import { GAS_PRICE_GWEI, GAS_PRICE } from 'state/types'
+import { GAS_PRICE_GWEI, GAS_PRICE } from 'config/constants/gas'
 
 const GasSettings = () => {
   const { t } = useTranslation()

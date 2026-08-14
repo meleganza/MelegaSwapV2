@@ -1,5 +1,5 @@
 import React from 'react'
-import { ifosConfig } from 'config/constants'
+import ifosConfig from 'config/constants/ifo'
 import { Ifo } from 'config/constants/types'
 import IfoLayout from './components/IfoLayout'
 import IfoCardV3Data from './components/IfoCardV3Data'
