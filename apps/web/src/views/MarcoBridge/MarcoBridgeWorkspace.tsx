@@ -85,7 +85,7 @@ const Hero = styled.header`
   width: 100%;
   min-height: ${HERO_HEIGHT};
   display: grid;
-  grid-template-columns: minmax(280px, 1.2fr) minmax(260px, 1.3fr) minmax(280px, 1fr);
+  grid-template-columns: minmax(380px, 1.4fr) minmax(260px, 1.25fr) minmax(280px, 1fr);
   column-gap: ${HERO_GAP};
   align-items: center;
   margin-bottom: 20px;
@@ -134,6 +134,7 @@ const HeroTitle = styled.h1`
   line-height: 58px;
   font-weight: 800;
   letter-spacing: -0.03em;
+  white-space: nowrap;
 
   @media (max-width: ${MOBILE}) {
     font-size: 36px;
