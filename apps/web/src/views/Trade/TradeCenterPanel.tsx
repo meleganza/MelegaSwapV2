@@ -91,6 +91,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
         chartEmptyReason={missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)}
         chartEmptyDetail={chartUnavailableDetail ?? missingReasonDetail}
         isIndexingMetrics={isIndexingMetrics}
+        pairAddress={data.primaryPairAddress}
       />
       <TradePairStats stats={orderedStats} />
     </Shell>

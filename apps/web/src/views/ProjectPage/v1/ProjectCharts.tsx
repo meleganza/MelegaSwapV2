@@ -15,6 +15,7 @@ import { formatPrice } from '../presentation/humanLabels'
 import { isChartSupported } from './helpers'
 import { useFeaturedProjectMarkets } from 'views/HomeTrade/useFeaturedProjectMarkets'
 import { Band, BandHead, BandMeta, BandTitle, Muted, pp } from './theme'
+import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 
 const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartPanel'), {
   ssr: false,
@@ -66,8 +67,7 @@ const ElegantPlaceholder = styled.div<{ $hero?: boolean }>`
   gap: 6px;
   border-radius: 12px;
   border: 1px solid ${pp.line};
-  background:
-    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(221, 185, 47, 0.08), transparent 65%),
+  background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(221, 185, 47, 0.08), transparent 65%),
     linear-gradient(165deg, rgba(18, 18, 18, 0.96), rgba(10, 10, 10, 0.98));
   color: ${pp.mute};
   font-size: 13px;
@@ -137,6 +137,7 @@ interface Props {
   pairAddress?: string | null
   /** V6: parent reclaim chart space when no factual history. */
   onHistoryAvailability?: (available: boolean) => void
+  chainId?: number
 }
 
 function resolveChartPair(
@@ -159,6 +160,7 @@ const ProjectCharts: React.FC<Props> = ({
   variant = 'full',
   pairAddress: pairProp,
   onHistoryAvailability,
+  chainId = 56,
 }) => {
   const compact = variant === 'compact'
   const hero = variant === 'hero'
@@ -173,28 +175,33 @@ const ProjectCharts: React.FC<Props> = ({
     slug === 'marco' || isMarcoSymbol(preferred?.baseSymbol, preferred?.baseSymbol)
       ? 'MARCO / WBNB'
       : preferred
-        ? `${preferred.baseSymbol} / ${preferred.quoteSymbol}`
-        : featuredRow?.symbol
-          ? `${featuredRow.symbol} / WBNB`
-          : 'Project pair'
+      ? `${preferred.baseSymbol} / ${preferred.quoteSymbol}`
+      : featuredRow?.symbol
+      ? `${featuredRow.symbol} / WBNB`
+      : 'Project pair'
 
   const { chartEntries, status } = useIndexerCandles(supported ? pairAddress : undefined, tf.interval)
+  const publicPair = usePairOhlcv(chainId, supported ? pairAddress : undefined)
 
   const pairPrices = useMemo(() => {
     const sliced = chartEntries.slice(-tf.limit)
-    return sliced.map((c) => ({ time: String(c.time), value: c.close }))
-  }, [chartEntries, tf.limit])
+    if (sliced.length >= 2) return sliced.map((c) => ({ time: String(c.time), value: c.close }))
+    return publicPair.candles
+      .slice(-tf.limit)
+      .map((candle) => ({ time: String(candle.timestamp), value: candle.close }))
+  }, [chartEntries, publicPair.candles, tf.limit])
 
   const latestClose = pairPrices.length ? pairPrices[pairPrices.length - 1]?.value : null
   const priceText = formatPrice(latestClose)
   const hasSpark = pairPrices.length >= 2
-  const showPlaceholder = !supported || (!hasSpark && status !== 'loading')
+  const chartLoading = status === 'loading' || (!hasSpark && publicPair.status === 'loading')
+  const showPlaceholder = !supported || (!hasSpark && !chartLoading)
 
   React.useEffect(() => {
     if (!onHistoryAvailability) return
-    if (status === 'loading' && !hasSpark) return
+    if (chartLoading && !hasSpark) return
     onHistoryAvailability(Boolean(supported && hasSpark))
-  }, [onHistoryAvailability, supported, hasSpark, status])
+  }, [onHistoryAvailability, supported, hasSpark, chartLoading])
 
   const timeframeRow = (
     <Timeframes
@@ -235,6 +242,7 @@ const ProjectCharts: React.FC<Props> = ({
             emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
             isLoading={status === 'loading'}
             currentPriceUsd={latestClose ?? undefined}
+            sourceLabel={chartEntries.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'}
           />
         )}
       </div>
@@ -258,7 +266,7 @@ const ProjectCharts: React.FC<Props> = ({
           >
             <PlaceholderTitle style={{ fontSize: 12 }}>No chart history</PlaceholderTitle>
           </ElegantPlaceholder>
-        ) : status === 'loading' && !hasSpark ? (
+        ) : chartLoading && !hasSpark ? (
           <ChartSkeleton $size="hero" aria-hidden />
         ) : (
           <TradeChartPanel
@@ -266,6 +274,7 @@ const ProjectCharts: React.FC<Props> = ({
             emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
             isLoading={status === 'loading'}
             currentPriceUsd={latestClose ?? undefined}
+            sourceLabel={chartEntries.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'}
           />
         )}
       </HeroChartWrap>
@@ -299,6 +308,7 @@ const ProjectCharts: React.FC<Props> = ({
               emptyReason={pairPrices.length < 2 && status === 'loading' ? 'loading' : 'insufficient_history'}
               isLoading={status === 'loading'}
               currentPriceUsd={latestClose ?? undefined}
+              sourceLabel={chartEntries.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'}
             />
           )}
         </>

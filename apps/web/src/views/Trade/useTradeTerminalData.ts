@@ -24,8 +24,19 @@ import useTotalSupply from 'hooks/useTotalSupply'
 import { PairState, usePairs } from 'hooks/usePairs'
 import type { MarcoPairLiquiditySnapshot } from 'lib/trade-market/fetchMarcoPairLiquidity'
 import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
+import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
 
 const SECONDS_24H = 86_400
+
+type TokenPairsResponse = {
+  analytics: ProjectDexAnalytics
+}
+
+async function fetchTokenPairs(url: string): Promise<TokenPairsResponse> {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`TOKEN_PAIRS_HTTP_${response.status}`)
+  return response.json()
+}
 
 async function fetchBnbUsdPrice(): Promise<number | undefined> {
   try {
@@ -169,18 +180,36 @@ function resolveCanonicalOutputAddress(
   return undefined
 }
 
-export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
+export const useTradeTerminalData = (
+  inputSymbol?: string,
+  outputSymbol?: string,
+  outputAddress?: string,
+  inputAddress?: string,
+) => {
   const { chainId } = useActiveChainId()
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured)
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
-  const tokenAddress = resolvedOutput
+  const resolvedInput = resolveCanonicalOutputAddress(chainId, inputSymbol, inputAddress)
+  const outputIsNative = Boolean(outputAddress && !/^0x[a-fA-F0-9]{40}$/.test(outputAddress))
+  // Prefer the buy/output asset; when the user reverses the route, keep analytics
+  // alive by indexing the non-native input token instead of reporting UNAVAILABLE.
+  const tokenAddress = outputIsNative ? resolvedInput : resolvedOutput ?? resolvedInput
+  const { data: tokenPairsData } = useSWR<TokenPairsResponse>(
+    chainId && tokenAddress
+      ? `/api/market-data/token-pairs?chainId=${chainId}&address=${encodeURIComponent(tokenAddress)}`
+      : null,
+    fetchTokenPairs,
+    { refreshInterval: 60_000, revalidateOnFocus: false, dedupingInterval: 45_000 },
+  )
+  const externalDex = tokenPairsData?.analytics
   const tokenData = useTokenDataSWR(tokenAddress)
   const { data: holderCount, isLoading: holderLoading } = useHolderCount(chainId, tokenAddress)
-  const isMarcoRoute =
-    isMarcoSymbol(outputSymbol) || !outputSymbol || resolvedOutput?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
+  const isMarcoRoute = tokenAddress
+    ? tokenAddress.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
+    : isMarcoSymbol(outputSymbol) || isMarcoSymbol(inputSymbol) || !outputSymbol
   const { data: publicMarket } = useSWR(isMarcoRoute ? 'trade-marco-coingecko-market' : null, fetchMarcoPublicMarket, {
     refreshInterval: 120_000,
     revalidateOnFocus: false,
@@ -338,23 +367,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         : undefined
 
     const volumeValue = useCanonicalIndexerStats
-      ? indexedVolumeValue
-      : indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
+      ? indexedVolumeValue ?? (externalDex?.volume24hUsd != null ? formatUsd(externalDex.volume24hUsd) : undefined)
+      : indexedVolumeValue ??
+        (externalDex?.volume24hUsd != null
+          ? formatUsd(externalDex.volume24hUsd)
+          : formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0))
     const liquidityValue =
       reserveLiquidityUsd != null
         ? formatUsd(reserveLiquidityUsd)
+        : externalDex?.liquidityUsd != null
+        ? formatUsd(externalDex.liquidityUsd)
         : useCanonicalIndexerStats
         ? undefined
         : formatUsd(tokenData?.liquidityUSD ?? 0)
-    const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
-    const fdvValue = formatCompactUsd(publicMarket?.fdvUsd ?? onChainFdvUsd)
+    const mcapValue = formatCompactUsd(externalDex?.marketCapUsd ?? publicMarket?.marketCapUsd)
+    const fdvValue = formatCompactUsd(externalDex?.fdvUsd ?? publicMarket?.fdvUsd ?? onChainFdvUsd)
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
 
     const volumeReason: DataReasonCode | undefined = indexedVolumeValue
       ? undefined
       : tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
       ? 'SUBGRAPH_LOADING'
-      : !tokenData?.exists && !publicMarket?.volume24hUsd
+      : !tokenData?.exists && !publicMarket?.volume24hUsd && externalDex?.volume24hUsd == null
       ? 'PAIR_NOT_INDEXED'
       : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
       ? 'NO_EVENTS_INDEXED'
@@ -365,6 +399,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         ? undefined
         : pairState === PairState.EXISTS && isMarcoRoute
         ? 'SUBGRAPH_LOADING'
+        : externalDex?.liquidityUsd != null
+        ? undefined
         : useCanonicalIndexerStats
         ? 'NO_POOL_FOUND'
         : tokenData === undefined && subgraphReport.melegaNativeConfigured
@@ -375,15 +411,18 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         ? 'NO_POOL_FOUND'
         : undefined
 
-    const tradesReason: DataReasonCode | undefined = indexedTradeValue
-      ? undefined
-      : tokenData === undefined && subgraphReport.melegaNativeConfigured
-      ? 'SUBGRAPH_LOADING'
-      : !tokenData?.exists
-      ? 'PAIR_NOT_INDEXED'
-      : !tokenData.txCount && !transactions?.length
-      ? 'NO_EVENTS_INDEXED'
-      : undefined
+    const externalTrades =
+      externalDex?.transactions24h != null ? externalDex.transactions24h.toLocaleString() : undefined
+    const tradesReason: DataReasonCode | undefined =
+      indexedTradeValue || externalTrades
+        ? undefined
+        : tokenData === undefined && subgraphReport.melegaNativeConfigured
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData?.exists
+        ? 'PAIR_NOT_INDEXED'
+        : !tokenData.txCount && !transactions?.length
+        ? 'NO_EVENTS_INDEXED'
+        : undefined
 
     const mcapReason: DataReasonCode | undefined = mcapValue ? undefined : 'EXPLORER_SOURCE_MISSING'
     const fdvReason: DataReasonCode | undefined = fdvValue ? undefined : 'EXPLORER_SOURCE_MISSING'
@@ -429,6 +468,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         label: '24H Trades',
         value:
           indexedTradeValue ??
+          externalTrades ??
           (useCanonicalIndexerStats ? undefined : tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
         change: txChange?.text,
         changePositive: txChange?.positive,
@@ -461,6 +501,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     isMarcoRoute,
     pairState,
     onChainFdvUsd,
+    externalDex,
   ])
 
   const pairPrice = useMemo(() => {
@@ -478,6 +519,17 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         value: tokenData.priceUSD,
         change24h: tokenData.priceUSDChange,
         formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+      }
+    }
+    if (externalDex?.priceUsd != null && externalDex.priceUsd > 0) {
+      return {
+        value: externalDex.priceUsd,
+        change24h: externalDex.priceChange24h ?? undefined,
+        formatted: `$${
+          externalDex.priceUsd < 0.01
+            ? externalDex.priceUsd.toLocaleString('en-US', { maximumSignificantDigits: 8 })
+            : externalDex.priceUsd.toLocaleString('en-US', { maximumFractionDigits: 6 })
+        }`,
       }
     }
     const close = indexerMetrics24h?.lastClose
@@ -499,16 +551,25 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       }
     }
     return undefined
-  }, [tokenData, indexerMetrics24h, effectiveBnbUsd, marcoPairMarket?.priceUsd, isMarcoRoute, indexerCandles])
+  }, [
+    tokenData,
+    indexerMetrics24h,
+    effectiveBnbUsd,
+    marcoPairMarket?.priceUsd,
+    isMarcoRoute,
+    indexerCandles,
+    externalDex,
+  ])
 
   const missingReason = useMemo((): TradeDataMissingReason => {
     if (useDurableIndexer && (transactions?.length || indexerCandles.length > 0)) return null
+    if (externalDex?.primaryPairAddress) return null
     if (tokenData === undefined) return null
     if (!tokenAddress) return 'route_not_configured'
     if (!tokenData.exists) return 'pair_not_indexed'
     if (!transactions?.length && !tokenData.volumeUSD) return 'subgraph_empty'
     return null
-  }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length])
+  }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length, externalDex?.primaryPairAddress])
 
   const missingReasonDetail = useMemo((): string | undefined => {
     if (missingReason === 'pair_not_indexed') return 'MARCO/WBNB pair not indexed in Melega subgraph'
@@ -522,6 +583,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   }, [missingReason, useDurableIndexer])
 
   const chartUnavailableDetail = useMemo((): string | undefined => {
+    if (externalDex?.primaryPairAddress) return undefined
     if (missingReason === 'pair_not_indexed') {
       return `Reason: Pair not indexed · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
     }
@@ -542,7 +604,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       return `Reason: Token metrics loading · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
     }
     return undefined
-  }, [missingReason, indexerState, tokenData])
+  }, [missingReason, indexerState, tokenData, externalDex?.primaryPairAddress])
 
   const machine = useMemo((): TradeDataMachinePayload => {
     const reasonCodes: Partial<Record<string, DataReasonCode>> = {}
@@ -668,6 +730,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         ? indexerState
         : undefined,
     chartUnavailableDetail,
+    primaryPairAddress: externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined),
     indexerState,
     tokenExists: tokenData?.exists,
   }

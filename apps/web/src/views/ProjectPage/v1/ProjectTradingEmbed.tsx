@@ -2,7 +2,7 @@
  * Section 3 — Trading embed. Reuses SmartSwapForm (do not modify Swap/Smart Swap sources).
  * Chain is forced from the Project Page deployment — no manual chain picker.
  */
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -14,6 +14,7 @@ import { Field, replaceSwapState } from 'state/swap/actions'
 import { useAppDispatch } from 'state'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import TradeCockpit from 'views/Trade/TradeCockpit'
+import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import TradeTerminalGlobalStyle from 'views/Trade/TradeTerminalGlobalStyle'
 import { TradeRuntimeProvider } from 'views/Trade/tradeRuntime/TradeRuntimeContext'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
@@ -155,6 +156,7 @@ function ProjectSwapInner({
   contractAddress,
   nonBlockingChainAlign = false,
 }: InnerProps) {
+  const [productAction, setProductAction] = useState<SmartSwapProductAction>('swap')
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { chainId } = useActiveChainId()
@@ -229,7 +231,7 @@ function ProjectSwapInner({
         </Muted>
       ) : null}
       <TradeRuntimeProvider>
-        <TradeCockpit />
+        <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
       </TradeRuntimeProvider>
     </QuietSwapShell>
   )

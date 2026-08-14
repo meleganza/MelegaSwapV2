@@ -57,7 +57,7 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).toContain('0.72fr')
     expect(shell).toContain('project-v7-market-first-workspace')
     expect(shell).not.toContain('project-v7-smart-swap-cta')
-    expect(shell).toContain('project-v7-claim-cta')
+    expect(shell).not.toContain('project-v7-claim-cta')
     expect(shell).toContain('project-v7-verified')
     expect(shell).toContain('project-v7-handle')
     expect(shell).not.toContain('project-v7-nav')
@@ -78,6 +78,18 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).not.toContain('All DEX Markets')
     expect(shell).not.toContain('Loading multi-DEX markets')
     expect(shell).not.toContain('<strong>⚡ Smart Swap</strong>')
+  })
+
+  it('keeps liquidity beside the chart, earn distributions aligned, and five boost actions in one row', () => {
+    expect(shell).toContain('project-v7-liquidity-distribution')
+    expect(shell).toContain('ADD LIQUIDITY')
+    expect(shell).toContain('<BandTitle>Earn</BandTitle>')
+    expect(shell).not.toContain('Earn & Liquidity')
+    expect(shell).toContain('project-v7-create-farm')
+    expect(shell).toContain('project-v7-create-pool')
+    expect(shell).toContain('grid-template-columns: repeat(5, minmax(140px, 1fr))')
+    expect(shell).toContain('SPONSORED RESEARCH')
+    expect(shell).not.toContain('ClaimProjectWizardModal')
   })
 
   it('related projects remain compact and do not render unavailable market metrics', () => {

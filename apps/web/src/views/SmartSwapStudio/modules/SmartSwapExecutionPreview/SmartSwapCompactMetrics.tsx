@@ -13,26 +13,26 @@ const Grid = styled.div`
 
 const Cell = styled.div`
   min-width: 0;
-  padding: 7px 7px 6px;
+  padding: 5px 6px 4px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(0, 0, 0, 0.28);
 `
 
 const K = styled.div`
-  min-height: 22px;
+  min-height: 20px;
   font-size: 9px;
   line-height: 11px;
   font-weight: 600;
   color: #9ca3af;
   letter-spacing: 0.02em;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   white-space: normal;
   overflow-wrap: anywhere;
 `
 
 const V = styled.div<{ $tone?: 'ok' | 'warn' | 'neutral' }>`
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: ${({ $tone }) => ($tone === 'ok' ? '#22c55e' : $tone === 'warn' ? '#f59e0b' : '#f8fafc')};
   font-variant-numeric: tabular-nums;

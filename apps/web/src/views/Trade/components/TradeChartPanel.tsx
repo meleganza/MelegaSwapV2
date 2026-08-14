@@ -98,6 +98,7 @@ export interface TradeChartPanelProps {
   emptyDetail?: string
   currentPriceUsd?: number
   isLoading?: boolean
+  sourceLabel?: string
 }
 
 export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
@@ -106,6 +107,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   emptyDetail,
   currentPriceUsd,
   isLoading = false,
+  sourceLabel = 'Melega durable indexer',
 }) => {
   const hasChartHistory = pairPrices.length >= 2
   const indexedPath = useMemo(() => buildIndexedPath(pairPrices, 360, 160), [pairPrices])
@@ -137,11 +139,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               strokeWidth="2"
               vectorEffect="non-scaling-stroke"
             />
-            <path
-              d={`${indexedPath} L 360 160 L 0 160 Z`}
-              fill="url(#tradeIndexedFill)"
-              opacity="0.12"
-            />
+            <path d={`${indexedPath} L 360 160 L 0 160 Z`} fill="url(#tradeIndexedFill)" opacity="0.12" />
             <defs>
               <linearGradient id="tradeIndexedFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={tradeColors.green} />
@@ -149,7 +147,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               </linearGradient>
             </defs>
           </IndexedSvg>
-          <IndexedLabel>Indexed candles · Melega durable indexer</IndexedLabel>
+          <IndexedLabel>Market candles · {sourceLabel}</IndexedLabel>
         </IndexedChart>
       </Area>
     )
@@ -163,10 +161,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
             ? 'Insufficient indexed history'
             : 'No indexed candles yet'}
         </CompactTitle>
-        <CompactDesc>
-          Chart renders only canonical indexer candles. Trend lines appear after two or more indexed
-          points in the selected window.
-        </CompactDesc>
+        <CompactDesc>Market history appears after two or more factual candle observations are available.</CompactDesc>
         {priceMarker ? <PriceMarker>{priceMarker}</PriceMarker> : null}
         <TradeTechnicalDetails detail={emptyDetail} />
       </CompactState>

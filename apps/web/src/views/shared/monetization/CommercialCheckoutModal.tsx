@@ -84,13 +84,14 @@ const EMPTY_DRAFT: ProjectDraft = {
   telegram: '',
 }
 
-const Grid = styled.div`
+const Grid = styled.div<{ $serviceWide?: boolean }>`
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   min-width: 0;
   @media (min-width: 820px) {
-    grid-template-columns: minmax(0, 1.45fr) minmax(270px, 0.55fr);
+    grid-template-columns: ${({ $serviceWide }) =>
+      $serviceWide ? 'minmax(0, 1fr)' : 'minmax(0, 1.45fr) minmax(270px, 0.55fr)'};
     align-items: start;
   }
 `
@@ -104,10 +105,13 @@ const Stack = styled.div`
 
 const ServiceGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
-  @media (min-width: 650px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+  @media (min-width: 620px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 920px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `
 
@@ -116,36 +120,47 @@ const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
   cursor: pointer;
   text-align: left;
   min-width: 0;
-  min-height: 130px;
-  padding: 12px;
+  min-height: 86px;
+  padding: 11px 13px;
   border-radius: 14px;
   border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.62)' : 'rgba(255,255,255,.1)')};
   background: ${({ $on }) => ($on ? 'rgba(221,185,47,.11)' : 'rgba(255,255,255,.025)')};
   color: ${uxRebuildColors.text};
   opacity: ${({ $live }) => ($live ? 1 : 0.72)};
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'icon title price'
+    'icon desc price';
+  align-items: center;
+  column-gap: 9px;
+  row-gap: 3px;
 `
 
 const Icon = styled.div`
+  grid-area: icon;
   color: ${uxRebuildColors.gold};
   font-size: 17px;
-  margin-bottom: 8px;
 `
 
 const STitle = styled.div`
+  grid-area: title;
   font-size: 13px;
   line-height: 1.2;
   font-weight: 780;
 `
 
 const SDesc = styled.div`
-  margin-top: 5px;
+  grid-area: desc;
   font-size: 10px;
   line-height: 1.35;
   color: ${uxRebuildColors.secondary};
 `
 
 const SPrice = styled.div`
-  margin-top: 8px;
+  grid-area: price;
+  margin-left: 6px;
+  text-align: right;
   color: ${uxRebuildColors.gold};
   font-size: 11px;
   font-weight: 760;
@@ -1098,7 +1113,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       closeOnBackdrop={!busy}
       closeOnEscape={!busy}
     >
-      <Grid>
+      <Grid $serviceWide={step === 'service'}>
         <Stack>
           {step === 'project' ? (
             <div data-testid="commercial-step-project">

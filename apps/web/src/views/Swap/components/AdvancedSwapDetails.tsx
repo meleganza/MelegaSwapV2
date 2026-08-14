@@ -7,12 +7,46 @@ import { AutoColumn } from 'components/Layout/Column'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import { BUYBACK_FEE, LP_HOLDERS_FEE, TOTAL_FEE, TREASURY_FEE } from 'config/constants/info'
 import { useState } from 'react'
+import styled from 'styled-components'
 import { Field } from 'state/swap/actions'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import { RouterViewer } from './RouterViewer'
 import SwapRoute from './SwapRoute'
 import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
 import { DexExecutionDetailsPanel } from 'components/DexPricing/DexExecutionDetailsPanel'
+
+const DetailsColumn = styled(AutoColumn)`
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  & > div {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+`
+
+const SummaryColumn = styled(AutoColumn)`
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0 16px;
+
+  & > div {
+    min-width: 0;
+    max-width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  & > div > div,
+  p {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+`
 
 function TradeSummary({
   inputAmount,
@@ -42,7 +76,7 @@ function TradeSummary({
   const buyBackFeePercent = `${(BUYBACK_FEE * 100).toFixed(4)}%`
 
   return (
-    <AutoColumn style={{ padding: '0 16px' }}>
+    <SummaryColumn>
       <RowBetween>
         <RowFixed>
           <Text fontSize="14px" color="textSubtle">
@@ -121,7 +155,7 @@ function TradeSummary({
           <Text fontSize="14px">{`${realizedLPFee.toSignificant(4)} ${inputAmount.currency.symbol}`}</Text>
         </RowBetween>
       )}
-    </AutoColumn>
+    </SummaryColumn>
   )
 }
 
@@ -155,7 +189,7 @@ export function AdvancedSwapDetails({
   const [isModalOpen, setIsModalOpen] = useState(() => false)
   const showRoute = Boolean(path && path.length > 1)
   return (
-    <AutoColumn gap="0px">
+    <DetailsColumn gap="0px">
       {inputAmount && (
         <>
           <TradeSummary
@@ -187,7 +221,7 @@ export function AdvancedSwapDetails({
           )}
           {showRoute && (
             <>
-              <RowBetween style={{ padding: '0 16px' }}>
+              <RowBetween style={{ padding: '0 16px', minWidth: 0, gap: '8px', flexWrap: 'wrap' }}>
                 <span style={{ display: 'flex', alignItems: 'center' }}>
                   <Text fontSize="14px" color="textSubtle">
                     {t('Route')}
@@ -227,6 +261,6 @@ export function AdvancedSwapDetails({
           )}
         </>
       )}
-    </AutoColumn>
+    </DetailsColumn>
   )
 }

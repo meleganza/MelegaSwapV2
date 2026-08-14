@@ -204,8 +204,10 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ productAction, onPro
             data-wallet-connected={account ? 'true' : 'false'}
             data-trade-swap-form
           >
-            <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-            <SmartSwapExecutionPreviewModule mode="smart" showSmartTransparency compact />
+            <SmartSwapForm
+              handleOutputSelect={handleOutputSelect}
+              executionPreview={<SmartSwapExecutionPreviewModule mode="smart" showSmartTransparency compact />}
+            />
           </SwapFormWrap>
         ) : (
           <MarcoBridgePanel embedded />

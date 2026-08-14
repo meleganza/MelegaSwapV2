@@ -22,6 +22,14 @@ export type ProjectDexVenue = {
   transactions24h: number | null
 }
 
+export type ProjectDexPairBreakdown = {
+  pairAddress: string
+  dexId: string
+  label: string
+  liquidityUsd: number | null
+  liquiditySharePct: number | null
+}
+
 export type ProjectDexAnalytics = {
   pairCount: number
   dexCount: number
@@ -34,6 +42,7 @@ export type ProjectDexAnalytics = {
   fdvUsd: number | null
   primaryPairAddress: string | null
   venues: ProjectDexVenue[]
+  pairs: ProjectDexPairBreakdown[]
 }
 
 function finiteNonNegative(value: unknown): number | null {
@@ -41,7 +50,7 @@ function finiteNonNegative(value: unknown): number | null {
 }
 
 /** Aggregate only fields actually returned by the provider; missing never becomes zero. */
-export function aggregateProjectDexPairs(rows: DexScreenerPair[]): ProjectDexAnalytics {
+export function aggregateProjectDexPairs(rows: DexScreenerPair[], projectAddress?: string): ProjectDexAnalytics {
   const venues = new Map<string, { pairCount: number; liquidity: number[]; volume: number[]; transactions: number[] }>()
 
   for (const row of rows) {
@@ -82,6 +91,39 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[]): ProjectDexAna
     .slice()
     .sort((a, b) => (finiteNonNegative(b.liquidity?.usd) ?? -1) - (finiteNonNegative(a.liquidity?.usd) ?? -1))[0]
   const parsedPrice = primary?.priceUsd == null ? null : Number(primary.priceUsd)
+  const totalPairLiquidity = rows
+    .map((row) => finiteNonNegative(row.liquidity?.usd))
+    .filter((value): value is number => value != null)
+    .reduce((sum, value) => sum + value, 0)
+  const normalizedProject = projectAddress?.toLowerCase()
+  const pairs = rows
+    .filter((row) => Boolean(row.pairAddress && row.dexId))
+    .map((row) => {
+      const liquidityUsd = finiteNonNegative(row.liquidity?.usd)
+      const baseAddress = row.baseToken?.address?.toLowerCase()
+      const quoteAddress = row.quoteToken?.address?.toLowerCase()
+      const counterpart =
+        normalizedProject && baseAddress === normalizedProject
+          ? row.quoteToken?.symbol
+          : normalizedProject && quoteAddress === normalizedProject
+          ? row.baseToken?.symbol
+          : row.quoteToken?.symbol || row.baseToken?.symbol
+      const projectSymbol =
+        normalizedProject && baseAddress === normalizedProject
+          ? row.baseToken?.symbol
+          : normalizedProject && quoteAddress === normalizedProject
+          ? row.quoteToken?.symbol
+          : row.baseToken?.symbol
+      return {
+        pairAddress: row.pairAddress!,
+        dexId: row.dexId!,
+        label: [projectSymbol, counterpart].filter(Boolean).join(' / ') || row.pairAddress!,
+        liquidityUsd,
+        liquiditySharePct:
+          liquidityUsd != null && totalPairLiquidity > 0 ? (liquidityUsd / totalPairLiquidity) * 100 : null,
+      }
+    })
+    .sort((a, b) => (b.liquidityUsd ?? -1) - (a.liquidityUsd ?? -1))
 
   return {
     pairCount: mapped.reduce((sum, venue) => sum + venue.pairCount, 0),
@@ -98,5 +140,6 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[]): ProjectDexAna
     fdvUsd: finiteNonNegative(primary?.fdv),
     primaryPairAddress: primary?.pairAddress ?? null,
     venues: mapped,
+    pairs,
   }
 }

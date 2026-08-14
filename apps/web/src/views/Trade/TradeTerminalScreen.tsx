@@ -128,7 +128,7 @@ export const TradeTerminalScreen: React.FC = () => {
   // Market/indexer reads are intentionally created once for the whole terminal.
   // TradeCenterPanel used to create a second identical runtime (SWR, multicall,
   // holder and candle subscriptions), which made route entry especially heavy in Firefox.
-  const tradeData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const tradeData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId, inputCurrencyId)
   const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } = tradeData
 
   return (

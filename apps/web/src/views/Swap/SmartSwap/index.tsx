@@ -51,9 +51,10 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 
-export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: Currency) => void }> = ({
-  handleOutputSelect,
-}) => {
+export const SmartSwapForm: React.FC<{
+  handleOutputSelect: (newCurrencyOutput: Currency) => void
+  executionPreview?: React.ReactNode
+}> = ({ handleOutputSelect, executionPreview }) => {
   const { isAccessTokenSupported } = useContext(SwapFeaturesContext)
   const { t } = useTranslation()
   const { refreshBlockNumber, isLoading } = useRefreshBlockNumberID()
@@ -372,6 +373,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
               onSlippageClick={onPresentSettingsModal}
             />
           )}
+          {executionPreview}
           {!swapIsUnsupported ? (
             !showWrap &&
             tradeInfo && (

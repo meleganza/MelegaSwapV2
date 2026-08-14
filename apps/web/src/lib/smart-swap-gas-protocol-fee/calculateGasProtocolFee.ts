@@ -91,8 +91,11 @@ export function calculateSmartRouterGasProtocolFee(
 /** Human-readable native amount (up to 8 decimals, trimmed). */
 export function formatFeeWeiAsBnb(feeWei: string): string {
   const wei = toBigInt(feeWei)
-  const whole = wei / 10n ** 18n
-  const frac = wei % 10n ** 18n
+  // Keep this as a literal: Next/SWC can rewrite bigint exponentiation to
+  // Math.pow, which throws in the browser when passed bigint operands.
+  const weiPerNativeToken = 1000000000000000000n
+  const whole = wei / weiPerNativeToken
+  const frac = wei % weiPerNativeToken
   if (frac === 0n) return whole.toString()
   const fracStr = frac.toString().padStart(18, '0').replace(/0+$/, '').slice(0, 8)
   return `${whole}.${fracStr}`

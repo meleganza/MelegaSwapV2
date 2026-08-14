@@ -10,6 +10,7 @@ import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import TradeChartPanel from './TradeChartPanel'
+import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -134,6 +135,7 @@ export interface TradePriceChartProps {
   chartEmptyReason?: string | null
   chartEmptyDetail?: string
   isIndexingMetrics?: boolean
+  pairAddress?: string | null
 }
 
 export const TradePriceChart: React.FC<TradePriceChartProps> = ({
@@ -146,6 +148,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   chartEmptyReason,
   chartEmptyDetail,
   isIndexingMetrics,
+  pairAddress,
 }) => {
   const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const { chainId: activeChainId } = useActiveChainId()
@@ -165,38 +168,41 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   }, [inputSymbol, activeChainId, token0Address])
 
   const indexerInterval = timeframeToIndexerInterval(timeframe)
-  const pairForIndexer =
-    isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
+  const pairForIndexer = isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
   const { chartEntries: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
     pairForIndexer,
     indexerInterval,
   )
+  const publicPair = usePairOhlcv(activeChainId, pairAddress ?? pairForIndexer)
 
   const pairPrices = useMemo(() => {
     if (indexerCandles.length >= 2) {
-      return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
+      return indexerCandles.map((c) => ({ time: String(c.time), value: c.close }))
     }
     if (indexerCandles.length === 1) {
-      return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
+      return indexerCandles.map((c) => ({ time: String(c.time), value: c.close }))
+    }
+    if (publicPair.candles.length > 0) {
+      return publicPair.candles.map((candle) => ({ time: String(candle.timestamp), value: candle.close }))
     }
     return []
-  }, [indexerCandles])
+  }, [indexerCandles, publicPair.candles])
+
+  const chartLoading = indexerCandleStatus === 'loading' || (pairPrices.length < 2 && publicPair.status === 'loading')
 
   const resolvedChartEmptyReason =
     chartEmptyReason ??
     (pairPrices.length > 0 && pairPrices.length < 2
       ? 'insufficient_history'
-      : pairPrices.length < 1 && indexerCandleStatus === 'loading'
-        ? 'loading'
-        : pairPrices.length < 1
-          ? 'insufficient_history'
-          : null)
+      : pairPrices.length < 1 && chartLoading
+      ? 'loading'
+      : pairPrices.length < 1
+      ? 'insufficient_history'
+      : null)
 
   const displayPrice = priceUsd
   const validChange =
-    change24h != null && Number.isFinite(change24h) && Math.abs(change24h) > 0.0001
-      ? change24h
-      : undefined
+    change24h != null && Number.isFinite(change24h) && Math.abs(change24h) > 0.0001 ? change24h : undefined
 
   const priceText =
     displayPrice != null && Number.isFinite(displayPrice)
@@ -256,7 +262,8 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           emptyReason={resolvedChartEmptyReason}
           emptyDetail={chartEmptyDetail}
           currentPriceUsd={displayPrice}
-          isLoading={indexerCandleStatus === 'loading'}
+          isLoading={chartLoading}
+          sourceLabel={indexerCandles.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'}
         />
       </ChartBlock>
     </Shell>

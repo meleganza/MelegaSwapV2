@@ -31,7 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
     )
     if (!response.ok) throw new Error(`PROVIDER_HTTP_${response.status}`)
     const rows = (await response.json()) as DexScreenerPair[]
-    const analytics = aggregateProjectDexPairs(Array.isArray(rows) ? rows : [])
+    const analytics = aggregateProjectDexPairs(Array.isArray(rows) ? rows : [], address)
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
     return res.status(200).json({
       schema: 'melega.project-multi-dex.v1',

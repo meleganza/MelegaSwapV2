@@ -127,9 +127,7 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
   // explicit active-chain override useGasPrice can resolve against an undefined
   // connector chain and leave the UI at “—”.
   const gasPrice = useGasPrice(quoteChainId)
-  const gasFeePlan = useSmartSwapGasProtocolFeePreview(
-    result.status === 'ok' ? result.preview?.gasEstimateUnits ?? null : null,
-  )
+  const gasFeePlan = useSmartSwapGasProtocolFeePreview(preview?.gasEstimateUnits, Number(quoteChainId))
   const aiResult = useSmartSwapAIAssistance(result, feeModel)
   const handoff = useSmartSwapExecutionHandoff(result, feeModel)
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -196,7 +194,9 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
     const formatted = estimatedNative.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')
     return `~${formatted} ${nativeSymbol}`
   }, [preview, gasPrice, quoteChainId])
-  const protocolFee = feeModel.feeAmount ? `${feeModel.feeAmount} ${feeModel.feeAsset ?? 'BNB'}` : 'Not collected'
+  const protocolFee = gasFeePlan
+    ? `~${gasFeePlan.display.protocolFeeBnb} ${gasFeePlan.fee.feeAsset}`
+    : '—'
 
   const metrics = [
     { label: 'Expected output', value: expected },
@@ -206,7 +206,9 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
     {
       label: 'Protocol fee',
       value: protocolFee,
-      sub: feeModel.unavailableReason ?? undefined,
+      sub: gasFeePlan
+        ? `${gasFeePlan.display.protocolFeeLabel} · preview only · Not collected`
+        : feeModel.unavailableReason ?? 'Fee estimate unavailable',
     },
   ]
 

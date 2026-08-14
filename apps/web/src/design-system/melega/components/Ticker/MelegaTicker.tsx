@@ -85,7 +85,7 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 40s linear infinite;
+  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 52s linear infinite;
   animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
 
   @media (prefers-reduced-motion: reduce) {

@@ -5,21 +5,18 @@ import { Text } from '@pancakeswap/uikit'
 import { Currency, TradeType } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import {
-  formatProtocolFeePercent,
-  resolveSwapProtocolFeeContext,
-  SWAP_PROTOCOL_FEE_BUY_MARCO_BPS,
-  SWAP_PROTOCOL_FEE_STANDARD_BPS,
-} from 'lib/d87-pricing'
-import {
   DEX_ECONOMIC_AUTHORITY,
   MELEGA_TREASURY_WALLET_ADDRESS,
   MELEGA_TREASURY_WALLET_LABEL,
 } from 'config/dexEconomicAuthority'
-import { MarcoBuyFeeIncentive } from './MarcoBuyFeeIncentive'
+import { SMART_SWAP_PREVIEW_GAS_UNITS, useSmartSwapGasProtocolFeePreview } from 'lib/smart-swap-gas-protocol-fee'
 import { useSmartRouterFeePanelContext } from './useSmartRouterFeePanelContext'
 
 const Panel = styled.div`
   margin-top: 10px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -28,6 +25,7 @@ const Panel = styled.div`
 
 const Row = styled.div`
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   font-size: 13px;
@@ -41,11 +39,15 @@ const Row = styled.div`
 
 const Label = styled.span`
   color: #8f8f8f;
+  min-width: 0;
 `
 
 const Value = styled.span`
   color: #f2f2f2;
   text-align: right;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 `
 
 const Note = styled(Text)`
@@ -79,10 +81,8 @@ type Props = {
 export function DexSwapFeeDisclosure({ trade }: Props) {
   const { chainId } = useActiveChainId()
   const panel = useSmartRouterFeePanelContext()
-  const ctx = useMemo(
-    () => (trade ? resolveSwapProtocolFeeContext(trade, chainId) : null),
-    [trade, chainId],
-  )
+  const feePlan = useSmartSwapGasProtocolFeePreview(SMART_SWAP_PREVIEW_GAS_UNITS, chainId)
+  const ctx = useMemo(() => (trade ? { ready: true } : null), [trade])
 
   if (!ctx) return null
 
@@ -97,15 +97,12 @@ export function DexSwapFeeDisclosure({ trade }: Props) {
         <Value>{panel?.protocolWrapperLabel ?? 'ADAPTER → WRAPPER (undeployed on mainnet)'}</Value>
       </Row>
       <Row>
-        <Label>Protocol Fee (policy)</Label>
-        <Value>
-          {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_STANDARD_BPS)} standard ·{' '}
-          {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_BUY_MARCO_BPS)} BUY MARCO
-        </Value>
+        <Label>Protocol Fee</Label>
+        <Value>{feePlan ? `~${feePlan.display.protocolFeeBnb} ${feePlan.fee.feeAsset}` : '—'}</Value>
       </Row>
       <Row>
-        <Label>Applied (policy)</Label>
-        <Value>{formatProtocolFeePercent(ctx.protocolFeeBps)}</Value>
+        <Label>Calculation</Label>
+        <Value>25% of estimated gas · finalized at confirmation</Value>
       </Row>
       <Row>
         <Label>LP Fee</Label>
@@ -121,18 +118,11 @@ export function DexSwapFeeDisclosure({ trade }: Props) {
         <Label>Execution</Label>
         <Value>{DEX_ECONOMIC_AUTHORITY.executionModel}</Value>
       </Row>
-      {ctx.buyMarcoApplied ? (
-        <Note color="#F4C430">
-          BUY MARCO incentive applied: protocol fee reduced to 0.20% (policy).
-        </Note>
-      ) : (
-        <Note>Standard D87 protocol fee policy: 0.30%. Collection requires deployed wrapper.</Note>
-      )}
+      <Note>Collection status: Not collected — the atomic protocol wrapper is not deployed on mainnet.</Note>
       <Note>
         DEX-owned application fees route directly to {MELEGA_TREASURY_WALLET_LABEL}. LP fees remain with
         liquidity providers. Execution is non-custodial.
       </Note>
-      <MarcoBuyFeeIncentive trade={trade ?? undefined} compact />
       <PricingLink href="/pricing-fees">Pricing &amp; Fees</PricingLink>
     </Panel>
   )

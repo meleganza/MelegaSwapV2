@@ -10,7 +10,7 @@ import type { SmartSwapRouteHopDisplay } from 'lib/smart-swap-execution-preview'
 
 const Root = styled.div`
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: 12px;
   border: 1px solid rgba(247, 201, 72, 0.18);
   background: #171512;
@@ -24,7 +24,7 @@ const Header = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 `
 
 const Label = styled.div`
@@ -59,9 +59,9 @@ const Track = styled.ol`
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   overflow: hidden;
-  min-height: 52px;
+  min-height: 44px;
 `
 
 const Node = styled.li`
@@ -78,8 +78,8 @@ const LogoWrap = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
 `
 
@@ -111,7 +111,7 @@ const Arrow = styled.li`
   align-items: center;
   justify-content: center;
   align-self: center;
-  height: 32px;
+  height: 28px;
   margin-top: 0;
 `
 
@@ -120,7 +120,7 @@ const Empty = styled.p`
   font-size: 12px;
   color: #9ca3af;
   text-align: center;
-  padding: 10px 0 4px;
+  padding: 5px 0 2px;
 `
 
 const Placeholder = styled.span`

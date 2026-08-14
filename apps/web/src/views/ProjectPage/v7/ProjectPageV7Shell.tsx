@@ -19,8 +19,11 @@ import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/
 import { getFeaturedPackage, getTrendBoostPackage } from 'lib/monetization/packages'
 import type { ProjectClaimMetadata } from 'lib/project-claims/types'
 import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
-import { ClaimProjectWizardModal } from 'views/shared/monetization/ClaimProjectWizardModal'
-import { COMMERCIAL_SERVICES, type CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
+import {
+  COMMERCIAL_SERVICES,
+  VISIBILITY_SERVICES,
+  type CommercialServiceId,
+} from 'views/shared/monetization/commercialCheckoutTypes'
 import { truthDash, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { resolveFounderFeaturedProjects } from 'views/HomeTrade/featuredProjectsCatalog'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
@@ -40,6 +43,8 @@ import {
 import { useProjectLiveMarket } from '../v1/useProjectLiveMarket'
 import { useProjectEconomyByToken } from './useProjectEconomyByToken'
 import { useProjectDexAnalytics } from './useProjectDexAnalytics'
+import { useProjectYieldAnalytics, type ProjectYieldSlice } from './useProjectYieldAnalytics'
+import { useProjectReactions, type ProjectReactionId } from './useProjectReactions'
 import {
   afterFirstPaint,
   markProjectChartReady,
@@ -71,6 +76,16 @@ function preciseUsd(value?: number | null): string {
   if (value == null || !Number.isFinite(value)) return '—'
   if (value >= 0.01) return `$${value.toLocaleString('en-US', { maximumFractionDigits: 4 })}`
   return `$${value.toLocaleString('en-US', { maximumSignificantDigits: 6 })}`
+}
+
+function fullUsd(value?: number | null): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })
 }
 
 function percent24h(value?: number | null): string {
@@ -418,10 +433,10 @@ const SwapSlot = styled.div<{ $expand?: boolean }>`
 `
 const MarketStrip = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   @media (min-width: 960px) {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 const StripCell = styled.div`
@@ -443,13 +458,12 @@ const StripLabel = styled.div`
 `
 const StripValue = styled.div<{ $tone?: 'up' | 'down' | 'mute' }>`
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
+  overflow-wrap: anywhere;
+  font-size: 13px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: ${({ $tone }) => ($tone === 'up' ? pp.ok : $tone === 'down' ? pp.bad : $tone === 'mute' ? pp.mute : '#fff')};
-  white-space: nowrap;
+  white-space: normal;
 `
 const DexCompactRow = styled.div`
   min-height: 34px;
@@ -505,6 +519,66 @@ const EconomyMeta = styled.div`
   font-size: 12px;
   color: rgba(255, 255, 255, 0.72);
   flex: 1;
+`
+const DistributionRow = styled.div`
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+`
+const DistributionDonut = styled.div`
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 13px;
+    border-radius: 50%;
+    background: #0e0e0e;
+  }
+  strong {
+    position: relative;
+    z-index: 1;
+    max-width: 58px;
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+  }
+`
+const DistributionLegend = styled.div`
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  > div {
+    display: grid;
+    grid-template-columns: 7px minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+  }
+  i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+`
+const ActivityBlock = styled.div`
+  padding: 10px 12px 12px;
+  border-top: 1px solid ${pp.line};
+`
+const LiquidityBlock = styled.div`
+  padding: 10px 12px 12px;
+  border-top: 1px solid ${pp.line};
 `
 const IntelGrid = styled.div`
   display: grid;
@@ -589,10 +663,10 @@ const HolderDonut = styled.div`
     position: relative;
     z-index: 1;
     color: #fff;
-    font-size: 15px;
-    max-width: 68px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 12px;
+    max-width: 76px;
+    overflow-wrap: anywhere;
+    text-align: center;
   }
 `
 const BoostConsole = styled.div`
@@ -603,11 +677,9 @@ const BoostConsole = styled.div`
 `
 const BoostRow = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
   gap: 6px;
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
+  overflow-x: auto;
 `
 const BoostTile = styled.button`
   display: flex;
@@ -674,23 +746,6 @@ const RelatedCard = styled(Link)`
     border-color: ${pp.goldLine};
   }
 `
-const HeroCta = styled.button<{ $ghost?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid ${({ $ghost }) => ($ghost ? pp.line : pp.goldLine)};
-  background: ${({ $ghost }) => ($ghost ? 'rgba(255,255,255,0.02)' : 'rgba(244,196,48,0.16)')};
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  &:hover {
-    border-color: ${pp.goldLine};
-  }
-`
 const MarcoActions = styled.div`
   display: flex;
   align-items: center;
@@ -740,6 +795,12 @@ const RelatedGrid = styled.div`
 const DenseBand = styled(Band)`
   margin-bottom: 8px;
 `
+const HeroBand = styled(DenseBand)`
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+`
 const ScoreOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -786,6 +847,61 @@ function timeAgo(ts?: number) {
   return `${Math.floor(sec / 86400)}d`
 }
 
+const DISTRIBUTION_COLORS = ['#f4c430', '#27c499', '#7c8cff', '#e96fb3', '#4aa8ff', '#f1844a']
+
+function distributionGradient(items: Array<{ sharePct: number | null }>): string {
+  let cursor = 0
+  const stops = items
+    .filter((item) => item.sharePct != null && item.sharePct > 0)
+    .map((item, index) => {
+      const start = cursor
+      cursor = Math.min(100, cursor + (item.sharePct ?? 0))
+      return `${DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length]} ${start}% ${cursor}%`
+    })
+  return stops.length ? `conic-gradient(${stops.join(', ')})` : 'rgba(255,255,255,.08)'
+}
+
+function DistributionSummary({
+  items,
+  total,
+  emptyLabel,
+}: {
+  items: Array<{ id: string; label: string; tvlUsd: number | null; sharePct: number | null }>
+  total: string
+  emptyLabel: string
+}) {
+  if (!items.length) return <Muted style={{ margin: 0 }}>{emptyLabel}</Muted>
+  return (
+    <DistributionRow>
+      <DistributionDonut style={{ background: distributionGradient(items) }}>
+        <strong>{total}</strong>
+      </DistributionDonut>
+      <DistributionLegend>
+        {items.slice(0, 6).map((item, index) => (
+          <div key={item.id}>
+            <i style={{ background: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length] }} />
+            <span>{item.label}</span>
+            <strong>{item.sharePct == null ? '—' : `${item.sharePct.toFixed(1)}%`}</strong>
+          </div>
+        ))}
+      </DistributionLegend>
+    </DistributionRow>
+  )
+}
+
+function YieldDetails({ items }: { items: ProjectYieldSlice[] }) {
+  if (!items.length) return null
+  return (
+    <div style={{ display: 'grid', gap: 5 }}>
+      {items.slice(0, 4).map((item) => (
+        <Muted key={item.id} style={{ margin: 0, fontSize: 10 }}>
+          {item.label} · APR {item.apr} · Historical rewards {item.historicalRewards}
+        </Muted>
+      ))}
+    </div>
+  )
+}
+
 export type ProjectPageV7ClaimedProps = {
   mode?: 'claimed'
   document: CanonicalProjectDocument
@@ -824,11 +940,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const [copied, setCopied] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [checkoutService, setCheckoutService] = useState<CommercialServiceId | null>(null)
-  const [claimOpen, setClaimOpen] = useState(false)
   const [tradeReady, setTradeReady] = useState(false)
   const [belowFold, setBelowFold] = useState(false)
   const [chartHistory, setChartHistory] = useState<boolean | null>(null)
-  const [localReact, setLocalReact] = useState<string | null>(null)
   const [scoreOpen, setScoreOpen] = useState(false)
 
   const selected =
@@ -841,6 +955,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const chainId = unclaimed?.chainId ?? selected?.chainId ?? 56
   const contract = unclaimed?.address ?? selected?.contractAddress ?? null
   const pageSlug = claimedProfile?.handle ?? unclaimed?.syntheticSlug ?? document!.slug
+  const reactions = useProjectReactions(pageSlug)
   const isMarcoProject = !isUnclaimed && (pageSlug.toLowerCase() === 'marco' || symbol?.toUpperCase() === 'MARCO')
   const verified =
     !isUnclaimed && document?.identity.verificationState?.meta?.availability === 'AVAILABLE'
@@ -889,6 +1004,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
     largestPairLabel: chainLiquidity[0]?.displayLabel || (symbol ? `${symbol} / WBNB` : null),
   })
   const dexAnalytics = useProjectDexAnalytics(chainId, contract)
+  const projectYield = useProjectYieldAnalytics(chainId, contract)
 
   const trustAttestations = useMemo(
     () =>
@@ -927,10 +1043,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const trendPkg = getTrendBoostPackage('trend_6h')
   const openBoost = useCallback(
     (service: CommercialServiceId) => {
-      if (service === 'claim-project') {
-        setClaimOpen(true)
-        return
-      }
       const svc = COMMERCIAL_SERVICES.find((s) => s.id === service)
       if (svc?.externalHref) {
         window.location.href = svc.externalHref(chainId)
@@ -999,13 +1111,16 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
 
   const boostTiles = useMemo(
     () =>
-      COMMERCIAL_SERVICES.map((s) => {
-        if (s.id === 'featured') return { ...s, priceHint: `$${featuredPkg.usdPrice}` }
-        if (s.id === 'trend-boost') return { ...s, title: 'Trend Boost', priceHint: `$${trendPkg.usdPrice}` }
-        if (s.id === 'claim-project') return { ...s, title: 'Claim', priceHint: 'Wizard' }
-        if (s.id === 'create-farm') return { ...s, title: 'Create Farm', priceHint: 'Studio' }
-        if (s.id === 'create-pool') return { ...s, title: 'Create Pool', priceHint: 'Studio' }
-        if (s.id === 'liquidity') return { ...s, title: 'Create Liquidity', priceHint: 'Studio' }
+      (
+        ['featured', 'sponsored-research', 'trend-boost', 'featured-farm', 'featured-pool'] as CommercialServiceId[]
+      ).flatMap((id) => {
+        const s = VISIBILITY_SERVICES.find((service) => service.id === id)
+        if (!s) return []
+        if (s.id === 'featured') return { ...s, title: 'GET FEATURED', priceHint: `$${featuredPkg.usdPrice}` }
+        if (s.id === 'sponsored-research') return { ...s, title: 'SPONSORED RESEARCH' }
+        if (s.id === 'trend-boost') return { ...s, title: 'TREND BOOST', priceHint: `$${trendPkg.usdPrice}` }
+        if (s.id === 'featured-farm') return { ...s, title: 'FEATURED FARM' }
+        if (s.id === 'featured-pool') return { ...s, title: 'FEATURED POOL' }
         return s
       }),
     [featuredPkg.usdPrice, trendPkg.usdPrice],
@@ -1050,8 +1165,13 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const liveVolume = dexMarket?.volume24hUsd != null ? compactUsd(dexMarket.volume24hUsd) : market.volume24h
   const liveTransactions =
     dexMarket?.transactions24h != null ? dexMarket.transactions24h.toLocaleString() : market.swaps24h
-  const liveMarketCap = market.marketCap !== '—' ? market.marketCap : compactUsd(dexMarket?.marketCapUsd)
-  const liveFdv = market.fdv !== '—' ? market.fdv : compactUsd(dexMarket?.fdvUsd)
+  const liveMarketCap =
+    dexMarket?.marketCapUsd != null
+      ? fullUsd(dexMarket.marketCapUsd)
+      : market.row?.marketCapLabel === 'Market Cap'
+      ? market.marketCap
+      : '—'
+  const liveFdv = dexMarket?.fdvUsd != null ? fullUsd(dexMarket.fdvUsd) : market.fdv
   const marketMetrics = (
     [
       ['Price', livePrice],
@@ -1086,7 +1206,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
       data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}
       data-pp-shell="1"
     >
-      <DenseBand id="overview" data-testid="project-v7-hero" data-project-section="hero">
+      <HeroBand id="overview" data-testid="project-v7-hero" data-project-section="hero">
         <Hero>
           <IdentityHeader data-testid="project-v7-market-first-identity">
             <div data-testid="project-v7-hero-left">
@@ -1226,17 +1346,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                       textOptions={AddToWalletTextOptions.NO_TEXT}
                     />
                   </WalletIconWrap>
-                  {!hasPublishedProfile ? (
-                    <HeroCta
-                      $ghost
-                      type="button"
-                      onClick={() => setClaimOpen(true)}
-                      data-testid="project-v7-claim-cta"
-                      style={{ minHeight: 30, padding: '0 10px', fontSize: 11 }}
-                    >
-                      Claim project
-                    </HeroCta>
-                  ) : null}
                 </ContractRow>
               ) : null}
 
@@ -1284,7 +1393,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                 <h2>About</h2>
                 <p>
                   {isUnclaimed && !hasPublishedProfile
-                    ? 'No project profile yet. Claim this project to publish verified identity and links.'
+                    ? 'No project profile has been published yet.'
                     : aboutFull || description || 'Project identity is indexed; extended information is not available.'}
                 </p>
               </HeroContextBlock>
@@ -1300,8 +1409,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                     <ReactBtn
                       key={id}
                       type="button"
-                      $on={localReact === id}
-                      onClick={() => setLocalReact((v) => (v === id ? null : id))}
+                      $on={reactions.selected === id}
+                      onClick={() => reactions.react(id as ProjectReactionId)}
+                      aria-pressed={reactions.selected === id}
                       data-testid={`project-v7-react-${id}`}
                     >
                       {label}
@@ -1331,7 +1441,8 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                     slug={pageSlug}
                     marketsDocument={marketsDocument}
                     variant="hero"
-                    pairAddress={market.pairAddress}
+                    pairAddress={dexMarket?.primaryPairAddress ?? market.pairAddress}
+                    chainId={chainId}
                     onHistoryAvailability={setChartHistory}
                   />
                 ) : (
@@ -1367,6 +1478,45 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   ) : null}
                 </DexCompactRow>
               ) : null}
+              <LiquidityBlock data-testid="project-v7-liquidity-distribution">
+                <BandHead>
+                  <BandTitle>Liquidity</BandTitle>
+                  <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
+                    ADD LIQUIDITY
+                  </Btn>
+                </BandHead>
+                <DistributionSummary
+                  items={(dexMarket?.pairs ?? []).map((pair) => ({
+                    id: pair.pairAddress,
+                    label: pair.label,
+                    tvlUsd: pair.liquidityUsd,
+                    sharePct: pair.liquiditySharePct,
+                  }))}
+                  total={liveLiquidity}
+                  emptyLabel="Liquidity distribution unavailable."
+                />
+              </LiquidityBlock>
+              <ActivityBlock data-testid="project-v7-activity">
+                <BandHead>
+                  <BandTitle>Latest Activity</BandTitle>
+                </BandHead>
+                {projectActivity.length ? (
+                  projectActivity.map((row) => (
+                    <ActivityRow key={`${row.transactionHash}-${row.logIndex}`}>
+                      <span style={{ color: /sell|remove/i.test(row.eventType) ? pp.bad : pp.ok }}>
+                        {/sell|remove/i.test(row.eventType) ? 'Sell' : 'Buy'}
+                      </span>
+                      <span>
+                        {(row.amounts?.[0] || row.resolvedSymbols?.[0] || '—').toString().slice(0, 18)} ·{' '}
+                        {shortWallet(row.wallet)}
+                      </span>
+                      <span style={{ color: pp.mute }}>{timeAgo(row.timestamp)}</span>
+                    </ActivityRow>
+                  ))
+                ) : (
+                  <Muted style={{ margin: 0 }}>No indexed activity yet.</Muted>
+                )}
+              </ActivityBlock>
             </WorkspacePanel>
             <WorkspacePanel aria-label={symbol ? `Buy ${symbol} with Smart Swap` : 'Smart Swap'}>
               <SwapSlot id="project-v7-swap" data-testid="project-v7-swap" $expand>
@@ -1385,109 +1535,64 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
             </WorkspacePanel>
           </MarketWorkspace>
         </Hero>
-      </DenseBand>
+      </HeroBand>
 
       {belowFold ? (
         <>
           <DenseBand data-testid="project-v7-economy" data-project-section="economy">
             <BandHead>
-              <BandTitle>Earn & Liquidity</BandTitle>
+              <BandTitle>Earn</BandTitle>
               <BandMeta>
                 <MelegaExploreChainBadge chainId={chainId} />
               </BandMeta>
             </BandHead>
             <EconomyGrid>
-              <EconomyCard data-testid="project-v7-economy-liquidity">
-                <EconomyTitle>Liquidity</EconomyTitle>
-                <EconomyMeta>
-                  {liveLiquidity !== '—' ? <span>TVL · {liveLiquidity}</span> : null}
-                  {dexMarket?.pairCount ? <span>{dexMarket.pairCount} indexed pairs</span> : null}
-                  <span>{pairLabel}</span>
-                </EconomyMeta>
-                <Btn $ghost href={`/liquidity-studio?chain=${chainId}`} data-testid="project-v7-view-liquidity">
-                  View Liquidity
-                </Btn>
-              </EconomyCard>
               <EconomyCard data-testid="project-v7-economy-farms">
                 <EconomyTitle>Farms</EconomyTitle>
-                {economy.farms.searched && economy.farms.count === 0 ? (
-                  <Muted data-testid="project-v7-economy-farms-empty">No active farms</Muted>
-                ) : (
-                  <EconomyMeta>
-                    <span>{economy.farms.count} indexed farms</span>
-                    {economy.farms.topLabel ? <span>{economy.farms.topLabel}</span> : null}
-                    {economy.farms.rewardToken ? <span>Reward · {economy.farms.rewardToken}</span> : null}
-                  </EconomyMeta>
-                )}
-                <Btn $ghost href={`/farms?chain=${chainId}`} data-testid="project-v7-view-farms">
-                  View Farms
+                <DistributionSummary
+                  items={projectYield.farms.items}
+                  total={fullUsd(projectYield.farms.totalTvlUsd)}
+                  emptyLabel={projectYield.farms.loading ? 'Indexing farms…' : 'No active farms for this token.'}
+                />
+                <YieldDetails items={projectYield.farms.items} />
+                <Btn $ghost href={`/farms?create=1&chain=${chainId}`} data-testid="project-v7-create-farm">
+                  CREATE FARM
                 </Btn>
               </EconomyCard>
               <EconomyCard data-testid="project-v7-economy-pools">
                 <EconomyTitle>Pools</EconomyTitle>
-                {economy.pools.searched && economy.pools.count === 0 ? (
-                  <Muted data-testid="project-v7-economy-pools-empty">No active pools</Muted>
-                ) : (
-                  <EconomyMeta>
-                    <span>{economy.pools.count} indexed pools</span>
-                    {economy.pools.topLabel ? <span>{economy.pools.topLabel}</span> : null}
-                    {economy.pools.rewardToken ? <span>Reward · {economy.pools.rewardToken}</span> : null}
-                  </EconomyMeta>
-                )}
-                <Btn $ghost href={`/pools?chain=${chainId}`} data-testid="project-v7-view-pools">
-                  View Pools
+                <DistributionSummary
+                  items={projectYield.pools.items}
+                  total={fullUsd(projectYield.pools.totalTvlUsd)}
+                  emptyLabel={projectYield.pools.loading ? 'Indexing pools…' : 'No active pools for this token.'}
+                />
+                <YieldDetails items={projectYield.pools.items} />
+                <Btn $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
+                  CREATE POOL
                 </Btn>
               </EconomyCard>
-            </EconomyGrid>
-          </DenseBand>
-
-          <DenseBand data-testid="project-v7-intel" data-project-section="intel">
-            <IntelGrid>
-              {projectActivity.length > 0 ? (
-                <IntelCard data-testid="project-v7-activity">
-                  <BandHead>
-                    <BandTitle>Latest Activity</BandTitle>
-                  </BandHead>
-                  {projectActivity.map((row) => (
-                    <ActivityRow key={`${row.transactionHash}-${row.logIndex}`}>
-                      <span style={{ color: /sell|remove/i.test(row.eventType) ? pp.bad : pp.ok }}>
-                        {/sell|remove/i.test(row.eventType) ? 'Sell' : 'Buy'}
-                      </span>
-                      <span>
-                        {(row.amounts?.[0] || row.resolvedSymbols?.[0] || '—').toString().slice(0, 18)} ·{' '}
-                        {shortWallet(row.wallet)}
-                      </span>
-                      <span style={{ color: pp.mute }}>{timeAgo(row.timestamp)}</span>
-                    </ActivityRow>
-                  ))}
-                  <Btn
-                    $ghost
-                    href={`/info/tokens/${contract || ''}`}
-                    style={{ marginTop: 8 }}
-                    data-testid="project-v7-view-tx"
-                  >
-                    View all transactions
-                  </Btn>
-                </IntelCard>
-              ) : null}
-
-              <IntelCard data-testid="project-v7-holders">
-                <BandHead>
-                  <BandTitle>Holders</BandTitle>
-                </BandHead>
+              <EconomyCard data-testid="project-v7-holders">
+                <EconomyTitle>Holders</EconomyTitle>
                 <HolderDonutWrap>
                   <HolderDonut aria-label="Indexed holder count">
                     <strong>{dash(market.holders)}</strong>
                   </HolderDonut>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>Indexed holders</div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>Total indexed</div>
                     <Muted style={{ margin: '4px 0 0', fontSize: 11 }} data-testid="project-v7-holders-dist">
-                      Live ownership count
+                      Wallets · —
+                      <br />
+                      Smart contracts · —
                     </Muted>
                   </div>
                 </HolderDonutWrap>
-              </IntelCard>
+                <Muted style={{ margin: 0, fontSize: 10 }}>Holder-type distribution is not indexed.</Muted>
+              </EconomyCard>
+            </EconomyGrid>
+          </DenseBand>
 
+          <DenseBand data-testid="project-v7-intel" data-project-section="intel">
+            <IntelGrid style={{ gridTemplateColumns: '1fr' }}>
               <IntelCard data-testid="project-v7-score">
                 <BandHead>
                   <BandTitle>Melega Score</BandTitle>
@@ -1661,25 +1766,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
         chainId={chainId}
         initialService={checkoutService}
         identityReady
-        onOpenClaim={() => setClaimOpen(true)}
-      />
-      <ClaimProjectWizardModal
-        open={claimOpen}
-        onClose={() => setClaimOpen(false)}
-        projectSlug={document?.slug ?? pageSlug}
-        projectName={displayName}
-        projectContract={contract}
-        projectChainId={chainId}
-        projectSymbol={symbol}
-        initialDraft={{
-          handle: pageSlug,
-          description: aboutFull || description || '',
-          website: websiteUrl || '',
-          x: xUrl || '',
-          telegram: telegramUrl || '',
-          discord: discordUrl || '',
-          logo: logoUrl || '',
-        }}
       />
     </Page>
   )
