@@ -1,20 +1,14 @@
-import { BinanceWalletConnector } from '@pancakeswap/wagmi/connectors/binanceWallet'
-import { BloctoConnector } from '@pancakeswap/wagmi/connectors/blocto'
-import { TrustWalletConnector } from '@pancakeswap/wagmi/connectors/trustWallet'
 import { bsc, mainnet, arbitrum, polygon, optimism, avalanche, fantom } from 'wagmi/chains'
 import { Chain, configureChains, createClient } from 'wagmi'
 import memoize from 'lodash/memoize'
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-import { LedgerConnector } from 'wagmi/connectors/ledger'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
-import { SafeConnector } from './safeConnector'
+import { noopStorage } from '@wagmi/core'
 import { BSC_TESTNET_RPC_URLS } from 'config/constants/rpc'
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 
-const arbitrum1 : Chain = {
+const arbitrum1: Chain = {
   id: 42161,
   name: 'Arbitrum One',
   network: 'arbitrum',
@@ -22,61 +16,61 @@ const arbitrum1 : Chain = {
   rpcUrls: {
     alchemy: { http: ['https://arb-mainnet.g.alchemy.com/v2'], webSocket: ['wss://arb-mainnet.g.alchemy.com/v2'] },
     infura: { http: ['https://arbitrum-mainnet.infura.io/v3'], webSocket: ['wss://arbitrum-mainnet.infura.io/ws/v3'] },
-    default: { http: ['https://arbitrum.llamarpc.com'] }
+    default: { http: ['https://arbitrum.llamarpc.com'] },
   },
   blockExplorers: {
     etherscan: { name: 'Arbiscan', url: 'https://arbiscan.io' },
-    default: { name: 'Arbiscan', url: 'https://arbiscan.io' }
+    default: { name: 'Arbiscan', url: 'https://arbiscan.io' },
   },
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 7654707
-    }
-  }
+      blockCreated: 7654707,
+    },
+  },
 }
 
-export const ethereum : Chain = {
+export const ethereum: Chain = {
   id: 1,
   name: 'Ethereum Chain',
   network: 'ethereum',
   nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.ankr.com/eth'] }
+    default: { http: ['https://rpc.ankr.com/eth'] },
   },
   blockExplorers: {
     etherscan: { name: 'EtherScan', url: 'https://etherscan.io' },
-    default: { name: 'EtherScan', url: 'https://etherscan.io/' }
+    default: { name: 'EtherScan', url: 'https://etherscan.io/' },
   },
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 15921452      
-    }
-  }
+      blockCreated: 15921452,
+    },
+  },
 }
 
-const bsc1 : Chain = {
+const bsc1: Chain = {
   id: 56,
   name: 'BNB Smart Chain',
   network: 'bsc',
   nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://bsc-rpc.publicnode.com'] }
+    default: { http: ['https://bsc-rpc.publicnode.com'] },
   },
   blockExplorers: {
     etherscan: { name: 'BscScan', url: 'https://bscscan.com' },
-    default: { name: 'BscScan', url: 'https://bscscan.com' }
+    default: { name: 'BscScan', url: 'https://bscscan.com' },
   },
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 15921452      
-    }
-  }
+      blockCreated: 15921452,
+    },
+  },
 }
 
-export const polygon1 : Chain = {
+export const polygon1: Chain = {
   id: 137,
   name: 'Polygon',
   network: 'matic',
@@ -85,115 +79,115 @@ export const polygon1 : Chain = {
     // alchemy: { http: ['https://polygon-mainnet.g.alchemy.com/v2'], webSocket: ['wss://polygon-mainnet.g.alchemy.com/v2'] },
     // infura: { http: ['https://polygon-mainnet.infura.io/v3'], webSocket: ['wss://polygon-mainnet.infura.io/ws/v3'] },
     // default: { http: ['https://polygon.llamarpc.com'] }
-    default: { http: ['https://polygon-bor-rpc.publicnode.com'] }
+    default: { http: ['https://polygon-bor-rpc.publicnode.com'] },
   },
   blockExplorers: {
     etherscan: { name: 'PolygonScan', url: 'https://polygonscan.com' },
-    default: { name: 'PolygonScan', url: 'https://polygonscan.com' }
+    default: { name: 'PolygonScan', url: 'https://polygonscan.com' },
   },
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 60101024
-    }
-  }
+      blockCreated: 60101024,
+    },
+  },
 }
 
-const zksync : Chain = {
+const zksync: Chain = {
   id: 324,
-  name: "zkSync Era",
-  network: "zksync",
+  name: 'zkSync Era',
+  network: 'zksync',
   nativeCurrency: {
     decimals: 18,
-    name: "Ether",
-    symbol: "ETH"
+    name: 'Ether',
+    symbol: 'ETH',
   },
   rpcUrls: {
-    default: { http: ["https://mainnet.era.zksync.io"] }
+    default: { http: ['https://mainnet.era.zksync.io'] },
   },
   blockExplorers: {
-    etherscan: { name: "zkSync Era Explorer", url: "https://era.zksync.network" },
-    default: { name: "zkSync Era Explorer", url: "https://era.zksync.network" }
+    etherscan: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
+    default: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
   },
   contracts: {
     multicall3: {
-      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
-      blockCreated: 6884829
-    }
-  }
-};
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 6884829,
+    },
+  },
+}
 
-const pulsechain : Chain = {
+const pulsechain: Chain = {
   id: 369,
-  name: "PulseChain",
-  network: "pulse",
+  name: 'PulseChain',
+  network: 'pulse',
   nativeCurrency: {
     decimals: 18,
-    name: "Pulse",
-    symbol: "PLS"
+    name: 'Pulse',
+    symbol: 'PLS',
   },
   rpcUrls: {
-    default: { http: ["https://rpc.pulsechain.com"] }
+    default: { http: ['https://rpc.pulsechain.com'] },
   },
   blockExplorers: {
-    etherscan: { name: "PulseChain Explorer", url: "https://scan.pulsehotlist.com/#" },
-    default: { name: "PulseChain Explorer", url: "https://scan.pulsehotlist.com/#" }
+    etherscan: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
+    default: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
   },
   contracts: {
     multicall3: {
-      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
-      blockCreated: 14353601
-    }
-  }
-};
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 14353601,
+    },
+  },
+}
 
-const cronos : Chain = {
+const cronos: Chain = {
   id: 25,
-  name: "Cronos",
-  network: "cronos",
+  name: 'Cronos',
+  network: 'cronos',
   nativeCurrency: {
     decimals: 18,
-    name: "Cronos",
-    symbol: "CRO"
+    name: 'Cronos',
+    symbol: 'CRO',
   },
   rpcUrls: {
-    default: { http: ["https://evm.cronos.org"] }
+    default: { http: ['https://evm.cronos.org'] },
   },
   blockExplorers: {
-    etherscan: { name: "CronoScan", url: "https://cronoscan.com" },
-    default: { name: "CronoScan", url: "https://cronoscan.com" }
+    etherscan: { name: 'CronoScan', url: 'https://cronoscan.com' },
+    default: { name: 'CronoScan', url: 'https://cronoscan.com' },
   },
   contracts: {
     multicall3: {
-      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
-      blockCreated: 1963112
-    }
-  }
-};
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 1963112,
+    },
+  },
+}
 
-export const base : Chain = {
+export const base: Chain = {
   id: 8453,
-  name: "Base",
-  network: "base",
+  name: 'Base',
+  network: 'base',
   nativeCurrency: {
     decimals: 18,
-    name: "Ether",
-    symbol: "ETH"
+    name: 'Ether',
+    symbol: 'ETH',
   },
   rpcUrls: {
-    default: { http: ["https://base-rpc.publicnode.com"] }
+    default: { http: ['https://base-rpc.publicnode.com'] },
   },
   blockExplorers: {
-    etherscan: { name: "BaseScan", url: "https://basescan.org" },
-    default: { name: "BaseScan", url: "https://basescan.org" }
+    etherscan: { name: 'BaseScan', url: 'https://basescan.org' },
+    default: { name: 'BaseScan', url: 'https://basescan.org' },
   },
   contracts: {
     multicall3: {
-      address: "0x4fe5CBf4658d6Ca76431dD05D2D7aD6BbCD20891",
-      blockCreated: 13912277
-    }
-  }
-};
+      address: '0x4fe5CBf4658d6Ca76431dD05D2D7aD6BbCD20891',
+      blockCreated: 13912277,
+    },
+  },
+}
 
 const bscTestnet: Chain = {
   id: 97,
@@ -294,51 +288,7 @@ export const injectedConnector = new InjectedConnector({
   },
 })
 
-export const coinbaseConnector = new CoinbaseWalletConnector({
-  chains,
-  options: {
-    appName: 'Melega DEX',
-    appLogoUrl: 'https://melega.finance/main.jpg',
-  },
-})
-
-export const walletConnectConnector = new WalletConnectConnector({
-  chains,
-  options: {
-    qrcode: true,
-  },
-})
-
-export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
-  chains,
-  options: {
-    qrcode: false,
-  },
-})
-
 export const metaMaskConnector = new MetaMaskConnector({
-  chains,
-  options: {
-    shimDisconnect: false,
-    shimChainChangedDisconnect: false,
-  },
-})
-
-const bloctoConnector = new BloctoConnector({
-  chains,
-  options: {
-    defaultChainId: 56,
-    appId: 'e2f2f0cd-3ceb-4dec-b293-bb555f2ed5af',
-  },
-})
-
-const ledgerConnector = new LedgerConnector({
-  chains,
-})
-
-export const bscConnector = new BinanceWalletConnector({ chains })
-
-export const trustWalletConnector = new TrustWalletConnector({
   chains,
   options: {
     shimDisconnect: false,
@@ -349,18 +299,90 @@ export const trustWalletConnector = new TrustWalletConnector({
 export const client = createClient({
   autoConnect: false,
   provider,
-  connectors: [
-    new SafeConnector({ chains }),
-    metaMaskConnector,
-    injectedConnector,
-    coinbaseConnector,
-    walletConnectConnector,
-    bscConnector,
-    bloctoConnector,
-    ledgerConnector,
-    trustWalletConnector,
-  ],
+  storage: typeof window === 'undefined' ? noopStorage : undefined,
+  // Keep the synchronous boot path limited to injected wallets. Advanced
+  // connector SDKs are loaded only for wallet intent or session restoration.
+  connectors: [metaMaskConnector, injectedConnector],
 })
+
+let extendedWalletConnectorsPromise: Promise<void> | null = null
+
+function installConnectors(connectors: typeof client.connectors) {
+  client.config.connectors = connectors
+  client.setState((state) => ({ ...state, connectors }))
+}
+
+/** Load connector SDKs without charging every route for WalletConnect/Ledger/Safe. */
+export function loadExtendedWalletConnectors(): Promise<void> {
+  if (client.connectors.some((connector) => connector.id === 'walletConnect')) return Promise.resolve()
+  if (extendedWalletConnectorsPromise) return extendedWalletConnectorsPromise
+
+  extendedWalletConnectorsPromise = Promise.all([
+    import('@pancakeswap/wagmi/connectors/binanceWallet'),
+    import('@pancakeswap/wagmi/connectors/blocto'),
+    import('@pancakeswap/wagmi/connectors/trustWallet'),
+    import('wagmi/connectors/coinbaseWallet'),
+    import('wagmi/connectors/walletConnect'),
+    import('wagmi/connectors/ledger'),
+    import('./safeConnector'),
+  ])
+    .then(([binance, blocto, trust, coinbase, walletConnect, ledger, safe]) => {
+      const coinbaseConnector = new coinbase.CoinbaseWalletConnector({
+        chains,
+        options: {
+          appName: 'Melega DEX',
+          appLogoUrl: 'https://melega.finance/main.jpg',
+        },
+      })
+      const walletConnectConnector = new walletConnect.WalletConnectConnector({
+        chains,
+        options: { qrcode: true },
+      })
+      const bscConnector = new binance.BinanceWalletConnector({ chains })
+      const bloctoConnector = new blocto.BloctoConnector({
+        chains,
+        options: {
+          defaultChainId: 56,
+          appId: 'e2f2f0cd-3ceb-4dec-b293-bb555f2ed5af',
+        },
+      })
+      const ledgerConnector = new ledger.LedgerConnector({ chains })
+      const trustWalletConnector = new trust.TrustWalletConnector({
+        chains,
+        options: {
+          shimDisconnect: false,
+          shimChainChangedDisconnect: false,
+        },
+      })
+
+      installConnectors([
+        new safe.SafeConnector({ chains }),
+        metaMaskConnector,
+        injectedConnector,
+        coinbaseConnector,
+        walletConnectConnector,
+        bscConnector,
+        bloctoConnector,
+        ledgerConnector,
+        trustWalletConnector,
+      ])
+    })
+    .catch((error) => {
+      extendedWalletConnectorsPromise = null
+      throw error
+    })
+
+  return extendedWalletConnectorsPromise
+}
+
+/** Restore only the connector SDK used by a persisted/embedded wallet session. */
+export function requiresExtendedWalletSession(): boolean {
+  if (typeof window === 'undefined') return false
+  const lastUsedConnector = client.storage?.getItem('wallet')
+  const coreConnector = lastUsedConnector === 'metaMask' || lastUsedConnector === 'injected'
+  const embeddedWallet = window.parent !== window
+  return embeddedWallet || Boolean(lastUsedConnector && !coreConnector)
+}
 
 export const CHAIN_IDS = chains.map((c) => c.id)
 

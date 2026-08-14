@@ -20,6 +20,7 @@ import { atom, useAtom } from 'jotai'
 import { lazy, PropsWithChildren, Suspense, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { StepIntro } from './components/Intro'
+import { WalletConnectorNotFoundError, WalletSwitchChainError } from './errors'
 import {
   desktopWalletSelectionClass,
   modalWrapperClass,
@@ -58,10 +59,6 @@ interface WalletModalV2Props<T = unknown> extends ModalV2Props {
   docLink: string
   docText: string
 }
-
-export class WalletConnectorNotFoundError extends Error {}
-
-export class WalletSwitchChainError extends Error {}
 
 const errorAtom = atom<string>('')
 

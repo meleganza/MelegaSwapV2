@@ -1,12 +1,11 @@
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import type { NextPageWithLayout } from './_app-types'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 
-// The current wallet/theme tree is not hydration-deterministic yet. Keep the
-// product runtime client-only until those providers can be server-rendered
-// without React replacing the page during hydration.
-const FullMyApp = dynamic(() => import('./_app-full'), { ssr: false })
+// Render the approved shell on the server so the first response is useful HTML.
+// Wallet and polling effects remain client-only inside the runtime tree.
+const FullMyApp = dynamic(() => import('app-runtime/FullMyApp'), { ssr: true })
 
 export default function App(props: AppProps) {
   const Component = props.Component as NextPageWithLayout
@@ -24,8 +23,5 @@ export default function App(props: AppProps) {
     )
   }
 
-  // data-melega-app-boot-shell lives outside the React root in _document.
-  // Keep it visible until _app-full has actually mounted instead of hiding it
-  // one render earlier and presenting a blank page while the main chunk loads.
   return <FullMyApp {...props} />
 }

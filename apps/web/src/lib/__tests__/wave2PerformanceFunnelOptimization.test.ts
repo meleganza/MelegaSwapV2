@@ -16,14 +16,11 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
 
   it('preserves early primary-nav taps while keeping normal transitions soft', () => {
     const app = load('pages/_app.tsx')
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const guard = load('lib/navigation/preserveEarlyNavigation.ts')
     const bottomNav = load('design-system/melega/components/BottomNavigation/MelegaBottomNavigation.tsx')
-    expect(app).toContain("dynamic(() => import('./_app-full')")
-    expect(app).toContain('{ ssr: false }')
-    expect(app).toContain('data-melega-app-boot-shell="true"')
-    expect(app).toContain('<FullAppLoading />')
-    expect(app).toContain("html[data-melega-hydrated='true']")
+    expect(app).toContain("dynamic(() => import('app-runtime/FullMyApp')")
+    expect(app).toContain('{ ssr: true }')
     expect(guard).toContain("document.readyState === 'complete'")
     expect(guard).toContain("dataset.melegaHydrated === 'true'")
     expect(fullApp).toContain("dataset.melegaHydrated = 'true'")
@@ -46,13 +43,13 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
     const updaters = load('app-shell/GlobalUpdaters.tsx')
     const walletUpdaters = load('state/transactions/WalletTransactionUpdaters.tsx')
     expect(updaters).toContain("dynamic(() => import('state/transactions/WalletTransactionUpdaters')")
-    expect(updaters).toContain('address ? <WalletTransactionUpdaters /> : null')
+    expect(updaters).toContain("profile === 'transactional' && address ? <WalletTransactionUpdaters /> : null")
     expect(walletUpdaters).toContain('TransactionUpdater')
     expect(walletUpdaters).toContain('TreasuryHandoffUpdater')
   })
 
   it('keeps non-visual runtimes and heavyweight search data out of first paint', () => {
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const updaters = load('app-shell/GlobalUpdaters.tsx')
     const search = load('app-shell/components/GlobalSearch.tsx')
     const wallet = load('components/ConnectWalletButton.tsx')
@@ -72,7 +69,7 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
   })
 
   it('uses focused UIKit entry points for global providers instead of the full component barrel', () => {
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const providers = load('Providers.tsx')
     expect(fullApp).toContain("from '@pancakeswap/uikit/src/ResetCSS'")
     expect(fullApp).toContain("from '@pancakeswap/uikit/src/components/ScrollToTopButton/ScrollToTopButtonV2'")
@@ -131,7 +128,7 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
   })
 
   it('keeps blocklist safety immediate while blockchain updaters wait for idle time', () => {
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const blocklist = load('app-shell/Blocklist.tsx')
     const constants = load('config/constants/index.ts')
     expect(fullApp).toContain("import Blocklist from 'app-shell/Blocklist'")
@@ -168,7 +165,7 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
   })
 
   it('keeps global SEO metadata independent from farm, pool and contract runtimes', () => {
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const page = load('components/Layout/Page.tsx')
     const meta = load('components/Layout/PageMeta.tsx')
     expect(fullApp).toContain("from 'components/Layout/PageMeta'")
@@ -199,7 +196,7 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
 
   it('serves one local premium typography system without render-blocking font providers', () => {
     const document = load('pages/_document.tsx')
-    const fullApp = load('pages/_app-full.tsx')
+    const fullApp = load('app-runtime/FullMyApp.tsx')
     const globalStyle = load('style/Global.tsx')
     const typography = load('design-system/melega/tokens/ds001/typography.ts')
     const economicShell = load('views/EconomicOS/components/EconomicPageShell.tsx')

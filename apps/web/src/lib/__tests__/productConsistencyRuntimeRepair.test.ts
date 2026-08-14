@@ -18,7 +18,7 @@ describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
   })
 
   it('P0 root: Next Router owns canonical history; MemoryRouter is legacy-only', () => {
-    const app = load('pages/_app-full.tsx')
+    const app = load('app-runtime/FullMyApp.tsx')
     const legacy = load('app-shell/LegacyReactRouterBoundary.tsx')
     expect(app).not.toContain("from 'react-router-dom'")
     expect(app).toContain('LegacyReactRouterBoundary')

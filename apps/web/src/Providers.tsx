@@ -37,7 +37,9 @@ const Providers: React.FC<React.PropsWithChildren<{ store: Store; children: Reac
                   // recent response instead of starting duplicate RPC/API work
                   // during route changes and wallet reconnection.
                   dedupingInterval: 10_000,
-                  focusThrottleInterval: 30_000,
+                  focusThrottleInterval: 60_000,
+                  refreshWhenHidden: false,
+                  refreshWhenOffline: false,
                   keepPreviousData: true,
                 }}
               >

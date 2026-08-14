@@ -12,7 +12,7 @@ import { assessAvalancheRouterDeployGates, AUTHORIZED_MELEGA_DEPLOYER } from 'li
 
 const WEB = path.resolve(__dirname, '../..')
 const DEPLOY_PAGE = path.resolve(WEB, 'pages/runtime/deployment/index.tsx')
-const APP_FULL = path.resolve(WEB, 'pages/_app-full.tsx')
+const APP_FULL = path.resolve(WEB, 'app-runtime/FullMyApp.tsx')
 const NETWORK_MODAL = path.resolve(WEB, 'components/NetworkModal/NetworkModal.tsx')
 const SWITCH_MODAL = path.resolve(WEB, 'components/Menu/UserMenu/NetworkSwitchModal.tsx')
 const PANEL = path.resolve(WEB, 'views/DeploymentOrchestrator/FounderAvalancheV2RouterPanel.tsx')
@@ -21,9 +21,7 @@ describe('Avalanche deployment runtime crash guards', () => {
   it('Avalanche is LIVE with bound Router and does not crash without liquidity', () => {
     const avax = getMelegaChain(43114)!
     expect(avax.status).toBe('LIVE')
-    expect(getMelegaRouterAddress(43114)?.toLowerCase()).toBe(
-      '0x5a38b0b75c2e199fd8098710594115a35abb6c7f',
-    )
+    expect(getMelegaRouterAddress(43114)?.toLowerCase()).toBe('0x5a38b0b75c2e199fd8098710594115a35abb6c7f')
     expect(avax.contracts.factory).toBeTruthy()
   })
 

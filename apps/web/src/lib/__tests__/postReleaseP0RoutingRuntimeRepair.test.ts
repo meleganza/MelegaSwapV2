@@ -32,7 +32,7 @@ describe('Post-release P0 routing & runtime repair', () => {
   })
 
   it('canonical app uses Next Router and isolates React Router to a lazy legacy boundary', () => {
-    const app = load('pages/_app-full.tsx')
+    const app = load('app-runtime/FullMyApp.tsx')
     const legacy = load('app-shell/LegacyReactRouterBoundary.tsx')
     expect(app).not.toContain("from 'react-router-dom'")
     expect(app).toContain("dynamic(() => import('app-shell/LegacyReactRouterBoundary')")

@@ -4,6 +4,7 @@ import useThemeCookie from 'hooks/useThemeCookie'
 import useUserAgent from 'hooks/useUserAgent'
 import { useRouter } from 'next/router'
 import { usePollBlockNumber } from 'state/block/hooks'
+import { resolveRuntimeProfile } from 'app-runtime/runtimeProfile'
 
 function BlockPollingRuntime({ refreshInterval }: { refreshInterval: number }) {
   usePollBlockNumber(refreshInterval)
@@ -13,20 +14,7 @@ function BlockPollingRuntime({ refreshInterval }: { refreshInterval: number }) {
 function StandardRuntimeHooks() {
   const router = useRouter()
   const path = router.pathname
-  const needsBlockPolling =
-    path === '/' ||
-    [
-      '/swap',
-      '/liquidity',
-      '/farms',
-      '/pools',
-      '/list',
-      '/projects',
-      '/project-hq',
-      '/token',
-      '/bridge',
-      '/portfolio',
-    ].some((prefix) => path === prefix || path.startsWith(`${prefix}/`))
+  const profile = resolveRuntimeProfile(path)
   const isTransactionCritical =
     path === '/swap' || path.startsWith('/swap/') || path === '/bridge' || path.startsWith('/bridge/')
   const refreshInterval = isTransactionCritical ? 6000 : path === '/list' || path === '/projects' ? 30000 : 12000
@@ -35,7 +23,7 @@ function StandardRuntimeHooks() {
   useAccountEventListener()
   useSentryUser()
   useThemeCookie()
-  return needsBlockPolling ? <BlockPollingRuntime refreshInterval={refreshInterval} /> : null
+  return profile === 'static' ? null : <BlockPollingRuntime refreshInterval={refreshInterval} />
 }
 
 function MiniProgramRuntimeHooks() {

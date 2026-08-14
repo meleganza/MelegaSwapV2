@@ -25,7 +25,7 @@ import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
 import { CHAIN_IDS } from 'utils/wagmi'
 import { useRouteTransitionRecovery } from 'hooks/useRouteTransitionRecovery'
-import type { NextPageWithLayout } from './_app-types'
+import type { NextPageWithLayout } from './appTypes'
 
 const GlobalRuntimeHooks = dynamic(() => import('app-shell/GlobalRuntimeHooks'), { ssr: false })
 const NetworkModal = dynamic(() => import('components/NetworkModal').then((module) => module.NetworkModal), {
@@ -87,7 +87,8 @@ const App = ({ Component, pageProps, clientRuntimeReady }: AppPropsWithLayout) =
 }
 
 export default function FullMyApp(props: AppProps<{ initialReduxState: any }>) {
-  const { pageProps, Component } = props
+  const { pageProps } = props
+  const Component = props.Component as NextPageWithLayout
   const store = useStore(pageProps.initialReduxState)
   const [globalRuntimeReady, setGlobalRuntimeReady] = useState(false)
 
@@ -113,7 +114,7 @@ export default function FullMyApp(props: AppProps<{ initialReduxState: any }>) {
     return () => window.clearTimeout(timeoutHandle)
   }, [])
 
-  const app = <App {...props} clientRuntimeReady={globalRuntimeReady} />
+  const app = <App {...props} Component={Component} clientRuntimeReady={globalRuntimeReady} />
 
   return (
     <>

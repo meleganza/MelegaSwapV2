@@ -10,5 +10,5 @@ export type NextPageWithLayout = NextPage & {
   mp?: boolean
   chains?: number[]
   isShowScrollToTopButton?: true
-  Meta?: React.FC<React.PropsWithChildren<unknown>>
+  Meta?: React.FC<any>
 }

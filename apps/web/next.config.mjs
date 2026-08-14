@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url'
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url))
 const localTokensPackage = path.resolve(webRoot, '../../packages/tokens')
+const localUiWalletsPackage = path.resolve(webRoot, '../../packages/ui-wallets')
+const localUikitPackage = path.resolve(webRoot, '../../packages/uikit')
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -42,24 +44,24 @@ const config = {
   },
   experimental: {
     scrollRestoration: true,
-    transpilePackages: [
-      '@pancakeswap/ui',
-      '@pancakeswap/uikit',
-      '@pancakeswap/swap-sdk-core',
-      '@pancakeswap/farms',
-      '@pancakeswap/localization',
-      '@pancakeswap/hooks',
-      '@pancakeswap/multicall',
-      '@pancakeswap/token-lists',
-      '@pancakeswap/utils',
-      '@pancakeswap/tokens',
-      '@pancakeswap/smart-router',
-      '@wagmi',
-      'wagmi',
-      '@ledgerhq',
-      '@gnosis.pm/safe-apps-wagmi',
-    ],
   },
+  transpilePackages: [
+    '@pancakeswap/ui',
+    '@pancakeswap/uikit',
+    '@pancakeswap/swap-sdk-core',
+    '@pancakeswap/farms',
+    '@pancakeswap/localization',
+    '@pancakeswap/hooks',
+    '@pancakeswap/multicall',
+    '@pancakeswap/token-lists',
+    '@pancakeswap/utils',
+    '@pancakeswap/tokens',
+    '@pancakeswap/smart-router',
+    '@wagmi',
+    'wagmi',
+    '@ledgerhq',
+    '@gnosis.pm/safe-apps-wagmi',
+  ],
   staticPageGenerationTimeout: 1000,
   reactStrictMode: true,
   swcMinify: true,
@@ -287,6 +289,8 @@ const config = {
     webpackConfig.resolve.alias = {
       ...webpackConfig.resolve.alias,
       '@pancakeswap/tokens': localTokensPackage,
+      '@pancakeswap/ui-wallets': localUiWalletsPackage,
+      '@pancakeswap/uikit': localUikitPackage,
     }
     return webpackConfig
   },

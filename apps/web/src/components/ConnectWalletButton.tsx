@@ -3,11 +3,12 @@ import { Button, ButtonProps } from '@pancakeswap/uikit'
 import { createWallets, getDocLink } from 'config/wallet'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useAuth from 'hooks/useAuth'
+import { loadExtendedWalletConnectors } from 'utils/wagmi'
 import dynamic from 'next/dynamic'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
 import { useActiveHandle } from 'hooks/useEagerConnect.bmp.ts'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useConnect } from 'wagmi'
 import Trans from './Trans'
 
@@ -18,6 +19,18 @@ export const preloadConnectWalletModal = () => {
     walletModalPromise = import('@pancakeswap/ui-wallets').then((walletUi) => walletUi.WalletModalV2)
   }
   return walletModalPromise
+}
+
+let walletRuntimePromise: Promise<unknown> | null = null
+
+export const preloadConnectWalletRuntime = () => {
+  if (!walletRuntimePromise) {
+    walletRuntimePromise = Promise.all([preloadConnectWalletModal(), loadExtendedWalletConnectors()]).catch((error) => {
+      walletRuntimePromise = null
+      throw error
+    })
+  }
+  return walletRuntimePromise
 }
 
 const WalletModalV2 = dynamic<any>(preloadConnectWalletModal, { ssr: false, loading: () => null })
@@ -36,26 +49,11 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
 
   const docLink = useMemo(() => getDocLink(code), [code])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined
-    const idleWindow = window as Window & {
-      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
-      cancelIdleCallback?: (handle: number) => void
-    }
-    if (idleWindow.requestIdleCallback) {
-      const handle = idleWindow.requestIdleCallback(() => void preloadConnectWalletModal(), { timeout: 1500 })
-      return () => idleWindow.cancelIdleCallback?.(handle)
-    }
-    const handle = window.setTimeout(() => void preloadConnectWalletModal(), 600)
-    return () => window.clearTimeout(handle)
-  }, [])
-
   const handleClick = () => {
     if (typeof __NEZHA_BRIDGE__ !== 'undefined') {
       handleActive()
     } else {
-      void preloadConnectWalletModal()
-      setOpen(true)
+      void preloadConnectWalletRuntime().then(() => setOpen(true))
     }
   }
 
@@ -66,11 +64,11 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
       <Button
         onClick={handleClick}
         onPointerEnter={(event) => {
-          void preloadConnectWalletModal()
+          void preloadConnectWalletRuntime()
           onPointerEnter?.(event)
         }}
         onFocus={(event) => {
-          void preloadConnectWalletModal()
+          void preloadConnectWalletRuntime()
           onFocus?.(event)
         }}
         {...buttonProps}

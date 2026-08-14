@@ -7,7 +7,7 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { poolsHero } from './poolsHeroTokens'
 
-const POOLS_HERO_ARTWORK = '/images/pools/pools-hero-marco-3d.png'
+const POOLS_HERO_ARTWORK = '/images/pools/pools-hero-marco-3d.webp'
 
 const cinematicDrift = keyframes`
   0%, 100% { transform: scale(1.05) translate3d(-0.8%, 0.3%, 0); }

@@ -13,6 +13,8 @@
     "prebuild": "yarn lb:manifest:check && node scripts/pools-current-participants-snapshot.mjs",
     "build": "next build",
     "start": "next start",
+    "performance:baseline": "node scripts/lightspeed-baseline.mjs",
+    "performance:check": "node scripts/lightspeed-baseline.mjs --check",
     "test": "LC_ALL=\"en_US.UTF-8\" vitest --run",
     "test:watch": "LC_ALL=\"en_US.UTF-8\" vitest --watch",
     "test:config": "vitest --run --config vitest-config-test.config.ts",

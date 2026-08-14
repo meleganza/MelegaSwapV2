@@ -68,7 +68,7 @@ describe('POOLS_MODULE_001 Hero', () => {
 
   it('uses the Founder-approved MARCO 3D artwork with premium reduced-motion-safe animation', () => {
     const artwork = load('modules/PoolsHeroArtwork.tsx')
-    expect(artwork).toContain('/images/pools/pools-hero-marco-3d.png')
+    expect(artwork).toContain('/images/pools/pools-hero-marco-3d.webp')
     expect(artwork).toContain('data-pools-hero-approved-artwork="marco-3d"')
     expect(artwork).toContain('data-pools-hero-animated="true"')
     expect(artwork).toContain('prefers-reduced-motion: reduce')

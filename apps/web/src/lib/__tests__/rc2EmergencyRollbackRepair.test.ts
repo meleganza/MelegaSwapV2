@@ -54,7 +54,7 @@ describe('RC2 emergency — header / bottom nav', () => {
   })
 
   it('app preserves the page tree across soft navigation and recovers stale chunks', () => {
-    const app = load('pages/_app-full.tsx')
+    const app = load('app-runtime/FullMyApp.tsx')
     expect(app).not.toMatch(/key=\{routeKey\}/)
     expect(app).not.toContain('const routeKey')
     expect(app).toMatch(/useRouteTransitionRecovery/)

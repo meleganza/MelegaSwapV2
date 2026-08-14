@@ -1,9 +1,8 @@
-import { WalletConfigV2 } from '@pancakeswap/ui-wallets'
+import type { WalletConfigV2 } from '@pancakeswap/ui-wallets'
 import { WalletFilledIcon } from '@pancakeswap/uikit'
 // import type { ExtendEthereum } from 'global'
 // import { isFirefox } from 'react-device-detect'
 // import WalletConnectProvider from '@walletconnect/ethereum-provider'
-import { getTrustWalletProvider } from '@pancakeswap/wagmi/connectors/trustWallet'
 import { metaMaskConnector } from '../utils/wagmi'
 
 export enum ConnectorNames {
@@ -43,6 +42,12 @@ const isMetamaskInstalled = () => {
   }
 
   return false
+}
+
+const getTrustWalletProvider = () => {
+  if (typeof window === 'undefined') return undefined
+  if (window.ethereum?.isTrust || window.ethereum?.isTrustWallet) return window.ethereum
+  return window.ethereum?.providers?.find((provider) => provider.isTrust || provider.isTrustWallet)
 }
 
 const walletsConfig = ({
