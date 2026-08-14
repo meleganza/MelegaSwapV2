@@ -5,6 +5,9 @@ import {
   buildTrendBoostQuote,
   createTrendBoostOrder,
   getTrendBoostOrder,
+  hydrateTrendBoostOrder,
+  persistTrendBoostOrderDurably,
+  trendBoostOrderStorageReady,
   prepareTrendBoostPayment,
   activateVerifiedTrendBoostWindow,
   updateTrendBoostOrder,
@@ -67,6 +70,9 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     if (action === 'create') {
+      if (!trendBoostOrderStorageReady()) {
+        return res.status(503).json({ error: 'DURABLE_COMMERCIAL_ORDER_STORAGE_UNAVAILABLE' })
+      }
       const projectId = String(body.projectId || '').trim()
       const buyerWallet = String(body.buyerWallet || '').trim()
       const paymentAsset = String(body.paymentAsset || 'BNB').toUpperCase() as FeaturedPayAsset
@@ -82,10 +88,12 @@ const handler: NextApiHandler = async (req, res) => {
         paymentAsset,
         packageId: body.packageId ? String(body.packageId) : null,
       })
+      await persistTrendBoostOrderDurably(order)
       return res.status(201).json({ order })
     }
 
     const orderId = String(body.orderId || '')
+    await hydrateTrendBoostOrder(orderId)
     const order = getTrendBoostOrder(orderId)
     if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
 
@@ -107,7 +115,8 @@ const handler: NextApiHandler = async (req, res) => {
           quoteExpiration: quote.quoteExpiration,
           usdReferenceAmount: quote.usdReferenceAmount,
         })
-        updateTrendBoostOrder(orderId, { state: 'AWAITING_WALLET' })
+        const awaiting = updateTrendBoostOrder(orderId, { state: 'AWAITING_WALLET' })
+        if (awaiting) await persistTrendBoostOrderDurably(awaiting)
         return res.status(200).json({ quote, prepared })
       } catch (e) {
         return res.status(400).json({ error: e instanceof Error ? e.message : 'QUOTE_FAILED' })
@@ -122,6 +131,7 @@ const handler: NextApiHandler = async (req, res) => {
         transactionHash: txHash,
         paymentStatus: 'submitted',
       })
+      if (updated) await persistTrendBoostOrderDurably(updated)
       return res.status(200).json({ order: updated })
     }
 
@@ -155,9 +165,10 @@ const handler: NextApiHandler = async (req, res) => {
           receiptVerified: false,
           lastError: validation.reason || 'RECEIPT_INVALID',
         })
+        if (failed) await persistTrendBoostOrderDurably(failed)
         return res.status(400).json({ error: validation.reason, validation, order: failed })
       }
-      updateTrendBoostOrder(orderId, {
+      const confirmed = updateTrendBoostOrder(orderId, {
         state: 'PAYMENT_CONFIRMED',
         paymentStatus: 'confirmed',
         receiptVerified: true,
@@ -165,6 +176,8 @@ const handler: NextApiHandler = async (req, res) => {
       })
       const activated = activateVerifiedTrendBoostWindow(orderId)
       if (!activated) return res.status(409).json({ error: 'ACTIVATION_PRECONDITION_FAILED' })
+      if (confirmed) await persistTrendBoostOrderDurably(confirmed)
+      await persistTrendBoostOrderDurably(activated)
       return res.status(200).json({ order: activated, validation })
     }
 
@@ -173,6 +186,7 @@ const handler: NextApiHandler = async (req, res) => {
         state: 'CANCELLED',
         paymentStatus: 'cancelled',
       })
+      if (cancelled) await persistTrendBoostOrderDurably(cancelled)
       return res.status(200).json({ order: cancelled })
     }
 

@@ -1,12 +1,19 @@
 import type { NextApiHandler } from 'next'
-import { FEATURED_OFFER, createFeaturedOrder, listFeaturedOrders, type FeaturedPayAsset } from 'lib/featured-placement'
+import {
+  FEATURED_OFFER,
+  commercialOrderStorageReady,
+  createFeaturedOrder,
+  listFeaturedOrdersDurably,
+  persistFeaturedOrderDurably,
+  type FeaturedPayAsset,
+} from 'lib/featured-placement'
 import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/constants/recoveryCapabilities'
 
 const ASSETS = new Set(FEATURED_OFFER.acceptedAssets)
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === 'GET') {
-    const orders = listFeaturedOrders().map((o) => ({
+    const orders = (await listFeaturedOrdersDurably()).map((o) => ({
       orderId: o.orderId,
       state: o.state,
       projectId: o.projectId,
@@ -44,6 +51,9 @@ const handler: NextApiHandler = async (req, res) => {
         message: RECOVERY_PAYMENT_UNAVAILABLE,
       })
     }
+    if (!commercialOrderStorageReady()) {
+      return res.status(503).json({ error: 'DURABLE_COMMERCIAL_ORDER_STORAGE_UNAVAILABLE' })
+    }
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
     const projectId = String(body.projectId || '').trim()
     const buyerWallet = String(body.buyerWallet || '').trim()
@@ -72,6 +82,7 @@ const handler: NextApiHandler = async (req, res) => {
       sourceFlow,
       packageId,
     })
+    await persistFeaturedOrderDurably(order)
     return res.status(201).json({ order })
   }
 

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
-import ConnectWalletButton from 'components/ConnectWalletButton'
+import { MarcoConnect } from 'components/MarcoWidgets'
 import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MelegaBrandLockup } from 'design-system/melega/components/BrandLockup'
@@ -213,9 +213,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
             <UserMenu />
           </MobileWalletSlot>
         ) : (
-          <ConnectWalletButton className="melega-shell-mobile-connect" aria-label="Connect wallet">
-            Connect
-          </ConnectWalletButton>
+          <MarcoConnect size="icon" />
         )}
         <MobileMyMelegaButton />
       </MobileHeader>

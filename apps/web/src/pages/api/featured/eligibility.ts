@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { getFeaturedOrder, isRotationEligible } from 'lib/featured-placement'
+import { getFeaturedOrder, hydrateFeaturedOrder, isRotationEligible } from 'lib/featured-placement'
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
@@ -8,6 +8,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
   const orderId = String(req.query.orderId || '')
   if (!orderId) return res.status(400).json({ error: 'orderId required' })
+  await hydrateFeaturedOrder(orderId)
   const order = getFeaturedOrder(orderId)
   if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
   const eligible = isRotationEligible(order)

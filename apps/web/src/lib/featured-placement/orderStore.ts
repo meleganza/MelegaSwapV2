@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
+import { get, list, put } from '@vercel/blob'
 import {
   CASHBACK_STATES,
   FEATURED_OFFER,
@@ -14,12 +15,30 @@ import { marcoCashbackAmount, resolveCashbackState } from './cashback'
 import { isRotationEligible } from './eligibility'
 
 const MEMORY = new Map<string, FeaturedOrder>()
+const BLOB_PREFIX = 'monetization/v1/featured/'
+
+function blobToken(): string | null {
+  return process.env.BLOB_READ_WRITE_TOKEN?.trim() || null
+}
+
+function blobKey(orderId: string): string {
+  return `${BLOB_PREFIX}${orderId}.json`
+}
+
+function hydrate(order: FeaturedOrder | null): FeaturedOrder | null {
+  if (!order || order.schema !== 'melega.featured-home-order.v1') return null
+  MEMORY.set(order.orderId, order)
+  return order
+}
+
+async function readBlobOrder(pathname: string, token: string): Promise<FeaturedOrder | null> {
+  const result = await get(pathname, { access: 'private', token, useCache: false })
+  if (!result || result.statusCode !== 200) return null
+  return hydrate((await new Response(result.stream).json()) as FeaturedOrder)
+}
 
 function dataDir(): string {
-  return (
-    process.env.FEATURED_ORDERS_DIR ||
-    path.join(process.cwd(), 'data', 'featured-orders')
-  )
+  return process.env.FEATURED_ORDERS_DIR || path.join(process.cwd(), 'data', 'featured-orders')
 }
 
 function orderPath(orderId: string): string {
@@ -57,6 +76,64 @@ export function getFeaturedOrder(orderId: string): FeaturedOrder | null {
   return MEMORY.get(orderId) ?? loadFromDisk(orderId)
 }
 
+export function commercialOrderStorageReady(): boolean {
+  return Boolean(blobToken()) || process.env.NODE_ENV !== 'production'
+}
+
+export async function hydrateFeaturedOrder(orderId: string): Promise<FeaturedOrder | null> {
+  const existing = getFeaturedOrder(orderId)
+  if (existing) return existing
+  const token = blobToken()
+  if (!token) return null
+  try {
+    return await readBlobOrder(blobKey(orderId), token)
+  } catch {
+    return null
+  }
+}
+
+export async function persistFeaturedOrderDurably(order: FeaturedOrder): Promise<FeaturedOrder> {
+  const token = blobToken()
+  if (!token) {
+    if (process.env.NODE_ENV === 'production') throw new Error('DURABLE_COMMERCIAL_ORDER_STORAGE_UNAVAILABLE')
+    return order
+  }
+  await put(blobKey(order.orderId), JSON.stringify(order), {
+    access: 'private',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: 'application/json',
+    token,
+  })
+  return order
+}
+
+export async function listFeaturedOrdersDurably(): Promise<FeaturedOrder[]> {
+  const token = blobToken()
+  if (!token) return listFeaturedOrders()
+  try {
+    const blobs: Array<{ pathname: string }> = []
+    let cursor: string | undefined
+    do {
+      const page = await list({ prefix: BLOB_PREFIX, limit: 1_000, cursor, token })
+      blobs.push(...page.blobs)
+      cursor = page.hasMore ? page.cursor : undefined
+    } while (cursor)
+    const orders = await Promise.all(
+      blobs.map(async (blob) => {
+        try {
+          return await readBlobOrder(blob.pathname, token)
+        } catch {
+          return null
+        }
+      }),
+    )
+    return orders.filter((order): order is FeaturedOrder => Boolean(order))
+  } catch {
+    return []
+  }
+}
+
 export function listFeaturedOrders(): FeaturedOrder[] {
   ensureDir()
   const ids = new Set<string>([...MEMORY.keys()])
@@ -67,9 +144,7 @@ export function listFeaturedOrders(): FeaturedOrder[] {
   } catch {
     /* empty */
   }
-  return [...ids]
-    .map((id) => getFeaturedOrder(id))
-    .filter((o): o is FeaturedOrder => Boolean(o))
+  return [...ids].map((id) => getFeaturedOrder(id)).filter((o): o is FeaturedOrder => Boolean(o))
 }
 
 export function createFeaturedOrder(input: {

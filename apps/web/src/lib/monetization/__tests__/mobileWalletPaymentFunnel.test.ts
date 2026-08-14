@@ -40,12 +40,15 @@ describe('mobile wallet payment funnel', () => {
     expect(liquidityBuilder).not.toContain("method: 'wallet_switchEthereumChain'")
   })
 
-  it('keeps commercial activation fail-closed while receipt certification is guarded', () => {
+  it('enables commercial activation only behind receipt verification and durable order storage', () => {
     const capabilities = load('config/constants/recoveryCapabilities.ts')
     const trendApi = load('pages/api/trend-boost/orders.ts')
-    expect(capabilities).toContain('commercialPaymentActivation: false')
+    const featuredApi = load('pages/api/featured/orders/index.ts')
+    expect(capabilities).toContain('commercialPaymentActivation: true')
     expect(trendApi).toContain("action === 'confirm-receipt'")
     expect(trendApi).toContain('verifyBscPaymentReceipt')
     expect(trendApi).toContain('RECEIPT_VERIFICATION_REQUIRED')
+    expect(trendApi).toContain('persistTrendBoostOrderDurably')
+    expect(featuredApi).toContain('persistFeaturedOrderDurably')
   })
 })

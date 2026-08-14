@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { useAccount, useNetwork } from 'wagmi'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -48,12 +48,24 @@ const Shell = styled.div`
   width: min(1120px, 100%);
   margin: 0 auto;
 `
+const cinematicDrift = keyframes`
+  0%, 100% { transform: scale(1.045) translate3d(0, 0, 0); }
+  50% { transform: scale(1.085) translate3d(-1.2%, -0.8%, 0); }
+`
 const Hero = styled.header<{ $embedded?: boolean }>`
+  position: relative;
+  isolation: isolate;
+  min-height: 260px;
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
   gap: 20px;
   margin-bottom: 18px;
+  padding: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 196, 48, 0.17);
+  border-radius: 18px;
+  background: #050606;
   h1 {
     margin: 0;
     font-size: clamp(34px, 5vw, 58px);
@@ -66,13 +78,53 @@ const Hero = styled.header<{ $embedded?: boolean }>`
     font-size: 15px;
   }
   @media (max-width: 700px) {
+    min-height: 300px;
+    padding: 24px 20px;
     align-items: start;
     flex-direction: column;
+    justify-content: flex-end;
   }
 
   ${({ $embedded }) => ($embedded ? 'display: none;' : '')}
 `
+const HeroArtwork = styled.img`
+  position: absolute;
+  z-index: -3;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  object-fit: cover;
+  object-position: center;
+  animation: ${cinematicDrift} 18s ease-in-out infinite;
+  will-change: transform;
+
+  @media (max-width: 700px) {
+    object-position: 66% center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transform: scale(1.045);
+  }
+`
+const HeroVeil = styled.div`
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4, 5, 5, 0.98) 0%, rgba(4, 5, 5, 0.82) 34%, rgba(4, 5, 5, 0.16) 72%),
+    linear-gradient(0deg, rgba(4, 5, 5, 0.78) 0%, transparent 48%);
+
+  @media (max-width: 700px) {
+    background: linear-gradient(0deg, rgba(4, 5, 5, 0.98) 0%, rgba(4, 5, 5, 0.38) 70%, rgba(4, 5, 5, 0.18) 100%);
+  }
+`
+const HeroCopy = styled.div`
+  position: relative;
+  z-index: 1;
+`
 const Available = styled.div`
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
@@ -432,10 +484,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     >
       <Shell>
         <Hero $embedded={embedded}>
-          <div>
-            <h1>Bridge MARCO</h1>
+          <HeroArtwork src="/images/bridge/marco-bridge-hero.webp" alt="" aria-hidden="true" />
+          <HeroVeil aria-hidden="true" />
+          <HeroCopy>
+            <h1>MARCO Bridge</h1>
             <p>Move MARCO across certified networks. One route, one tracked delivery.</p>
-          </div>
+          </HeroCopy>
           <Available aria-label="Available on">
             {networkEntries.map((network) => (
               <NetworkPill key={network.id}>{network.label}</NetworkPill>

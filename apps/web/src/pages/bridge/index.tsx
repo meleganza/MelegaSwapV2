@@ -4,7 +4,7 @@ import MarcoBridgeWorkspace from 'views/MarcoBridge/MarcoBridgeWorkspace'
 
 const BridgePage = () => (
   <>
-    <PageMeta title="Bridge MARCO" />
+    <PageMeta title="MARCO Bridge" />
     <MarcoBridgeWorkspace />
   </>
 )

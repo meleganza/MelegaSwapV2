@@ -24,7 +24,8 @@ describe('Smart Swap wallet controls layout', () => {
     expect(tradeStyle).toContain('bottom: 8px !important')
     expect(tradeStyle).not.toContain('top: -20px !important')
     expect(homeStyle).toContain('Canonical in-field wallet controls shared with /swap')
-    expect(homeStyle).toContain('bottom: 6px !important')
+    expect(homeStyle).toContain('bottom: 5px !important')
+    expect(tradeStyle).toContain('top: 31px !important')
   })
 
   it('keeps the market column independent when cockpit Details expands', () => {

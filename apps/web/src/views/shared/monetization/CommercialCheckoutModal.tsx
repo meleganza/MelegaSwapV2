@@ -42,7 +42,7 @@ import {
 } from './commercialCheckoutTypes'
 import { appendMarketingHistory } from './marketingHistory'
 
-const MARCO_PAY_APPLICATION = process.env.NEXT_PUBLIC_MARCO_PAY_APPLICATION?.trim() ?? ''
+const MARCO_PAY_APPLICATION = process.env.NEXT_PUBLIC_MARCO_PAY_APPLICATION?.trim() || 'Melega DEX'
 
 const IDENTITY_CHAINS = [
   { id: 56, label: 'BNB Chain', short: 'BSC' },
@@ -1366,7 +1366,14 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       key={asset}
                       type="button"
                       $on={pay === asset}
-                      onClick={() => setPay(asset)}
+                      onClick={() => {
+                        setPay(asset)
+                        setError(null)
+                        setStatus('idle')
+                        setWalletStage('idle')
+                        setQuoteSummary(null)
+                        setOrderId(null)
+                      }}
                       data-testid={`commercial-pay-${asset}`}
                     >
                       {asset === 'MARCO_PAY' ? 'MARCO PAY' : asset}

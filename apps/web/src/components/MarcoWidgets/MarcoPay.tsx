@@ -15,9 +15,22 @@ type Props = {
   onPaymentCompleted?: (event: MarcoPayEvent) => void
   onError?: (error: Error) => void
 }
-const Root = styled.div`min-height: 48px; width: 100%;`
+const Root = styled.div`
+  min-height: 48px;
+  width: 100%;
+`
 
-export const MarcoPay: React.FC<Props> = ({ application, amount, currency, item, onPassportResolved, onPaymentStarted, onPaymentCreated, onPaymentCompleted, onError }) => {
+export const MarcoPay: React.FC<Props> = ({
+  application,
+  amount,
+  currency,
+  item,
+  onPassportResolved,
+  onPaymentStarted,
+  onPaymentCreated,
+  onPaymentCompleted,
+  onError,
+}) => {
   const hostRef = useRef<HTMLDivElement | null>(null)
   const [ready, setReady] = useState(false)
   useEffect(() => {
@@ -25,10 +38,19 @@ export const MarcoPay: React.FC<Props> = ({ application, amount, currency, item,
     let cancelled = false
     let element: HTMLElement | null = null
     const listeners: Array<[string, EventListener]> = [
-      ['passportResolved', ((event: MarcoPayEvent) => onPassportResolved?.(event)) as EventListener],
-      ['paymentStarted', ((event: MarcoPayEvent) => onPaymentStarted?.(event)) as EventListener],
-      ['paymentCreated', ((event: MarcoPayEvent) => onPaymentCreated?.(event)) as EventListener],
-      ['paymentCompleted', ((event: MarcoPayEvent) => onPaymentCompleted?.(event)) as EventListener],
+      ['marco-pay:open', ((event: MarcoPayEvent) => onPaymentStarted?.(event)) as EventListener],
+      ['marco-pay:paymentCreated', ((event: MarcoPayEvent) => onPaymentCreated?.(event)) as EventListener],
+      ['marco-pay:paymentCompleted', ((event: MarcoPayEvent) => onPaymentCompleted?.(event)) as EventListener],
+      [
+        'marco-pay:error',
+        ((event: MarcoPayEvent) => {
+          const detail = event.detail ?? {}
+          const message = detail.message ?? detail.error ?? detail.code ?? 'MARCO PAY is temporarily unavailable.'
+          onError?.(new Error(String(message)))
+        }) as EventListener,
+      ],
+      // Kept for forward compatibility with the passport event documented by MARCO Connect.
+      ['marco-pay:passportResolved', ((event: MarcoPayEvent) => onPassportResolved?.(event)) as EventListener],
     ]
     void loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay'))).then(
       () => {
@@ -44,14 +66,26 @@ export const MarcoPay: React.FC<Props> = ({ application, amount, currency, item,
         hostRef.current.replaceChildren(element)
         setReady(true)
       },
-      (cause) => { if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause))) },
+      (cause) => {
+        if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause)))
+      },
     )
     return () => {
       cancelled = true
       listeners.forEach(([name, listener]) => element?.removeEventListener(name, listener))
       element?.remove()
     }
-  }, [amount, application, currency, item, onError, onPassportResolved, onPaymentCompleted, onPaymentCreated, onPaymentStarted])
+  }, [
+    amount,
+    application,
+    currency,
+    item,
+    onError,
+    onPassportResolved,
+    onPaymentCompleted,
+    onPaymentCreated,
+    onPaymentStarted,
+  ])
   return <Root ref={hostRef} data-testid="marco-pay" aria-busy={!ready} />
 }
 

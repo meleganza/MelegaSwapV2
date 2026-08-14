@@ -5,7 +5,8 @@
  */
 export const RECOVERY_CAPABILITIES = {
   separateSmartSwapProtocolFee: false,
-  commercialPaymentActivation: false,
+  /** Direct BNB/ERC-20 settlement is enabled only with canonical RPC receipt verification. */
+  commercialPaymentActivation: true,
   /** Canonical BNB factory bytecode, fee/treasury reads and receipt invariants are certified. */
   createTokenExecution: true,
 } as const

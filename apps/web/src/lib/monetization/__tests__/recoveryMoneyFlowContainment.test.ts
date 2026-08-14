@@ -1,9 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@vercel/blob', () => ({
+  get: vi.fn(),
+  list: vi.fn(),
+  put: vi.fn(),
+}))
 import featuredOrderHandler from 'pages/api/featured/orders/[orderId]'
-import featuredOrdersHandler from 'pages/api/featured/orders'
 import trendBoostHandler from 'pages/api/trend-boost/orders'
 import { RECOVERY_CAPABILITIES } from 'config/constants/recoveryCapabilities'
+import { commercialOrderStorageReady } from 'lib/featured-placement'
+import { trendBoostOrderStorageReady } from 'lib/monetization/trendBoostOrders'
 
 function mockResponse() {
   const state: { statusCode: number; body: unknown } = { statusCode: 200, body: null }
@@ -24,15 +31,17 @@ function mockResponse() {
 }
 
 describe('recovery money-flow containment', () => {
-  it('keeps all uncertified money-moving capabilities disabled', () => {
+  it('enables only receipt-certified commercial payments', () => {
     expect(RECOVERY_CAPABILITIES).toEqual({
       separateSmartSwapProtocolFee: false,
-      commercialPaymentActivation: false,
-      createTokenExecution: false,
+      commercialPaymentActivation: true,
+      createTokenExecution: true,
     })
+    expect(commercialOrderStorageReady()).toBe(true)
+    expect(trendBoostOrderStorageReady()).toBe(true)
   })
 
-  it('rejects a Featured quote before order lookup or wallet preparation', async () => {
+  it('never prepares a Featured payment for an unknown order', async () => {
     const { state, response } = mockResponse()
     await featuredOrderHandler(
       {
@@ -42,29 +51,11 @@ describe('recovery money-flow containment', () => {
       } as unknown as NextApiRequest,
       response,
     )
-    expect(state.statusCode).toBe(503)
-    expect(state.body).toMatchObject({ error: 'PAYMENT_VERIFICATION_UNAVAILABLE' })
+    expect(state.statusCode).toBe(404)
+    expect(state.body).toMatchObject({ error: 'ORDER_NOT_FOUND' })
   })
 
-  it('does not create dead Featured orders while payment activation is contained', async () => {
-    const { state, response } = mockResponse()
-    await featuredOrdersHandler(
-      {
-        method: 'POST',
-        query: {},
-        body: {
-          projectId: 'project',
-          buyerWallet: '0x1111111111111111111111111111111111111111',
-          projectSlug: 'project',
-        },
-      } as unknown as NextApiRequest,
-      response,
-    )
-    expect(state.statusCode).toBe(503)
-    expect(state.body).toMatchObject({ error: 'PAYMENT_VERIFICATION_UNAVAILABLE' })
-  })
-
-  it('rejects Trend Boost confirmation without activating an order', async () => {
+  it('never confirms Trend Boost without a persisted order', async () => {
     const { state, response } = mockResponse()
     await trendBoostHandler(
       {
@@ -74,7 +65,7 @@ describe('recovery money-flow containment', () => {
       } as unknown as NextApiRequest,
       response,
     )
-    expect(state.statusCode).toBe(503)
-    expect(state.body).toMatchObject({ error: 'PAYMENT_VERIFICATION_UNAVAILABLE' })
+    expect(state.statusCode).toBe(404)
+    expect(state.body).toMatchObject({ error: 'ORDER_NOT_FOUND' })
   })
 })

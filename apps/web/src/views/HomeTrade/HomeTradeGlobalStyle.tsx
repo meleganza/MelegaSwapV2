@@ -390,7 +390,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap #swap-currency-output::before {
     content: '';
     position: absolute;
-    top: 12px;
+    top: 10px;
     left: 14px;
     font-size: 11px;
     font-weight: 600;
@@ -538,9 +538,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
     .home-trade-swap #swap-currency-input::before,
     .home-trade-swap #swap-currency-output::before {
-      top: 12px;
+      top: 10px;
       font-size: 10px;
-      line-height: 10px;
+      line-height: 11px;
     }
 
     .home-trade-swap #swap-currency-input [class*='InputContainer'] > div,
@@ -825,7 +825,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     position: absolute !important;
     left: 14px !important;
     right: 14px !important;
-    bottom: 6px !important;
+    /* Amount is vertically centered with equal 3px label/balance gaps. */
+    bottom: 5px !important;
     top: auto !important;
     z-index: 4 !important;
     height: 18px !important;

@@ -1,13 +1,14 @@
 import type { NextApiHandler } from 'next'
-import { listActiveTrendBoostOrders } from 'lib/monetization/trendBoostOrders'
+import { listActiveTrendBoostOrders, listTrendBoostOrdersDurably } from 'lib/monetization/trendBoostOrders'
 
 /** Public-safe active Boost feed consumed by the global trending ticker. */
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET')
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  await listTrendBoostOrdersDurably()
   const placements = listActiveTrendBoostOrders().map((order) => ({
     orderId: order.orderId,
     projectId: order.projectId,

@@ -5,6 +5,7 @@
 import fs from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
+import { get, list, put } from '@vercel/blob'
 import { FEATURED_PAYMENT_TOKENS, FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
 import { isQuoteExpired } from 'lib/featured-placement/quote'
 import {
@@ -55,6 +56,27 @@ export type TrendBoostOrder = {
 }
 
 const MEMORY = new Map<string, TrendBoostOrder>()
+const BLOB_PREFIX = 'monetization/v1/trend-boost/'
+
+function blobToken(): string | null {
+  return process.env.BLOB_READ_WRITE_TOKEN?.trim() || null
+}
+
+function blobKey(orderId: string): string {
+  return `${BLOB_PREFIX}${orderId}.json`
+}
+
+function hydrate(order: TrendBoostOrder | null): TrendBoostOrder | null {
+  if (!order || order.schema !== 'melega.trend-boost-order.v1') return null
+  MEMORY.set(order.orderId, order)
+  return order
+}
+
+async function readBlobOrder(pathname: string, token: string): Promise<TrendBoostOrder | null> {
+  const result = await get(pathname, { access: 'private', token, useCache: false })
+  if (!result || result.statusCode !== 200) return null
+  return hydrate((await new Response(result.stream).json()) as TrendBoostOrder)
+}
 
 function dataDir(): string {
   return process.env.TREND_BOOST_ORDERS_DIR || path.join(process.cwd(), 'data', 'trend-boost-orders')
@@ -91,6 +113,64 @@ export function getTrendBoostOrder(orderId: string): TrendBoostOrder | null {
   }
 }
 
+export function trendBoostOrderStorageReady(): boolean {
+  return Boolean(blobToken()) || process.env.NODE_ENV !== 'production'
+}
+
+export async function hydrateTrendBoostOrder(orderId: string): Promise<TrendBoostOrder | null> {
+  const existing = getTrendBoostOrder(orderId)
+  if (existing) return existing
+  const token = blobToken()
+  if (!token) return null
+  try {
+    return await readBlobOrder(blobKey(orderId), token)
+  } catch {
+    return null
+  }
+}
+
+export async function persistTrendBoostOrderDurably(order: TrendBoostOrder): Promise<TrendBoostOrder> {
+  const token = blobToken()
+  if (!token) {
+    if (process.env.NODE_ENV === 'production') throw new Error('DURABLE_COMMERCIAL_ORDER_STORAGE_UNAVAILABLE')
+    return order
+  }
+  await put(blobKey(order.orderId), JSON.stringify(order), {
+    access: 'private',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: 'application/json',
+    token,
+  })
+  return order
+}
+
+export async function listTrendBoostOrdersDurably(): Promise<TrendBoostOrder[]> {
+  const token = blobToken()
+  if (!token) return listTrendBoostOrders()
+  try {
+    const blobs: Array<{ pathname: string }> = []
+    let cursor: string | undefined
+    do {
+      const page = await list({ prefix: BLOB_PREFIX, limit: 1_000, cursor, token })
+      blobs.push(...page.blobs)
+      cursor = page.hasMore ? page.cursor : undefined
+    } while (cursor)
+    const orders = await Promise.all(
+      blobs.map(async (blob) => {
+        try {
+          return await readBlobOrder(blob.pathname, token)
+        } catch {
+          return null
+        }
+      }),
+    )
+    return orders.filter((order): order is TrendBoostOrder => Boolean(order))
+  } catch {
+    return []
+  }
+}
+
 export function listTrendBoostOrders(): TrendBoostOrder[] {
   ensureDir()
   const ids = new Set<string>([...MEMORY.keys()])
@@ -101,9 +181,7 @@ export function listTrendBoostOrders(): TrendBoostOrder[] {
   } catch {
     /* empty */
   }
-  return [...ids]
-    .map((id) => getTrendBoostOrder(id))
-    .filter((order): order is TrendBoostOrder => Boolean(order))
+  return [...ids].map((id) => getTrendBoostOrder(id)).filter((order): order is TrendBoostOrder => Boolean(order))
 }
 
 /** Public placement eligibility. Payment proof and the purchased time window are both mandatory. */
@@ -161,10 +239,7 @@ export function createTrendBoostOrder(input: {
   return order
 }
 
-export function updateTrendBoostOrder(
-  orderId: string,
-  patch: Partial<TrendBoostOrder>,
-): TrendBoostOrder | null {
+export function updateTrendBoostOrder(orderId: string, patch: Partial<TrendBoostOrder>): TrendBoostOrder | null {
   const current = getTrendBoostOrder(orderId)
   if (!current) return null
   const next = { ...current, ...patch, updatedAt: new Date().toISOString() }

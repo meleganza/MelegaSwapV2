@@ -3,9 +3,11 @@ import { RECOVERY_CAPABILITIES, RECOVERY_PAYMENT_UNAVAILABLE } from 'config/cons
 import {
   FEATURED_OFFER,
   buildFeaturedQuote,
+  hydrateFeaturedOrder,
   getFeaturedOrder,
   isQuoteExpired,
   prepareFeaturedPayment,
+  persistFeaturedOrderDurably,
   scheduleFeaturedWindow,
   updateFeaturedOrder,
   type FeaturedPayAsset,
@@ -56,6 +58,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const orderId = String(req.query.orderId || '')
+  await hydrateFeaturedOrder(orderId)
   const order = getFeaturedOrder(orderId)
   if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
 
@@ -93,7 +96,8 @@ const handler: NextApiHandler = async (req, res) => {
           quoteExpiration: quote.quoteExpiration,
           usdReferenceAmount: quote.usdReferenceAmount,
         })
-        updateFeaturedOrder(orderId, { state: 'AWAITING_WALLET' })
+        const awaiting = updateFeaturedOrder(orderId, { state: 'AWAITING_WALLET' })
+        if (awaiting) await persistFeaturedOrderDurably(awaiting)
         return res.status(200).json({ quote, prepared })
       } catch (e) {
         return res.status(400).json({ error: e instanceof Error ? e.message : 'QUOTE_FAILED' })
@@ -110,6 +114,7 @@ const handler: NextApiHandler = async (req, res) => {
         transactionHash: txHash,
         paymentStatus: 'submitted',
       })
+      if (updated) await persistFeaturedOrderDurably(updated)
       return res.status(200).json({ order: updated })
     }
 
@@ -140,6 +145,7 @@ const handler: NextApiHandler = async (req, res) => {
           receiptVerified: false,
           lastError: validation.reason || 'RECEIPT_INVALID',
         })
+        if (failed) await persistFeaturedOrderDurably(failed)
         return res.status(400).json({ error: validation.reason, validation, order: failed })
       }
       const durationMs = current.durationMs || FEATURED_OFFER.durationDays * 24 * 60 * 60 * 1000
@@ -154,6 +160,7 @@ const handler: NextApiHandler = async (req, res) => {
         rotationStatus: 'candidate',
         transactionHash: body.transactionHash || current.transactionHash,
       })
+      if (confirmed) await persistFeaturedOrderDurably(confirmed)
       return res.status(200).json({ order: confirmed, validation })
     }
 
@@ -162,6 +169,7 @@ const handler: NextApiHandler = async (req, res) => {
         state: 'CANCELLED',
         paymentStatus: order.paymentStatus === 'confirmed' ? order.paymentStatus : 'cancelled',
       })
+      if (cancelled) await persistFeaturedOrderDurably(cancelled)
       return res.status(200).json({ order: cancelled })
     }
 

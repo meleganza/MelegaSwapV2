@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { FEATURED_OFFER, listRotationCandidates } from 'lib/featured-placement'
+import { FEATURED_OFFER, listFeaturedOrdersDurably, listRotationCandidates } from 'lib/featured-placement'
 
 /**
  * Public-safe handoff for Home Featured rotation consumer.
@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
     res.setHeader('Allow', 'GET')
     return res.status(405).json({ error: 'Method not allowed' })
   }
+  await listFeaturedOrdersDurably()
   const candidates = listRotationCandidates()
   res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=30')
   return res.status(200).json({
