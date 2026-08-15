@@ -31,6 +31,8 @@ describe('P0 technical performance boundary', () => {
     expect(button).toContain('preloadConnectWalletRuntime')
     expect(button).not.toContain('loadExtendedWalletConnectors')
     expect(auth).toContain('await loadWalletConnector(connectorID)')
+    expect(auth).toContain('walletLoginInFlight')
+    expect(auth).toContain('throw error')
     expect(button).not.toContain('requestIdleCallback')
     expect(button).not.toContain('window.setTimeout')
   })

@@ -111,9 +111,9 @@ describe('DS001.2 global header shell contracts', () => {
     expect(connect).toContain('max-width: 100%')
     expect(connect).toContain("$size === 'icon' || $size === 'navbar' ? '44px'")
     expect(connect).toContain('position: absolute;')
-    expect(connect).toContain('widgetVisible')
-    expect(connect).toContain('setWidgetVisible(Boolean(hostRef.current.firstElementChild))')
-    expect(connect).toContain('$hidden={ready && widgetVisible && !failed}')
+    expect(connect).toContain('opacity: 0;')
+    expect(connect).toContain('pointer-events: none;')
+    expect(connect).toContain('$hidden={Boolean(shortAddress)}')
   })
 
   it('mounts only one official MARCO Connect runtime for the active viewport', () => {
@@ -134,12 +134,10 @@ describe('DS001.2 global header shell contracts', () => {
   it('does not reopen wallet permissions from a passive MARCO session replay on navigation', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
-    expect(connect).not.toContain('walletIntentUntilRef')
+    expect(connect).not.toContain('syncWalletSession')
+    expect(connect).not.toContain('connectAsync')
+    expect(connect).not.toContain("sdk.on('connect'")
     expect(connect).not.toContain('onPointerDownCapture')
-    expect(connect).toContain("method: 'eth_accounts'")
-    expect(connect).not.toContain("method: 'eth_requestAccounts'")
-    expect(connect).toContain('accounts.length === 0')
-    expect(connect).toContain('walletSyncPendingRef')
     expect(connect).toContain('signature: false')
   })
 
@@ -147,10 +145,11 @@ describe('DS001.2 global header shell contracts', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
     expect(connect).toContain('sdkRef.current = sdk')
-    expect(connect).toContain('onClick={() => sdkRef.current?.open()}')
+    expect(connect).toContain('if (ready && !failed) sdkRef.current?.open()')
     expect(connect).toContain('aria-label="Open MARCO Passport"')
-    expect(connect).toContain("visibility: ${({ $concealed }) => ($concealed ? 'hidden' : 'visible')}")
-    expect(connect).toContain("pointer-events: ${({ $concealed }) => ($concealed ? 'none' : 'auto')}")
+    expect(connect).toContain('visibility: hidden;')
+    expect(connect).toContain('pointer-events: none;')
+    expect(connect).toContain('const displayedAddress = address || null')
   })
 
   it('restores injected wallets only from a previously authorised passive session', () => {

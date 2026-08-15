@@ -18,6 +18,8 @@ import { clearUserStates } from '../utils/clearUserStates'
 import { useActiveChainId } from './useActiveChainId'
 import { useSessionChainId } from './useSessionChainId'
 
+let walletLoginInFlight: Promise<unknown> | null = null
+
 const useAuth = () => {
   const dispatch = useAppDispatch()
   const { connectAsync, connectors } = useConnect()
@@ -28,26 +30,38 @@ const useAuth = () => {
   const { t } = useTranslation()
 
   const login = useCallback(
-    async (connectorID: ConnectorNames) => {
-      try {
-        const findConnector =
-          (await loadWalletConnector(connectorID)) ?? connectors.find((connector) => connector.id === connectorID)
-        if (!findConnector) throw new ConnectorNotFoundError()
-        const connected = await connectAsync({ connector: findConnector, chainId })
-        if (!connected.chain.unsupported && connected.chain.id !== chainId) {
-          replaceBrowserHistory('chain', CHAIN_QUERY_NAME[connected.chain.id])
-          setSessionChainId(connected.chain.id)
+    (connectorID: ConnectorNames) => {
+      if (walletLoginInFlight) return walletLoginInFlight
+
+      const attempt = (async () => {
+        try {
+          const findConnector =
+            (await loadWalletConnector(connectorID)) ?? connectors.find((connector) => connector.id === connectorID)
+          if (!findConnector) throw new ConnectorNotFoundError()
+          const connected = await connectAsync({ connector: findConnector, chainId })
+          if (!connected.chain.unsupported && connected.chain.id !== chainId) {
+            replaceBrowserHistory('chain', CHAIN_QUERY_NAME[connected.chain.id])
+            setSessionChainId(connected.chain.id)
+          }
+          return connected
+        } catch (error) {
+          if (error instanceof ConnectorNotFoundError) {
+            throw new WalletConnectorNotFoundError()
+          }
+          if (error instanceof SwitchChainNotSupportedError || error instanceof SwitchChainError) {
+            throw new WalletSwitchChainError(t('Unable to switch network. Please try it on your wallet'))
+          }
+          // The wallet modal owns the customer-facing error state. Propagating
+          // provider errors is essential: swallowing them left MetaMask looking
+          // unresponsive and encouraged duplicate permission requests.
+          throw error
         }
-        return connected
-      } catch (error) {
-        if (error instanceof ConnectorNotFoundError) {
-          throw new WalletConnectorNotFoundError()
-        }
-        if (error instanceof SwitchChainNotSupportedError || error instanceof SwitchChainError) {
-          throw new WalletSwitchChainError(t('Unable to switch network. Please try it on your wallet'))
-        }
-      }
-      return undefined
+      })()
+
+      walletLoginInFlight = attempt.finally(() => {
+        walletLoginInFlight = null
+      })
+      return walletLoginInFlight
     },
     [connectors, connectAsync, chainId, setSessionChainId, t],
   )
