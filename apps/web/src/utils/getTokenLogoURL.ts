@@ -6,6 +6,7 @@ const mapping = {
   [ChainId.ARBITRUM]: 'arbitrum',
   [ChainId.ETHEREUM]: 'ethereum',
   [ChainId.BSC]: 'smartchain',
+  [ChainId.BASE]: 'base',
   [ChainId.POLYGON]: 'polygon',
   [ChainId.SHIMMER2]: 'shimmerevm',
 }

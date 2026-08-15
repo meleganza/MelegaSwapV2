@@ -38,4 +38,19 @@ describe('resolveTokenLogoSources', () => {
   it('never returns empty array for MARCO — always has brand fallback', () => {
     expect(resolveTokenLogoSources({ symbol: 'MARCO' }).length).toBeGreaterThan(0)
   })
+
+  it.each([
+    [137, 'polygon'],
+    [8453, 'base'],
+    [1, 'ethereum'],
+  ])('keeps local and Trust Wallet fallbacks scoped to chain %s', (chainId, trustWalletChain) => {
+    const address = '0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9'
+    const sources = resolveTokenLogoSources({ symbol: 'TOKEN', address, chainId })
+
+    expect(sources).toContain(`/images/${chainId}/tokens/${address}.png`)
+    expect(sources.some((source) => source.includes(`/blockchains/${trustWalletChain}/assets/`))).toBe(true)
+    if (chainId !== 56) {
+      expect(sources.some((source) => source.includes('melega.finance/images/tokens/'))).toBe(false)
+    }
+  })
 })

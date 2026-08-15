@@ -904,15 +904,19 @@ const Logo = styled.div`
 `
 
 const ProjectLogo: React.FC<{ project: DetectedProject; compact?: boolean }> = ({ project, compact = false }) => {
-  const [failed, setFailed] = useState(false)
-  useEffect(() => setFailed(false), [project.logoUrl])
+  const size = compact ? 38 : 48
   return (
-    <Logo style={compact ? { width: 38, height: 38 } : undefined}>
-      {project.logoUrl && !failed ? (
-        <img src={project.logoUrl} alt={`${project.name} logo`} onError={() => setFailed(true)} />
-      ) : (
-        project.symbol.slice(0, 1)
-      )}
+    <Logo style={compact ? { width: size, height: size } : undefined}>
+      <MelegaTokenAvatar
+        symbol={project.symbol}
+        name={project.name}
+        address={project.contract}
+        chainId={project.chainId}
+        logoURI={project.logoUrl}
+        size={size}
+        radius="circle"
+        alt={`${project.name} logo`}
+      />
     </Logo>
   )
 }

@@ -44,9 +44,12 @@ function resolveDexListing(contract: string, chainId: number) {
       listed: false,
       projectClaimed: false,
       registrySlug: null,
-      name: null,
-      symbol: null,
-      logo: null,
+      // A token-list identity is useful metadata even when the token does not
+      // have a live Melega DEX trade surface yet. Keep `listed` honest while
+      // still returning the chain-scoped logo used by the onboarding funnel.
+      name: tokenListEntry?.name ?? null,
+      symbol: tokenListEntry?.symbol ?? null,
+      logo: tokenListEntry?.logoURI ?? null,
       website: null,
       surfaces: null,
     }
