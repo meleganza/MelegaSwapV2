@@ -225,6 +225,11 @@ export const MarcoConnect: React.FC<{
             size,
             signature: false,
           })
+          // MARCO Connect mounts synchronously in current production builds.
+          // Capture that first paint immediately: an observer installed after
+          // mount cannot see the completed insertion and would leave the DEX
+          // wallet fallback layered over the Passport control.
+          setWidgetVisible(Boolean(hostRef.current.firstElementChild))
           const updateWidgetVisibility = () => {
             const host = hostRef.current
             if (!host) return

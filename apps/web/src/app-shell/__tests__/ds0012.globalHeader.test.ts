@@ -111,6 +111,7 @@ describe('DS001.2 global header shell contracts', () => {
     expect(connect).toContain('max-width: 100%')
     expect(connect).toContain('position: absolute;')
     expect(connect).toContain('widgetVisible')
+    expect(connect).toContain('setWidgetVisible(Boolean(hostRef.current.firstElementChild))')
     expect(connect).toContain('$hidden={ready && widgetVisible && !failed}')
   })
 
