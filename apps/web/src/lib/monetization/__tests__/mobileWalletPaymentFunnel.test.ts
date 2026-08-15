@@ -17,10 +17,11 @@ describe('mobile wallet payment funnel', () => {
   it('exposes WalletConnect and Melega-specific mobile deep links', () => {
     expect(walletConfig).toContain("id: 'walletconnect'")
     expect(walletConfig).toContain('ConnectorNames.WalletConnect')
-    expect(walletConfig).toContain('metamask.app.link/dapp/${currentDappUrl}')
+    expect(walletConfig).toMatch(/metamask\.app\.link\/dapp\/\$\{currentDappUrl\}/)
     expect(walletConfig).toContain('link.trustwallet.com/open_url')
     expect(walletConfig).not.toContain('pancakeswap.finance')
-    expect(wagmi).toMatch(/connectors:[\s\S]*walletConnectConnector/)
+    expect(wagmi).toContain('walletConnect: () =>')
+    expect(wagmi).toContain("import('wagmi/connectors/walletConnect')")
   })
 
   it('uses the connected Wagmi signer on every commercial payment surface', () => {

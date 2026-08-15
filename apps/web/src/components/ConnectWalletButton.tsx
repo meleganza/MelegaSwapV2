@@ -3,7 +3,6 @@ import { Button, ButtonProps } from '@pancakeswap/uikit'
 import { createWallets, getDocLink } from 'config/wallet'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useAuth from 'hooks/useAuth'
-import { loadExtendedWalletConnectors } from 'utils/wagmi'
 import dynamic from 'next/dynamic'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
@@ -25,7 +24,7 @@ let walletRuntimePromise: Promise<unknown> | null = null
 
 export const preloadConnectWalletRuntime = () => {
   if (!walletRuntimePromise) {
-    walletRuntimePromise = Promise.all([preloadConnectWalletModal(), loadExtendedWalletConnectors()]).catch((error) => {
+    walletRuntimePromise = preloadConnectWalletModal().catch((error) => {
       walletRuntimePromise = null
       throw error
     })
@@ -53,7 +52,7 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
     if (typeof __NEZHA_BRIDGE__ !== 'undefined') {
       handleActive()
     } else {
-      void preloadConnectWalletRuntime().then(() => setOpen(true))
+      preloadConnectWalletRuntime().then(() => setOpen(true))
     }
   }
 
@@ -64,11 +63,11 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
       <Button
         onClick={handleClick}
         onPointerEnter={(event) => {
-          void preloadConnectWalletRuntime()
+          preloadConnectWalletRuntime()
           onPointerEnter?.(event)
         }}
         onFocus={(event) => {
-          void preloadConnectWalletRuntime()
+          preloadConnectWalletRuntime()
           onFocus?.(event)
         }}
         {...buttonProps}

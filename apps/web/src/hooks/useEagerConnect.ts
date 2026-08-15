@@ -1,6 +1,6 @@
 import { useClient, useConnect } from 'wagmi'
 import { useEffect } from 'react'
-import { loadExtendedWalletConnectors, requiresExtendedWalletSession } from 'utils/wagmi'
+import { getPersistedWalletConnectorId, loadWalletConnector } from 'utils/wagmi'
 
 const SAFE_ID = 'safe'
 let eagerConnectPromise: Promise<unknown> | null = null
@@ -11,7 +11,8 @@ const useEagerConnect = () => {
   useEffect(() => {
     if (eagerConnectPromise || typeof window === 'undefined') return
     const restoreSession = async () => {
-      if (requiresExtendedWalletSession()) await loadExtendedWalletConnectors()
+      const persistedConnectorId = getPersistedWalletConnectorId()
+      if (persistedConnectorId) await loadWalletConnector(persistedConnectorId)
       const connectorInstance = client.connectors.find((c) => c.id === SAFE_ID && c.ready)
       if (
         connectorInstance &&

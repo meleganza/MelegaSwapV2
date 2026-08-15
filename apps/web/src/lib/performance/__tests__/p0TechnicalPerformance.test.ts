@@ -20,14 +20,26 @@ describe('P0 technical performance boundary', () => {
     expect(wagmi).not.toMatch(/^import .*coinbaseWallet/m)
     expect(wagmi).toContain("import('wagmi/connectors/walletConnect')")
     expect(wagmi).toContain("import('wagmi/connectors/ledger')")
-    expect(wagmi).toContain('loadExtendedWalletConnectors')
+    expect(wagmi).toContain('loadWalletConnector')
+    expect(wagmi).toContain('connectorLoaders')
+    expect(wagmi).not.toContain('extendedWalletConnectorsPromise')
   })
 
-  it('loads wallet UI and advanced connectors only after explicit intent', () => {
+  it('loads the wallet UI on intent and each advanced connector only after selection', () => {
     const button = read('src/components/ConnectWalletButton.tsx')
+    const auth = read('src/hooks/useAuth.tsx')
     expect(button).toContain('preloadConnectWalletRuntime')
+    expect(button).not.toContain('loadExtendedWalletConnectors')
+    expect(auth).toContain('await loadWalletConnector(connectorID)')
     expect(button).not.toContain('requestIdleCallback')
     expect(button).not.toContain('window.setTimeout')
+  })
+
+  it('keeps Node crypto out of the browser artifact-integrity path', () => {
+    const artifacts = read('src/lib/deployment-orchestrator/founderAvalancheRouterArtifacts.ts')
+    expect(artifacts).toContain("import { sha256 } from '@ethersproject/sha2'")
+    expect(artifacts).not.toContain("require('crypto')")
+    expect(artifacts).not.toContain('Buffer.from')
   })
 
   it('stops background refresh for hidden and offline tabs', () => {

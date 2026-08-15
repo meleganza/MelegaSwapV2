@@ -3,9 +3,10 @@
  * Committed manifest only (no gitignored Forge artifacts).
  */
 import { keccak256 } from '@ethersproject/keccak256'
+import { sha256 } from '@ethersproject/sha2'
 import { AUTHORIZED_MELEGA_DEPLOYER } from './founderDeployer'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
 const certified = require('./artifacts/avalanche-v2-router-certified.json') as {
   schema: string
   version: string
@@ -107,17 +108,12 @@ async function sha256Hex(bytecode: string): Promise<string> {
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('')
   }
-  // Node fallback for tests
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createHash } = require('crypto') as typeof import('crypto')
-  return createHash('sha256').update(Buffer.from(hex, 'hex')).digest('hex')
+  return sha256(`0x${hex}`).slice(2)
 }
 
 export function sha256AvaxRouterCreationBytecodeSync(bytecode: string): string {
   const hex = bytecode.replace(/^0x/, '')
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createHash } = require('crypto') as typeof import('crypto')
-  return createHash('sha256').update(Buffer.from(hex, 'hex')).digest('hex')
+  return sha256(`0x${hex}`).slice(2)
 }
 
 export function assessAvaxRouterArtifactIntegrity(
@@ -149,9 +145,7 @@ export function assessAvaxRouterArtifactIntegrity(
     art.creationBytecode.startsWith('0x') &&
     art.creationBytecode.length > 10
 
-  const creationBytecodeHash = creationBytecodePresent
-    ? keccakAvaxRouterCreationBytecode(art.creationBytecode)
-    : null
+  const creationBytecodeHash = creationBytecodePresent ? keccakAvaxRouterCreationBytecode(art.creationBytecode) : null
   const creationBytecodeSha256 = creationBytecodePresent
     ? sha256AvaxRouterCreationBytecodeSync(art.creationBytecode)
     : null
@@ -179,11 +173,9 @@ export function assessAvaxRouterArtifactIntegrity(
   if (!constructorSchemaPresent) mismatches.push('constructor schema invalid')
 
   const factoryOk =
-    (art.constructorValues?._factory || certified.factory || '').toLowerCase() ===
-    AVAX_ROUTER_FACTORY.toLowerCase()
+    (art.constructorValues?._factory || certified.factory || '').toLowerCase() === AVAX_ROUTER_FACTORY.toLowerCase()
   const wavaxOk =
-    (art.constructorValues?._WETH || certified.wavax || '').toLowerCase() ===
-    AVAX_ROUTER_WAVAX.toLowerCase()
+    (art.constructorValues?._WETH || certified.wavax || '').toLowerCase() === AVAX_ROUTER_WAVAX.toLowerCase()
   if (!factoryOk) mismatches.push('Factory constructor value mismatch')
   if (!wavaxOk) mismatches.push('WAVAX constructor value mismatch')
 

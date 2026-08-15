@@ -5,6 +5,7 @@ import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { ConnectorNames } from 'config/wallet'
 import { useCallback } from 'react'
 import { useAppDispatch } from 'state'
+import { loadWalletConnector } from 'utils/wagmi'
 import {
   ConnectorNotFoundError,
   SwitchChainError,
@@ -28,8 +29,10 @@ const useAuth = () => {
 
   const login = useCallback(
     async (connectorID: ConnectorNames) => {
-      const findConnector = connectors.find((c) => c.id === connectorID)
       try {
+        const findConnector =
+          (await loadWalletConnector(connectorID)) ?? connectors.find((connector) => connector.id === connectorID)
+        if (!findConnector) throw new ConnectorNotFoundError()
         const connected = await connectAsync({ connector: findConnector, chainId })
         if (!connected.chain.unsupported && connected.chain.id !== chainId) {
           replaceBrowserHistory('chain', CHAIN_QUERY_NAME[connected.chain.id])

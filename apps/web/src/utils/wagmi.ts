@@ -1,4 +1,4 @@
-import { bsc, mainnet, arbitrum, polygon, optimism, avalanche, fantom } from 'wagmi/chains'
+import { bsc, mainnet } from 'wagmi/chains'
 import { Chain, configureChains, createClient } from 'wagmi'
 import memoize from 'lodash/memoize'
 import { InjectedConnector } from 'wagmi/connectors/injected'
@@ -89,78 +89,6 @@ export const polygon1: Chain = {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
       blockCreated: 60101024,
-    },
-  },
-}
-
-const zksync: Chain = {
-  id: 324,
-  name: 'zkSync Era',
-  network: 'zksync',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: { http: ['https://mainnet.era.zksync.io'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
-    default: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 6884829,
-    },
-  },
-}
-
-const pulsechain: Chain = {
-  id: 369,
-  name: 'PulseChain',
-  network: 'pulse',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Pulse',
-    symbol: 'PLS',
-  },
-  rpcUrls: {
-    default: { http: ['https://rpc.pulsechain.com'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
-    default: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 14353601,
-    },
-  },
-}
-
-const cronos: Chain = {
-  id: 25,
-  name: 'Cronos',
-  network: 'cronos',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Cronos',
-    symbol: 'CRO',
-  },
-  rpcUrls: {
-    default: { http: ['https://evm.cronos.org'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'CronoScan', url: 'https://cronoscan.com' },
-    default: { name: 'CronoScan', url: 'https://cronoscan.com' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 1963112,
     },
   },
 }
@@ -305,83 +233,131 @@ export const client = createClient({
   connectors: [metaMaskConnector, injectedConnector],
 })
 
-let extendedWalletConnectorsPromise: Promise<void> | null = null
+type WalletConnector = (typeof client.connectors)[number]
+
+const CONNECTOR_ORDER = [
+  'safe',
+  'metaMask',
+  'injected',
+  'coinbaseWallet',
+  'walletConnect',
+  'bsc',
+  'blocto',
+  'ledger',
+  'trustWallet',
+] as const
+
+const connectorRegistry = new Map<string, WalletConnector>([
+  [metaMaskConnector.id, metaMaskConnector],
+  [injectedConnector.id, injectedConnector],
+])
+const connectorLoadPromises = new Map<string, Promise<WalletConnector>>()
 
 function installConnectors(connectors: typeof client.connectors) {
   client.config.connectors = connectors
   client.setState((state) => ({ ...state, connectors }))
 }
 
-/** Load connector SDKs without charging every route for WalletConnect/Ledger/Safe. */
-export function loadExtendedWalletConnectors(): Promise<void> {
-  if (client.connectors.some((connector) => connector.id === 'walletConnect')) return Promise.resolve()
-  if (extendedWalletConnectorsPromise) return extendedWalletConnectorsPromise
+function installLoadedConnector(connector: WalletConnector): WalletConnector {
+  connectorRegistry.set(connector.id, connector)
+  const ordered = CONNECTOR_ORDER.flatMap((id) => {
+    const registered = connectorRegistry.get(id)
+    return registered ? [registered] : []
+  })
+  installConnectors(ordered)
+  return connector
+}
 
-  extendedWalletConnectorsPromise = Promise.all([
-    import('@pancakeswap/wagmi/connectors/binanceWallet'),
-    import('@pancakeswap/wagmi/connectors/blocto'),
-    import('@pancakeswap/wagmi/connectors/trustWallet'),
-    import('wagmi/connectors/coinbaseWallet'),
-    import('wagmi/connectors/walletConnect'),
-    import('wagmi/connectors/ledger'),
-    import('./safeConnector'),
-  ])
-    .then(([binance, blocto, trust, coinbase, walletConnect, ledger, safe]) => {
-      const coinbaseConnector = new coinbase.CoinbaseWalletConnector({
-        chains,
-        options: {
-          appName: 'Melega DEX',
-          appLogoUrl: 'https://melega.finance/main.jpg',
-        },
-      })
-      const walletConnectConnector = new walletConnect.WalletConnectConnector({
-        chains,
-        options: { qrcode: true },
-      })
-      const bscConnector = new binance.BinanceWalletConnector({ chains })
-      const bloctoConnector = new blocto.BloctoConnector({
-        chains,
-        options: {
-          defaultChainId: 56,
-          appId: 'e2f2f0cd-3ceb-4dec-b293-bb555f2ed5af',
-        },
-      })
-      const ledgerConnector = new ledger.LedgerConnector({ chains })
-      const trustWalletConnector = new trust.TrustWalletConnector({
-        chains,
-        options: {
-          shimDisconnect: false,
-          shimChainChangedDisconnect: false,
-        },
-      })
+const connectorLoaders: Record<string, () => Promise<WalletConnector>> = {
+  coinbaseWallet: () =>
+    import('wagmi/connectors/coinbaseWallet').then(
+      ({ CoinbaseWalletConnector }) =>
+        new CoinbaseWalletConnector({
+          chains,
+          options: {
+            appName: 'Melega DEX',
+            appLogoUrl: 'https://melega.finance/main.jpg',
+          },
+        }),
+    ),
+  walletConnect: () =>
+    import('wagmi/connectors/walletConnect').then(
+      ({ WalletConnectConnector }) =>
+        new WalletConnectConnector({
+          chains,
+          options: { qrcode: true },
+        }),
+    ),
+  bsc: () =>
+    import('@pancakeswap/wagmi/connectors/binanceWallet').then(
+      ({ BinanceWalletConnector }) => new BinanceWalletConnector({ chains }),
+    ),
+  blocto: () =>
+    import('@pancakeswap/wagmi/connectors/blocto').then(
+      ({ BloctoConnector }) =>
+        new BloctoConnector({
+          chains,
+          options: {
+            defaultChainId: 56,
+            appId: 'e2f2f0cd-3ceb-4dec-b293-bb555f2ed5af',
+          },
+        }),
+    ),
+  ledger: () => import('wagmi/connectors/ledger').then(({ LedgerConnector }) => new LedgerConnector({ chains })),
+  trustWallet: () =>
+    import('@pancakeswap/wagmi/connectors/trustWallet').then(
+      ({ TrustWalletConnector }) =>
+        new TrustWalletConnector({
+          chains,
+          options: {
+            shimDisconnect: false,
+            shimChainChangedDisconnect: false,
+          },
+        }),
+    ),
+  safe: () => import('./safeConnector').then(({ SafeConnector }) => new SafeConnector({ chains })),
+}
 
-      installConnectors([
-        new safe.SafeConnector({ chains }),
-        metaMaskConnector,
-        injectedConnector,
-        coinbaseConnector,
-        walletConnectConnector,
-        bscConnector,
-        bloctoConnector,
-        ledgerConnector,
-        trustWalletConnector,
-      ])
-    })
+/**
+ * Load exactly one wallet SDK after that wallet is selected (or its persisted
+ * session needs restoration). The chooser itself never downloads every SDK.
+ */
+export function loadWalletConnector(connectorId: string): Promise<WalletConnector | undefined> {
+  const installed = connectorRegistry.get(connectorId)
+  if (installed) return Promise.resolve(installed)
+
+  const loader = connectorLoaders[connectorId]
+  if (!loader) return Promise.resolve(undefined)
+
+  const inFlight = connectorLoadPromises.get(connectorId)
+  if (inFlight) return inFlight
+
+  const promise = loader()
+    .then(installLoadedConnector)
     .catch((error) => {
-      extendedWalletConnectorsPromise = null
+      connectorLoadPromises.delete(connectorId)
       throw error
     })
+  connectorLoadPromises.set(connectorId, promise)
+  return promise
+}
 
-  return extendedWalletConnectorsPromise
+/** Compatibility helper for diagnostics; customer flows use loadWalletConnector. */
+export async function loadExtendedWalletConnectors(): Promise<void> {
+  await Promise.all(Object.keys(connectorLoaders).map((connectorId) => loadWalletConnector(connectorId)))
+}
+
+export function getPersistedWalletConnectorId(): string | null {
+  if (typeof window === 'undefined') return null
+  if (window.parent !== window) return 'safe'
+  const connectorId = client.storage?.getItem('wallet')
+  return typeof connectorId === 'string' && connectorId ? connectorId : null
 }
 
 /** Restore only the connector SDK used by a persisted/embedded wallet session. */
 export function requiresExtendedWalletSession(): boolean {
-  if (typeof window === 'undefined') return false
-  const lastUsedConnector = client.storage?.getItem('wallet')
-  const coreConnector = lastUsedConnector === 'metaMask' || lastUsedConnector === 'injected'
-  const embeddedWallet = window.parent !== window
-  return embeddedWallet || Boolean(lastUsedConnector && !coreConnector)
+  const connectorId = getPersistedWalletConnectorId()
+  return Boolean(connectorId && connectorId !== 'metaMask' && connectorId !== 'injected')
 }
 
 export const CHAIN_IDS = chains.map((c) => c.id)
