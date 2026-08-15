@@ -41,7 +41,20 @@ import {
 } from './commercialCheckoutTypes'
 import { appendMarketingHistory } from './marketingHistory'
 
-const MARCO_PAY_APPLICATION = process.env.NEXT_PUBLIC_MARCO_PAY_APPLICATION?.trim() || ''
+type MarcoPayReadiness = {
+  executable: boolean
+  reason: string | null
+  applicationRef: string | null
+  rewards?: { customerBps?: number | null; partnerBps?: number | null; customerLabel?: string }
+}
+
+type MarcoPayOrderConfig = {
+  orderId: string
+  application: string
+  amount: string
+  currency: string
+  reference: string
+}
 
 const IDENTITY_CHAINS = [
   { id: 56, label: 'BNB Chain', short: 'BSC' },
@@ -76,7 +89,7 @@ const PAYMENT_ASSET_META: Record<
     logoURI: MARCO_LOGO_URI,
   },
   MARCO_PAY: {
-    label: 'MARCO PAY',
+    label: 'MARCO Pay',
     symbol: 'M',
     logoURI: MARCO_LOGO_URI,
     purple: true,
@@ -1129,6 +1142,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [orderId, setOrderId] = useState<string | null>(null)
   const [quoteSummary, setQuoteSummary] = useState<string | null>(null)
   const [settlementMarket, setSettlementMarket] = useState<SettlementMarket>({ loading: false })
+  const [marcoPayReadiness, setMarcoPayReadiness] = useState<MarcoPayReadiness | null>(null)
+  const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
 
   const serviceMeta = VISIBILITY_SERVICES.find((item) => item.id === service) ?? null
   const packages = service ? CATALOGS[service] ?? [] : []
@@ -1147,8 +1162,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   })
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
-    (pay === 'MARCO_PAY' && !MARCO_PAY_APPLICATION
-      ? 'MARCO PAY cannot prepare production payments until the provider issues the Melega DEX application key.'
+    (pay === 'MARCO_PAY' && !marcoPayReadiness?.executable
+      ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
@@ -1242,10 +1257,27 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setWalletStage('idle')
     setOrderId(null)
     setQuoteSummary(null)
+    setMarcoPayReadiness(null)
+    setMarcoPayOrder(null)
     setSettlementMarket({ loading: true })
     setBusy(false)
     setStep('project')
   }, [open, initialService, chainId, projectContract])
+
+  useEffect(() => {
+    if (!open) return undefined
+    const controller = new AbortController()
+    void fetch('/api/marco-pay/readiness', { signal: controller.signal, cache: 'no-store' })
+      .then(async (response) => {
+        const payload = (await response.json()) as MarcoPayReadiness
+        setMarcoPayReadiness(payload)
+      })
+      .catch((cause) => {
+        if (cause instanceof Error && cause.name === 'AbortError') return
+        setMarcoPayReadiness({ executable: false, reason: 'MARCO Pay is temporarily unavailable.', applicationRef: null })
+      })
+    return () => controller.abort()
+  }, [open])
 
   useEffect(() => {
     if (!open) return undefined
@@ -1378,6 +1410,65 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
   }, [address, detected, draft, signer])
 
+  const prepareMarcoPayOrder = useCallback(async (): Promise<boolean> => {
+    if (!selectedPackage || !service || !detected) return false
+    if (!marcoPayReadiness?.executable) {
+      setError(marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.')
+      return false
+    }
+    if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
+      setWalletStage('connect')
+      setError(RC_COPY.connectWallet)
+      return false
+    }
+    const resolvedSlug = detected.slug ?? projectSlug
+    const resolvedProjectId = projectId || resolvedSlug || detected.contract || detected.symbol
+    setBusy(true)
+    try {
+      const response = await fetch('/api/marco-pay/orders', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          projectId: resolvedProjectId,
+          projectSlug: resolvedSlug,
+          projectContract: detected.contract,
+          buyerWallet,
+          serviceId: service,
+          packageId: selectedPackage.id,
+          targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
+        }),
+      })
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.message || 'MARCO Pay is temporarily unavailable.')
+      const next: MarcoPayOrderConfig = {
+        orderId: String(payload.order.orderId),
+        application: String(payload.widget.application),
+        amount: String(payload.widget.amount),
+        currency: String(payload.widget.currency),
+        reference: String(payload.widget.reference),
+      }
+      setMarcoPayOrder(next)
+      setOrderId(next.orderId)
+      setQuoteSummary(`Order ${next.orderId} · awaiting canonical MARCO Pay settlement`)
+      return true
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'MARCO Pay is temporarily unavailable.')
+      return false
+    } finally {
+      setBusy(false)
+    }
+  }, [
+    buyerWallet,
+    detected,
+    farmTarget,
+    marcoPayReadiness,
+    poolTarget,
+    projectId,
+    projectSlug,
+    selectedPackage,
+    service,
+  ])
+
   const goNext = async () => {
     setError(null)
     if (step === 'project') {
@@ -1425,6 +1516,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return
     }
     if (step === 'review') {
+      if (pay === 'MARCO_PAY') {
+        const prepared = await prepareMarcoPayOrder()
+        if (!prepared) return
+      }
       setStep('checkout')
     }
   }
@@ -1467,6 +1562,82 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setWalletStage('error')
     setError(cause.message || 'MARCO PAY is temporarily unavailable.')
   }, [])
+
+  useEffect(() => {
+    if (!open || step !== 'checkout' || pay !== 'MARCO_PAY' || !marcoPayOrder || status === 'confirmed') {
+      return undefined
+    }
+    let cancelled = false
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/marco-pay/orders?orderId=${encodeURIComponent(marcoPayOrder.orderId)}`, {
+          cache: 'no-store',
+        })
+        if (!response.ok || cancelled) return
+        const payload = await response.json()
+        const order = payload.order as {
+          state?: string
+          receiptRef?: string | null
+          activatedAt?: string | null
+          testMode?: boolean | null
+        }
+        if (order.state === 'PAYMENT_CONFIRMED' || order.state === 'ACTIVATING') {
+          setWalletStage('confirm')
+          setQuoteSummary('Payment confirmed · activating your service')
+          return
+        }
+        if (order.state === 'TEST_VERIFIED') {
+          setWalletStage('success')
+          setStatus('marco_pay_test_verified')
+          setQuoteSummary('Test payment verified · no funds moved · no service activated')
+          return
+        }
+        if (order.state !== 'ACTIVE') return
+        setStatus('confirmed')
+        setWalletStage('success')
+        setQuoteSummary(`Payment confirmed · service active · receipt ${order.receiptRef ?? 'verified'}`)
+        const resolvedSlug = detected?.slug ?? projectSlug
+        appendMarketingHistory(resolvedSlug || projectSlug, {
+          kind:
+            service === 'sponsored-research'
+              ? 'sponsored-research'
+              : service === 'featured-farm'
+              ? 'farm'
+              : service === 'featured-pool'
+              ? 'pool'
+              : service === 'featured'
+              ? 'featured'
+              : 'trend-boost',
+          label: selectedPackage?.label ?? 'MARCO Pay purchase',
+          status: 'Running',
+          packageId: String(selectedPackage?.id ?? ''),
+          expiresAt: selectedPackage
+            ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
+            : null,
+        })
+        onHistoryChange?.()
+      } catch {
+        /* Canonical webhook/reconciliation remains authoritative; keep polling. */
+      }
+    }
+    void poll()
+    const timer = window.setInterval(() => void poll(), 2_500)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [
+    detected?.slug,
+    marcoPayOrder,
+    onHistoryChange,
+    open,
+    pay,
+    projectSlug,
+    selectedPackage,
+    service,
+    status,
+    step,
+  ])
 
   const runCheckout = useCallback(async () => {
     setError(null)
@@ -1991,10 +2162,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <div data-testid="commercial-step-payment">
               <Label>Choose payment</Label>
               <PaymentGrid>
-                {(['BNB', 'USDT', 'USDC', 'MARCO', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
+                {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
                   (asset) => {
                     const disabled =
-                      (asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION) ||
+                      (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
                       (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
                     const meta = PAYMENT_ASSET_META[asset]
                     return (
@@ -2004,8 +2175,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         $on={pay === asset}
                         disabled={disabled}
                         title={
-                          asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION
-                            ? 'MARCO PAY is temporarily unavailable.'
+                          asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
+                            ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
+                            : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
+                            ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
                             : undefined
                         }
                         onClick={() => {
@@ -2015,6 +2188,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                           setWalletStage('idle')
                           setQuoteSummary(null)
                           setOrderId(null)
+                          setMarcoPayOrder(null)
                         }}
                         data-testid={`commercial-pay-${asset}`}
                       >
@@ -2022,7 +2196,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         <PaymentAssetLogo asset={asset} />
                         <PaymentName>{meta.label}</PaymentName>
                         <PaymentNetwork>BNB Chain</PaymentNetwork>
-                        {asset === 'MARCO' ? <PremiumCashbackSticker>+5% CASHBACK</PremiumCashbackSticker> : null}
+                        {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
+                          <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
+                        ) : null}
                       </PaymentCard>
                     )
                   },
@@ -2051,29 +2227,14 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                 </SettlementMain>
                 <SettlementNote>
                   <div>Final amount is refreshed before wallet confirmation.</div>
-                  {pay === 'MARCO' ? (
+                  {pay === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
                     <div>
-                      Cashback in <strong>M-Credits</strong> is credited after verified settlement in your{' '}
-                      <strong>MARCO PASSPORT</strong>.
+                      {marcoPayReadiness.rewards.customerLabel} after verified settlement in your{' '}
+                      <strong>MARCO Passport</strong>.
                     </div>
                   ) : null}
                 </SettlementNote>
               </SettlementSummary>
-              <div style={{ marginTop: 12 }}>
-                <Label>Referral link · 50% to referrer</Label>
-                <Input
-                  value={referral}
-                  onChange={(event) => setReferral(event.target.value)}
-                  placeholder="Paste referral link or wallet-linked code"
-                />
-                {referral ? (
-                  <Alert>{VISIBILITY_RUNTIME.referral.reason}</Alert>
-                ) : (
-                  <Meta style={{ marginTop: 6 }}>
-                    Permanent attribution will be shown in My Melega once the referral ledger is active.
-                  </Meta>
-                )}
-              </div>
             </div>
           ) : null}
 
@@ -2125,15 +2286,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               <Label>Checkout</Label>
               {checkoutBlocker ? (
                 <Alert $error>{checkoutBlocker}</Alert>
-              ) : pay === 'MARCO_PAY' ? (
+              ) : pay === 'MARCO_PAY' && marcoPayOrder ? (
                 <>
-                  <Meta>Complete the official MARCO PAY flow below.</Meta>
+                  <Meta>Complete the official MARCO Pay flow below.</Meta>
                   <div style={{ marginTop: 12 }}>
                     <MarcoPay
-                      application={MARCO_PAY_APPLICATION}
-                      amount={String(Math.round(totalUsd * 100))}
-                      currency="USD"
+                      application={marcoPayOrder.application}
+                      amount={marcoPayOrder.amount}
+                      currency={marcoPayOrder.currency}
                       item={`${serviceMeta?.title ?? 'Melega DEX visibility'} · ${detected?.symbol ?? projectSlug}`}
+                      reference={marcoPayOrder.reference}
                       onPassportResolved={handleMarcoPayPassport}
                       onPaymentStarted={handleMarcoPayStarted}
                       onPaymentCreated={handleMarcoPayCreated}
@@ -2142,7 +2304,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     />
                   </div>
                   <Meta style={{ marginTop: 8 }}>
-                    A client event never activates a placement. Melega verifies the provider callback first.
+                    Your service activates only after the signed MARCO Pay receipt is verified.
                   </Meta>
                 </>
               ) : (

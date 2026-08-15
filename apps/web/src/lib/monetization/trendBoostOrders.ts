@@ -358,6 +358,7 @@ export function activateVerifiedTrendBoostWindow(orderId: string) {
   const order = getTrendBoostOrder(orderId)
   if (!order) return null
   if (!order.receiptVerified || order.paymentStatus !== 'confirmed') return null
+  if (order.state === 'ACTIVE' && order.scheduledStart && order.scheduledEnd) return order
   const window = schedulePlacementWindow(order.durationMs)
   return updateTrendBoostOrder(orderId, {
     state: 'ACTIVE',

@@ -13,7 +13,7 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
   'featured-pool': { live: true, reason: null },
   M_CREDITS: {
     live: false,
-    reason: 'M-Credits debit through MARCO Passport is not connected to a production ledger yet.',
+    reason: 'M-Credits are not available for this service.',
   },
   referral: {
     live: false,
