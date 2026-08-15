@@ -19,6 +19,7 @@ import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/
 import { getFeaturedPackage, getTrendBoostPackage } from 'lib/monetization/packages'
 import type { ProjectClaimMetadata } from 'lib/project-claims/types'
 import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
+import { ProjectMarketingHistoryPopover } from 'views/shared/monetization/ProjectMarketingHistoryPopover'
 import {
   COMMERCIAL_SERVICES,
   VISIBILITY_SERVICES,
@@ -1182,6 +1183,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const [copied, setCopied] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [checkoutService, setCheckoutService] = useState<CommercialServiceId | null>(null)
+  const [historyKey, setHistoryKey] = useState(0)
   const [tradeReady, setTradeReady] = useState(false)
   const [belowFold, setBelowFold] = useState(false)
   const [chartHistory, setChartHistory] = useState<boolean | null>(null)
@@ -1534,6 +1536,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                         </ScorePopoverFoot>
                       </ScorePopover>
                     </ScoreBadgeWrap>
+                    {!isUnclaimed || hasPublishedProfile ? (
+                      <ProjectMarketingHistoryPopover slug={pageSlug} refreshKey={historyKey} />
+                    ) : null}
                   </Row>
                 </div>
               </Row>
@@ -1953,6 +1958,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
         chainId={chainId}
         initialService={checkoutService}
         identityReady
+        onHistoryChange={() => setHistoryKey((value) => value + 1)}
       />
     </CanonicalPage>
   )

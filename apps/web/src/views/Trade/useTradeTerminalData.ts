@@ -210,7 +210,11 @@ export const useTradeTerminalData = (
   const isMarcoRoute = tokenAddress
     ? tokenAddress.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
     : isMarcoSymbol(outputSymbol) || isMarcoSymbol(inputSymbol) || !outputSymbol
-  const indexedPairAddress = externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined)
+  // MARCO analytics, candles and recent swaps must all resolve against the
+  // canonical Melega pair. Dex aggregators may rank another MARCO/WBNB pool as
+  // the external "primary" pair; using that address here made the stats show
+  // canonical activity while the recent-swaps table queried a different pool.
+  const indexedPairAddress = isMarcoRoute ? MARCO_WBNB_PAIR_BSC : externalDex?.primaryPairAddress
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer(indexedPairAddress)
   const { data: publicMarket } = useSWR(isMarcoRoute ? 'trade-marco-coingecko-market' : null, fetchMarcoPublicMarket, {
     refreshInterval: 120_000,
@@ -731,7 +735,7 @@ export const useTradeTerminalData = (
         ? indexerState
         : undefined,
     chartUnavailableDetail,
-    primaryPairAddress: externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined),
+    primaryPairAddress: isMarcoRoute ? MARCO_WBNB_PAIR_BSC : externalDex?.primaryPairAddress,
     indexerState,
     tokenExists: tokenData?.exists,
   }

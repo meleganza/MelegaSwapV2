@@ -577,11 +577,18 @@ const PaymentNetwork = styled.span`
 `
 
 const PremiumCashbackSticker = styled(CashbackSticker)`
-  top: -1px;
-  right: -1px;
-  padding: 5px 8px;
-  font-size: 9px;
+  top: 8px;
+  left: 50%;
+  right: auto;
+  width: max-content;
+  max-width: calc(100% - 18px);
+  box-sizing: border-box;
+  padding: 5px 9px;
+  font-size: clamp(7px, 0.72vw, 9px);
   line-height: 1.05;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const SettlementSummary = styled.section`
@@ -996,7 +1003,7 @@ const Label = styled.div`
   font-weight: 720;
 `
 
-const STEPS: CommercialCheckoutStep[] = ['project', 'service', 'package', 'chain', 'payment', 'review', 'checkout']
+const STEPS: CommercialCheckoutStep[] = ['project', 'service', 'package', 'chain', 'payment', 'review']
 const STEP_LABELS: Record<CommercialCheckoutStep, string> = {
   project: 'Project',
   service: 'Service',
@@ -1004,7 +1011,6 @@ const STEP_LABELS: Record<CommercialCheckoutStep, string> = {
   chain: 'Chain',
   payment: 'Payment',
   review: 'Review',
-  checkout: 'Checkout',
 }
 
 const CATALOGS: Partial<Record<CommercialServiceId, readonly PlacementPackage[]>> = {
@@ -1522,13 +1528,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setStep('review')
       return
     }
-    if (step === 'review') {
-      if (pay === 'MARCO_PAY') {
-        const prepared = await prepareMarcoPayOrder()
-        if (!prepared) return
-      }
-      setStep('checkout')
-    }
   }
 
   const goBack = () => {
@@ -1571,7 +1570,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }, [])
 
   useEffect(() => {
-    if (!open || step !== 'checkout' || pay !== 'MARCO_PAY' || !marcoPayOrder || status === 'confirmed') {
+    if (!open || step !== 'review' || pay !== 'MARCO_PAY' || !marcoPayOrder || status === 'confirmed') {
       return undefined
     }
     let cancelled = false
@@ -1852,6 +1851,19 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     signer,
   ])
 
+  const reviewAndPay = useCallback(async () => {
+    setError(null)
+    if (checkoutBlocker) {
+      setError(checkoutBlocker)
+      return
+    }
+    if (pay === 'MARCO_PAY') {
+      if (!marcoPayOrder) await prepareMarcoPayOrder()
+      return
+    }
+    await runCheckout()
+  }, [checkoutBlocker, marcoPayOrder, pay, prepareMarcoPayOrder, runCheckout])
+
   const footer = (
     <MelegaModalFooter>
       <MelegaModalFooterMeta>
@@ -1871,25 +1883,25 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'checkout' && !buyerWallet && pay !== 'MARCO_PAY' ? (
+        {step === 'review' && !buyerWallet && pay !== 'MARCO_PAY' ? (
           <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
-        ) : step === 'checkout' ? (
-          <PrimaryBtn
+        ) : step === 'review' ? (
+          <SecurePrimaryBtn
             type="button"
-            disabled={busy || Boolean(checkoutBlocker) || pay === 'MARCO_PAY'}
-            onClick={() => void runCheckout()}
+            onClick={() => void reviewAndPay()}
+            disabled={busy || detecting || Boolean(checkoutBlocker) || (pay === 'MARCO_PAY' && Boolean(marcoPayOrder))}
             data-testid="commercial-checkout-pay"
           >
-            {busy ? 'Processing…' : pay === 'MARCO_PAY' ? 'Complete in MARCO PAY' : 'Pay & activate'}
-          </PrimaryBtn>
-        ) : step === 'payment' || step === 'review' ? (
+            {busy ? 'Processing…' : pay === 'MARCO_PAY' && marcoPayOrder ? 'Complete in MARCO Pay' : 'Review and pay'}
+          </SecurePrimaryBtn>
+        ) : step === 'payment' ? (
           <SecurePrimaryBtn
             type="button"
             onClick={() => void goNext()}
             disabled={busy || detecting}
             data-testid="commercial-checkout-next"
           >
-            {step === 'review' ? 'Continue to secure payment' : `Continue with ${paymentLabel}`}
+            {`Continue with ${paymentLabel}`}
           </SecurePrimaryBtn>
         ) : (
           <PrimaryBtn
@@ -2268,48 +2280,41 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     <span aria-hidden="true">{checkoutBlocker ? '!' : '✓'}</span>
                     {checkoutBlocker ?? 'Verified settlement · Automatic placement activation'}
                   </VerifiedSettlement>
+                  {pay === 'MARCO_PAY' && marcoPayOrder ? (
+                    <>
+                      <div style={{ marginTop: 14 }}>
+                        <MarcoPay
+                          application={marcoPayOrder.application}
+                          amount={marcoPayOrder.amount}
+                          currency={marcoPayOrder.currency}
+                          product={marcoPayOrder.product}
+                          item={`${serviceMeta?.title ?? 'Melega DEX visibility'} · ${detected?.symbol ?? projectSlug}`}
+                          reference={marcoPayOrder.reference}
+                          onPassportResolved={handleMarcoPayPassport}
+                          onPaymentStarted={handleMarcoPayStarted}
+                          onPaymentCreated={handleMarcoPayCreated}
+                          onPaymentCompleted={handleMarcoPayCompleted}
+                          onError={handleMarcoPayError}
+                        />
+                      </div>
+                      <Meta style={{ marginTop: 8, textAlign: 'center' }}>
+                        Your service activates only after the signed MARCO Pay receipt is verified.
+                      </Meta>
+                    </>
+                  ) : null}
+                  {quoteSummary ? <Meta style={{ marginTop: 8, textAlign: 'center' }}>{quoteSummary}</Meta> : null}
+                  {walletStage !== 'idle' ? (
+                    <div style={{ marginTop: 10 }}>
+                      <WalletFlowStatus stage={walletStage} />
+                    </div>
+                  ) : null}
+                  {status === 'confirmed' ? (
+                    <Meta style={{ marginTop: 8, color: uxRebuildColors.positive, textAlign: 'center' }}>
+                      Activated · see Marketing History
+                    </Meta>
+                  ) : null}
                 </ReviewCard>
               </ReviewStage>
-            </div>
-          ) : null}
-
-          {step === 'checkout' ? (
-            <div data-testid="commercial-step-checkout">
-              <Label>Checkout</Label>
-              {checkoutBlocker ? (
-                <Alert $error>{checkoutBlocker}</Alert>
-              ) : pay === 'MARCO_PAY' && marcoPayOrder ? (
-                <>
-                  <Meta>Complete the official MARCO Pay flow below.</Meta>
-                  <div style={{ marginTop: 12 }}>
-                    <MarcoPay
-                      application={marcoPayOrder.application}
-                      amount={marcoPayOrder.amount}
-                      currency={marcoPayOrder.currency}
-                      product={marcoPayOrder.product}
-                      item={`${serviceMeta?.title ?? 'Melega DEX visibility'} · ${detected?.symbol ?? projectSlug}`}
-                      reference={marcoPayOrder.reference}
-                      onPassportResolved={handleMarcoPayPassport}
-                      onPaymentStarted={handleMarcoPayStarted}
-                      onPaymentCreated={handleMarcoPayCreated}
-                      onPaymentCompleted={handleMarcoPayCompleted}
-                      onError={handleMarcoPayError}
-                    />
-                  </div>
-                  <Meta style={{ marginTop: 8 }}>
-                    Your service activates only after the signed MARCO Pay receipt is verified.
-                  </Meta>
-                </>
-              ) : (
-                <Meta>Confirm in your wallet. Placement activates only after a verified receipt.</Meta>
-              )}
-              {quoteSummary ? <Meta style={{ marginTop: 8 }}>{quoteSummary}</Meta> : null}
-              <div style={{ marginTop: 10 }}>
-                <WalletFlowStatus stage={walletStage} />
-              </div>
-              {status === 'confirmed' ? (
-                <Meta style={{ marginTop: 8, color: uxRebuildColors.positive }}>Activated · see Marketing History</Meta>
-              ) : null}
             </div>
           ) : null}
           {error ? <Err data-testid="commercial-checkout-error">{error}</Err> : null}

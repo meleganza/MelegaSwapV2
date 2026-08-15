@@ -43,4 +43,12 @@ describe('global search', () => {
     const projectResults = searchGlobal(index, 'melega')
     expect(projectResults.some((r) => r.category === 'project')).toBe(true)
   })
+
+  it('links project results to their indexed token identity and logo', () => {
+    const project = index.find((item) => item.id === 'project-eyed')
+
+    expect(project?.category).toBe('project')
+    expect(project?.address).toMatch(/^0x[0-9a-f]{40}$/i)
+    expect(project?.logoUrl).toBeTruthy()
+  })
 })

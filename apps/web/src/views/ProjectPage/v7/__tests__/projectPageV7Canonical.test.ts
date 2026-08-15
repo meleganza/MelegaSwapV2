@@ -121,6 +121,18 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).not.toContain('<ScoreGauge')
   })
 
+  it('projects verified marketing history from the checkout into a safe hero popover', () => {
+    const history = load('views/shared/monetization/ProjectMarketingHistoryPopover.tsx')
+    expect(shell).toContain('ProjectMarketingHistoryPopover')
+    expect(shell).toContain('onHistoryChange={() => setHistoryKey')
+    expect(history).toContain('loadMarketingHistory(slug)')
+    expect(history).toContain('resolveMarketingStatus')
+    expect(history).toContain('Marketing History')
+    expect(history).toContain('remaining')
+    expect(history).not.toContain('transactionHash')
+    expect(history).not.toContain('walletAddress')
+  })
+
   it('related projects remain compact and do not render unavailable market metrics', () => {
     expect(shell).toContain('FeaturedCard')
     expect(shell).toContain('Indexed project')

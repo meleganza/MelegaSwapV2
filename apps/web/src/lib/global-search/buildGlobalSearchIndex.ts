@@ -19,12 +19,9 @@ const CATEGORY_LABELS: Record<GlobalSearchCategory, string> = {
   collectible: 'Collectible',
 }
 
-export const globalSearchCategoryLabel = (category: GlobalSearchCategory): string =>
-  CATEGORY_LABELS[category]
+export const globalSearchCategoryLabel = (category: GlobalSearchCategory): string => CATEGORY_LABELS[category]
 
-const entry = (
-  partial: Omit<GlobalSearchEntry, 'searchableText'> & { keywords?: string[] },
-): GlobalSearchEntry => {
+const entry = (partial: Omit<GlobalSearchEntry, 'searchableText'> & { keywords?: string[] }): GlobalSearchEntry => {
   const haystack = [
     partial.label,
     partial.subtitle,
@@ -42,9 +39,7 @@ const entry = (
 }
 
 function tokenActions(address: string, projectHref?: string | null): GlobalSearchAction[] {
-  const actions: GlobalSearchAction[] = [
-    { label: 'Trade', href: `/swap?outputCurrency=${address}` },
-  ]
+  const actions: GlobalSearchAction[] = [{ label: 'Trade', href: `/swap?outputCurrency=${address}` }]
   if (projectHref) actions.push({ label: 'Open Project', href: projectHref })
   actions.push({ label: 'Add Wallet', href: `/portfolio?addToken=${address}` })
   return actions
@@ -76,6 +71,7 @@ function farmActions(href: string): GlobalSearchAction[] {
 /** Static search corpus — nav, registry, venues, tokens, surfaces. */
 export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
   const items: GlobalSearchEntry[] = []
+  const indexedTokens = buildDexTokenIndex()
 
   shellNavigation.forEach((section) => {
     section.items.forEach((nav) => {
@@ -123,6 +119,13 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
     .map(enrichProject)
     .forEach((project) => {
       const chainId = project.supportedChains?.[0] ?? null
+      const indexedProjectToken = indexedTokens.find(
+        (token) =>
+          token.registryProject?.slug === project.slug ||
+          (chainId != null &&
+            token.chainId === chainId &&
+            project.tickers.some((ticker) => ticker.toUpperCase() === token.symbol.toUpperCase())),
+      )
       items.push(
         entry({
           id: `project-${project.slug}`,
@@ -131,19 +134,17 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
           href: `/@${project.slug}/`,
           category: 'project',
           chainId,
-          address: null,
-          verified: Boolean(
-            project.trustBadges?.includes('canonical') || project.trustBadges?.includes('observed'),
-          ),
-          logoUrl: project.logoUrl ?? null,
+          address: indexedProjectToken?.address ?? null,
+          verified: Boolean(project.trustBadges?.includes('canonical') || project.trustBadges?.includes('observed')),
+          logoUrl: project.logoUrl ?? indexedProjectToken?.logo ?? null,
           actions: projectActions(project.slug),
           keywords: [
             project.slug,
             project.searchableText,
             ...project.tickers,
-            ...Object.values(project.capabilities)
+            ...(Object.values(project.capabilities)
               .map((c) => c.notes)
-              .filter(Boolean) as string[],
+              .filter(Boolean) as string[]),
           ],
         }),
       )
@@ -174,17 +175,16 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
         chainId: venue.chainId,
         address: venue.contractAddress ?? null,
         verified: venue.trust?.badges?.includes('verified') || venue.trust?.verificationStatus === 'verified',
-        actions:
-          category === 'farm' ? farmActions(href) : category === 'pool' ? poolActions(href) : undefined,
+        actions: category === 'farm' ? farmActions(href) : category === 'pool' ? poolActions(href) : undefined,
         keywords: [
           venue.slug,
           venue.venueType,
           venue.contractAddress ?? '',
           venue.legacyRef ?? '',
           ...venue.tags,
-          ...Object.values(venue.capabilities)
+          ...(Object.values(venue.capabilities)
             .map((c) => c.notes)
-            .filter(Boolean) as string[],
+            .filter(Boolean) as string[]),
         ],
         scoreBoost: venue.description.toLowerCase().includes('masterchef') ? 2 : 0,
       }),
@@ -229,7 +229,7 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
     )
   })
 
-  buildDexTokenIndex().forEach((token) => {
+  indexedTokens.forEach((token) => {
     const projectHref = resolveCanonicalProjectHref({
       slug: token.registryProject?.slug,
       chainId: token.chainId,
@@ -240,16 +240,16 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
       token.chainId === 56
         ? 'BSC'
         : token.chainId === 1
-          ? 'Ethereum'
-          : token.chainId === 8453
-            ? 'Base'
-            : token.chainId === 137
-              ? 'Polygon'
-              : token.chainId === 42161
-                ? 'Arbitrum'
-                : token.chainId === 43114
-                  ? 'Avalanche'
-                  : `Chain ${token.chainId}`
+        ? 'Ethereum'
+        : token.chainId === 8453
+        ? 'Base'
+        : token.chainId === 137
+        ? 'Polygon'
+        : token.chainId === 42161
+        ? 'Arbitrum'
+        : token.chainId === 43114
+        ? 'Avalanche'
+        : `Chain ${token.chainId}`
     items.push(
       entry({
         id: `token-${token.chainId}-${token.address.toLowerCase()}`,

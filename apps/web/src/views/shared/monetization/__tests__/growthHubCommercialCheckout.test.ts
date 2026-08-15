@@ -45,9 +45,10 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).toContain('MelegaModalFooter')
     expect(checkout).toContain('title="Boost Your Project"')
     expect(checkout).toContain('commercial-checkout-modal')
-    for (const step of ['project', 'service', 'package', 'chain', 'payment', 'review', 'checkout']) {
+    for (const step of ['project', 'service', 'package', 'chain', 'payment', 'review']) {
       expect(checkout).toContain(`commercial-step-${step}`)
     }
+    expect(checkout).not.toContain('commercial-step-checkout')
     expect(checkout).toContain('BNB')
     expect(checkout).toContain('USDT')
     expect(checkout).toContain('USDC')
@@ -81,7 +82,7 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).toContain('Review your order')
     expect(checkout).toContain('Approx. {settlementEstimate.label} required')
     expect(checkout).toContain('Verified settlement · Automatic placement activation')
-    expect(checkout).toContain('Continue to secure payment')
+    expect(checkout).toContain('Review and pay')
   })
 
   it('every paid visibility service has a receipt-gated consumer surface', () => {
