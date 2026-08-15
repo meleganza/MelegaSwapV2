@@ -13,6 +13,7 @@ type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
 type MarcoConnectEvent = { state?: unknown; wallet?: { address?: string } }
 type MarcoConnectSdk = {
   on: (event: string, listener: (payload: MarcoConnectEvent) => void) => (() => void) | void
+  open: () => void
   destroy: () => void
 }
 type MarcoConnectApi = {
@@ -27,7 +28,9 @@ const Root = styled.div<{ $size: MarcoConnectSize }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  height: ${({ $size }) => ($size === 'icon' || $size === 'navbar' ? '44px' : 'auto')};
+  min-height: ${({ $size }) => ($size === 'icon' || $size === 'navbar' ? '44px' : '40px')};
+  max-height: ${({ $size }) => ($size === 'icon' || $size === 'navbar' ? '44px' : 'none')};
   width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '164px' : 'auto')};
   min-width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '148px' : '0')};
   max-width: 100%;
@@ -42,8 +45,13 @@ const Host = styled.div<{ $concealed: boolean }>`
   justify-content: center;
   width: 100%;
   min-width: 0;
-  min-height: 40px;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
   opacity: ${({ $concealed }) => ($concealed ? 0 : 1)};
+  visibility: ${({ $concealed }) => ($concealed ? 'hidden' : 'visible')};
+  pointer-events: ${({ $concealed }) => ($concealed ? 'none' : 'auto')};
 
   > * {
     width: 100%;
@@ -53,7 +61,7 @@ const Host = styled.div<{ $concealed: boolean }>`
   }
 `
 
-const ConnectedDisplay = styled.div`
+const ConnectedDisplay = styled.button`
   position: absolute;
   inset: 0;
   width: 100%;
@@ -69,8 +77,10 @@ const ConnectedDisplay = styled.div`
   color: #fff;
   font-size: 13px;
   font-weight: 780;
+  font-family: inherit;
   font-variant-numeric: tabular-nums;
-  pointer-events: none;
+  cursor: pointer;
+  z-index: 3;
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
@@ -134,8 +144,8 @@ export const MarcoConnect: React.FC<{
   const { address } = useAccount()
   const { connectAsync, connectors } = useConnect()
   const hostRef = useRef<HTMLDivElement | null>(null)
+  const sdkRef = useRef<MarcoConnectSdk | null>(null)
   const addressRef = useRef<string | undefined>(undefined)
-  const walletIntentUntilRef = useRef(0)
   const walletSyncPendingRef = useRef(false)
   const connectorsRef = useRef(connectors)
   const connectAsyncRef = useRef(connectAsync)
@@ -171,23 +181,30 @@ export const MarcoConnect: React.FC<{
     const payloadAddress = payload?.wallet?.address
     if (payloadAddress) setWidgetAddress(payloadAddress)
     if (addressRef.current) return
-    // The official widget can replay its current Passport session when it is
-    // mounted after a route change. That passive replay must never reopen the
-    // Web3 permission/signature flow. Synchronise wagmi only after a real user
-    // interaction with MARCO Connect; persisted DEX sessions are restored by
-    // WalletSessionRuntime without another prompt.
-    if (Date.now() > walletIntentUntilRef.current) return
     if (walletSyncPendingRef.current) return
-    // Consume the user intent once. Some versions of the official widget emit
-    // more than one connect notification while Passport and Web3 converge.
-    // Only the first event may open the injected wallet permission flow.
-    walletIntentUntilRef.current = 0
     const connector =
       connectorsRef.current.find((candidate) => candidate.id === 'metaMask' && candidate.ready) ??
       connectorsRef.current.find((candidate) => candidate.id === 'injected' && candidate.ready)
     if (!connector) return
     walletSyncPendingRef.current = true
     try {
+      // A MARCO Passport replay is not wallet consent. Only attach wagmi when
+      // the injected provider already exposes an authorised account through
+      // eth_accounts; never call eth_requestAccounts or start a signature from
+      // a route change, ticker click, hover or another unrelated interaction.
+      const provider = (await connector.getProvider()) as {
+        request?: (args: { method: string }) => Promise<unknown>
+      }
+      const accounts = provider?.request ? await provider.request({ method: 'eth_accounts' }) : []
+      if (!Array.isArray(accounts) || accounts.length === 0) return
+      if (
+        payloadAddress &&
+        !accounts.some(
+          (account) => typeof account === 'string' && account.toLowerCase() === payloadAddress.toLowerCase(),
+        )
+      ) {
+        return
+      }
       await connectAsyncRef.current({ connector })
     } catch {
       // MARCO Connect owns the Passport session. A rejected DEX wallet sync
@@ -225,6 +242,7 @@ export const MarcoConnect: React.FC<{
             size,
             signature: false,
           })
+          sdkRef.current = sdk
           // MARCO Connect mounts synchronously in current production builds.
           // Capture that first paint immediately: an observer installed after
           // mount cannot see the completed insertion and would leave the DEX
@@ -279,6 +297,7 @@ export const MarcoConnect: React.FC<{
       mutationObserver?.disconnect()
       resizeObserver?.disconnect()
       unsubscribers.forEach((unsubscribe) => unsubscribe())
+      if (sdkRef.current === sdk) sdkRef.current = null
       sdk?.destroy()
       hostRef.current?.replaceChildren()
     }
@@ -299,16 +318,15 @@ export const MarcoConnect: React.FC<{
       data-marco-connect-active={isActive ? 'true' : 'false'}
       data-marco-connect-ready={ready ? 'true' : 'false'}
       data-marco-connect-provider="official-v2.1"
-      onPointerDownCapture={() => {
-        walletIntentUntilRef.current = Date.now() + 15_000
-      }}
-      onKeyDownCapture={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') walletIntentUntilRef.current = Date.now() + 15_000
-      }}
     >
       <Host ref={hostRef} $concealed={Boolean(ready && shortAddress)} />
       {ready && widgetVisible && shortAddress ? (
-        <ConnectedDisplay data-testid="marco-connect-connected-address" aria-hidden="true">
+        <ConnectedDisplay
+          type="button"
+          data-testid="marco-connect-connected-address"
+          aria-label="Open MARCO Passport"
+          onClick={() => sdkRef.current?.open()}
+        >
           <img src={MARCO_LOGO_URI} alt="" />
           {size === 'icon' ? null : shortAddress}
         </ConnectedDisplay>

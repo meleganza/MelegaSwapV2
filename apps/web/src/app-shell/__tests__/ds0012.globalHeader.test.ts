@@ -109,6 +109,7 @@ describe('DS001.2 global header shell contracts', () => {
     expect(header).toContain('display: none;')
     expect(connect).toContain("$size === 'navbar' ? '164px'")
     expect(connect).toContain('max-width: 100%')
+    expect(connect).toContain("$size === 'icon' || $size === 'navbar' ? '44px'")
     expect(connect).toContain('position: absolute;')
     expect(connect).toContain('widgetVisible')
     expect(connect).toContain('setWidgetVisible(Boolean(hostRef.current.firstElementChild))')
@@ -133,13 +134,23 @@ describe('DS001.2 global header shell contracts', () => {
   it('does not reopen wallet permissions from a passive MARCO session replay on navigation', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
-    expect(connect).toContain('walletIntentUntilRef')
-    expect(connect).toContain('if (Date.now() > walletIntentUntilRef.current) return')
-    expect(connect).toContain('onPointerDownCapture')
-    expect(connect).toContain('onKeyDownCapture')
+    expect(connect).not.toContain('walletIntentUntilRef')
+    expect(connect).not.toContain('onPointerDownCapture')
+    expect(connect).toContain("method: 'eth_accounts'")
+    expect(connect).not.toContain("method: 'eth_requestAccounts'")
+    expect(connect).toContain('accounts.length === 0')
     expect(connect).toContain('walletSyncPendingRef')
-    expect(connect).toContain('walletIntentUntilRef.current = 0')
     expect(connect).toContain('signature: false')
+  })
+
+  it('opens the single official Passport instance from the contained address control', () => {
+    const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
+
+    expect(connect).toContain('sdkRef.current = sdk')
+    expect(connect).toContain('onClick={() => sdkRef.current?.open()}')
+    expect(connect).toContain('aria-label="Open MARCO Passport"')
+    expect(connect).toContain("visibility: ${({ $concealed }) => ($concealed ? 'hidden' : 'visible')}")
+    expect(connect).toContain("pointer-events: ${({ $concealed }) => ($concealed ? 'none' : 'auto')}")
   })
 
   it('restores injected wallets only from a previously authorised passive session', () => {
