@@ -29,10 +29,10 @@ import {
   TabRow,
   px,
 } from './theme'
-import { Metric } from './Metric'
 import { explorerAddressUrl, positionActionLinks, type PositionDomain } from './runtime/buildPortfolioViewModel'
-import { chainLabel } from './helpers'
+import { chainLabel, parseUsdLoose } from './helpers'
 import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
+import { usePortfolioHistory, type PortfolioHistoryPoint } from './runtime/usePortfolioHistory'
 
 const HeroGrid = styled.div`
   display: grid;
@@ -109,8 +109,8 @@ const AnalyticsGrid = styled.div`
   display: grid;
   gap: 10px;
 
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.85fr) minmax(240px, 0.85fr) minmax(170px, 0.55fr);
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(390px, 1.15fr) minmax(0, 1.85fr);
   }
 `
 
@@ -125,11 +125,9 @@ const ChartCanvas = styled.div`
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  background:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
-    radial-gradient(ellipse 80% 90% at 45% 120%, rgba(221,185,47,.14), transparent 68%),
-    #090909;
+  background: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 90% at 45% 120%, rgba(221, 185, 47, 0.14), transparent 68%), #090909;
   background-size: 100% 33.333%, 16.666% 100%, 100% 100%, 100% 100%;
   display: grid;
   place-items: center;
@@ -137,16 +135,61 @@ const ChartCanvas = styled.div`
   text-align: center;
 `
 
+const HistorySvg = styled.svg`
+  position: absolute;
+  inset: 14px;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  overflow: visible;
+`
+
+const ChartLegend = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+  color: ${px.mute};
+  font-size: 10px;
+  span::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-right: 5px;
+    display: inline-block;
+    border-radius: 50%;
+    background: ${px.gold};
+  }
+  span:last-child::before {
+    background: ${px.ok};
+  }
+`
+
+const DonutGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const DonutCard = styled(Band)`
+  min-height: 174px;
+`
+
 const DonutLayout = styled.div`
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 94px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
-  min-height: 175px;
+  min-height: 122px;
 `
 
 const Donut = styled.div<{ $gradient: string }>`
-  width: 112px;
+  width: 94px;
   aspect-ratio: 1;
   border-radius: 50%;
   background: ${({ $gradient }) => $gradient};
@@ -155,10 +198,10 @@ const Donut = styled.div<{ $gradient: string }>`
   &::after {
     content: '';
     position: absolute;
-    inset: 24px;
+    inset: 20px;
     border-radius: 50%;
     background: #0c0c0c;
-    border: 1px solid rgba(255,255,255,.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 `
 
@@ -168,7 +211,7 @@ const DonutCenter = styled.div`
   z-index: 1;
   display: grid;
   place-items: center;
-  padding: 32px;
+  padding: 27px;
   text-align: center;
   font-size: 11px;
   font-weight: 800;
@@ -189,7 +232,10 @@ const LegendRow = styled.div`
   font-size: 11px;
   color: ${px.mute};
 
-  strong { color: ${px.text}; font-variant-numeric: tabular-nums; }
+  strong {
+    color: ${px.text};
+    font-variant-numeric: tabular-nums;
+  }
 `
 
 const Dot = styled.span<{ $color: string }>`
@@ -197,23 +243,6 @@ const Dot = styled.span<{ $color: string }>`
   height: 8px;
   border-radius: 50%;
   background: ${({ $color }) => $color};
-`
-
-const KpiStack = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-
-  @media (min-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const Kpi = styled(Band)`
-  min-height: 76px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 `
 
 const Skeleton = styled.div`
@@ -243,6 +272,21 @@ function donutGradient(items: Array<{ percentage: number; color: string }>): str
   return `conic-gradient(${stops.join(', ')})`
 }
 
+function polyline(points: PortfolioHistoryPoint[], field: 'portfolioUsd' | 'rewardsUsd'): string {
+  if (points.length < 2) return ''
+  const values = points.map((point) => point[field])
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const spread = Math.max(max - min, max * 0.01, 0.01)
+  return points
+    .map((point, index) => {
+      const x = (index / (points.length - 1)) * 100
+      const y = 92 - ((point[field] - min) / spread) * 78
+      return `${x.toFixed(2)},${y.toFixed(2)}`
+    })
+    .join(' ')
+}
+
 export const PortfolioStudioScreen: React.FC = () => {
   const { model } = usePortfolioRuntime()
   const { disconnect } = useDisconnect()
@@ -255,10 +299,18 @@ export const PortfolioStudioScreen: React.FC = () => {
   }
 
   const estimatedValue = model.summary.find((metric) => metric.id === 'portfolio')?.value || '—'
-  const liquidityMetric = model.summary.find((metric) => metric.id === 'liquidity')
-  const farmsMetric = model.summary.find((metric) => metric.id === 'farms')
-  const poolsMetric = model.summary.find((metric) => metric.id === 'pools')
-  const rewardsMetric = model.summary.find((metric) => metric.id === 'rewards')
+  const portfolioUsd = parseUsdLoose(estimatedValue)
+  const rewardsUsd = model.claimables.reduce((sum, row) => sum + (parseUsdLoose(row.estimatedUsd) || 0), 0)
+  const history = usePortfolioHistory({
+    wallet: wallet.address,
+    chainId: model.chainId,
+    portfolioUsd,
+    rewardsUsd,
+  })
+  const historyReady = history.length >= 2
+  const firstPoint = history[0]
+  const lastPoint = history[history.length - 1]
+  const pnl = historyReady && firstPoint && lastPoint ? lastPoint.portfolioUsd - firstPoint.portfolioUsd : null
 
   return (
     <Page
@@ -290,8 +342,10 @@ export const PortfolioStudioScreen: React.FC = () => {
             </HeroValue>
             <HeroValue>
               <HeroMetricLabel>24h P&amp;L</HeroMetricLabel>
-              <HeroMetricValue $muted>—</HeroMetricValue>
-              <BandMeta>Historical series unavailable</BandMeta>
+              <HeroMetricValue $muted={pnl == null}>
+                {pnl == null ? '—' : `${pnl >= 0 ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}`}
+              </HeroMetricValue>
+              <BandMeta>{historyReady ? 'Verified browser snapshots' : 'Indexing starts now'}</BandMeta>
             </HeroValue>
             <HeroActions data-testid="portfolio-hero-ctas">
               {!wallet.connected ? <ConnectWalletButton>Connect Wallet</ConnectWalletButton> : null}
@@ -321,73 +375,123 @@ export const PortfolioStudioScreen: React.FC = () => {
               <BandMeta>24H · 7D · 30D · ALL</BandMeta>
             </BandHead>
             <Row>
-              <HeroMetricValue style={{ fontSize: 24 }} $muted={estimatedValue === '—'}>{estimatedValue}</HeroMetricValue>
-              <Chip $tone="mute">P&amp;L unavailable</Chip>
+              <HeroMetricValue style={{ fontSize: 24 }} $muted={estimatedValue === '—'}>
+                {estimatedValue}
+              </HeroMetricValue>
+              <Chip $tone={pnl == null ? 'mute' : pnl >= 0 ? 'ok' : 'bad'}>
+                {pnl == null ? 'Collecting history' : `${pnl >= 0 ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}`}
+              </Chip>
             </Row>
-            <ChartCanvas data-testid="portfolio-history-unavailable">
-              <div>
-                <MelegaLogoSvg size={32} />
-                <Muted style={{ marginTop: 8 }}>Historical portfolio series not indexed.</Muted>
-                <BandMeta>Current value remains available from live wallet positions.</BandMeta>
-              </div>
+            <ChartCanvas data-testid={historyReady ? 'portfolio-history-chart' : 'portfolio-history-indexing'}>
+              {historyReady ? (
+                <>
+                  <ChartLegend>
+                    <span>Portfolio</span>
+                    <span>Rewards</span>
+                  </ChartLegend>
+                  <HistorySvg
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    role="img"
+                    aria-label="Portfolio and rewards history"
+                  >
+                    <polyline
+                      points={polyline(history, 'portfolioUsd')}
+                      fill="none"
+                      stroke={px.gold}
+                      strokeWidth="2"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <polyline
+                      points={polyline(history, 'rewardsUsd')}
+                      fill="none"
+                      stroke={px.ok}
+                      strokeWidth="1.6"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </HistorySvg>
+                </>
+              ) : (
+                <div>
+                  <MelegaLogoSvg size={32} />
+                  <Muted style={{ marginTop: 8 }}>
+                    Verified portfolio history starts with this live wallet snapshot.
+                  </Muted>
+                  <BandMeta>No synthetic historical values are generated.</BandMeta>
+                </div>
+              )}
             </ChartCanvas>
           </ChartCard>
 
-          <Band>
-            <BandHead>
-              <BandTitle>Allocation</BandTitle>
-              <BandMeta>{model.analytics.allocationMode === 'value' ? 'By value' : 'By positions'}</BandMeta>
-            </BandHead>
-            <DonutLayout>
-              <Donut $gradient={donutGradient(model.analytics.allocation)}>
-                <DonutCenter>{model.analytics.indexedValue}</DonutCenter>
-              </Donut>
-              <Legend>
-                {model.analytics.allocation.length ? model.analytics.allocation.map((item) => (
-                  <LegendRow key={item.id}>
-                    <Dot $color={item.color} />
-                    <span>{item.label}<br /><BandMeta>{item.value}</BandMeta></span>
-                    <strong>{item.percentage.toFixed(1)}%</strong>
-                  </LegendRow>
-                )) : <Muted>No indexed positions.</Muted>}
-              </Legend>
-            </DonutLayout>
-          </Band>
-
-          <Band>
-            <BandHead>
-              <BandTitle>By Chain</BandTitle>
-              <BandMeta>Priced positions</BandMeta>
-            </BandHead>
-            <DonutLayout>
-              <Donut $gradient={donutGradient(model.analytics.chains)}>
-                <DonutCenter>{model.analytics.indexedValue}</DonutCenter>
-              </Donut>
-              <Legend>
-                {model.analytics.chains.length ? model.analytics.chains.map((item) => (
-                  <LegendRow key={item.id}>
-                    <Dot $color={item.color} />
-                    <span>{item.label}<br /><BandMeta>{item.value}</BandMeta></span>
-                    <strong>{item.percentage.toFixed(1)}%</strong>
-                  </LegendRow>
-                )) : <Muted>Chain valuation unavailable.</Muted>}
-              </Legend>
-            </DonutLayout>
-          </Band>
-
-          <KpiStack>
-            {[liquidityMetric, farmsMetric, poolsMetric, rewardsMetric].map((metric) => metric ? (
-              <Kpi key={metric.id}>
-                <Metric
-                  label={metric.label}
-                  value={metric.value || '—'}
-                  source={metric.source}
-                  tone={metric.partial || metric.status === 'partial' ? 'gold' : metric.status === 'zero' ? 'mute' : undefined}
-                  testId={`portfolio-metric-${metric.id}`}
-                />
-              </Kpi>
-            ) : null)}
-          </KpiStack>
+          <DonutGrid data-testid="portfolio-four-donuts">
+            {(['liquidity', 'farms', 'pools'] as const).map((domain) => {
+              const breakdown = model.analytics.domainBreakdowns[domain]
+              return (
+                <DonutCard key={domain} data-testid={`portfolio-donut-${domain}`}>
+                  <BandHead>
+                    <BandTitle>{breakdown.label}</BandTitle>
+                    <BandMeta>
+                      {breakdown.count} {breakdown.count === 1 ? 'position' : 'positions'}
+                    </BandMeta>
+                  </BandHead>
+                  <DonutLayout>
+                    <Donut $gradient={donutGradient(breakdown.items)}>
+                      <DonutCenter>
+                        {breakdown.portfolioPercentage == null
+                          ? `${breakdown.count}`
+                          : `${breakdown.portfolioPercentage.toFixed(1)}%`}
+                      </DonutCenter>
+                    </Donut>
+                    <Legend>
+                      {breakdown.items.length ? (
+                        breakdown.items.slice(0, 4).map((item) => (
+                          <LegendRow key={item.id}>
+                            <Dot $color={item.color} />
+                            <span>
+                              {item.label}
+                              <br />
+                              <BandMeta>{item.value}</BandMeta>
+                            </span>
+                            <strong>{item.percentage.toFixed(1)}%</strong>
+                          </LegendRow>
+                        ))
+                      ) : (
+                        <Muted>No indexed positions.</Muted>
+                      )}
+                    </Legend>
+                  </DonutLayout>
+                </DonutCard>
+              )
+            })}
+            <DonutCard data-testid="portfolio-donut-chains">
+              <BandHead>
+                <BandTitle>By Chain</BandTitle>
+                <BandMeta>Indexed capital</BandMeta>
+              </BandHead>
+              <DonutLayout>
+                <Donut $gradient={donutGradient(model.analytics.chains)}>
+                  <DonutCenter>{model.analytics.indexedValue}</DonutCenter>
+                </Donut>
+                <Legend>
+                  {model.analytics.chains.length ? (
+                    model.analytics.chains.slice(0, 4).map((item) => (
+                      <LegendRow key={item.id}>
+                        <Dot $color={item.color} />
+                        <span>
+                          {item.label}
+                          <br />
+                          <BandMeta>{item.value}</BandMeta>
+                        </span>
+                        <strong>{item.percentage.toFixed(1)}%</strong>
+                      </LegendRow>
+                    ))
+                  ) : (
+                    <Muted>Chain valuation unavailable.</Muted>
+                  )}
+                </Legend>
+              </DonutLayout>
+            </DonutCard>
+          </DonutGrid>
         </AnalyticsGrid>
         {model.portfolioValueNote ? <Muted>{model.portfolioValueNote}</Muted> : null}
 
@@ -470,9 +574,7 @@ export const PortfolioStudioScreen: React.FC = () => {
           {tab === 'farms' ? (
             model.farms.length === 0 ? (
               <Muted>
-                {wallet.connected
-                  ? 'No farm positions for this wallet.'
-                  : 'Connect a wallet to load farm positions.'}
+                {wallet.connected ? 'No farm positions for this wallet.' : 'Connect a wallet to load farm positions.'}
               </Muted>
             ) : (
               <DenseTable data-position-domain="farms">
@@ -528,9 +630,7 @@ export const PortfolioStudioScreen: React.FC = () => {
           {tab === 'pools' ? (
             model.pools.length === 0 ? (
               <Muted>
-                {wallet.connected
-                  ? 'No pool positions for this wallet.'
-                  : 'Connect a wallet to load pool positions.'}
+                {wallet.connected ? 'No pool positions for this wallet.' : 'Connect a wallet to load pool positions.'}
               </Muted>
             ) : (
               <DenseTable data-position-domain="pools">
@@ -592,9 +692,7 @@ export const PortfolioStudioScreen: React.FC = () => {
         <Band data-portfolio-section="rewards" data-testid="portfolio-section-rewards">
           <BandHead>
             <BandTitle>Rewards</BandTitle>
-            <BandMeta>
-              {model.claimables.length === 0 ? 'None' : `${model.claimables.length} claimable`}
-            </BandMeta>
+            <BandMeta>{model.claimables.length === 0 ? 'None' : `${model.claimables.length} claimable`}</BandMeta>
           </BandHead>
           {model.claimables.length === 0 ? (
             <Muted>No non-zero claimable rewards for this wallet.</Muted>
@@ -645,7 +743,6 @@ export const PortfolioStudioScreen: React.FC = () => {
           </BandHead>
           <Muted data-testid="portfolio-activity-empty">{model.activityNote}</Muted>
         </Band>
-
       </Stack>
     </Page>
   )

@@ -64,7 +64,7 @@ const HonestState = styled.div`
 `
 
 function normalized(value: unknown): string {
-  return typeof value === 'string' ? value.trim().toLowerCase() : ''
+  return typeof value === 'string' ? value.trim().toLowerCase().replace(/wbnb/g, 'bnb').replace(/\s+/g, '') : ''
 }
 
 function EmbeddedFarm({ target }: { target: string }) {

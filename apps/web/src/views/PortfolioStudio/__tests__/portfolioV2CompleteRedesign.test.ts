@@ -20,9 +20,15 @@ describe('Portfolio V2 complete redesign', () => {
     expect(shell).toContain('portfolio-section-rewards')
     expect(shell).toContain('portfolio-section-activity')
     expect(shell).toContain('Portfolio Performance')
-    expect(shell).toContain('Allocation')
+    expect(shell).toContain('portfolio-four-donuts')
+    expect(shell).toContain("['liquidity', 'farms', 'pools']")
+    expect(shell).toContain('portfolio-donut-${domain}')
+    expect(shell).toContain('portfolio-donut-chains')
     expect(shell).toContain('By Chain')
-    expect(shell).toContain('Historical portfolio series not indexed')
+    expect(shell).toContain('No synthetic historical values are generated')
+    expect(shell).toContain('<span>Portfolio</span>')
+    expect(shell).toContain('Rewards')
+    expect(shell).not.toContain('<KpiStack>')
     expect(shell).not.toContain('usePassportHeroIdentity')
     expect(shell).not.toContain('Guest')
     expect(shell).not.toContain('VERIFICATION')
@@ -39,16 +45,18 @@ describe('Portfolio V2 complete redesign', () => {
     const state = load('runtime/portfolioState.ts')
     expect(state).not.toContain('CONNECTED_NO_PASSPORT')
     expect(state).not.toContain('CONNECTED_PASSPORT')
-    expect(resolvePortfolioSurfaceState(false, {
-      walletLoading: false,
-      liquidityLoading: false,
-      farmsLoading: false,
-      poolsLoading: false,
-      anyDomainError: false,
-      anyDomainPartial: false,
-      hasLastGoodPositions: false,
-      hasAnyFactualPositions: false,
-    })).toBe('DISCONNECTED')
+    expect(
+      resolvePortfolioSurfaceState(false, {
+        walletLoading: false,
+        liquidityLoading: false,
+        farmsLoading: false,
+        poolsLoading: false,
+        anyDomainError: false,
+        anyDomainPartial: false,
+        hasLastGoodPositions: false,
+        hasAnyFactualPositions: false,
+      }),
+    ).toBe('DISCONNECTED')
   })
 
   it('assets summary excludes controlled projects metric', () => {
@@ -60,13 +68,7 @@ describe('Portfolio V2 complete redesign', () => {
       claimables: [],
       domains: { liquidityLoading: false, farmsLoading: false, poolsLoading: false },
     })
-    expect(summary.metrics.map((m) => m.id)).toEqual([
-      'portfolio',
-      'liquidity',
-      'farms',
-      'pools',
-      'rewards',
-    ])
+    expect(summary.metrics.map((m) => m.id)).toEqual(['portfolio', 'liquidity', 'farms', 'pools', 'rewards'])
     expect(summary.metrics.find((m) => m.id === 'projects')).toBeUndefined()
   })
 
@@ -108,20 +110,11 @@ describe('Portfolio V2 complete redesign', () => {
   })
 
   it('pages and nav point Portfolio to /portfolio', () => {
-    const portfolioPage = readFileSync(
-      path.resolve(__dirname, '../../../pages/portfolio/index.tsx'),
-      'utf8',
-    )
+    const portfolioPage = readFileSync(path.resolve(__dirname, '../../../pages/portfolio/index.tsx'), 'utf8')
     expect(portfolioPage).toContain('PortfolioStudioScreen')
-    const passportPage = readFileSync(
-      path.resolve(__dirname, '../../../pages/passport/index.tsx'),
-      'utf8',
-    )
+    const passportPage = readFileSync(path.resolve(__dirname, '../../../pages/passport/index.tsx'), 'utf8')
     expect(passportPage).toContain("replace('/portfolio')")
-    const nav = readFileSync(
-      path.resolve(__dirname, '../../../app-shell/config/navigation.ts'),
-      'utf8',
-    )
+    const nav = readFileSync(path.resolve(__dirname, '../../../app-shell/config/navigation.ts'), 'utf8')
     expect(nav).toContain("href: '/portfolio'")
   })
 })

@@ -43,7 +43,18 @@ export type PortfolioAnalytics = {
   allocation: PortfolioBreakdownItem[]
   chains: PortfolioBreakdownItem[]
   indexedValue: string
+  domainBreakdowns: Record<PositionDomain, PortfolioDomainBreakdown>
   historicalSeriesAvailable: false
+}
+
+export type PortfolioDomainBreakdown = {
+  id: PositionDomain
+  label: string
+  count: number
+  indexedValue: string
+  portfolioPercentage: number | null
+  mode: 'value' | 'positions'
+  items: PortfolioBreakdownItem[]
 }
 
 export type PortfolioClaimableRow = {
@@ -105,6 +116,20 @@ function percentageRows(rows: Array<{ id: string; label: string; numeric: number
   }))
 }
 
+function positionRows(rows: Array<{ id: string; label: string; numeric: number }>): PortfolioBreakdownItem[] {
+  const valued = percentageRows(rows)
+  if (valued.length) return valued
+  if (!rows.length) return []
+  const percentage = 100 / rows.length
+  return rows.map((row, index) => ({
+    id: row.id,
+    label: row.label,
+    value: 'Indexed position',
+    percentage,
+    color: BREAKDOWN_COLORS[index % BREAKDOWN_COLORS.length],
+  }))
+}
+
 export function buildPortfolioAnalytics(args: {
   liquidity: PassportLiquidityPosition[]
   farms: FarmsWalletPosition[]
@@ -148,18 +173,86 @@ export function buildPortfolioAnalytics(args: {
       { id: 'liquidity', label: 'Liquidity', numeric: args.liquidity.length },
       { id: 'farms', label: 'Farms', numeric: args.farms.length },
       { id: 'pools', label: 'Pools', numeric: args.pools.length },
-    ]).map((row) => ({ ...row, value: `${Math.round((row.percentage / 100) * (args.liquidity.length + args.farms.length + args.pools.length))} positions` }))
+    ]).map((row) => ({
+      ...row,
+      value: `${Math.round(
+        (row.percentage / 100) * (args.liquidity.length + args.farms.length + args.pools.length),
+      )} positions`,
+    }))
   }
 
   const chains = percentageRows(
-    [...chainValues.entries()].map(([label, numeric]) => ({ id: label.toLowerCase().replace(/\s+/g, '-'), label, numeric })),
+    [...chainValues.entries()].map(([label, numeric]) => ({
+      id: label.toLowerCase().replace(/\s+/g, '-'),
+      label,
+      numeric,
+    })),
   )
+
+  const domainBreakdowns: PortfolioAnalytics['domainBreakdowns'] = {
+    liquidity: {
+      id: 'liquidity',
+      label: 'Liquidity',
+      count: args.liquidity.length,
+      indexedValue: domainValues.liquidity > 0 ? formatUsd(domainValues.liquidity) : '—',
+      portfolioPercentage: indexedValue > 0 ? (domainValues.liquidity / indexedValue) * 100 : null,
+      mode: args.liquidity.some((position) => (parseUsdLoose(position.estimatedValue) || 0) > 0)
+        ? 'value'
+        : 'positions',
+      items: positionRows(
+        args.liquidity.map((position) => ({
+          id: position.id,
+          label: position.pairLabel,
+          numeric: parseUsdLoose(position.estimatedValue) || 0,
+        })),
+      ),
+    },
+    farms: {
+      id: 'farms',
+      label: 'Farms',
+      count: args.farms.length,
+      indexedValue: domainValues.farms > 0 ? formatUsd(domainValues.farms) : '—',
+      portfolioPercentage: indexedValue > 0 ? (domainValues.farms / indexedValue) * 100 : null,
+      mode: args.farms.some(
+        (position) => (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.pendingValue) || 0) > 0,
+      )
+        ? 'value'
+        : 'positions',
+      items: positionRows(
+        args.farms.map((position) => ({
+          id: position.positionId,
+          label: position.title || `${position.token0.symbol}/${position.token1.symbol}`,
+          numeric: (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.pendingValue) || 0),
+        })),
+      ),
+    },
+    pools: {
+      id: 'pools',
+      label: 'Pools',
+      count: args.pools.length,
+      indexedValue: domainValues.pools > 0 ? formatUsd(domainValues.pools) : '—',
+      portfolioPercentage: indexedValue > 0 ? (domainValues.pools / indexedValue) * 100 : null,
+      mode: args.pools.some(
+        (position) => (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.claimableValue) || 0) > 0,
+      )
+        ? 'value'
+        : 'positions',
+      items: positionRows(
+        args.pools.map((position) => ({
+          id: position.positionId,
+          label: position.title || `${position.stakeToken.symbol} → ${position.rewardToken.symbol}`,
+          numeric: (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.claimableValue) || 0),
+        })),
+      ),
+    },
+  }
 
   return {
     allocationMode,
     allocation,
     chains,
     indexedValue: indexedValue > 0 ? formatUsd(indexedValue) : '—',
+    domainBreakdowns,
     historicalSeriesAvailable: false,
   }
 }
@@ -199,8 +292,7 @@ export function buildClaimables(args: {
       actionLabel: 'Harvest',
       actionHref: FARMS_HREF,
       contractHref:
-        explorerAddressUrl(farm.masterChef, farm.chainId) ||
-        explorerAddressUrl(farm.lpToken.address, farm.chainId),
+        explorerAddressUrl(farm.masterChef, farm.chainId) || explorerAddressUrl(farm.lpToken.address, farm.chainId),
     })
   }
 
@@ -317,8 +409,7 @@ export function buildAssetsSummary(args: {
   }
 
   const partialValuation = pricedCount > 0 && unpricedCount > 0
-  const anyLoading =
-    args.domains.liquidityLoading || args.domains.farmsLoading || args.domains.poolsLoading
+  const anyLoading = args.domains.liquidityLoading || args.domains.farmsLoading || args.domains.poolsLoading
 
   let portfolioValue = '—'
   let portfolioStatus: PortfolioMetricStatus = 'unavailable'
@@ -359,35 +450,27 @@ export function buildAssetsSummary(args: {
       metric(
         'farms',
         'Farms',
-        args.domains.farmsUnavailable
-          ? UNAVAILABLE_SHORT
-          : args.domains.farmsLoading
-            ? '—'
-            : String(farmCount),
+        args.domains.farmsUnavailable ? UNAVAILABLE_SHORT : args.domains.farmsLoading ? '—' : String(farmCount),
         args.domains.farmsUnavailable
           ? 'unavailable'
           : args.domains.farmsLoading
-            ? 'loading'
-            : farmCount === 0
-              ? 'zero'
-              : 'live',
+          ? 'loading'
+          : farmCount === 0
+          ? 'zero'
+          : 'live',
         'MasterChef LP staking',
       ),
       metric(
         'pools',
         'Pools',
-        args.domains.poolsUnavailable
-          ? UNAVAILABLE_SHORT
-          : args.domains.poolsLoading
-            ? '—'
-            : String(poolCount),
+        args.domains.poolsUnavailable ? UNAVAILABLE_SHORT : args.domains.poolsLoading ? '—' : String(poolCount),
         args.domains.poolsUnavailable
           ? 'unavailable'
           : args.domains.poolsLoading
-            ? 'loading'
-            : poolCount === 0
-              ? 'zero'
-              : 'live',
+          ? 'loading'
+          : poolCount === 0
+          ? 'zero'
+          : 'live',
         'SmartChef staking',
       ),
       metric(
@@ -421,8 +504,7 @@ export function buildPortfolioViewModel(input: {
   }
 }): PortfolioViewModel {
   const claimables = buildClaimables({ farms: input.farms, pools: input.pools })
-  const hasAny =
-    input.liquidity.length + input.farms.length + input.pools.length + claimables.length > 0
+  const hasAny = input.liquidity.length + input.farms.length + input.pools.length + claimables.length > 0
 
   const surfaceState = resolvePortfolioSurfaceState(input.wallet.connected, {
     walletLoading: input.wallet.loading,
@@ -469,7 +551,10 @@ export function buildPortfolioViewModel(input: {
   }
 }
 
-export function positionActionLinks(domain: PositionDomain, id?: string): {
+export function positionActionLinks(
+  domain: PositionDomain,
+  id?: string,
+): {
   manageHref: string
   removeHref?: string
   harvestHref?: string

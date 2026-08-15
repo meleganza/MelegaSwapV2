@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import {
   Code,
@@ -18,6 +19,24 @@ import {
 } from 'views/DeveloperPortal/PortalShell'
 
 type WidgetKind = 'swap' | 'bridge' | 'liquidity' | 'farm' | 'pool' | 'badge'
+
+const MARKET_TARGETS: Record<'liquidity' | 'farm' | 'pool', Array<{ value: string; label: string }>> = {
+  liquidity: [
+    { value: 'MARCO/BNB', label: 'MARCO / BNB' },
+    { value: 'MARCO/USDT', label: 'MARCO / USDT' },
+    { value: 'MM72/BNB', label: 'MM72 / BNB' },
+  ],
+  farm: [
+    { value: 'MARCO/BNB', label: 'MARCO / BNB' },
+    { value: 'MARCO/USDT', label: 'MARCO / USDT' },
+    { value: 'MM72/BNB', label: 'MM72 / BNB' },
+  ],
+  pool: [
+    { value: 'MARCO->MARCO', label: 'Stake MARCO → Earn MARCO' },
+    { value: 'MARCO->YD', label: 'Stake MARCO → Earn YD' },
+    { value: 'MARCO->MM72', label: 'Stake MARCO → Earn MM72' },
+  ],
+}
 
 const widgetOptions: Array<{ id: WidgetKind; icon: string; label: string }> = [
   { id: 'swap', icon: '⇄', label: 'Smart Swap' },
@@ -163,16 +182,32 @@ const PreviewHead = styled.div`
   }
 `
 
-const Preview = styled.iframe`
+const PreviewViewport = styled.div`
   width: 100%;
-  height: 600px;
-  display: block;
+  height: 468px;
+  overflow: hidden;
   border: 1px solid rgba(244, 196, 48, 0.3);
   border-radius: 12px;
   background: #070808;
 
   @media (max-width: 760px) {
-    height: 650px;
+    height: 500px;
+  }
+`
+
+const Preview = styled.iframe`
+  width: 128.21%;
+  height: 600px;
+  display: block;
+  border: 0;
+  background: #070808;
+  transform: scale(0.78);
+  transform-origin: top left;
+
+  @media (max-width: 760px) {
+    width: 111.12%;
+    height: 555px;
+    transform: scale(0.9);
   }
 `
 
@@ -259,11 +294,17 @@ function widgetUrl(kind: WidgetKind, token: string, target: string): string {
   return `/embed/market?kind=${kind}&target=${encodeURIComponent(target)}`
 }
 
-const DevsPage: React.FC = () => {
+const DevsPage: NextPageWithLayout = () => {
   const [kind, setKind] = useState<WidgetKind>('swap')
   const [token, setToken] = useState(MARCO_BSC_ADDRESS)
-  const [target, setTarget] = useState('')
+  const [marketTargets, setMarketTargets] = useState<Record<'liquidity' | 'farm' | 'pool', string>>({
+    liquidity: MARKET_TARGETS.liquidity[0].value,
+    farm: MARKET_TARGETS.farm[0].value,
+    pool: MARKET_TARGETS.pool[0].value,
+  })
   const [copied, setCopied] = useState(false)
+  const marketKind = kind === 'liquidity' || kind === 'farm' || kind === 'pool' ? kind : null
+  const target = marketKind ? marketTargets[marketKind] : ''
   const url = useMemo(() => widgetUrl(kind, token.trim() || MARCO_BSC_ADDRESS, target.trim()), [kind, token, target])
   const absolute = `https://www.melega.finance${url}`
   const code =
@@ -310,12 +351,18 @@ const DevsPage: React.FC = () => {
                 ) : null}
                 {kind === 'farm' || kind === 'pool' || kind === 'liquidity' ? (
                   <Field>
-                    Pair, PID or contract
-                    <input
-                      value={target}
-                      onChange={(event) => setTarget(event.target.value)}
-                      placeholder="Blank selects the first live market"
-                    />
+                    {kind === 'pool' ? 'Stake / reward market' : 'Liquidity pair'}
+                    <select
+                      value={marketTargets[kind]}
+                      onChange={(event) => setMarketTargets((current) => ({ ...current, [kind]: event.target.value }))}
+                      data-testid={`devs-${kind}-market-selector`}
+                    >
+                      {MARKET_TARGETS[kind].map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
                   </Field>
                 ) : null}
                 <Field>
@@ -359,7 +406,9 @@ const DevsPage: React.FC = () => {
                   </div>
                 </BadgePreview>
               ) : (
-                <Preview title={`${kind} live preview`} src={url} loading="lazy" scrolling="no" />
+                <PreviewViewport data-testid="devs-preview-viewport">
+                  <Preview title={`${kind} live preview`} src={url} loading="lazy" scrolling="no" />
+                </PreviewViewport>
               )}
             </PreviewSurface>
           </Workbench>

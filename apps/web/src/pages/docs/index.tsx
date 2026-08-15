@@ -3,6 +3,7 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 import { MELEGA_FACTORY_BSC, MELEGA_ROUTER_BSC, MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import DocsVisual, { type DocsVisualVariant } from 'views/Docs/DocsVisual'
 import {
@@ -39,7 +40,11 @@ const GUIDES: Guide[] = [
     id: 'swap',
     title: 'Swap',
     lead: 'Trade through the route presented by Smart Swap. The wallet signs the final router call; a quote is not a completed trade.',
-    steps: ['Choose the input and output tokens.', 'Enter the amount and review output, minimum received, impact and fees.', 'Confirm the correct network and approve the wallet transaction.'],
+    steps: [
+      'Choose the input and output tokens.',
+      'Enter the amount and review output, minimum received, impact and fees.',
+      'Confirm the correct network and approve the wallet transaction.',
+    ],
     href: '/swap',
     visual: 'swap',
   },
@@ -47,7 +52,11 @@ const GUIDES: Guide[] = [
     id: 'bridge',
     title: 'MARCO Bridge',
     lead: 'Move MARCO only across routes shown as available by the live bridge capability. Delivery is tracked from source to destination.',
-    steps: ['Choose source and destination networks.', 'Confirm destination wallet and live quote.', 'Sign and retain the tracked delivery reference.'],
+    steps: [
+      'Choose source and destination networks.',
+      'Confirm destination wallet and live quote.',
+      'Sign and retain the tracked delivery reference.',
+    ],
     href: '/bridge',
     visual: 'bridge',
   },
@@ -55,7 +64,11 @@ const GUIDES: Guide[] = [
     id: 'liquidity',
     title: 'Liquidity',
     lead: 'Add or remove liquidity from a Factory-backed pair. My Liquidity is derived from the connected wallet and indexed pair state.',
-    steps: ['Select an existing pair or create a market when available.', 'Enter both token amounts.', 'Review pool share and confirm the wallet action.'],
+    steps: [
+      'Select an existing pair or create a market when available.',
+      'Enter both token amounts.',
+      'Review pool share and confirm the wallet action.',
+    ],
     href: '/liquidity',
     visual: 'liquidity',
   },
@@ -63,7 +76,11 @@ const GUIDES: Guide[] = [
     id: 'farms',
     title: 'Farms',
     lead: 'Stake LP tokens in an active farm. APR, TVL, participants and duration are shown only when their source can be certified.',
-    steps: ['Choose an active farm and verify the LP pair.', 'Approve and stake the LP amount.', 'Track rewards and unstake from My Farms.'],
+    steps: [
+      'Choose an active farm and verify the LP pair.',
+      'Approve and stake the LP amount.',
+      'Track rewards and unstake from My Farms.',
+    ],
     href: '/farms',
     visual: 'farms',
   },
@@ -71,7 +88,11 @@ const GUIDES: Guide[] = [
     id: 'pools',
     title: 'Pools',
     lead: 'Stake the displayed token to earn the displayed reward token. A pool should be treated as active only when rewards are funded.',
-    steps: ['Verify stake token, reward token and live state.', 'Approve and stake the chosen amount.', 'Harvest or unstake through My Pools.'],
+    steps: [
+      'Verify stake token, reward token and live state.',
+      'Approve and stake the chosen amount.',
+      'Harvest or unstake through My Pools.',
+    ],
     href: '/pools',
     visual: 'pools',
   },
@@ -79,7 +100,11 @@ const GUIDES: Guide[] = [
     id: 'projects',
     title: 'Projects & Project Pages',
     lead: 'Discover registry-backed projects, inspect market facts, and open the project-specific Smart Swap configuration.',
-    steps: ['Search or filter indexed projects.', 'Open the Project Page and verify contract identity.', 'Use the embedded market actions when available.'],
+    steps: [
+      'Search or filter indexed projects.',
+      'Open the Project Page and verify contract identity.',
+      'Use the embedded market actions when available.',
+    ],
     href: '/projects',
     visual: 'projects',
   },
@@ -87,7 +112,11 @@ const GUIDES: Guide[] = [
     id: 'boost',
     title: 'Boost Your Project',
     lead: 'Purchase eligible visibility for an indexed Project Page. Paid placement activates only after verified settlement and reconciliation.',
-    steps: ['Detect the project and choose an eligible service target.', 'Choose duration and executable payment rail.', 'Complete payment and retain the activation receipt.'],
+    steps: [
+      'Detect the project and choose an eligible service target.',
+      'Choose duration and executable payment rail.',
+      'Complete payment and retain the activation receipt.',
+    ],
     href: '/projects',
     visual: 'boost',
   },
@@ -95,7 +124,11 @@ const GUIDES: Guide[] = [
     id: 'payments',
     title: 'MARCO Pay & M-Credits',
     lead: 'MARCO Pay uses the canonical application and signed server callback. M-Credits appears only when the selected product can complete that rail.',
-    steps: ['Review the server-owned service total.', 'Approve the canonical MARCO Pay request.', 'Wait for Payment Confirmed and Service Active; do not pay twice while activation is reconciling.'],
+    steps: [
+      'Review the server-owned service total.',
+      'Approve the canonical MARCO Pay request.',
+      'Wait for Payment Confirmed and Service Active; do not pay twice while activation is reconciling.',
+    ],
     href: '/pricing-fees',
     visual: 'payments',
   },
@@ -108,7 +141,25 @@ const DocsGrid = styled.div`
   gap: 16px;
   align-items: start;
 
-  @media (max-width: 900px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const DocsSideNav = styled(SideNav)`
+  position: sticky;
+  top: 148px;
+  align-self: start;
+  max-height: calc(100vh - 172px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+
+  @media (max-width: 900px) {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
 `
 
 const Guide = styled(Panel)`
@@ -118,7 +169,9 @@ const Guide = styled(Panel)`
   gap: 18px;
   align-items: stretch;
 
-  @media (max-width: 780px) { grid-template-columns: 1fr; }
+  @media (max-width: 780px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const Steps = styled.ol`
@@ -143,7 +196,7 @@ const CodeLine = styled.code`
   color: ${uxRebuildColors.text};
 `
 
-const DocsPage: React.FC = () => (
+const DocsPage: NextPageWithLayout = () => (
   <>
     <PageMeta title="Docs" />
     <PortalPage data-melega-docs-page>
@@ -161,15 +214,19 @@ const DocsPage: React.FC = () => (
         </PortalHero>
 
         <DocsGrid>
-          <SideNav aria-label="Documentation sections">
+          <DocsSideNav aria-label="Documentation sections" data-testid="docs-sticky-navigation">
             <NavTitle>Product guides</NavTitle>
-            {GUIDES.map((guide) => <NavLink key={guide.id} href={`#${guide.id}`}>{guide.title}</NavLink>)}
+            {GUIDES.map((guide) => (
+              <NavLink key={guide.id} href={`#${guide.id}`}>
+                {guide.title}
+              </NavLink>
+            ))}
             <NavTitle style={{ marginTop: 18 }}>Developer resources</NavTitle>
             <NavLink href="/docs/liquidity-builder">AI Liquidity Builder</NavLink>
             <NavLink href="/api-agents">API &amp; Agents</NavLink>
             <NavLink href="/devs">Embeddable widgets</NavLink>
             <NavLink href="#contracts">Contracts &amp; safety</NavLink>
-          </SideNav>
+          </DocsSideNav>
 
           <div style={{ display: 'grid', gap: 14, minWidth: 0 }}>
             {GUIDES.map((guide) => (
@@ -177,7 +234,11 @@ const DocsPage: React.FC = () => (
                 <div>
                   <PanelTitle>{guide.title}</PanelTitle>
                   <PanelBody>{guide.lead}</PanelBody>
-                  <Steps>{guide.steps.map((step) => <li key={step}>{step}</li>)}</Steps>
+                  <Steps>
+                    {guide.steps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </Steps>
                   <Open href={guide.href}>Open {guide.title} →</Open>
                 </div>
                 <DocsVisual variant={guide.visual} />
@@ -192,8 +253,12 @@ const DocsPage: React.FC = () => (
                 Never share a seed phrase or private key.
               </PanelBody>
               <div style={{ marginTop: 14, display: 'grid', gap: 8, fontSize: 12, color: uxRebuildColors.secondary }}>
-                <div>Factory: <CodeLine>{MELEGA_FACTORY_BSC}</CodeLine></div>
-                <div>Router: <CodeLine>{MELEGA_ROUTER_BSC}</CodeLine></div>
+                <div>
+                  Factory: <CodeLine>{MELEGA_FACTORY_BSC}</CodeLine>
+                </div>
+                <div>
+                  Router: <CodeLine>{MELEGA_ROUTER_BSC}</CodeLine>
+                </div>
               </div>
               <Open href="/audit">Open live audit &amp; telemetry →</Open>
             </Panel>
