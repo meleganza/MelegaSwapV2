@@ -45,12 +45,14 @@ type MachineEconomy = {
 }
 
 type MarcoToken = {
-  name?: string
-  symbol?: string
-  network?: string
-  chain_id?: string
-  contract_address?: string
-  decimals?: string
+  data?: {
+    name?: string
+    symbol?: string
+    network?: string
+    chain_id?: string
+    contract_address?: string
+    decimals?: string
+  }
 }
 
 function blobToken(): string | null {
@@ -137,15 +139,12 @@ export async function resolveMarcoPayReadiness() {
   const signedTestVerified = Boolean(
     signedTest && applicationRef && signedTest.applicationRef === applicationRef && signedTest.activated === false,
   )
-  const productRefsConfigured = Boolean(process.env.MARCO_PAY_PRODUCT_REFS_JSON?.trim())
-  const executable = Boolean(
-    applicationRef && appResolved && secretConfigured && productRefsConfigured && machineLive && signedTestVerified,
-  )
+  const executable = Boolean(applicationRef && appResolved && secretConfigured && machineLive && signedTestVerified)
   const reason = !applicationRef
     ? 'MARCO Pay is temporarily unavailable.'
     : !appResolved
     ? 'MARCO Pay is temporarily unavailable.'
-    : !secretConfigured || !signedTestVerified || !productRefsConfigured
+    : !secretConfigured || !signedTestVerified
     ? 'MARCO Pay is completing secure activation.'
     : !machineLive
     ? 'MARCO Pay is temporarily unavailable.'
@@ -160,7 +159,8 @@ export async function resolveMarcoPayReadiness() {
     secretConfigured,
     signedTestVerified,
     signedTestVerifiedAt: signedTest?.verifiedAt ?? null,
-    productRefsConfigured,
+    commerceModel: 'CHECKOUT_INTEGRATION' as const,
+    productMappingRequired: false,
     machineLive,
     contractVersion: pay?.data?.webhooks?.contract_version ?? null,
     widget: {
@@ -176,7 +176,7 @@ export async function resolveMarcoPayReadiness() {
           ? `Get ${customerRewardBps / 100}% back in M-Credits`
           : 'M-Credits reward available when qualified',
     },
-    token: token ?? null,
-    callbackUrl: 'https://www.melega.finance/api/marco-pay/webhook',
+    token: token?.data ?? null,
+    callbackUrl: 'https://www.melega.finance/api/marco-pay/webhook/',
   }
 }

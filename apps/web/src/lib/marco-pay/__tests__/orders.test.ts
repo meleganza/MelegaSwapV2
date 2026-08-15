@@ -126,6 +126,7 @@ describe('MARCO Pay fulfilment', () => {
       packageId: 'trend_1h',
     })
     const result = await processMarcoPayCompletedEvent(eventFor(order.orderId))
+    expect(order.productRef).toBeNull()
     expect(result.testMode).toBe(true)
     expect(result.order?.state).toBe('TEST_VERIFIED')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')

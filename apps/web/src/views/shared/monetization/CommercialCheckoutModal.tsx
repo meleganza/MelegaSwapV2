@@ -53,7 +53,7 @@ type MarcoPayOrderConfig = {
   application: string
   amount: string
   currency: string
-  product: string
+  product: string | null
   reference: string
 }
 
@@ -1451,7 +1451,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         application: String(payload.widget.application),
         amount: String(payload.widget.amount),
         currency: String(payload.widget.currency),
-        product: String(payload.widget.product),
+        product: typeof payload.widget.product === 'string' && payload.widget.product ? payload.widget.product : null,
         reference: String(payload.widget.reference),
       }
       setMarcoPayOrder(next)

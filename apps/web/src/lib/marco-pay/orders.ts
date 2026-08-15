@@ -153,18 +153,6 @@ export async function updateMarcoPayOrder(
   return persistMarcoPayOrder(next)
 }
 
-export function marcoPayProductRef(packageId: string): string | null {
-  const raw = process.env.MARCO_PAY_PRODUCT_REFS_JSON?.trim()
-  if (!raw) return null
-  try {
-    const parsed = JSON.parse(raw) as Record<string, unknown>
-    const value = parsed[packageId]
-    return typeof value === 'string' && value.trim() ? value.trim() : null
-  } catch {
-    return null
-  }
-}
-
 export async function createMarcoPayOrder(input: {
   applicationRef: string
   projectId: string
@@ -180,7 +168,6 @@ export async function createMarcoPayOrder(input: {
       ? getFeaturedPackage(input.packageId)
       : getVisibilityPackage(input.serviceId as VisibilityProductId, input.packageId)
   const now = new Date().toISOString()
-  const productRef = marcoPayProductRef(String(pkg.id))
   const buyerWallet = input.buyerWallet.toLowerCase()
   const common = {
     projectId: input.projectId,
@@ -209,7 +196,10 @@ export async function createMarcoPayOrder(input: {
     orderId: `mp_${randomBytes(12).toString('hex')}`,
     state: 'CREATED',
     applicationRef: input.applicationRef,
-    productRef,
+    // Melega DEX is a canonical CHECKOUT_INTEGRATION. Its server-owned order
+    // reference, amount and currency are the commercial authority; no MARCO
+    // catalogue product or product mapping participates in this flow.
+    productRef: null,
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,
     projectContract: input.projectContract ?? null,

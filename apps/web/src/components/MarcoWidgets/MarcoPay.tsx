@@ -10,7 +10,7 @@ type Props = {
   application: string
   amount: string
   currency: string
-  product: string
+  product?: string | null
   item: string
   reference: string
   onPassportResolved?: (event: MarcoPayEvent) => void
@@ -79,7 +79,7 @@ export const MarcoPay: React.FC<Props> = ({
           element = document.createElement('marco-pay')
           element.setAttribute('data-marco-deployment', application)
           element.setAttribute('application', application)
-          element.setAttribute('product', product)
+          if (product) element.setAttribute('product', product)
           element.setAttribute('amount', amount)
           element.setAttribute('currency', currency)
           element.setAttribute('item', item)
