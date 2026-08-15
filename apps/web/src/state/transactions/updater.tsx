@@ -1,10 +1,6 @@
-import React, { useEffect, useMemo, useRef } from 'react'
-import merge from 'lodash/merge'
-import pickBy from 'lodash/pickBy'
-import forEach from 'lodash/forEach'
+import React, { useEffect, useMemo } from 'react'
 import { useTranslation } from '@pancakeswap/localization'
 import { useProvider } from 'wagmi'
-import { poll } from '@ethersproject/web'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import { Box, Text, useToast } from '@pancakeswap/uikit'
 import { FAST_INTERVAL } from 'config/constants/common'
@@ -19,14 +15,10 @@ import {
 } from './actions'
 import { useAllChainTransactions } from './hooks'
 import { fetchCelerApi } from './fetchCelerApi'
-import { TransactionDetails } from './reducer'
+import type { TransactionDetails } from './reducer'
 
-export function shouldCheck(
-  fetchedTransactions: { [txHash: string]: TransactionDetails },
-  tx: TransactionDetails,
-): boolean {
-  if (tx.receipt) return false
-  return !fetchedTransactions[tx.hash]
+export function shouldReconcile(transaction: TransactionDetails): boolean {
+  return !transaction.receipt
 }
 
 export const Updater: React.FC<{ chainId: number }> = ({ chainId }) => {
@@ -38,61 +30,56 @@ export const Updater: React.FC<{ chainId: number }> = ({ chainId }) => {
 
   const { toastError, toastSuccess } = useToast()
 
-  const fetchedTransactions = useRef<{ [txHash: string]: TransactionDetails }>({})
-
   useEffect(() => {
     if (!chainId || !provider) return
+    let cancelled = false
+    const pending = Object.values(transactions).filter(shouldReconcile)
+    if (!pending.length) return
 
-    forEach(
-      pickBy(transactions, (transaction) => shouldCheck(fetchedTransactions.current, transaction)),
-      (transaction) => {
-        const getTransaction = async () => {
-          await provider.getNetwork()
+    // Reconcile every pending hash on a bounded timer. The previous detached
+    // block poll marked a hash as fetched before a receipt existed; a transient
+    // RPC/provider remount could therefore leave the header permanently pending.
+    const reconcile = async () => {
+      await Promise.all(
+        pending.map(async (transaction) => {
+          try {
+            const receipt = await provider.getTransactionReceipt(transaction.hash)
+            if (cancelled || !receipt?.blockHash) return
+            dispatch(
+              finalizeTransaction({
+                chainId,
+                hash: transaction.hash,
+                receipt: {
+                  blockHash: receipt.blockHash,
+                  blockNumber: receipt.blockNumber,
+                  contractAddress: receipt.contractAddress,
+                  from: receipt.from,
+                  status: receipt.status,
+                  to: receipt.to,
+                  transactionHash: receipt.transactionHash,
+                  transactionIndex: receipt.transactionIndex,
+                },
+              }),
+            )
+            const toast = receipt.status === 1 ? toastSuccess : toastError
+            toast(
+              t('Transaction receipt'),
+              <ToastDescriptionWithTx txHash={receipt.transactionHash} txChainId={chainId} />,
+            )
+          } catch {
+            // A single RPC failure must not retire the watcher; the next bounded
+            // attempt reconciles from canonical chain truth.
+          }
+        }),
+      )
+    }
 
-          const params = { transactionHash: provider.formatter.hash(transaction.hash, true) }
-
-          poll(
-            async () => {
-              const result = await provider.perform('getTransactionReceipt', params)
-
-              if (result == null || result.blockHash == null) {
-                return undefined
-              }
-
-              const receipt = provider.formatter.receipt(result)
-
-              dispatch(
-                finalizeTransaction({
-                  chainId,
-                  hash: transaction.hash,
-                  receipt: {
-                    blockHash: receipt.blockHash,
-                    blockNumber: receipt.blockNumber,
-                    contractAddress: receipt.contractAddress,
-                    from: receipt.from,
-                    status: receipt.status,
-                    to: receipt.to,
-                    transactionHash: receipt.transactionHash,
-                    transactionIndex: receipt.transactionIndex,
-                  },
-                }),
-              )
-
-              const toast = receipt.status === 1 ? toastSuccess : toastError
-              toast(
-                t('Transaction receipt'),
-                <ToastDescriptionWithTx txHash={receipt.transactionHash} txChainId={chainId} />,
-              )
-              return true
-            },
-            { onceBlock: provider },
-          )
-          merge(fetchedTransactions.current, { [transaction.hash]: transactions[transaction.hash] })
-        }
-
-        getTransaction()
-      },
-    )
+    void reconcile()
+    const timer = window.setInterval(reconcile, FAST_INTERVAL)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
   }, [chainId, provider, transactions, dispatch, toastSuccess, toastError, t])
 
   const nonBscFarmPendingTxns = useMemo(

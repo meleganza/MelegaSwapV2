@@ -191,7 +191,6 @@ export const useTradeTerminalData = (
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured)
-  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
   const resolvedInput = resolveCanonicalOutputAddress(chainId, inputSymbol, inputAddress)
   const outputIsNative = Boolean(outputAddress && !/^0x[a-fA-F0-9]{40}$/.test(outputAddress))
@@ -211,6 +210,8 @@ export const useTradeTerminalData = (
   const isMarcoRoute = tokenAddress
     ? tokenAddress.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
     : isMarcoSymbol(outputSymbol) || isMarcoSymbol(inputSymbol) || !outputSymbol
+  const indexedPairAddress = externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined)
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer(indexedPairAddress)
   const { data: publicMarket } = useSWR(isMarcoRoute ? 'trade-marco-coingecko-market' : null, fetchMarcoPublicMarket, {
     refreshInterval: 120_000,
     revalidateOnFocus: false,
@@ -312,8 +313,7 @@ export const useTradeTerminalData = (
     if (!transactions?.length) return []
     const swapTxs = transactions.filter((tx) => tx.type === TransactionType.SWAP)
     const pairFiltered = swapTxs.filter((tx) => matchesPair(tx, displayInput, displayOutput))
-    const source = pairFiltered.length > 0 ? pairFiltered : swapTxs
-    return [...source]
+    return [...pairFiltered]
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       .slice(0, 12)
       .map((tx) => {
@@ -356,8 +356,7 @@ export const useTradeTerminalData = (
     // leak the intermediate WBNB notional into the USD analytics card while
     // the BNB/USD oracle is still hydrating; show the honest unavailable state
     // until the canonical conversion is ready.
-    const indexedVolumeValue =
-      indexerMetrics24h?.volumeUsd != null ? formatUsd(indexerMetrics24h.volumeUsd) : undefined
+    const indexedVolumeValue = indexerMetrics24h?.volumeUsd != null ? formatUsd(indexerMetrics24h.volumeUsd) : undefined
     const indexedTradeValue =
       indexerMetrics24h?.tradeCount != null && indexerMetrics24h.tradeCount > 0
         ? indexerMetrics24h.tradeCount.toLocaleString()

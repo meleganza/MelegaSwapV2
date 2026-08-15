@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
+import Link from 'next/link'
 import { Field, replaceSwapState } from 'state/swap/actions'
 import { useAppDispatch } from 'state'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
@@ -29,6 +30,27 @@ const Canvas = styled.main`
   }
 `
 
+const Brand = styled(Link)`
+  width: fit-content;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+
+  img {
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+  }
+  span {
+    color: #f4c430;
+  }
+`
+
 const SwapEmbed = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
@@ -40,12 +62,21 @@ const SwapEmbed = () => {
     const output = typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
     if (!output) return
     dispatch(
-      replaceSwapState({ typedValue: '', field: Field.INPUT, inputCurrencyId: input, outputCurrencyId: output, recipient: null }),
+      replaceSwapState({
+        typedValue: '',
+        field: Field.INPUT,
+        inputCurrencyId: input,
+        outputCurrencyId: output,
+        recipient: null,
+      }),
     )
   }, [dispatch, router.isReady, router.query.inputCurrency, router.query.outputCurrency])
 
   return (
     <Canvas data-melega-widget="smart-swap">
+      <Brand href="https://www.melega.finance" target="_blank" rel="noopener noreferrer">
+        <img src="/images/melega.png" alt="" /> Melega<span>DEX</span>
+      </Brand>
       <SwapFeaturesProvider>
         <TradeRuntimeProvider>
           <TradeCockpit productAction={action} onProductActionChange={setAction} />

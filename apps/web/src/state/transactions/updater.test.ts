@@ -1,9 +1,8 @@
-import { shouldCheck } from './updater'
+import { shouldReconcile } from './updater'
 import { TransactionDetails } from './reducer'
 
 describe('transactions updater', () => {
-  const trxDetailInFetchedTransactions: TransactionDetails = { hash: 'Ox34567', addedTime: 5, from: '0x787213' }
-  const trxDetailNotInFetchedTransactions: TransactionDetails = { hash: 'Ox78903', addedTime: 6, from: '0x787213' }
+  const pendingTransaction: TransactionDetails = { hash: 'Ox78903', addedTime: 6, from: '0x787213' }
   const trxDetailWithReceipt: TransactionDetails = {
     hash: 'Ox78903',
     addedTime: 6,
@@ -19,18 +18,12 @@ describe('transactions updater', () => {
       transactionIndex: 5,
     },
   }
-  const fetchedTransactions: { [txHash: string]: TransactionDetails } = {
-    [trxDetailInFetchedTransactions.hash]: trxDetailInFetchedTransactions,
-  }
-  describe('shouldCheck', () => {
-    it('returns false if trx detail in fetchedTransaction', () => {
-      expect(shouldCheck(fetchedTransactions, trxDetailInFetchedTransactions)).toEqual(false)
-    })
-    it('returns true if trx detail not in fetchedTransaction', () => {
-      expect(shouldCheck(fetchedTransactions, trxDetailNotInFetchedTransactions)).toEqual(true)
+  describe('shouldReconcile', () => {
+    it('keeps a transaction eligible until a receipt exists', () => {
+      expect(shouldReconcile(pendingTransaction)).toEqual(true)
     })
     it('returns false if trx has receipt', () => {
-      expect(shouldCheck(fetchedTransactions, trxDetailWithReceipt)).toEqual(false)
+      expect(shouldReconcile(trxDetailWithReceipt)).toEqual(false)
     })
   })
 })

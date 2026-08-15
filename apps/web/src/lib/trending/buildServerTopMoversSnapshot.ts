@@ -272,7 +272,7 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
     return [
       {
         id: `paid-boosted-${order.chainId}-${order.orderId}`,
-        symbol: `🚀 ${projectToken?.symbol || meta.symbol}`,
+        symbol: projectToken?.symbol || meta.symbol,
         address: address.toLowerCase(),
         chainId: order.chainId,
         changeLabel: remaining,
@@ -289,7 +289,7 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
   const paidAddresses = new Set(paidEntries.map((entry) => entry.address?.toLowerCase()).filter(Boolean))
   const visibleOrganicAssets = organicRankedAssets.filter((asset) => !paidAddresses.has(asset.address.toLowerCase()))
   const paidRankedAssets: TierRankedAsset[] = paidEntries.map((entry) => {
-    const symbol = entry.symbol.replace(/^🚀\s*/, '')
+    const symbol = entry.symbol
     return {
       symbol,
       slug: entry.id,
