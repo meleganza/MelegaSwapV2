@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import TradePriceChart from './components/TradePriceChart'
-import TradePairStats from './components/TradePairStats'
-import useTradeTerminalData from './useTradeTerminalData'
+import { TradePriceChart } from './components/TradePriceChart'
+import { TradePairStats } from './components/TradePairStats'
+import { useTradeTerminalData } from './useTradeTerminalData'
 import { tradeLayout } from './tradeTokens'
 import type { TradePairStat } from './useTradeTerminalData'
 
@@ -15,10 +15,9 @@ const Shell = styled.div`
   height: 100%;
 `
 
-const TRADE_STAT_ORDER = ['price', 'liquidity', 'volume', 'transactions', 'fdv', 'holders'] as const
+const TRADE_STAT_ORDER = ['liquidity', 'volume', 'transactions', 'fdv', 'holders'] as const
 
 const STAT_LABELS: Record<string, string> = {
-  price: 'Price',
   liquidity: 'Liquidity',
   volume: 'Volume',
   transactions: 'Trades',
@@ -44,26 +43,8 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
   const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail, isIndexingMetrics } = data
 
   const orderedStats = useMemo((): TradePairStat[] => {
-    const priceChange =
-      pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h) && Math.abs(pairPrice.change24h) > 0.0001
-        ? {
-            text: `${pairPrice.change24h >= 0 ? '+' : ''}${pairPrice.change24h.toFixed(2)}%`,
-            positive: pairPrice.change24h >= 0,
-          }
-        : undefined
-
-    const priceStat: TradePairStat = {
-      id: 'price',
-      label: STAT_LABELS.price,
-      value: pairPrice?.formatted,
-      change: priceChange?.text,
-      changePositive: priceChange?.positive,
-      reasonCode: isIndexingMetrics ? 'SUBGRAPH_LOADING' : pairPrice?.formatted ? undefined : 'NO_EVENTS_INDEXED',
-    }
-
     const byId = Object.fromEntries(pairStats.map((stat) => [stat.id, stat]))
     const merged = TRADE_STAT_ORDER.map((id) => {
-      if (id === 'price') return priceStat
       const stat = byId[id]
       if (!stat) {
         return {
@@ -77,7 +58,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
     })
 
     return merged
-  }, [pairStats, pairPrice, isIndexingMetrics])
+  }, [pairStats, isIndexingMetrics])
 
   return (
     <Shell data-trade-center-panel>

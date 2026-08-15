@@ -28,9 +28,20 @@ describe('Founder Step 2 — approved Swap page contract', () => {
 
   it('removes Available routes in Bridge and keeps recent swaps under the left market stack', () => {
     expect(terminalSource).toContain("productAction === 'bridge'")
-    expect(terminalSource).toContain('data-bridge-recent-swaps="true"')
+    expect(terminalSource).toContain("data-bridge-recent-swaps={productAction === 'bridge'")
     expect(terminalSource).toContain("productAction === 'swap'")
     expect(terminalSource).toContain('<TradeRouterPanel />')
+    expect(terminalSource).toContain('<RightWorkspace>')
+    expect(terminalSource).toContain('<LeftWorkspace>')
+    expect(terminalSource).not.toContain('BottomGrid')
     expect(terminalSource).toContain('align-items: start')
+  })
+
+  it('keeps only the five non-redundant analytics cards', () => {
+    const centerSource = fs.readFileSync(path.join(tradeRoot, 'TradeCenterPanel.tsx'), 'utf8')
+    const statsSource = fs.readFileSync(path.join(tradeRoot, 'components/TradePairStats.tsx'), 'utf8')
+    expect(centerSource).toContain("['liquidity', 'volume', 'transactions', 'fdv', 'holders']")
+    expect(centerSource).not.toContain("price: 'Price'")
+    expect(statsSource).toContain('repeat(5, minmax(0, 1fr))')
   })
 })

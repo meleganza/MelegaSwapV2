@@ -7,13 +7,13 @@ import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
-import TradeSwapHero from './components/TradeSwapHero'
-import TradeCockpit from './TradeCockpit'
-import TradeCenterPanel from './TradeCenterPanel'
-import TradeRecentSwaps from './components/TradeRecentSwaps'
-import TradeRouterPanel from './components/TradeRouterPanel'
-import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
-import useTradeTerminalData from './useTradeTerminalData'
+import { TradeSwapHero } from './components/TradeSwapHero'
+import { TradeCockpit } from './TradeCockpit'
+import { TradeCenterPanel } from './TradeCenterPanel'
+import { TradeRecentSwaps } from './components/TradeRecentSwaps'
+import { TradeRouterPanel } from './components/TradeRouterPanel'
+import { TradeMarcoIconPatch } from './components/TradeMarcoIconPatch'
+import { useTradeTerminalData } from './useTradeTerminalData'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
 import { tradeColors, tradeLayout } from './tradeTokens'
 
@@ -66,20 +66,6 @@ const TopGrid = styled.div`
   }
 `
 
-const BottomGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
-  grid-auto-rows: ${tradeLayout.tradeTerminalRecentSwapsHeight};
-  gap: ${tradeLayout.columnGap};
-  min-width: 0;
-  align-items: stretch;
-
-  @media (max-width: 899px) {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-`
-
 const stretchColumn = `
   display: flex;
   flex-direction: column;
@@ -102,8 +88,11 @@ const LeftWorkspace = styled.div`
   align-self: start;
 `
 
-const AreaCockpit = styled.div`
+const RightWorkspace = styled.div`
   grid-area: cockpit;
+  display: flex;
+  flex-direction: column;
+  gap: ${tradeLayout.verticalRhythm};
   min-width: 0;
   align-self: start;
 `
@@ -143,9 +132,14 @@ export const TradeTerminalScreen: React.FC = () => {
         <TradeSwapHero />
         <TradeRuntimeProvider>
           <TopGrid>
-            <AreaCockpit>
+            <RightWorkspace>
               <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
-            </AreaCockpit>
+              {productAction === 'swap' ? (
+                <AreaRoutes>
+                  <TradeRouterPanel />
+                </AreaRoutes>
+              ) : null}
+            </RightWorkspace>
             <LeftWorkspace>
               <TradeCenterPanel
                 data={tradeData}
@@ -154,23 +148,7 @@ export const TradeTerminalScreen: React.FC = () => {
                 inputCurrencyId={inputCurrencyId}
                 outputCurrencyId={outputCurrencyId}
               />
-              {productAction === 'bridge' ? (
-                <AreaSwaps data-bridge-recent-swaps="true">
-                  <TradeRecentSwaps
-                    rows={recentSwaps}
-                    isIndexing={isIndexing}
-                    swapEmptyReason={swapEmptyReason}
-                    missingReason={missingReason}
-                    missingReasonDetail={missingReasonDetail}
-                    swapDiagnostic={swapDiagnostic}
-                  />
-                </AreaSwaps>
-              ) : null}
-            </LeftWorkspace>
-          </TopGrid>
-          {productAction === 'swap' ? (
-            <BottomGrid>
-              <AreaSwaps>
+              <AreaSwaps data-bridge-recent-swaps={productAction === 'bridge' ? 'true' : undefined}>
                 <TradeRecentSwaps
                   rows={recentSwaps}
                   isIndexing={isIndexing}
@@ -180,11 +158,8 @@ export const TradeTerminalScreen: React.FC = () => {
                   swapDiagnostic={swapDiagnostic}
                 />
               </AreaSwaps>
-              <AreaRoutes>
-                <TradeRouterPanel />
-              </AreaRoutes>
-            </BottomGrid>
-          ) : null}
+            </LeftWorkspace>
+          </TopGrid>
         </TradeRuntimeProvider>
       </Content>
     </Root>
