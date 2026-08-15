@@ -1,7 +1,11 @@
 const scriptPromises = new Map<string, Promise<void>>()
 
 /** Load an official MARCO widget once, only when its surface is rendered. */
-export const loadMarcoWidgetScript = (src: string, ready: () => boolean): Promise<void> => {
+export const loadMarcoWidgetScript = (
+  src: string,
+  ready: () => boolean,
+  attributes: Record<string, string> = {},
+): Promise<void> => {
   if (typeof window === 'undefined') return Promise.reject(new Error('MARCO_WIDGET_BROWSER_REQUIRED'))
   if (ready()) return Promise.resolve()
 
@@ -27,6 +31,7 @@ export const loadMarcoWidgetScript = (src: string, ready: () => boolean): Promis
       script.async = true
       script.defer = true
       script.dataset.marcoWidgetSrc = src
+      Object.entries(attributes).forEach(([name, value]) => script.setAttribute(name, value))
       document.head.appendChild(script)
     }
   }).catch((error) => {

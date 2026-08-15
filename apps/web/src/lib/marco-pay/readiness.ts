@@ -133,24 +133,19 @@ export async function resolveMarcoPayReadiness() {
     pay.data.webhooks.signature_input_format === '<signature_version>.<timestamp>.<raw_body>' &&
     pay.data.webhooks.timestamp_tolerance_seconds === 300 &&
     pay.data.webhooks.authoritative_activation_event === 'payment.completed'
-  const machineLive =
-    marcoCapability?.status === 'LIVE' && webhookCapability?.status === 'LIVE' && contractValid
+  const machineLive = marcoCapability?.status === 'LIVE' && webhookCapability?.status === 'LIVE' && contractValid
   const signedTestVerified = Boolean(
     signedTest && applicationRef && signedTest.applicationRef === applicationRef && signedTest.activated === false,
   )
   const productRefsConfigured = Boolean(process.env.MARCO_PAY_PRODUCT_REFS_JSON?.trim())
   const executable = Boolean(
-    applicationRef &&
-      appResolved &&
-      secretConfigured &&
-      machineLive &&
-      signedTestVerified,
+    applicationRef && appResolved && secretConfigured && productRefsConfigured && machineLive && signedTestVerified,
   )
   const reason = !applicationRef
     ? 'MARCO Pay is temporarily unavailable.'
     : !appResolved
     ? 'MARCO Pay is temporarily unavailable.'
-    : !secretConfigured || !signedTestVerified
+    : !secretConfigured || !signedTestVerified || !productRefsConfigured
     ? 'MARCO Pay is completing secure activation.'
     : !machineLive
     ? 'MARCO Pay is temporarily unavailable.'

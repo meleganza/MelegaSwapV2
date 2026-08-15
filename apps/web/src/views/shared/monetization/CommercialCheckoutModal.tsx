@@ -53,6 +53,7 @@ type MarcoPayOrderConfig = {
   application: string
   amount: string
   currency: string
+  product: string
   reference: string
 }
 
@@ -453,7 +454,8 @@ const Chip = styled.button<{ $on?: boolean }>`
 const CashbackSticker = styled.span`
   position: absolute;
   top: -9px;
-  right: -7px;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 2px 6px;
   border-radius: 999px;
   border: 1px solid rgba(172, 104, 255, 0.72);
@@ -477,7 +479,7 @@ const PaymentGrid = styled.div`
   }
 
   @media (min-width: 1080px) {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `
 
@@ -1274,7 +1276,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
       .catch((cause) => {
         if (cause instanceof Error && cause.name === 'AbortError') return
-        setMarcoPayReadiness({ executable: false, reason: 'MARCO Pay is temporarily unavailable.', applicationRef: null })
+        setMarcoPayReadiness({
+          executable: false,
+          reason: 'MARCO Pay is temporarily unavailable.',
+          applicationRef: null,
+        })
       })
     return () => controller.abort()
   }, [open])
@@ -1445,6 +1451,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         application: String(payload.widget.application),
         amount: String(payload.widget.amount),
         currency: String(payload.widget.currency),
+        product: String(payload.widget.product),
         reference: String(payload.widget.reference),
       }
       setMarcoPayOrder(next)
@@ -1611,9 +1618,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           label: selectedPackage?.label ?? 'MARCO Pay purchase',
           status: 'Running',
           packageId: String(selectedPackage?.id ?? ''),
-          expiresAt: selectedPackage
-            ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
-            : null,
+          expiresAt: selectedPackage ? new Date(Date.now() + selectedPackage.durationMs).toISOString() : null,
         })
         onHistoryChange?.()
       } catch {
@@ -1626,18 +1631,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [
-    detected?.slug,
-    marcoPayOrder,
-    onHistoryChange,
-    open,
-    pay,
-    projectSlug,
-    selectedPackage,
-    service,
-    status,
-    step,
-  ])
+  }, [detected?.slug, marcoPayOrder, onHistoryChange, open, pay, projectSlug, selectedPackage, service, status, step])
 
   const runCheckout = useCallback(async () => {
     setError(null)
@@ -2162,47 +2156,45 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <div data-testid="commercial-step-payment">
               <Label>Choose payment</Label>
               <PaymentGrid>
-                {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
-                  (asset) => {
-                    const disabled =
-                      (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
-                      (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
-                    const meta = PAYMENT_ASSET_META[asset]
-                    return (
-                      <PaymentCard
-                        key={asset}
-                        type="button"
-                        $on={pay === asset}
-                        disabled={disabled}
-                        title={
-                          asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
-                            ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
-                            : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
-                            ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
-                            : undefined
-                        }
-                        onClick={() => {
-                          setPay(asset)
-                          setError(null)
-                          setStatus('idle')
-                          setWalletStage('idle')
-                          setQuoteSummary(null)
-                          setOrderId(null)
-                          setMarcoPayOrder(null)
-                        }}
-                        data-testid={`commercial-pay-${asset}`}
-                      >
-                        {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
-                        <PaymentAssetLogo asset={asset} />
-                        <PaymentName>{meta.label}</PaymentName>
-                        <PaymentNetwork>BNB Chain</PaymentNetwork>
-                        {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
-                          <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
-                        ) : null}
-                      </PaymentCard>
-                    )
-                  },
-                )}
+                {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map((asset) => {
+                  const disabled =
+                    (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
+                    (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
+                  const meta = PAYMENT_ASSET_META[asset]
+                  return (
+                    <PaymentCard
+                      key={asset}
+                      type="button"
+                      $on={pay === asset}
+                      disabled={disabled}
+                      title={
+                        asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
+                          ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
+                          : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
+                          ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
+                          : undefined
+                      }
+                      onClick={() => {
+                        setPay(asset)
+                        setError(null)
+                        setStatus('idle')
+                        setWalletStage('idle')
+                        setQuoteSummary(null)
+                        setOrderId(null)
+                        setMarcoPayOrder(null)
+                      }}
+                      data-testid={`commercial-pay-${asset}`}
+                    >
+                      {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
+                      <PaymentAssetLogo asset={asset} />
+                      <PaymentName>{meta.label}</PaymentName>
+                      <PaymentNetwork>BNB Chain</PaymentNetwork>
+                      {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
+                        <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
+                      ) : null}
+                    </PaymentCard>
+                  )
+                })}
               </PaymentGrid>
               <SettlementSummary data-testid="commercial-settlement-summary">
                 <SettlementMain>
@@ -2294,6 +2286,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       application={marcoPayOrder.application}
                       amount={marcoPayOrder.amount}
                       currency={marcoPayOrder.currency}
+                      product={marcoPayOrder.product}
                       item={`${serviceMeta?.title ?? 'Melega DEX visibility'} · ${detected?.symbol ?? projectSlug}`}
                       reference={marcoPayOrder.reference}
                       onPassportResolved={handleMarcoPayPassport}

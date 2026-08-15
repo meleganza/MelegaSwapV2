@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 
-const MARCO_PAY_SRC = 'https://marco.melega.ai/widgets/marco-pay-mark.v1.js'
+const MARCO_SITE_SRC = 'https://marco.melega.ai/widgets/marco.js'
+const MARCO_PAY_SRC = 'https://marco.melega.ai/widgets/marco-pay.v1.js'
+const MARCO_SITE_ID = 'dsk_fcbd4464eb8347ae8ae7472700eec0d6'
 type MarcoPayEvent = CustomEvent<Record<string, unknown>>
 type Props = {
   application: string
   amount: string
   currency: string
+  product: string
   item: string
   reference: string
   onPassportResolved?: (event: MarcoPayEvent) => void
@@ -25,6 +28,7 @@ export const MarcoPay: React.FC<Props> = ({
   application,
   amount,
   currency,
+  product,
   item,
   reference,
   onPassportResolved,
@@ -63,26 +67,32 @@ export const MarcoPay: React.FC<Props> = ({
       // Kept for forward compatibility with the passport event documented by MARCO Connect.
       ['marco-pay:passportResolved', ((event: MarcoPayEvent) => onPassportResolved?.(event)) as EventListener],
     ]
-    void loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay-mark'))).then(
-      () => {
-        if (cancelled || !hostRef.current) return
-        element = document.createElement('marco-pay-mark')
-        element.setAttribute('mode', 'button')
-        element.setAttribute('application', application)
-        element.setAttribute('amount', amount)
-        element.setAttribute('currency', currency)
-        element.setAttribute('item', item)
-        element.setAttribute('reference', reference)
-        element.setAttribute('theme', 'dark')
-        element.setAttribute('size', 'standard')
-        listeners.forEach(([name, listener]) => element?.addEventListener(name, listener))
-        hostRef.current.replaceChildren(element)
-        setReady(true)
-      },
-      (cause) => {
-        if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause)))
-      },
+    void loadMarcoWidgetScript(
+      MARCO_SITE_SRC,
+      () => Boolean(document.querySelector(`script[src="${MARCO_SITE_SRC}"]`)),
+      { 'data-marco-site': MARCO_SITE_ID },
     )
+      .then(() => loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay'))))
+      .then(
+        () => {
+          if (cancelled || !hostRef.current) return
+          element = document.createElement('marco-pay')
+          element.setAttribute('data-marco-deployment', application)
+          element.setAttribute('application', application)
+          element.setAttribute('product', product)
+          element.setAttribute('amount', amount)
+          element.setAttribute('currency', currency)
+          element.setAttribute('item', item)
+          element.setAttribute('reference', reference)
+          element.setAttribute('theme', 'dark')
+          listeners.forEach(([name, listener]) => element?.addEventListener(name, listener))
+          hostRef.current.replaceChildren(element)
+          setReady(true)
+        },
+        (cause) => {
+          if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause)))
+        },
+      )
     return () => {
       cancelled = true
       listeners.forEach(([name, listener]) => element?.removeEventListener(name, listener))
@@ -92,6 +102,7 @@ export const MarcoPay: React.FC<Props> = ({
     amount,
     application,
     currency,
+    product,
     item,
     reference,
     onError,

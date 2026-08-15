@@ -81,6 +81,7 @@ const handler: NextApiHandler = async (req, res) => {
         application: order.applicationRef,
         amount: order.referenceAmountMinor,
         currency: order.referenceCurrency,
+        product: order.productRef,
         reference: order.orderId,
       },
     })
