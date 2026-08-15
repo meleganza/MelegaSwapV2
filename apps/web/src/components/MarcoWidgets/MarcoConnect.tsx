@@ -32,6 +32,7 @@ const Root = styled.div<{ $size: MarcoConnectSize }>`
   max-width: 100%;
   flex: ${({ $size }) => ($size === 'navbar' ? '0 1 148px' : '0 0 auto')};
   box-sizing: border-box;
+  overflow: hidden;
 `
 
 const Host = styled.div<{ $concealed: boolean }>`
@@ -42,6 +43,13 @@ const Host = styled.div<{ $concealed: boolean }>`
   min-width: 0;
   min-height: 40px;
   opacity: ${({ $concealed }) => ($concealed ? 0 : 1)};
+
+  > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
 `
 
 const ConnectedDisplay = styled.div`
@@ -72,10 +80,31 @@ const ConnectedDisplay = styled.div`
     border-radius: 50%;
     flex: 0 0 20px;
   }
+
+  img:only-child {
+    margin-right: 0;
+  }
 `
 
 const Fallback = styled.div<{ $hidden: boolean }>`
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
   display: ${({ $hidden }) => ($hidden ? 'none' : 'inline-flex')};
+  align-items: center;
+  justify-content: center;
+
+  > button {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 
   img {
     width: 20px;
@@ -84,6 +113,10 @@ const Fallback = styled.div<{ $hidden: boolean }>`
     border-radius: 50%;
     object-fit: cover;
     flex: 0 0 20px;
+  }
+
+  img:only-child {
+    margin-right: 0;
   }
 `
 
@@ -96,9 +129,11 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   const hostRef = useRef<HTMLDivElement | null>(null)
   const addressRef = useRef<string | undefined>(undefined)
   const walletIntentUntilRef = useRef(0)
+  const walletSyncPendingRef = useRef(false)
   const connectorsRef = useRef(connectors)
   const connectAsyncRef = useRef(connectAsync)
   const [ready, setReady] = useState(false)
+  const [widgetVisible, setWidgetVisible] = useState(false)
   const [failed, setFailed] = useState(false)
   const [widgetAddress, setWidgetAddress] = useState<string | null>(null)
 
@@ -116,15 +151,23 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     // interaction with MARCO Connect; persisted DEX sessions are restored by
     // WalletSessionRuntime without another prompt.
     if (Date.now() > walletIntentUntilRef.current) return
+    if (walletSyncPendingRef.current) return
+    // Consume the user intent once. Some versions of the official widget emit
+    // more than one connect notification while Passport and Web3 converge.
+    // Only the first event may open the injected wallet permission flow.
+    walletIntentUntilRef.current = 0
     const connector =
       connectorsRef.current.find((candidate) => candidate.id === 'metaMask' && candidate.ready) ??
       connectorsRef.current.find((candidate) => candidate.id === 'injected' && candidate.ready)
     if (!connector) return
+    walletSyncPendingRef.current = true
     try {
       await connectAsyncRef.current({ connector })
     } catch {
       // MARCO Connect owns the Passport session. A rejected DEX wallet sync
       // remains visible through the existing wallet fallback on the next render.
+    } finally {
+      walletSyncPendingRef.current = false
     }
   }, [])
 
@@ -134,10 +177,14 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     let sdk: MarcoConnectSdk | null = null
     let idleHandle: number | undefined
     let timeoutHandle: number | undefined
+    let visibilityFrame: number | undefined
+    let mutationObserver: MutationObserver | undefined
+    let resizeObserver: ResizeObserver | undefined
     const unsubscribers: Array<() => void> = []
 
     setFailed(false)
     setReady(false)
+    setWidgetVisible(false)
     const loadWidget = () => {
       void loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
         Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
@@ -152,7 +199,29 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
             size,
             signature: false,
           })
-          const unsubscribe = sdk.on('connect', (payload) => void syncWalletSession(payload))
+          const updateWidgetVisibility = () => {
+            const host = hostRef.current
+            if (!host) return
+            const visibleChild = Array.from(host.children).some((child) => {
+              const element = child as HTMLElement
+              const rect = element.getBoundingClientRect()
+              const style = window.getComputedStyle(element)
+              return rect.width >= 32 && rect.height >= 32 && style.display !== 'none' && style.visibility !== 'hidden'
+            })
+            setWidgetVisible(visibleChild)
+          }
+          mutationObserver = new MutationObserver(updateWidgetVisibility)
+          mutationObserver.observe(hostRef.current, { childList: true, subtree: true, attributes: true })
+          if (typeof ResizeObserver !== 'undefined') {
+            resizeObserver = new ResizeObserver(updateWidgetVisibility)
+            resizeObserver.observe(hostRef.current)
+            Array.from(hostRef.current.children).forEach((child) => resizeObserver?.observe(child))
+          }
+          visibilityFrame = window.requestAnimationFrame(updateWidgetVisibility)
+          const unsubscribe = sdk.on('connect', (payload) => {
+            setWidgetVisible(true)
+            void syncWalletSession(payload)
+          })
           if (unsubscribe) unsubscribers.push(unsubscribe)
           setReady(true)
         })
@@ -175,6 +244,9 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       cancelled = true
       if (idleHandle != null) idleWindow.cancelIdleCallback?.(idleHandle)
       if (timeoutHandle != null) window.clearTimeout(timeoutHandle)
+      if (visibilityFrame != null) window.cancelAnimationFrame(visibilityFrame)
+      mutationObserver?.disconnect()
+      resizeObserver?.disconnect()
       unsubscribers.forEach((unsubscribe) => unsubscribe())
       sdk?.destroy()
       hostRef.current?.replaceChildren()
@@ -203,19 +275,19 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       }}
     >
       <Host ref={hostRef} $concealed={Boolean(ready && shortAddress)} />
-      {ready && shortAddress ? (
+      {ready && widgetVisible && shortAddress ? (
         <ConnectedDisplay data-testid="marco-connect-connected-address" aria-hidden="true">
           <img src={MARCO_LOGO_URI} alt="" />
-          {size === 'icon' ? shortAddress.slice(0, 6) : shortAddress}
+          {size === 'icon' ? null : shortAddress}
         </ConnectedDisplay>
       ) : null}
-      <Fallback $hidden={ready && !failed}>
+      <Fallback $hidden={ready && widgetVisible && !failed}>
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
           aria-label="MARCO Connect"
         >
           <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />
-          {size === 'icon' ? 'MARCO' : 'MARCO CONNECT'}
+          {size === 'icon' ? null : 'MARCO CONNECT'}
         </ConnectWalletButton>
       </Fallback>
     </Root>

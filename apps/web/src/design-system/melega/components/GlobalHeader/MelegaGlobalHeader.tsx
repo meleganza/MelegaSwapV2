@@ -86,7 +86,7 @@ const Brand = styled(Link)`
 
   /* Preserve every wallet action inside the viewport at tablet-landscape
      widths without changing the desktop or mobile header. */
-  @media (min-width: 1024px) and (max-width: 1100px) {
+  @media (min-width: 1024px) and (max-width: 1279px) {
     width: 52px;
   }
 `
@@ -109,7 +109,7 @@ const Wordmark = styled.span`
   font-weight: 700;
   letter-spacing: -0.4px;
 
-  @media (min-width: 1024px) and (max-width: 1100px) {
+  @media (min-width: 1024px) and (max-width: 1279px) {
     display: none;
   }
 `
@@ -172,7 +172,7 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
   }
 
   &[data-compact-hide='true'] {
-    @media (max-width: 1279px) {
+    @media (max-width: 1399px) {
       display: none;
     }
   }
@@ -211,7 +211,7 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   }
 
   &[data-compact-hide='true'] {
-    @media (max-width: 1279px) {
+    @media (max-width: 1399px) {
       display: none;
     }
   }
@@ -251,7 +251,7 @@ const SearchRegion = styled.div`
     max-width: none;
   }
 
-  @media (max-width: 1279px) {
+  @media (max-width: 1399px) {
     min-width: 0;
     max-width: min(240px, 22vw);
     margin-left: 10px;
@@ -359,7 +359,7 @@ const MyMelegaTrigger = styled.button`
 `
 
 const LangSlot = styled.div`
-  @media (max-width: 1279px) {
+  @media (max-width: 1399px) {
     display: none;
   }
 `

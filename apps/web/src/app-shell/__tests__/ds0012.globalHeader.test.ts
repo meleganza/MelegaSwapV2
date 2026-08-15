@@ -57,7 +57,15 @@ describe('DS001.2 global header shell contracts', () => {
   })
 
   it('primary navigation exposes every core DEX funnel in one click (Portfolio secondary)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Bridge', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
+      'Home',
+      'Swap',
+      'Bridge',
+      'Liquidity',
+      'Farms',
+      'Pools',
+      'List',
+    ])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
@@ -97,10 +105,13 @@ describe('DS001.2 global header shell contracts', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
     expect(header).toContain('max-width: 1100px')
-    expect(header).toContain("width: 124px")
-    expect(header).toContain("display: none;")
+    expect(header).toContain('width: 124px')
+    expect(header).toContain('display: none;')
     expect(connect).toContain("$size === 'navbar' ? '148px'")
     expect(connect).toContain('max-width: 100%')
+    expect(connect).toContain('position: absolute;')
+    expect(connect).toContain('widgetVisible')
+    expect(connect).toContain('$hidden={ready && widgetVisible && !failed}')
   })
 
   it('does not reopen wallet permissions from a passive MARCO session replay on navigation', () => {
@@ -110,7 +121,29 @@ describe('DS001.2 global header shell contracts', () => {
     expect(connect).toContain('if (Date.now() > walletIntentUntilRef.current) return')
     expect(connect).toContain('onPointerDownCapture')
     expect(connect).toContain('onKeyDownCapture')
+    expect(connect).toContain('walletSyncPendingRef')
+    expect(connect).toContain('walletIntentUntilRef.current = 0')
     expect(connect).toContain('signature: false')
+  })
+
+  it('restores injected wallets only from a previously authorised passive session', () => {
+    const eagerConnect = readFileSync(path.join(ROOT, 'hooks/useEagerConnect.ts'), 'utf8')
+
+    expect(eagerConnect).toContain("method: 'eth_accounts'")
+    expect(eagerConnect).not.toContain("method: 'eth_requestAccounts'")
+    expect(eagerConnect).toContain('if (!persistedConnectorId && window.parent === window) return')
+    expect(eagerConnect).toContain('if (!Array.isArray(accounts) || accounts.length === 0) return')
+  })
+
+  it('uses compact header priorities through 1399px without hiding wallet actions', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+
+    expect(header.match(/max-width: 1399px/g)?.length).toBeGreaterThanOrEqual(4)
+    expect(header).toContain('data-testid="melega-header-connect"')
+    expect(header).toContain('data-testid="melega-header-my-melega"')
   })
 
   it('header height remains sticky 72px contract', () => {
