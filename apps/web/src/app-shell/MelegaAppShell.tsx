@@ -2,9 +2,7 @@ import React, { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { useAccount } from 'wagmi'
 import { MarcoConnect } from 'components/MarcoWidgets'
-import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MelegaBrandLockup } from 'design-system/melega/components/BrandLockup'
 import { MelegaGlobalHeader, MELEGA_APP_HEADER_HEIGHT } from 'design-system/melega/components/GlobalHeader'
@@ -16,7 +14,7 @@ import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRe
 import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
-import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
+import { AppShellUIKitNeutralizer } from './AppShellStyles'
 import {
   GlobalTrendingBar,
   MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
@@ -113,7 +111,7 @@ const MobileNetwork = styled.div`
   align-items: center;
   min-width: 0;
 
-  /* Keep chain control tappable on 390px — icon-only UserMenu must remain a hit target. */
+  /* Keep chain control tappable on 390px beside the official MARCO Connect control. */
   [data-testid='network-switcher-root'] {
     min-width: 40px;
     min-height: 40px;
@@ -180,7 +178,6 @@ const MobileMyMelegaButton: React.FC = () => {
  */
 const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
-  const { address } = useAccount()
   const { open: isMyMelegaOpen } = useMyMelegaDrawer()
 
   const bottomItems = useMemo(
@@ -208,13 +205,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        {address ? (
-          <MobileWalletSlot>
-            <UserMenu />
-          </MobileWalletSlot>
-        ) : (
-          <MarcoConnect size="icon" />
-        )}
+        <MarcoConnect size="icon" />
         <MobileMyMelegaButton />
       </MobileHeader>
 

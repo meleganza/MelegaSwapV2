@@ -1,30 +1,70 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAccount, useSignMessage } from 'wagmi'
+import {
+  PROJECT_REACTION_IDS,
+  buildProjectReactionMessage,
+  type ProjectReactionCounts,
+  type ProjectReactionId,
+} from 'lib/project-reactions/contract'
 
-export const PROJECT_REACTION_IDS = ['like', 'bullish', 'moon', 'watching'] as const
-export type ProjectReactionId = (typeof PROJECT_REACTION_IDS)[number]
+export { PROJECT_REACTION_IDS }
+export type { ProjectReactionId }
+
+const EMPTY_COUNTS: ProjectReactionCounts = { like: 0, watching: 0, bullish: 0, bearish: 0, moon: 0 }
 
 export function useProjectReactions(slug: string) {
-  const storageKey = `melega:project-reaction:${slug}`
-  const [selected, setSelected] = useState<ProjectReactionId | null>(null)
+  const { address } = useAccount()
+  const { signMessageAsync } = useSignMessage()
+  const [selected, setSelected] = useState<ProjectReactionId[]>([])
+  const [counts, setCounts] = useState<ProjectReactionCounts>(EMPTY_COUNTS)
+  const [pending, setPending] = useState<ProjectReactionId | null>(null)
+  const endpoint = useMemo(() => {
+    const query = address ? `?account=${encodeURIComponent(address)}` : ''
+    return `/api/projects/${encodeURIComponent(slug)}/reactions${query}`
+  }, [address, slug])
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(storageKey)
-    setSelected(
-      stored && PROJECT_REACTION_IDS.includes(stored as ProjectReactionId) ? (stored as ProjectReactionId) : null,
-    )
-  }, [storageKey])
+    let active = true
+    void fetch(endpoint, { credentials: 'same-origin' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((snapshot) => {
+        if (!active || !snapshot?.ok) return
+        setCounts({ ...EMPTY_COUNTS, ...snapshot.counts })
+        setSelected(Array.isArray(snapshot.selected) ? snapshot.selected : [])
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [endpoint])
 
   const react = useCallback(
-    (id: ProjectReactionId) => {
-      setSelected((current) => {
-        const next = current === id ? null : id
-        if (next) window.localStorage.setItem(storageKey, next)
-        else window.localStorage.removeItem(storageKey)
-        return next
-      })
+    async (id: ProjectReactionId) => {
+      if (!address || pending) return
+      const active = !selected.includes(id)
+      const signedAt = new Date().toISOString()
+      const message = buildProjectReactionMessage({ slug, account: address, reaction: id, active, signedAt })
+      setPending(id)
+      try {
+        const signature = await signMessageAsync({ message })
+        const response = await fetch(`/api/projects/${encodeURIComponent(slug)}/reactions`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ account: address, reaction: id, active, signedAt, signature }),
+        })
+        if (!response.ok) throw new Error('REACTION_UPDATE_FAILED')
+        const snapshot = await response.json()
+        setCounts({ ...EMPTY_COUNTS, ...snapshot.counts })
+        setSelected(Array.isArray(snapshot.selected) ? snapshot.selected : [])
+      } catch {
+        // A rejected signature or temporary receiver failure leaves canonical counts untouched.
+      } finally {
+        setPending(null)
+      }
     },
-    [storageKey],
+    [address, pending, selected, signMessageAsync, slug],
   )
 
-  return { selected, react }
+  return { selected, counts, pending, walletConnected: Boolean(address), react }
 }

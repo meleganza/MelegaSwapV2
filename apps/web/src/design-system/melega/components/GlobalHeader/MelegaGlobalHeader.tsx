@@ -2,9 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { useAccount } from 'wagmi'
 import { MarcoConnect } from 'components/MarcoWidgets'
-import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
@@ -352,7 +350,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   const pathname = pathnameOverride ?? router.pathname
   const asPath = router.asPath?.split('?')[0] ?? pathname
   const query = router.query as Record<string, string | string[] | undefined>
-  const { address } = useAccount()
   const { open: myMelegaOpen, toggleDrawer: toggleMyMelega } = useMyMelegaDrawer()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement>(null)
@@ -464,13 +461,9 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           <LangSlot>
             <MelegaLanguageControl />
           </LangSlot>
-          {address ? (
-            <UserMenu />
-          ) : (
-            <div data-testid="melega-header-connect">
-              <MarcoConnect size="navbar" />
-            </div>
-          )}
+          <div data-testid="melega-header-connect">
+            <MarcoConnect size="navbar" />
+          </div>
           <MyMelegaTrigger
             type="button"
             aria-label="Open My Melega"

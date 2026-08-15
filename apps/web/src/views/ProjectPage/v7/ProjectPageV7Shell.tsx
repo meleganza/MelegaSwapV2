@@ -909,6 +909,19 @@ const ReactBtn = styled.button<{ $on?: boolean }>`
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  small {
+    min-width: 16px;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 10px;
+    line-height: 14px;
+  }
 `
 const AboutGrid = styled.div`
   display: grid;
@@ -1661,19 +1674,26 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                 <ReactRow>
                   {[
                     ['like', '👍 Like'],
-                    ['bullish', '🔥 Bullish'],
-                    ['moon', '🚀 Moon'],
                     ['watching', '👀 Watching'],
+                    ['bullish', '🔥 Bullish'],
+                    ['bearish', '🐻 Bearish'],
+                    ['moon', '🚀 Moon'],
                   ].map(([id, label]) => (
                     <ReactBtn
                       key={id}
                       type="button"
-                      $on={reactions.selected === id}
+                      $on={reactions.selected.includes(id as ProjectReactionId)}
                       onClick={() => reactions.react(id as ProjectReactionId)}
-                      aria-pressed={reactions.selected === id}
+                      aria-pressed={reactions.selected.includes(id as ProjectReactionId)}
+                      aria-label={
+                        reactions.walletConnected
+                          ? `${label}: ${reactions.counts[id as ProjectReactionId]}`
+                          : `${label}: connect wallet to react`
+                      }
+                      disabled={reactions.pending === id}
                       data-testid={`project-v7-react-${id}`}
                     >
-                      {label}
+                      {label} <small>{reactions.counts[id as ProjectReactionId]}</small>
                     </ReactBtn>
                   ))}
                 </ReactRow>

@@ -81,10 +81,12 @@ describe('DS001.2 global header shell contracts', () => {
       'utf8',
     )
     const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
-    expect(header).toContain('address ? (')
-    expect(header).toContain('<UserMenu />')
     expect(header).toContain('<MarcoConnect size="navbar" />')
+    expect(header).not.toContain('<UserMenu />')
+    expect(header).not.toContain("from 'components/Menu/UserMenu'")
     expect(shell).toContain('<MarcoConnect size="icon" />')
+    expect(shell).not.toContain('<UserMenu />')
+    expect(shell).not.toContain("from 'components/Menu/UserMenu'")
   })
 
   it('header height remains sticky 72px contract', () => {
