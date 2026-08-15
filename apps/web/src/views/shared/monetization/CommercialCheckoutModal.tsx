@@ -149,6 +149,18 @@ type DetectedProject = {
   website: string | null
 }
 
+type EligibleVisibilityTarget = {
+  id: string
+  kind: 'farm' | 'pool'
+  chainId: number
+  title: string
+  detail: string
+  contractAddress: string
+  pid?: number
+  stakeSymbol?: string
+  rewardSymbol?: string
+}
+
 type ProjectDraft = {
   handle: string
   logoUrl: string
@@ -316,6 +328,64 @@ const PackagePrice = styled.div`
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+`
+
+const TargetGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+
+  @media (max-width: 680px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`
+
+const TargetCard = styled.button<{ $on?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  min-width: 0;
+  min-height: 76px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.68)' : 'rgba(255,255,255,.11)')};
+  background: ${({ $on }) => ($on ? 'rgba(221,185,47,.1)' : 'rgba(255,255,255,.025)')};
+  color: ${uxRebuildColors.text};
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+
+  &:hover {
+    border-color: rgba(221, 185, 47, 0.58);
+  }
+`
+
+const TargetTitle = styled.strong`
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const TargetDetail = styled.span`
+  color: ${uxRebuildColors.secondary};
+  font-size: 11px;
+  line-height: 1.35;
+`
+
+const TargetState = styled.div`
+  margin-top: 10px;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: ${uxRebuildColors.secondary};
+  font-size: 12px;
+  display: flex;
+  align-items: center;
 `
 
 const BadgeRow = styled.div`
@@ -1048,6 +1118,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [pay, setPay] = useState<CommercialPaymentAsset>('BNB')
   const [farmTarget, setFarmTarget] = useState('')
   const [poolTarget, setPoolTarget] = useState('')
+  const [eligibleTargets, setEligibleTargets] = useState<EligibleVisibilityTarget[]>([])
+  const [eligibleTargetsState, setEligibleTargetsState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [referral, setReferral] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -1081,6 +1153,42 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const totalUsd = subtotal
   const settlementEstimate = resolveSettlementEstimate(pay, totalUsd, settlementMarket)
   const paymentLabel = PAYMENT_ASSET_META[pay].label.replace('\n', ' · ')
+
+  useEffect(() => {
+    if (!open || !detected || (service !== 'featured-farm' && service !== 'featured-pool')) {
+      setEligibleTargets([])
+      setEligibleTargetsState('idle')
+      return undefined
+    }
+    const controller = new AbortController()
+    const params = new URLSearchParams({
+      service,
+      chainId: String(detected.chainId),
+      address: detected.contract,
+      symbol: detected.symbol,
+    })
+    setEligibleTargetsState('loading')
+    fetch(`/api/visibility/eligible-targets?${params.toString()}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('ELIGIBLE_TARGETS_UNAVAILABLE')
+        return response.json() as Promise<{ targets?: EligibleVisibilityTarget[] }>
+      })
+      .then((payload) => {
+        const targets = payload.targets ?? []
+        setEligibleTargets(targets)
+        setEligibleTargetsState('ready')
+        if (targets.length === 1) {
+          if (service === 'featured-farm') setFarmTarget(targets[0].id)
+          if (service === 'featured-pool') setPoolTarget(targets[0].id)
+        }
+      })
+      .catch((cause) => {
+        if ((cause as Error)?.name === 'AbortError') return
+        setEligibleTargets([])
+        setEligibleTargetsState('error')
+      })
+    return () => controller.abort()
+  }, [detected, open, service])
 
   const detectProject = useCallback(async () => {
     if (!/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) {
@@ -1297,11 +1405,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         return
       }
       if (service === 'featured-farm' && !farmTarget.trim()) {
-        setError('Enter the Farm PID or LP address to feature.')
+        setError('Choose one of the active farm pairs available for this token.')
         return
       }
       if (service === 'featured-pool' && !poolTarget.trim()) {
-        setError('Enter the Pool ID or staking contract to feature.')
+        setError('Choose one of the active staking or reward pools available for this token.')
         return
       }
       setStep('chain')
@@ -1767,6 +1875,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       onClick={() => {
                         setService(item.id)
                         setSelectedPackageId('')
+                        setFarmTarget('')
+                        setPoolTarget('')
                       }}
                       data-testid={`commercial-service-${item.id}`}
                     >
@@ -1805,22 +1915,60 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               </PkgGrid>
               {service === 'featured-farm' ? (
                 <div style={{ marginTop: 10 }}>
-                  <Label>Farm to feature</Label>
-                  <Input
-                    value={farmTarget}
-                    onChange={(event) => setFarmTarget(event.target.value)}
-                    placeholder="Farm PID or LP address"
-                  />
+                  <Label>Choose an active farm pair</Label>
+                  {eligibleTargetsState === 'loading' ? <TargetState>Loading active farms…</TargetState> : null}
+                  {eligibleTargetsState === 'error' ? (
+                    <TargetState>Active farms are temporarily unavailable. Please try again.</TargetState>
+                  ) : null}
+                  {eligibleTargetsState === 'ready' && eligibleTargets.length === 0 ? (
+                    <TargetState>No active farm currently contains {detected?.symbol ?? 'this token'}.</TargetState>
+                  ) : null}
+                  {eligibleTargets.length > 0 ? (
+                    <TargetGrid data-testid="commercial-featured-farm-targets">
+                      {eligibleTargets.map((target) => (
+                        <TargetCard
+                          key={target.id}
+                          type="button"
+                          $on={farmTarget === target.id}
+                          onClick={() => setFarmTarget(target.id)}
+                          data-testid={`commercial-farm-target-${target.pid ?? target.id}`}
+                        >
+                          <TargetTitle>{target.title}</TargetTitle>
+                          <TargetDetail>{target.detail}</TargetDetail>
+                        </TargetCard>
+                      ))}
+                    </TargetGrid>
+                  ) : null}
                 </div>
               ) : null}
               {service === 'featured-pool' ? (
                 <div style={{ marginTop: 10 }}>
-                  <Label>Pool to feature</Label>
-                  <Input
-                    value={poolTarget}
-                    onChange={(event) => setPoolTarget(event.target.value)}
-                    placeholder="Pool ID or staking contract"
-                  />
+                  <Label>Choose an active pool</Label>
+                  {eligibleTargetsState === 'loading' ? <TargetState>Loading active pools…</TargetState> : null}
+                  {eligibleTargetsState === 'error' ? (
+                    <TargetState>Active pools are temporarily unavailable. Please try again.</TargetState>
+                  ) : null}
+                  {eligibleTargetsState === 'ready' && eligibleTargets.length === 0 ? (
+                    <TargetState>
+                      No active pool currently uses {detected?.symbol ?? 'this token'} for staking or rewards.
+                    </TargetState>
+                  ) : null}
+                  {eligibleTargets.length > 0 ? (
+                    <TargetGrid data-testid="commercial-featured-pool-targets">
+                      {eligibleTargets.map((target) => (
+                        <TargetCard
+                          key={target.id}
+                          type="button"
+                          $on={poolTarget === target.id}
+                          onClick={() => setPoolTarget(target.id)}
+                          data-testid={`commercial-pool-target-${target.id}`}
+                        >
+                          <TargetTitle>{target.title}</TargetTitle>
+                          <TargetDetail>{target.detail}</TargetDetail>
+                        </TargetCard>
+                      ))}
+                    </TargetGrid>
+                  ) : null}
                 </div>
               ) : null}
             </div>

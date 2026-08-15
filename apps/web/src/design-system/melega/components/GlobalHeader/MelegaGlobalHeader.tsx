@@ -464,13 +464,10 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           <LangSlot>
             <MelegaLanguageControl />
           </LangSlot>
-          {address ? (
-            <UserMenu />
-          ) : (
-            <div data-testid="melega-header-connect">
-              <MarcoConnect size="navbar" />
-            </div>
-          )}
+          <div data-testid="melega-header-connect">
+            <MarcoConnect size="navbar" />
+          </div>
+          {address ? <UserMenu /> : null}
           <MyMelegaTrigger
             type="button"
             aria-label="Open My Melega"

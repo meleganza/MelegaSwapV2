@@ -15,6 +15,10 @@ import {
   type TopMoverEntry,
   type TopMoversSharedSnapshot,
 } from 'lib/trending/topMoversSharedSnapshot'
+import { formatPaidPlacementRemaining } from 'lib/trending/paidTickerPlacements'
+import { listActiveTrendBoostOrders, listTrendBoostOrdersDurably } from 'lib/monetization/trendBoostOrders'
+import { getProjectBySlug } from 'registry/projects/getProjectBySlug'
+import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
 
@@ -191,6 +195,7 @@ function displayMeta(address: string) {
  * cacheable snapshot to browsers; no client chain hooks, CoinGecko fan-out or duplicate subscriptions.
  */
 export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTopMoversPayload> {
+  await listTrendBoostOrdersDurably()
   const tier = await loadTierMetricsSnapshot()
   const internalMeasured = tier.rows
     .filter((row) => isTrendingTierStatus(row.status))
@@ -223,7 +228,7 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
     address,
     chainId: meta.chainId,
     displayName: meta.displayName,
-    tierStatus: row.status,
+    tierStatus: isTrendingTierStatus(row.status) ? row.status : 'SYNCING',
     change24h: format24hChangePct(row.priceChange24h!),
     // The server has WBNB notional, not a certified USD conversion. Keep USD volume unavailable.
     volume24h: 0,
@@ -249,9 +254,59 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
   }
   const externalRankedAssets = await loadLiveDexScreenerMovers([...liveUniverse])
   // A non-empty live response is authoritative. Internal index rows are an honest outage fallback only.
-  const rankedAssets = (externalRankedAssets.length > 0 ? externalRankedAssets : internalRankedAssets).slice(0, limit)
+  const organicRankedAssets = (externalRankedAssets.length > 0 ? externalRankedAssets : internalRankedAssets).slice(
+    0,
+    limit,
+  )
 
-  const entries: TopMoverEntry[] = rankedAssets.map((asset) => {
+  const activeBoosts = listActiveTrendBoostOrders().filter(
+    (order) => (order.serviceId ?? 'trend-boost') === 'trend-boost',
+  )
+  const paidEntries: TopMoverEntry[] = activeBoosts.flatMap((order) => {
+    const project = order.projectSlug ? getProjectBySlug(order.projectSlug) : undefined
+    const projectToken = project?.resources.tokens.find((token) => token.chainId === order.chainId)
+    const address = order.projectContract || projectToken?.address || null
+    if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) return []
+    const meta = displayMeta(address)
+    const remaining = formatPaidPlacementRemaining(order.scheduledEnd)
+    return [
+      {
+        id: `paid-boosted-${order.chainId}-${order.orderId}`,
+        symbol: `🚀 ${projectToken?.symbol || meta.symbol}`,
+        address: address.toLowerCase(),
+        chainId: order.chainId,
+        changeLabel: remaining,
+        changePct: null,
+        accentPositive: true,
+        href: resolveCanonicalProjectHref({
+          slug: project?.slug ?? order.projectSlug,
+          chainId: order.chainId,
+          address,
+        }),
+      },
+    ]
+  })
+  const paidAddresses = new Set(paidEntries.map((entry) => entry.address?.toLowerCase()).filter(Boolean))
+  const visibleOrganicAssets = organicRankedAssets.filter((asset) => !paidAddresses.has(asset.address.toLowerCase()))
+  const paidRankedAssets: TierRankedAsset[] = paidEntries.map((entry) => {
+    const symbol = entry.symbol.replace(/^🚀\s*/, '')
+    return {
+      symbol,
+      slug: entry.id,
+      pairSlug: entry.id,
+      address: entry.address || '',
+      chainId: entry.chainId ?? 56,
+      displayName: symbol,
+      tierStatus: 'READY',
+      volume24h: 0,
+      liquidityScore: 0,
+      tradeCount24h: 0,
+      rankingSignals: ['paidTrendBoost'],
+    }
+  })
+  const rankedAssets = [...paidRankedAssets, ...visibleOrganicAssets]
+
+  const organicEntries: TopMoverEntry[] = visibleOrganicAssets.map((asset) => {
     const { accent, accentPositive } = trendingTickerAccent(asset)
     return {
       id: `trade-asset-${asset.slug}`,
@@ -264,7 +319,8 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
       href: `/swap?outputCurrency=${asset.address}`,
     }
   })
-  const generatedAt = tier.generatedAt
+  const entries = [...paidEntries, ...organicEntries]
+  const generatedAt = paidEntries.length > 0 ? new Date().toISOString() : tier.generatedAt
   const snapshot: TopMoversSharedSnapshot = {
     schema: 'melega.top-movers.shared-snapshot.v1',
     snapshotId: buildTopMoversSnapshotId(entries, generatedAt),
@@ -278,13 +334,15 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
     snapshot,
     rankedAssets,
     liveMarketAuthority: externalRankedAssets.length > 0,
-    indexedRibbonAssets: rankedAssets.map((asset) => ({
-      slug: asset.slug,
-      symbol: asset.symbol,
-      address: asset.address,
-      chainId: asset.chainId,
-      displayName: asset.displayName,
-    })),
+    indexedRibbonAssets: rankedAssets
+      .map((asset) => ({
+        slug: asset.slug,
+        symbol: asset.symbol,
+        address: asset.address,
+        chainId: asset.chainId,
+        displayName: asset.displayName,
+      }))
+      .filter((asset) => Boolean(asset.address)),
     indexerScopeNote: entries.length
       ? externalRankedAssets.length > 0
         ? 'Live BSC DEX markets · rolling 24h snapshot'

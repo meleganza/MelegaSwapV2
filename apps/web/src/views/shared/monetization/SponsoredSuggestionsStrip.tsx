@@ -16,13 +16,6 @@ const Wrap = styled.div`
   min-width: 0;
 `
 
-const Title = styled.div`
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
-  letter-spacing: 0.02em;
-`
-
 const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -111,7 +104,6 @@ export const SponsoredSuggestionsStrip: React.FC<Props> = ({
   if (!items.length) return null
   return (
     <Wrap data-testid={testId} aria-label="Featured, Trending, and Sponsored suggestions">
-      <Title>Featured · Trending · Sponsored</Title>
       <Row>
         {items.map((s) => (
           <Item

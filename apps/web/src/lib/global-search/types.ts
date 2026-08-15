@@ -1,11 +1,4 @@
-export type GlobalSearchCategory =
-  | 'page'
-  | 'token'
-  | 'farm'
-  | 'pool'
-  | 'project'
-  | 'contract'
-  | 'collectible'
+export type GlobalSearchCategory = 'page' | 'token' | 'farm' | 'pool' | 'project' | 'contract' | 'collectible'
 
 export type GlobalSearchAction = {
   label: string
@@ -26,6 +19,8 @@ export interface GlobalSearchEntry {
   address?: string | null
   logoUrl?: string | null
   verified?: boolean
+  /** Explicit paid disclosure supplied by the verified placement feed. */
+  placement?: 'sponsored'
   actions?: GlobalSearchAction[]
 }
 

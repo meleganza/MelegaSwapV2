@@ -9,7 +9,9 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     const payload = await buildServerTopMoversSnapshot()
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120')
+    // Paid placements have minute-level countdowns and must become visible
+    // shortly after receipt verification. Market rows remain edge cached.
+    res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30')
     return res.status(200).json(payload)
   } catch {
     res.setHeader('Cache-Control', 'no-store')

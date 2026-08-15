@@ -75,7 +75,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   }, [address, connectAsync, connectors])
 
   useEffect(() => {
-    if (!hostRef.current || address) return undefined
+    if (!hostRef.current) return undefined
     let cancelled = false
     let sdk: MarcoConnectSdk | null = null
     let idleHandle: number | undefined
@@ -125,8 +125,6 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       hostRef.current?.replaceChildren()
     }
   }, [address, size, syncWalletSession])
-
-  if (address) return null
 
   return (
     <Root

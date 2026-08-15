@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
+import useSWR from 'swr'
 import { MelegaSearchBar } from 'design-system/melega/components/SearchBar'
 import { colors } from 'design-system/melega/tokens/colors'
 import { typography } from 'design-system/melega/tokens/typography'
@@ -129,6 +130,21 @@ const Verified = styled.span`
   letter-spacing: 0.02em;
 `
 
+const Sponsored = styled.span`
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid rgba(174, 116, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(111, 52, 186, 0.22);
+  color: #d7b7ff;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+`
+
 const ResultMeta = styled.span`
   font-size: 12px;
   color: #8f8f8f;
@@ -181,6 +197,23 @@ const EmptyState = styled.div`
   text-align: center;
 `
 
+type ActiveSponsoredPlacement = {
+  orderId: string
+  projectSlug: string | null
+  projectContract: string | null
+  chainId: number
+  name: string
+  symbol: string
+  logoUrl: string | null
+}
+
+async function fetchSponsoredPlacements(url: string): Promise<ActiveSponsoredPlacement[]> {
+  const response = await fetch(url)
+  if (!response.ok) return []
+  const payload = (await response.json()) as { placements?: ActiveSponsoredPlacement[] }
+  return payload.placements ?? []
+}
+
 const GlobalSearch: React.FC = () => {
   const rootRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')
@@ -188,6 +221,11 @@ const GlobalSearch: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [searchRuntime, setSearchRuntime] = useState<GlobalSearchRuntime | null>(null)
   const [isSearchLoading, setIsSearchLoading] = useState(false)
+  const sponsoredKey = open && query.trim() ? '/api/trend-boost/active?service=sponsored-research' : null
+  const { data: sponsoredPlacements = [] } = useSWR(sponsoredKey, fetchSponsoredPlacements, {
+    refreshInterval: 30_000,
+    revalidateOnFocus: false,
+  })
 
   const ensureSearchRuntime = useCallback(() => {
     if (searchRuntime) return Promise.resolve(searchRuntime)
@@ -199,10 +237,55 @@ const GlobalSearch: React.FC = () => {
     })
   }, [searchRuntime])
 
-  const results = useMemo(
-    () => (searchRuntime ? searchRuntime.search(searchRuntime.index, query) : []),
-    [query, searchRuntime],
-  )
+  const results = useMemo(() => {
+    if (!searchRuntime) return []
+    const organic = searchRuntime.search(searchRuntime.index, query)
+    const normalizedQuery = query.trim().toLowerCase()
+    const paid: GlobalSearchResult[] = sponsoredPlacements
+      .filter((placement) => {
+        const haystack = [placement.name, placement.symbol, placement.projectContract, placement.projectSlug]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+        return haystack.includes(normalizedQuery)
+      })
+      .map((placement) => {
+        const address = placement.projectContract
+        const projectHref = placement.projectSlug ? `/@${placement.projectSlug}/` : '/projects'
+        return {
+          id: `sponsored-${placement.orderId}`,
+          label: `${placement.symbol} — ${placement.chainId === 56 ? 'BSC' : `Chain ${placement.chainId}`}`,
+          subtitle: placement.name,
+          href: projectHref,
+          category: 'token',
+          searchableText: `${placement.name} ${placement.symbol} ${address ?? ''}`.toLowerCase(),
+          score: Number.MAX_SAFE_INTEGER,
+          scoreBoost: 1_000,
+          chainId: placement.chainId,
+          address,
+          logoUrl: placement.logoUrl,
+          verified: true,
+          placement: 'sponsored',
+          actions: [
+            ...(address ? [{ label: 'Trade', href: `/swap?outputCurrency=${address}` }] : []),
+            { label: 'Open Project', href: projectHref },
+            ...(address ? [{ label: 'Add Wallet', href: `/portfolio?addToken=${address}` }] : []),
+          ],
+        }
+      })
+    const paidAddresses = new Set(paid.map((result) => result.address?.toLowerCase()).filter(Boolean))
+    const paidSlugs = new Set(
+      sponsoredPlacements.map((placement) => placement.projectSlug).filter((slug): slug is string => Boolean(slug)),
+    )
+    return [
+      ...paid,
+      ...organic.filter(
+        (result) =>
+          !paidAddresses.has(result.address?.toLowerCase()) &&
+          ![...paidSlugs].some((slug) => result.href.includes(`/@${slug}/`)),
+      ),
+    ]
+  }, [query, searchRuntime, sponsoredPlacements])
 
   const closeSearch = useCallback(() => {
     setOpen(false)
@@ -315,6 +398,7 @@ const GlobalSearch: React.FC = () => {
                   <TextCol>
                     <TitleRow>
                       <ResultLabel>{result.label}</ResultLabel>
+                      {result.placement === 'sponsored' ? <Sponsored>Sponsored</Sponsored> : null}
                       {result.chainId != null ? <MelegaExploreChainBadge chainId={result.chainId} /> : null}
                       {result.verified ? <Verified>Verified</Verified> : null}
                     </TitleRow>

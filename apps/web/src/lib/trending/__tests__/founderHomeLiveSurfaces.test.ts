@@ -17,7 +17,7 @@ describe('Founder Home live-surface contracts', () => {
     expect(producer).toContain('liveMarketAuthority: externalRankedAssets.length > 0')
     expect(provider).toContain('data?.liveMarketAuthority && liveItems.length > 0')
     expect(durable).toContain('10 * 60 * 1000')
-    expect(api).toContain("'s-maxage=60, stale-while-revalidate=120'")
+    expect(api).toContain("'s-maxage=15, stale-while-revalidate=30'")
   })
 
   it('keeps Home farm/pool rows to two textual lines and five equal slots', () => {
@@ -61,7 +61,7 @@ describe('Founder Home live-surface contracts', () => {
     expect(services).toContain("title: 'Featured Pool'")
     expect(modal).toContain("'MARCO_PAY'")
     expect(modal).toContain('<MarcoPay')
-    expect(modal).toContain("|| 'Melega DEX'")
+    expect(modal).toContain("'Melega DEX visibility'")
     expect(marcoPay).toContain("'marco-pay:paymentCompleted'")
     expect(marcoPay).toContain("'marco-pay:error'")
     expect(marcoConnect).toContain('marco-connect.v2.1.js')
