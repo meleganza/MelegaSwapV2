@@ -11,11 +11,7 @@ import {
   format24hChangePct,
 } from 'lib/data-truth/compute24hPriceChange'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
-import {
-  MELEGA_FACTORY_BSC,
-  MELEGA_ROUTER_BSC,
-  MARCO_WBNB_PAIR_BSC,
-} from 'lib/bsc-indexer/constants'
+import { MELEGA_FACTORY_BSC, MELEGA_ROUTER_BSC, MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { TransactionType } from 'state/info/types'
@@ -40,6 +36,7 @@ import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements
 import type { PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
 
@@ -223,9 +220,7 @@ function ingestCgQuote(
     priceUsd,
     change24hPct: change,
     volume24hUsd:
-      row.usd_24h_vol != null && Number.isFinite(row.usd_24h_vol) && row.usd_24h_vol > 0
-        ? row.usd_24h_vol
-        : undefined,
+      row.usd_24h_vol != null && Number.isFinite(row.usd_24h_vol) && row.usd_24h_vol > 0 ? row.usd_24h_vol : undefined,
     source: 'coingecko',
   })
 }
@@ -237,11 +232,11 @@ function ingestCgQuote(
  */
 async function fetchCoinGeckoTokenQuotes(addresses: string[]): Promise<Map<string, ExternalTokenQuote>> {
   const out = new Map<string, ExternalTokenQuote>()
-  const unique = Array.from(
-    new Set(addresses.map((a) => a.toLowerCase()).filter((a) => /^0x[a-f0-9]{40}$/.test(a))),
-  )
+  const unique = Array.from(new Set(addresses.map((a) => a.toLowerCase()).filter((a) => /^0x[a-f0-9]{40}$/.test(a))))
 
-  const idPairs = Object.entries(COINGECKO_ID_BY_ADDRESS).filter(([addr]) => unique.includes(addr) || unique.length === 0)
+  const idPairs = Object.entries(COINGECKO_ID_BY_ADDRESS).filter(
+    ([addr]) => unique.includes(addr) || unique.length === 0,
+  )
   // Always request the known ecosystem set even when pair index is sparse.
   const idList = Array.from(new Set([...idPairs.map(([, id]) => id), ...Object.values(COINGECKO_ID_BY_ADDRESS)]))
   if (idList.length) {
@@ -381,12 +376,7 @@ export function isCredibleMoverChange(input: {
 
 function formatTickerPriceUsd(priceUsd: number): string {
   if (!Number.isFinite(priceUsd) || priceUsd <= 0) return ''
-  if (priceUsd >= 1000) return `$${priceUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-  if (priceUsd >= 1) return `$${priceUsd.toFixed(2)}`
-  if (priceUsd >= 0.0001) return `$${priceUsd.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
-  if (priceUsd < 1e-9) return '$<0.000001'
-  const fixed = priceUsd.toFixed(12).replace(/0+$/, '').replace(/\.$/, '')
-  return `$${fixed}`
+  return formatCompactPriceUsd(priceUsd)
 }
 
 function bumpActivity(
@@ -464,13 +454,10 @@ function marcoIndexerMetrics(
       return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= cutoff
     }).length ?? 0
   const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h
-  const volumeUsd =
-    quoteVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) ? quoteVolumeWbnb * bnbUsd : 0
+  const volumeUsd = quoteVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) ? quoteVolumeWbnb * bnbUsd : 0
   const marcoChange = computeIndexedMove(candles)
   const marcoUsdFromCandle =
-    candles[candles.length - 1]?.close != null && bnbUsd
-      ? candles[candles.length - 1].close * bnbUsd
-      : undefined
+    candles[candles.length - 1]?.close != null && bnbUsd ? candles[candles.length - 1].close * bnbUsd : undefined
   // Always surface featured-pair swap count from durable indexer candles/txs in activity window.
   const activityCutoff = Math.floor(Date.now() / 1000) - SECONDS_ACTIVITY
   const activityTradeCount =
@@ -575,10 +562,7 @@ export function useDexTrendingRankings() {
     for (const [addr] of TOKEN_LIST_BY_ADDRESS) {
       const listed = TOKEN_LIST_BY_ADDRESS.get(addr)
       const sym = listed?.symbol?.toUpperCase()
-      if (
-        sym &&
-        ['CAKE', 'FLOKI', 'DOT', 'ASTER', 'EYED', 'MM72', 'AIOT', 'NAIVE', 'MARCO'].includes(sym)
-      ) {
+      if (sym && ['CAKE', 'FLOKI', 'DOT', 'ASTER', 'EYED', 'MM72', 'AIOT', 'NAIVE', 'MARCO'].includes(sym)) {
         set.add(addr)
       }
     }
@@ -724,13 +708,10 @@ export function useDexTrendingRankings() {
       const isMarcoPair = row.slug === 'marco-wbnb' || addrKey === MARCO_BSC_ADDRESS.toLowerCase()
       const fromSwaps = swapActivity.get(addrKey)
 
-      let volume24h =
-        row.volume24hQuote > 0 && effectiveBnbUsd ? row.volume24hQuote * effectiveBnbUsd : 0
+      let volume24h = row.volume24hQuote > 0 && effectiveBnbUsd ? row.volume24hQuote * effectiveBnbUsd : 0
       let tradeCount24h = row.tradeCount24h
       let change24h =
-        row.priceChange24h != null &&
-        Number.isFinite(row.priceChange24h) &&
-        Math.abs(row.priceChange24h) > 0.0001
+        row.priceChange24h != null && Number.isFinite(row.priceChange24h) && Math.abs(row.priceChange24h) > 0.0001
           ? format24hChangePct(row.priceChange24h)
           : undefined
       let lastActivityTs = fromSwaps?.lastTs
@@ -886,11 +867,7 @@ export function useDexTrendingRankings() {
           change24h: preferExternal ? cgChange : existing.change24h,
           volume24h: Math.max(existing.volume24h, volume24h),
           rankingSignals: Array.from(
-            new Set([
-              ...existing.rankingSignals,
-              'coingecko',
-              ...(preferExternal ? ['externalTrackedPrice'] : []),
-            ]),
+            new Set([...existing.rankingSignals, 'coingecko', ...(preferExternal ? ['externalTrackedPrice'] : [])]),
           ),
         })
         continue
@@ -915,12 +892,7 @@ export function useDexTrendingRankings() {
     // Enrich missing % from swap execution observations + drop idle shells with no signal.
     for (const [key, asset] of byAddress) {
       const external = externalQuotes.get(key)
-      if (
-        asset.liquidityScore <= 0 &&
-        asset.tradeCount24h < 1 &&
-        asset.volume24h <= 0 &&
-        !external
-      ) {
+      if (asset.liquidityScore <= 0 && asset.tradeCount24h < 1 && asset.volume24h <= 0 && !external) {
         byAddress.delete(key)
         continue
       }

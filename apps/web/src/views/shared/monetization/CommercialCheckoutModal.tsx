@@ -15,6 +15,8 @@ import {
   MelegaModalFooterMeta,
 } from 'design-system/melega/components'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
+import { MARCO_BSC_ADDRESS, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import MelegaTokenAvatar from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { RC_COPY } from 'lib/monetization/copy'
 import { FEATURED_OFFER } from 'lib/featured-placement/constants'
 import { cashbackUserMessage } from 'lib/featured-placement/cashback'
@@ -47,6 +49,89 @@ const IDENTITY_CHAINS = [
   { id: 8453, label: 'Base', short: 'BASE' },
   { id: 137, label: 'Polygon', short: 'POL' },
 ] as const
+
+const PAYMENT_ASSET_META: Record<
+  CommercialPaymentAsset,
+  { label: string; symbol: string; address?: string; logoURI?: string; purple?: boolean }
+> = {
+  BNB: {
+    label: 'BNB',
+    symbol: 'BNB',
+    address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+  },
+  USDT: {
+    label: 'USDT',
+    symbol: 'USDT',
+    address: '0x55d398326f99059ff775485246999027b3197955',
+  },
+  USDC: {
+    label: 'USDC',
+    symbol: 'USDC',
+    address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+  },
+  MARCO: {
+    label: 'MARCO',
+    symbol: 'MARCO',
+    address: MARCO_BSC_ADDRESS,
+    logoURI: MARCO_LOGO_URI,
+  },
+  MARCO_PAY: {
+    label: 'MARCO PAY',
+    symbol: 'M',
+    logoURI: MARCO_LOGO_URI,
+    purple: true,
+  },
+  M_CREDITS: {
+    label: 'M-Credits\nMARCO PASSPORT',
+    symbol: 'M',
+    purple: true,
+  },
+}
+
+type SettlementMarket = {
+  marcoUsd?: number
+  bnbUsd?: number
+  loading: boolean
+}
+
+function formatApproxNumber(value: number, maximumFractionDigits: number): string {
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits,
+    minimumFractionDigits: 0,
+  }).format(value)
+}
+
+function resolveSettlementEstimate(
+  payment: CommercialPaymentAsset,
+  totalUsd: number,
+  market: SettlementMarket,
+): { amount: string; label: string } {
+  if (payment === 'MARCO') {
+    if (!market.marcoUsd || market.marcoUsd <= 0) {
+      return { amount: market.loading ? 'Refreshing quote…' : 'Final quote at checkout', label: 'MARCO' }
+    }
+    return {
+      amount: `≈ ${formatApproxNumber(totalUsd / market.marcoUsd, 0)} MARCO`,
+      label: 'MARCO',
+    }
+  }
+  if (payment === 'BNB') {
+    if (!market.bnbUsd || market.bnbUsd <= 0) {
+      return { amount: market.loading ? 'Refreshing quote…' : 'Final quote at checkout', label: 'BNB' }
+    }
+    return {
+      amount: `≈ ${formatApproxNumber(totalUsd / market.bnbUsd, 6)} BNB`,
+      label: 'BNB',
+    }
+  }
+  if (payment === 'USDT' || payment === 'USDC') {
+    return { amount: `≈ ${formatApproxNumber(totalUsd, 2)} ${payment}`, label: payment }
+  }
+  if (payment === 'M_CREDITS') {
+    return { amount: `≈ ${formatApproxNumber(totalUsd, 2)} M-Credits`, label: 'M-Credits' }
+  }
+  return { amount: `$${formatApproxNumber(totalUsd, 2)} via MARCO PAY`, label: 'MARCO PAY' }
+}
 
 type DetectedProject = {
   tier: 'canonical' | 'pending'
@@ -148,12 +233,6 @@ const ServiceTitleRow = styled.div`
   min-height: 42px;
 `
 
-const Icon = styled.div`
-  color: ${uxRebuildColors.gold};
-  font-size: 23px;
-  line-height: 1;
-`
-
 const STitle = styled.div`
   font-size: 16px;
   line-height: 1.2;
@@ -170,7 +249,10 @@ const SPrice = styled.div`
   margin-top: auto;
   text-align: center;
   color: ${uxRebuildColors.gold};
-  font-size: 18px;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
   font-weight: 820;
   animation: ${pricePulse} 2.8s ease-in-out infinite;
   @media (prefers-reduced-motion: reduce) {
@@ -178,12 +260,23 @@ const SPrice = styled.div`
   }
 `
 
+const SPricePrefix = styled.span`
+  font-size: 11px;
+  font-weight: 720;
+  color: rgba(221, 185, 47, 0.76);
+`
+
+const SPriceValue = styled.span`
+  font-size: 22px;
+  line-height: 1;
+`
+
 const PkgGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   @media (min-width: 920px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 `
 
@@ -191,8 +284,8 @@ const PkgCard = styled.button<{ $on?: boolean }>`
   appearance: none;
   cursor: pointer;
   text-align: center;
-  min-height: 150px;
-  padding: 18px 12px;
+  min-height: 132px;
+  padding: 14px 10px;
   border-radius: 12px;
   border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.62)' : 'rgba(255,255,255,.1)')};
   background: ${({ $on }) => ($on ? 'rgba(221,185,47,.1)' : 'rgba(255,255,255,.025)')};
@@ -201,7 +294,7 @@ const PkgCard = styled.button<{ $on?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
   transition: transform 0.22s ease, border-color 0.22s ease;
   &:hover {
     transform: translateY(-2px);
@@ -209,6 +302,19 @@ const PkgCard = styled.button<{ $on?: boolean }>`
   }
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+`
+
+const PackagePrice = styled.div`
+  margin-top: 4px;
+  color: ${uxRebuildColors.gold};
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 840;
+  animation: ${pricePulse} 2.8s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `
 
@@ -259,6 +365,351 @@ const Chip = styled.button<{ $on?: boolean }>`
     opacity: 0.48;
   }
 `
+
+const CashbackSticker = styled.span`
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(172, 104, 255, 0.72);
+  background: #5d27a8;
+  color: #f2e8ff;
+  box-shadow: 0 4px 14px rgba(117, 51, 210, 0.35);
+  font-size: 8px;
+  line-height: 1.2;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+`
+
+const PaymentGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1080px) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+`
+
+const PaymentCard = styled.button<{ $on?: boolean }>`
+  appearance: none;
+  position: relative;
+  min-width: 0;
+  min-height: 154px;
+  padding: 16px 10px 14px;
+  border-radius: 14px;
+  border: 1px solid ${({ $on }) => ($on ? 'rgba(244,196,48,.78)' : 'rgba(255,255,255,.13)')};
+  background: ${({ $on }) =>
+    $on
+      ? 'radial-gradient(circle at 50% 30%, rgba(244,196,48,.17), rgba(244,196,48,.055) 58%, rgba(255,255,255,.02))'
+      : 'rgba(255,255,255,.026)'};
+  box-shadow: ${({ $on }) => ($on ? '0 0 24px rgba(244,196,48,.12), inset 0 0 20px rgba(244,196,48,.04)' : 'none')};
+  color: ${uxRebuildColors.text};
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: rgba(244, 196, 48, 0.62);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.46;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`
+
+const PaymentSelected = styled.span`
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: ${uxRebuildColors.gold};
+  color: #111;
+  font-size: 11px;
+  font-weight: 900;
+`
+
+const PaymentLogoShell = styled.span<{ $purple?: boolean }>`
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid ${({ $purple }) => ($purple ? 'rgba(171,104,255,.52)' : 'rgba(255,255,255,.18)')};
+  background: ${({ $purple }) => ($purple ? 'rgba(102,44,171,.16)' : 'rgba(255,255,255,.035)')};
+  box-shadow: ${({ $purple }) => ($purple ? '0 0 18px rgba(137,66,214,.2)' : 'inset 0 0 12px rgba(255,255,255,.035)')};
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: ${({ $purple }) => ($purple ? '#b77aff' : uxRebuildColors.gold)};
+  font-size: 24px;
+  font-weight: 900;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`
+
+const PaymentName = styled.strong`
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1.12;
+  text-align: center;
+  white-space: pre-line;
+`
+
+const PaymentNetwork = styled.span`
+  min-height: 21px;
+  padding: 2px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 10px;
+  line-height: 15px;
+`
+
+const PremiumCashbackSticker = styled(CashbackSticker)`
+  top: -1px;
+  right: -1px;
+  padding: 5px 8px;
+  font-size: 9px;
+  line-height: 1.05;
+`
+
+const SettlementSummary = styled.section`
+  margin-top: 14px;
+  border: 1px solid rgba(221, 185, 47, 0.34);
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(221, 185, 47, 0.055), rgba(255, 255, 255, 0.018));
+  overflow: hidden;
+`
+
+const SettlementMain = styled.div`
+  display: grid;
+  grid-template-columns: minmax(170px, 1.2fr) repeat(3, minmax(120px, 1fr));
+  align-items: center;
+  min-height: 92px;
+
+  @media (max-width: 820px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`
+
+const SettlementCell = styled.div<{ $title?: boolean }>`
+  min-width: 0;
+  padding: 15px 18px;
+  border-left: ${({ $title }) => ($title ? 'none' : '1px solid rgba(255,255,255,.1)')};
+
+  @media (max-width: 820px) {
+    border-left: none;
+    border-top: ${({ $title }) => ($title ? 'none' : '1px solid rgba(255,255,255,.075)')};
+  }
+`
+
+const SettlementTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: ${uxRebuildColors.text};
+  font-size: 15px;
+  font-weight: 780;
+`
+
+const SettlementGlyph = styled.span`
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.08);
+  box-shadow: 0 0 16px rgba(244, 196, 48, 0.12);
+  color: ${uxRebuildColors.gold};
+  font-size: 20px;
+`
+
+const SettlementLabel = styled.div`
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 10px;
+`
+
+const SettlementValue = styled.div<{ $gold?: boolean }>`
+  color: ${({ $gold }) => ($gold ? uxRebuildColors.gold : uxRebuildColors.text)};
+  font-size: ${({ $gold }) => ($gold ? '19px' : '17px')};
+  line-height: 1.15;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+`
+
+const SettlementNote = styled.div`
+  padding: 9px 16px 11px;
+  border-top: 1px solid rgba(221, 185, 47, 0.22);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+
+  strong {
+    color: #b77aff;
+  }
+`
+
+const ReviewStage = styled.div`
+  width: min(100%, 720px);
+  margin: 2px auto 0;
+`
+
+const ReviewCard = styled.section`
+  padding: 22px 24px 14px;
+  border: 1px solid rgba(221, 185, 47, 0.34);
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 0, rgba(244, 196, 48, 0.055), transparent 42%), rgba(255, 255, 255, 0.018);
+`
+
+const ReviewTitle = styled.h3`
+  margin: 0;
+  color: ${uxRebuildColors.text};
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 820;
+  text-align: center;
+`
+
+const ReviewDivider = styled.div`
+  height: 1px;
+  margin: 16px 0;
+  background: linear-gradient(90deg, transparent, rgba(244, 196, 48, 0.72), transparent);
+  box-shadow: 0 0 9px rgba(244, 196, 48, 0.3);
+`
+
+const ReviewRows = styled.div`
+  display: grid;
+  gap: 11px;
+`
+
+const ReviewRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+
+  strong {
+    color: ${uxRebuildColors.text};
+    font-size: 13px;
+    text-align: right;
+  }
+`
+
+const ReviewTotal = styled(ReviewRow)`
+  font-size: 17px;
+  font-weight: 800;
+
+  strong {
+    color: ${uxRebuildColors.gold};
+    font-size: 24px;
+    text-shadow: 0 0 15px rgba(244, 196, 48, 0.25);
+  }
+`
+
+const ReviewQuote = styled.div`
+  margin-top: 14px;
+  padding: 14px 16px 12px;
+  border: 1px solid rgba(244, 196, 48, 0.62);
+  border-radius: 13px;
+  background: radial-gradient(circle at 50% 20%, rgba(244, 196, 48, 0.14), rgba(244, 196, 48, 0.04) 62%);
+  box-shadow: 0 0 22px rgba(244, 196, 48, 0.1), inset 0 0 18px rgba(244, 196, 48, 0.035);
+  text-align: center;
+`
+
+const ReviewQuoteLabel = styled.div`
+  color: rgba(244, 196, 48, 0.86);
+  font-size: 12px;
+`
+
+const ReviewQuoteValue = styled.div`
+  margin-top: 5px;
+  color: ${uxRebuildColors.gold};
+  font-size: clamp(23px, 4vw, 34px);
+  line-height: 1.05;
+  font-weight: 860;
+  text-shadow: 0 0 16px rgba(244, 196, 48, 0.25);
+`
+
+const ReviewQuoteNote = styled.div`
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+`
+
+const VerifiedSettlement = styled.div<{ $error?: boolean }>`
+  margin-top: 10px;
+  min-height: 40px;
+  padding: 7px 12px;
+  border: 1px solid ${({ $error }) => ($error ? 'rgba(255,104,104,.4)' : 'rgba(81,180,111,.44)')};
+  border-radius: 10px;
+  background: ${({ $error }) => ($error ? 'rgba(160,40,40,.1)' : 'rgba(33,126,62,.09)')};
+  color: ${({ $error }) => ($error ? '#ffaaa8' : '#a6d69f')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+`
+
+const PaymentAssetLogo: React.FC<{ asset: CommercialPaymentAsset }> = ({ asset }) => {
+  const meta = PAYMENT_ASSET_META[asset]
+  if (meta.address) {
+    return (
+      <PaymentLogoShell $purple={meta.purple}>
+        <MelegaTokenAvatar
+          symbol={meta.symbol}
+          address={meta.address}
+          chainId={56}
+          logoURI={meta.logoURI}
+          size={50}
+          radius="circle"
+          alt=""
+        />
+      </PaymentLogoShell>
+    )
+  }
+  return (
+    <PaymentLogoShell $purple={meta.purple}>
+      {meta.logoURI ? <img src={meta.logoURI} alt="" aria-hidden="true" /> : meta.symbol}
+    </PaymentLogoShell>
+  )
+}
 
 const Input = styled.input`
   width: 100%;
@@ -411,6 +862,17 @@ const PrimaryBtn = styled.button`
     opacity: 0.45;
     cursor: not-allowed;
   }
+`
+
+const SecurePrimaryBtn = styled(PrimaryBtn)`
+  min-height: 42px;
+  padding: 0 22px;
+  border-color: rgba(244, 196, 48, 0.86);
+  background: linear-gradient(180deg, #f6cf58, #d9a91f);
+  color: #111;
+  box-shadow: 0 0 18px rgba(244, 196, 48, 0.2), inset 0 1px rgba(255, 255, 255, 0.35);
+  font-size: 13px;
+  font-weight: 840;
 `
 
 const CheckoutConnectBtn = styled(ConnectWalletButton)`
@@ -593,6 +1055,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [walletStage, setWalletStage] = useState<WalletFlowStage>('idle')
   const [orderId, setOrderId] = useState<string | null>(null)
   const [quoteSummary, setQuoteSummary] = useState<string | null>(null)
+  const [settlementMarket, setSettlementMarket] = useState<SettlementMarket>({ loading: false })
 
   const serviceMeta = VISIBILITY_SERVICES.find((item) => item.id === service) ?? null
   const packages = service ? CATALOGS[service] ?? [] : []
@@ -616,6 +1079,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
+  const settlementEstimate = resolveSettlementEstimate(pay, totalUsd, settlementMarket)
+  const paymentLabel = PAYMENT_ASSET_META[pay].label.replace('\n', ' · ')
 
   const detectProject = useCallback(async () => {
     if (!/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) {
@@ -668,9 +1133,41 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setWalletStage('idle')
     setOrderId(null)
     setQuoteSummary(null)
+    setSettlementMarket({ loading: true })
     setBusy(false)
     setStep('project')
   }, [open, initialService, chainId, projectContract])
+
+  useEffect(() => {
+    if (!open) return undefined
+    const controller = new AbortController()
+    setSettlementMarket({ loading: true })
+    void fetch('/api/trade/pair-liquidity', { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('SETTLEMENT_MARKET_UNAVAILABLE')
+        return (await response.json()) as { priceUsd?: number; bnbUsd?: number }
+      })
+      .then((market) => {
+        const marcoUsd =
+          typeof market.priceUsd === 'number' && Number.isFinite(market.priceUsd) && market.priceUsd > 0
+            ? market.priceUsd
+            : undefined
+        const bnbUsd =
+          typeof market.bnbUsd === 'number' && Number.isFinite(market.bnbUsd) && market.bnbUsd > 0
+            ? market.bnbUsd
+            : undefined
+        setSettlementMarket({
+          marcoUsd,
+          bnbUsd,
+          loading: false,
+        })
+      })
+      .catch((cause) => {
+        if (cause instanceof Error && cause.name === 'AbortError') return
+        setSettlementMarket({ loading: false })
+      })
+    return () => controller.abort()
+  }, [open])
 
   useEffect(() => {
     if (!open || !/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) return undefined
@@ -1111,6 +1608,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           >
             {busy ? 'Processing…' : pay === 'MARCO_PAY' ? 'Complete in MARCO PAY' : 'Pay & activate'}
           </PrimaryBtn>
+        ) : step === 'payment' || step === 'review' ? (
+          <SecurePrimaryBtn
+            type="button"
+            onClick={() => void goNext()}
+            disabled={busy || detecting}
+            data-testid="commercial-checkout-next"
+          >
+            {step === 'review' ? 'Continue to secure payment' : `Continue with ${paymentLabel}`}
+          </SecurePrimaryBtn>
         ) : (
           <PrimaryBtn
             type="button"
@@ -1265,11 +1771,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       data-testid={`commercial-service-${item.id}`}
                     >
                       <ServiceTitleRow>
-                        <Icon>{item.icon}</Icon>
                         <STitle>{item.title}</STitle>
                       </ServiceTitleRow>
                       <SDesc>{item.description}</SDesc>
-                      <SPrice>{item.priceHint}</SPrice>
+                      <SPrice>
+                        <SPricePrefix>From</SPricePrefix>
+                        <SPriceValue>{item.priceHint.replace(/^From\s+/i, '')}</SPriceValue>
+                      </SPrice>
                     </ServiceCard>
                   )
                 })}
@@ -1291,7 +1799,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   >
                     <STitle>{item.shortLabel}</STitle>
                     <SDesc>{item.durationLabel}</SDesc>
-                    <SPrice>${item.usdPrice}</SPrice>
+                    <PackagePrice>${item.usdPrice}</PackagePrice>
                   </PkgCard>
                 ))}
               </PkgGrid>
@@ -1333,21 +1841,22 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           {step === 'payment' ? (
             <div data-testid="commercial-step-payment">
               <Label>Choose payment</Label>
-              <ChipRow>
+              <PaymentGrid>
                 {(['BNB', 'USDT', 'USDC', 'MARCO', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
                   (asset) => {
                     const disabled =
                       (asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION) ||
                       (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
+                    const meta = PAYMENT_ASSET_META[asset]
                     return (
-                      <Chip
+                      <PaymentCard
                         key={asset}
                         type="button"
                         $on={pay === asset}
                         disabled={disabled}
                         title={
                           asset === 'MARCO_PAY' && !MARCO_PAY_APPLICATION
-                            ? 'Awaiting the production application key from MARCO PAY.'
+                            ? 'MARCO PAY is temporarily unavailable.'
                             : undefined
                         }
                         onClick={() => {
@@ -1360,40 +1869,47 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         }}
                         data-testid={`commercial-pay-${asset}`}
                       >
-                        {asset === 'MARCO_PAY' ? 'MARCO PAY' : asset}
-                        {asset === 'MARCO'
-                          ? ' · +5% CASHBACK'
-                          : asset === 'MARCO_PAY'
-                          ? MARCO_PAY_APPLICATION
-                            ? ' · Passport'
-                            : ' · Provider setup'
-                          : asset === 'M_CREDITS'
-                          ? ' · MARCO Passport'
-                          : ''}
-                      </Chip>
+                        {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
+                        <PaymentAssetLogo asset={asset} />
+                        <PaymentName>{meta.label}</PaymentName>
+                        <PaymentNetwork>BNB Chain</PaymentNetwork>
+                        {asset === 'MARCO' ? <PremiumCashbackSticker>+5% CASHBACK</PremiumCashbackSticker> : null}
+                      </PaymentCard>
                     )
                   },
                 )}
-              </ChipRow>
-              {!MARCO_PAY_APPLICATION ? (
-                <Meta style={{ marginTop: 8 }}>
-                  MARCO PAY is awaiting its production application key. BNB, USDT, USDC and MARCO settlement remain
-                  available and receipt-verified.
-                </Meta>
-              ) : null}
-              {pay === 'MARCO' ? (
-                <BadgeRow>
-                  <Badge $purple>+5% cashback</Badge>
-                  <Meta>Cashback is credited after verified settlement.</Meta>
-                </BadgeRow>
-              ) : null}
-              {pay === 'M_CREDITS' ? <Alert>{VISIBILITY_RUNTIME.M_CREDITS.reason}</Alert> : null}
-              {pay === 'MARCO_PAY' ? (
-                <BadgeRow>
-                  <Badge $purple>Official checkout</Badge>
-                  <Meta>Secure MARCO Passport payment. Activation follows a verified provider callback.</Meta>
-                </BadgeRow>
-              ) : null}
+              </PaymentGrid>
+              <SettlementSummary data-testid="commercial-settlement-summary">
+                <SettlementMain>
+                  <SettlementCell $title>
+                    <SettlementTitle>
+                      <SettlementGlyph aria-hidden="true">▤</SettlementGlyph>
+                      Settlement summary
+                    </SettlementTitle>
+                  </SettlementCell>
+                  <SettlementCell>
+                    <SettlementLabel>Total</SettlementLabel>
+                    <SettlementValue>${formatApproxNumber(totalUsd, 2)}</SettlementValue>
+                  </SettlementCell>
+                  <SettlementCell>
+                    <SettlementLabel>Estimated amount</SettlementLabel>
+                    <SettlementValue $gold>{settlementEstimate.amount}</SettlementValue>
+                  </SettlementCell>
+                  <SettlementCell>
+                    <SettlementLabel>Network</SettlementLabel>
+                    <SettlementValue>BNB Chain</SettlementValue>
+                  </SettlementCell>
+                </SettlementMain>
+                <SettlementNote>
+                  <div>Final amount is refreshed before wallet confirmation.</div>
+                  {pay === 'MARCO' ? (
+                    <div>
+                      Cashback in <strong>M-Credits</strong> is credited after verified settlement in your{' '}
+                      <strong>MARCO PASSPORT</strong>.
+                    </div>
+                  ) : null}
+                </SettlementNote>
+              </SettlementSummary>
               <div style={{ marginTop: 12 }}>
                 <Label>Referral link · 50% to referrer</Label>
                 <Input
@@ -1414,24 +1930,44 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
           {step === 'review' ? (
             <div data-testid="commercial-step-review">
-              <Label>Review</Label>
-              <Meta>
-                {detected?.name} · {serviceMeta?.title} · {selectedPackage?.label}
-              </Meta>
-              <Meta style={{ marginTop: 7 }}>
-                {pay === 'MARCO_PAY'
-                  ? `Pay $${totalUsd} with MARCO PAY`
-                  : `Pay $${totalUsd} in ${pay} · settlement on BNB Chain`}
-              </Meta>
-              {checkoutBlocker ? (
-                <Alert $error style={{ marginTop: 10 }}>
-                  {checkoutBlocker}
-                </Alert>
-              ) : (
-                <Alert style={{ marginTop: 10 }}>
-                  Ready for verified wallet settlement and automatic placement activation.
-                </Alert>
-              )}
+              <ReviewStage>
+                <ReviewCard>
+                  <ReviewTitle>Review your order</ReviewTitle>
+                  <ReviewDivider />
+                  <ReviewRows>
+                    <ReviewRow>
+                      <span>Project</span>
+                      <strong>{detected?.name ?? projectSlug}</strong>
+                    </ReviewRow>
+                    <ReviewRow>
+                      <span>Service</span>
+                      <strong>{serviceMeta?.title ?? '—'}</strong>
+                    </ReviewRow>
+                    <ReviewRow>
+                      <span>Duration</span>
+                      <strong>{selectedPackage?.durationLabel ?? '—'}</strong>
+                    </ReviewRow>
+                    <ReviewRow>
+                      <span>Settlement</span>
+                      <strong>{paymentLabel} on BNB Chain</strong>
+                    </ReviewRow>
+                  </ReviewRows>
+                  <ReviewDivider />
+                  <ReviewTotal>
+                    <span>Total</span>
+                    <strong>${formatApproxNumber(totalUsd, 2)}</strong>
+                  </ReviewTotal>
+                  <ReviewQuote>
+                    <ReviewQuoteLabel>Approx. {settlementEstimate.label} required</ReviewQuoteLabel>
+                    <ReviewQuoteValue>{settlementEstimate.amount}</ReviewQuoteValue>
+                    <ReviewQuoteNote>Final amount is refreshed before wallet confirmation.</ReviewQuoteNote>
+                  </ReviewQuote>
+                  <VerifiedSettlement $error={Boolean(checkoutBlocker)}>
+                    <span aria-hidden="true">{checkoutBlocker ? '!' : '✓'}</span>
+                    {checkoutBlocker ?? 'Verified settlement · Automatic placement activation'}
+                  </VerifiedSettlement>
+                </ReviewCard>
+              </ReviewStage>
             </div>
           ) : null}
 

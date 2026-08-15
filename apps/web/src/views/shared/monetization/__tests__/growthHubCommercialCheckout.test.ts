@@ -67,7 +67,20 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).not.toContain('TREND_PACKAGE_BADGES')
     expect(checkout).not.toContain('ESTIMATED REACH')
     expect(checkout).not.toContain('DISCOVERY BOOST')
-    expect(checkout).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+    expect(checkout).toContain('grid-template-columns: repeat(6, minmax(0, 1fr))')
+  })
+
+  it('uses the approved premium Payment and Review conversion surfaces', () => {
+    expect(checkout).toContain('commercial-settlement-summary')
+    expect(checkout).toContain('Settlement summary')
+    expect(checkout).toContain('Estimated amount')
+    expect(checkout).toContain('Cashback in')
+    expect(checkout).toContain('M-Credits')
+    expect(checkout).toContain('MARCO PASSPORT')
+    expect(checkout).toContain('Review your order')
+    expect(checkout).toContain('Approx. {settlementEstimate.label} required')
+    expect(checkout).toContain('Verified settlement · Automatic placement activation')
+    expect(checkout).toContain('Continue to secure payment')
   })
 
   it('every paid visibility service has a receipt-gated consumer surface', () => {

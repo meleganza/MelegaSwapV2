@@ -32,7 +32,7 @@ type PositionsResponse = {
   error?: string
 }
 
-const FACTORY_FETCH_TIMEOUT_MS = 10_000
+const FACTORY_FETCH_TIMEOUT_MS = 25_000
 
 function isBnbFactoryChain(chainId?: number): boolean {
   return chainId === 56 || chainId === 97

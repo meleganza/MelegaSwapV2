@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import TradeTechnicalDetails from './TradeTechnicalDetails'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const Area = styled.div`
   height: ${tradeLayout.chartAreaHeight};
@@ -114,9 +115,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
 
   const priceMarker =
     currentPriceUsd != null && Number.isFinite(currentPriceUsd) && currentPriceUsd > 0
-      ? currentPriceUsd < 0.01
-        ? `$${currentPriceUsd.toFixed(6)}`
-        : `$${currentPriceUsd.toFixed(4)}`
+      ? formatCompactPriceUsd(currentPriceUsd)
       : undefined
 
   if (isLoading) {

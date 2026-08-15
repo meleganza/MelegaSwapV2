@@ -11,6 +11,7 @@ import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import TradeChartPanel from './TradeChartPanel'
 import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
+import { formatCompactPriceNumber, formatFullPriceNumber } from 'utils/formatCompactPrice'
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -206,10 +207,9 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
 
   const priceText =
     displayPrice != null && Number.isFinite(displayPrice)
-      ? displayPrice < 0.01
-        ? displayPrice.toFixed(6)
-        : displayPrice.toFixed(4)
+      ? formatCompactPriceNumber(displayPrice, { significantDigits: 5, unavailable: '' })
       : null
+  const fullPriceText = formatFullPriceNumber(displayPrice)
 
   const priceLoading = isIndexingMetrics && !priceText
 
@@ -229,7 +229,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
             <PairName>
               {inputSymbol} / {outputSymbol}
             </PairName>
-            <PriceMain $loading={priceLoading}>
+            <PriceMain $loading={priceLoading} title={fullPriceText ? `USD $${fullPriceText}` : undefined}>
               {priceLoading ? RUNTIME_LOADING_LABEL : priceText ?? RUNTIME_UNAVAILABLE_LABEL}
             </PriceMain>
             {priceText ? <PriceUsd>USD ${priceText}</PriceUsd> : null}

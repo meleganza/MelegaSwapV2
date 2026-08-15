@@ -88,7 +88,7 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   contain: paint;
   backface-visibility: hidden;
   transform-style: flat;
-  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 52s linear infinite;
+  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 62s linear infinite;
   animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
 
   @media (prefers-reduced-motion: reduce) {
@@ -182,8 +182,7 @@ const Secondary = styled.span`
 const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
   font-weight: 700;
   font-size: 14px;
-  color: ${({ $unavailable, $positive }) =>
-    $unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676'};
+  color: ${({ $unavailable, $positive }) => ($unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676')};
 `
 
 const Dot = styled.span`

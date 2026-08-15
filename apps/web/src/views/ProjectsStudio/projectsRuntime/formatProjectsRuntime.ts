@@ -23,6 +23,7 @@ import { buildProjectRating } from './buildProjectRating'
 import { buildMarketSources } from './marketSources'
 import { buildOnChainMetrics } from './onChainMetrics'
 import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 
 const FEATURED_SLUG_SET = new Set<string>(FOUNDER_FEATURED_SLUGS)
@@ -62,10 +63,10 @@ export function mapIndexedAssetToPreviewCard(asset: DexAssetRecord, rank: number
     category: asset.sources.includes('farm')
       ? 'Farm'
       : asset.sources.includes('pool')
-        ? 'Pool'
-        : asset.sources.includes('token-list')
-          ? 'Listed'
-          : 'Indexed',
+      ? 'Pool'
+      : asset.sources.includes('token-list')
+      ? 'Listed'
+      : 'Indexed',
     chains: [chainLabel(asset.chainId)],
     chainId,
     status: verified ? 'verified' : asset.status === 'listed' ? 'new' : 'community',
@@ -159,8 +160,7 @@ export function mapProjectToPreviewCard(
   const muted = (value: string) => value === EMPTY
 
   const featured = FEATURED_SLUG_SET.has(project.slug)
-  const verified =
-    project.verificationStatus === 'observed' || project.trustBadges.includes('canonical')
+  const verified = project.verificationStatus === 'observed' || project.trustBadges.includes('canonical')
   const status = projectStatus(project)
   const chainId = token?.chainId ?? project.supportedChains[0]
   const listedAtMs = (() => {
@@ -201,11 +201,7 @@ export function mapProjectToPreviewCard(
     riskTone,
     website: websiteDisplay(project.websiteUrl),
     contract:
-      project.verificationStatus === 'unverified'
-        ? 'Unverified'
-        : token?.address
-          ? shortAddress(token.address)
-          : '—',
+      project.verificationStatus === 'unverified' ? 'Unverified' : token?.address ? shortAddress(token.address) : '—',
     contractAddress: token?.address,
     tradeHref: token?.address
       ? `/swap?outputCurrency=${token.address}&chain=${chainId}&source=projects-directory`
@@ -226,7 +222,7 @@ function pendingChainBadge(chainId: number): string {
 }
 
 export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: number): ProjectPreviewCard {
-  const name = pending.name.available ? (pending.name.value ?? 'Unknown') : 'Unknown'
+  const name = pending.name.available ? pending.name.value ?? 'Unknown' : 'Unknown'
   const symbol = pending.symbol.available ? pending.symbol.value : undefined
   const score = pending.health.readiness_score
 
@@ -246,7 +242,9 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     })(),
     rating: score,
     ratingTier: score >= 70 ? 'active' : 'emerging',
-    aiSummary: `Pending registry profile — ${formatPendingReviewStatusLabel(pending.status)}. Awaiting canonical promotion.`,
+    aiSummary: `Pending registry profile — ${formatPendingReviewStatusLabel(
+      pending.status,
+    )}. Awaiting canonical promotion.`,
     metrics: [
       { label: 'Liquidity', value: EMPTY, tone: 'gray' },
       { label: 'Volume', value: EMPTY, tone: 'gray' },
@@ -278,7 +276,7 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
 export function buildActivityFromPending(pendingRecords: PendingProjectRecord[]): ProjectsActivityRow[] {
   return pendingRecords.slice(0, 4).map((pending) => ({
     time: pending.updated_at,
-    project: pending.symbol.available ? (pending.symbol.value ?? 'Unknown') : 'Unknown',
+    project: pending.symbol.available ? pending.symbol.value ?? 'Unknown' : 'Unknown',
     projectSymbol: pending.symbol.available ? pending.symbol.value : undefined,
     action: 'Pending Review',
     details: `${formatPendingReviewStatusLabel(pending.status)} — non-canonical registry intake`,
@@ -304,8 +302,8 @@ export function aggregateKpis(
   const holdersSubline = holdersMetric?.reasonCode
     ? metricUiReasonLabel(holdersMetric.reasonCode as ProjectDataReasonCode)
     : holdersValue === EMPTY
-      ? metricUiReasonLabel('EXPLORER_SOURCE_MISSING')
-      : undefined
+    ? metricUiReasonLabel('EXPLORER_SOURCE_MISSING')
+    : undefined
 
   return [
     { id: 'indexed', label: 'Projects Indexed', value: String(indexed) },
@@ -360,7 +358,7 @@ export function buildFeaturedProject(
   let hasPriceData = false
   if (priceUsd != null && Number.isFinite(priceUsd) && priceUsd > 0) {
     hasPriceData = true
-    price = priceUsd >= 1 ? `$${priceUsd.toFixed(4)}` : `$${priceUsd.toFixed(6)}`
+    price = formatCompactPriceUsd(priceUsd)
     priceChange = onChain.priceChange && onChain.priceChange !== EMPTY ? onChain.priceChange : undefined
   }
 
@@ -524,7 +522,7 @@ export function buildMachineProfile(project: EnrichedProjectRecord) {
   }
 }
 
-export type ProjectFilterChip = (typeof import('../projectsStudioData').PROJECT_FILTER_CHIPS)[number]
+export type ProjectFilterChip = typeof import('../projectsStudioData').PROJECT_FILTER_CHIPS[number]
 
 export function filterProjectsByChip(
   cards: ProjectPreviewCard[],
@@ -571,21 +569,15 @@ export function filterProjectsByChip(
     case 'BSC':
       return cards.filter((c) => c.chains.includes('BNB') || c.chains.includes('BSC') || c.chainId === 56)
     case 'Ethereum':
-      return cards.filter(
-        (c) => c.chains.includes('ETH') || c.chains.includes('Ethereum') || c.chainId === 1,
-      )
+      return cards.filter((c) => c.chains.includes('ETH') || c.chains.includes('Ethereum') || c.chainId === 1)
     case 'Base':
       return cards.filter((c) => c.chains.includes('Base') || c.chainId === 8453)
     case 'Polygon':
       return cards.filter((c) => c.chains.includes('Polygon') || c.chainId === 137)
     case 'Arbitrum':
-      return cards.filter(
-        (c) => c.chains.includes('Arbitrum') || c.chains.includes('ARB') || c.chainId === 42161,
-      )
+      return cards.filter((c) => c.chains.includes('Arbitrum') || c.chains.includes('ARB') || c.chainId === 42161)
     case 'Avalanche':
-      return cards.filter(
-        (c) => c.chains.includes('Avalanche') || c.chains.includes('AVAX') || c.chainId === 43114,
-      )
+      return cards.filter((c) => c.chains.includes('Avalanche') || c.chains.includes('AVAX') || c.chainId === 43114)
     case 'Highest Rated':
       return [...cards].sort((a, b) => b.rating - a.rating)
     case 'Highest Liquidity':

@@ -345,7 +345,7 @@ const ListLogos = styled.div`
 
 const MoreBtn = styled.button`
   appearance: none;
-  margin-top: 12px;
+  margin-top: 0;
   cursor: pointer;
   min-height: 36px;
   padding: 0 14px;
@@ -549,7 +549,6 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
   const [expanded, setExpanded] = useState(false)
   const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
   const visiblePositions = expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
-  const canExpand = positions.length > previewMin
 
   const proceedManage = useCallback(
     (row: LiquidityPositionRow) => {
@@ -696,6 +695,16 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
                 {LIQUIDITY_MY_POSITIONS_COPY.viewList}
               </ViewBtn>
             </ViewToggle>
+            <MoreBtn
+              type="button"
+              data-testid="liquidity-my-positions-expand"
+              onClick={() => {
+                setExpanded((value) => !value)
+                setViewMode(expanded ? 'cards' : 'list')
+              }}
+            >
+              {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
+            </MoreBtn>
           </Toolbar>
 
           {viewMode === 'cards' ? (
@@ -718,12 +727,6 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
               ))}
             </ListTable>
           )}
-
-          {canExpand ? (
-            <MoreBtn type="button" data-testid="liquidity-my-positions-expand" onClick={() => setExpanded((v) => !v)}>
-              {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
-            </MoreBtn>
-          ) : null}
         </>
       ) : null}
 

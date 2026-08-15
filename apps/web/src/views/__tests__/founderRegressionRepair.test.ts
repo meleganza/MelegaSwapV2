@@ -2,11 +2,7 @@ import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
-import {
-  formatUsdCompact,
-  formatUsdPrice,
-  tokenUsdFromWbnbQuote,
-} from 'lib/bsc-indexer/usdValuation'
+import { formatUsdCompact, formatUsdPrice, tokenUsdFromWbnbQuote } from 'lib/bsc-indexer/usdValuation'
 import {
   formatFeaturedChange,
   formatFeaturedPrice,
@@ -44,7 +40,7 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(formatFeaturedChange({ status: 'NO_RECENT_TRADES', changePct: null } as never).text).toBe('')
     expect(formatFeaturedVolume({ status: 'NO_RECENT_TRADES' } as never)).toBe('$0.00')
     expect(formatFeaturedVolume({ status: 'STALE' } as never)).toBe('—')
-    expect(formatUsdPrice(0.000000259849)).toBe('$0.000000259849')
+    expect(formatUsdPrice(0.000000259849)).toBe('$0.0₆25985')
   })
 
   it('durable trending snapshot prefers live and falls back to last-good', () => {
@@ -56,10 +52,7 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
   })
 
   it('Liquidity Builder is exploded configuration surface with how-it-works', () => {
-    const card = readFileSync(
-      path.join(SRC, 'views/LiquidityStudio/onePage/LiquidityBuildingCard.tsx'),
-      'utf8',
-    )
+    const card = readFileSync(path.join(SRC, 'views/LiquidityStudio/onePage/LiquidityBuildingCard.tsx'), 'utf8')
     expect(card).toContain('data-lb-surface="exploded"')
     expect(card).toContain('liq-lb-how-it-works')
     expect(card).toContain('liq-lb-exploded-grid')
@@ -69,29 +62,20 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
   })
 
   it('Pools explore retains unfiltered last-good inventory', () => {
-    const hook = readFileSync(
-      path.join(SRC, 'views/PoolsStudio/modules/usePoolsExplorePools.ts'),
-      'utf8',
-    )
+    const hook = readFileSync(path.join(SRC, 'views/PoolsStudio/modules/usePoolsExplorePools.ts'), 'utf8')
     expect(hook).toContain("filter: 'All'")
     expect(hook).toContain('Showing last known active pools while refreshing')
     expect(hook).toContain('8_000')
   })
 
   it('Create Pool is a permanently expanded operational workspace and Featured band is denser', () => {
-    const create = readFileSync(
-      path.join(SRC, 'views/PoolsStudio/components/CreatePoolCta.tsx'),
-      'utf8',
-    )
+    const create = readFileSync(path.join(SRC, 'views/PoolsStudio/components/CreatePoolCta.tsx'), 'utf8')
     expect(create).toContain('data-ps-create-pool-permanently-expanded')
     expect(create).toContain('data-ps-create-pool-expanded="true"')
     expect(create).not.toContain('data-ps-create-pool-compact')
     expect(create).not.toMatch(/data-ps-create-pool-expand(?!ed)/)
     expect(create).not.toContain('data-ps-create-pool-close')
-    const featured = readFileSync(
-      path.join(SRC, 'views/PoolsStudio/modules/PoolsFeaturedPoolBand.tsx'),
-      'utf8',
-    )
+    const featured = readFileSync(path.join(SRC, 'views/PoolsStudio/modules/PoolsFeaturedPoolBand.tsx'), 'utf8')
     expect(featured).toContain('max-height: 120px')
     expect(featured).toContain('font-size: 12px')
   })
@@ -104,15 +88,9 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
   })
 
   it('preserves Create Token factory bind and LB factory address', () => {
-    const ct = readFileSync(
-      path.join(ROOT, 'apps/web/src/config/constants/createTokenFactoryDeployment.ts'),
-      'utf8',
-    )
+    const ct = readFileSync(path.join(ROOT, 'apps/web/src/config/constants/createTokenFactoryDeployment.ts'), 'utf8')
     expect(ct).toContain('0x6DbB5d7162842dA94ef9172AedC8D148d203d311')
-    const lb = readFileSync(
-      path.join(ROOT, 'apps/web/src/config/constants/liquidityBuildingDeployment.ts'),
-      'utf8',
-    )
+    const lb = readFileSync(path.join(ROOT, 'apps/web/src/config/constants/liquidityBuildingDeployment.ts'), 'utf8')
     expect(lb).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
   })
 

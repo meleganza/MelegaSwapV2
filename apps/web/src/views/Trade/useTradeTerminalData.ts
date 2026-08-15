@@ -25,6 +25,7 @@ import { PairState, usePairs } from 'hooks/usePairs'
 import type { MarcoPairLiquiditySnapshot } from 'lib/trade-market/fetchMarcoPairLiquidity'
 import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
 import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const SECONDS_24H = 86_400
 
@@ -505,31 +506,34 @@ export const useTradeTerminalData = (
   ])
 
   const pairPrice = useMemo(() => {
-    const onChain = marcoPairMarket?.priceUsd
+    const onChain = marcoPairMarket?.priceUsd ?? indexedPairLiquidity?.priceUsd
     if (isMarcoRoute && onChain && onChain > 0) {
       const marcoChange = computeValid24hPriceChange(indexerCandles)
       return {
         value: onChain,
         change24h: marcoChange ? parseFloat(marcoChange.text.replace(/[^0-9.-]/g, '')) : undefined,
-        formatted: `$${onChain < 0.01 ? onChain.toFixed(6) : onChain.toFixed(4)}`,
+        formatted: formatCompactPriceUsd(onChain),
       }
     }
     if (tokenData?.priceUSD) {
       return {
         value: tokenData.priceUSD,
         change24h: tokenData.priceUSDChange,
-        formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+        formatted: formatCompactPriceUsd(tokenData.priceUSD),
       }
     }
     if (externalDex?.priceUsd != null && externalDex.priceUsd > 0) {
       return {
         value: externalDex.priceUsd,
         change24h: externalDex.priceChange24h ?? undefined,
-        formatted: `$${
-          externalDex.priceUsd < 0.01
-            ? externalDex.priceUsd.toLocaleString('en-US', { maximumSignificantDigits: 8 })
-            : externalDex.priceUsd.toLocaleString('en-US', { maximumFractionDigits: 6 })
-        }`,
+        formatted: formatCompactPriceUsd(externalDex.priceUsd),
+      }
+    }
+    if (isMarcoRoute && publicMarket?.priceUsd != null && publicMarket.priceUsd > 0) {
+      return {
+        value: publicMarket.priceUsd,
+        change24h: undefined,
+        formatted: formatCompactPriceUsd(publicMarket.priceUsd),
       }
     }
     const close = indexerMetrics24h?.lastClose
@@ -540,7 +544,7 @@ export const useTradeTerminalData = (
           return {
             value: priceUsd,
             change24h: undefined,
-            formatted: `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(4)}`,
+            formatted: formatCompactPriceUsd(priceUsd),
           }
         }
       }
@@ -556,9 +560,11 @@ export const useTradeTerminalData = (
     indexerMetrics24h,
     effectiveBnbUsd,
     marcoPairMarket?.priceUsd,
+    indexedPairLiquidity?.priceUsd,
     isMarcoRoute,
     indexerCandles,
     externalDex,
+    publicMarket?.priceUsd,
   ])
 
   const missingReason = useMemo((): TradeDataMissingReason => {

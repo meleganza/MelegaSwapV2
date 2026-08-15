@@ -1,6 +1,7 @@
 import type { TierMetricStatus } from 'lib/bsc-indexer/types'
 import type { Valid24hChange } from 'lib/data-truth/compute24hPriceChange'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 export type TierMetricRow = {
   slug: string
@@ -74,15 +75,8 @@ export function hasTrendingMarketSignal(input: {
   change24h?: Valid24hChange
 }): boolean {
   const hasChange =
-    input.change24h != null &&
-    Number.isFinite(input.change24h.pct) &&
-    Math.abs(input.change24h.pct) > 0.0001
-  return (
-    input.tradeCount24h > 0 ||
-    input.volume24h > 0 ||
-    input.liquidityScore > 0 ||
-    hasChange
-  )
+    input.change24h != null && Number.isFinite(input.change24h.pct) && Math.abs(input.change24h.pct) > 0.0001
+  return input.tradeCount24h > 0 || input.volume24h > 0 || input.liquidityScore > 0 || hasChange
 }
 
 /** Active DEX activity only — never pad with liquidity-only / idle indexed tokens. */
@@ -95,10 +89,7 @@ export function hasTrendingActivitySignal(input: {
 }
 
 /** True trending membership: requires Swap count or volume — never lastVerified / discovery fill. */
-export function hasTrendingSwapActivity(input: {
-  tradeCount24h: number
-  volume24h: number
-}): boolean {
+export function hasTrendingSwapActivity(input: { tradeCount24h: number; volume24h: number }): boolean {
   return input.tradeCount24h > 0 || input.volume24h > 0
 }
 
@@ -165,9 +156,7 @@ export function rankTierAssets(assets: TierRankedAsset[], limit = 10): TierRanke
 
 export function formatTrendingTickerPrice(price?: number): string | undefined {
   if (!price || price <= 0 || !Number.isFinite(price)) return undefined
-  if (price >= 1) return `$${price.toFixed(2)}`
-  if (price >= 0.01) return `$${price.toFixed(4)}`
-  return `$${price.toFixed(6)}`
+  return formatCompactPriceUsd(price)
 }
 
 export function trendingTickerAccent(asset: TierRankedAsset): {
@@ -175,8 +164,7 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   accentPositive?: boolean
   accentUnavailable?: boolean
 } {
-  const change =
-    asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
+  const change = asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
   if (change) {
     const arrow = change.positive ? '↑' : '↓'
     const pct = `${Math.abs(change.pct).toFixed(1)}%`

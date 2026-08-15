@@ -16,7 +16,7 @@ import { useFactoryLiquidityTokenPairs } from './useFactoryLiquidityTokenPairs'
 /** Deterministic wallet LP hydration lifecycle (UI never freezes on partial state). */
 export type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'empty' | 'error'
 
-const POSITIONS_FETCH_TIMEOUT_MS = 12_000
+const POSITIONS_FETCH_TIMEOUT_MS = 30_000
 
 function pairKey(tokens: [ERC20Token, ERC20Token]): string {
   return [tokens[0].address, tokens[1].address]
@@ -158,7 +158,9 @@ export function useLiquidityPositions(enabled = true) {
     const byPair = new Map<string, LiquidityPositionRow>()
     liquidityTokensWithBalances.forEach(({ liquidityToken }, index) => {
       const [, livePair] = v2Pairs[index] ?? []
-      const pair = livePair ?? factoryPairsByAddress[liquidityToken.address.toLowerCase()]
+      // The wallet-scoped Melega registry carries the real historical factory
+      // address and reserves. A generic SDK-derived pair is only a fallback.
+      const pair = factoryPairsByAddress[liquidityToken.address.toLowerCase()] ?? livePair
       if (!pair) return
       // Pair derives a canonical SDK LP address. The Melega indexer is the
       // authority for historical factory deployments, so retain its real LP

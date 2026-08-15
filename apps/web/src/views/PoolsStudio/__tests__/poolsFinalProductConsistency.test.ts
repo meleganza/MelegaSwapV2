@@ -69,13 +69,13 @@ describe('Pools final product consistency', () => {
     expect(vm.state).toBe('empty')
   })
 
-  it('preview max is 4 and View all my positions expands inline', () => {
+  it('preview max is 4 and View all my pools expands inline', () => {
     expect(poolsMyPositions.maxVisibleDesktop).toBe(4)
     const mod = load('modules/PoolsMyPositionsModule.tsx')
-    expect(mod).toContain('View all my positions')
+    expect(mod).toContain('View all my pools')
     expect(mod).not.toContain('View all positions')
     expect(mod).toContain('Show less')
-    expect(mod).toContain("setExpanded((v) => !v)")
+    expect(mod).toContain('setExpanded((v) => !v)')
     expect(mod).not.toContain("setPortfolioViewMode('MY_POOLS')")
     expect(mod).toContain('Cards')
     expect(mod).toContain('List')
@@ -118,10 +118,7 @@ describe('Pools final product consistency', () => {
     expect(card).toContain('pools-explore-view-pool')
     expect(card).toContain('YieldActivitySparkline')
     expect(card).toContain('pools-explore-activity-spark')
-    const spark = readFileSync(
-      path.resolve(STUDIO, '../../components/YieldActivitySparkline.tsx'),
-      'utf8',
-    )
+    const spark = readFileSync(path.resolve(STUDIO, '../../components/YieldActivitySparkline.tsx'), 'utf8')
     expect(spark).toContain('baseline')
     expect(spark).toContain('never invents oscillation')
   })

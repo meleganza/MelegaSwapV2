@@ -21,7 +21,7 @@ describe('MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR', () => {
     const src = load('views/PoolsStudio/modules/PoolsHeroFeaturedCompact.tsx')
     expect(src).toContain('if (!card?.rawPool) return null')
     expect(src).not.toContain('No rewarding pool available')
-    expect(src).not.toContain("data-featured=\"empty\"")
+    expect(src).not.toContain('data-featured="empty"')
   })
 
   it('P0 /trade redirects to /swap', () => {
@@ -74,7 +74,7 @@ describe('MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR', () => {
       { chainId: 56, status: 'LIVE' as const, contractAddress: '0xdef', shortLabel: 'BNB', label: 'BNB' },
     ] as Parameters<typeof defaultSelectedChainId>[0]
     expect(defaultSelectedChainId(deployments)).toBe(56)
-    expect(formatPrice(5.9e-7)).toBe('<$0.000001')
+    expect(formatPrice(5.9e-7)).toBe('$0.0₆59')
     expect(formatPrice(0.000012)).toMatch(/^\$0\.000012/)
     expect(String(formatPrice(5.9e-7))).not.toMatch(/e-/i)
     const buy = getBuyTokenHref({ chainId: 56, contract: '0x963556de0eb8138E97A85F0A86eE0acD159D210b' })

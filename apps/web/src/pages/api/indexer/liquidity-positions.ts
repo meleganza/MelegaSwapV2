@@ -91,13 +91,24 @@ const handler: NextApiHandler = async (req, res) => {
     const candidates = pairs.filter((pair) => pair.pairAddress && pair.token0 && pair.token1)
     const owned: PositionRow[] = []
 
-    for (let offset = 0; offset < candidates.length; offset += CHUNK_SIZE) {
-      const batch = candidates.slice(offset, offset + CHUNK_SIZE)
-      const calls = batch.map((pair) => [pair.pairAddress, erc20.encodeFunctionData('balanceOf', [account])])
-      const callData = multicall.encodeFunctionData('tryAggregate', [false, calls])
-      const encoded = await rpcCall<string>('eth_call', [{ to: MULTICALL3, data: callData }, 'latest'])
-      const [results] = multicall.decodeFunctionResult('tryAggregate', encoded)
+    const batches = Array.from({ length: Math.ceil(candidates.length / CHUNK_SIZE) }, (_, index) =>
+      candidates.slice(index * CHUNK_SIZE, (index + 1) * CHUNK_SIZE),
+    )
 
+    // The previous serial scan multiplied RPC latency by every registry chunk
+    // and routinely lost the browser's timeout race. Four bounded Multicall3
+    // reads cover the current inventory and remain wallet/read-only.
+    const batchResults = await Promise.all(
+      batches.map(async (batch) => {
+        const calls = batch.map((pair) => [pair.pairAddress, erc20.encodeFunctionData('balanceOf', [account])])
+        const callData = multicall.encodeFunctionData('tryAggregate', [false, calls])
+        const encoded = await rpcCall<string>('eth_call', [{ to: MULTICALL3, data: callData }, 'latest'])
+        const [results] = multicall.decodeFunctionResult('tryAggregate', encoded)
+        return { batch, results }
+      }),
+    )
+
+    batchResults.forEach(({ batch, results }) => {
       results.forEach((result: { success: boolean; returnData: string }, index: number) => {
         if (!result.success || result.returnData === '0x') return
         const [balance] = erc20.decodeFunctionResult('balanceOf', result.returnData)
@@ -114,7 +125,7 @@ const handler: NextApiHandler = async (req, res) => {
           lpBalanceRaw: balance.toString(),
         })
       })
-    }
+    })
 
     const metadata = await loadOwnedTokenMetadata(owned)
     owned.forEach((row) => {

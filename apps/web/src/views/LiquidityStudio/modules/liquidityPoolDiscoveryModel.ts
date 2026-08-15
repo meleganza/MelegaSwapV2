@@ -40,10 +40,7 @@ const STABLES = new Set([
  * TVL ≈ 2 × quoteReserve × quoteUsd (standard AMM when one side is WBNB/stable).
  * Returns null when quote valuation cannot be trusted.
  */
-export function estimateReserveTvlUsd(
-  pair: ClassifiedAmmPair,
-  bnbUsd?: number | null,
-): number | null {
+export function estimateReserveTvlUsd(pair: ClassifiedAmmPair, bnbUsd?: number | null): number | null {
   const t0 = pair.token0?.toLowerCase()
   const t1 = pair.token1?.toLowerCase()
   if (!t0 || !t1) return null
@@ -141,8 +138,7 @@ export function resolveDiscoveryStatus(
   if (pair.classification === 'invalid_contract') {
     return { status: 'Unavailable', reason: 'Invalid pair contract', active: false }
   }
-  const hasReserves =
-    pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
+  const hasReserves = pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
   const tvl = metrics?.tvlUsd
   const volume = metrics?.volumeUsd
   const hasTvl = tvl != null && Number.isFinite(tvl) && tvl > 0
@@ -208,16 +204,12 @@ export function toDiscoveryCard(
   const resolved = resolveDiscoveryStatus(pair, metrics)
   const reserveTvl = estimateReserveTvlUsd(pair, bnbUsd)
   const tvlUsd =
-    metrics?.tvlUsd != null && Number.isFinite(metrics.tvlUsd) && metrics.tvlUsd > 0
-      ? metrics.tvlUsd
-      : reserveTvl
+    metrics?.tvlUsd != null && Number.isFinite(metrics.tvlUsd) && metrics.tvlUsd > 0 ? metrics.tvlUsd : reserveTvl
   const volumeUsd = metrics?.volumeUsd ?? null
   const feesUsd = metrics?.feesUsd ?? null
   const tvl = metricLabel(
     tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
-    reserveTvl
-      ? 'TVL source: Factory reserves × quote USD'
-      : 'TVL source: Info subgraph unavailable for this pair',
+    reserveTvl ? 'TVL source: Factory reserves × quote USD' : 'TVL source: Info subgraph unavailable for this pair',
   )
   const volume = metricLabel(
     volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
@@ -230,7 +222,9 @@ export function toDiscoveryCard(
   const aprPct =
     metrics?.aprPct != null && Number.isFinite(metrics.aprPct) && metrics.aprPct > 0 ? metrics.aprPct : null
   const aprLabel =
-    aprPct != null ? `${aprPct >= 100 ? aprPct.toFixed(0) : aprPct.toFixed(2)}%` : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
+    aprPct != null
+      ? `${aprPct >= 100 ? aprPct.toFixed(0) : aprPct.toFixed(2)}%`
+      : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
   const r0 = Number(pair.reserve0 ?? '0')
   const r1 = Number(pair.reserve1 ?? '0')
   const reservesLabel =
@@ -266,9 +260,10 @@ export function toDiscoveryCard(
     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
     aprPct,
-    metricSourceNote: [tvl.note, volume.note, fees.note, aprPct == null ? 'APR: subgraph lpApr7d unavailable' : null]
-      .filter(Boolean)
-      .join(' · ') || undefined,
+    metricSourceNote:
+      [tvl.note, volume.note, fees.note, aprPct == null ? 'APR: subgraph lpApr7d unavailable' : null]
+        .filter(Boolean)
+        .join(' · ') || undefined,
     lastVerified: pair.lastVerified,
     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
     classification: pair.classification,
@@ -289,8 +284,7 @@ export function filterDiscoveryCards(
     case 'my-tokens':
       if (myTokenAddresses.size === 0) return []
       return cards.filter(
-        (c) =>
-          myTokenAddresses.has(c.token0.toLowerCase()) || myTokenAddresses.has(c.token1.toLowerCase()),
+        (c) => myTokenAddresses.has(c.token0.toLowerCase()) || myTokenAddresses.has(c.token1.toLowerCase()),
       )
     case 'all':
     default:
@@ -329,7 +323,7 @@ export function sortDiscoveryCards(
     case 'tvl':
       return next.sort(
         (a, b) =>
-          (hasDiscoveryMetrics(b) ? 1 : 0) - (hasDiscoveryMetrics(a) ? 1 : 0) ||
+          (b.tvlUsd != null && b.tvlUsd > 0 ? 1 : 0) - (a.tvlUsd != null && a.tvlUsd > 0 ? 1 : 0) ||
           (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
           (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
           a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase()),

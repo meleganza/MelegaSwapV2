@@ -3,13 +3,16 @@ import { rpcCall } from 'lib/bsc-indexer/rpc/chunkedLogs'
 import { fetchBnbUsd } from 'lib/market-data/bnbUsd'
 
 const GET_RESERVES_SELECTOR = '0x0902f1ac'
+const MARCO_DECIMALS = 18
 const WBNB_DECIMALS = 18
 
 export interface MarcoPairLiquiditySnapshot {
   status: 'ready'
   pairAddress: string
   liquidityUsd: number
+  marcoReserve: number
   quoteReserveWbnb: number
+  priceUsd: number
   bnbUsd: number
   bnbUsdSource: string
   source: 'melega-pair-reserves'
@@ -42,20 +45,31 @@ export async function fetchMarcoPairLiquidity(): Promise<MarcoPairLiquiditySnaps
   ])
 
   // MARCO sorts before WBNB in the canonical V2 pair, therefore WBNB is reserve1.
+  const reserve0 = decodeUintSlot(rawReserves, 0)
   const reserve1 = decodeUintSlot(rawReserves, 1)
+  const marcoReserve = reserve0 == null ? undefined : toDecimal(reserve0, MARCO_DECIMALS)
   const quoteReserveWbnb = reserve1 == null ? undefined : toDecimal(reserve1, WBNB_DECIMALS)
+  if (marcoReserve == null || marcoReserve <= 0) {
+    throw new Error('MARCO/WBNB pair returned an invalid MARCO reserve')
+  }
   if (quoteReserveWbnb == null || quoteReserveWbnb <= 0) {
     throw new Error('MARCO/WBNB pair returned an invalid WBNB reserve')
   }
   if (bnb.usd == null || !Number.isFinite(bnb.usd) || bnb.usd <= 0) {
     throw new Error('BNB/USD reference price is unavailable')
   }
+  const priceUsd = (quoteReserveWbnb * bnb.usd) / marcoReserve
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) {
+    throw new Error('MARCO/WBNB pair returned an invalid USD price')
+  }
 
   return {
     status: 'ready',
     pairAddress: MARCO_WBNB_PAIR_BSC,
     liquidityUsd: quoteReserveWbnb * bnb.usd * 2,
+    marcoReserve,
     quoteReserveWbnb,
+    priceUsd,
     bnbUsd: bnb.usd,
     bnbUsdSource: bnb.source ?? 'unknown',
     source: 'melega-pair-reserves',

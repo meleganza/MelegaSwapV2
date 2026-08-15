@@ -2,6 +2,7 @@
  * UX001 — human-facing labels for machine enums.
  * Underlying API enums remain unchanged; this adapter is presentation-only.
  */
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const CHAIN_NAMES: Record<number, string> = {
   1: 'Ethereum',
@@ -83,11 +84,7 @@ export function formatCompactUsd(value: number | null | undefined): string | nul
 export function formatPrice(value: number | null | undefined): string | null {
   if (value == null || Number.isNaN(value)) return null
   if (value === 0) return '$0'
-  if (value >= 1) return `$${value.toFixed(2)}`
-  if (value >= 0.0001) return `$${Number(value.toPrecision(4))}`
-  if (value < 0.000001) return '<$0.000001'
-  // Readable decimals only — never scientific notation in consumer UI.
-  return `$${value.toFixed(8).replace(/0+$/, '').replace(/\.$/, '')}`
+  return formatCompactPriceUsd(value)
 }
 
 /** True when a string looks like a UPI / internal machine id that must not appear in primary UX. */

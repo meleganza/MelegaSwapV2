@@ -18,6 +18,7 @@ import {
 import { truthDash } from 'lib/data-truth'
 import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
 import type { ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
@@ -107,10 +108,7 @@ export interface ProjectsIntelligenceRuntime {
 
 function formatPriceUsd(priceUsd?: number): string | undefined {
   if (priceUsd == null || !Number.isFinite(priceUsd) || priceUsd <= 0) return undefined
-  if (priceUsd >= 1000) return `$${priceUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-  if (priceUsd >= 1) return `$${priceUsd.toFixed(2)}`
-  if (priceUsd >= 0.0001) return `$${priceUsd.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
-  return '$<0.0001'
+  return formatCompactPriceUsd(priceUsd)
 }
 
 function formatChangePct(pct?: number | null): string | undefined {

@@ -27,6 +27,7 @@ import {
 import { truthDash, GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import { resolveFounderFeaturedProjects } from 'views/HomeTrade/featuredProjectsCatalog'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 import {
   useProtocolActivityFeed,
   type CanonicalProtocolActivityRow,
@@ -97,8 +98,7 @@ function compactUsd(value?: number | null): string {
 
 function preciseUsd(value?: number | null): string {
   if (value == null || !Number.isFinite(value)) return '—'
-  if (value >= 0.01) return `$${value.toLocaleString('en-US', { maximumFractionDigits: 4 })}`
-  return `$${value.toLocaleString('en-US', { maximumSignificantDigits: 6 })}`
+  return formatCompactPriceUsd(value)
 }
 
 function fullUsd(value?: number | null): string {

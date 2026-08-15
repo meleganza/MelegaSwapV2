@@ -701,7 +701,7 @@ const LiquidityV3Body: React.FC = () => {
           <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
             {showPositionsPanel ? (
               <Btn $ghost type="button" onClick={goPositions} data-testid="liquidity-v3-hero-positions">
-                My Positions
+                My Liquidity
               </Btn>
             ) : null}
             <Btn $primary type="button" onClick={goAdd} data-testid="liquidity-v3-hero-add">
@@ -734,7 +734,7 @@ const LiquidityV3Body: React.FC = () => {
           <Panel id="liquidity-positions" data-testid="liquidity-v3-panel-positions">
             <SectionHeader>
               <SectionTitleRow>
-                <SectionTitle>My Positions</SectionTitle>
+                <SectionTitle>My Liquidity</SectionTitle>
               </SectionTitleRow>
               <SectionMeta>Positions found in your connected wallet</SectionMeta>
             </SectionHeader>

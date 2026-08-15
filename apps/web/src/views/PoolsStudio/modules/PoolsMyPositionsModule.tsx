@@ -1,6 +1,6 @@
 /**
- * POOLS_MODULE_003 — My Positions.
- * Preview ≤4 cards; View all my positions expands inline with Cards | List.
+ * POOLS_MODULE_003 — My Pools.
+ * Preview ≤4 cards; View all my pools expands inline with Cards | List.
  */
 
 import React, { useMemo, useState } from 'react'
@@ -260,7 +260,10 @@ const List = styled.div`
 
 const ListHeader = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(90px, 1fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(160px, 1.1fr);
+  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(90px, 1fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
+      72px,
+      0.7fr
+    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(160px, 1.1fr);
   gap: 8px;
   padding: 0 14px 6px;
   font-size: 10px;
@@ -277,7 +280,10 @@ const ListHeader = styled.div`
 
 const ListRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(90px, 1fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(160px, 1.1fr);
+  grid-template-columns: minmax(140px, 1.6fr) 72px minmax(90px, 1fr) minmax(64px, 0.7fr) minmax(90px, 1fr) minmax(
+      72px,
+      0.7fr
+    ) minmax(72px, 0.7fr) minmax(72px, 0.7fr) 88px minmax(160px, 1.1fr);
   gap: 8px;
   align-items: center;
   padding: 12px 14px;
@@ -428,8 +434,7 @@ function PositionListRow({ position }: { position: PoolsWalletPosition }) {
         {truthDash(position.claimableFormatted)}
       </ListCell>
       <ListCell>
-        <ListLabel>Participants</ListLabel>
-        —
+        <ListLabel>Participants</ListLabel>—
       </ListCell>
       <ListCell>
         <ListLabel>Remaining</ListLabel>
@@ -457,11 +462,7 @@ function PositionListRow({ position }: { position: PoolsWalletPosition }) {
             Stake
           </ActionBtn>
           {claimAction?.enabled ? (
-            <ActionBtn
-              type="button"
-              data-action="claim"
-              onClick={() => requestModal(position.sourceCard, 'claim')}
-            >
+            <ActionBtn type="button" data-action="claim" onClick={() => requestModal(position.sourceCard, 'claim')}>
               Claim
             </ActionBtn>
           ) : null}
@@ -501,8 +502,6 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
     return vm.visiblePositions.slice(0, limit)
   }, [expanded, vm.positions, vm.visiblePositions, limit])
 
-  const canExpand = (vm.totalCount ?? vm.positions.length) > limit
-
   // No giant empty module — hide when disconnected or zero positions.
   if (vm.state === 'empty' || vm.state === 'disconnected') {
     return null
@@ -521,14 +520,14 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
       <Surface data-pools-my-positions-surface="true">
         <Header>
           <TitleRow>
-            <Title id="pools-my-positions-title">My Positions</Title>
+            <Title id="pools-my-positions-title">My Pools</Title>
             {vm.showCountBadge && vm.totalCount != null ? (
               <CountBadge aria-label={`${vm.totalCount} positions`}>{vm.totalCount}</CountBadge>
             ) : null}
           </TitleRow>
           <HeaderActions>
             {expanded ? (
-              <ViewToggle role="group" aria-label="My Positions view mode" data-testid="pools-my-positions-view-toggle">
+              <ViewToggle role="group" aria-label="My Pools view mode" data-testid="pools-my-positions-view-toggle">
                 <ToggleBtn
                   type="button"
                   $active={viewMode === 'cards'}
@@ -547,16 +546,16 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
                 </ToggleBtn>
               </ViewToggle>
             ) : null}
-            {canExpand || expanded ? (
+            {(vm.totalCount ?? vm.positions.length) > 0 ? (
               <ViewAll
                 type="button"
                 onClick={() => {
                   setExpanded((v) => !v)
                 }}
                 data-testid="pools-view-all-my-positions"
-                aria-label={expanded ? 'Show less' : 'View all my positions'}
+                aria-label={expanded ? 'Show less' : 'View all my pools'}
               >
-                {expanded ? 'Show less' : 'View all my positions'}
+                {expanded ? 'Show less' : 'View all my pools'}
               </ViewAll>
             ) : null}
           </HeaderActions>
