@@ -513,9 +513,16 @@ export function useDexTrendingRankings() {
   const [placementNow, setPlacementNow] = useState(0)
   useEffect(() => {
     if (activeTrendBoosts.length === 0) return undefined
-    setPlacementNow(Date.now())
-    const id = window.setInterval(() => setPlacementNow(Date.now()), 30_000)
-    return () => window.clearInterval(id)
+    const tick = () => {
+      if (!document.hidden) setPlacementNow(Date.now())
+    }
+    tick()
+    const id = window.setInterval(tick, 30_000)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      window.clearInterval(id)
+      document.removeEventListener('visibilitychange', tick)
+    }
   }, [activeTrendBoosts.length])
   const { data: pairRows = [], isValidating: pairsLoading } = useSWR('dex-trending-pairs', fetchTradeablePairs, {
     revalidateOnFocus: false,

@@ -14,10 +14,14 @@ const useIsBrowserTabActive = () => {
       isBrowserTabActiveRef.current = !document.hidden
     }
 
-    window.addEventListener('visibilitychange', onVisibilityChange)
+    // `visibilitychange` is a Document event. Listening on window leaves the
+    // ref stale in browsers where the event does not bubble, so background
+    // tabs keep driving refresh-dependent RPC work.
+    onVisibilityChange()
+    document.addEventListener('visibilitychange', onVisibilityChange)
 
     return () => {
-      window.removeEventListener('visibilitychange', onVisibilityChange)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
     }
   }, [])
 

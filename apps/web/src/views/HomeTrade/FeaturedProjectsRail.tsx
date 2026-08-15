@@ -371,11 +371,19 @@ export const FeaturedProjectsRail: React.FC = () => {
         // Founder fallback remains visible when the paid placement feed is unavailable.
       }
     }
-    void load()
-    const id = window.setInterval(load, 60_000)
+    const loadWhenVisible = () => {
+      if (!document.hidden) void load()
+    }
+    const onVisibilityChange = () => {
+      if (!document.hidden) void load()
+    }
+    loadWhenVisible()
+    const id = window.setInterval(loadWhenVisible, 60_000)
+    document.addEventListener('visibilitychange', onVisibilityChange)
     return () => {
       cancelled = true
       window.clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
     }
   }, [])
 
