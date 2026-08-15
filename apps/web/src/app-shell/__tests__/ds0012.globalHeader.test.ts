@@ -89,10 +89,10 @@ describe('DS001.2 global header shell contracts', () => {
       'utf8',
     )
     const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
-    expect(header).toContain('<MarcoConnect size="navbar" />')
+    expect(header).toContain('<MarcoConnect size="navbar" activation="desktop" />')
     expect(header).not.toContain('<UserMenu />')
     expect(header).not.toContain("from 'components/Menu/UserMenu'")
-    expect(shell).toContain('<MarcoConnect size="icon" />')
+    expect(shell).toContain('<MarcoConnect size="icon" activation="mobile" />')
     expect(shell).not.toContain('<UserMenu />')
     expect(shell).not.toContain("from 'components/Menu/UserMenu'")
   })
@@ -105,13 +105,28 @@ describe('DS001.2 global header shell contracts', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
     expect(header).toContain('max-width: 1100px')
-    expect(header).toContain('width: 124px')
+    expect(header).toContain('width: 156px')
     expect(header).toContain('display: none;')
-    expect(connect).toContain("$size === 'navbar' ? '148px'")
+    expect(connect).toContain("$size === 'navbar' ? '164px'")
     expect(connect).toContain('max-width: 100%')
     expect(connect).toContain('position: absolute;')
     expect(connect).toContain('widgetVisible')
     expect(connect).toContain('$hidden={ready && widgetVisible && !failed}')
+  })
+
+  it('mounts only one official MARCO Connect runtime for the active viewport', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+    const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
+    const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
+
+    expect(header).toContain('activation="desktop"')
+    expect(shell).toContain('activation="mobile"')
+    expect(connect).toContain("activation === 'desktop' ? '(min-width: 1024px)' : '(max-width: 1023px)'")
+    expect(connect).toContain('if (!isActive || !hostRef.current) return undefined')
+    expect(connect).toContain('media.addListener(sync)')
   })
 
   it('does not reopen wallet permissions from a passive MARCO session replay on navigation', () => {

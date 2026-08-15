@@ -9,6 +9,7 @@ const MARCO_CONNECT_SRC = 'https://marco.melega.ai/widgets/marco-connect.v2.1.js
 const DEFAULT_APPLICATION = process.env.NEXT_PUBLIC_MARCO_CONNECT_APPLICATION?.trim() || 'Melega DEX'
 
 type MarcoConnectSize = 'compact' | 'standard' | 'full' | 'navbar' | 'floating' | 'icon'
+type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
 type MarcoConnectEvent = { state?: unknown; wallet?: { address?: string } }
 type MarcoConnectSdk = {
   on: (event: string, listener: (payload: MarcoConnectEvent) => void) => (() => void) | void
@@ -27,10 +28,10 @@ const Root = styled.div<{ $size: MarcoConnectSize }>`
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '148px' : 'auto')};
-  min-width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '118px' : '0')};
+  width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '164px' : 'auto')};
+  min-width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '148px' : '0')};
   max-width: 100%;
-  flex: ${({ $size }) => ($size === 'navbar' ? '0 1 148px' : '0 0 auto')};
+  flex: ${({ $size }) => ($size === 'navbar' ? '0 1 164px' : '0 0 auto')};
   box-sizing: border-box;
   overflow: hidden;
 `
@@ -97,11 +98,16 @@ const Fallback = styled.div<{ $hidden: boolean }>`
   justify-content: center;
 
   > button {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    letter-spacing: -0.01em;
     overflow: hidden;
     white-space: nowrap;
   }
@@ -120,10 +126,11 @@ const Fallback = styled.div<{ $hidden: boolean }>`
   }
 `
 
-export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: string }> = ({
-  size = 'navbar',
-  className,
-}) => {
+export const MarcoConnect: React.FC<{
+  size?: MarcoConnectSize
+  className?: string
+  activation?: MarcoConnectActivation
+}> = ({ size = 'navbar', className, activation = 'always' }) => {
   const { address } = useAccount()
   const { connectAsync, connectors } = useConnect()
   const hostRef = useRef<HTMLDivElement | null>(null)
@@ -136,10 +143,29 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   const [widgetVisible, setWidgetVisible] = useState(false)
   const [failed, setFailed] = useState(false)
   const [widgetAddress, setWidgetAddress] = useState<string | null>(null)
+  const [isActive, setIsActive] = useState(activation === 'always')
 
   addressRef.current = address
   connectorsRef.current = connectors
   connectAsyncRef.current = connectAsync
+
+  useEffect(() => {
+    if (activation === 'always') {
+      setIsActive(true)
+      return undefined
+    }
+
+    const media = window.matchMedia(activation === 'desktop' ? '(min-width: 1024px)' : '(max-width: 1023px)')
+    const sync = () => setIsActive(media.matches)
+    sync()
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', sync)
+      return () => media.removeEventListener('change', sync)
+    }
+    // Firefox ESR and older WebKit expose the legacy MediaQueryList API.
+    media.addListener(sync)
+    return () => media.removeListener(sync)
+  }, [activation])
 
   const syncWalletSession = useCallback(async (payload?: MarcoConnectEvent) => {
     const payloadAddress = payload?.wallet?.address
@@ -172,7 +198,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   }, [])
 
   useEffect(() => {
-    if (!hostRef.current) return undefined
+    if (!isActive || !hostRef.current) return undefined
     let cancelled = false
     let sdk: MarcoConnectSdk | null = null
     let idleHandle: number | undefined
@@ -251,7 +277,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       sdk?.destroy()
       hostRef.current?.replaceChildren()
     }
-  }, [size, syncWalletSession])
+  }, [isActive, size, syncWalletSession])
 
   useEffect(() => {
     if (!address) setWidgetAddress(null)
@@ -265,6 +291,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       $size={size}
       className={className}
       data-testid="marco-connect"
+      data-marco-connect-active={isActive ? 'true' : 'false'}
       data-marco-connect-ready={ready ? 'true' : 'false'}
       data-marco-connect-provider="official-v2.1"
       onPointerDownCapture={() => {

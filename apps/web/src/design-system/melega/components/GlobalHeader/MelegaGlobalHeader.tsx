@@ -281,17 +281,18 @@ const RightCluster = styled.div`
   }
 
   [data-testid='melega-header-connect'] {
-    min-width: 118px;
-    max-width: 148px;
-    flex: 0 1 148px;
+    width: 164px;
+    min-width: 148px;
+    max-width: 164px;
+    flex: 0 1 164px;
   }
 
   @media (min-width: 1024px) and (max-width: 1100px) {
     [data-testid='melega-header-connect'] {
-      width: 124px;
-      min-width: 124px;
-      max-width: 124px;
-      flex-basis: 124px;
+      width: 156px;
+      min-width: 156px;
+      max-width: 156px;
+      flex-basis: 156px;
     }
   }
 
@@ -492,7 +493,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             <MelegaLanguageControl />
           </LangSlot>
           <div data-testid="melega-header-connect">
-            <MarcoConnect size="navbar" />
+            <MarcoConnect size="navbar" activation="desktop" />
           </div>
           <MyMelegaTrigger
             type="button"
