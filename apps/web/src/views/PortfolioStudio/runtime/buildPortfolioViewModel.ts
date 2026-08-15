@@ -30,6 +30,22 @@ export type PortfolioSummaryMetric = {
   partial?: boolean
 }
 
+export type PortfolioBreakdownItem = {
+  id: string
+  label: string
+  value: string
+  percentage: number
+  color: string
+}
+
+export type PortfolioAnalytics = {
+  allocationMode: 'value' | 'positions'
+  allocation: PortfolioBreakdownItem[]
+  chains: PortfolioBreakdownItem[]
+  indexedValue: string
+  historicalSeriesAvailable: false
+}
+
 export type PortfolioClaimableRow = {
   id: string
   group: 'Farms' | 'Pools' | 'Other'
@@ -69,8 +85,93 @@ export type PortfolioViewModel = {
   farms: FarmsWalletPosition[]
   pools: PoolsWalletPosition[]
   claimables: PortfolioClaimableRow[]
+  analytics: PortfolioAnalytics
   activityEmpty: boolean
   activityNote: string
+}
+
+const BREAKDOWN_COLORS = ['#e6bd3a', '#c79a26', '#7d6a3f', '#4c4a45', '#2ebd9b']
+
+function percentageRows(rows: Array<{ id: string; label: string; numeric: number }>): PortfolioBreakdownItem[] {
+  const positive = rows.filter((row) => row.numeric > 0)
+  const total = positive.reduce((sum, row) => sum + row.numeric, 0)
+  if (total <= 0) return []
+  return positive.map((row, index) => ({
+    id: row.id,
+    label: row.label,
+    value: formatUsd(row.numeric),
+    percentage: (row.numeric / total) * 100,
+    color: BREAKDOWN_COLORS[index % BREAKDOWN_COLORS.length],
+  }))
+}
+
+export function buildPortfolioAnalytics(args: {
+  liquidity: PassportLiquidityPosition[]
+  farms: FarmsWalletPosition[]
+  pools: PoolsWalletPosition[]
+}): PortfolioAnalytics {
+  const domainValues = { liquidity: 0, farms: 0, pools: 0 }
+  const chainValues = new Map<string, number>()
+
+  const addChain = (label: string, value: number) => {
+    if (value <= 0) return
+    chainValues.set(label, (chainValues.get(label) || 0) + value)
+  }
+
+  for (const position of args.liquidity) {
+    const value = parseUsdLoose(position.estimatedValue) || 0
+    domainValues.liquidity += value
+    addChain(position.chainLabel || 'Unknown chain', value)
+  }
+  for (const position of args.farms) {
+    const value = (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.pendingValue) || 0)
+    domainValues.farms += value
+    addChain(chainLabelForAnalytics(position.chainId), value)
+  }
+  for (const position of args.pools) {
+    const value = (parseUsdLoose(position.stakedValue) || 0) + (parseUsdLoose(position.claimableValue) || 0)
+    domainValues.pools += value
+    addChain(chainLabelForAnalytics(position.chainId), value)
+  }
+
+  const indexedValue = domainValues.liquidity + domainValues.farms + domainValues.pools
+  let allocation = percentageRows([
+    { id: 'liquidity', label: 'Liquidity', numeric: domainValues.liquidity },
+    { id: 'farms', label: 'Farms', numeric: domainValues.farms },
+    { id: 'pools', label: 'Pools', numeric: domainValues.pools },
+  ])
+  let allocationMode: PortfolioAnalytics['allocationMode'] = 'value'
+
+  if (!allocation.length) {
+    allocationMode = 'positions'
+    allocation = percentageRows([
+      { id: 'liquidity', label: 'Liquidity', numeric: args.liquidity.length },
+      { id: 'farms', label: 'Farms', numeric: args.farms.length },
+      { id: 'pools', label: 'Pools', numeric: args.pools.length },
+    ]).map((row) => ({ ...row, value: `${Math.round((row.percentage / 100) * (args.liquidity.length + args.farms.length + args.pools.length))} positions` }))
+  }
+
+  const chains = percentageRows(
+    [...chainValues.entries()].map(([label, numeric]) => ({ id: label.toLowerCase().replace(/\s+/g, '-'), label, numeric })),
+  )
+
+  return {
+    allocationMode,
+    allocation,
+    chains,
+    indexedValue: indexedValue > 0 ? formatUsd(indexedValue) : '—',
+    historicalSeriesAvailable: false,
+  }
+}
+
+function chainLabelForAnalytics(chainId: number | null | undefined): string {
+  if (chainId === 56) return 'BNB Chain'
+  if (chainId === 1) return 'Ethereum'
+  if (chainId === 8453) return 'Base'
+  if (chainId === 137) return 'Polygon'
+  if (chainId === 42161) return 'Arbitrum'
+  if (chainId === 43114) return 'Avalanche'
+  return chainId ? `Chain ${chainId}` : 'Unknown chain'
 }
 
 function amountLooksNonZero(formatted: string | null | undefined): boolean {
@@ -342,6 +443,11 @@ export function buildPortfolioViewModel(input: {
     claimables,
     domains: input.domains,
   })
+  const analytics = buildPortfolioAnalytics({
+    liquidity: input.liquidity,
+    farms: input.farms,
+    pools: input.pools,
+  })
 
   return {
     surfaceState,
@@ -355,6 +461,7 @@ export function buildPortfolioViewModel(input: {
     farms: input.farms,
     pools: input.pools,
     claimables,
+    analytics,
     activityEmpty: true,
     activityNote: input.wallet.connected
       ? 'No recent wallet activity indexed yet.'

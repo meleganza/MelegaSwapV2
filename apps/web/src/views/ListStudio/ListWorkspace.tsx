@@ -281,13 +281,14 @@ const AutosaveLine = styled.div`
   }
 `
 
-const Body = styled.div`
+const Body = styled.div<{ $single?: boolean }>`
   box-sizing: border-box;
   height: auto;
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(240px, ${listOne.workspaceContextW});
+  grid-template-columns: ${({ $single }) =>
+    $single ? 'minmax(0, 1fr)' : `minmax(0, 1.2fr) minmax(240px, ${listOne.workspaceContextW})`};
   column-gap: 20px;
   overflow: hidden;
 
@@ -398,6 +399,29 @@ const FormStack = styled.div`
   flex-direction: column;
   gap: ${listOne.workspaceFieldGap};
   padding: 8px 0 12px;
+`
+
+const CreateTokenGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const CreateTokenWide = styled.div`
+  grid-column: 1 / -1;
+`
+
+const CreateReview = styled.div`
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(221, 185, 47, 0.28);
+  background: linear-gradient(145deg, rgba(221, 185, 47, 0.08), rgba(12, 12, 12, 0.9));
 `
 
 const ClaimIntro = styled.div`
@@ -934,6 +958,7 @@ export const ListWorkspace: React.FC = () => {
   const [now, setNow] = useState(() => Date.now())
   const [pendingDescription, setPendingDescription] = useState<string | null>(null)
   const [createTokenPhase, setCreateTokenPhase] = useState<'form' | 'success'>('form')
+  const [createTokenReviewing, setCreateTokenReviewing] = useState(false)
   const [createdToken, setCreatedToken] = useState<CreateTokenSuccessModel | null>(null)
   const [createTokenBusy, setCreateTokenBusy] = useState(false)
   const [createTokenStage, setCreateTokenStage] = useState<
@@ -968,6 +993,7 @@ export const ListWorkspace: React.FC = () => {
     setSavedAt(null)
     setPendingDescription(null)
     setCreateTokenPhase('form')
+    setCreateTokenReviewing(false)
     setCreatedToken(null)
     setCreateTokenBusy(false)
     setCreateTokenStage('idle')
@@ -1123,6 +1149,7 @@ export const ListWorkspace: React.FC = () => {
 
   const savedLabel = relativeSaved(savedAt, now)
   const createTokenSuccess = listIntent === 'create-token' && createTokenPhase === 'success' && createdToken
+  const createTokenJourneyStage = createTokenSuccess ? 3 : createTokenBusy ? 2 : createTokenReviewing ? 1 : 0
   const createTokenFinalStep = listIntent === 'create-token'
   const createTokenActionLabel = !isConnected
     ? 'Connect wallet'
@@ -1136,7 +1163,9 @@ export const ListWorkspace: React.FC = () => {
     ? 'Creating token…'
     : createTokenStage === 'verifying'
     ? 'Verifying token…'
-    : 'Create Token'
+    : createTokenReviewing
+    ? 'Create Token'
+    : 'Review Token'
   const primaryLabel = createTokenSuccess
     ? 'Done'
     : listIntent === 'claim-project' && claimSubmitted
@@ -1428,6 +1457,7 @@ export const ListWorkspace: React.FC = () => {
       clearListIntent()
       setCreateTokenPhase('form')
       setCreatedToken(null)
+      setCreateTokenReviewing(false)
       return
     }
     const req = REQUIRED[listIntent].filter((f) => f.required)
@@ -1474,6 +1504,11 @@ export const ListWorkspace: React.FC = () => {
       const stillMissing = req.some((f) => !filled(values[f.key]))
       if (stillMissing) {
         setAttempted(true)
+        return
+      }
+      if (!createTokenReviewing) {
+        setAttempted(false)
+        setCreateTokenReviewing(true)
         return
       }
       void publishCreateToken()
@@ -1531,7 +1566,17 @@ export const ListWorkspace: React.FC = () => {
 
     if (listIntent === 'create-token') {
       if (createTokenPhase === 'success' && createdToken) {
-        return <CreateTokenPostCreationFunnel model={createdToken} />
+        return (
+          <CreateTokenPostCreationFunnel
+            model={createdToken}
+            onFinish={() => {
+              clearListIntent()
+              setCreateTokenPhase('form')
+              setCreateTokenReviewing(false)
+              setCreatedToken(null)
+            }}
+          />
+        )
       }
       const decimalsNum = Number.parseInt(values.decimals || '18', 10)
       const review = buildReviewFacts({
@@ -1546,9 +1591,9 @@ export const ListWorkspace: React.FC = () => {
           data-testid="list-workspace-form"
           data-create-token-status={CREATE_TOKEN_READINESS.status}
           data-create-token-ui-state={CREATE_TOKEN_READINESS.uiState}
-          data-create-token-phase="form"
+          data-create-token-phase={createTokenReviewing ? 'review' : 'form'}
         >
-          {LIST_CREATE_TOKEN_AVAILABLE ? (
+          {!createTokenReviewing && LIST_CREATE_TOKEN_AVAILABLE ? (
             <Banner
               data-testid="list-create-token-ready"
               data-lifecycle="DEPLOYED_VALIDATED_BOUND_READY"
@@ -1557,68 +1602,50 @@ export const ListWorkspace: React.FC = () => {
               Create Token — connect your wallet, set name, symbol and supply, then confirm. Creation fee: 0.10 BNB.
               Network: BNB Smart Chain.
             </Banner>
-          ) : (
+          ) : !createTokenReviewing ? (
             <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
               Create Token is temporarily unavailable. Creation fee: 0.10 BNB. Network: BNB Smart Chain.
             </Banner>
-          )}
+          ) : null}
           {createTokenError ? <Banner data-testid="list-create-token-error">{createTokenError}</Banner> : null}
-          <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
-            <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
-          </Field>
-          <Field label="Token Symbol" ok={filled(values.ticker)} invalid={invalid('ticker')}>
-            <Input value={values.ticker || ''} onChange={set('ticker')} placeholder="e.g. SMPL" />
-          </Field>
-          <Field label="Total Supply" ok={filled(values.supply)} invalid={invalid('supply')}>
-            <Input value={values.supply || ''} onChange={set('supply')} placeholder="Fixed total supply" />
-          </Field>
-          <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')} hint="Default 18">
-            <Input value={values.decimals || '18'} onChange={set('decimals')} />
-          </Field>
-          <Field
-            label="Owner Wallet"
-            ok={filled(values.owner)}
-            invalid={invalid('owner')}
-            hint="Defaults to your connected wallet when available"
-          >
-            <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… receives full fixed supply" />
-          </Field>
-          <Field
-            label="Logo (optional)"
-            ok={filled(values.logo)}
-            invalid={false}
-            optional
-            hint="Does not affect on-chain deployment"
-          >
-            <Input value={values.logo || ''} onChange={set('logo')} placeholder="Optional URL — metadata only" />
-          </Field>
-          <Field label="Project description (optional)" ok={filled(values.description)} invalid={false} optional>
-            <TextArea
-              value={values.description || ''}
-              onChange={set('description')}
-              placeholder="Optional — off-chain metadata"
-            />
-          </Field>
-          <Field label="Website (optional)" ok={filled(values.website)} invalid={false} optional>
-            <Input value={values.website || ''} onChange={set('website')} placeholder="https://" />
-          </Field>
-          <Field label="Social links (optional)" ok={filled(values.social)} invalid={false} optional>
-            <Input value={values.social || ''} onChange={set('social')} placeholder="X / Telegram / Discord" />
-          </Field>
-          <Banner data-testid="list-create-token-review" data-review="factual">
-            Review — Name: {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply:{' '}
-            {review.totalSupply || '—'}. Decimals: {review.decimals}. Owner: {review.owner || '—'}. Creation fee: 0.10
-            BNB. Network: BNB Smart Chain.
-          </Banner>
-          {LIST_CREATE_TOKEN_AVAILABLE ? (
-            <Banner data-testid="list-create-token-cta-ready">
-              Create Token — confirm in your wallet to deploy. Creation fee: 0.10 BNB on BNB Smart Chain. Drafts are
-              autosaved until you confirm.
-            </Banner>
+          {createTokenReviewing ? (
+            <CreateReview data-testid="list-create-token-review" data-review="factual">
+              <ContextTitle>Review token deployment</ContextTitle>
+              <ContextRow>Token <strong>{review.tokenName || '—'} ({review.symbol || '—'})</strong></ContextRow>
+              <ContextRow>Total supply <strong>{review.totalSupply || '—'}</strong></ContextRow>
+              <ContextRow>Decimals <strong>{review.decimals}</strong></ContextRow>
+              <ContextRow>Owner <strong>{review.owner || '—'}</strong></ContextRow>
+              <ContextRow>Network <strong>BNB Smart Chain</strong></ContextRow>
+              <ContextRow>Creation fee <strong>0.10 BNB</strong></ContextRow>
+              <Banner data-testid="list-create-token-cta-ready">
+                Confirm once in your wallet. Melega DEX is non-custodial and never controls the created token.
+              </Banner>
+            </CreateReview>
           ) : (
-            <Banner data-testid="list-create-token-cta-blocked">
-              Create Token — deployment is not available right now. Your draft remains saved. Creation fee: 0.10 BNB.
-            </Banner>
+            <CreateTokenGrid>
+              <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
+                <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Melega Token" />
+              </Field>
+              <Field label="Symbol" ok={filled(values.ticker)} invalid={invalid('ticker')}>
+                <Input value={values.ticker || ''} onChange={set('ticker')} placeholder="e.g. MLGA" />
+              </Field>
+              <Field label="Total Supply" ok={filled(values.supply)} invalid={invalid('supply')}>
+                <Input value={values.supply || ''} onChange={set('supply')} placeholder="Fixed total supply" />
+              </Field>
+              <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')} hint="Default 18">
+                <Input value={values.decimals || '18'} onChange={set('decimals')} />
+              </Field>
+              <CreateTokenWide>
+                <Field label="Owner Wallet" ok={filled(values.owner)} invalid={invalid('owner')} hint="Defaults to the connected wallet">
+                  <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… receives the fixed supply" />
+                </Field>
+              </CreateTokenWide>
+              <CreateTokenWide>
+                <Field label="Logo (optional)" ok={filled(values.logo)} invalid={false} optional hint="Metadata only · PNG, JPG or SVG URL">
+                  <Input value={values.logo || ''} onChange={set('logo')} placeholder="https://…" />
+                </Field>
+              </CreateTokenWide>
+            </CreateTokenGrid>
           )}
         </FormStack>
       )
@@ -2140,7 +2167,12 @@ export const ListWorkspace: React.FC = () => {
         ) : listIntent === 'import-token' ? (
           <SingleStep data-testid="list-workspace-progress">Token setup · one step</SingleStep>
         ) : listIntent === 'create-token' ? (
-          <SingleStep data-testid="list-workspace-progress">Configure · review · create</SingleStep>
+          <JourneyProgress data-testid="list-workspace-progress" aria-label={`Create token step ${createTokenJourneyStage + 1} of 4`}>
+            {['Token', 'Review', 'Create', 'List'].map((label, index) => {
+              const state = index < createTokenJourneyStage ? 'done' : index === createTokenJourneyStage ? 'current' : 'future'
+              return <JourneyStage key={label} $state={state}>{label}</JourneyStage>
+            })}
+          </JourneyProgress>
         ) : (
           <ProgressTrack data-testid="list-workspace-progress" aria-label={`Step ${step + 1} of ${flowStepCount}`}>
             {Array.from({ length: flowStepCount }, (_, i) => {
@@ -2164,14 +2196,16 @@ export const ListWorkspace: React.FC = () => {
         </HeaderRight>
       </Header>
 
-      <Body data-testid="list-workspace-body" data-pixel-workspace-body="760">
+      <Body $single={Boolean(createTokenSuccess)} data-testid="list-workspace-body" data-pixel-workspace-body="760">
         <LeftPane data-testid="list-workspace-left">{left}</LeftPane>
-        <RightPane data-testid="list-workspace-right" data-pixel-workspace-context="340x760">
-          {right}
-        </RightPane>
+        {!createTokenSuccess ? (
+          <RightPane data-testid="list-workspace-right" data-pixel-workspace-context="340x760">
+            {right}
+          </RightPane>
+        ) : null}
       </Body>
 
-      <Footer data-testid="list-workspace-footer" data-pixel-workspace-footer="72">
+      {!createTokenSuccess ? <Footer data-testid="list-workspace-footer" data-pixel-workspace-footer="72">
         <FooterLeft>
           {listIntent === 'claim-project' && step === 1 && !claimSubmitted ? (
             <Btn
@@ -2181,6 +2215,10 @@ export const ListWorkspace: React.FC = () => {
                 setStep(0)
               }}
             >
+              Back
+            </Btn>
+          ) : listIntent === 'create-token' && createTokenReviewing ? (
+            <Btn type="button" onClick={() => { setCreateTokenReviewing(false); setCreateTokenError(null) }}>
               Back
             </Btn>
           ) : listIntent ? (
@@ -2225,7 +2263,7 @@ export const ListWorkspace: React.FC = () => {
             </Btn>
           ) : null}
         </FooterRight>
-      </Footer>
+      </Footer> : null}
     </Shell>
     {claimSubmitted && claimRecord ? (
       <CommercialCheckoutModal

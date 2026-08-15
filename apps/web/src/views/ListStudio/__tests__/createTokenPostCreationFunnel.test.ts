@@ -52,33 +52,24 @@ describe('Create Token post-creation funnel', () => {
     expect(ws).toContain("createTokenPhase === 'success'")
   })
 
-  it('post-creation funnel exposes required next actions and locks promotion', () => {
+  it('post-creation funnel keeps listing in one compact flow', () => {
     const funnel = load('createToken/CreateTokenPostCreationFunnel.tsx')
-    expect(funnel).toContain('Your token has been created')
-    expect(funnel).toContain('Add Liquidity')
-    expect(funnel).toContain('Add Liquidity on Melega DEX')
-    expect(funnel).toContain('Use another liquidity provider')
-    expect(funnel).toContain('Create Your Project Page')
-    expect(funnel).toContain('Claim Project Page')
-    expect(funnel).toContain('Launch Your Community')
-    expect(funnel).toContain('LOCKED')
+    expect(funnel).toContain('Token created')
+    expect(funnel).toContain('List on Melega DEX?')
+    expect(funnel).toContain('Yes — Add Liquidity')
+    expect(funnel).toContain('No, finish')
+    expect(funnel).toContain('You can list later from Liquidity')
     expect(funnel).not.toContain('Get Featured on Home')
     expect(funnel).not.toContain('ListFeaturedCheckout')
     expect(funnel).not.toContain('ListTrendBoostCheckout')
     expect(funnel).not.toContain('CommercialCheckoutModal')
-    expect(funnel).toContain('CLAIM_PROJECT_HREF')
     expect(funnel).toContain('/liquidity-studio?view=add')
   })
 
-  it('Claim Project CTA routes to existing claim intent', () => {
+  it('uses the created contract when opening Add Liquidity', () => {
     const funnel = load('createToken/CreateTokenPostCreationFunnel.tsx')
-    const header = readFileSync(
-      path.join(WEB, 'src/views/ProjectsStudio/components/ProjectsStudioPageHeader.tsx'),
-      'utf8',
-    )
-    expect(funnel).toContain('CLAIM_PROJECT_HREF')
-    expect(funnel).toContain('contract=')
-    expect(header).toContain("'/list?intent=claim-project'")
+    expect(funnel).toContain('currency=')
+    expect(funnel).toContain('model.contractAddress')
   })
 
   it('Growth Hub commercial checkout remains available on Project Page V6', () => {

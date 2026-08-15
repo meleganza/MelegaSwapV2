@@ -8,7 +8,6 @@ import styled from 'styled-components'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { CLAIM_PROJECT_HREF } from 'views/ProjectsStudio/components/ProjectsStudioPageHeader'
 import type { CreateTokenSuccessModel, FunnelMetricStatus } from './createTokenPostCreationTypes'
 
 const gold = uxRebuildColors.gold
@@ -133,18 +132,6 @@ const CopyBtn = styled.button`
   }
 `
 
-const SectionTitle = styled.h4`
-  margin: 4px 0 0;
-  font-size: 14px;
-  font-weight: 750;
-  color: rgba(255, 255, 255, 0.88);
-`
-
-const Cards = styled.div`
-  display: grid;
-  gap: 12px;
-`
-
 const ActionCard = styled.article<{ $locked?: boolean }>`
   padding: 16px;
   border-radius: 14px;
@@ -211,19 +198,6 @@ const LockedNote = styled.p`
   color: rgba(255, 255, 255, 0.45);
 `
 
-const ExternalBox = styled.div`
-  margin-top: 4px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid ${line};
-  background: rgba(0, 0, 0, 0.22);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-`
-
 const ExternalLink = styled.a`
   color: ${gold};
   font-weight: 650;
@@ -246,18 +220,11 @@ function melegaAddLiquidityHref(chainId: number, tokenAddress: string | null): s
   return base
 }
 
-function claimProjectHref(tokenAddress: string | null): string {
-  if (tokenAddress && /^0x[a-fA-F0-9]{40}$/.test(tokenAddress)) {
-    return `${CLAIM_PROJECT_HREF}&contract=${encodeURIComponent(tokenAddress)}`
-  }
-  return CLAIM_PROJECT_HREF
-}
-
 export const CreateTokenPostCreationFunnel: React.FC<{
   model: CreateTokenSuccessModel
-}> = ({ model }) => {
+  onFinish: () => void
+}> = ({ model, onFinish }) => {
   const [copied, setCopied] = useState(false)
-  const [showExternalLp, setShowExternalLp] = useState(false)
   const hasContract = Boolean(model.contractAddress && /^0x[a-fA-F0-9]{40}$/.test(model.contractAddress))
 
   const onCopy = async () => {
@@ -272,10 +239,10 @@ export const CreateTokenPostCreationFunnel: React.FC<{
   }
 
   return (
-    <Root data-testid="create-token-post-creation-funnel" data-post-create-funnel="v1">
+    <Root data-testid="create-token-post-creation-funnel" data-post-create-funnel="v2">
       <SuccessCard data-testid="create-token-success">
         <Eyebrow>Token created</Eyebrow>
-        <Title>Your token has been created</Title>
+        <Title>{model.name} ({model.symbol})</Title>
         <Identity>
           <MelegaTokenAvatar
             name={model.name}
@@ -312,68 +279,35 @@ export const CreateTokenPostCreationFunnel: React.FC<{
           >
             {copied ? 'Copied' : 'Copy contract'}
           </CopyBtn>
+          {hasContract && model.contractAddress ? (
+            <ExternalLink
+              href={`https://bscscan.com/token/${model.contractAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on BscScan ↗
+            </ExternalLink>
+          ) : null}
         </ContractRow>
       </SuccessCard>
 
-      <SectionTitle>Next actions</SectionTitle>
-      <Cards>
-        <ActionCard data-testid="create-token-next-add-liquidity">
-          <CardTitle>Add Liquidity</CardTitle>
-          <CardDesc>Create the first market for your token.</CardDesc>
-          <CardActions>
-            <PrimaryLink
-              href={melegaAddLiquidityHref(model.chainId, model.contractAddress)}
-              data-testid="create-token-add-liquidity-melega"
-            >
-              Add Liquidity on Melega DEX
-            </PrimaryLink>
-            <SecondaryBtn
-              type="button"
-              onClick={() => setShowExternalLp((v) => !v)}
-              data-testid="create-token-add-liquidity-external"
-            >
-              Use another liquidity provider
-            </SecondaryBtn>
-          </CardActions>
-          {showExternalLp ? (
-            <ExternalBox data-testid="create-token-external-lp">
-              <span>External providers are outside Melega DEX. You leave this product surface.</span>
-              <ExternalLink
-                href={
-                  hasContract && model.contractAddress
-                    ? `https://pancakeswap.finance/add/${model.contractAddress}/BNB`
-                    : 'https://pancakeswap.finance/liquidity'
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open PancakeSwap liquidity ↗
-              </ExternalLink>
-            </ExternalBox>
-          ) : null}
-        </ActionCard>
-
-        <ActionCard data-testid="create-token-next-claim-project">
-          <CardTitle>Create Your Project Page</CardTitle>
-          <CardDesc>Claim your project identity and unlock discovery features.</CardDesc>
-          <CardActions>
-            <PrimaryLink href={claimProjectHref(model.contractAddress)} data-testid="create-token-claim-project">
-              Claim Project Page
-            </PrimaryLink>
-          </CardActions>
-        </ActionCard>
-
-        <ActionCard $locked data-testid="create-token-next-community" data-status="LOCKED">
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center' }}>
-            <CardTitle>Launch Your Community</CardTitle>
-            <StatusPill $tone="LOCKED">LOCKED</StatusPill>
-          </div>
-          <CardDesc>After your project page is active, unlock discovery and promotion tools.</CardDesc>
-          <LockedNote>
-            Grow Your Project unlocks commercial visibility tools only after your project page is claimed.
-          </LockedNote>
-        </ActionCard>
-      </Cards>
+      <ActionCard data-testid="create-token-next-add-liquidity">
+        <Eyebrow>List on Melega DEX?</Eyebrow>
+        <CardTitle>Make your token tradable now</CardTitle>
+        <CardDesc>Add liquidity without leaving this creation flow.</CardDesc>
+        <CardActions style={{ display: 'grid' }}>
+          <PrimaryLink
+            href={melegaAddLiquidityHref(model.chainId, model.contractAddress)}
+            data-testid="create-token-add-liquidity-melega"
+          >
+            Yes — Add Liquidity
+          </PrimaryLink>
+          <SecondaryBtn type="button" onClick={onFinish} data-testid="create-token-finish-without-listing">
+            No, finish
+          </SecondaryBtn>
+        </CardActions>
+        <LockedNote>You can list later from Liquidity.</LockedNote>
+      </ActionCard>
     </Root>
   )
 }
