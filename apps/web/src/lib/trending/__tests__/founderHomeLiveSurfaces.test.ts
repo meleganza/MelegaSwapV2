@@ -55,6 +55,7 @@ describe('Founder Home live-surface contracts', () => {
     const marcoPay = read('components/MarcoWidgets/MarcoPay.tsx')
     const marcoConnect = read('components/MarcoWidgets/MarcoConnect.tsx')
     const header = read('design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx')
+    const documentSource = read('pages/_document.tsx')
 
     expect(services).toContain("title: 'Sponsored Search'")
     expect(services).toContain("title: 'Featured Farm'")
@@ -67,6 +68,9 @@ describe('Founder Home live-surface contracts', () => {
     expect(marcoPay).toContain('widgets/marco-pay.v1.js')
     expect(marcoPay).toContain('data-marco-deployment')
     expect(marcoPay).toContain('dsk_fcbd4464eb8347ae8ae7472700eec0d6')
+    expect(documentSource).toContain('https://marco.melega.ai/widgets/marco.js')
+    expect(documentSource).toContain('data-marco-site="dsk_fcbd4464eb8347ae8ae7472700eec0d6"')
+    expect(documentSource).toContain('https://marco.melega.ai/widgets/marco-pay.v1.js')
     expect(modal).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
     expect(modal).toContain('product={marcoPayOrder.product}')
     expect(marcoConnect).toContain('marco-connect.v2.1.js')
