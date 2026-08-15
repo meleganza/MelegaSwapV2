@@ -1,8 +1,8 @@
 # Local recovery worktrees and generated artifacts are never part of the deploy source.
 MelegaSwapV2-*
 recovery/
-docs/
-apps/web/docs/
+/docs/
+/apps/web/docs/
 
 # Vercel installs and builds from the committed workspace manifests.
 node_modules/

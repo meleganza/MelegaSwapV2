@@ -70,6 +70,10 @@ export function useSwapCallback(
       return { state: SwapCallbackState.LOADING, callback: null, error: null }
     }
 
+    if (swapCalls.length === 0) {
+      return { state: SwapCallbackState.LOADING, callback: null, error: null }
+    }
+
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<string> {

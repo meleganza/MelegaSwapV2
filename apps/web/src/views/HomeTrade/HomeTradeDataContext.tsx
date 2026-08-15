@@ -32,7 +32,7 @@ const HomeTradeDataRuntime = dynamic(() => import('./HomeTradeDataRuntime'), {
   loading: () => null,
 })
 
-/** Critical Home UI renders immediately; market/yield producers join at idle. */
+/** Critical Home UI renders immediately; market/yield producers join after the first paint. */
 export const HomeTradeDataProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [value, setValue] = useState<HomeCriticalData>(EMPTY_HOME_DATA)
   const [runtimeReady, setRuntimeReady] = useState(false)
@@ -45,12 +45,14 @@ export const HomeTradeDataProvider: React.FC<React.PropsWithChildren> = ({ child
 
     if (idleWindow.requestIdleCallback) {
       const idleHandle = idleWindow.requestIdleCallback(() => startTransition(() => setRuntimeReady(true)), {
-        timeout: 600,
+        // Ranking cards are above the fold. Keep the producer out of the first
+        // paint without postponing Farms long after the other three cards.
+        timeout: 120,
       })
       return () => idleWindow.cancelIdleCallback?.(idleHandle)
     }
 
-    const timeoutHandle = window.setTimeout(() => startTransition(() => setRuntimeReady(true)), 150)
+    const timeoutHandle = window.setTimeout(() => startTransition(() => setRuntimeReady(true)), 0)
     return () => window.clearTimeout(timeoutHandle)
   }, [])
 

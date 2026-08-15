@@ -320,8 +320,8 @@ const Discovery = styled.section`
 `
 
 const DiscCard = styled.section`
-  min-height: 300px;
-  padding: 18px 16px;
+  min-height: 262px;
+  padding: 16px 16px 10px;
   border-radius: ${uxRebuildRadius.card};
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.024), transparent 42%), ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};

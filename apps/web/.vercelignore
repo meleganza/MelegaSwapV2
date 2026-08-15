@@ -3,6 +3,5 @@
 .next/
 node_modules/
 coverage/
-docs/
+/docs/
 *.log
-

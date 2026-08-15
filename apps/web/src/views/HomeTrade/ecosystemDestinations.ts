@@ -30,18 +30,18 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     external: true,
   },
   {
-    id: 'blackpump',
-    title: 'BLACK',
-    subtitle: 'Fair-launch infrastructure.',
-    href: 'https://black.mn',
-    external: true,
-  },
-  {
     id: 'space',
     title: 'SPACE',
     subtitle: 'Increase project visibility.',
     href: 'https://melega.space/',
     external: true,
+  },
+  {
+    id: 'blackpump',
+    title: 'BLACK',
+    subtitle: 'Fair-launch infrastructure.',
+    disabled: true,
+    disabledLabel: 'Coming soon',
   },
   {
     id: 'maiora',

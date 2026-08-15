@@ -45,7 +45,7 @@ describe('RC2 emergency — journey UI removed', () => {
 
 describe('RC2 emergency — header / bottom nav', () => {
   it('header remains product destinations', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Bridge', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
@@ -87,10 +87,11 @@ describe('RC2 emergency — farms/pools inventory', () => {
 })
 
 describe('RC2 emergency — ecosystem', () => {
-  it('removes Radar/Labs and adds BlackPump', () => {
+  it('removes Radar/Labs and retains BLACK as an honest coming-soon destination', () => {
     expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'radar')).toBeUndefined()
     expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'labs')).toBeUndefined()
-    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'blackpump')?.href).toBe('https://blackpump.fun/')
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'blackpump')?.disabled).toBe(true)
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'blackpump')?.href).toBeUndefined()
   })
 })
 

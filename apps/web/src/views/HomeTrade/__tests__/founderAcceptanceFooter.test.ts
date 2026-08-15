@@ -24,6 +24,8 @@ describe('Founder acceptance — MelegaDexFooter', () => {
 
   it('links Docs → /docs and Audit → /audit', () => {
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Docs')?.href).toBe('/docs')
+    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'API / Agent documentation')?.href).toBe('/api-agents')
+    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Devs')?.href).toBe('/devs')
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Audit')?.href).toBe('/audit')
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Support')?.href).toBe('/support')
   })
@@ -62,17 +64,17 @@ describe('Founder acceptance — MelegaDexFooter', () => {
 
 
 describe('Founder acceptance — ecosystem destinations', () => {
-  it('wires live destinations without Radar/Labs; includes BlackPump', () => {
+  it('wires live destinations without Radar/Labs and keeps BLACK honestly unavailable', () => {
     const live = ECOSYSTEM_DESTINATIONS.filter((d) => !d.disabled)
     expect(live.map((d) => d.id)).toEqual(
-      expect.arrayContaining(['passport', 'smartdrop', 'blackpump', 'space']),
+      expect.arrayContaining(['passport', 'smartdrop', 'space']),
     )
     expect(live.map((d) => d.id)).not.toEqual(expect.arrayContaining(['labs', 'radar']))
     expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'labs')).toBeUndefined()
     expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'radar')).toBeUndefined()
     expect(live.find((d) => d.id === 'passport')?.href).toBe('https://marco.melega.ai')
     expect(live.find((d) => d.id === 'smartdrop')?.href).toBe('https://smartdrop.melega.ai/dashboard')
-    expect(live.find((d) => d.id === 'blackpump')?.href).toBe('https://black.mn')
+    expect(live.find((d) => d.id === 'blackpump')).toBeUndefined()
     expect(live.find((d) => d.id === 'space')?.href).toBe('https://melega.space/')
 
     for (const d of live) {
@@ -88,10 +90,11 @@ describe('Founder acceptance — ecosystem destinations', () => {
     expect(maiora?.disabledLabel).toBe('Coming soon')
   })
 
-  it('marks only disabled Maiora as Coming soon', () => {
+  it('marks BLACK and Maiora as Coming soon', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
     expect(eco).not.toMatch(/comingSoon:\s*true/)
     expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
+    expect(ECOSYSTEM_DESTINATIONS.filter((d) => d.disabled).map((d) => d.id)).toEqual(['blackpump', 'maiora'])
   })
 })
 
@@ -101,9 +104,12 @@ describe('Founder acceptance — docs and audit pages', () => {
       path.resolve(__dirname, '../../../pages/docs/index.tsx'),
       'utf8',
     )
-    expect(docs).toContain("title: 'Home'")
-    expect(docs).toContain("title: 'Instant Swap'")
-    expect(docs).toContain("title: 'Smart Swap'")
+    expect(docs).toContain("title: 'Swap'")
+    expect(docs).toContain("title: 'MARCO Bridge'")
+    expect(docs).toContain("title: 'Liquidity'")
+    expect(docs).toContain("title: 'Farms'")
+    expect(docs).toContain("title: 'Pools'")
+    expect(docs).toContain("title: 'Boost Your Project'")
     expect(docs).toContain('MELEGA_FACTORY_BSC')
     expect(docs).toContain('MELEGA_ROUTER_BSC')
     expect(docs).toContain("from 'lib/bsc-indexer/constants'")

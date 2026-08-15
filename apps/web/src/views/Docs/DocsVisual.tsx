@@ -4,6 +4,14 @@ import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/ux
 
 export type DocsVisualVariant =
   | 'hub'
+  | 'swap'
+  | 'bridge'
+  | 'liquidity'
+  | 'farms'
+  | 'pools'
+  | 'projects'
+  | 'boost'
+  | 'payments'
   | 'overview'
   | 'steps'
   | 'reserve'
@@ -16,6 +24,14 @@ export type DocsVisualVariant =
 
 const COPY: Record<DocsVisualVariant, { eyebrow: string; title: string; nodes: string[] }> = {
   hub: { eyebrow: 'Knowledge center', title: 'Build deeper markets', nodes: ['Pair', 'Reserve', 'Strategy'] },
+  swap: { eyebrow: 'Smart Swap', title: 'Quote → review → sign', nodes: ['Choose pair', 'Review route', 'Confirm wallet'] },
+  bridge: { eyebrow: 'MARCO Bridge', title: 'Tracked cross-chain delivery', nodes: ['Choose networks', 'Review quote', 'Track delivery'] },
+  liquidity: { eyebrow: 'Liquidity', title: 'Manage an AMM position', nodes: ['Choose pair', 'Enter amounts', 'Confirm once'] },
+  farms: { eyebrow: 'Farms', title: 'Stake LP tokens', nodes: ['Choose farm', 'Stake LP', 'Track rewards'] },
+  pools: { eyebrow: 'Pools', title: 'Stake and earn', nodes: ['Choose pool', 'Stake token', 'Harvest'] },
+  projects: { eyebrow: 'Projects', title: 'From discovery to market', nodes: ['Discover', 'Verify identity', 'Trade'] },
+  boost: { eyebrow: 'Boost your project', title: 'Verified paid visibility', nodes: ['Select service', 'Pay', 'Activate'] },
+  payments: { eyebrow: 'MARCO Pay', title: 'Verified service checkout', nodes: ['Quote', 'Wallet approval', 'Receipt'] },
   overview: { eyebrow: 'Overview', title: 'Token → liquidity', nodes: ['Token', 'Program', 'LP'] },
   steps: { eyebrow: 'Workflow', title: 'Seven guided steps', nodes: ['Select', 'Configure', 'Activate'] },
   reserve: {

@@ -8,9 +8,16 @@ export const melegaFooterLinks: (t: ContextApi['t']) => FooterLinkType[] = (t) =
     items: [
       {
         label: t('Docs'),
-        href: 'https://docs.melega.finance/',
+        href: '/docs',
         isHighlighted: true,
-        blank: true,
+      },
+      {
+        label: t('API / Agent documentation'),
+        href: '/api-agents',
+      },
+      {
+        label: t('Devs'),
+        href: '/devs',
       },
       {
         label: t('Swap'),

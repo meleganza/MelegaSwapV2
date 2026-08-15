@@ -69,6 +69,10 @@ describe('Product IA refinement — Home', () => {
     for (const name of ['PASSPORT', 'SMARTDROP', 'BLACK', 'SPACE', 'MAIORA']) {
       expect(destinations).toContain(name)
     }
+    expect(destinations.indexOf("id: 'passport'")).toBeLessThan(destinations.indexOf("id: 'smartdrop'"))
+    expect(destinations.indexOf("id: 'smartdrop'")).toBeLessThan(destinations.indexOf("id: 'space'"))
+    expect(destinations.indexOf("id: 'space'")).toBeLessThan(destinations.indexOf("id: 'blackpump'"))
+    expect(destinations.indexOf("id: 'blackpump'")).toBeLessThan(destinations.indexOf("id: 'maiora'"))
   })
 
   it('Top Movers ranking prefers abs% then swaps then volume; ranks full indexed universe', () => {

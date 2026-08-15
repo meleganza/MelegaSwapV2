@@ -352,16 +352,12 @@ export const useTradeTerminalData = (
     // baseline. Do not manufacture a 24H change percentage.
     const txChange = undefined
 
+    // Volume is a fiat-denominated market metric on the Trade surface. Never
+    // leak the intermediate WBNB notional into the USD analytics card while
+    // the BNB/USD oracle is still hydrating; show the honest unavailable state
+    // until the canonical conversion is ready.
     const indexedVolumeValue =
-      indexerMetrics24h?.volumeUsd != null
-        ? formatUsd(indexerMetrics24h.volumeUsd)
-        : indexerMetrics24h?.quoteVolumeWbnb != null
-        ? `${
-            indexerMetrics24h.quoteVolumeWbnb < 0.01
-              ? indexerMetrics24h.quoteVolumeWbnb.toFixed(6)
-              : indexerMetrics24h.quoteVolumeWbnb.toFixed(4)
-          } WBNB`
-        : undefined
+      indexerMetrics24h?.volumeUsd != null ? formatUsd(indexerMetrics24h.volumeUsd) : undefined
     const indexedTradeValue =
       indexerMetrics24h?.tradeCount != null && indexerMetrics24h.tradeCount > 0
         ? indexerMetrics24h.tradeCount.toLocaleString()
