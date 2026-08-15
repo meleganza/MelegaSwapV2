@@ -1083,7 +1083,7 @@ function parseDetectedProject(
     chainId: requestedChain,
     decimals: Number.isFinite(Number(json.onChain.decimals)) ? Number(json.onChain.decimals) : null,
     totalSupply: json.onChain.totalSupplyFormatted ?? null,
-    logoUrl: project?.logoUrl ?? dex?.logo ?? null,
+    logoUrl: dex?.logo ?? project?.logoUrl ?? null,
     slug: project?.slug ?? dex?.registrySlug ?? null,
     projectPageExists: Boolean((canonical && project?.slug) || (dex?.projectClaimed && dex?.registrySlug)),
     explorerUrl: json.onChain.explorerUrl ?? null,

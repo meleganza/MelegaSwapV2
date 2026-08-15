@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'lib/dex-asset-index'
 import { buildLiveEvents } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
 import useDexTrendingRankings from 'views/HomeTrade/useDexTrendingRankings'
 import type { TrendingFilterChip } from '../trendingStudioData'

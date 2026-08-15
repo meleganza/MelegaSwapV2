@@ -11,13 +11,6 @@ export interface ExtensionCard extends OptionalService {
 
 const EXTENSION_DEFS: Omit<ExtensionCard, 'available' | 'requirements' | 'status'>[] = [
   {
-    id: 'radar',
-    title: 'Radar Visibility',
-    purpose: 'Index project infrastructure in ecosystem radar for operational discovery.',
-    activationTime: '~15 min',
-    href: '/radar',
-  },
-  {
     id: 'projects',
     title: 'Projects Verification',
     purpose: 'Verify project profile against constitutional infrastructure standards.',
@@ -64,11 +57,6 @@ export function buildInfrastructureExtensions(project?: EnrichedProjectRecord): 
 
     if (project) {
       switch (ext.id) {
-        case 'radar':
-          available = project.capabilities.radar.status === 'live' || suggestedIds.has('radar-indexing')
-          requirements = 'Registry project + contract'
-          status = project.capabilities.radar.status === 'live' ? 'Live' : 'Suggested'
-          break
         case 'projects':
           available = project.registryStatus === 'listed'
           requirements = 'Indexed in Projects registry'

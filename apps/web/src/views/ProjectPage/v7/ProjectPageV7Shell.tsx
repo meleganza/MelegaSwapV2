@@ -716,6 +716,14 @@ const EconomyMeta = styled.div`
   color: rgba(255, 255, 255, 0.72);
   flex: 1;
 `
+const EconomyAction = styled(Btn)`
+  width: 100%;
+  min-height: 40px;
+  margin-top: auto;
+  align-self: center;
+  justify-content: center;
+  text-align: center;
+`
 const DistributionRow = styled.div`
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr);
@@ -1766,9 +1774,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                 emptyLabel={projectYield.farms.loading ? 'Indexing farms…' : 'No active farms for this token.'}
               />
               <YieldDetails items={projectYield.farms.items} />
-              <Btn $ghost href={`/farms?create=1&chain=${chainId}`} data-testid="project-v7-create-farm">
+              <EconomyAction $ghost href={`/farms?create=1&chain=${chainId}`} data-testid="project-v7-create-farm">
                 CREATE FARM
-              </Btn>
+              </EconomyAction>
             </EconomyCard>
             <EconomyCard data-testid="project-v7-economy-pools">
               <EconomyTitle>Pools</EconomyTitle>
@@ -1778,17 +1786,12 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                 emptyLabel={projectYield.pools.loading ? 'Indexing pools…' : 'No active pools for this token.'}
               />
               <YieldDetails items={projectYield.pools.items} />
-              <Btn $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
+              <EconomyAction $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
                 CREATE POOL
-              </Btn>
+              </EconomyAction>
             </EconomyCard>
             <EconomyCard data-testid="project-v7-liquidity-distribution">
-              <BandHead>
-                <EconomyTitle>Liquidity</EconomyTitle>
-                <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
-                  ADD LIQUIDITY
-                </Btn>
-              </BandHead>
+              <EconomyTitle>Liquidity</EconomyTitle>
               <DistributionSummary
                 items={(dexMarket?.pairs ?? []).map((pair) => ({
                   id: pair.pairAddress,
@@ -1820,6 +1823,9 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   ) : null}
                 </DexCompactRow>
               ) : null}
+              <EconomyAction $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
+                ADD LIQUIDITY
+              </EconomyAction>
             </EconomyCard>
             <EconomyCard data-testid="project-v7-holders">
               <EconomyTitle>Holders</EconomyTitle>

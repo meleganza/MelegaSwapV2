@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'lib/dex-asset-index'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
 import { usePriceCakeBusd } from 'state/farms/hooks'

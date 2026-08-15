@@ -94,7 +94,7 @@ export const BuildInfrastructureGuidePanel: React.FC<Props> = ({ open, onClose }
       <Panel data-bs-guide-panel onClick={(e) => e.stopPropagation()} role="dialog" aria-labelledby="bs-guide-title">
         <Title id="bs-guide-title">AI Infrastructure Guide</Title>
         <Sub>
-          Build Studio orchestrates Projects, Radar, Pools, and Farms runtimes. Use this flow to prepare infrastructure
+          Build Studio orchestrates Projects, Pools, and Farms runtimes. Use this flow to prepare infrastructure
           before deployment — all scores and suggestions are rule-based with provenance, not fabricated AI claims.
         </Sub>
         <Steps>
@@ -107,7 +107,6 @@ export const BuildInfrastructureGuidePanel: React.FC<Props> = ({ open, onClose }
         <LinkRow>
           <GuideLink href="/import-existing-token">Import existing token</GuideLink>
           <GuideLink href="/projects">Projects registry</GuideLink>
-          <GuideLink href="/radar">Radar intelligence</GuideLink>
           <GuideLink href="/pools">Pools runtime</GuideLink>
           <GuideLink href="/farms">Farms runtime</GuideLink>
         </LinkRow>

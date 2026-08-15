@@ -208,12 +208,13 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        <MarcoConnect size="icon" />
         {address ? (
           <MobileWalletSlot>
             <UserMenu />
           </MobileWalletSlot>
-        ) : null}
+        ) : (
+          <MarcoConnect size="icon" />
+        )}
         <MobileMyMelegaButton />
       </MobileHeader>
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { buildDexAssetIndex, buildDexAssetIndexPayload } from '../buildDexAssetIndex'
-import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'lib/dex-asset-index'
 
 describe('buildDexAssetIndex R730A', () => {
   it('indexes more project-surface assets than the legacy 3-token cap', () => {
@@ -18,7 +18,7 @@ describe('buildDexAssetIndex R730A', () => {
     expect(marco?.surfaces.project).toBe(true)
   })
 
-  it('feeds expanded enriched projects for radar/trending/projects runtimes', () => {
+  it('feeds expanded enriched projects for search, trending, projects and Home', () => {
     const enriched = dexIndexToEnrichedProjects(buildDexTokenIndex())
     expect(enriched.length).toBeGreaterThan(3)
   })

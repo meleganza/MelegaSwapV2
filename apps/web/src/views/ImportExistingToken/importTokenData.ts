@@ -212,14 +212,6 @@ export const SERVICE_ACTIVATION: ServiceActivationItem[] = [
     description: 'Constitutional project directory profile',
   },
   {
-    id: 'radar',
-    title: 'Radar',
-    category: 'infrastructure',
-    checked: true,
-    moduleHref: '/radar',
-    description: 'Operational intelligence indexing',
-  },
-  {
     id: 'pools',
     title: 'Pools',
     category: 'infrastructure',

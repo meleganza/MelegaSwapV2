@@ -5,7 +5,7 @@ import {
   resolveProjectRegistryLookup,
 } from 'registry/projects/pending'
 import type { PendingProjectRecord } from 'registry/projects/pending/types'
-import { buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { buildDexTokenIndex } from 'lib/dex-asset-index'
 import { createProjectsRuntimeError, type ProjectsRuntimeError } from './projectsRuntimeErrors'
 
 export interface ContractDiscoveryResult {
@@ -53,7 +53,7 @@ function mapRegistryProject(project: StaticProjectRecord): ContractDiscoveryResu
     project,
     name: project.displayName,
     ticker: token?.symbol,
-    logo: token?.symbol?.slice(0, 2),
+    logo: project.logoUrl,
     website: project.websiteUrl,
     twitter: socialUrl(project, 'twitter'),
     telegram: socialUrl(project, 'telegram'),

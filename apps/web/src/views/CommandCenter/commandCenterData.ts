@@ -77,6 +77,6 @@ export interface QuickActionItem {
 export const QUICK_ACTIONS: QuickActionItem[] = [
   { id: '1', label: 'Claim Rewards', href: '/farms' },
   { id: '2', label: 'Add Liquidity', href: '/liquidity-studio' },
-  { id: '3', label: 'Open Radar', href: '/radar' },
+  { id: '3', label: 'Discover Projects', href: '/projects?sort=trending' },
   { id: '4', label: 'Build Studio', href: '/build-studio' },
 ]

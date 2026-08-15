@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
-import { dexIndexToEnrichedProjects, buildDexTokenIndex } from './buildDexTokenIndex'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'lib/dex-asset-index'
 import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
 import type { ContractPreviewData, RadarFilterChip } from '../radarStudioData'

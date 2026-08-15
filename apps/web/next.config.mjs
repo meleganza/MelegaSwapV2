@@ -291,33 +291,43 @@ const config = {
       },
       {
         source: '/info/pools',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
         source: '/info/pools/:address',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
         source: '/info',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
         source: '/info/:path*',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
         source: '/dex-intelligence',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
         source: '/dex-intelligence/:path*',
-        destination: '/radar',
+        destination: '/projects?sort=trending',
         permanent: false,
+      },
+      {
+        source: '/radar',
+        destination: '/projects?sort=trending',
+        permanent: true,
+      },
+      {
+        source: '/radar/:path*',
+        destination: '/projects?sort=trending',
+        permanent: true,
       },
     ]
   },

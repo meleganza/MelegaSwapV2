@@ -1,7 +1,8 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
-import { getAllProjects } from 'registry/projects/getAllProjects'
 import { enrichProject } from 'registry/projects/discovery'
-import { buildDexAssetIndex, type DexAssetRecord } from 'lib/dex-asset-index'
+import { getAllProjects } from 'registry/projects/getAllProjects'
+import { buildDexAssetIndex } from './buildDexAssetIndex'
+import type { DexAssetRecord } from './types'
 
 export interface DexIndexedToken {
   symbol: string
@@ -18,21 +19,22 @@ export interface DexIndexedToken {
 function toDexIndexedToken(asset: DexAssetRecord): DexIndexedToken | null {
   if (!asset.address) return null
   const sources = asset.sources.filter(
-    (s): s is DexIndexedToken['sources'][number] =>
-      s === 'registry' ||
-      s === 'farm' ||
-      s === 'pool' ||
-      s === 'liquidity' ||
-      s === 'canonical' ||
-      s === 'token-list' ||
-      s === 'venue' ||
-      s === 'asset-registry',
+    (source): source is DexIndexedToken['sources'][number] =>
+      source === 'registry' ||
+      source === 'farm' ||
+      source === 'pool' ||
+      source === 'liquidity' ||
+      source === 'canonical' ||
+      source === 'token-list' ||
+      source === 'venue' ||
+      source === 'asset-registry',
   )
   const registryProject = asset.registrySlug
     ? getAllProjects()
         .map(enrichProject)
-        .find((p) => p.slug === asset.registrySlug)
+        .find((project) => project.slug === asset.registrySlug)
     : undefined
+
   return {
     symbol: asset.symbol,
     address: asset.address,
@@ -46,7 +48,7 @@ function toDexIndexedToken(asset: DexAssetRecord): DexIndexedToken | null {
   }
 }
 
-/** Union registry + configured farm/pool/liquidity tokens for Radar/Trending discovery. */
+/** Shared DEX asset projection consumed by search, projects, trending and Home. */
 export function buildDexTokenIndex(): DexIndexedToken[] {
   return buildDexAssetIndex()
     .map(toDexIndexedToken)
@@ -56,21 +58,23 @@ export function buildDexTokenIndex(): DexIndexedToken[] {
 export function dexIndexToEnrichedProjects(index: DexIndexedToken[]): EnrichedProjectRecord[] {
   const registry = getAllProjects().map(enrichProject)
   const registryAddresses = new Set(
-    registry.flatMap((p) => p.resources.tokens.map((t) => `${t.chainId}:${t.address?.toLowerCase()}`)),
+    registry.flatMap((project) =>
+      project.resources.tokens.map((token) => `${token.chainId}:${token.address?.toLowerCase()}`),
+    ),
   )
 
-  // R781 — attach indexed tokens to existing registry projects only; no synthetic dex-{symbol} clones.
+  // Attach indexed tokens only to existing registry projects; never create synthetic clones.
   index.forEach((entry) => {
     if (entry.registryProject) return
     const key = `${entry.chainId}:${entry.address.toLowerCase()}`
     if (!registryAddresses.has(key)) return
   })
 
-  return registry.sort((a, b) => {
-    const aMarco = a.slug === 'melega-dex'
-    const bMarco = b.slug === 'melega-dex'
-    if (aMarco && !bMarco) return -1
-    if (bMarco && !aMarco) return 1
-    return a.displayName.localeCompare(b.displayName)
+  return registry.sort((left, right) => {
+    const leftMarco = left.slug === 'melega-dex'
+    const rightMarco = right.slug === 'melega-dex'
+    if (leftMarco && !rightMarco) return -1
+    if (rightMarco && !leftMarco) return 1
+    return left.displayName.localeCompare(right.displayName)
   })
 }

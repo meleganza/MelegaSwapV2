@@ -57,14 +57,13 @@ describe('DS001.2 global header shell contracts', () => {
   })
 
   it('primary navigation exposes every core DEX funnel in one click (Portfolio secondary)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Bridge', 'Liquidity', 'Farms', 'Pools', 'List'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
   })
 
   it('secondary surfaces remain available via More overflow destinations', () => {
     expect(MORE_DROPDOWN_ITEMS.map((i) => i.label)).toEqual([
       'Trending Projects',
-      'DEX Intelligence',
       'Identity Hub',
       'Identity Console',
       'Build Studio',
@@ -74,6 +73,18 @@ describe('DS001.2 global header shell contracts', () => {
   it('GlobalSearch placeholder matches approved mockup', () => {
     const search = readFileSync(path.join(ROOT, 'app-shell/components/GlobalSearch.tsx'), 'utf8')
     expect(search).toMatch(/Search tokens, projects, pools\.\.\./)
+  })
+
+  it('MARCO Connect replaces the wallet account control instead of rendering beside it', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+    const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
+    expect(header).toContain('address ? (')
+    expect(header).toContain('<UserMenu />')
+    expect(header).toContain('<MarcoConnect size="navbar" />')
+    expect(shell).toContain('<MarcoConnect size="icon" />')
   })
 
   it('header height remains sticky 72px contract', () => {

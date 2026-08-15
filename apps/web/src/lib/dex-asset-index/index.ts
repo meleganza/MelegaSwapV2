@@ -14,3 +14,5 @@ export {
   getTradeSurfaceAssets,
 } from './buildDexAssetIndex'
 export { resolveAssetLogo, assetKey, mergeAssetSurfaces } from './resolveAssetLogo'
+export { buildDexTokenIndex, dexIndexToEnrichedProjects } from './buildDexTokenIndex'
+export type { DexIndexedToken } from './buildDexTokenIndex'

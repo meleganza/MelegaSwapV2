@@ -129,7 +129,6 @@ export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
     href: '/projects?sort=trending',
     match: (p) => p === '/projects' || p.startsWith('/projects'),
   },
-  { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',
     label: 'Identity Hub',
@@ -153,8 +152,8 @@ export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   id: 'analytics',
   label: 'Analytics',
-  href: '/radar',
-  match: (p) => p === '/radar',
+  href: '/projects?sort=trending',
+  match: (p) => p === '/projects' || p.startsWith('/projects'),
 }
 
 /** Canonical primary navigation — flat links matching approved mockup. */

@@ -6,7 +6,7 @@ import { getAllVenues } from 'registry/venues/getAllVenues'
 import { LEGACY_BSC_MASTER_CHEF } from 'registry/venues/constants'
 import { SURFACE_MAP_RECORDS } from 'lib/surface-map/surface-map'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
-import { buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { buildDexTokenIndex } from 'lib/dex-asset-index'
 import type { GlobalSearchAction, GlobalSearchCategory, GlobalSearchEntry } from './types'
 
 const CATEGORY_LABELS: Record<GlobalSearchCategory, string> = {
@@ -157,7 +157,7 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
       venue.deepLinks?.farms ??
       venue.deepLinks?.pools ??
       venue.deepLinks?.swap ??
-      (category === 'farm' ? '/farms' : category === 'pool' ? '/pools' : '/radar')
+      (category === 'farm' ? '/farms' : category === 'pool' ? '/pools' : '/projects')
 
     const identityId =
       venue.contractAddress != null

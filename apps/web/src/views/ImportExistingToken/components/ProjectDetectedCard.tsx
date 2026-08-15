@@ -94,14 +94,14 @@ export const ProjectDetectedCard: React.FC = () => {
           <ItBody style={{ marginTop: 12 }}>{analysis.summary}</ItBody>
           <LinkRow>
             <Link href={`/@${project.slug}/`}>Open Project Page</Link>
-            {addr ? <Link href={`/radar?contract=${addr}`}>Radar Intelligence</Link> : null}
+            {addr ? <Link href={`/projects?search=${addr}`}>Find in Projects</Link> : null}
             {addr ? <Link href={`/swap?outputCurrency=${addr}`}>Trade</Link> : null}
           </LinkRow>
         </Meta>
       </Top>
       {contract ? (
         <TickerRow style={{ marginTop: 12 }}>
-          Contract: {contract} · Provenance: Projects + Radar runtime
+          Contract: {contract} · Provenance: Projects registry + DEX asset index
         </TickerRow>
       ) : null}
     </Panel>

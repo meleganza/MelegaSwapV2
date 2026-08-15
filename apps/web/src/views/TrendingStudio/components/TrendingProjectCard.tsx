@@ -225,14 +225,6 @@ const OpenBtn = styled(TrGhostBtn)`
   justify-content: center;
 `
 
-const RadarBtn = styled(TrGhostBtn)`
-  padding: 0 12px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-`
-
 interface Props {
   project: TrendingProjectCardType
 }
@@ -295,11 +287,6 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
         <OpenBtn as="a" href={project.projectHref ?? '/projects'}>
           Open Project
         </OpenBtn>
-        {project.radarHref ? (
-          <RadarBtn as="a" href={project.radarHref}>
-            Radar
-          </RadarBtn>
-        ) : null}
       </Footer>
     </Card>
   )

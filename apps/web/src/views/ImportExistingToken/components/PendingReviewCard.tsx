@@ -197,7 +197,7 @@ export const PendingReviewCard: React.FC = () => {
       {reviewStatus === 'approved' ? (
         <PromotionNote>
           Approved — pending profile remains non-canonical until manual merge into STATIC_PROJECTS.
-          Visible in Projects and Radar with Pending Review badge until promotion.
+          Visible in Projects with a Pending Review badge until promotion.
         </PromotionNote>
       ) : null}
     </Panel>

@@ -8,7 +8,7 @@ import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivi
 import { formatHomeActivityRows } from './formatHomeActivity'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
-import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'lib/dex-asset-index'
 import { Transaction, TransactionType } from 'state/info/types'
 import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'

@@ -59,8 +59,8 @@ export const ProjectsMachinePanel: React.FC = () => {
     timestamp: machine.timestamp,
     dataSources: ['registry', 'subgraph', 'pending-registry'],
     reasonCodes: machine.errors.map((e) => e.code),
-    primaryActions: ['filter_projects', 'view_featured', 'open_radar', 'import_project'],
-    runtimeLinks: ['/radar', '/trending', '/import-existing-token', '/command-center'],
+    primaryActions: ['filter_projects', 'view_featured', 'import_project'],
+    runtimeLinks: ['/projects?sort=trending', '/import-existing-token', '/command-center'],
     ...machine,
   }
   const jsonText = JSON.stringify(payload, null, 2)

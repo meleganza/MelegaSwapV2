@@ -9,7 +9,7 @@ describe('listed token identity recovery', () => {
 
     expect(api).toContain('/^https?:\\/\\//i.test(packageToken.name)')
     expect(api).toContain('packageToken?.projectLink ?? legacyProjectLink')
-    expect(modal).toContain('logoUrl: project?.logoUrl ?? dex?.logo ?? null')
+    expect(modal).toContain('logoUrl: dex?.logo ?? project?.logoUrl ?? null')
     expect(modal).toContain("website: current.website || next.website || ''")
     expect(modal).toContain('commercial-project-identity-compact')
     expect(modal).toContain('<ProjectLogo project={detected} compact />')

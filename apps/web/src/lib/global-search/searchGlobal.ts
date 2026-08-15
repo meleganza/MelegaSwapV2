@@ -91,8 +91,8 @@ export const searchGlobal = (
       results.push({
         id: `wallet-${normalized}`,
         label: trimmed,
-        subtitle: 'Wallet or contract address — open Radar intelligence',
-        href: `/radar?contract=${encodeURIComponent(trimmed)}`,
+        subtitle: 'Wallet or contract address — search indexed projects',
+        href: `/projects?search=${encodeURIComponent(trimmed)}`,
         category: 'contract',
         searchableText: normalized,
         score: 150,

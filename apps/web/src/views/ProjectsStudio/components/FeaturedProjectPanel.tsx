@@ -284,11 +284,6 @@ export const FeaturedProjectPanel: React.FC = () => {
               Trade
             </PrFeaturedPrimaryBtn>
             <PrFeaturedOutlineBtn href={featured.projectHref}>Open Project</PrFeaturedOutlineBtn>
-            {featured.radarHref ? (
-              <PrFeaturedOutlineBtn href={featured.radarHref}>Radar</PrFeaturedOutlineBtn>
-            ) : (
-              <PrFeaturedOutlineBtnDisabled>Radar</PrFeaturedOutlineBtnDisabled>
-            )}
             {featured.spaceUrl ? (
               <PrFeaturedOutlineBtn href={featured.spaceUrl} target="_blank" rel="noopener noreferrer">
                 Professional Audit
