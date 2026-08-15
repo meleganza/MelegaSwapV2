@@ -54,6 +54,11 @@ const Inner = styled.div`
   @media (min-width: 1600px) {
     padding: 0 ${ds001Layout.headerPaddingXWide};
   }
+
+  @media (min-width: 1024px) and (max-width: 1100px) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 `
 
 const Brand = styled(Link)`
@@ -78,6 +83,12 @@ const Brand = styled(Link)`
     outline-offset: 4px;
     border-radius: 10px;
   }
+
+  /* Preserve every wallet action inside the viewport at tablet-landscape
+     widths without changing the desktop or mobile header. */
+  @media (min-width: 1024px) and (max-width: 1100px) {
+    width: 52px;
+  }
 `
 
 const Logo = styled.img`
@@ -97,6 +108,10 @@ const Wordmark = styled.span`
   line-height: 24px;
   font-weight: 700;
   letter-spacing: -0.4px;
+
+  @media (min-width: 1024px) and (max-width: 1100px) {
+    display: none;
+  }
 `
 
 const MelegaWord = styled.span`
@@ -245,7 +260,7 @@ const SearchRegion = styled.div`
 
   /* Keep Wallet + My Melega in-viewport on 1024 tablet landscape. */
   @media (max-width: 1100px) {
-    max-width: min(160px, 16vw);
+    max-width: min(132px, 13vw);
     margin-left: 8px;
     margin-right: 6px;
   }
@@ -263,6 +278,21 @@ const RightCluster = styled.div`
 
   @media (max-width: 1100px) {
     gap: 6px;
+  }
+
+  [data-testid='melega-header-connect'] {
+    min-width: 118px;
+    max-width: 148px;
+    flex: 0 1 148px;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1100px) {
+    [data-testid='melega-header-connect'] {
+      width: 124px;
+      min-width: 124px;
+      max-width: 124px;
+      flex-basis: 124px;
+    }
   }
 
   [data-testid='melega-header-chain'],

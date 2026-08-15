@@ -21,19 +21,25 @@ type MarcoConnectApi = {
   ) => MarcoConnectSdk
 }
 
-const Root = styled.div`
+const Root = styled.div<{ $size: MarcoConnectSize }>`
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  flex: 0 0 auto;
+  width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '148px' : 'auto')};
+  min-width: ${({ $size }) => ($size === 'icon' ? '44px' : $size === 'navbar' ? '118px' : '0')};
+  max-width: 100%;
+  flex: ${({ $size }) => ($size === 'navbar' ? '0 1 148px' : '0 0 auto')};
+  box-sizing: border-box;
 `
 
 const Host = styled.div<{ $concealed: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  min-width: 0;
   min-height: 40px;
   opacity: ${({ $concealed }) => ($concealed ? 0 : 1)};
 `
@@ -41,7 +47,8 @@ const Host = styled.div<{ $concealed: boolean }>`
 const ConnectedDisplay = styled.div`
   position: absolute;
   inset: 0;
-  min-width: 132px;
+  width: 100%;
+  min-width: 0;
   padding: 0 14px;
   display: inline-flex;
   align-items: center;
@@ -55,11 +62,15 @@ const ConnectedDisplay = styled.div`
   font-weight: 780;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
 
   img {
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    flex: 0 0 20px;
   }
 `
 
@@ -84,6 +95,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   const { connectAsync, connectors } = useConnect()
   const hostRef = useRef<HTMLDivElement | null>(null)
   const addressRef = useRef<string | undefined>(undefined)
+  const walletIntentUntilRef = useRef(0)
   const connectorsRef = useRef(connectors)
   const connectAsyncRef = useRef(connectAsync)
   const [ready, setReady] = useState(false)
@@ -98,6 +110,12 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     const payloadAddress = payload?.wallet?.address
     if (payloadAddress) setWidgetAddress(payloadAddress)
     if (addressRef.current) return
+    // The official widget can replay its current Passport session when it is
+    // mounted after a route change. That passive replay must never reopen the
+    // Web3 permission/signature flow. Synchronise wagmi only after a real user
+    // interaction with MARCO Connect; persisted DEX sessions are restored by
+    // WalletSessionRuntime without another prompt.
+    if (Date.now() > walletIntentUntilRef.current) return
     const connector =
       connectorsRef.current.find((candidate) => candidate.id === 'metaMask' && candidate.ready) ??
       connectorsRef.current.find((candidate) => candidate.id === 'injected' && candidate.ready)
@@ -172,10 +190,17 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
 
   return (
     <Root
+      $size={size}
       className={className}
       data-testid="marco-connect"
       data-marco-connect-ready={ready ? 'true' : 'false'}
       data-marco-connect-provider="official-v2.1"
+      onPointerDownCapture={() => {
+        walletIntentUntilRef.current = Date.now() + 15_000
+      }}
+      onKeyDownCapture={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') walletIntentUntilRef.current = Date.now() + 15_000
+      }}
     >
       <Host ref={hostRef} $concealed={Boolean(ready && shortAddress)} />
       {ready && shortAddress ? (

@@ -89,6 +89,30 @@ describe('DS001.2 global header shell contracts', () => {
     expect(shell).not.toContain("from 'components/Menu/UserMenu'")
   })
 
+  it('keeps the connected MARCO wallet control inside the 1024px desktop header', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+    const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
+
+    expect(header).toContain('max-width: 1100px')
+    expect(header).toContain("width: 124px")
+    expect(header).toContain("display: none;")
+    expect(connect).toContain("$size === 'navbar' ? '148px'")
+    expect(connect).toContain('max-width: 100%')
+  })
+
+  it('does not reopen wallet permissions from a passive MARCO session replay on navigation', () => {
+    const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
+
+    expect(connect).toContain('walletIntentUntilRef')
+    expect(connect).toContain('if (Date.now() > walletIntentUntilRef.current) return')
+    expect(connect).toContain('onPointerDownCapture')
+    expect(connect).toContain('onKeyDownCapture')
+    expect(connect).toContain('signature: false')
+  })
+
   it('header height remains sticky 72px contract', () => {
     expect(ds001Layout.headerHeight).toBe('72px')
   })
