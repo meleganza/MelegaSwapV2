@@ -84,6 +84,7 @@ const PAYMENT_ASSET_META: Record<
   M_CREDITS: {
     label: 'M-Credits\nMARCO PASSPORT',
     symbol: 'M',
+    logoURI: '/images/m-credits-logo.png',
     purple: true,
   },
 }
@@ -536,7 +537,7 @@ const PaymentLogoShell = styled.span<{ $purple?: boolean }>`
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 `
 

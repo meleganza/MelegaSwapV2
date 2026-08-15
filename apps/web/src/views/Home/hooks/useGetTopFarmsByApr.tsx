@@ -100,7 +100,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         const volB = b.lpRewardsApr && b.lpRewardsApr > 0 ? b.lpRewardsApr : 0
         return aprB - aprA || tvlB - tvlA || volB - volA || a.pid - b.pid
       })
-    return sortedByTruth.slice(0, 5)
+    return sortedByTruth.slice(0, 3)
   }, [farms, fetchStatus, cakePriceBusd, regularCakePerBlock, chainId])
 
   return { topFarms, fetchStatus }

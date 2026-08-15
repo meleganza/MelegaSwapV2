@@ -76,6 +76,7 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).toContain('Estimated amount')
     expect(checkout).toContain('Cashback in')
     expect(checkout).toContain('M-Credits')
+    expect(checkout).toContain('/images/m-credits-logo.png')
     expect(checkout).toContain('MARCO PASSPORT')
     expect(checkout).toContain('Review your order')
     expect(checkout).toContain('Approx. {settlementEstimate.label} required')

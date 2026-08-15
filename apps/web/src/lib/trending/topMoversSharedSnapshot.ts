@@ -5,8 +5,8 @@
 
 import type { MelegaTickerItem } from 'design-system/melega'
 
-/** Home Top Movers card shows at least 5 factual movers (prefix of shared ticker snapshot). */
-export const HOME_TOP_MOVERS_LIMIT = 5
+/** Compact Home card: exact first three factual movers from the shared ticker snapshot. */
+export const HOME_TOP_MOVERS_LIMIT = 3
 
 function fnv1aHex(input: string): string {
   let h = 0x811c9dc5

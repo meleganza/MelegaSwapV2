@@ -125,7 +125,7 @@ const useGetTopPoolsByApr = (isIntersecting: boolean, sharedFarmDataReady?: bool
         const idB = String(b.pool.contractAddress || b.pool.sousId).toLowerCase()
         return idA.localeCompare(idB)
       })
-      .slice(0, 8)
+      .slice(0, 3)
       .map((row) => row.pool)
 
     return ranked

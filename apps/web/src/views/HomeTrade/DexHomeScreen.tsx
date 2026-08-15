@@ -574,10 +574,10 @@ const DexHomeScreenContent: React.FC = () => {
     })
   }, [data.homeTopMoversEntries, data.indexedRibbonAssets])
 
-  const farmRows = (data.farmRows ?? []).slice(0, 5)
-  const poolRows = (data.poolRows ?? []).slice(0, 5)
+  const farmRows = (data.farmRows ?? []).slice(0, 3)
+  const poolRows = (data.poolRows ?? []).slice(0, 3)
 
-  const newListings = useMemo(() => buildHomeNewListings(5), [])
+  const newListings = useMemo(() => buildHomeNewListings(3), [])
 
   return (
     <Root data-dex-home-screen data-ux-rebuild-home>

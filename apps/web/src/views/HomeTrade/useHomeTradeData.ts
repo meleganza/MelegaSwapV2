@@ -495,7 +495,7 @@ export const useHomeTradeData = () => {
         }
       })
       .sort((a, b) => b.sortApr - a.sortApr || b.sortTvl - a.sortTvl || a.id.localeCompare(b.id))
-      .slice(0, 5)
+      .slice(0, 3)
       .map(({ sortTvl: _t, sortApr: _a, sortVolume: _v, sortActivity: _act, ...row }) => row)
 
     return ranked
@@ -535,7 +535,7 @@ export const useHomeTradeData = () => {
             .toLowerCase()
             .localeCompare((b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()),
       )
-      .slice(0, 5)
+      .slice(0, 3)
 
     const toEarnRow = (pool: Pool.DeserializedPool<Token>, tvlUsd: number, aprValue?: number): EarnRow => {
       const stake = pool.stakingToken?.symbol

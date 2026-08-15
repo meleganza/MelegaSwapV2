@@ -29,9 +29,9 @@ describe('Top Movers shared snapshot', () => {
     ]
     const snap = buildTopMoversSharedSnapshot({ items, generatedAt: '2026-07-30T00:00:00.000Z' })
     const home = homeTopMoversPrefix(snap, HOME_TOP_MOVERS_LIMIT)
-    expect(HOME_TOP_MOVERS_LIMIT).toBeGreaterThanOrEqual(5)
-    expect(home).toHaveLength(5)
-    expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72', 'CAKE', 'DOT'])
+    expect(HOME_TOP_MOVERS_LIMIT).toBe(3)
+    expect(home).toHaveLength(3)
+    expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72'])
     expect(assertIdenticalPrefix(snap.entries, home)).toBe('IDENTICAL_PREFIX')
     expect(home.every((h, i) => h.changeLabel === snap.entries[i].changeLabel)).toBe(true)
     expect(home.every((h, i) => h.address === snap.entries[i].address)).toBe(true)
@@ -60,8 +60,8 @@ describe('Top Movers shared snapshot', () => {
       })
       const home = homeTopMoversPrefix(snap)
       expect(assertIdenticalPrefix(snap.entries, home)).toBe('IDENTICAL_PREFIX')
-      expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72', 'CAKE', 'DOT'])
-      expect(home.map((e) => e.changeLabel)).toEqual(['+12.4%', '+8.1%', '-3.2%', '+2.0%', '+1.5%'])
+      expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72'])
+      expect(home.map((e) => e.changeLabel)).toEqual(['+12.4%', '+8.1%', '-3.2%'])
     }
   })
 

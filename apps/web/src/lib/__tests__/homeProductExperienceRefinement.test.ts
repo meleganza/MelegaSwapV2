@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import { HOME_TOP_MOVERS_LIMIT } from 'lib/trending/topMoversSharedSnapshot'
+import { TRENDING_RIBBON_LIMIT } from 'views/HomeTrade/useTrendingDisplayLimit'
 import { ECOSYSTEM_DESTINATIONS } from 'views/HomeTrade/ecosystemDestinations'
 import { listLivePoolInventoryPreview } from 'lib/data-truth/liveInventoryCounts'
 
@@ -22,8 +23,12 @@ describe('home product experience refinement', () => {
     expect(load('components/MyMelega/MyMelegaDrawer.tsx')).toMatch(/View Full Portfolio/)
   })
 
-  it('Home Top Movers shows at least 5 factual movers from shared snapshot', () => {
-    expect(HOME_TOP_MOVERS_LIMIT).toBeGreaterThanOrEqual(5)
+  it('Home Top Movers keeps the approved compact three-row prefix', () => {
+    expect(HOME_TOP_MOVERS_LIMIT).toBe(3)
+  })
+
+  it('global Top Movers ribbon renders the approved ten entries', () => {
+    expect(TRENDING_RIBBON_LIMIT).toBe(10)
   })
 
   it('ecosystem keeps BlackPump and omits Radar/Labs', () => {
