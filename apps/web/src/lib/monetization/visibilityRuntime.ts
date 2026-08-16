@@ -11,10 +11,9 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
   'sponsored-research': { live: true, reason: null },
   'featured-farm': { live: true, reason: null },
   'featured-pool': { live: true, reason: null },
-  M_CREDITS: {
-    live: false,
-    reason: 'M-Credits are not available for this service.',
-  },
+  // Availability is resolved from MARCO's machine authority at runtime. The
+  // checkout remains fail-closed until the signed Pay connection is green.
+  M_CREDITS: { live: true, reason: null },
   referral: {
     live: false,
     reason:
@@ -37,7 +36,6 @@ export function visibilityCheckoutBlocker(args: {
   if (!args.service) return 'Choose a visibility service.'
   const service = VISIBILITY_RUNTIME[args.service]
   if (!service?.live) return service?.reason ?? 'This service is not enabled for production checkout.'
-  if (args.payment === 'M_CREDITS') return VISIBILITY_RUNTIME.M_CREDITS.reason
   if (args.hasReferral) return VISIBILITY_RUNTIME.referral.reason
   if (args.hasFeaturedAddOns) return 'Choose Featured Farm or Featured Pool as a dedicated service.'
   return null

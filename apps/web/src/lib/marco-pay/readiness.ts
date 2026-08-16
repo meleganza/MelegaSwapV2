@@ -129,6 +129,7 @@ export async function resolveMarcoPayReadiness() {
     applicationRef ? applicationResolves(applicationRef) : Promise.resolve(false),
   ])
   const marcoCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.marco')
+  const mCreditsCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.mcredits')
   const webhookCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.signed_webhooks')
   const contractValid =
     pay?.data?.webhooks?.contract_version === '1' &&
@@ -136,6 +137,7 @@ export async function resolveMarcoPayReadiness() {
     pay.data.webhooks.timestamp_tolerance_seconds === 300 &&
     pay.data.webhooks.authoritative_activation_event === 'payment.completed'
   const machineLive = marcoCapability?.status === 'LIVE' && webhookCapability?.status === 'LIVE' && contractValid
+  const mCreditsLive = mCreditsCapability?.status === 'LIVE'
   const signedTestVerified = Boolean(
     signedTest && applicationRef && signedTest.applicationRef === applicationRef && signedTest.activated === false,
   )
@@ -162,6 +164,10 @@ export async function resolveMarcoPayReadiness() {
     commerceModel: 'CHECKOUT_INTEGRATION' as const,
     productMappingRequired: false,
     machineLive,
+    paymentMethods: {
+      marco: executable,
+      mCredits: executable && mCreditsLive,
+    },
     contractVersion: pay?.data?.webhooks?.contract_version ?? null,
     widget: {
       version: pay?.data?.public_widget?.widget_version ?? null,

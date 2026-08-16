@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 
 const MARCO_SITE_SRC = 'https://marco.melega.ai/widgets/marco.js'
-const MARCO_PAY_SRC = 'https://marco.melega.ai/widgets/marco-pay.v1.js'
+const MARCO_PAY_SRC = 'https://marco.melega.ai/widgets/marco-pay-mark.v1.js'
 const MARCO_SITE_ID = 'dsk_fcbd4464eb8347ae8ae7472700eec0d6'
 type MarcoPayEvent = CustomEvent<Record<string, unknown>>
 type Props = {
@@ -72,12 +72,17 @@ export const MarcoPay: React.FC<Props> = ({
       () => Boolean(document.querySelector(`script[src="${MARCO_SITE_SRC}"]`)),
       { 'data-marco-site': MARCO_SITE_ID },
     )
-      .then(() => loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay'))))
+      .then(() => loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay-mark'))))
       .then(
         () => {
           if (cancelled || !hostRef.current) return
-          element = document.createElement('marco-pay')
-          element.setAttribute('data-marco-deployment', application)
+          // The public mark is the canonical launcher. It loads the single
+          // MARCO Pay runtime on demand and carries only server-authorised
+          // checkout context into that runtime.
+          element = document.createElement('marco-pay-mark')
+          element.setAttribute('mode', 'button')
+          element.setAttribute('size', 'large')
+          element.setAttribute('shape', 'rounded')
           element.setAttribute('application', application)
           if (product) element.setAttribute('product', product)
           element.setAttribute('amount', amount)

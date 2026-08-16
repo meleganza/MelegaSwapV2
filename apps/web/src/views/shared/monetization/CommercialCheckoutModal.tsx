@@ -45,6 +45,7 @@ type MarcoPayReadiness = {
   executable: boolean
   reason: string | null
   applicationRef: string | null
+  paymentMethods?: { marco?: boolean; mCredits?: boolean }
   rewards?: { customerBps?: number | null; partnerBps?: number | null; customerLabel?: string }
 }
 
@@ -1259,10 +1260,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     hasReferral: Boolean(referral.trim()),
     hasFeaturedAddOns: false,
   })
+  const isCanonicalMarcoPayment = pay === 'MARCO_PAY' || pay === 'M_CREDITS'
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
-    (pay === 'MARCO_PAY' && !marcoPayReadiness?.executable
+    (isCanonicalMarcoPayment && !marcoPayReadiness?.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
+      : pay === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits
+      ? 'M-Credits are temporarily unavailable.'
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
@@ -1661,7 +1665,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }, [])
 
   useEffect(() => {
-    if (!open || step !== 'review' || pay !== 'MARCO_PAY' || !marcoPayOrder || status === 'confirmed') {
+    if (!open || step !== 'review' || !isCanonicalMarcoPayment || !marcoPayOrder || status === 'confirmed') {
       return undefined
     }
     let cancelled = false
@@ -1721,7 +1725,18 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [detected?.slug, marcoPayOrder, onHistoryChange, open, pay, projectSlug, selectedPackage, service, status, step])
+  }, [
+    detected?.slug,
+    isCanonicalMarcoPayment,
+    marcoPayOrder,
+    onHistoryChange,
+    open,
+    projectSlug,
+    selectedPackage,
+    service,
+    status,
+    step,
+  ])
 
   const runCheckout = useCallback(async () => {
     setError(null)
@@ -1730,7 +1745,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setError(checkoutBlocker)
       return
     }
-    if (pay === 'MARCO_PAY') {
+    if (isCanonicalMarcoPayment) {
       setError('Complete payment in the MARCO PAY panel.')
       return
     }
@@ -1739,11 +1754,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setError(RC_COPY.connectWallet)
       return
     }
-    if (pay === 'M_CREDITS') {
-      setError(VISIBILITY_RUNTIME.M_CREDITS.reason)
-      return
-    }
-
     const paymentAsset = pay as MonetizationAsset
     const resolvedContract = detected?.contract ?? projectContract
     const resolvedSlug = detected?.slug ?? projectSlug
@@ -1933,6 +1943,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     checkoutBlocker,
     detected,
     onHistoryChange,
+    isCanonicalMarcoPayment,
     pay,
     projectContract,
     projectId,
@@ -1948,12 +1959,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setError(checkoutBlocker)
       return
     }
-    if (pay === 'MARCO_PAY') {
+    if (isCanonicalMarcoPayment) {
       if (!marcoPayOrder) await prepareMarcoPayOrder()
       return
     }
     await runCheckout()
-  }, [checkoutBlocker, marcoPayOrder, pay, prepareMarcoPayOrder, runCheckout])
+  }, [checkoutBlocker, isCanonicalMarcoPayment, marcoPayOrder, prepareMarcoPayOrder, runCheckout])
 
   const footer = (
     <MelegaModalFooter>
@@ -1974,16 +1985,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'review' && !buyerWallet && pay !== 'MARCO_PAY' ? (
+        {step === 'review' && !buyerWallet && !isCanonicalMarcoPayment ? (
           <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
         ) : step === 'review' ? (
           <SecurePrimaryBtn
             type="button"
             onClick={() => void reviewAndPay()}
-            disabled={busy || detecting || Boolean(checkoutBlocker) || (pay === 'MARCO_PAY' && Boolean(marcoPayOrder))}
+            disabled={busy || detecting || Boolean(checkoutBlocker) || (isCanonicalMarcoPayment && Boolean(marcoPayOrder))}
             data-testid="commercial-checkout-pay"
           >
-            {busy ? 'Processing…' : pay === 'MARCO_PAY' && marcoPayOrder ? 'Complete in MARCO Pay' : 'Review and pay'}
+            {busy ? 'Processing…' : isCanonicalMarcoPayment && marcoPayOrder ? 'Complete in MARCO Pay' : 'Review and pay'}
           </SecurePrimaryBtn>
         ) : step === 'payment' ? (
           <SecurePrimaryBtn
@@ -2262,7 +2273,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                 {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map((asset) => {
                   const disabled =
                     (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
-                    (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
+                    (asset === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits)
                   const meta = PAYMENT_ASSET_META[asset]
                   return (
                     <PaymentCard
@@ -2273,8 +2284,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       title={
                         asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
                           ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
-                          : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
-                          ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
+                          : asset === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits
+                          ? marcoPayReadiness?.reason ?? 'M-Credits are temporarily unavailable.'
                           : undefined
                       }
                       onClick={() => {
@@ -2371,7 +2382,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     <span aria-hidden="true">{checkoutBlocker ? '!' : '✓'}</span>
                     {checkoutBlocker ?? 'Verified settlement · Automatic placement activation'}
                   </VerifiedSettlement>
-                  {pay === 'MARCO_PAY' && marcoPayOrder ? (
+                  {isCanonicalMarcoPayment && marcoPayOrder ? (
                     <>
                       <div style={{ marginTop: 14 }}>
                         <MarcoPay

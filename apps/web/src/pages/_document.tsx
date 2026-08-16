@@ -130,8 +130,8 @@ class MyDocument extends Document {
             defer
           />
           <script
-            src="https://marco.melega.ai/widgets/marco-pay.v1.js"
-            data-marco-widget-src="https://marco.melega.ai/widgets/marco-pay.v1.js"
+            src="https://marco.melega.ai/widgets/marco-pay-mark.v1.js"
+            data-marco-widget-src="https://marco.melega.ai/widgets/marco-pay-mark.v1.js"
             defer
           />
         </Head>
