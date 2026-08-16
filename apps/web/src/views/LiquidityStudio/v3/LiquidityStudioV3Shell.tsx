@@ -110,8 +110,7 @@ const Hero = styled.section<{ $builder?: boolean }>`
 
   @media (max-width: ${liqV3.mobileBreak}) {
     height: 224px;
-    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
-    gap: 10px;
+    display: block;
     padding: 16px;
   }
 
@@ -134,6 +133,13 @@ const HeroCopy = styled.div`
 
   @media (max-width: ${liqV3.tabletBreak}) {
     grid-column: 1;
+  }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    width: 228px;
+    max-width: 70%;
+    height: 100%;
+    z-index: 2;
   }
 `
 

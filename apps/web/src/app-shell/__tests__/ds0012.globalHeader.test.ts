@@ -145,7 +145,10 @@ describe('DS001.2 global header shell contracts', () => {
     const connect = readFileSync(path.join(ROOT, 'components/MarcoWidgets/MarcoConnect.tsx'), 'utf8')
 
     expect(connect).toContain('sdkRef.current = sdk')
-    expect(connect).toContain('if (ready && !failed) sdkRef.current?.open()')
+    expect(connect).toContain('openMarcoPassport(sdk)')
+    expect(connect).toContain('await sdk.connect()')
+    expect(connect).toContain('if (sdk.getState().connected) sdk.open()')
+    expect(connect).toContain("sdk.on('disconnect', () => disconnect())")
     expect(connect).toContain('aria-label="Open MARCO Passport"')
     expect(connect).toContain('visibility: hidden;')
     expect(connect).toContain('pointer-events: none;')

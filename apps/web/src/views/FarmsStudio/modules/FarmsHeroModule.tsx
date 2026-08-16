@@ -75,9 +75,7 @@ const Inner = styled.div`
   }
 
   @media (max-width: ${farmsHero.mobileBreak}) {
-    display: grid;
-    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
-    gap: 10px;
+    display: block;
   }
 `
 
@@ -96,6 +94,10 @@ const Left = styled.div`
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: 100%;
+    max-width: 228px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
   }
 `
 
@@ -241,8 +243,13 @@ const ArtCol = styled.div`
   }
 
   @media (max-width: ${farmsHero.mobileBreak}) {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    height: auto;
+    position: absolute;
+    inset: -16px;
+    z-index: 0;
+    justify-content: stretch;
+    pointer-events: none;
   }
 `
 

@@ -47,13 +47,45 @@ const Frame = styled.div`
   isolation: isolate;
   contain: paint;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.38) 8%,
+    #000 20%,
+    #000 80%,
+    rgba(0, 0, 0, 0.38) 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.38) 8%,
+    #000 20%,
+    #000 80%,
+    rgba(0, 0, 0, 0.38) 92%,
+    transparent 100%
+  );
 
   @media (max-width: ${farmsHero.mobileBreak}) {
-    width: calc(100% + 24px);
-    height: calc(100% + 32px);
-    margin: -16px -12px;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.06) 42%,
+      rgba(0, 0, 0, 0.72) 60%,
+      #000 72%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.06) 42%,
+      rgba(0, 0, 0, 0.72) 60%,
+      #000 72%,
+      #000 100%
+    );
   }
 `
 
@@ -68,6 +100,10 @@ const Artwork = styled.img`
   transform-origin: 50% 56%;
   animation: ${harvestRise} 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   will-change: transform;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    object-position: 66% center;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;

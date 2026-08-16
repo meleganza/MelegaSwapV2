@@ -48,10 +48,29 @@ const Frame = styled.div`
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 7%, #000 20%, #000 100%);
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    width: calc(100% + 16px);
-    height: calc(100% + 32px);
-    margin: -16px -16px -16px 0;
-    align-self: center;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    align-self: stretch;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.06) 42%,
+      rgba(0, 0, 0, 0.72) 60%,
+      #000 72%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.06) 42%,
+      rgba(0, 0, 0, 0.72) 60%,
+      #000 72%,
+      #000 100%
+    );
   }
 `
 

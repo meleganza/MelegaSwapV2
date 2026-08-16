@@ -149,11 +149,13 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   }
 
   [data-melega-app-shell] .melega-shell-mobile-connect {
-    min-width: 68px !important;
-    width: auto !important;
+    min-width: 40px !important;
+    width: 40px !important;
+    max-width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
-    padding: 0 10px !important;
+    max-height: 40px !important;
+    padding: 0 !important;
     border-radius: 10px !important;
     border: 1px solid ${colors.gold} !important;
     background: transparent !important;

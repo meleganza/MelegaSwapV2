@@ -39,7 +39,7 @@ const Hero = styled.section`
 
   @media (max-width: 767px) {
     height: 224px;
-    grid-template-columns: minmax(150px, 0.38fr) minmax(0, 0.62fr);
+    display: block;
     padding: 16px;
   }
 `
@@ -54,6 +54,9 @@ const Copy = styled.div`
   padding-left: 12px;
 
   @media (max-width: 767px) {
+    width: calc(100% - 180px);
+    max-width: 150px;
+    height: 100%;
     padding-left: 2px;
   }
 `
@@ -142,7 +145,36 @@ const Featured = styled.div`
   }
 
   @media (max-width: 767px) {
+    position: absolute;
+    top: 16px;
+    right: 10px;
+    bottom: 16px;
+    width: 164px;
     padding: 2px 0;
+
+    & > section,
+    & > section > div {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    & > section > div {
+      padding-left: 0;
+    }
+
+    & > section > div > * {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    & article {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 `
 

@@ -218,6 +218,10 @@ const ServiceGrid = styled.div`
   @media (min-width: 1080px) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
+
+  @media (max-width: 639px) {
+    gap: 8px;
+  }
 `
 
 const pricePulse = keyframes`
@@ -250,6 +254,13 @@ const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+
+  @media (max-width: 639px) {
+    min-height: 108px;
+    max-width: 100%;
+    padding: 12px 10px 10px;
+    gap: 6px;
+  }
 `
 
 const ServiceTitleRow = styled.div`
@@ -270,6 +281,11 @@ const SDesc = styled.div`
   font-size: 12px;
   line-height: 1.4;
   color: ${uxRebuildColors.secondary};
+
+  @media (max-width: 639px) {
+    font-size: 11px;
+    line-height: 1.3;
+  }
 `
 
 const SPrice = styled.div`
@@ -305,6 +321,10 @@ const PkgGrid = styled.div`
   @media (min-width: 920px) {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
+
+  @media (max-width: 639px) {
+    gap: 7px;
+  }
 `
 
 const PkgCard = styled.button<{ $on?: boolean }>`
@@ -330,6 +350,13 @@ const PkgCard = styled.button<{ $on?: boolean }>`
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+
+  @media (max-width: 639px) {
+    min-height: 94px;
+    max-width: 100%;
+    padding: 10px 7px;
+    gap: 4px;
+  }
 `
 
 const PackagePrice = styled.div`
@@ -342,6 +369,10 @@ const PackagePrice = styled.div`
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
+  }
+
+  @media (max-width: 639px) {
+    font-size: 21px;
   }
 `
 
@@ -481,6 +512,10 @@ const PaymentGrid = styled.div`
   @media (min-width: 1080px) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
+
+  @media (max-width: 639px) {
+    gap: 8px;
+  }
 `
 
 const PaymentCard = styled.button<{ $on?: boolean }>`
@@ -518,6 +553,13 @@ const PaymentCard = styled.button<{ $on?: boolean }>`
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+
+  @media (max-width: 639px) {
+    min-height: 116px;
+    max-width: 100%;
+    padding: 12px 7px 10px;
+    gap: 6px;
+  }
 `
 
 const PaymentSelected = styled.span`
@@ -554,6 +596,12 @@ const PaymentLogoShell = styled.span<{ $purple?: boolean }>`
     height: 100%;
     object-fit: contain;
   }
+
+  @media (max-width: 639px) {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
 `
 
 const PaymentName = styled.strong`
@@ -564,6 +612,11 @@ const PaymentName = styled.strong`
   line-height: 1.12;
   text-align: center;
   white-space: pre-line;
+
+  @media (max-width: 639px) {
+    min-height: 24px;
+    font-size: 12px;
+  }
 `
 
 const PaymentNetwork = styled.span`
@@ -574,6 +627,12 @@ const PaymentNetwork = styled.span`
   color: rgba(255, 255, 255, 0.58);
   font-size: 10px;
   line-height: 15px;
+
+  @media (max-width: 639px) {
+    min-height: 18px;
+    padding: 1px 7px;
+    font-size: 9px;
+  }
 `
 
 const PremiumCashbackSticker = styled(CashbackSticker)`
@@ -610,7 +669,8 @@ const SettlementMain = styled.div`
   }
 
   @media (max-width: 520px) {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
   }
 `
 
@@ -622,6 +682,11 @@ const SettlementCell = styled.div<{ $title?: boolean }>`
   @media (max-width: 820px) {
     border-left: none;
     border-top: ${({ $title }) => ($title ? 'none' : '1px solid rgba(255,255,255,.075)')};
+  }
+
+  @media (max-width: 520px) {
+    grid-column: ${({ $title }) => ($title ? '1 / -1' : 'auto')};
+    padding: 10px 11px;
   }
 `
 
@@ -684,6 +749,10 @@ const ReviewCard = styled.section`
   border: 1px solid rgba(221, 185, 47, 0.34);
   border-radius: 14px;
   background: radial-gradient(circle at 50% 0, rgba(244, 196, 48, 0.055), transparent 42%), rgba(255, 255, 255, 0.018);
+
+  @media (max-width: 639px) {
+    padding: 15px 14px 12px;
+  }
 `
 
 const ReviewTitle = styled.h3`
@@ -883,6 +952,24 @@ const IdentityChip = styled.div`
   border: 1px solid rgba(221, 185, 47, 0.3);
   border-radius: 999px;
   background: rgba(221, 185, 47, 0.055);
+
+  @media (max-width: 639px) {
+    max-width: 132px;
+    gap: 7px;
+    padding: 5px 8px 5px 5px;
+
+    > div:last-child {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 `
 
 const Logo = styled.div`
