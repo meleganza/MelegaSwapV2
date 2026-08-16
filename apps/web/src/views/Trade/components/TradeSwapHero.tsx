@@ -54,8 +54,8 @@ const Copy = styled.div`
   padding-left: 12px;
 
   @media (max-width: 767px) {
-    width: calc(100% - 188px);
-    max-width: 152px;
+    width: calc(100% - 180px);
+    max-width: 136px;
     height: 100%;
     padding-left: 2px;
   }
@@ -144,8 +144,8 @@ const Featured = styled.div`
     padding: 3px 0;
   }
 
-  /* Compact desktop keeps a complete card per snap page. The shared rail is
-     still scrollable, but the next card never appears as a broken fragment. */
+  /* Compact layouts keep one complete premium placement. Avoiding a nested
+     scroller prevents clipped halos and the browser-native scrollbar. */
   @media (min-width: 768px) and (max-width: 1279px) {
     align-items: center;
 
@@ -158,18 +158,12 @@ const Featured = styled.div`
     }
 
     & > section > div {
-      display: flex;
-      overflow-x: auto;
-      overflow-y: hidden;
-      gap: 12px;
-      scrollbar-width: none;
-      scroll-snap-type: x mandatory;
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    & > section > div::-webkit-scrollbar {
-      display: none;
+      display: block;
+      overflow: visible;
+      padding: 8px 10px;
+      margin: 0;
+      background: transparent;
+      box-sizing: border-box;
     }
 
     & > section > div > * {
@@ -177,7 +171,10 @@ const Featured = styled.div`
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      scroll-snap-align: start;
+    }
+
+    & > section > div > *:not(:first-child) {
+      display: none;
     }
   }
 
@@ -198,7 +195,12 @@ const Featured = styled.div`
     }
 
     & > section > div {
-      padding-left: 0;
+      display: block;
+      overflow: visible;
+      padding: 6px;
+      margin: 0;
+      background: transparent;
+      box-sizing: border-box;
     }
 
     & > section > div > * {
@@ -206,6 +208,10 @@ const Featured = styled.div`
       width: 100%;
       max-width: 100%;
       min-width: 0;
+    }
+
+    & > section > div > *:not(:first-child) {
+      display: none;
     }
 
     & article {

@@ -64,8 +64,8 @@ const Left = styled.div`
 
   @media (max-width: 767px) {
     padding-left: 2px;
-    width: calc(100% - 188px);
-    max-width: 152px;
+    width: calc(100% - 176px);
+    max-width: 140px;
     height: 100%;
   }
 `
@@ -86,8 +86,8 @@ const Title = styled.h1`
   }
 
   @media (max-width: 767px) {
-    font-size: 34px;
-    line-height: 40px;
+    font-size: 32px;
+    line-height: 37px;
   }
 `
 
@@ -111,11 +111,12 @@ const Sub = styled.p`
 
   @media (max-width: 767px) {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 12px;
-    line-height: 18px;
+    flex-shrink: 0;
+    font-size: 11px;
+    line-height: 14px;
   }
 `
 
@@ -140,6 +141,7 @@ const Actions = styled.div`
     a {
       flex: 1 1 0;
       height: 28px;
+      min-height: 28px;
       padding: 0 7px;
       font-size: 10px;
       white-space: nowrap;
@@ -156,8 +158,9 @@ const Actions = styled.div`
       width: auto;
       flex: 1 1 0;
       height: 28px;
+      min-height: 28px;
       padding: 0 4px;
-      font-size: 9px;
+      font-size: 8.5px;
       white-space: nowrap;
     }
   }
@@ -223,8 +226,9 @@ const Featured = styled.div`
     }
   }
 
-  /* Directory hero: one complete, swipeable placement at compact widths.
-     No clipped second card and no visible horizontal scrollbar. */
+  /* Directory hero: one complete premium placement at compact widths.
+     Keeping the rail non-scrollable preserves the card halo without a
+     rectangular clipping surface or a browser-native scrollbar. */
   @media (min-width: 768px) and (max-width: 1279px) {
     width: 100%;
     max-width: 100%;
@@ -238,26 +242,22 @@ const Featured = styled.div`
     }
 
     & > section > div {
-      display: flex;
-      overflow-x: auto;
-      overflow-y: hidden;
-      gap: 12px;
-      scrollbar-width: none;
-      scroll-snap-type: x mandatory;
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    & > section > div::-webkit-scrollbar {
-      display: none;
+      display: block;
+      overflow: visible;
+      padding: 7px 9px;
+      margin: 0;
+      background: transparent;
+      box-sizing: border-box;
     }
 
     & > section > div > * {
-      flex: 0 0 100%;
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      scroll-snap-align: start;
+    }
+
+    & > section > div > *:not(:first-child) {
+      display: none;
     }
   }
 
@@ -280,26 +280,22 @@ const Featured = styled.div`
     }
 
     & > section > div {
-      display: flex;
-      overflow-x: auto;
-      overflow-y: hidden;
-      gap: 10px;
-      scrollbar-width: none;
-      scroll-snap-type: x mandatory;
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    & > section > div::-webkit-scrollbar {
-      display: none;
+      display: block;
+      overflow: visible;
+      padding: 6px;
+      margin: 0;
+      background: transparent;
+      box-sizing: border-box;
     }
 
     & > section > div > * {
-      flex: 0 0 100%;
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      scroll-snap-align: start;
+    }
+
+    & > section > div > *:not(:first-child) {
+      display: none;
     }
   }
 `
