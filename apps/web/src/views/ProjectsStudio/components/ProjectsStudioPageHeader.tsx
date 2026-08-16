@@ -79,6 +79,12 @@ const Title = styled.h1`
   letter-spacing: -0.025em;
   color: ${projectsStudioColors.text};
 
+  @media (min-width: 768px) and (max-width: 1279px) {
+    margin-top: 4px;
+    font-size: 36px;
+    line-height: 38px;
+  }
+
   @media (max-width: 767px) {
     font-size: 34px;
     line-height: 40px;
@@ -92,6 +98,16 @@ const Sub = styled.p`
   font-size: 14px;
   line-height: 21px;
   color: ${projectsStudioColors.secondary};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 17px;
+  }
 
   @media (max-width: 767px) {
     display: -webkit-box;
@@ -114,6 +130,20 @@ const Actions = styled.div`
     min-width: 0;
     padding: 0 12px;
     font-size: 12px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 6px;
+
+    a {
+      flex: 1 1 0;
+      height: 28px;
+      padding: 0 7px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
   }
 
   @media (max-width: 767px) {
