@@ -36,6 +36,12 @@ const Bar = styled.div`
     height: ${TRENDING_BAR_DESKTOP_H};
     z-index: ${melegaZIndex.chromeTicker};
   }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    top: ${ds001Layout.headerHeight};
+    height: ${TRENDING_BAR_DESKTOP_H};
+    z-index: ${melegaZIndex.chromeTicker};
+  }
 `
 
 const Inner = styled.div`
@@ -52,6 +58,10 @@ const Inner = styled.div`
 
   @media (min-width: 1024px) {
     padding: 0 ${ds001Layout.outerMargin};
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    padding: 0 16px;
   }
 
   /* Lock MelegaTicker to shell geometry without a second ticker implementation */

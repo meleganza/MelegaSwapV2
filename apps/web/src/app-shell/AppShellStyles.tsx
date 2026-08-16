@@ -181,6 +181,24 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     font-size: 0 !important;
     box-shadow: none !important;
   }
+
+  /* Compact desktop keeps the official MARCO control as a contained icon so
+     navigation and search remain available in a narrowed desktop window. */
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    [data-melega-global-header] .melega-shell-connect {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      height: 40px !important;
+      padding: 0 !important;
+      font-size: 0 !important;
+      gap: 0 !important;
+    }
+
+    [data-melega-global-header] .melega-shell-connect img {
+      margin: 0 !important;
+    }
+  }
 `
 
 const WalletIconBtn = styled.div`

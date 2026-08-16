@@ -7,6 +7,10 @@ import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 
 const MARCO_CONNECT_SRC = 'https://marco.melega.ai/widgets/marco-connect.v2.1.js'
 const DEFAULT_APPLICATION = process.env.NEXT_PUBLIC_MARCO_CONNECT_APPLICATION?.trim() || 'Melega DEX'
+const COMPACT_DESKTOP_QUERY = '(min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)'
+const DESKTOP_ACTIVATION_QUERY = `(min-width: 1024px), ${COMPACT_DESKTOP_QUERY}`
+const MOBILE_ACTIVATION_QUERY =
+  '(max-width: 767px), (max-width: 1023px) and (hover: none), (max-width: 1023px) and (pointer: coarse)'
 
 type MarcoConnectSize = 'compact' | 'standard' | 'full' | 'navbar' | 'floating' | 'icon'
 type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
@@ -166,7 +170,7 @@ export const MarcoConnect: React.FC<{
       return undefined
     }
 
-    const media = window.matchMedia(activation === 'desktop' ? '(min-width: 1024px)' : '(max-width: 1023px)')
+    const media = window.matchMedia(activation === 'desktop' ? DESKTOP_ACTIVATION_QUERY : MOBILE_ACTIVATION_QUERY)
     const sync = () => setIsActive(media.matches)
     sync()
     if (typeof media.addEventListener === 'function') {

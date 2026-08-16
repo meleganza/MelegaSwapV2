@@ -41,6 +41,10 @@ const Nav = styled.nav<{
     display: none;
   }
 
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    display: none;
+  }
+
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 

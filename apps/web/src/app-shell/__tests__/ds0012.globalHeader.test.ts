@@ -126,7 +126,9 @@ describe('DS001.2 global header shell contracts', () => {
 
     expect(header).toContain('activation="desktop"')
     expect(shell).toContain('activation="mobile"')
-    expect(connect).toContain("activation === 'desktop' ? '(min-width: 1024px)' : '(max-width: 1023px)'")
+    expect(connect).toContain('DESKTOP_ACTIVATION_QUERY')
+    expect(connect).toContain('MOBILE_ACTIVATION_QUERY')
+    expect(connect).toContain('(min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)')
     expect(connect).toContain('if (!isActive || !hostRef.current) return undefined')
     expect(connect).toContain('media.addListener(sync)')
   })
@@ -186,6 +188,26 @@ describe('DS001.2 global header shell contracts', () => {
     expect(header).toContain('max-width: 520px;')
     expect(header).not.toContain('max-width: min(240px, 22vw);')
     expect(header).not.toContain('max-width: min(132px, 13vw);')
+  })
+
+  it('retains a compact desktop header when a mouse-driven viewport narrows below 1024px', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+    const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
+    const ticker = readFileSync(path.join(ROOT, 'app-shell/GlobalTrendingBar.tsx'), 'utf8')
+    const bottomNav = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/BottomNavigation/MelegaBottomNavigation.tsx'),
+      'utf8',
+    )
+    const compactDesktop =
+      '@media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)'
+
+    expect(header).toContain(compactDesktop)
+    expect(shell).toContain(compactDesktop)
+    expect(ticker).toContain(compactDesktop)
+    expect(bottomNav).toContain(compactDesktop)
   })
 
   it('header height remains sticky 72px contract', () => {

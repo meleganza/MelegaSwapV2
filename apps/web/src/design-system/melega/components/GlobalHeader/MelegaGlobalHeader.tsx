@@ -39,6 +39,12 @@ const Bar = styled.header`
   @media (min-width: 1024px) {
     display: block;
   }
+
+  /* A narrowed desktop window keeps the desktop header instead of falling
+     straight into the touch/mobile shell. */
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    display: block;
+  }
 `
 
 const Inner = styled.div`
@@ -58,6 +64,11 @@ const Inner = styled.div`
   @media (min-width: 1024px) and (max-width: 1100px) {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 `
 
@@ -89,6 +100,10 @@ const Brand = styled(Link)`
   @media (min-width: 1024px) and (max-width: 1279px) {
     width: 52px;
   }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    width: 42px;
+  }
 `
 
 const Logo = styled.img`
@@ -97,6 +112,12 @@ const Logo = styled.img`
   flex: 0 0 ${ds001Layout.headerLogoSize};
   object-fit: contain;
   border-radius: 50%;
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
 `
 
 const Wordmark = styled.span`
@@ -110,6 +131,10 @@ const Wordmark = styled.span`
   letter-spacing: -0.4px;
 
   @media (min-width: 1024px) and (max-width: 1279px) {
+    display: none;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
     display: none;
   }
 `
@@ -130,6 +155,10 @@ const Nav = styled.nav`
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
   margin-left: 0;
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    gap: 0;
+  }
 `
 
 const NavItemWrap = styled.div`
@@ -176,6 +205,13 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
       display: none;
     }
   }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    height: 36px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 12px;
+  }
 `
 
 const NavLink = styled(Link)<{ $active?: boolean }>`
@@ -214,6 +250,14 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
     @media (max-width: 1399px) {
       display: none;
     }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    height: 36px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 12px;
+    gap: 4px;
   }
 `
 
@@ -260,6 +304,15 @@ const SearchRegion = styled.div`
   @media (max-width: 1100px) {
     margin-left: 8px;
     margin-right: 6px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    margin-left: 4px;
+    margin-right: 4px;
+
+    [data-melega-global-search] {
+      max-width: 180px;
+    }
   }
 `
 
@@ -324,6 +377,31 @@ const RightCluster = styled.div`
     aspect-ratio: 1 / 1 !important;
     object-fit: contain !important;
   }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    gap: 4px;
+
+    [data-testid='melega-header-connect'],
+    [data-testid='melega-header-connect'] [data-testid='marco-connect'] {
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+      flex: 0 0 40px;
+    }
+
+    [data-testid='melega-header-connect'] [data-testid='marco-connect-connected-address'] {
+      padding: 0;
+      gap: 0;
+      font-size: 0;
+    }
+
+    [data-testid='melega-header-chain'],
+    [data-network-status-pill],
+    [data-testid='melega-header-chain'] button,
+    [data-testid='melega-header-chain'] [role='button'] {
+      max-width: 64px;
+    }
+  }
 `
 
 const MyMelegaTrigger = styled.button`
@@ -353,6 +431,11 @@ const MyMelegaTrigger = styled.button`
   &[aria-expanded='true'] {
     border-color: rgba(244, 196, 48, 0.7);
     box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.25);
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    width: 36px;
+    height: 36px;
   }
 `
 

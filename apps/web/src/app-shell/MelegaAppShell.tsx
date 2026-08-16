@@ -50,6 +50,13 @@ const DesktopMain = styled.main`
     padding-left: 24px;
     padding-right: 24px;
   }
+
+  /* Desktop browser narrowed below 1024px: retain the desktop chrome while
+     page modules may continue using their responsive layouts. */
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${MELEGA_TRENDING_BAR_DESKTOP_HEIGHT}) 24px
+      ${ds001Layout.pagePaddingBottom};
+  }
 `
 
 const Root = styled.div`
@@ -81,6 +88,11 @@ const FooterSlot = styled.div`
   @media (max-width: 1023px) {
     padding-bottom: calc(${MOBILE_BOTTOM_NAV_H} + 8px + env(safe-area-inset-bottom, 0px));
   }
+
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    padding-bottom: 8px;
+  }
 `
 
 const MobileHeader = styled.div`
@@ -100,6 +112,10 @@ const MobileHeader = styled.div`
   box-sizing: border-box;
 
   @media (min-width: 1024px) {
+    display: none;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
     display: none;
   }
 `
@@ -174,7 +190,8 @@ const MobileMyMelegaButton: React.FC = () => {
 /**
  * DS001.2 — Shared Melega DEX shell.
  * Desktop: 72px global header + 44px Trending Bar, no permanent left sidebar.
- * Mobile (<1024): compact mobile header + 36px Trending Bar + bottom navigation.
+ * Compact desktop (768–1023 with mouse/trackpad): compressed desktop header.
+ * Mobile/touch (<1024): compact mobile header + 36px Trending Bar + bottom navigation.
  */
 const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
