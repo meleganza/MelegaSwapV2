@@ -149,11 +149,13 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   }
 
   [data-melega-app-shell] .melega-shell-mobile-connect {
-    min-width: 68px !important;
-    width: auto !important;
+    min-width: 40px !important;
+    width: 40px !important;
+    max-width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
-    padding: 0 10px !important;
+    max-height: 40px !important;
+    padding: 0 !important;
     border-radius: 10px !important;
     border: 1px solid ${colors.gold} !important;
     background: transparent !important;
@@ -165,6 +167,49 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    overflow: hidden !important;
+    transform: none !important;
+    margin: 0 !important;
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 1023px) {
+    [data-melega-app-shell] [data-testid='marco-connect'] {
+      position: relative !important;
+      inset: auto !important;
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      max-height: 40px !important;
+      flex: 0 0 40px !important;
+      margin: 0 !important;
+      transform: none !important;
+      overflow: visible !important;
+      touch-action: manipulation;
+    }
+
+    [data-melega-app-shell] [data-testid='marco-connect'] > button,
+    [data-melega-app-shell] [data-testid='marco-connect'] > div {
+      inset: 0 !important;
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      max-height: 40px !important;
+      margin: 0 !important;
+      transform: none !important;
+      box-sizing: border-box !important;
+    }
+
+    [data-melega-app-shell] [data-testid='marco-connect'] img {
+      width: 20px !important;
+      height: 20px !important;
+      margin: 0 !important;
+      flex: 0 0 20px !important;
+    }
   }
 
   [data-melega-app-shell] .melega-shell-wallet-icon {

@@ -46,6 +46,15 @@ const Module = styled.section`
     max-width: none;
     height: 224px;
     max-height: none;
+
+    [data-testid='farms-hero-artwork'] {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      align-self: stretch !important;
+      justify-self: stretch !important;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -76,7 +85,7 @@ const Inner = styled.div`
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     display: grid;
-    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
+    grid-template-columns: minmax(188px, 0.62fr) minmax(0, 0.38fr);
     gap: 10px;
   }
 `
@@ -182,11 +191,11 @@ const PrimaryCta = styled.button`
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: auto;
-    min-width: 104px;
+    min-width: 90px;
     height: 32px;
     min-height: 32px;
-    padding: 0 10px;
-    font-size: 11px;
+    padding: 0 8px;
+    font-size: 10px;
     flex: 0 0 auto;
   }
 `
@@ -219,11 +228,11 @@ const SecondaryCta = styled.a`
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: auto;
-    min-width: 104px;
+    min-width: 90px;
     height: 32px;
     min-height: 32px;
-    padding: 0 10px;
-    font-size: 11px;
+    padding: 0 8px;
+    font-size: 10px;
     flex: 0 0 auto;
   }
 `
@@ -243,6 +252,8 @@ const ArtCol = styled.div`
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: 100%;
     justify-content: center;
+    overflow: hidden;
+    border-radius: 0 16px 16px 0;
   }
 `
 

@@ -110,9 +110,18 @@ const Hero = styled.section<{ $builder?: boolean }>`
 
   @media (max-width: ${liqV3.mobileBreak}) {
     height: 224px;
-    grid-template-columns: minmax(150px, 0.54fr) minmax(0, 0.46fr);
+    grid-template-columns: minmax(188px, 0.62fr) minmax(0, 0.38fr);
     gap: 10px;
     padding: 16px;
+
+    [data-testid='liquidity-hero-artwork'] {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      align-self: stretch !important;
+      justify-self: stretch !important;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -207,8 +216,9 @@ const Btn = styled.button<{ $primary?: boolean; $ghost?: boolean }>`
 
   @media (max-width: ${liqV3.mobileBreak}) {
     min-height: 32px;
-    padding: 0 10px;
-    font-size: 11px;
+    min-width: 90px;
+    padding: 0 8px;
+    font-size: 10px;
     white-space: nowrap;
     flex: 0 0 auto;
   }

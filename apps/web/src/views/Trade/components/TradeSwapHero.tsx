@@ -143,6 +143,19 @@ const Featured = styled.div`
 
   @media (max-width: 767px) {
     padding: 2px 0;
+    overflow: hidden;
+
+    & > section > div > * {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    & article {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 `
 
