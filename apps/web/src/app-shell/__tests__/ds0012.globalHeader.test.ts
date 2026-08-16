@@ -175,6 +175,19 @@ describe('DS001.2 global header shell contracts', () => {
     expect(header).toContain('data-testid="melega-header-my-melega"')
   })
 
+  it('keeps desktop wallet actions right-aligned while the search region resizes continuously', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+
+    expect(header).toContain('flex: 1 1 0;')
+    expect(header).toContain('justify-content: flex-end;')
+    expect(header).toContain('max-width: 520px;')
+    expect(header).not.toContain('max-width: min(240px, 22vw);')
+    expect(header).not.toContain('max-width: min(132px, 13vw);')
+  })
+
   it('header height remains sticky 72px contract', () => {
     expect(ds001Layout.headerHeight).toBe('72px')
   })

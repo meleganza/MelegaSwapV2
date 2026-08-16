@@ -236,11 +236,11 @@ const Chevron = styled.span<{ $open?: boolean }>`
 `
 
 const SearchRegion = styled.div`
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
-  max-width: min(520px, 42vw);
+  max-width: none;
   display: flex;
-  justify-content: stretch;
+  justify-content: flex-end;
   align-items: center;
   margin-left: 16px;
   margin-right: 12px;
@@ -248,19 +248,16 @@ const SearchRegion = styled.div`
 
   [data-melega-global-search] {
     width: 100%;
-    max-width: none;
+    max-width: 520px;
   }
 
   @media (max-width: 1399px) {
-    min-width: 0;
-    max-width: min(240px, 22vw);
     margin-left: 10px;
     margin-right: 8px;
   }
 
   /* Keep Wallet + My Melega in-viewport on 1024 tablet landscape. */
   @media (max-width: 1100px) {
-    max-width: min(132px, 13vw);
     margin-left: 8px;
     margin-right: 6px;
   }
