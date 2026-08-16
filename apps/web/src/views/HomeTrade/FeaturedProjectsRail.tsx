@@ -122,6 +122,16 @@ const Grid = styled.div`
       scroll-snap-stop: always;
     }
   }
+
+  @media (max-width: 767px) {
+    padding: 6px 2px 10px;
+    margin: 0;
+
+    & > * {
+      flex: 0 0 min(298px, calc(100vw - 20px));
+      max-width: min(298px, calc(100vw - 20px));
+    }
+  }
 `
 
 const Card = styled.article`
@@ -136,6 +146,10 @@ const Card = styled.article`
   box-sizing: border-box;
   animation: ${halo} 2.8s ease-in-out infinite;
   overflow: visible;
+
+  @media (max-width: 767px) {
+    min-height: 220px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;

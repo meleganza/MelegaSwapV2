@@ -51,9 +51,12 @@ const Frame = styled.div`
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 8%, #000 20%, #000 80%, rgba(0, 0, 0, 0.38) 92%, transparent 100%);
 
   @media (max-width: ${farmsHero.mobileBreak}) {
-    width: calc(100% + 24px);
-    height: calc(100% + 32px);
-    margin: -16px -12px;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    margin: 0;
+    mask-image: linear-gradient(90deg, #000 0%, #000 100%);
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 100%);
   }
 `
 
@@ -73,6 +76,12 @@ const Artwork = styled.img`
     animation: none;
     transform: scale(1.06);
     will-change: auto;
+  }
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 `
 

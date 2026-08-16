@@ -187,7 +187,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       data-marco-connect-provider="official-v2.1"
     >
       <Host ref={hostRef} className="melega-marco-connect-host" />
-      <Fallback $hidden={ready && !failed}>
+      <Fallback $hidden={ready || Boolean(address)}>
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
           aria-label="MARCO Connect"

@@ -48,10 +48,11 @@ const Frame = styled.div`
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.38) 7%, #000 20%, #000 100%);
 
   @media (max-width: ${liqV3.mobileBreak}) {
-    width: calc(100% + 16px);
-    height: calc(100% + 32px);
-    margin: -16px -16px -16px 0;
-    align-self: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 100%);
   }
 `
 
@@ -71,6 +72,12 @@ const Artwork = styled.img`
     animation: none;
     transform: scale(1.16);
     will-change: auto;
+  }
+
+  @media (max-width: ${liqV3.mobileBreak}) {
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 `
 

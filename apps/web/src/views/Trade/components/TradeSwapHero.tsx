@@ -44,7 +44,7 @@ const Hero = styled.section`
     grid-template-columns: minmax(132px, 0.31fr) minmax(0, 0.69fr);
     gap: 12px;
     padding: 16px;
-    align-items: center;
+    align-items: start;
   }
 `
 
@@ -104,7 +104,7 @@ const Featured = styled.div`
 
   & > section {
     width: 100%;
-    height: 100%;
+    height: auto;
     min-height: 0;
     padding: 0;
     margin: 0;
@@ -112,14 +112,14 @@ const Featured = styled.div`
   }
 
   & > section > div {
-    height: 100%;
+    height: auto;
     min-height: 0;
     grid-auto-rows: minmax(0, 1fr);
   }
 
   & article {
-    height: 100%;
-    max-height: 100%;
+    height: auto;
+    max-height: none;
     min-height: 0;
     padding: 8px 10px;
     gap: 3px;
@@ -147,6 +147,8 @@ const Featured = styled.div`
 
   @media (max-width: 767px) {
     padding: 2px 0;
+    min-height: auto;
+    align-items: stretch;
   }
 
   @media (max-width: 767px) {

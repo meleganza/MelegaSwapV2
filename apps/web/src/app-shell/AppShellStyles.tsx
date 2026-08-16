@@ -177,17 +177,36 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     min-width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
+    max-height: 40px !important;
+    position: relative !important;
+    z-index: 1 !important;
+    touch-action: manipulation !important;
   }
 
   [data-melega-app-shell] .melega-marco-connect-root {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    position: relative !important;
+    z-index: 1 !important;
     width: max-content !important;
     min-width: 40px !important;
     height: 40px !important;
     min-height: 40px !important;
     overflow: visible !important;
+    transform: none !important;
+    will-change: transform !important;
+  }
+
+  [data-melega-app-shell] .melega-shell-mobile-connect-slot > div,
+  [data-melega-app-shell] .melega-marco-connect-root > div,
+  [data-melega-app-shell] .melega-marco-connect-host > div {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
   }
 
   [data-melega-app-shell] .melega-marco-connect-host {
@@ -199,6 +218,11 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     height: 40px !important;
     min-height: 40px !important;
     overflow: visible !important;
+    max-height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    transform: none !important;
   }
 
   [data-melega-app-shell] .melega-shell-wallet-icon {
