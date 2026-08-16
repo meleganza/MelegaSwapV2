@@ -1,10 +1,6 @@
 import { get, put } from '@vercel/blob'
-import {
-  getMarcoPayApplicationRef,
-  getMarcoPayWebhookSecret,
-  MARCO_MACHINE_ORIGIN,
-  MARCO_PAY_WIDGET_URL,
-} from './contract'
+import { getMarcoPayApplicationRef, MARCO_MACHINE_ORIGIN, MARCO_PAY_WIDGET_URL } from './contract'
+import { resolveMarcoPayWebhookSecret } from './connectionGrant'
 
 const HEALTH_KEY = 'monetization/v1/marco-pay/health/signed-test-webhook.json'
 
@@ -119,15 +115,16 @@ async function applicationResolves(applicationRef: string): Promise<boolean> {
 
 export async function resolveMarcoPayReadiness() {
   const applicationRef = getMarcoPayApplicationRef()
-  const secretConfigured = Boolean(getMarcoPayWebhookSecret())
-  const [pay, capabilities, economy, token, signedTest, appResolved] = await Promise.all([
+  const [pay, capabilities, economy, token, signedTest, appResolved, boundSecret] = await Promise.all([
     fetchJson<MachinePay>('/api/public/machine/pay').catch(() => null),
     fetchJson<MachineCapabilities>('/api/public/machine/capabilities').catch(() => null),
     fetchJson<MachineEconomy>('/api/public/machine/economy').catch(() => null),
     fetchJson<MarcoToken>('/api/public/token').catch(() => null),
     loadSignedTestWebhook(),
     applicationRef ? applicationResolves(applicationRef) : Promise.resolve(false),
+    resolveMarcoPayWebhookSecret(),
   ])
+  const secretConfigured = Boolean(boundSecret)
   const marcoCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.marco')
   const mCreditsCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.mcredits')
   const webhookCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.signed_webhooks')

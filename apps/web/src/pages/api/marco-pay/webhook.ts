@@ -1,11 +1,16 @@
 import type { NextApiHandler } from 'next'
 import {
   getMarcoPayApplicationRef,
-  getMarcoPayWebhookSecret,
   MARCO_PAY_HEADERS,
   MarcoPayVerificationError,
   verifyMarcoPayWebhook,
 } from 'lib/marco-pay/contract'
+import {
+  CONNECTION_GRANT_HEADER,
+  consumeInboundConnectionGrant,
+  isConnectionGrantRequest,
+  resolveMarcoPayWebhookSecret,
+} from 'lib/marco-pay/connectionGrant'
 import { processMarcoPayCompletedEvent } from 'lib/marco-pay/orders'
 import { recordSignedTestWebhook } from 'lib/marco-pay/readiness'
 
@@ -32,10 +37,21 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
   const applicationRef = getMarcoPayApplicationRef()
-  const secret = getMarcoPayWebhookSecret()
-  if (!applicationRef || !secret) return res.status(503).json({ error: 'WEBHOOK_NOT_CONFIGURED' })
+  if (!applicationRef) return res.status(503).json({ error: 'WEBHOOK_NOT_CONFIGURED' })
   try {
     const rawBody = await readRawBody(req)
+    const grantHeader = req.headers[CONNECTION_GRANT_HEADER]
+    if (isConnectionGrantRequest(rawBody, grantHeader)) {
+      const grant = await consumeInboundConnectionGrant({
+        rawBody,
+        headerToken: grantHeader,
+        expectedApplicationRef: applicationRef,
+        nodeEnv: process.env.NODE_ENV,
+      })
+      return res.status(grant.status).json(grant.body)
+    }
+    const secret = await resolveMarcoPayWebhookSecret()
+    if (!secret) return res.status(503).json({ error: 'WEBHOOK_NOT_CONFIGURED' })
     const event = verifyMarcoPayWebhook({
       rawBody,
       secret,
