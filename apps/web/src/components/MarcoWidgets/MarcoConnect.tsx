@@ -29,13 +29,28 @@ type MarcoConnectApi = {
   ) => MarcoConnectSdk
 }
 
+let activeMarcoSdk: MarcoConnectSdk | null = null
+let activeMarcoHost: HTMLElement | null = null
+
+const waitForConnectedState = async (sdk: Pick<MarcoConnectSdk, 'getState'>, attempts = 12, intervalMs = 75) => {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    if (sdk.getState().connected) return true
+    await new Promise<void>((resolve) => setTimeout(resolve, intervalMs))
+  }
+  return Boolean(sdk.getState().connected)
+}
+
 export async function openMarcoPassport(sdk: Pick<MarcoConnectSdk, 'connect' | 'getState' | 'open'>) {
   if (sdk.getState().connected) {
     sdk.open()
-    return
+    return true
   }
   await sdk.connect()
-  if (sdk.getState().connected) sdk.open()
+  if (await waitForConnectedState(sdk)) {
+    sdk.open()
+    return true
+  }
+  return false
 }
 
 const Root = styled.div<{ $size: MarcoConnectSize }>`
@@ -52,6 +67,8 @@ const Root = styled.div<{ $size: MarcoConnectSize }>`
   flex: ${({ $size }) => ($size === 'navbar' ? '0 1 164px' : '0 0 auto')};
   box-sizing: border-box;
   overflow: hidden;
+  isolation: isolate;
+  contain: layout;
 `
 
 const Host = styled.div`
@@ -160,9 +177,16 @@ export const MarcoConnect: React.FC<{
   const { disconnect } = useDisconnect()
   const hostRef = useRef<HTMLDivElement | null>(null)
   const sdkRef = useRef<MarcoConnectSdk | null>(null)
+  const disconnectRef = useRef(disconnect)
+  const passportIntentRef = useRef(false)
+  const passportOpenRef = useRef<Promise<boolean> | null>(null)
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [isActive, setIsActive] = useState(activation === 'always')
+
+  useEffect(() => {
+    disconnectRef.current = disconnect
+  }, [disconnect])
 
   useEffect(() => {
     if (activation === 'always') {
@@ -204,8 +228,17 @@ export const MarcoConnect: React.FC<{
             size,
             signature: false,
           })
+          if (activeMarcoSdk && activeMarcoSdk !== sdk) {
+            activeMarcoSdk.destroy()
+            activeMarcoHost?.replaceChildren()
+          }
+          activeMarcoSdk = sdk
+          activeMarcoHost = hostRef.current
           sdkRef.current = sdk
-          unsubscribeDisconnect = sdk.on('disconnect', () => disconnect())
+          unsubscribeDisconnect = sdk.on('disconnect', () => {
+            passportIntentRef.current = false
+            disconnectRef.current()
+          })
           setReady(true)
         })
         .catch(() => {
@@ -221,13 +254,31 @@ export const MarcoConnect: React.FC<{
       cancelled = true
       if (sdkRef.current === sdk) sdkRef.current = null
       unsubscribeDisconnect?.()
-      sdk?.destroy()
-      hostRef.current?.replaceChildren()
+      if (activeMarcoSdk === sdk) {
+        activeMarcoSdk = null
+        activeMarcoHost = null
+        sdk?.destroy()
+        hostRef.current?.replaceChildren()
+      }
     }
-  }, [disconnect, isActive, size])
+  }, [isActive, size])
 
   const displayedAddress = address || null
   const shortAddress = displayedAddress ? `${displayedAddress.slice(0, 6)}…${displayedAddress.slice(-4)}` : null
+  const requestPassportOpen = () => {
+    const sdk = sdkRef.current
+    if (!ready || failed || !sdk || passportOpenRef.current) return
+    passportIntentRef.current = false
+    const request = openMarcoPassport(sdk).finally(() => {
+      if (passportOpenRef.current === request) passportOpenRef.current = null
+    })
+    passportOpenRef.current = request
+  }
+
+  useEffect(() => {
+    if (!displayedAddress || !passportIntentRef.current) return
+    requestPassportOpen()
+  }, [displayedAddress, ready, failed])
 
   return (
     <Root
@@ -245,13 +296,8 @@ export const MarcoConnect: React.FC<{
           data-testid="marco-connect-connected-address"
           aria-label="Open MARCO Passport"
           onClick={() => {
-            const sdk = sdkRef.current
-            if (!ready || failed || !sdk) return
-
-            // This is the only explicit Passport authentication trigger. The
-            // official runtime reuses its persisted session, opens immediately
-            // when already connected, and never signs on navigation or hover.
-            void openMarcoPassport(sdk)
+            passportIntentRef.current = true
+            requestPassportOpen()
           }}
         >
           <img src={MARCO_LOGO_URI} alt="" />
@@ -262,6 +308,9 @@ export const MarcoConnect: React.FC<{
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
           aria-label="MARCO Connect"
+          onClick={() => {
+            passportIntentRef.current = true
+          }}
         >
           <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />
           {size === 'icon' ? null : 'MARCO CONNECT'}

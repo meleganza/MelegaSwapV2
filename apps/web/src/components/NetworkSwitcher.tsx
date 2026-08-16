@@ -208,6 +208,7 @@ export const NetworkSwitcher = () => {
         <Flex alignItems="center" height="44px" px="16px" style={{ cursor: 'default', userSelect: 'none' }}>
           <ChainLogo chainId={ChainId.BSC} width={20} height={20} />
           <Text
+            data-chain-label
             ml="6px"
             fontSize="13px"
             fontWeight={600}
@@ -238,7 +239,9 @@ export const NetworkSwitcher = () => {
           ) : isWrongNetwork ? (
             t('Network')
           ) : foundChain ? (
-            <Box title={headerChainTitle(foundChain.id)}>{headerChainLabel(foundChain.id)}</Box>
+            <Box data-chain-label title={headerChainTitle(foundChain.id)}>
+              {headerChainLabel(foundChain.id)}
+            </Box>
           ) : (
             t('Select a Network')
           ))

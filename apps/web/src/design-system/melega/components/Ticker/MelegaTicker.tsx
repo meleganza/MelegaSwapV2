@@ -108,6 +108,11 @@ const AnchorWrap = styled.div`
     padding-left: 28px;
     padding-right: 24px;
   }
+
+  @media (max-width: 767px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 `
 
 const TrendingAnchor = styled.span`
@@ -120,6 +125,11 @@ const TrendingAnchor = styled.span`
   text-transform: uppercase;
   color: #f4c542;
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
 `
 
 const paidItemStyles = `
@@ -141,6 +151,19 @@ const ItemLink = styled.a<{ $boosted?: boolean }>`
   flex-shrink: 0;
   white-space: nowrap;
   ${({ $boosted }) => ($boosted ? paidItemStyles : '')}
+
+  @media (max-width: 767px) {
+    gap: 5px;
+    margin-right: 14px;
+    font-size: 11px;
+    ${({ $boosted }) =>
+      $boosted
+        ? `
+          padding: 3px 8px 3px 6px;
+          border-radius: 999px;
+        `
+        : ''}
+  }
 `
 
 const ItemSpan = styled.span<{ $boosted?: boolean }>`
@@ -153,6 +176,19 @@ const ItemSpan = styled.span<{ $boosted?: boolean }>`
   flex-shrink: 0;
   white-space: nowrap;
   ${({ $boosted }) => ($boosted ? paidItemStyles : '')}
+
+  @media (max-width: 767px) {
+    gap: 5px;
+    margin-right: 14px;
+    font-size: 11px;
+    ${({ $boosted }) =>
+      $boosted
+        ? `
+          padding: 3px 8px 3px 6px;
+          border-radius: 999px;
+        `
+        : ''}
+  }
 `
 
 const ItemIcon = styled.span`
@@ -174,12 +210,26 @@ const ItemIcon = styled.span`
     border-radius: 50%;
     object-fit: cover;
   }
+
+  @media (max-width: 767px) {
+    width: 16px;
+    height: 16px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `
 
 const Primary = styled.span`
   font-weight: 700;
   font-size: 13px;
   color: #ffffff;
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 `
 
 const Secondary = styled.span`
@@ -195,6 +245,11 @@ const BoostedLabel = styled.span`
   line-height: 1;
   font-weight: 850;
   letter-spacing: 0.08em;
+
+  @media (max-width: 767px) {
+    font-size: 7px;
+    letter-spacing: 0.04em;
+  }
 `
 
 const RocketMark = () => (
@@ -217,6 +272,10 @@ const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
   font-weight: 700;
   font-size: 14px;
   color: ${({ $unavailable, $positive }) => ($unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676')};
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 `
 
 const Dot = styled.span`

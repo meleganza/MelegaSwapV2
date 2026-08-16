@@ -378,6 +378,28 @@ const RightCluster = styled.div`
     object-fit: contain !important;
   }
 
+  /* At narrowed desktop widths the chain identity is carried by its canonical
+     icon. Hiding the text is deliberate; clipping "BSC" into "BS" is not. */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    [data-testid='melega-header-chain'],
+    [data-network-status-pill] {
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+      overflow: hidden;
+    }
+
+    [data-testid='melega-header-chain'] [data-chain-label] {
+      display: none !important;
+    }
+
+    [data-testid='melega-header-chain'] [data-network-status-pill] > div {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      justify-content: center !important;
+    }
+  }
+
   @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
     gap: 4px;
 
@@ -399,7 +421,19 @@ const RightCluster = styled.div`
     [data-network-status-pill],
     [data-testid='melega-header-chain'] button,
     [data-testid='melega-header-chain'] [role='button'] {
-      max-width: 64px;
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+    }
+
+    [data-testid='melega-header-chain'] [data-chain-label] {
+      display: none !important;
+    }
+
+    [data-testid='melega-header-chain'] [data-network-status-pill] > div {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      justify-content: center !important;
     }
   }
 `

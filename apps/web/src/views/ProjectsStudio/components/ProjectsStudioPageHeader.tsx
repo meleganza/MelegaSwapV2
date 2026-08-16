@@ -41,9 +41,14 @@ const Shell = styled.header`
     padding: 16px;
   }
 
+  @media (min-width: 768px) and (max-width: 1279px) {
+    grid-template-columns: minmax(270px, 0.38fr) minmax(0, 0.62fr);
+    gap: 14px;
+  }
+
   @media (max-width: 767px) {
     height: 224px;
-    grid-template-columns: minmax(150px, 0.42fr) minmax(0, 0.58fr);
+    display: block;
     padding: 16px;
   }
 `
@@ -59,6 +64,9 @@ const Left = styled.div`
 
   @media (max-width: 767px) {
     padding-left: 2px;
+    width: calc(100% - 188px);
+    max-width: 152px;
+    height: 100%;
   }
 `
 
@@ -185,13 +193,83 @@ const Featured = styled.div`
     }
   }
 
+  /* Directory hero: one complete, swipeable placement at compact widths.
+     No clipped second card and no visible horizontal scrollbar. */
+  @media (min-width: 768px) and (max-width: 1279px) {
+    width: 100%;
+    max-width: 100%;
+
+    & > section,
+    & > section > div {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    & > section > div {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 12px;
+      scrollbar-width: none;
+      scroll-snap-type: x mandatory;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    & > section > div::-webkit-scrollbar {
+      display: none;
+    }
+
+    & > section > div > * {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      scroll-snap-align: start;
+    }
+  }
+
   @media (max-width: 767px) {
+    position: absolute;
+    top: 16px;
+    right: 8px;
+    bottom: 16px;
+    width: 176px;
     height: 148px;
     padding: 2px 0;
 
     & > section,
     & > section > div {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       height: 148px;
+      box-sizing: border-box;
+    }
+
+    & > section > div {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 10px;
+      scrollbar-width: none;
+      scroll-snap-type: x mandatory;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    & > section > div::-webkit-scrollbar {
+      display: none;
+    }
+
+    & > section > div > * {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      scroll-snap-align: start;
     }
   }
 `

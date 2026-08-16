@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { MarcoConnect } from 'components/MarcoWidgets'
@@ -9,10 +10,12 @@ import { MelegaGlobalHeader, MELEGA_APP_HEADER_HEIGHT } from 'design-system/mele
 import { MelegaBottomNavigation } from 'design-system/melega/components/BottomNavigation'
 import { colors } from 'design-system/melega/tokens/colors'
 import { ds001Layout } from 'design-system/melega/tokens/ds001'
+import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { IconUser } from 'design-system/melega/components/GlobalHeader/HeaderIcons'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { shellBottomNavItems } from './config/navigation'
+import { GLOBAL_HEADER_NAV } from './config/globalHeaderNav'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
 import {
@@ -89,7 +92,6 @@ const FooterSlot = styled.div`
     padding-bottom: calc(${MOBILE_BOTTOM_NAV_H} + 8px + env(safe-area-inset-bottom, 0px));
   }
 
-
   @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
     padding-bottom: 8px;
   }
@@ -136,6 +138,23 @@ const MobileNetwork = styled.div`
     justify-content: center;
     cursor: pointer;
   }
+
+  [data-network-status-pill] {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    overflow: hidden;
+  }
+
+  [data-network-status-pill] > div {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    justify-content: center !important;
+  }
+
+  [data-chain-label] {
+    display: none !important;
+  }
 `
 
 const MobileMyMelegaTrigger = styled.button`
@@ -161,6 +180,105 @@ const MobileMyMelegaTrigger = styled.button`
 
   &[aria-expanded='true'] {
     border-color: rgba(244, 196, 48, 0.7);
+  }
+
+  @media (max-width: 419px) {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+`
+
+const MobileMenuTrigger = styled.button`
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: rgba(18, 18, 18, 0.96);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  color: ${uxRebuildColors.gold};
+  cursor: pointer;
+  flex-shrink: 0;
+
+  span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+
+  &[aria-expanded='true'] span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  &[aria-expanded='true'] span:nth-child(2) {
+    opacity: 0;
+  }
+
+  &[aria-expanded='true'] span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${uxRebuildColors.gold};
+    outline-offset: 2px;
+  }
+`
+
+const MobileMenu = styled.nav`
+  position: fixed;
+  top: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
+  right: 8px;
+  z-index: ${melegaZIndex.chromeDropdown};
+  width: min(272px, calc(100vw - 16px));
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  border: 1px solid rgba(244, 196, 48, 0.32);
+  border-radius: 14px;
+  background: rgba(8, 8, 8, 0.98);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  a {
+    min-width: 0;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: ${uxRebuildColors.secondary};
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  a[aria-current='page'] {
+    color: ${uxRebuildColors.gold};
+    border-color: rgba(244, 196, 48, 0.42);
+    background: rgba(244, 196, 48, 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+    display: none;
   }
 `
 
@@ -196,6 +314,11 @@ const MobileMyMelegaButton: React.FC = () => {
 const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
   const { open: isMyMelegaOpen } = useMyMelegaDrawer()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   const bottomItems = useMemo(
     () =>
@@ -224,7 +347,34 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         </MobileNetwork>
         <MarcoConnect size="icon" activation="mobile" />
         <MobileMyMelegaButton />
+        <MobileMenuTrigger
+          type="button"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="melega-mobile-navigation"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          data-testid="melega-mobile-menu-trigger"
+        >
+          <span />
+          <span />
+          <span />
+        </MobileMenuTrigger>
       </MobileHeader>
+
+      {mobileMenuOpen ? (
+        <MobileMenu id="melega-mobile-navigation" aria-label="Mobile navigation" data-testid="melega-mobile-menu">
+          {GLOBAL_HEADER_NAV.filter((item) => item.kind === 'link').map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              aria-current={item.match(pathname) ? 'page' : undefined}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </MobileMenu>
+      ) : null}
 
       <DesktopMain data-melega-shell-main>
         <Content>

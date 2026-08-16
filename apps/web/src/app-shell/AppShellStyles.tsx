@@ -85,6 +85,27 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     }
   }
 
+  /* On compact desktop the chain logo is the complete selector affordance.
+     The textual label is removed instead of being visually truncated. */
+  @media (min-width: 768px) and (max-width: 1279px) {
+    [data-melega-global-header] [data-testid='melega-header-chain'],
+    [data-melega-global-header] [data-network-status-pill] {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+    }
+
+    [data-melega-global-header] [data-chain-label] {
+      display: none !important;
+    }
+
+    [data-melega-global-header] [data-network-status-pill] > div {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      justify-content: center !important;
+    }
+  }
+
   [data-melega-app-shell] .melega-shell-settings {
     width: 36px;
     height: 36px;
@@ -197,6 +218,65 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
     [data-melega-global-header] .melega-shell-connect img {
       margin: 0 !important;
+    }
+  }
+
+  /* FARMS responsive containment. Module 001 remains visually frozen at
+     desktop widths; only the demonstrably broken 768–1100px band is adapted. */
+  @media (min-width: 768px) and (max-width: 1100px) {
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-inner'] {
+      display: block !important;
+      position: relative !important;
+    }
+
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-left'] {
+      position: relative !important;
+      z-index: 3 !important;
+      width: calc(100% - 246px) !important;
+      max-width: 340px !important;
+      height: 100% !important;
+    }
+
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-left'] > :last-child {
+      flex-wrap: nowrap !important;
+      overflow: visible !important;
+    }
+
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-inner'] > :nth-child(2) {
+      position: absolute !important;
+      inset: -16px !important;
+      width: auto !important;
+      height: auto !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+    }
+
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-artwork'] {
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+    }
+
+    [data-testid='farms-hero-module'] [data-testid='farms-hero-inner'] > :nth-child(3) {
+      position: absolute !important;
+      z-index: 3 !important;
+      top: 50% !important;
+      right: 0 !important;
+      width: 230px !important;
+      height: auto !important;
+      max-height: 176px !important;
+      transform: translateY(-50%) !important;
+    }
+
+    [data-testid='farms-hero-featured-compact'] {
+      padding: 10px 12px !important;
+      gap: 5px !important;
+      max-height: 176px !important;
+      overflow: hidden !important;
+    }
+
+    [data-testid='farms-hero-featured-compact'] > :last-child {
+      gap: 6px !important;
     }
   }
 `

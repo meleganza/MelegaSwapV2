@@ -16,8 +16,9 @@ describe('final mobile-only UX containment', () => {
   it('opens Passport only from the explicit connected control and synchronizes disconnect', () => {
     const connect = load('components/MarcoWidgets/MarcoConnect.tsx')
     expect(connect).toContain('openMarcoPassport(sdk)')
-    expect(connect).toContain('if (sdk.getState().connected) sdk.open()')
-    expect(connect).toContain("sdk.on('disconnect', () => disconnect())")
+    expect(connect).toContain('waitForConnectedState(sdk)')
+    expect(connect).toContain("sdk.on('disconnect', () => {")
+    expect(connect).toContain('disconnectRef.current()')
     expect(connect).not.toContain('onPointerEnter')
     expect(connect).not.toContain('onPointerDownCapture')
   })
@@ -34,8 +35,17 @@ describe('final mobile-only UX containment', () => {
 
   it('keeps the vertical featured project card fully contained and offset on mobile', () => {
     const swap = load('views/Trade/components/TradeSwapHero.tsx')
-    expect(swap).toContain('right: 10px;')
-    expect(swap).toContain('width: 164px;')
+    expect(swap).toContain('right: 8px;')
+    expect(swap).toContain('width: 176px;')
     expect(swap).toContain('flex: 0 0 100%;')
+  })
+
+  it('keeps the mobile hamburger and compact boosted ticker inside the chrome', () => {
+    const shell = load('app-shell/MelegaAppShell.tsx')
+    const ticker = load('design-system/melega/components/Ticker/MelegaTicker.tsx')
+    expect(shell).toContain('data-testid="melega-mobile-menu-trigger"')
+    expect(shell).toContain('data-testid="melega-mobile-menu"')
+    expect(ticker).toContain('padding: 3px 8px 3px 6px;')
+    expect(ticker).toContain('width: 16px;')
   })
 })

@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic'
 // eslint-disable-next-line import/extensions
 import { useActiveHandle } from 'hooks/useEagerConnect.bmp.ts'
 import { useMemo, useState } from 'react'
+import type { MouseEvent } from 'react'
 import { useConnect } from 'wagmi'
 import Trans from './Trans'
 
@@ -44,11 +45,13 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
   const { connectAsync } = useConnect()
   const { chainId } = useActiveChainId()
   const [open, setOpen] = useState(false)
-  const { onPointerEnter, onFocus, ...buttonProps } = props
+  const { onPointerEnter, onFocus, onClick, ...buttonProps } = props
 
   const docLink = useMemo(() => getDocLink(code), [code])
 
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    if (event.defaultPrevented) return
     if (typeof __NEZHA_BRIDGE__ !== 'undefined') {
       handleActive()
     } else {

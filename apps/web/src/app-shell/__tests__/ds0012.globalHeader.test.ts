@@ -149,8 +149,10 @@ describe('DS001.2 global header shell contracts', () => {
     expect(connect).toContain('sdkRef.current = sdk')
     expect(connect).toContain('openMarcoPassport(sdk)')
     expect(connect).toContain('await sdk.connect()')
-    expect(connect).toContain('if (sdk.getState().connected) sdk.open()')
-    expect(connect).toContain("sdk.on('disconnect', () => disconnect())")
+    expect(connect).toContain('waitForConnectedState(sdk)')
+    expect(connect).toContain("sdk.on('disconnect', () => {")
+    expect(connect).toContain('disconnectRef.current()')
+    expect(connect).toContain('activeMarcoSdk')
     expect(connect).toContain('aria-label="Open MARCO Passport"')
     expect(connect).toContain('visibility: hidden;')
     expect(connect).toContain('pointer-events: none;')
@@ -201,13 +203,23 @@ describe('DS001.2 global header shell contracts', () => {
       path.join(ROOT, 'design-system/melega/components/BottomNavigation/MelegaBottomNavigation.tsx'),
       'utf8',
     )
-    const compactDesktop =
-      '@media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)'
+    const compactDesktop = '@media (min-width: 768px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)'
 
     expect(header).toContain(compactDesktop)
     expect(shell).toContain(compactDesktop)
     expect(ticker).toContain(compactDesktop)
     expect(bottomNav).toContain(compactDesktop)
+  })
+
+  it('uses the chain icon without clipping its label at narrowed desktop widths', () => {
+    const header = readFileSync(
+      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
+      'utf8',
+    )
+    const switcher = readFileSync(path.join(ROOT, 'components/NetworkSwitcher.tsx'), 'utf8')
+    expect(header).toContain("[data-testid='melega-header-chain'] [data-chain-label]")
+    expect(header).toContain('width: 40px;')
+    expect(switcher).toContain('data-chain-label')
   })
 
   it('header height remains sticky 72px contract', () => {
