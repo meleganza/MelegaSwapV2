@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useMatchBreakpoints } from '@pancakeswap/uikit'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -14,6 +15,8 @@ import { ds001Layout } from 'design-system/melega/tokens/ds001'
 import { IconUser } from 'design-system/melega/components/GlobalHeader/HeaderIcons'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
+import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
+import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
@@ -22,8 +25,6 @@ import {
   MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
   MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
 } from './GlobalTrendingBar'
-import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
-import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 
 const MyMelegaDrawer = dynamic(preloadMyMelegaDrawer, { ssr: false, loading: () => null })
 
@@ -195,6 +196,8 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   )
 
   const activeBottomId = shellBottomNavItems.find((item) => item.match(pathname))?.id
+  const { isLg, isXl, isXxl } = useMatchBreakpoints()
+  const showMobileConnect = !(isLg || isXl || isXxl)
 
   return (
     <Root data-melega-app-shell data-melega-shell-no-sidebar>
@@ -208,7 +211,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        <MarcoConnect size="icon" />
+        {showMobileConnect ? <MarcoConnect size="icon" className="melega-shell-mobile-connect-slot" /> : null}
         {address ? (
           <MobileWalletSlot>
             <UserMenu />

@@ -246,6 +246,11 @@ const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
     transform: translateY(-2px);
     border-color: rgba(221, 185, 47, 0.62);
   }
+  @media (max-width: 767px) {
+    min-height: 128px;
+    padding: 12px 10px 11px;
+    gap: 7px;
+  }
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
@@ -263,12 +268,20 @@ const STitle = styled.div`
   font-size: 16px;
   line-height: 1.2;
   font-weight: 780;
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+  }
 `
 
 const SDesc = styled.div`
   font-size: 12px;
   line-height: 1.4;
   color: ${uxRebuildColors.secondary};
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 `
 
 const SPrice = styled.div`
@@ -290,11 +303,19 @@ const SPricePrefix = styled.span`
   font-size: 11px;
   font-weight: 720;
   color: rgba(221, 185, 47, 0.76);
+
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 `
 
 const SPriceValue = styled.span`
   font-size: 22px;
   line-height: 1;
+
+  @media (max-width: 767px) {
+    font-size: 19px;
+  }
 `
 
 const PkgGrid = styled.div`
@@ -326,6 +347,11 @@ const PkgCard = styled.button<{ $on?: boolean }>`
     transform: translateY(-2px);
     border-color: rgba(221, 185, 47, 0.62);
   }
+  @media (max-width: 767px) {
+    min-height: 118px;
+    padding: 10px;
+    gap: 4px;
+  }
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
@@ -338,6 +364,11 @@ const PackagePrice = styled.div`
   line-height: 1;
   font-weight: 840;
   animation: ${pricePulse} 2.8s ease-in-out infinite;
+
+  @media (max-width: 767px) {
+    font-size: 21px;
+    margin-top: 2px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -374,6 +405,12 @@ const TargetCard = styled.button<{ $on?: boolean }>`
   &:hover {
     border-color: rgba(221, 185, 47, 0.58);
   }
+
+  @media (max-width: 767px) {
+    min-height: 68px;
+    padding: 10px 12px;
+    gap: 4px;
+  }
 `
 
 const TargetTitle = styled.strong`
@@ -400,6 +437,12 @@ const TargetState = styled.div`
   font-size: 12px;
   display: flex;
   align-items: center;
+
+  @media (max-width: 767px) {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 11px;
+  }
 `
 
 const BadgeRow = styled.div`
@@ -513,6 +556,12 @@ const PaymentCard = styled.button<{ $on?: boolean }>`
     opacity: 0.46;
   }
 
+  @media (max-width: 767px) {
+    min-height: 134px;
+    padding: 12px 10px 11px;
+    gap: 8px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
@@ -552,6 +601,12 @@ const PaymentLogoShell = styled.span<{ $purple?: boolean }>`
     height: 100%;
     object-fit: contain;
   }
+
+  @media (max-width: 767px) {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
 `
 
 const PaymentName = styled.strong`
@@ -562,6 +617,11 @@ const PaymentName = styled.strong`
   line-height: 1.12;
   text-align: center;
   white-space: pre-line;
+
+  @media (max-width: 767px) {
+    min-height: 28px;
+    font-size: 12px;
+  }
 `
 
 const PaymentNetwork = styled.span`
@@ -572,6 +632,11 @@ const PaymentNetwork = styled.span`
   color: rgba(255, 255, 255, 0.58);
   font-size: 10px;
   line-height: 15px;
+
+  @media (max-width: 767px) {
+    padding: 1px 7px;
+    font-size: 9px;
+  }
 `
 
 const PremiumCashbackSticker = styled(CashbackSticker)`
@@ -614,6 +679,10 @@ const SettlementCell = styled.div<{ $title?: boolean }>`
     border-left: none;
     border-top: ${({ $title }) => ($title ? 'none' : '1px solid rgba(255,255,255,.075)')};
   }
+
+  @media (max-width: 520px) {
+    padding: 12px 14px;
+  }
 `
 
 const SettlementTitle = styled.div`
@@ -642,6 +711,11 @@ const SettlementLabel = styled.div`
   margin-bottom: 5px;
   color: rgba(255, 255, 255, 0.56);
   font-size: 10px;
+
+  @media (max-width: 767px) {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
 `
 
 const SettlementValue = styled.div<{ $gold?: boolean }>`
@@ -650,6 +724,10 @@ const SettlementValue = styled.div<{ $gold?: boolean }>`
   line-height: 1.15;
   font-weight: 800;
   overflow-wrap: anywhere;
+
+  @media (max-width: 767px) {
+    font-size: ${({ $gold }) => ($gold ? '17px' : '15px')};
+  }
 `
 
 const SettlementNote = styled.div`
@@ -684,6 +762,10 @@ const ReviewTitle = styled.h3`
   line-height: 1.2;
   font-weight: 820;
   text-align: center;
+
+  @media (max-width: 767px) {
+    font-size: 20px;
+  }
 `
 
 const ReviewDivider = styled.div`
@@ -696,6 +778,10 @@ const ReviewDivider = styled.div`
 const ReviewRows = styled.div`
   display: grid;
   gap: 11px;
+
+  @media (max-width: 767px) {
+    gap: 9px;
+  }
 `
 
 const ReviewRow = styled.div`
@@ -711,6 +797,16 @@ const ReviewRow = styled.div`
     font-size: 13px;
     text-align: right;
   }
+
+  @media (max-width: 767px) {
+    gap: 12px;
+    font-size: 11px;
+
+    strong {
+      font-size: 12px;
+      text-align: right;
+    }
+  }
 `
 
 const ReviewTotal = styled(ReviewRow)`
@@ -721,6 +817,14 @@ const ReviewTotal = styled(ReviewRow)`
     color: ${uxRebuildColors.gold};
     font-size: 24px;
     text-shadow: 0 0 15px rgba(244, 196, 48, 0.25);
+  }
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+
+    strong {
+      font-size: 20px;
+    }
   }
 `
 
@@ -746,6 +850,10 @@ const ReviewQuoteValue = styled.div`
   line-height: 1.05;
   font-weight: 860;
   text-shadow: 0 0 16px rgba(244, 196, 48, 0.25);
+
+  @media (max-width: 767px) {
+    font-size: clamp(20px, 12vw, 30px);
+  }
 `
 
 const ReviewQuoteNote = styled.div`
@@ -1274,7 +1382,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
       .catch((cause) => {
         if (cause instanceof Error && cause.name === 'AbortError') return
-        setMarcoPayReadiness({ executable: false, reason: 'MARCO Pay is temporarily unavailable.', applicationRef: null })
+        setMarcoPayReadiness({
+          executable: false,
+          reason: 'MARCO Pay is temporarily unavailable.',
+          applicationRef: null,
+        })
       })
     return () => controller.abort()
   }, [open])
@@ -1611,9 +1723,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           label: selectedPackage?.label ?? 'MARCO Pay purchase',
           status: 'Running',
           packageId: String(selectedPackage?.id ?? ''),
-          expiresAt: selectedPackage
-            ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
-            : null,
+          expiresAt: selectedPackage ? new Date(Date.now() + selectedPackage.durationMs).toISOString() : null,
         })
         onHistoryChange?.()
       } catch {
@@ -1626,18 +1736,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [
-    detected?.slug,
-    marcoPayOrder,
-    onHistoryChange,
-    open,
-    pay,
-    projectSlug,
-    selectedPackage,
-    service,
-    status,
-    step,
-  ])
+  }, [detected?.slug, marcoPayOrder, onHistoryChange, open, pay, projectSlug, selectedPackage, service, status, step])
 
   const runCheckout = useCallback(async () => {
     setError(null)
@@ -2162,47 +2261,45 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <div data-testid="commercial-step-payment">
               <Label>Choose payment</Label>
               <PaymentGrid>
-                {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map(
-                  (asset) => {
-                    const disabled =
-                      (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
-                      (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
-                    const meta = PAYMENT_ASSET_META[asset]
-                    return (
-                      <PaymentCard
-                        key={asset}
-                        type="button"
-                        $on={pay === asset}
-                        disabled={disabled}
-                        title={
-                          asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
-                            ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
-                            : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
-                            ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
-                            : undefined
-                        }
-                        onClick={() => {
-                          setPay(asset)
-                          setError(null)
-                          setStatus('idle')
-                          setWalletStage('idle')
-                          setQuoteSummary(null)
-                          setOrderId(null)
-                          setMarcoPayOrder(null)
-                        }}
-                        data-testid={`commercial-pay-${asset}`}
-                      >
-                        {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
-                        <PaymentAssetLogo asset={asset} />
-                        <PaymentName>{meta.label}</PaymentName>
-                        <PaymentNetwork>BNB Chain</PaymentNetwork>
-                        {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
-                          <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
-                        ) : null}
-                      </PaymentCard>
-                    )
-                  },
-                )}
+                {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map((asset) => {
+                  const disabled =
+                    (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
+                    (asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live)
+                  const meta = PAYMENT_ASSET_META[asset]
+                  return (
+                    <PaymentCard
+                      key={asset}
+                      type="button"
+                      $on={pay === asset}
+                      disabled={disabled}
+                      title={
+                        asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
+                          ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
+                          : asset === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live
+                          ? VISIBILITY_RUNTIME.M_CREDITS.reason ?? undefined
+                          : undefined
+                      }
+                      onClick={() => {
+                        setPay(asset)
+                        setError(null)
+                        setStatus('idle')
+                        setWalletStage('idle')
+                        setQuoteSummary(null)
+                        setOrderId(null)
+                        setMarcoPayOrder(null)
+                      }}
+                      data-testid={`commercial-pay-${asset}`}
+                    >
+                      {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
+                      <PaymentAssetLogo asset={asset} />
+                      <PaymentName>{meta.label}</PaymentName>
+                      <PaymentNetwork>BNB Chain</PaymentNetwork>
+                      {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
+                        <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
+                      ) : null}
+                    </PaymentCard>
+                  )
+                })}
               </PaymentGrid>
               <SettlementSummary data-testid="commercial-settlement-summary">
                 <SettlementMain>

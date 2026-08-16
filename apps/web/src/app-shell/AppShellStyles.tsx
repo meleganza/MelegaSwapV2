@@ -167,6 +167,40 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     justify-content: center !important;
   }
 
+  [data-melega-app-shell] .melega-shell-mobile-connect-slot {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+    width: max-content !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  [data-melega-app-shell] .melega-marco-connect-root {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: max-content !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    overflow: visible !important;
+  }
+
+  [data-melega-app-shell] .melega-marco-connect-host {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: max-content !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    overflow: visible !important;
+  }
+
   [data-melega-app-shell] .melega-shell-wallet-icon {
     width: 40px !important;
     height: 40px !important;
@@ -178,6 +212,28 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     color: ${colors.gold} !important;
     font-size: 0 !important;
     box-shadow: none !important;
+  }
+
+  @media (max-width: 767px) {
+    [data-melega-app-shell] .melega-shell-mobile-connect-slot,
+    [data-melega-app-shell] .melega-shell-mobile-connect {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      padding: 0 !important;
+      justify-content: center !important;
+      overflow: visible !important;
+    }
+
+    [data-melega-app-shell] .melega-shell-wallet-icon,
+    [data-melega-app-shell] .melega-shell-mobile-connect-slot img {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      max-height: 40px !important;
+    }
   }
 `
 

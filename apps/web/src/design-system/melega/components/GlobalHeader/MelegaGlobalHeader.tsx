@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMatchBreakpoints } from '@pancakeswap/uikit'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
+
 import { MarcoConnect } from 'components/MarcoWidgets'
+import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
-import { MELEGA_LOGO_URI } from '../../constants/brand'
-import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
-import { uxRebuildColors } from '../../tokens/uxRebuild'
 import {
   ANALYTICS_MORE_ITEM,
   GLOBAL_HEADER_NAV,
@@ -17,10 +17,12 @@ import {
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
-import HeaderNavDropdown from './HeaderNavDropdown'
-import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
-import { IconChevronDown, IconUser } from './HeaderIcons'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
+import HeaderNavDropdown from './HeaderNavDropdown'
+import { IconChevronDown, IconUser } from './HeaderIcons'
+import { MELEGA_LOGO_URI } from '../../constants/brand'
+import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
+import { uxRebuildColors } from '../../tokens/uxRebuild'
 
 const Bar = styled.header`
   display: none;
@@ -356,6 +358,8 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   const { open: myMelegaOpen, toggleDrawer: toggleMyMelega } = useMyMelegaDrawer()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement>(null)
+  const { isLg, isXl, isXxl } = useMatchBreakpoints()
+  const showDesktopConnect = isLg || isXl || isXxl
 
   const resolvedPath = useMemo(() => {
     if (asPath.startsWith('/@') || asPath.startsWith('/project-hq')) return asPath
@@ -405,8 +409,12 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                     data-compact-hide={item.compactHide ? 'true' : undefined}
                     aria-current={active ? 'page' : undefined}
                     data-testid={`melega-header-nav-${item.id}`}
-                    onPointerEnter={() => void router.prefetch(item.href)}
-                    onFocus={() => void router.prefetch(item.href)}
+                    onPointerEnter={() => {
+                      router.prefetch(item.href).catch(() => null)
+                    }}
+                    onFocus={() => {
+                      router.prefetch(item.href).catch(() => null)
+                    }}
                     onClick={(event) => {
                       closeMenus()
                       preserveEarlyNavigation(event, item.href)
@@ -464,9 +472,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           <LangSlot>
             <MelegaLanguageControl />
           </LangSlot>
-          <div data-testid="melega-header-connect">
-            <MarcoConnect size="navbar" />
-          </div>
+          <div data-testid="melega-header-connect">{showDesktopConnect ? <MarcoConnect size="navbar" /> : null}</div>
           {address ? <UserMenu /> : null}
           <MyMelegaTrigger
             type="button"

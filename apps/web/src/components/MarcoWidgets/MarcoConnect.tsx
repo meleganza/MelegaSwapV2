@@ -21,6 +21,16 @@ type MarcoConnectApi = {
   ) => MarcoConnectSdk
 }
 
+let inFlightConnectSession = false
+
+const normalizeAddress = (value: string | undefined | null): string => (value ?? '').toLowerCase().trim()
+
+const normalizeConnectTarget = (candidate: HTMLDivElement): boolean => {
+  const style = window.getComputedStyle(candidate)
+  if (style.display === 'none' || style.visibility === 'hidden') return false
+  return candidate.offsetWidth > 0 && candidate.offsetHeight > 0
+}
+
 const Root = styled.div`
   position: relative;
   display: inline-flex;
@@ -59,20 +69,36 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
   const [failed, setFailed] = useState(false)
   const { address } = useAccount()
   const { connectAsync, connectors } = useConnect()
+  const mountedHostRef = useRef(false)
 
-  const syncWalletSession = useCallback(async () => {
-    if (address) return
-    const connector =
-      connectors.find((candidate) => candidate.id === 'metaMask' && candidate.ready) ??
-      connectors.find((candidate) => candidate.id === 'injected' && candidate.ready)
-    if (!connector) return
-    try {
-      await connectAsync({ connector })
-    } catch {
-      // MARCO Connect owns the Passport session. A rejected DEX wallet sync
-      // remains visible through the existing wallet fallback on the next render.
-    }
-  }, [address, connectAsync, connectors])
+  const syncWalletSession = useCallback(
+    async (eventWalletAddress?: string) => {
+      const eventAddress = normalizeAddress(eventWalletAddress)
+      const currentAddress = normalizeAddress(address)
+
+      if (!address) {
+        if (inFlightConnectSession) return
+      } else if (!eventAddress || eventAddress === currentAddress) {
+        return
+      }
+
+      const connector =
+        connectors.find((candidate) => candidate.id === 'metaMask' && candidate.ready) ??
+        connectors.find((candidate) => candidate.id === 'injected' && candidate.ready)
+      if (!connector) return
+
+      inFlightConnectSession = true
+      try {
+        await connectAsync({ connector })
+      } catch {
+        // MARCO Connect owns the Passport session. A rejected DEX wallet sync
+        // remains visible through the existing wallet fallback on the next render.
+      } finally {
+        inFlightConnectSession = false
+      }
+    },
+    [address, connectAsync, connectors],
+  )
 
   useEffect(() => {
     if (!hostRef.current) return undefined
@@ -80,30 +106,53 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     let sdk: MarcoConnectSdk | null = null
     let idleHandle: number | undefined
     let timeoutHandle: number | undefined
+    const hostNode = hostRef.current
     const unsubscribers: Array<() => void> = []
 
     setFailed(false)
-    const loadWidget = () => {
-      void loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
-        Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
-      )
-        .then(() => {
-          if (cancelled || !hostRef.current) return
-          const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
-          if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
-          sdk = api.mount(hostRef.current, {
-            application: DEFAULT_APPLICATION,
-            theme: 'dark',
-            size,
-            signature: false,
-          })
-          const unsubscribe = sdk.on('connect', () => void syncWalletSession())
-          if (unsubscribe) unsubscribers.push(unsubscribe)
-          setReady(true)
+    let scheduledAutoMount: number | undefined
+    const loadWidget = async () => {
+      if (!hostNode || !normalizeConnectTarget(hostNode) || mountedHostRef.current) return
+      try {
+        await loadMarcoWidgetScript(MARCO_CONNECT_SRC, () =>
+          Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
+        )
+        if (cancelled || !hostNode || !normalizeConnectTarget(hostNode)) return
+        const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
+        if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
+        sdk = api.mount(hostNode, {
+          application: DEFAULT_APPLICATION,
+          theme: 'dark',
+          size,
+          signature: false,
         })
-        .catch(() => {
-          if (!cancelled) setFailed(true)
+        const unsubscribe = sdk.on('connect', ({ wallet }) => {
+          syncWalletSession(wallet?.address).catch(() => null)
         })
+        if (unsubscribe) unsubscribers.push(unsubscribe)
+        mountedHostRef.current = true
+        setReady(true)
+      } catch {
+        if (!cancelled) setFailed(true)
+      }
+    }
+
+    const evaluateMount = () => {
+      if (cancelled || mountedHostRef.current || !hostNode) return
+      if (!normalizeConnectTarget(hostNode)) {
+        if (scheduledAutoMount != null) {
+          window.clearTimeout(scheduledAutoMount)
+        }
+        scheduledAutoMount = window.setTimeout(evaluateMount, 200)
+        return
+      }
+      loadWidget().catch(() => null)
+    }
+
+    const scheduleResizeWatch = () => {
+      if (typeof window === 'undefined') return
+      if (typeof window.addEventListener !== 'function') return
+      window.addEventListener('resize', evaluateMount)
     }
 
     const idleWindow = window as Window & {
@@ -115,25 +164,29 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     } else {
       timeoutHandle = window.setTimeout(loadWidget, 250)
     }
+    scheduleResizeWatch()
 
     return () => {
       cancelled = true
       if (idleHandle != null) idleWindow.cancelIdleCallback?.(idleHandle)
       if (timeoutHandle != null) window.clearTimeout(timeoutHandle)
+      if (scheduledAutoMount != null) window.clearTimeout(scheduledAutoMount)
+      window.removeEventListener('resize', evaluateMount)
       unsubscribers.forEach((unsubscribe) => unsubscribe())
       sdk?.destroy()
-      hostRef.current?.replaceChildren()
+      mountedHostRef.current = false
+      hostNode.replaceChildren()
     }
   }, [address, size, syncWalletSession])
 
   return (
     <Root
-      className={className}
+      className={`melega-marco-connect-root ${className ?? ''}`.trim()}
       data-testid="marco-connect"
       data-marco-connect-ready={ready ? 'true' : 'false'}
       data-marco-connect-provider="official-v2.1"
     >
-      <Host ref={hostRef} />
+      <Host ref={hostRef} className="melega-marco-connect-host" />
       <Fallback $hidden={ready && !failed}>
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}

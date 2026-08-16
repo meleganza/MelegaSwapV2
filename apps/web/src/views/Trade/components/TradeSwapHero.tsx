@@ -38,9 +38,13 @@ const Hero = styled.section`
   }
 
   @media (max-width: 767px) {
-    height: 224px;
-    grid-template-columns: minmax(150px, 0.38fr) minmax(0, 0.62fr);
+    height: auto;
+    min-height: 268px;
+    overflow: visible;
+    grid-template-columns: minmax(132px, 0.31fr) minmax(0, 0.69fr);
+    gap: 12px;
     padding: 16px;
+    align-items: center;
   }
 `
 
@@ -143,6 +147,10 @@ const Featured = styled.div`
 
   @media (max-width: 767px) {
     padding: 2px 0;
+  }
+
+  @media (max-width: 767px) {
+    padding-right: 2px;
   }
 `
 
