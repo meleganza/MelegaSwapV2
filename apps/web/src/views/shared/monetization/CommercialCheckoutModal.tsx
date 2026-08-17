@@ -33,6 +33,8 @@ import { VISIBILITY_RUNTIME, visibilityCheckoutBlocker } from 'lib/monetization/
 import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import {
   assignMarcoPayHandoff,
+  MARCO_PASSPORT_URL,
+  marcoPayRewardNotice,
   openMarcoPayHandoffWindow,
   readMarcoPayHandoffSession,
 } from 'lib/marco-pay/approval'
@@ -1642,12 +1644,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     if (index > 0) setStep(STEPS[index - 1])
   }
 
-  const handleMarcoPayPassport = useCallback((event: CustomEvent<Record<string, unknown>>) => {
-    const passport = event.detail?.passport as { passportNumber?: string | number } | undefined
-    if (passport?.passportNumber === undefined) return
-    setQuoteSummary(`MARCO Passport · ${String(passport.passportNumber)}`)
-  }, [])
-
   const handleMarcoPayStarted = useCallback(() => {
     setError(null)
     setStatus('marco_pay_started')
@@ -1699,9 +1695,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           return
         }
         if (order.state === 'TEST_VERIFIED') {
-          setWalletStage('success')
-          setStatus('marco_pay_test_verified')
-          setQuoteSummary('Test payment verified · no funds moved · no service activated')
+          setWalletStage('error')
+          setStatus('marco_pay_error')
+          setError('MARCO Pay is temporarily unavailable.')
+          setQuoteSummary(null)
           return
         }
         if (order.state !== 'ACTIVE') return
@@ -1987,6 +1984,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
     await runCheckout()
   }, [checkoutBlocker, isCanonicalMarcoPayment, marcoPayOrder, prepareMarcoPayOrder, runCheckout])
+
+  const confirmedRewardNotice =
+    status === 'confirmed' ? marcoPayRewardNotice(marcoPayReadiness?.rewards?.customerBps) : null
 
   const footer = (
     <MelegaModalFooter>
@@ -2416,7 +2416,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                           reference={marcoPayOrder.reference}
                           paymentId={marcoPayOrder.paymentId}
                           approvalUrl={marcoPayOrder.approvalUrl}
-                          onPassportResolved={handleMarcoPayPassport}
                           onPaymentStarted={handleMarcoPayStarted}
                           onPaymentCreated={handleMarcoPayCreated}
                           onPaymentCompleted={handleMarcoPayCompleted}
@@ -2435,9 +2434,26 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </div>
                   ) : null}
                   {status === 'confirmed' ? (
-                    <Meta style={{ marginTop: 8, color: uxRebuildColors.positive, textAlign: 'center' }}>
-                      Activated · see Marketing History
-                    </Meta>
+                    <>
+                      <Meta style={{ marginTop: 8, color: uxRebuildColors.positive, textAlign: 'center' }}>
+                        Activated · see Marketing History
+                      </Meta>
+                      {confirmedRewardNotice ? (
+                        <Meta style={{ marginTop: 8, textAlign: 'center' }} data-testid="marco-pay-reward-notice">
+                          {confirmedRewardNotice}
+                          {' · '}
+                          <a href={MARCO_PASSPORT_URL} target="_blank" rel="noopener noreferrer">
+                            Open MARCO Passport
+                          </a>
+                        </Meta>
+                      ) : (
+                        <Meta style={{ marginTop: 8, textAlign: 'center' }}>
+                          <a href={MARCO_PASSPORT_URL} target="_blank" rel="noopener noreferrer">
+                            Open MARCO Passport
+                          </a>
+                        </Meta>
+                      )}
+                    </>
                   ) : null}
                 </ReviewCard>
               </ReviewStage>

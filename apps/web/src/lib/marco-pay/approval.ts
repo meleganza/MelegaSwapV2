@@ -49,7 +49,7 @@ export function readMarcoPayHandoffSession(payload: unknown): MarcoPayHandoffSes
 
 export function openMarcoPayHandoffWindow(): Window | null {
   if (typeof window === 'undefined') return null
-  const popup = window.open('about:blank', MARCO_PAY_APPROVAL_WINDOW_NAME, 'width=460,height=760')
+  const popup = window.open('', MARCO_PAY_APPROVAL_WINDOW_NAME, 'width=460,height=760')
   if (popup) {
     try {
       popup.opener = null
@@ -59,6 +59,15 @@ export function openMarcoPayHandoffWindow(): Window | null {
   }
   return popup
 }
+
+export function marcoPayRewardNotice(customerBps: number | null | undefined): string | null {
+  if (typeof customerBps !== 'number' || !(customerBps > 0)) return null
+  const percent = customerBps / 100
+  const shown = Number.isInteger(percent) ? String(percent) : percent.toFixed(1)
+  return `+${shown}% M-Credits received`
+}
+
+export const MARCO_PASSPORT_URL = `${MARCO_PAY_APPROVAL_ORIGIN}/passport`
 
 export function assignMarcoPayHandoff(popup: Window | null, session: MarcoPayHandoffSession | null): boolean {
   const url = session ? marcoPayApprovalUrl(session.paymentId) : ''

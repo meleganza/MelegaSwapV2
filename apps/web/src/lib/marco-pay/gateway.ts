@@ -29,6 +29,8 @@ type GatewayResponse = {
   approvalUrl?: string
   intent?: { intent_id?: string; payment_id?: string }
   payment?: { id?: string; payment_id?: string }
+  test_mode?: boolean
+  testMode?: boolean
 }
 
 function compactJson(value: Record<string, unknown>): string {
@@ -145,6 +147,12 @@ function sessionFromPayload(payload: GatewayResponse): MarcoPayPaymentSession {
     throw new MarcoPayGatewayError(
       payload.error || 'NOT_EXECUTABLE',
       payload.message || 'MARCO Pay did not return a payment session.',
+    )
+  }
+  if (payload.test_mode === true || payload.testMode === true) {
+    throw new MarcoPayGatewayError(
+      'LIVE_SETTLEMENT_REQUIRED',
+      'MARCO Pay is temporarily unavailable.',
     )
   }
   return {

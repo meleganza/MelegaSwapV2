@@ -4,6 +4,7 @@ import path from 'path'
 import {
   assignMarcoPayHandoff,
   marcoPayApprovalUrl,
+  marcoPayRewardNotice,
   openMarcoPayHandoffWindow,
   readMarcoPayHandoffSession,
 } from '../approval'
@@ -24,6 +25,8 @@ describe('MARCO Pay approval handoff', () => {
     expect(marcoPayApprovalUrl('19703979-3386-429c-af9a-8376cb3f3845')).toBe(
       'https://marco.melega.ai/pay/19703979-3386-429c-af9a-8376cb3f3845',
     )
+    expect(marcoPayRewardNotice(500)).toBe('+5% M-Credits received')
+    expect(marcoPayRewardNotice(null)).toBeNull()
   })
 
   it('reads payment_id and approval_url from the DEX order API contract', () => {
@@ -45,7 +48,12 @@ describe('MARCO Pay approval handoff', () => {
     expect(checkout).toContain('assignMarcoPayHandoff')
     expect(checkout).not.toContain('isCanonicalMarcoPayment && Boolean(marcoPayOrder)')
     expect(launcher).toContain('openMarcoPayHandoffWindow')
-    expect(helper).toContain("window.open('about:blank'")
+    expect(helper).toContain("window.open('', MARCO_PAY_APPROVAL_WINDOW_NAME")
+    expect(launcher).not.toContain('widgets/marco.js')
+    expect(launcher).not.toContain('passportResolved')
+    expect(checkout).not.toContain('no funds moved')
+    expect(checkout).not.toContain('onPassportResolved')
+    expect(checkout).toContain('Open MARCO Passport')
   })
 
   it('assigns https://marco.melega.ai/pay/{payment_id} and fails closed without approval_url', () => {
@@ -68,7 +76,7 @@ describe('MARCO Pay approval handoff', () => {
     const open = vi.fn(() => popup)
     vi.stubGlobal('window', { open })
     expect(openMarcoPayHandoffWindow()).toBe(popup)
-    expect(open).toHaveBeenCalledWith('about:blank', 'marco-pay', 'width=460,height=760')
+    expect(open).toHaveBeenCalledWith('', 'marco-pay', 'width=460,height=760')
     vi.unstubAllGlobals()
   })
 })

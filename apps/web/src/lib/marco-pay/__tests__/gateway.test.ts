@@ -118,6 +118,30 @@ describe('MARCO Pay merchant session', () => {
     expect(session.approvalUrl).toBe('https://marco.melega.ai/pay/pay_derived_1')
   })
 
+  it('refuses a test-mode session so checkout never settles without moving MARCO', async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          payment_id: 'pay_test_only',
+          test_mode: true,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      )
+    })
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_probe_intent_1',
+        amountMinor: '900',
+        currency: 'USD',
+        secret,
+        nowSeconds: now,
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'LIVE_SETTLEMENT_REQUIRED' })
+  })
+
   it('does not mark a payment completed and fails closed without a payment_id', async () => {
     const fetchImpl = vi.fn(async () => {
       return new Response(JSON.stringify({ ok: true, status: 'PAID' }), {

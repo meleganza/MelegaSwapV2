@@ -123,17 +123,6 @@ class MyDocument extends Document {
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" href="/main.jpg" />
           <link rel="manifest" href="/manifest.json" />
-          <script
-            src="https://marco.melega.ai/widgets/marco.js"
-            data-marco-site="dsk_fcbd4464eb8347ae8ae7472700eec0d6"
-            data-marco-widget-src="https://marco.melega.ai/widgets/marco.js"
-            defer
-          />
-          <script
-            src="https://marco.melega.ai/widgets/marco-pay-mark.v1.js"
-            data-marco-widget-src="https://marco.melega.ai/widgets/marco-pay-mark.v1.js"
-            defer
-          />
         </Head>
         <body>
           <noscript>
