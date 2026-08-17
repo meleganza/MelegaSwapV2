@@ -31,6 +31,11 @@ import {
 } from 'lib/monetization/packages'
 import { VISIBILITY_RUNTIME, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
 import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
+import {
+  assignMarcoPayHandoff,
+  openMarcoPayHandoffWindow,
+  readMarcoPayHandoffSession,
+} from 'lib/marco-pay/approval'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
@@ -56,6 +61,8 @@ type MarcoPayOrderConfig = {
   currency: string
   product: string | null
   reference: string
+  paymentId: string
+  approvalUrl: string
 }
 
 const IDENTITY_CHAINS = [
@@ -1517,16 +1524,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
   }, [address, detected, draft, signer])
 
-  const prepareMarcoPayOrder = useCallback(async (): Promise<boolean> => {
-    if (!selectedPackage || !service || !detected) return false
+  const prepareMarcoPayOrder = useCallback(async (): Promise<MarcoPayOrderConfig | null> => {
+    if (!selectedPackage || !service || !detected) return null
     if (!marcoPayReadiness?.executable) {
       setError(marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.')
-      return false
+      return null
     }
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       setWalletStage('connect')
       setError(RC_COPY.connectWallet)
-      return false
+      return null
     }
     const resolvedSlug = detected.slug ?? projectSlug
     const resolvedProjectId = projectId || resolvedSlug || detected.contract || detected.symbol
@@ -1547,6 +1554,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
       const payload = await response.json()
       if (!response.ok) throw new Error(payload.message || 'MARCO Pay is temporarily unavailable.')
+      const session = readMarcoPayHandoffSession(payload)
+      if (!session) throw new Error('MARCO Pay is temporarily unavailable.')
       const next: MarcoPayOrderConfig = {
         orderId: String(payload.order.orderId),
         application: String(payload.widget.application),
@@ -1554,14 +1563,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         currency: String(payload.widget.currency),
         product: typeof payload.widget.product === 'string' && payload.widget.product ? payload.widget.product : null,
         reference: String(payload.widget.reference),
+        paymentId: session.paymentId,
+        approvalUrl: session.approvalUrl,
       }
       setMarcoPayOrder(next)
       setOrderId(next.orderId)
       setQuoteSummary(`Order ${next.orderId} · awaiting canonical MARCO Pay settlement`)
-      return true
+      return next
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'MARCO Pay is temporarily unavailable.')
-      return false
+      return null
     } finally {
       setBusy(false)
     }
@@ -1960,7 +1971,18 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return
     }
     if (isCanonicalMarcoPayment) {
-      if (!marcoPayOrder) await prepareMarcoPayOrder()
+      const popup = openMarcoPayHandoffWindow()
+      if (!popup) {
+        setError('MARCO Pay is temporarily unavailable.')
+        return
+      }
+      const order = marcoPayOrder ?? (await prepareMarcoPayOrder())
+      const session = order?.paymentId && order?.approvalUrl
+        ? { paymentId: order.paymentId, approvalUrl: order.approvalUrl }
+        : null
+      if (!assignMarcoPayHandoff(popup, session)) {
+        setError('MARCO Pay is temporarily unavailable.')
+      }
       return
     }
     await runCheckout()
@@ -1991,7 +2013,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           <SecurePrimaryBtn
             type="button"
             onClick={() => void reviewAndPay()}
-            disabled={busy || detecting || Boolean(checkoutBlocker) || (isCanonicalMarcoPayment && Boolean(marcoPayOrder))}
+            disabled={busy || detecting || Boolean(checkoutBlocker)}
             data-testid="commercial-checkout-pay"
           >
             {busy ? 'Processing…' : isCanonicalMarcoPayment && marcoPayOrder ? 'Complete in MARCO Pay' : 'Review and pay'}
@@ -2392,6 +2414,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                           product={marcoPayOrder.product}
                           item={`${serviceMeta?.title ?? 'Melega DEX visibility'} · ${detected?.symbol ?? projectSlug}`}
                           reference={marcoPayOrder.reference}
+                          paymentId={marcoPayOrder.paymentId}
+                          approvalUrl={marcoPayOrder.approvalUrl}
                           onPassportResolved={handleMarcoPayPassport}
                           onPaymentStarted={handleMarcoPayStarted}
                           onPaymentCreated={handleMarcoPayCreated}

@@ -27,12 +27,16 @@ const handler: NextApiHandler = async (req, res) => {
     const order = await hydrateMarcoPayOrder(orderId)
     if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
     return res.status(200).json({
+      payment_id: order.paymentRef,
+      approval_url: order.approvalUrl,
       order: {
         orderId: order.orderId,
         state: order.state,
         receiptRef: order.receiptRef,
         paymentRef: order.paymentRef,
+        payment_id: order.paymentRef,
         paymentId: order.paymentRef,
+        approval_url: order.approvalUrl,
         approvalUrl: order.approvalUrl,
         testMode: order.testMode,
         activatedAt: order.activatedAt,
@@ -103,13 +107,17 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(503).json({ error: code, message })
     }
     return res.status(201).json({
+      payment_id: bound.paymentRef,
+      approval_url: bound.approvalUrl,
       order: {
         orderId: bound.orderId,
         referenceCurrency: bound.referenceCurrency,
         referenceAmountMinor: bound.referenceAmountMinor,
         productRef: bound.productRef,
         state: bound.state,
+        payment_id: bound.paymentRef,
         paymentId: bound.paymentRef,
+        approval_url: bound.approvalUrl,
         approvalUrl: bound.approvalUrl,
       },
       widget: {
@@ -118,7 +126,9 @@ const handler: NextApiHandler = async (req, res) => {
         currency: bound.referenceCurrency,
         product: bound.productRef,
         reference: bound.orderId,
+        payment_id: bound.paymentRef,
         paymentId: bound.paymentRef,
+        approval_url: bound.approvalUrl,
         approvalUrl: bound.approvalUrl,
       },
     })

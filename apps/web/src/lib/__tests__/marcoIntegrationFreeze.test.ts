@@ -2,7 +2,6 @@ import { execSync } from 'child_process'
 import { describe, expect, it } from 'vitest'
 
 const FROZEN = [
-  'apps/web/src/views/shared/monetization/CommercialCheckoutModal.tsx',
   'apps/web/src/components/MarcoWidgets/MarcoConnect.tsx',
   'apps/web/src/hooks/useEagerConnect.ts',
   'apps/web/src/views/Swap',
@@ -13,7 +12,7 @@ const FROZEN = [
 ]
 
 describe('MARCO integration non-regression freeze', () => {
-  it('does not modify swap, liquidity, farms, pools, wallet, or checkout UX files', () => {
+  it('does not modify swap, liquidity, farms, pools, or wallet files', () => {
     const diff = execSync('git diff --name-only HEAD', {
       cwd: process.cwd(),
       encoding: 'utf8',

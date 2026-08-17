@@ -91,10 +91,8 @@ function readIntentId(payload: GatewayResponse, paymentId: string): string | nul
   return trimmed && trimmed !== paymentId ? trimmed : trimmed || null
 }
 
-function readApprovalUrl(payload: GatewayResponse, paymentId: string): string {
-  const provided = (payload.approval_url || payload.approvalUrl || '').trim()
-  if (provided) return provided
-  return `${MARCO_PAY_BASE_URL}/pay/${encodeURIComponent(paymentId)}`
+function readApprovalUrl(_payload: GatewayResponse, paymentId: string): string {
+  return `${MARCO_PAY_BASE_URL}/pay/${paymentId}`
 }
 
 function parseGatewayPayload(raw: string): GatewayResponse {

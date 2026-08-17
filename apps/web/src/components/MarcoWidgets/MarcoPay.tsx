@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
+import {
+  assignMarcoPayHandoff,
+  openMarcoPayHandoffWindow,
+  readMarcoPayHandoffSession,
+  type MarcoPayHandoffSession,
+} from 'lib/marco-pay/approval'
 
 const MARCO_SITE_SRC = 'https://marco.melega.ai/widgets/marco.js'
 const MARCO_PAY_SRC = 'https://marco.melega.ai/widgets/marco-pay-mark.v1.js'
@@ -13,6 +19,8 @@ type Props = {
   product?: string | null
   item: string
   reference: string
+  paymentId?: string | null
+  approvalUrl?: string | null
   onPassportResolved?: (event: MarcoPayEvent) => void
   onPaymentStarted?: (event: MarcoPayEvent) => void
   onPaymentCreated?: (event: MarcoPayEvent) => void
@@ -24,11 +32,6 @@ const Root = styled.div`
   width: 100%;
 `
 
-type ServerSession = {
-  paymentId: string
-  approvalUrl: string
-}
-
 export const MarcoPay: React.FC<Props> = ({
   application,
   amount,
@@ -36,6 +39,8 @@ export const MarcoPay: React.FC<Props> = ({
   product,
   item,
   reference,
+  paymentId,
+  approvalUrl,
   onPassportResolved,
   onPaymentStarted,
   onPaymentCreated,
@@ -43,8 +48,11 @@ export const MarcoPay: React.FC<Props> = ({
   onError,
 }) => {
   const hostRef = useRef<HTMLDivElement | null>(null)
-  const sessionRef = useRef<ServerSession | null>(null)
+  const sessionRef = useRef<MarcoPayHandoffSession | null>(readMarcoPayHandoffSession({ payment_id: paymentId, approval_url: approvalUrl }))
   const [ready, setReady] = useState(false)
+  useEffect(() => {
+    sessionRef.current = readMarcoPayHandoffSession({ payment_id: paymentId, approval_url: approvalUrl })
+  }, [approvalUrl, paymentId])
   useEffect(() => {
     if (!application || !hostRef.current) return undefined
     let cancelled = false
@@ -73,31 +81,35 @@ export const MarcoPay: React.FC<Props> = ({
       // Kept for forward compatibility with the passport event documented by MARCO Connect.
       ['marco-pay:passportResolved', ((event: MarcoPayEvent) => onPassportResolved?.(event)) as EventListener],
     ]
-    const openServerApproval = (event: Event) => {
-      event.preventDefault()
-      event.stopPropagation()
-      const session = sessionRef.current
-      if (!session) return
-      onPaymentStarted?.(new CustomEvent('marco-pay-mark:launch', { detail: { paymentId: session.paymentId } }))
-      window.open(session.approvalUrl, 'marco-pay', 'noopener,width=460,height=760')
-      onPaymentCreated?.(new CustomEvent('marco-pay:paymentCreated', { detail: { paymentId: session.paymentId } }))
-    }
-    const loadSession = async (): Promise<ServerSession | null> => {
+    const loadSession = async (): Promise<MarcoPayHandoffSession | null> => {
+      if (sessionRef.current) return sessionRef.current
       for (let attempt = 0; attempt < 4 && !cancelled; attempt += 1) {
         const response = await fetch(`/api/marco-pay/orders?orderId=${encodeURIComponent(reference)}`, {
           cache: 'no-store',
         })
         if (response.ok) {
-          const payload = (await response.json()) as {
-            order?: { paymentId?: string | null; approvalUrl?: string | null }
-          }
-          const paymentId = String(payload.order?.paymentId || '').trim()
-          const approvalUrl = String(payload.order?.approvalUrl || '').trim()
-          if (paymentId && approvalUrl) return { paymentId, approvalUrl }
+          const payload = await response.json()
+          const session = readMarcoPayHandoffSession(payload)
+          if (session) return session
         }
         await new Promise((resolve) => window.setTimeout(resolve, 250 * (attempt + 1)))
       }
       return null
+    }
+    const openServerApproval = (event: Event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      const popup = openMarcoPayHandoffWindow()
+      void (async () => {
+        const session = sessionRef.current ?? (await loadSession())
+        sessionRef.current = session
+        if (!session || !assignMarcoPayHandoff(popup, session)) {
+          onError?.(new Error('MARCO Pay is temporarily unavailable.'))
+          return
+        }
+        onPaymentStarted?.(new CustomEvent('marco-pay-mark:launch', { detail: { paymentId: session.paymentId } }))
+        onPaymentCreated?.(new CustomEvent('marco-pay:paymentCreated', { detail: { paymentId: session.paymentId } }))
+      })()
     }
     void loadMarcoWidgetScript(
       MARCO_SITE_SRC,
@@ -151,6 +163,8 @@ export const MarcoPay: React.FC<Props> = ({
     product,
     item,
     reference,
+    paymentId,
+    approvalUrl,
     onError,
     onPassportResolved,
     onPaymentCompleted,
