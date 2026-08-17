@@ -1,7 +1,6 @@
 import { createHmac } from 'crypto'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
-  MARCO_PAY_CREATE_PATH,
   MARCO_PAY_SESSION_PATH,
   buildMarcoPayCreateBody,
   createMarcoPayPaymentSession,
@@ -47,17 +46,19 @@ describe('MARCO Pay merchant session', () => {
     ).toThrowError(MarcoPayGatewayError)
   })
 
-  it('signs v1.<timestamp>.<raw_body> and never puts the secret in the request', async () => {
+  it('POSTs HMAC-signed /api/public/pay/session and never puts the secret in the request', async () => {
     const rawBody = buildMarcoPayCreateBody({
       applicationRef,
       merchantOrderRef: 'mp_probe_intent_1',
       amountMinor: '900',
       currency: 'USD',
+      item: 'trend-boost',
     })
     const expected = signedFor(rawBody)
     const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
       const headers = new Headers(init?.headers)
-      expect(String(url)).toContain(MARCO_PAY_CREATE_PATH)
+      expect(String(url)).toBe('https://marco.melega.ai/api/public/pay/session')
+      expect(String(url)).toContain(MARCO_PAY_SESSION_PATH)
       expect(headers.get('marco-application')).toBe(applicationRef)
       expect(headers.get('marco-timestamp')).toBe(expected.timestamp)
       expect(headers.get('marco-signature')).toBe(expected.signature)
@@ -66,11 +67,18 @@ describe('MARCO Pay merchant session', () => {
       )
       expect(JSON.stringify(Object.fromEntries(headers.entries()))).not.toContain(secret)
       expect(String(init?.body)).toBe(rawBody)
+      expect(JSON.parse(String(init?.body))).toEqual({
+        application_ref: applicationRef,
+        merchant_order_ref: 'mp_probe_intent_1',
+        amount_minor: '900',
+        currency: 'USD',
+        item: 'trend-boost',
+      })
       return new Response(
         JSON.stringify({
           ok: true,
-          payment_id: 'pay_live_intent_1',
-          approval_url: 'https://marco.melega.ai/pay/pay_live_intent_1',
+          payment_id: 'pay_live_session_1',
+          approval_url: 'https://marco.melega.ai/pay/pay_live_session_1',
         }),
         { status: 200, headers: { 'content-type': 'application/json' } },
       )
@@ -81,35 +89,23 @@ describe('MARCO Pay merchant session', () => {
       merchantOrderRef: 'mp_probe_intent_1',
       amountMinor: '900',
       currency: 'USD',
+      item: 'trend-boost',
       secret,
       nowSeconds: now,
       fetchImpl: fetchImpl as unknown as typeof fetch,
     })
-    expect(session.paymentId).toBe('pay_live_intent_1')
-    expect(session.approvalUrl).toBe('https://marco.melega.ai/pay/pay_live_intent_1')
-    expect(session.source).toBe('create')
+    expect(session.paymentId).toBe('pay_live_session_1')
+    expect(session.approvalUrl).toBe('https://marco.melega.ai/pay/pay_live_session_1')
     expect(fetchImpl).toHaveBeenCalledTimes(1)
   })
 
-  it('falls back to /api/public/pay/session when create returns GATEWAY_INVALID_REQUEST', async () => {
-    const fetchImpl = vi.fn(async (url: string) => {
-      if (String(url).includes(MARCO_PAY_CREATE_PATH)) {
-        return new Response(
-          JSON.stringify({
-            ok: false,
-            error: 'GATEWAY_INVALID_REQUEST',
-            message: 'The request body is not a valid MARCO Pay create request.',
-          }),
-          { status: 400, headers: { 'content-type': 'application/json' } },
-        )
-      }
-      expect(String(url)).toContain(MARCO_PAY_SESSION_PATH)
-      return new Response(
-        JSON.stringify({ ok: true, payment_id: 'pay_session_intent_1' }),
-        { status: 200, headers: { 'content-type': 'application/json' } },
-      )
+  it('builds approval_url from payment_id when MARCO omits it', async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(JSON.stringify({ ok: true, payment_id: 'pay_derived_1' }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })
     })
-
     const session = await createMarcoPayPaymentSession({
       applicationRef,
       merchantOrderRef: 'mp_probe_intent_1',
@@ -119,10 +115,7 @@ describe('MARCO Pay merchant session', () => {
       nowSeconds: now,
       fetchImpl: fetchImpl as unknown as typeof fetch,
     })
-    expect(session.paymentId).toBe('pay_session_intent_1')
-    expect(session.approvalUrl).toBe('https://marco.melega.ai/pay/pay_session_intent_1')
-    expect(session.source).toBe('session')
-    expect(fetchImpl).toHaveBeenCalledTimes(2)
+    expect(session.approvalUrl).toBe('https://marco.melega.ai/pay/pay_derived_1')
   })
 
   it('does not mark a payment completed and fails closed without a payment_id', async () => {
@@ -145,7 +138,7 @@ describe('MARCO Pay merchant session', () => {
     ).rejects.toMatchObject({ code: 'NOT_EXECUTABLE' })
   })
 
-  it('surfaces SESSION_SIGNATURE_INVALID from a signed create refusal', async () => {
+  it('surfaces SESSION_SIGNATURE_INVALID from MARCO', async () => {
     const fetchImpl = vi.fn(async () => {
       return new Response(
         JSON.stringify({

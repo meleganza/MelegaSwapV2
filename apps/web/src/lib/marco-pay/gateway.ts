@@ -1,7 +1,6 @@
 import { createHmac } from 'crypto'
 import { MARCO_PAY_BASE_URL, MARCO_PAY_SIGNATURE_VERSION } from './contract'
 
-export const MARCO_PAY_CREATE_PATH = '/api/public/marco-pay/create'
 export const MARCO_PAY_SESSION_PATH = '/api/public/pay/session'
 export const MARCO_PAY_MERCHANT_ORDER_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{5,119}$/
 
@@ -16,7 +15,6 @@ export type MarcoPayPaymentSession = {
   paymentId: string
   intentId: string | null
   approvalUrl: string
-  source: 'create' | 'session'
 }
 
 type GatewayResponse = {
@@ -143,7 +141,7 @@ async function postSignedMarcoPay(
   return { status: response.status, payload: parseGatewayPayload(raw) }
 }
 
-function sessionFromPayload(payload: GatewayResponse, source: MarcoPayPaymentSession['source']): MarcoPayPaymentSession {
+function sessionFromPayload(payload: GatewayResponse): MarcoPayPaymentSession {
   const paymentId = readPaymentId(payload)
   if (!payload.ok || !paymentId) {
     throw new MarcoPayGatewayError(
@@ -155,7 +153,6 @@ function sessionFromPayload(payload: GatewayResponse, source: MarcoPayPaymentSes
     paymentId,
     intentId: readIntentId(payload, paymentId),
     approvalUrl: readApprovalUrl(payload, paymentId),
-    source,
   }
 }
 
@@ -175,38 +172,18 @@ export async function createMarcoPayPaymentSession(input: {
   const rawBody = buildMarcoPayCreateBody(input)
   const timestampSeconds = input.nowSeconds ?? Math.floor(Date.now() / 1000)
   const fetchImpl = input.fetchImpl ?? fetch
-  const signed = {
+  const session = await postSignedMarcoPay(MARCO_PAY_SESSION_PATH, {
     applicationRef: input.applicationRef,
     rawBody,
     secret: input.secret,
     timestampSeconds,
     fetchImpl,
-  }
-
-  // The mission names /api/public/marco-pay/create. Live MARCO currently
-  // rejects that body with GATEWAY_INVALID_REQUEST; the published embed
-  // contract creates the payment at /api/public/pay/session.
-  try {
-    const created = await postSignedMarcoPay(MARCO_PAY_CREATE_PATH, signed)
-    if (created.payload.ok && readPaymentId(created.payload)) {
-      return sessionFromPayload(created.payload, 'create')
-    }
-    if (created.payload.error && created.payload.error !== 'GATEWAY_INVALID_REQUEST') {
-      throw new MarcoPayGatewayError(
-        created.payload.error,
-        created.payload.message || 'MARCO Pay could not create this payment.',
-      )
-    }
-  } catch (cause) {
-    if (cause instanceof MarcoPayGatewayError && cause.code !== 'GATEWAY_INVALID_RESPONSE') throw cause
-  }
-
-  const session = await postSignedMarcoPay(MARCO_PAY_SESSION_PATH, signed)
+  })
   if (!session.payload.ok) {
     throw new MarcoPayGatewayError(
       session.payload.error || 'NOT_EXECUTABLE',
       session.payload.message || 'MARCO Pay could not create this payment.',
     )
   }
-  return sessionFromPayload(session.payload, 'session')
+  return sessionFromPayload(session.payload)
 }
