@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   MARCO_PAY_HEADERS,
   MarcoPayVerificationError,
+  verifyMarcoPaySignedEvent,
   verifyMarcoPayWebhook,
   type MarcoPayCompletedEvent,
 } from '../contract'
@@ -89,5 +90,58 @@ describe('MARCO Pay MP103 webhook contract', () => {
       signature: 'marco-signature',
       signatureVersion: 'marco-signature-version',
     })
+  })
+
+  it('acknowledges signed payment.failed without treating it as completed', () => {
+    const failed = {
+      event_id: '00000000-0000-4000-8000-000000000002',
+      event_type: 'payment.failed' as const,
+      event_version: '1',
+      created_at: '2026-08-15T05:00:00.000Z',
+      application_ref: applicationRef,
+      payment_ref: 'pay_failed_1',
+      intent_ref: 'intent_failed_1',
+      product_ref: null,
+      merchant_order_ref: 'mp_test_1',
+      reference_currency: 'USD',
+      reference_amount_minor: '900',
+      marco_amount_minor: '2840000',
+      status: 'FAILED',
+      test_mode: true,
+      receipt_ref: null,
+    }
+    const rawBody = Buffer.from(JSON.stringify(failed))
+    const timestamp = String(now)
+    const digest = createHmac('sha256', secret).update(`v1.${timestamp}.${rawBody.toString('utf8')}`).digest('hex')
+    const signedEvent = verifyMarcoPaySignedEvent({
+      rawBody,
+      secret,
+      expectedApplicationRef: applicationRef,
+      nowSeconds: now,
+      headers: {
+        eventId: failed.event_id,
+        eventType: failed.event_type,
+        timestamp,
+        signature: `v1=${digest}`,
+        signatureVersion: 'v1',
+      },
+    })
+    expect(signedEvent.kind).toBe('lifecycle')
+    expect(signedEvent.kind === 'lifecycle' && signedEvent.event.event_type).toBe('payment.failed')
+    expect(() =>
+      verifyMarcoPayWebhook({
+        rawBody,
+        secret,
+        expectedApplicationRef: applicationRef,
+        nowSeconds: now,
+        headers: {
+          eventId: failed.event_id,
+          eventType: failed.event_type,
+          timestamp,
+          signature: `v1=${digest}`,
+          signatureVersion: 'v1',
+        },
+      }),
+    ).toThrowError(MarcoPayVerificationError)
   })
 })

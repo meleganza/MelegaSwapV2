@@ -3,7 +3,7 @@ import {
   getMarcoPayApplicationRef,
   MARCO_PAY_HEADERS,
   MarcoPayVerificationError,
-  verifyMarcoPayWebhook,
+  verifyMarcoPaySignedEvent,
 } from 'lib/marco-pay/contract'
 import {
   CONNECTION_GRANT_HEADER,
@@ -11,7 +11,7 @@ import {
   isConnectionGrantRequest,
   resolveMarcoPayWebhookSecret,
 } from 'lib/marco-pay/connectionGrant'
-import { processMarcoPayCompletedEvent } from 'lib/marco-pay/orders'
+import { processMarcoPaySignedEvent } from 'lib/marco-pay/orders'
 import { recordSignedTestWebhook } from 'lib/marco-pay/readiness'
 
 export const config = {
@@ -52,7 +52,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
     const secret = await resolveMarcoPayWebhookSecret()
     if (!secret) return res.status(503).json({ error: 'WEBHOOK_NOT_CONFIGURED' })
-    const event = verifyMarcoPayWebhook({
+    const signed = verifyMarcoPaySignedEvent({
       rawBody,
       secret,
       expectedApplicationRef: applicationRef,
@@ -64,13 +64,13 @@ const handler: NextApiHandler = async (req, res) => {
         signatureVersion: req.headers[MARCO_PAY_HEADERS.signatureVersion],
       },
     })
-    const result = await processMarcoPayCompletedEvent(event)
-    if (event.test_mode) {
+    const result = await processMarcoPaySignedEvent(signed)
+    if (signed.kind === 'completed' && signed.event.test_mode) {
       await recordSignedTestWebhook({
         schema: 'melega.marco-pay-test-health.v1',
-        eventId: event.event_id,
-        paymentRef: event.payment_ref,
-        applicationRef: event.application_ref,
+        eventId: signed.event.event_id,
+        paymentRef: signed.event.payment_ref,
+        applicationRef: signed.event.application_ref,
         verifiedAt: new Date().toISOString(),
         activated: false,
       })
@@ -79,7 +79,8 @@ const handler: NextApiHandler = async (req, res) => {
       received: true,
       duplicate: result.duplicate,
       testMode: result.testMode,
-      activated: result.order?.state === 'ACTIVE',
+      activated: result.activated,
+      effect: result.effect,
     })
   } catch (cause) {
     const code = cause instanceof MarcoPayVerificationError ? cause.code : cause instanceof Error ? cause.message : 'ERROR'

@@ -66,6 +66,7 @@ let clearMarcoPayOrdersForTests: () => void
 let createMarcoPayOrder: (input: any) => Promise<any>
 let getMarcoPayOrder: (orderId: string) => any
 let processMarcoPayCompletedEvent: (event: MarcoPayCompletedEvent) => Promise<any>
+let processMarcoPaySignedEvent: (signed: any) => Promise<any>
 
 const applicationRef = 'app_sedafoqw6qlxyxb9l8ds'
 
@@ -97,7 +98,7 @@ describe('MARCO Pay fulfilment', () => {
   beforeAll(async () => {
     ;({ clearFeaturedOrdersForTests } = await import('lib/featured-placement/orderStore'))
     ;({ clearTrendBoostOrdersForTests, getTrendBoostOrder } = await import('lib/monetization/trendBoostOrders'))
-    ;({ clearMarcoPayOrdersForTests, createMarcoPayOrder, getMarcoPayOrder, processMarcoPayCompletedEvent } =
+    ;({ clearMarcoPayOrdersForTests, createMarcoPayOrder, getMarcoPayOrder, processMarcoPayCompletedEvent, processMarcoPaySignedEvent } =
       await import('../orders'))
   })
   beforeEach(() => {
@@ -170,5 +171,77 @@ describe('MARCO Pay fulfilment', () => {
       processMarcoPayCompletedEvent(eventFor(order.orderId, { reference_amount_minor: '899', test_mode: false })),
     ).rejects.toThrow('ORDER_AMOUNT_MISMATCH')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('marks a failed payment without activating and ignores a duplicate failure', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    const failed = {
+      kind: 'lifecycle' as const,
+      event: {
+        event_id: '00000000-0000-4000-8000-000000000011',
+        event_type: 'payment.failed' as const,
+        event_version: '1' as const,
+        created_at: new Date().toISOString(),
+        application_ref: applicationRef,
+        payment_ref: 'pay_failed_order',
+        intent_ref: 'intent_failed_order',
+        product_ref: null,
+        merchant_order_ref: order.orderId,
+        reference_currency: 'USD',
+        reference_amount_minor: '900',
+        marco_amount_minor: '2840000',
+        status: 'FAILED',
+        test_mode: false,
+        receipt_ref: null,
+      },
+    }
+    const first = await processMarcoPaySignedEvent(failed)
+    const second = await processMarcoPaySignedEvent(failed)
+    expect(first.effect).toBe('failed')
+    expect(first.activated).toBe(false)
+    expect(second.duplicate).toBe(true)
+    expect(getMarcoPayOrder(order.orderId)?.state).toBe('FAILED')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('does not let payment.created or payment.pending mark an order paid', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    for (const event_type of ['payment.created', 'payment.pending'] as const) {
+      const result = await processMarcoPaySignedEvent({
+        kind: 'lifecycle',
+        event: {
+          event_id: `00000000-0000-4000-8000-00000000001${event_type === 'payment.created' ? '2' : '3'}`,
+          event_type,
+          event_version: '1',
+          created_at: new Date().toISOString(),
+          application_ref: applicationRef,
+          payment_ref: 'pay_early',
+          intent_ref: 'intent_early',
+          product_ref: null,
+          merchant_order_ref: order.orderId,
+          reference_currency: 'USD',
+          reference_amount_minor: '900',
+          marco_amount_minor: '2840000',
+          status: event_type === 'payment.created' ? 'CREATED' : 'PENDING',
+          test_mode: false,
+          receipt_ref: null,
+        },
+      })
+      expect(result.activated).toBe(false)
+      expect(result.effect).toBe('acknowledged')
+    }
+    expect(getMarcoPayOrder(order.orderId)?.state).toBe('CREATED')
   })
 })

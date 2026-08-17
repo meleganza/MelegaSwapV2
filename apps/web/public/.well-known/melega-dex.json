@@ -1,0 +1,24 @@
+{
+  "schema": "melega.dex-manifest.v1",
+  "name": "Melega DEX",
+  "origin": "https://www.melega.finance",
+  "live_manifest": "/api/public/dex-manifest/",
+  "marco_pay": {
+    "enabled": true,
+    "merchant_id": "app_sedafoqw6qlxyxb9l8ds",
+    "application_ref": "app_sedafoqw6qlxyxb9l8ds",
+    "base_url": "https://marco.melega.ai",
+    "callback_url": "https://www.melega.finance/api/marco-pay/webhook/"
+  },
+  "marco_connect": {
+    "enabled": true,
+    "payment_requires_passport": false
+  },
+  "discovery": [
+    "/.well-known/melega-dex-manifest.json",
+    "/.well-known/melega-dex-discovery.json",
+    "/.well-known/melega-dex-machine.json",
+    "/api/marco-pay/readiness/",
+    "/api/marco-connect/identity/"
+  ]
+}

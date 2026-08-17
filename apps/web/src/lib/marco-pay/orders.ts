@@ -21,7 +21,7 @@ import {
   type VisibilityProductId,
 } from 'lib/monetization/packages'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
-import type { MarcoPayCompletedEvent } from './contract'
+import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
 
 export type MarcoPayOrderState =
   | 'CREATED'
@@ -359,6 +359,83 @@ export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEven
   })
   if (!confirmed) throw new Error('ORDER_NOT_FOUND')
   return { duplicate: false, order: await activateOrder(confirmed), testMode: false }
+}
+
+export type MarcoPayEventResult = {
+  duplicate: boolean
+  order: MarcoPayOrder | null
+  testMode: boolean
+  activated: boolean
+  effect: 'activated' | 'test_verified' | 'failed' | 'acknowledged' | 'none'
+}
+
+async function processMarcoPayLifecycleEvent(event: MarcoPayLifecycleEvent): Promise<MarcoPayEventResult> {
+  const eventClaimed = await claimOnce('event', event.event_id)
+  const existing = event.merchant_order_ref ? await hydrateMarcoPayOrder(event.merchant_order_ref) : null
+  if (!eventClaimed) {
+    return {
+      duplicate: true,
+      order: existing,
+      testMode: event.test_mode,
+      activated: existing?.state === 'ACTIVE',
+      effect: 'none',
+    }
+  }
+
+  const terminalFailure =
+    event.event_type === 'payment.failed' ||
+    event.event_type === 'payment.expired' ||
+    event.event_type === 'payment.refunded'
+
+  if (terminalFailure && existing) {
+    if (existing.state === 'ACTIVE' || existing.state === 'TEST_VERIFIED') {
+      return {
+        duplicate: false,
+        order: existing,
+        testMode: event.test_mode,
+        activated: existing.state === 'ACTIVE',
+        effect: 'acknowledged',
+      }
+    }
+    const failed = await updateMarcoPayOrder(existing.orderId, {
+      state: 'FAILED',
+      paymentRef: event.payment_ref,
+      intentRef: event.intent_ref,
+      receiptRef: event.receipt_ref,
+      marcoAmountMinor: event.marco_amount_minor,
+      testMode: event.test_mode,
+      lastError: event.event_type,
+    })
+    return {
+      duplicate: false,
+      order: failed,
+      testMode: event.test_mode,
+      activated: false,
+      effect: 'failed',
+    }
+  }
+
+  return {
+    duplicate: false,
+    order: existing,
+    testMode: event.test_mode,
+    activated: false,
+    effect: 'acknowledged',
+  }
+}
+
+export async function processMarcoPaySignedEvent(signed: MarcoPaySignedEvent): Promise<MarcoPayEventResult> {
+  if (signed.kind === 'completed') {
+    const result = await processMarcoPayCompletedEvent(signed.event)
+    return {
+      duplicate: result.duplicate,
+      order: result.order,
+      testMode: result.testMode,
+      activated: result.order?.state === 'ACTIVE',
+      effect: result.testMode ? 'test_verified' : result.order?.state === 'ACTIVE' ? 'activated' : 'none',
+    }
+  }
+  return processMarcoPayLifecycleEvent(signed.event)
 }
 
 export function clearMarcoPayOrdersForTests() {
