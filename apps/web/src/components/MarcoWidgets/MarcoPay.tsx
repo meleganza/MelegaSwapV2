@@ -24,6 +24,11 @@ const Root = styled.div`
   width: 100%;
 `
 
+type ServerSession = {
+  paymentId: string
+  approvalUrl: string
+}
+
 export const MarcoPay: React.FC<Props> = ({
   application,
   amount,
@@ -38,6 +43,7 @@ export const MarcoPay: React.FC<Props> = ({
   onError,
 }) => {
   const hostRef = useRef<HTMLDivElement | null>(null)
+  const sessionRef = useRef<ServerSession | null>(null)
   const [ready, setReady] = useState(false)
   useEffect(() => {
     if (!application || !hostRef.current) return undefined
@@ -67,18 +73,49 @@ export const MarcoPay: React.FC<Props> = ({
       // Kept for forward compatibility with the passport event documented by MARCO Connect.
       ['marco-pay:passportResolved', ((event: MarcoPayEvent) => onPassportResolved?.(event)) as EventListener],
     ]
+    const openServerApproval = (event: Event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      const session = sessionRef.current
+      if (!session) return
+      onPaymentStarted?.(new CustomEvent('marco-pay-mark:launch', { detail: { paymentId: session.paymentId } }))
+      window.open(session.approvalUrl, 'marco-pay', 'noopener,width=460,height=760')
+      onPaymentCreated?.(new CustomEvent('marco-pay:paymentCreated', { detail: { paymentId: session.paymentId } }))
+    }
+    const loadSession = async (): Promise<ServerSession | null> => {
+      for (let attempt = 0; attempt < 4 && !cancelled; attempt += 1) {
+        const response = await fetch(`/api/marco-pay/orders?orderId=${encodeURIComponent(reference)}`, {
+          cache: 'no-store',
+        })
+        if (response.ok) {
+          const payload = (await response.json()) as {
+            order?: { paymentId?: string | null; approvalUrl?: string | null }
+          }
+          const paymentId = String(payload.order?.paymentId || '').trim()
+          const approvalUrl = String(payload.order?.approvalUrl || '').trim()
+          if (paymentId && approvalUrl) return { paymentId, approvalUrl }
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 250 * (attempt + 1)))
+      }
+      return null
+    }
     void loadMarcoWidgetScript(
       MARCO_SITE_SRC,
       () => Boolean(document.querySelector(`script[src="${MARCO_SITE_SRC}"]`)),
       { 'data-marco-site': MARCO_SITE_ID },
     )
       .then(() => loadMarcoWidgetScript(MARCO_PAY_SRC, () => Boolean(window.customElements?.get('marco-pay-mark'))))
-      .then(
-        () => {
+      .then(async () => {
+        try {
+          const session = await loadSession()
           if (cancelled || !hostRef.current) return
-          // The public mark is the canonical launcher. It loads the single
-          // MARCO Pay runtime on demand and carries only server-authorised
-          // checkout context into that runtime.
+          if (!session) {
+            onError?.(new Error('MARCO Pay is temporarily unavailable.'))
+            return
+          }
+          sessionRef.current = session
+          // The public mark stays the visible launcher. The unsigned embed
+          // runtime is intercepted so approval opens the server-created payment.
           element = document.createElement('marco-pay-mark')
           element.setAttribute('mode', 'button')
           element.setAttribute('size', 'large')
@@ -92,14 +129,18 @@ export const MarcoPay: React.FC<Props> = ({
           element.setAttribute('theme', 'dark')
           listeners.forEach(([name, listener]) => element?.addEventListener(name, listener))
           hostRef.current.replaceChildren(element)
+          hostRef.current.addEventListener('click', openServerApproval, true)
           setReady(true)
-        },
-        (cause) => {
+        } catch (cause) {
           if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause)))
-        },
-      )
+        }
+      }, (cause) => {
+        if (!cancelled) onError?.(cause instanceof Error ? cause : new Error(String(cause)))
+      })
     return () => {
       cancelled = true
+      sessionRef.current = null
+      hostRef.current?.removeEventListener('click', openServerApproval, true)
       listeners.forEach(([name, listener]) => element?.removeEventListener(name, listener))
       element?.remove()
     }

@@ -1,9 +1,12 @@
 import type { NextApiHandler } from 'next'
 import { getMarcoPayApplicationRef } from 'lib/marco-pay/contract'
+import { resolveMarcoPayWebhookSecret } from 'lib/marco-pay/connectionGrant'
+import { createMarcoPayPaymentSession, MarcoPayGatewayError } from 'lib/marco-pay/gateway'
 import {
   createMarcoPayOrder,
   hydrateMarcoPayOrder,
   marcoPayStorageReady,
+  updateMarcoPayOrder,
   type MarcoPayOrder,
 } from 'lib/marco-pay/orders'
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
@@ -29,6 +32,8 @@ const handler: NextApiHandler = async (req, res) => {
         state: order.state,
         receiptRef: order.receiptRef,
         paymentRef: order.paymentRef,
+        paymentId: order.paymentRef,
+        approvalUrl: order.approvalUrl,
         testMode: order.testMode,
         activatedAt: order.activatedAt,
         lastError: order.lastError,
@@ -69,20 +74,52 @@ const handler: NextApiHandler = async (req, res) => {
       packageId: body.packageId ? String(body.packageId) : null,
       targetId,
     })
+    const secret = await resolveMarcoPayWebhookSecret()
+    if (!secret) {
+      return res.status(503).json({ error: 'MARCO_PAY_UNAVAILABLE', message: 'MARCO Pay signing secret is not configured.' })
+    }
+    let bound = order
+    try {
+      const session = await createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: order.orderId,
+        amountMinor: order.referenceAmountMinor,
+        currency: order.referenceCurrency,
+        item: order.serviceId,
+        secret,
+      })
+      bound =
+        (await updateMarcoPayOrder(order.orderId, {
+          paymentRef: session.paymentId,
+          intentRef: session.intentId,
+          approvalUrl: session.approvalUrl,
+        })) ?? order
+      if (!bound.paymentRef || !bound.approvalUrl) {
+        return res.status(503).json({ error: 'MARCO_PAY_INTENT_UNAVAILABLE', message: 'MARCO Pay did not return a payment session.' })
+      }
+    } catch (cause) {
+      const code = cause instanceof MarcoPayGatewayError ? cause.code : 'MARCO_PAY_INTENT_UNAVAILABLE'
+      const message = cause instanceof Error ? cause.message : 'MARCO Pay could not create this payment.'
+      return res.status(503).json({ error: code, message })
+    }
     return res.status(201).json({
       order: {
-        orderId: order.orderId,
-        referenceCurrency: order.referenceCurrency,
-        referenceAmountMinor: order.referenceAmountMinor,
-        productRef: order.productRef,
-        state: order.state,
+        orderId: bound.orderId,
+        referenceCurrency: bound.referenceCurrency,
+        referenceAmountMinor: bound.referenceAmountMinor,
+        productRef: bound.productRef,
+        state: bound.state,
+        paymentId: bound.paymentRef,
+        approvalUrl: bound.approvalUrl,
       },
       widget: {
-        application: order.applicationRef,
-        amount: order.referenceAmountMinor,
-        currency: order.referenceCurrency,
-        product: order.productRef,
-        reference: order.orderId,
+        application: bound.applicationRef,
+        amount: bound.referenceAmountMinor,
+        currency: bound.referenceCurrency,
+        product: bound.productRef,
+        reference: bound.orderId,
+        paymentId: bound.paymentRef,
+        approvalUrl: bound.approvalUrl,
       },
     })
   } catch (cause) {

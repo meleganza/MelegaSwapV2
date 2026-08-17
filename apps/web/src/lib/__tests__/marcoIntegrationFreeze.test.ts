@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest'
 const FROZEN = [
   'apps/web/src/views/shared/monetization/CommercialCheckoutModal.tsx',
   'apps/web/src/components/MarcoWidgets/MarcoConnect.tsx',
-  'apps/web/src/components/MarcoWidgets/MarcoPay.tsx',
   'apps/web/src/hooks/useEagerConnect.ts',
   'apps/web/src/views/Swap',
   'apps/web/src/views/Farms',

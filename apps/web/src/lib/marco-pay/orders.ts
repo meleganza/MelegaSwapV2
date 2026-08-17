@@ -50,6 +50,7 @@ export type MarcoPayOrder = {
   legacyOrderId: string
   paymentRef: string | null
   intentRef: string | null
+  approvalUrl: string | null
   receiptRef: string | null
   marcoAmountMinor: string | null
   testMode: boolean | null
@@ -95,8 +96,9 @@ function persistLocal(order: MarcoPayOrder) {
 
 function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
   if (!order || order.schema !== 'melega.marco-pay-order.v1') return null
-  MEMORY.set(order.orderId, order)
-  return order
+  const next = { ...order, approvalUrl: order.approvalUrl ?? null }
+  MEMORY.set(next.orderId, next)
+  return next
 }
 
 export function marcoPayStorageReady(): boolean {
@@ -213,6 +215,7 @@ export async function createMarcoPayOrder(input: {
     legacyOrderId,
     paymentRef: null,
     intentRef: null,
+    approvalUrl: null,
     receiptRef: null,
     marcoAmountMinor: null,
     testMode: null,
