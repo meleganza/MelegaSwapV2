@@ -1,7 +1,8 @@
 import type { NextApiHandler } from 'next'
 import { getMarcoPayApplicationRef } from 'lib/marco-pay/contract'
 import { resolveMarcoPayWebhookSecret } from 'lib/marco-pay/connectionGrant'
-import { createMarcoPayPaymentSession, MarcoPayGatewayError } from 'lib/marco-pay/gateway'
+import { createMarcoPayPaymentSession, MarcoPayGatewayError, quoteMarcoPayConversion } from 'lib/marco-pay/gateway'
+import { assertMarcoPaySettlementWallet } from 'lib/marco-pay/settlement'
 import {
   createMarcoPayOrder,
   hydrateMarcoPayOrder,
@@ -82,8 +83,19 @@ const handler: NextApiHandler = async (req, res) => {
     if (!secret) {
       return res.status(503).json({ error: 'MARCO_PAY_UNAVAILABLE', message: 'MARCO Pay signing secret is not configured.' })
     }
+    try {
+      assertMarcoPaySettlementWallet()
+    } catch {
+      return res.status(503).json({ error: 'SETTLEMENT_WALLET_INVALID', message: 'MARCO Pay is temporarily unavailable.' })
+    }
     let bound = order
     try {
+      await quoteMarcoPayConversion({
+        applicationRef,
+        amountMinor: order.referenceAmountMinor,
+        currency: order.referenceCurrency,
+        item: order.serviceId,
+      })
       const session = await createMarcoPayPaymentSession({
         applicationRef,
         merchantOrderRef: order.orderId,

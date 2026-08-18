@@ -4,6 +4,7 @@ import {
   MARCO_PAY_SESSION_PATH,
   buildMarcoPayCreateBody,
   createMarcoPayPaymentSession,
+  quoteMarcoPayConversion,
   signMarcoPayMerchantRequest,
   MarcoPayGatewayError,
 } from '../gateway'
@@ -19,6 +20,8 @@ function signedFor(rawBody: string) {
 describe('MARCO Pay merchant session', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    delete process.env.MARCO_DEX_RECEIVING_WALLET
+    delete process.env.MARCO_TREASURY_SETTLEMENT_WALLET
   })
 
   it('owns amount, merchant_order_ref and merchant identifier in the signed body', () => {
@@ -36,6 +39,7 @@ describe('MARCO Pay merchant session', () => {
       currency: 'USD',
       item: 'trend-boost',
     })
+    expect(rawBody).not.toContain('marco_amount_minor')
     expect(() =>
       buildMarcoPayCreateBody({
         applicationRef,
@@ -140,6 +144,74 @@ describe('MARCO Pay merchant session', () => {
         fetchImpl: fetchImpl as unknown as typeof fetch,
       }),
     ).rejects.toMatchObject({ code: 'LIVE_SETTLEMENT_REQUIRED' })
+  })
+
+  it('rejects a quote that copies USD into the displayed MARCO amount', async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          quote: { amountLabel: 'USD 79', marcoAmountLabel: '79 MARCO' },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      )
+    })
+    await expect(
+      quoteMarcoPayConversion({
+        applicationRef,
+        amountMinor: '7900',
+        currency: 'USD',
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'MARCO_CONVERSION_INVALID' })
+  })
+
+  it('rejects a session that settles to a sentinel wallet', async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          payment_id: 'pay_sentinel',
+          receiving_wallet: '0xdE00000000000000000000000000000000000001',
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      )
+    })
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_probe_intent_1',
+        amountMinor: '900',
+        currency: 'USD',
+        secret,
+        nowSeconds: now,
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'SETTLEMENT_WALLET_NOT_TREASURY' })
+  })
+
+  it('rejects a session that copies the USD amount as the MARCO quantity', async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          payment_id: 'pay_copied_usd',
+          marco_amount_minor: '900',
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      )
+    })
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_probe_intent_1',
+        amountMinor: '900',
+        currency: 'USD',
+        secret,
+        nowSeconds: now,
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'MARCO_CONVERSION_INVALID' })
   })
 
   it('does not mark a payment completed and fails closed without a payment_id', async () => {

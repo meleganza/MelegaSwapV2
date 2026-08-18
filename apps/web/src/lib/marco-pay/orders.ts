@@ -22,6 +22,7 @@ import {
 } from 'lib/monetization/packages'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
+import { usdCopiedToMarco } from './settlement'
 
 export type MarcoPayOrderState =
   | 'CREATED'
@@ -261,6 +262,12 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
   if (event.reference_amount_minor !== order.referenceAmountMinor) throw new Error('ORDER_AMOUNT_MISMATCH')
   if (order.productRef && event.product_ref !== order.productRef) throw new Error('ORDER_PRODUCT_MISMATCH')
   if (!event.test_mode && !event.receipt_ref) throw new Error('RECEIPT_REQUIRED')
+  if (
+    !event.test_mode &&
+    usdCopiedToMarco({ usdMinor: event.reference_amount_minor, marcoMinor: event.marco_amount_minor })
+  ) {
+    throw new Error('MARCO_CONVERSION_INVALID')
+  }
 }
 
 async function activateOrder(order: MarcoPayOrder): Promise<MarcoPayOrder> {

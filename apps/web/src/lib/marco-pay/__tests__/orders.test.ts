@@ -173,6 +173,20 @@ describe('MARCO Pay fulfilment', () => {
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 
+  it('never activates when MARCO amount is copied from USD', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { marco_amount_minor: '900', test_mode: false })),
+    ).rejects.toThrow('MARCO_CONVERSION_INVALID')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
   it('marks a failed payment without activating and ignores a duplicate failure', async () => {
     const order = await createMarcoPayOrder({
       applicationRef,

@@ -1,6 +1,7 @@
 import { get, put } from '@vercel/blob'
 import { getMarcoPayApplicationRef, MARCO_MACHINE_ORIGIN, MARCO_PAY_WIDGET_URL } from './contract'
 import { resolveMarcoPayWebhookSecret } from './connectionGrant'
+import { resolveMarcoPaySettlementWallet } from './settlement'
 
 const HEALTH_KEY = 'monetization/v1/marco-pay/health/signed-test-webhook.json'
 
@@ -138,7 +139,10 @@ export async function resolveMarcoPayReadiness() {
   const signedTestVerified = Boolean(
     signedTest && applicationRef && signedTest.applicationRef === applicationRef && signedTest.activated === false,
   )
-  const executable = Boolean(applicationRef && appResolved && secretConfigured && machineLive && signedTestVerified)
+  const settlement = resolveMarcoPaySettlementWallet()
+  const executable = Boolean(
+    applicationRef && appResolved && secretConfigured && machineLive && signedTestVerified && settlement.ok,
+  )
   const reason = !applicationRef
     ? 'MARCO Pay is temporarily unavailable.'
     : !appResolved
@@ -146,6 +150,8 @@ export async function resolveMarcoPayReadiness() {
     : !secretConfigured || !signedTestVerified
     ? 'MARCO Pay is completing secure activation.'
     : !machineLive
+    ? 'MARCO Pay is temporarily unavailable.'
+    : !settlement.ok
     ? 'MARCO Pay is temporarily unavailable.'
     : null
   const customerRewardBps = economy?.data?.customer_reward_bps ?? null

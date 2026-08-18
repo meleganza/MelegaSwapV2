@@ -1,5 +1,10 @@
 import { createHmac } from 'crypto'
 import { MARCO_PAY_BASE_URL, MARCO_PAY_SIGNATURE_VERSION } from './contract'
+import {
+  assertLiveMarcoConversion,
+  assertMarcoPaySettlementWallet,
+  isCanonicalMarcoPaySettlementWallet,
+} from './settlement'
 
 export const MARCO_PAY_SESSION_PATH = '/api/public/pay/session'
 export const MARCO_PAY_MERCHANT_ORDER_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{5,119}$/
@@ -31,6 +36,12 @@ type GatewayResponse = {
   payment?: { id?: string; payment_id?: string }
   test_mode?: boolean
   testMode?: boolean
+  marco_amount_minor?: string
+  marcoAmountMinor?: string
+  receiving_wallet?: string
+  receivingWallet?: string
+  settlement_wallet?: string
+  amount_minor?: string
 }
 
 function compactJson(value: Record<string, unknown>): string {
@@ -141,7 +152,7 @@ async function postSignedMarcoPay(
   return { status: response.status, payload: parseGatewayPayload(raw) }
 }
 
-function sessionFromPayload(payload: GatewayResponse): MarcoPayPaymentSession {
+function sessionFromPayload(payload: GatewayResponse, usdMinor: string): MarcoPayPaymentSession {
   const paymentId = readPaymentId(payload)
   if (!payload.ok || !paymentId) {
     throw new MarcoPayGatewayError(
@@ -155,10 +166,68 @@ function sessionFromPayload(payload: GatewayResponse): MarcoPayPaymentSession {
       'MARCO Pay is temporarily unavailable.',
     )
   }
+  const marcoMinor = (payload.marco_amount_minor || payload.marcoAmountMinor || '').trim()
+  try {
+    assertLiveMarcoConversion({ usdMinor, marcoMinor: marcoMinor || null })
+  } catch {
+    throw new MarcoPayGatewayError('MARCO_CONVERSION_INVALID', 'MARCO Pay is temporarily unavailable.')
+  }
+  const destination = (
+    payload.receiving_wallet ||
+    payload.receivingWallet ||
+    payload.settlement_wallet ||
+    ''
+  ).trim()
+  if (destination && !isCanonicalMarcoPaySettlementWallet(destination)) {
+    throw new MarcoPayGatewayError('SETTLEMENT_WALLET_NOT_TREASURY', 'MARCO Pay is temporarily unavailable.')
+  }
   return {
     paymentId,
     intentId: readIntentId(payload, paymentId),
     approvalUrl: readApprovalUrl(payload, paymentId),
+  }
+}
+
+export async function quoteMarcoPayConversion(input: {
+  applicationRef: string
+  amountMinor: string
+  currency: string
+  item?: string | null
+  fetchImpl?: typeof fetch
+}): Promise<void> {
+  const fetchImpl = input.fetchImpl ?? fetch
+  const response = await fetchImpl(`${MARCO_PAY_BASE_URL}/api/public/pay/quote`, {
+    method: 'POST',
+    headers: { accept: 'application/json', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      application_key: input.applicationRef,
+      amount_minor: input.amountMinor,
+      currency: input.currency.trim().toUpperCase(),
+      item: input.item ?? null,
+    }),
+    signal: typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8_000) : undefined,
+  })
+  const payload = (await response.json()) as {
+    ok?: boolean
+    quote?: {
+      amountLabel?: string
+      marcoAmountLabel?: string
+      marco_amount_minor?: string
+      marcoAmountMinor?: string
+    }
+  }
+  if (!response.ok || !payload.ok || !payload.quote) {
+    throw new MarcoPayGatewayError('QUOTE_UNAVAILABLE', 'MARCO Pay is temporarily unavailable.')
+  }
+  try {
+    assertLiveMarcoConversion({
+      usdMinor: input.amountMinor,
+      marcoMinor: payload.quote.marco_amount_minor || payload.quote.marcoAmountMinor || null,
+      usdLabel: payload.quote.amountLabel || null,
+      marcoLabel: payload.quote.marcoAmountLabel || null,
+    })
+  } catch {
+    throw new MarcoPayGatewayError('MARCO_CONVERSION_INVALID', 'MARCO Pay is temporarily unavailable.')
   }
 }
 
@@ -175,7 +244,18 @@ export async function createMarcoPayPaymentSession(input: {
   if (!input.secret.trim()) {
     throw new MarcoPayGatewayError('SECRET_UNAVAILABLE', 'MARCO Pay signing secret is not configured.')
   }
+  try {
+    assertMarcoPaySettlementWallet()
+  } catch (cause) {
+    throw new MarcoPayGatewayError(
+      cause instanceof Error ? cause.message : 'SETTLEMENT_WALLET_INVALID',
+      'MARCO Pay is temporarily unavailable.',
+    )
+  }
   const rawBody = buildMarcoPayCreateBody(input)
+  if (rawBody.includes('marco_amount_minor') || rawBody.includes('marcoAmountMinor')) {
+    throw new MarcoPayGatewayError('MARCO_CONVERSION_INVALID', 'MARCO Pay is temporarily unavailable.')
+  }
   const timestampSeconds = input.nowSeconds ?? Math.floor(Date.now() / 1000)
   const fetchImpl = input.fetchImpl ?? fetch
   const session = await postSignedMarcoPay(MARCO_PAY_SESSION_PATH, {
@@ -191,5 +271,5 @@ export async function createMarcoPayPaymentSession(input: {
       session.payload.message || 'MARCO Pay could not create this payment.',
     )
   }
-  return sessionFromPayload(session.payload)
+  return sessionFromPayload(session.payload, input.amountMinor)
 }

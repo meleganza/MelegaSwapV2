@@ -34,6 +34,8 @@ describe('MARCO Pay approval handoff', () => {
     expect(api).toContain('payment_id:')
     expect(api).toContain('approval_url:')
     expect(api).toContain('createMarcoPayPaymentSession')
+    expect(api).toContain('assertMarcoPaySettlementWallet')
+    expect(api).toContain('quoteMarcoPayConversion')
   })
 
   it('opens a blank window from the checkout click before assigning approval_url', () => {
