@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { openMarcoPassport } from './MarcoConnect'
 
 describe('openMarcoPassport', () => {
@@ -32,5 +34,11 @@ describe('openMarcoPassport', () => {
 
     expect(connect).toHaveBeenCalledTimes(1)
     expect(open).not.toHaveBeenCalled()
+  })
+
+  it('does not auto-open Passport when the header widget mounts', () => {
+    const source = readFileSync(path.join(__dirname, 'MarcoConnect.tsx'), 'utf8')
+    expect(source).toContain('defaultOpen: false')
+    expect(source).not.toContain('widgets/marco.js')
   })
 })

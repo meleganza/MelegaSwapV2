@@ -25,7 +25,13 @@ type MarcoConnectSdk = {
 type MarcoConnectApi = {
   mount: (
     target: HTMLElement,
-    options: { application: string; theme: 'dark'; size: MarcoConnectSize; signature: boolean },
+    options: {
+      application: string
+      theme: 'dark'
+      size: MarcoConnectSize
+      signature: boolean
+      defaultOpen: boolean
+    },
   ) => MarcoConnectSdk
 }
 
@@ -227,6 +233,7 @@ export const MarcoConnect: React.FC<{
             theme: 'dark',
             size,
             signature: false,
+            defaultOpen: false,
           })
           if (activeMarcoSdk && activeMarcoSdk !== sdk) {
             activeMarcoSdk.destroy()

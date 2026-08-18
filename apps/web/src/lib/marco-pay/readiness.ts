@@ -1,5 +1,5 @@
 import { get, put } from '@vercel/blob'
-import { getMarcoPayApplicationRef, MARCO_MACHINE_ORIGIN, MARCO_PAY_WIDGET_URL } from './contract'
+import { getMarcoPayApplicationRef, getMarcoPayMerchantApiKey, MARCO_MACHINE_ORIGIN, MARCO_PAY_WIDGET_URL } from './contract'
 import { resolveMarcoPayWebhookSecret } from './connectionGrant'
 import { resolveMarcoPaySettlementWallet } from './settlement'
 
@@ -126,6 +126,7 @@ export async function resolveMarcoPayReadiness() {
     resolveMarcoPayWebhookSecret(),
   ])
   const secretConfigured = Boolean(boundSecret)
+  const merchantKeyConfigured = Boolean(getMarcoPayMerchantApiKey())
   const marcoCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.marco')
   const mCreditsCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.mcredits')
   const webhookCapability = capabilities?.data?.capabilities?.find((item) => item.id === 'pay.signed_webhooks')
@@ -141,13 +142,13 @@ export async function resolveMarcoPayReadiness() {
   )
   const settlement = resolveMarcoPaySettlementWallet()
   const executable = Boolean(
-    applicationRef && appResolved && secretConfigured && machineLive && signedTestVerified && settlement.ok,
+    applicationRef && appResolved && secretConfigured && merchantKeyConfigured && machineLive && signedTestVerified && settlement.ok,
   )
   const reason = !applicationRef
     ? 'MARCO Pay is temporarily unavailable.'
     : !appResolved
     ? 'MARCO Pay is temporarily unavailable.'
-    : !secretConfigured || !signedTestVerified
+    : !secretConfigured || !merchantKeyConfigured || !signedTestVerified
     ? 'MARCO Pay is completing secure activation.'
     : !machineLive
     ? 'MARCO Pay is temporarily unavailable.'
@@ -162,6 +163,7 @@ export async function resolveMarcoPayReadiness() {
     applicationRef,
     applicationResolved: appResolved,
     secretConfigured,
+    merchantKeyConfigured,
     signedTestVerified,
     signedTestVerifiedAt: signedTest?.verifiedAt ?? null,
     commerceModel: 'CHECKOUT_INTEGRATION' as const,

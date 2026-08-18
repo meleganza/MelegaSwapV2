@@ -35,7 +35,7 @@ describe('MARCO Pay approval handoff', () => {
     expect(api).toContain('approval_url:')
     expect(api).toContain('createMarcoPayPaymentSession')
     expect(api).toContain('assertMarcoPaySettlementWallet')
-    expect(api).toContain('quoteMarcoPayConversion')
+    expect(api).toContain('getMarcoPayMerchantApiKey')
   })
 
   it('opens a blank window from the checkout click before assigning approval_url', () => {
@@ -50,7 +50,7 @@ describe('MARCO Pay approval handoff', () => {
     expect(checkout).toContain('assignMarcoPayHandoff')
     expect(checkout).not.toContain('isCanonicalMarcoPayment && Boolean(marcoPayOrder)')
     expect(launcher).toContain('openMarcoPayHandoffWindow')
-    expect(helper).toContain("window.open('', MARCO_PAY_APPROVAL_WINDOW_NAME")
+    expect(helper).toContain("window.open('about:blank', MARCO_PAY_APPROVAL_WINDOW_NAME")
     expect(launcher).not.toContain('widgets/marco.js')
     expect(launcher).not.toContain('passportResolved')
     expect(checkout).not.toContain('no funds moved')
@@ -78,7 +78,7 @@ describe('MARCO Pay approval handoff', () => {
     const open = vi.fn(() => popup)
     vi.stubGlobal('window', { open })
     expect(openMarcoPayHandoffWindow()).toBe(popup)
-    expect(open).toHaveBeenCalledWith('', 'marco-pay', 'width=460,height=760')
+    expect(open).toHaveBeenCalledWith('about:blank', 'marco-pay', 'width=460,height=760')
     vi.unstubAllGlobals()
   })
 })

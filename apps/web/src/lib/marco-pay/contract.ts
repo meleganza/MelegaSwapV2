@@ -288,3 +288,9 @@ export function getMarcoPayApplicationRef(): string | null {
 export function getMarcoPayWebhookSecret(): string | null {
   return process.env.MARCO_PAY_WEBHOOK_SECRET?.trim() || null
 }
+
+/** Server-only merchant API credential. Never expose via NEXT_PUBLIC_*. */
+export function getMarcoPayMerchantApiKey(): string | null {
+  const value = (process.env.MARCO_PAY_MERCHANT_API_KEY || process.env.MARCO_PAY_API_KEY || '').trim()
+  return value ? value : null
+}

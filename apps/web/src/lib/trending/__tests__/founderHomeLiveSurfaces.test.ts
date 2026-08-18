@@ -75,6 +75,7 @@ describe('Founder Home live-surface contracts', () => {
     expect(modal).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
     expect(modal).toContain('product={marcoPayOrder.product}')
     expect(marcoConnect).toContain('marco-connect.v2.1.js')
+    expect(marcoConnect).toContain('defaultOpen: false')
     expect(header).toContain('<MarcoConnect size="navbar" activation="desktop" />')
   })
 })

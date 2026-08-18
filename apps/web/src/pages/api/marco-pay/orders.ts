@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { getMarcoPayApplicationRef } from 'lib/marco-pay/contract'
+import { getMarcoPayApplicationRef, getMarcoPayMerchantApiKey } from 'lib/marco-pay/contract'
 import { resolveMarcoPayWebhookSecret } from 'lib/marco-pay/connectionGrant'
 import { createMarcoPayPaymentSession, MarcoPayGatewayError, quoteMarcoPayConversion } from 'lib/marco-pay/gateway'
 import { assertMarcoPaySettlementWallet } from 'lib/marco-pay/settlement'
@@ -80,7 +80,8 @@ const handler: NextApiHandler = async (req, res) => {
       targetId,
     })
     const secret = await resolveMarcoPayWebhookSecret()
-    if (!secret) {
+    const merchantApiKey = getMarcoPayMerchantApiKey()
+    if (!secret || !merchantApiKey) {
       return res.status(503).json({ error: 'MARCO_PAY_UNAVAILABLE', message: 'MARCO Pay signing secret is not configured.' })
     }
     try {
@@ -89,6 +90,13 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(503).json({ error: 'SETTLEMENT_WALLET_INVALID', message: 'MARCO Pay is temporarily unavailable.' })
     }
     let bound = order
+    let quote = {
+      reference_amount_minor: order.referenceAmountMinor,
+      reference_currency: order.referenceCurrency,
+      marco_amount_minor: null as string | null,
+      destination: null as string | null,
+      chain_id: null as number | null,
+    }
     try {
       await quoteMarcoPayConversion({
         applicationRef,
@@ -103,12 +111,21 @@ const handler: NextApiHandler = async (req, res) => {
         currency: order.referenceCurrency,
         item: order.serviceId,
         secret,
+        merchantApiKey,
       })
+      quote = {
+        reference_amount_minor: order.referenceAmountMinor,
+        reference_currency: order.referenceCurrency,
+        marco_amount_minor: session.marcoAmountMinor,
+        destination: session.destinationWallet,
+        chain_id: session.chainId,
+      }
       bound =
         (await updateMarcoPayOrder(order.orderId, {
           paymentRef: session.paymentId,
           intentRef: session.intentId,
           approvalUrl: session.approvalUrl,
+          marcoAmountMinor: session.marcoAmountMinor,
         })) ?? order
       if (!bound.paymentRef || !bound.approvalUrl) {
         return res.status(503).json({ error: 'MARCO_PAY_INTENT_UNAVAILABLE', message: 'MARCO Pay did not return a payment session.' })
@@ -121,6 +138,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(201).json({
       payment_id: bound.paymentRef,
       approval_url: bound.approvalUrl,
+      quote,
       order: {
         orderId: bound.orderId,
         referenceCurrency: bound.referenceCurrency,
