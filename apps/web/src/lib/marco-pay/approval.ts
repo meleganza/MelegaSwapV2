@@ -6,6 +6,36 @@ export type MarcoPayHandoffSession = {
   approvalUrl: string
 }
 
+let isolationCount = 0
+let walletFlight: Promise<unknown> | null = null
+
+export function beginMarcoPayIsolation(): void {
+  isolationCount += 1
+}
+
+export function endMarcoPayIsolation(): void {
+  isolationCount = Math.max(0, isolationCount - 1)
+}
+
+export function isMarcoPayIsolationActive(): boolean {
+  return isolationCount > 0
+}
+
+export function isMarcoPayWalletFlightActive(): boolean {
+  return walletFlight != null
+}
+
+export async function runMarcoPaySingleFlight<T>(run: () => Promise<T>): Promise<T | null> {
+  if (walletFlight) return null
+  const pending: Promise<T> = Promise.resolve()
+    .then(run)
+    .finally(() => {
+      if (walletFlight === pending) walletFlight = null
+    })
+  walletFlight = pending
+  return pending
+}
+
 function asRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
   return value as Record<string, unknown>

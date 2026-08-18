@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import {
   assignMarcoPayHandoff,
+  isMarcoPayWalletFlightActive,
   openMarcoPayHandoffWindow,
   readMarcoPayHandoffSession,
 } from 'lib/marco-pay/approval'
@@ -17,6 +18,7 @@ type Props = {
   reference: string
   paymentId?: string | null
   approvalUrl?: string | null
+  onLaunch?: () => void
   onPaymentStarted?: (event: MarcoPayEvent) => void
   onPaymentCreated?: (event: MarcoPayEvent) => void
   onPaymentCompleted?: (event: MarcoPayEvent) => void
@@ -51,11 +53,17 @@ const Mark = styled.img`
 export const MarcoPay: React.FC<Props> = ({
   paymentId,
   approvalUrl,
+  onLaunch,
   onPaymentStarted,
   onPaymentCreated,
   onError,
 }) => {
   const launchApproval = useCallback(() => {
+    if (isMarcoPayWalletFlightActive()) return
+    if (onLaunch) {
+      onLaunch()
+      return
+    }
     const popup = openMarcoPayHandoffWindow()
     const session = readMarcoPayHandoffSession({ payment_id: paymentId, approval_url: approvalUrl })
     if (!assignMarcoPayHandoff(popup, session)) {
@@ -64,7 +72,7 @@ export const MarcoPay: React.FC<Props> = ({
     }
     onPaymentStarted?.(new CustomEvent('marco-pay:open', { detail: { paymentId: session.paymentId } }))
     onPaymentCreated?.(new CustomEvent('marco-pay:paymentCreated', { detail: { paymentId: session.paymentId } }))
-  }, [approvalUrl, onError, onPaymentCreated, onPaymentStarted, paymentId])
+  }, [approvalUrl, onError, onLaunch, onPaymentCreated, onPaymentStarted, paymentId])
 
   return (
     <Root data-testid="marco-pay">

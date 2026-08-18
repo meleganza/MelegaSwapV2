@@ -11,7 +11,9 @@ describe('MARCO Connect identity association', () => {
     expect(status.payment_requires_passport).toBe(false)
     expect(status.client_supplied_passport_id_accepted).toBe(false)
     const checkout = readFileSync(path.join(WEB, 'views/shared/monetization/CommercialCheckoutModal.tsx'), 'utf8')
-    expect(checkout).toContain("pay === 'MARCO_PAY' || pay === 'M_CREDITS'")
+    expect(checkout).toContain("pay === 'MARCO_PAY'")
+    expect(checkout).toContain("pay === 'M_CREDITS'")
+    expect(checkout).not.toContain("pay === 'MARCO_PAY' || pay === 'M_CREDITS'")
     expect(checkout).not.toContain('marco_passport_id')
   })
 

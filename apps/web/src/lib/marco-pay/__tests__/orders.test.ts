@@ -12,24 +12,32 @@ vi.mock('lib/featured-placement/orderStore', () => ({
   clearFeaturedOrdersForTests: vi.fn(),
   createFeaturedOrder: vi.fn(),
   getFeaturedOrder: vi.fn(),
+  hydrateFeaturedOrder: vi.fn(async () => null),
   persistFeaturedOrderDurably: vi.fn(),
   updateFeaturedOrder: vi.fn(),
 }))
-vi.mock('lib/monetization/packages', () => ({
-  getFeaturedPackage: () => ({ id: 'featured_24h', durationMs: 86_400_000, usdPrice: 29 }),
-  getVisibilityPackage: () => ({ id: 'trend_1h', durationMs: 3_600_000, usdPrice: 9 }),
-}))
+vi.mock('lib/monetization/packages', async () => {
+  const actual = await vi.importActual<typeof import('lib/monetization/packages')>('lib/monetization/packages')
+  return {
+    ...actual,
+    getFeaturedPackage: () => ({ id: 'featured_24h', durationMs: 86_400_000, usdPrice: 29 }),
+    getVisibilityPackage: () => ({ id: 'trend_1h', durationMs: 3_600_000, usdPrice: 9 }),
+  }
+})
 vi.mock('lib/monetization/trendBoostOrders', () => {
   const orders = new Map<string, any>()
   return {
     clearTrendBoostOrdersForTests: () => orders.clear(),
     getTrendBoostOrder: (id: string) => orders.get(id) ?? null,
+    hydrateTrendBoostOrder: async (id: string) => orders.get(id) ?? null,
     createTrendBoostOrder: (input: any) => {
       const order = {
         orderId: `legacy_${orders.size + 1}`,
         state: 'DRAFT',
         receiptVerified: false,
         paymentStatus: 'none',
+        treasuryWallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+        chainId: 56,
         ...input,
       }
       orders.set(order.orderId, order)
@@ -67,6 +75,8 @@ let createMarcoPayOrder: (input: any) => Promise<any>
 let getMarcoPayOrder: (orderId: string) => any
 let processMarcoPayCompletedEvent: (event: MarcoPayCompletedEvent) => Promise<any>
 let processMarcoPaySignedEvent: (signed: any) => Promise<any>
+let fulfilPaidBoostOrder: (orderRef: string) => Promise<any>
+let updateMarcoPayOrder: (orderId: string, patch: any) => Promise<any>
 
 const applicationRef = 'app_sedafoqw6qlxyxb9l8ds'
 
@@ -98,8 +108,15 @@ describe('MARCO Pay fulfilment', () => {
   beforeAll(async () => {
     ;({ clearFeaturedOrdersForTests } = await import('lib/featured-placement/orderStore'))
     ;({ clearTrendBoostOrdersForTests, getTrendBoostOrder } = await import('lib/monetization/trendBoostOrders'))
-    ;({ clearMarcoPayOrdersForTests, createMarcoPayOrder, getMarcoPayOrder, processMarcoPayCompletedEvent, processMarcoPaySignedEvent } =
-      await import('../orders'))
+    ;({
+      clearMarcoPayOrdersForTests,
+      createMarcoPayOrder,
+      getMarcoPayOrder,
+      processMarcoPayCompletedEvent,
+      processMarcoPaySignedEvent,
+      fulfilPaidBoostOrder,
+      updateMarcoPayOrder,
+    } = await import('../orders'))
   })
   beforeEach(() => {
     process.env.MARCO_PAY_ORDERS_DIR = '/private/tmp/melega-marco-pay-orders-test'
@@ -257,5 +274,95 @@ describe('MARCO Pay fulfilment', () => {
       expect(result.effect).toBe('acknowledged')
     }
     expect(getMarcoPayOrder(order.orderId)?.state).toBe('CREATED')
+  })
+
+  it('does not fulfil from client success without MARCO verification', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    expect(getMarcoPayOrder(order.orderId)?.state).toBe('CREATED')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+    await expect(fulfilPaidBoostOrder(order.orderId)).rejects.toThrow('RECEIPT_REQUIRED')
+  })
+
+  it('rejects the wrong order_ref', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { merchant_order_ref: 'mp_other_order_ref_1', test_mode: false })),
+    ).rejects.toThrow(/ORDER_NOT_FOUND|ORDER_REFERENCE_MISMATCH/)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('rejects a mismatched MARCO quantity', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await updateMarcoPayOrder(order.orderId, { marcoAmountMinor: '2840000' })
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { marco_amount_minor: '2840001', test_mode: false })),
+    ).rejects.toThrow('MARCO_QUANTITY_MISMATCH')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('rejects the wrong chain and the wrong treasury wallet', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await updateMarcoPayOrder(order.orderId, {
+      paymentRef: 'pay_chain',
+      receiptRef: 'rcp_chain',
+      marcoAmountMinor: '2840000',
+      chainId: 1,
+      testMode: false,
+    })
+    await expect(fulfilPaidBoostOrder(order.orderId)).rejects.toThrow('CHAIN_MISMATCH')
+    await updateMarcoPayOrder(order.orderId, {
+      chainId: 56,
+      destinationWallet: '0x000000000000000000000000000000000000dead',
+    })
+    await expect(fulfilPaidBoostOrder(order.orderId)).rejects.toThrow('SETTLEMENT_WALLET_NOT_TREASURY')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('recovers a paid-but-unfulfilled historical order exactly once', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await updateMarcoPayOrder(order.orderId, {
+      state: 'PAYMENT_CONFIRMED',
+      paymentRef: 'pay_historical',
+      receiptRef: 'rcp_historical',
+      marcoAmountMinor: '2840000',
+      destinationWallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      chainId: 56,
+      testMode: false,
+    })
+    const first = await fulfilPaidBoostOrder(order.orderId)
+    const second = await fulfilPaidBoostOrder(order.orderId)
+    expect(first.state).toBe('ACTIVE')
+    expect(second.activatedAt).toBe(first.activatedAt)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
   })
 })

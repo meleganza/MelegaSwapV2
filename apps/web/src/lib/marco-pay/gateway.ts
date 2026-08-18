@@ -369,3 +369,75 @@ export async function readMarcoPayPublicState(input: {
     return { marcoAmountMinor: null, destinationWallet: null, chainId: null }
   }
 }
+
+export type MarcoPaySettlementState = {
+  status: string | null
+  completed: boolean | null
+  testMode: boolean
+  receiptRef: string | null
+  merchantOrderRef: string | null
+  referenceAmountMinor: string | null
+  marcoAmountMinor: string | null
+  destinationWallet: string | null
+  chainId: number | null
+  txHash: string | null
+}
+
+function readStringField(payload: GatewayResponse, keys: string[]): string | null {
+  const record = payload as Record<string, unknown>
+  const nestedPayment = typeof record.payment === 'object' && record.payment ? (record.payment as Record<string, unknown>) : null
+  for (const key of keys) {
+    const value = record[key] ?? nestedPayment?.[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return null
+}
+
+export async function readMarcoPaySettlementState(input: {
+  applicationRef: string
+  paymentId: string
+  fetchImpl?: typeof fetch
+}): Promise<MarcoPaySettlementState> {
+  const fetchImpl = input.fetchImpl ?? fetch
+  const empty: MarcoPaySettlementState = {
+    status: null,
+    completed: null,
+    testMode: false,
+    receiptRef: null,
+    merchantOrderRef: null,
+    referenceAmountMinor: null,
+    marcoAmountMinor: null,
+    destinationWallet: null,
+    chainId: null,
+    txHash: null,
+  }
+  try {
+    const response = await fetchImpl(`${MARCO_PAY_BASE_URL}/api/public/pay/state`, {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        application_ref: input.applicationRef,
+        payment_id: input.paymentId,
+      }),
+      signal: typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8_000) : undefined,
+    })
+    if (!response.ok) return empty
+    const payload = parseGatewayPayload(await response.text())
+    const status = readStringField(payload, ['status', 'payment_status', 'state'])
+    const completedRaw = (payload as Record<string, unknown>).completed
+    return {
+      status,
+      completed: typeof completedRaw === 'boolean' ? completedRaw : status ? ['COMPLETED', 'PAID', 'SETTLED'].includes(status.toUpperCase()) : null,
+      testMode: payload.test_mode === true || payload.testMode === true,
+      receiptRef: readStringField(payload, ['receipt_ref', 'receiptRef', 'receipt_id']),
+      merchantOrderRef: readStringField(payload, ['merchant_order_ref', 'merchantOrderRef']),
+      referenceAmountMinor: readStringField(payload, ['reference_amount_minor', 'amount_minor', 'referenceAmountMinor']),
+      marcoAmountMinor: readMarcoAmountMinor(payload),
+      destinationWallet: readDestination(payload),
+      chainId: readChainId(payload),
+      txHash: readStringField(payload, ['tx_hash', 'transaction_hash', 'transactionHash']),
+    }
+  } catch {
+    return empty
+  }
+}

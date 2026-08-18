@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { useAccount, useDisconnect } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import { isMarcoPayIsolationActive } from 'lib/marco-pay/approval'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 
 const MARCO_CONNECT_SRC = 'https://marco.melega.ai/widgets/marco-connect.v2.1.js'
@@ -244,6 +245,7 @@ export const MarcoConnect: React.FC<{
           sdkRef.current = sdk
           unsubscribeDisconnect = sdk.on('disconnect', () => {
             passportIntentRef.current = false
+            if (isMarcoPayIsolationActive()) return
             disconnectRef.current()
           })
           setReady(true)

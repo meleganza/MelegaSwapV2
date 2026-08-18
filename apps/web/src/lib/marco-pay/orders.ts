@@ -1,10 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import { randomBytes } from 'crypto'
-import { get, head, put } from '@vercel/blob'
+import { get, head, list, put } from '@vercel/blob'
 import {
   createFeaturedOrder,
   getFeaturedOrder,
+  hydrateFeaturedOrder,
   persistFeaturedOrderDurably,
   updateFeaturedOrder,
 } from 'lib/featured-placement/orderStore'
@@ -12,25 +13,34 @@ import { scheduleFeaturedWindow } from 'lib/featured-placement/eligibility'
 import {
   activateVerifiedTrendBoostWindow,
   createTrendBoostOrder,
+  hydrateTrendBoostOrder,
   persistTrendBoostOrderDurably,
   updateTrendBoostOrder,
 } from 'lib/monetization/trendBoostOrders'
 import {
   getFeaturedPackage,
   getVisibilityPackage,
+  MONETIZATION_TREASURY,
   type VisibilityProductId,
 } from 'lib/monetization/packages'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
-import { usdCopiedToMarco } from './settlement'
+import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET, usdCopiedToMarco } from './settlement'
+import { MARCO_PAY_CHAIN_ID } from './walletTransfer'
+import { readMarcoPaySettlementState, type MarcoPaySettlementState } from './gateway'
 
 export type MarcoPayOrderState =
   | 'CREATED'
+  | 'AWAITING_WALLET'
+  | 'SUBMITTED'
+  | 'ONCHAIN_PENDING'
   | 'PAYMENT_CONFIRMED'
   | 'ACTIVATING'
   | 'ACTIVE'
   | 'TEST_VERIFIED'
   | 'FAILED'
+
+export const MARCO_PAY_FULFILLED_STATE: MarcoPayOrderState = 'ACTIVE'
 
 export type MarcoPayOrder = {
   schema: 'melega.marco-pay-order.v1'
@@ -54,6 +64,9 @@ export type MarcoPayOrder = {
   approvalUrl: string | null
   receiptRef: string | null
   marcoAmountMinor: string | null
+  destinationWallet: string | null
+  chainId: number | null
+  txHash: string | null
   testMode: boolean | null
   createdAt: string
   updatedAt: string
@@ -97,7 +110,13 @@ function persistLocal(order: MarcoPayOrder) {
 
 function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
   if (!order || order.schema !== 'melega.marco-pay-order.v1') return null
-  const next = { ...order, approvalUrl: order.approvalUrl ?? null }
+  const next = {
+    ...order,
+    approvalUrl: order.approvalUrl ?? null,
+    destinationWallet: order.destinationWallet ?? null,
+    chainId: order.chainId ?? null,
+    txHash: order.txHash ?? null,
+  }
   MEMORY.set(next.orderId, next)
   return next
 }
@@ -144,6 +163,34 @@ export async function persistMarcoPayOrder(order: MarcoPayOrder): Promise<MarcoP
     token,
   })
   return order
+}
+
+export async function listMarcoPayOrdersDurably(): Promise<MarcoPayOrder[]> {
+  const token = blobToken()
+  if (!token) return [...MEMORY.values()]
+  try {
+    const blobs: Array<{ pathname: string }> = []
+    let cursor: string | undefined
+    do {
+      const page = await list({ prefix: `${BLOB_PREFIX}orders/`, limit: 1_000, cursor, token })
+      blobs.push(...page.blobs)
+      cursor = page.hasMore ? page.cursor : undefined
+    } while (cursor)
+    const orders = await Promise.all(
+      blobs.map(async (blob) => {
+        try {
+          const result = await get(blob.pathname, { access: 'private', token, useCache: false })
+          if (!result || result.statusCode !== 200) return null
+          return hydrate((await new Response(result.stream).json()) as MarcoPayOrder)
+        } catch {
+          return null
+        }
+      }),
+    )
+    return orders.filter((order): order is MarcoPayOrder => Boolean(order))
+  } catch {
+    return [...MEMORY.values()]
+  }
 }
 
 export async function updateMarcoPayOrder(
@@ -219,6 +266,9 @@ export async function createMarcoPayOrder(input: {
     approvalUrl: null,
     receiptRef: null,
     marcoAmountMinor: null,
+    destinationWallet: null,
+    chainId: null,
+    txHash: null,
     testMode: null,
     createdAt: now,
     updatedAt: now,
@@ -228,7 +278,7 @@ export async function createMarcoPayOrder(input: {
   return persistMarcoPayOrder(order)
 }
 
-async function claimOnce(kind: 'event' | 'payment', reference: string): Promise<boolean> {
+async function claimOnce(kind: 'event' | 'payment' | 'fulfilment', reference: string): Promise<boolean> {
   const localKey = `${kind}:${reference}`
   const token = blobToken()
   if (!token) {
@@ -262,6 +312,9 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
   if (event.reference_amount_minor !== order.referenceAmountMinor) throw new Error('ORDER_AMOUNT_MISMATCH')
   if (order.productRef && event.product_ref !== order.productRef) throw new Error('ORDER_PRODUCT_MISMATCH')
   if (!event.test_mode && !event.receipt_ref) throw new Error('RECEIPT_REQUIRED')
+  if (order.marcoAmountMinor && event.marco_amount_minor !== order.marcoAmountMinor) {
+    throw new Error('MARCO_QUANTITY_MISMATCH')
+  }
   if (
     !event.test_mode &&
     usdCopiedToMarco({ usdMinor: event.reference_amount_minor, marcoMinor: event.marco_amount_minor })
@@ -270,11 +323,27 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
   }
 }
 
-async function activateOrder(order: MarcoPayOrder): Promise<MarcoPayOrder> {
-  if (order.state === 'ACTIVE') return order
-  await updateMarcoPayOrder(order.orderId, { state: 'ACTIVATING' })
+function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
+  if (order.testMode || order.state === 'TEST_VERIFIED') throw new Error('TEST_AUTHORITY_CANNOT_ACTIVATE')
+  if (order.referenceCurrency !== 'USD') throw new Error('ORDER_CURRENCY_MISMATCH')
+  if (order.destinationWallet && !isCanonicalMarcoPaySettlementWallet(order.destinationWallet)) {
+    throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+  }
+  if (order.chainId != null && order.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  if (
+    order.marcoAmountMinor &&
+    usdCopiedToMarco({ usdMinor: order.referenceAmountMinor, marcoMinor: order.marcoAmountMinor })
+  ) {
+    throw new Error('MARCO_CONVERSION_INVALID')
+  }
+}
+
+async function activatePlacement(order: MarcoPayOrder): Promise<void> {
   if (order.serviceId === 'featured') {
-    const existing = getFeaturedOrder(order.legacyOrderId)
+    const existing = (await hydrateFeaturedOrder(order.legacyOrderId)) ?? getFeaturedOrder(order.legacyOrderId)
+    if (existing?.treasuryWallet && !isCanonicalMarcoPaySettlementWallet(existing.treasuryWallet)) {
+      throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+    }
     const alreadyScheduled = Boolean(
       existing?.receiptVerified &&
         existing.paymentStatus === 'confirmed' &&
@@ -294,27 +363,122 @@ async function activateOrder(order: MarcoPayOrder): Promise<MarcoPayOrder> {
           scheduledStart: window.start,
           scheduledEnd: window.end,
           rotationStatus: 'candidate',
+          treasuryWallet: MARCO_PAY_SETTLEMENT_WALLET,
           lastError: null,
         })
     if (!legacy) throw new Error('FULFILMENT_ORDER_MISSING')
     await persistFeaturedOrderDurably(legacy)
-  } else {
-    const confirmed = updateTrendBoostOrder(order.legacyOrderId, {
-      state: 'PAYMENT_CONFIRMED',
-      paymentStatus: 'confirmed',
-      receiptVerified: true,
-      lastError: null,
-    })
-    if (!confirmed) throw new Error('FULFILMENT_ORDER_MISSING')
-    const activated = activateVerifiedTrendBoostWindow(order.legacyOrderId)
-    if (!activated) throw new Error('ACTIVATION_PRECONDITION_FAILED')
-    await persistTrendBoostOrderDurably(activated)
+    return
   }
-  return (await updateMarcoPayOrder(order.orderId, {
+  await hydrateTrendBoostOrder(order.legacyOrderId)
+  const current = updateTrendBoostOrder(order.legacyOrderId, {
+    state: 'PAYMENT_CONFIRMED',
+    paymentStatus: 'confirmed',
+    receiptVerified: true,
+    treasuryWallet: MONETIZATION_TREASURY,
+    lastError: null,
+  })
+  if (!current) throw new Error('FULFILMENT_ORDER_MISSING')
+  if (!isCanonicalMarcoPaySettlementWallet(current.treasuryWallet)) {
+    throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+  }
+  if (current.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  const activated = activateVerifiedTrendBoostWindow(order.legacyOrderId)
+  if (!activated) throw new Error('ACTIVATION_PRECONDITION_FAILED')
+  await persistTrendBoostOrderDurably(activated)
+}
+
+export async function fulfilPaidBoostOrder(orderRef: string): Promise<MarcoPayOrder> {
+  const order = (await hydrateMarcoPayOrder(orderRef)) ?? getMarcoPayOrder(orderRef)
+  if (!order) throw new Error('ORDER_NOT_FOUND')
+  if (order.state === 'ACTIVE') return order
+  assertLiveFulfilmentPreconditions(order)
+  if (!order.paymentRef || !order.receiptRef) throw new Error('RECEIPT_REQUIRED')
+  await claimOnce('fulfilment', order.orderId)
+  const latest = (await hydrateMarcoPayOrder(order.orderId)) ?? order
+  if (latest.state === 'ACTIVE') return latest
+  await updateMarcoPayOrder(latest.orderId, { state: 'ACTIVATING', lastError: null })
+  await activatePlacement(latest)
+  return (await updateMarcoPayOrder(latest.orderId, {
     state: 'ACTIVE',
-    activatedAt: new Date().toISOString(),
+    activatedAt: latest.activatedAt ?? new Date().toISOString(),
     lastError: null,
   }))!
+}
+
+function settlementIsPaid(state: MarcoPaySettlementState): boolean {
+  if (state.testMode) return false
+  if (state.completed === true) return true
+  const status = (state.status || '').toUpperCase()
+  return status === 'COMPLETED' || status === 'PAID' || status === 'SETTLED'
+}
+
+export async function reconcileMarcoPayOrder(orderRef: string): Promise<MarcoPayOrder | null> {
+  const order = await hydrateMarcoPayOrder(orderRef)
+  if (!order) return null
+  if (order.state === 'ACTIVE' || order.state === 'FAILED' || order.state === 'TEST_VERIFIED') return order
+  if (order.state === 'PAYMENT_CONFIRMED' || order.state === 'ACTIVATING') {
+    return fulfilPaidBoostOrder(order.orderId)
+  }
+  if (!order.paymentRef) return order
+  const state = await readMarcoPaySettlementState({
+    applicationRef: order.applicationRef,
+    paymentId: order.paymentRef,
+  })
+  if (!settlementIsPaid(state)) return order
+  if (state.merchantOrderRef && state.merchantOrderRef !== order.orderId) throw new Error('ORDER_REFERENCE_MISMATCH')
+  if (state.referenceAmountMinor && state.referenceAmountMinor !== order.referenceAmountMinor) {
+    throw new Error('ORDER_AMOUNT_MISMATCH')
+  }
+  if (state.marcoAmountMinor && order.marcoAmountMinor && state.marcoAmountMinor !== order.marcoAmountMinor) {
+    throw new Error('MARCO_QUANTITY_MISMATCH')
+  }
+  if (state.destinationWallet && !isCanonicalMarcoPaySettlementWallet(state.destinationWallet)) {
+    throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+  }
+  if (state.chainId != null && state.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  if (!state.receiptRef && !order.receiptRef) throw new Error('RECEIPT_REQUIRED')
+  const confirmed = await updateMarcoPayOrder(order.orderId, {
+    state: 'PAYMENT_CONFIRMED',
+    receiptRef: state.receiptRef || order.receiptRef,
+    marcoAmountMinor: state.marcoAmountMinor || order.marcoAmountMinor,
+    destinationWallet: MARCO_PAY_SETTLEMENT_WALLET,
+    chainId: MARCO_PAY_CHAIN_ID,
+    txHash: state.txHash || order.txHash,
+    testMode: false,
+  })
+  if (!confirmed) throw new Error('ORDER_NOT_FOUND')
+  return fulfilPaidBoostOrder(confirmed.orderId)
+}
+
+export async function recoverPaidUnfulfilledMarcoPayOrders(): Promise<{
+  scanned: number
+  recovered: Array<{ orderId: string; paymentRef: string | null; txHash: string | null; serviceId: string }>
+  skipped: Array<{ orderId: string; reason: string }>
+}> {
+  const orders = await listMarcoPayOrdersDurably()
+  const recovered: Array<{ orderId: string; paymentRef: string | null; txHash: string | null; serviceId: string }> = []
+  const skipped: Array<{ orderId: string; reason: string }> = []
+  for (const order of orders) {
+    if (order.state === 'ACTIVE' || order.state === 'FAILED' || order.state === 'TEST_VERIFIED' || order.testMode) {
+      continue
+    }
+    if (!order.paymentRef && order.state === 'CREATED') continue
+    try {
+      const next = await reconcileMarcoPayOrder(order.orderId)
+      if (next?.state === 'ACTIVE' && order.state !== 'ACTIVE') {
+        recovered.push({
+          orderId: next.orderId,
+          paymentRef: next.paymentRef,
+          txHash: next.txHash,
+          serviceId: next.serviceId,
+        })
+      }
+    } catch (cause) {
+      skipped.push({ orderId: order.orderId, reason: cause instanceof Error ? cause.message : 'RECOVERY_FAILED' })
+    }
+  }
+  return { scanned: orders.length, recovered, skipped }
 }
 
 export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEvent): Promise<{
@@ -349,15 +513,17 @@ export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEven
   const eventClaimed = await claimOnce('event', event.event_id)
   if (!eventClaimed) {
     const duplicateOrder = (await hydrateMarcoPayOrder(order.orderId)) ?? order
+    if (duplicateOrder.state === 'ACTIVE') return { duplicate: true, order: duplicateOrder, testMode: false }
+    if (duplicateOrder.paymentRef && duplicateOrder.receiptRef && duplicateOrder.state !== 'FAILED') {
+      return { duplicate: true, order: await fulfilPaidBoostOrder(duplicateOrder.orderId), testMode: false }
+    }
     return { duplicate: true, order: duplicateOrder, testMode: false }
   }
   const paymentClaimed = await claimOnce('payment', event.payment_ref)
   if (!paymentClaimed) {
     const current = (await hydrateMarcoPayOrder(order.orderId)) ?? order
-    if (current.state === 'PAYMENT_CONFIRMED' || current.state === 'ACTIVATING') {
-      return { duplicate: true, order: await activateOrder(current), testMode: false }
-    }
-    return { duplicate: true, order: current, testMode: false }
+    if (current.state === 'ACTIVE') return { duplicate: true, order: current, testMode: false }
+    return { duplicate: true, order: await fulfilPaidBoostOrder(current.orderId), testMode: false }
   }
   const confirmed = await updateMarcoPayOrder(order.orderId, {
     state: 'PAYMENT_CONFIRMED',
@@ -365,10 +531,12 @@ export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEven
     intentRef: event.intent_ref,
     receiptRef: event.receipt_ref,
     marcoAmountMinor: event.marco_amount_minor,
+    destinationWallet: order.destinationWallet || MARCO_PAY_SETTLEMENT_WALLET,
+    chainId: order.chainId || MARCO_PAY_CHAIN_ID,
     testMode: false,
   })
   if (!confirmed) throw new Error('ORDER_NOT_FOUND')
-  return { duplicate: false, order: await activateOrder(confirmed), testMode: false }
+  return { duplicate: false, order: await fulfilPaidBoostOrder(confirmed.orderId), testMode: false }
 }
 
 export type MarcoPayEventResult = {
