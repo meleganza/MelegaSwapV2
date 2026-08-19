@@ -1136,6 +1136,47 @@ const SuccessNote = styled.div`
   line-height: 1.45;
 `
 
+const processingSpin = keyframes`
+  to { transform: rotate(360deg); }
+`
+
+const ProcessingState = styled.div`
+  margin-top: 14px;
+  text-align: center;
+`
+
+const ProcessingSpinner = styled.span`
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(221, 185, 47, 0.22);
+  border-top-color: ${uxRebuildColors.gold};
+  animation: ${processingSpin} 0.8s linear infinite;
+`
+
+const ProcessingTitle = styled.div`
+  color: ${uxRebuildColors.text};
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+`
+
+const ProcessingCopy = styled.div`
+  margin-top: 6px;
+  color: ${uxRebuildColors.secondary};
+  font-size: 12px;
+  line-height: 1.45;
+`
+
+const ProcessingHash = styled.div`
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 11px;
+  word-break: break-all;
+`
+
 const Label = styled.div`
   margin-bottom: 7px;
   color: rgba(255, 255, 255, 0.58);
@@ -1289,6 +1330,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [walletStage, setWalletStage] = useState<WalletFlowStage>('idle')
   const [orderId, setOrderId] = useState<string | null>(null)
   const [quoteSummary, setQuoteSummary] = useState<string | null>(null)
+  const [submittedTxHash, setSubmittedTxHash] = useState<string | null>(null)
   const [settlementMarket, setSettlementMarket] = useState<SettlementMarket>({ loading: false })
   const [marcoPayReadiness, setMarcoPayReadiness] = useState<MarcoPayReadiness | null>(null)
   const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
@@ -1412,6 +1454,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setWalletStage('idle')
     setOrderId(null)
     setQuoteSummary(null)
+    setSubmittedTxHash(null)
     setMarcoPayReadiness(null)
     setMarcoPayOrder(null)
     setSettlementMarket({ loading: true })
@@ -1750,8 +1793,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           testMode?: boolean | null
           durationMs?: number
         }
-        if (order.state === 'PAYMENT_CONFIRMED' || order.state === 'ACTIVATING') {
-          setWalletStage('confirm')
+        if (
+          order.state === 'ONCHAIN_PENDING' ||
+          order.state === 'PAYMENT_CONFIRMED' ||
+          order.state === 'ACTIVATING'
+        ) {
+          setStatus('submitted')
+          setWalletStage('idle')
           setQuoteSummary('Payment confirmed · activating your service')
           return
         }
@@ -2043,7 +2091,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
   const reviewAndPay = useCallback(async () => {
     setError(null)
-    if (status === 'confirmed') return
+    if (status === 'confirmed' || status === 'submitted' || status === 'submitted_pending_receipt' || status === 'marco_pay_pending_verification') return
     if (checkoutBlocker) {
       setError(checkoutBlocker)
       return
@@ -2113,6 +2161,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             chainId: wallet.chainId,
           })
           setStatus('submitted')
+          setWalletStage('idle')
+          setSubmittedTxHash(transaction.hash)
           setQuoteSummary(`Transaction submitted · ${transaction.hash} · verifying MARCO settlement`)
         } catch (cause) {
           const message = cause instanceof Error ? cause.message : String(cause)
@@ -2158,6 +2208,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const confirmedRewardNotice =
     status === 'confirmed' ? marcoPayRewardNotice(marcoPayReadiness?.rewards?.customerBps) : null
   const isTerminalSuccess = status === 'confirmed'
+  const isPaymentProcessing =
+    status === 'submitted' ||
+    status === 'submitted_pending_receipt' ||
+    status === 'marco_pay_pending_verification'
+  const hidePaymentAction = isTerminalSuccess || isPaymentProcessing
   const fulfilledServiceSummary = [
     detected?.name ?? projectSlug,
     serviceMeta?.title,
@@ -2189,7 +2244,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'review' && isTerminalSuccess ? null : step === 'review' && !buyerWallet && !isMarcoPay && !isMCredits ? (
+        {step === 'review' && hidePaymentAction ? null : step === 'review' && !buyerWallet && !isMarcoPay && !isMCredits ? (
           <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
         ) : step === 'review' ? (
           <SecurePrimaryBtn
@@ -2586,7 +2641,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     <span aria-hidden="true">{checkoutBlocker ? '!' : '✓'}</span>
                     {checkoutBlocker ?? 'Verified settlement · Automatic placement activation'}
                   </VerifiedSettlement>
-                  {isMarcoPay && marcoPayOrder && !isTerminalSuccess ? (
+                  {isMarcoPay && marcoPayOrder && !hidePaymentAction ? (
                     <>
                       <div style={{ marginTop: 14 }}>
                         <MarcoPay
@@ -2610,13 +2665,29 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       </Meta>
                     </>
                   ) : null}
-                  {!isTerminalSuccess && quoteSummary ? (
+                  {!hidePaymentAction && quoteSummary ? (
                     <Meta style={{ marginTop: 8, textAlign: 'center' }}>{quoteSummary}</Meta>
                   ) : null}
-                  {!isTerminalSuccess && walletStage !== 'idle' ? (
+                  {!hidePaymentAction && walletStage !== 'idle' ? (
                     <div style={{ marginTop: 10 }}>
                       <WalletFlowStatus stage={walletStage} />
                     </div>
+                  ) : null}
+                  {isPaymentProcessing && !isTerminalSuccess ? (
+                    <ProcessingState data-testid="commercial-checkout-processing">
+                      <ProcessingSpinner aria-hidden="true" />
+                      <ProcessingTitle>TRANSACTION SUBMITTED</ProcessingTitle>
+                      <ProcessingCopy>Your MARCO payment is being confirmed on-chain.</ProcessingCopy>
+                      <ProcessingCopy>
+                        Please wait while we verify your payment and activate your service.
+                      </ProcessingCopy>
+                      <ProcessingCopy>This may take a few moments.</ProcessingCopy>
+                      {submittedTxHash ? (
+                        <ProcessingHash>
+                          {`${submittedTxHash.slice(0, 10)}…${submittedTxHash.slice(-8)}`}
+                        </ProcessingHash>
+                      ) : null}
+                    </ProcessingState>
                   ) : null}
                   {isTerminalSuccess ? (
                     <SuccessState data-testid="commercial-checkout-success">
