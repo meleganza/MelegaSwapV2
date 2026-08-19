@@ -108,3 +108,26 @@ export function compareNormalizedQuotes(quotes: NormalizedQuote[]): RouteSelecti
     productionActivation: false,
   }
 }
+
+/**
+ * Principal M2 comparison: highest net user output wins.
+ * Venue identity is never a tie-breaker in favor of Melega.
+ */
+export function selectBestNetRoute(
+  candidates: Array<{ quoteId: string; venueId: string; netUserOutputRaw: string; confidenceOk: boolean }>,
+): { selectedQuoteId: string | null; selectedVenueId: string | null; productionActivation: false } {
+  const usable = candidates
+    .filter((row) => row.confidenceOk && /^\d+$/.test(row.netUserOutputRaw) && row.netUserOutputRaw !== '0')
+    .sort((a, b) => {
+      const netA = BigInt(a.netUserOutputRaw)
+      const netB = BigInt(b.netUserOutputRaw)
+      if (netB !== netA) return netB > netA ? 1 : -1
+      return a.quoteId.localeCompare(b.quoteId)
+    })
+  const best = usable[0] ?? null
+  return {
+    selectedQuoteId: best?.quoteId ?? null,
+    selectedVenueId: best?.venueId ?? null,
+    productionActivation: false,
+  }
+}
