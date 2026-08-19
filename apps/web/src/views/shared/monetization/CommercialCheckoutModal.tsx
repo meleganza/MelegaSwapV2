@@ -1103,6 +1103,39 @@ const Meta = styled.p`
   line-height: 1.45;
 `
 
+const SuccessState = styled.div`
+  margin-top: 14px;
+  text-align: center;
+`
+
+const SuccessTitle = styled.div`
+  color: ${uxRebuildColors.positive};
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+`
+
+const SuccessHeadline = styled.div`
+  margin-top: 6px;
+  color: ${uxRebuildColors.text};
+  font-size: 15px;
+  font-weight: 800;
+`
+
+const SuccessSummary = styled.div`
+  margin-top: 8px;
+  color: ${uxRebuildColors.text};
+  font-size: 13px;
+  font-weight: 720;
+`
+
+const SuccessNote = styled.div`
+  margin-top: 6px;
+  color: ${uxRebuildColors.secondary};
+  font-size: 12px;
+  line-height: 1.45;
+`
+
 const Label = styled.div`
   margin-bottom: 7px;
   color: rgba(255, 255, 255, 0.58);
@@ -2010,6 +2043,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
   const reviewAndPay = useCallback(async () => {
     setError(null)
+    if (status === 'confirmed') return
     if (checkoutBlocker) {
       setError(checkoutBlocker)
       return
@@ -2118,10 +2152,19 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     service,
     serviceMeta?.title,
     signer,
+    status,
   ])
 
   const confirmedRewardNotice =
     status === 'confirmed' ? marcoPayRewardNotice(marcoPayReadiness?.rewards?.customerBps) : null
+  const isTerminalSuccess = status === 'confirmed'
+  const fulfilledServiceSummary = [
+    detected?.name ?? projectSlug,
+    serviceMeta?.title,
+    selectedPackage?.durationLabel,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   const footer = (
     <MelegaModalFooter>
@@ -2133,7 +2176,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           : 'Boost Your Project'}
       </MelegaModalFooterMeta>
       <MelegaModalFooterActions>
-        {step !== 'project' ? (
+        {step === 'review' && isTerminalSuccess ? (
+          <GhostBtn type="button" onClick={onClose} data-testid="commercial-checkout-close">
+            Close
+          </GhostBtn>
+        ) : step !== 'project' ? (
           <GhostBtn type="button" onClick={goBack} data-testid="commercial-checkout-back">
             Back
           </GhostBtn>
@@ -2142,7 +2189,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'review' && !buyerWallet && !isMarcoPay && !isMCredits ? (
+        {step === 'review' && isTerminalSuccess ? null : step === 'review' && !buyerWallet && !isMarcoPay && !isMCredits ? (
           <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
         ) : step === 'review' ? (
           <SecurePrimaryBtn
@@ -2151,7 +2198,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             disabled={busy || detecting || Boolean(checkoutBlocker) || isMarcoPayWalletFlightActive()}
             data-testid="commercial-checkout-pay"
           >
-            {busy ? 'Processing…' : isMarcoPay && marcoPayOrder ? 'Complete in MARCO Pay' : 'Review and pay'}
+            {busy ? 'Processing…' : isMarcoPay && marcoPayOrder ? 'PAY WITH MARCO' : 'Review and pay'}
           </SecurePrimaryBtn>
         ) : step === 'payment' ? (
           <SecurePrimaryBtn
@@ -2539,7 +2586,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     <span aria-hidden="true">{checkoutBlocker ? '!' : '✓'}</span>
                     {checkoutBlocker ?? 'Verified settlement · Automatic placement activation'}
                   </VerifiedSettlement>
-                  {isMarcoPay && marcoPayOrder ? (
+                  {isMarcoPay && marcoPayOrder && !isTerminalSuccess ? (
                     <>
                       <div style={{ marginTop: 14 }}>
                         <MarcoPay
@@ -2563,17 +2610,22 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       </Meta>
                     </>
                   ) : null}
-                  {quoteSummary ? <Meta style={{ marginTop: 8, textAlign: 'center' }}>{quoteSummary}</Meta> : null}
-                  {walletStage !== 'idle' ? (
+                  {!isTerminalSuccess && quoteSummary ? (
+                    <Meta style={{ marginTop: 8, textAlign: 'center' }}>{quoteSummary}</Meta>
+                  ) : null}
+                  {!isTerminalSuccess && walletStage !== 'idle' ? (
                     <div style={{ marginTop: 10 }}>
                       <WalletFlowStatus stage={walletStage} />
                     </div>
                   ) : null}
-                  {status === 'confirmed' ? (
-                    <>
-                      <Meta style={{ marginTop: 8, color: uxRebuildColors.positive, textAlign: 'center' }}>
-                        Activated · see Marketing History
-                      </Meta>
+                  {isTerminalSuccess ? (
+                    <SuccessState data-testid="commercial-checkout-success">
+                      <SuccessTitle>✓ PAYMENT COMPLETED</SuccessTitle>
+                      <SuccessHeadline>BOOST ACTIVATED</SuccessHeadline>
+                      <SuccessSummary>{fulfilledServiceSummary}</SuccessSummary>
+                      {isMarcoPay ? (
+                        <SuccessNote>Paid with MARCO Pay · Verified on-chain</SuccessNote>
+                      ) : null}
                       {confirmedRewardNotice ? (
                         <Meta style={{ marginTop: 8, textAlign: 'center' }} data-testid="marco-pay-reward-notice">
                           {confirmedRewardNotice}
@@ -2589,7 +2641,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                           </a>
                         </Meta>
                       )}
-                    </>
+                    </SuccessState>
                   ) : null}
                 </ReviewCard>
               </ReviewStage>
