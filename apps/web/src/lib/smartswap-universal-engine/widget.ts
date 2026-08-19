@@ -39,3 +39,14 @@ export function hostMustNotOwnRouting(): boolean {
 export function engineMustNotOwnUx(): boolean {
   return true
 }
+
+export function hostMustNotOverrideRevenuePolicy(): boolean {
+  return true
+}
+
+export function assertHostDoesNotSupplyFee(host: SmartSwapHostContext): void {
+  const record = host as SmartSwapHostContext & { feeBps?: unknown; revenuePolicy?: unknown }
+  if (record.feeBps != null || record.revenuePolicy != null) {
+    throw new Error('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
+  }
+}
