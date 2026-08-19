@@ -118,6 +118,7 @@ export const CANONICAL_EXAMPLE_ASSETS = {
   weth: evmContract(EVM_CHAIN_IDS.ETHEREUM, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 'WETH', 18),
   usdcBase: evmContract(EVM_CHAIN_IDS.BASE, '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', 'USDC', 6),
   usdcBnb: evmContract(EVM_CHAIN_IDS.BSC, '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', 'USDC', 18),
+  usdcEthereum: evmContract(EVM_CHAIN_IDS.ETHEREUM, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 'USDC', 6),
   usdcSolana: solanaMint('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 'USDC', 6),
 } as const
 
@@ -129,6 +130,7 @@ export function distinguishSymbolCollisions(): Record<string, string> {
     weth: assetIdentityKey(CANONICAL_EXAMPLE_ASSETS.weth),
     usdcBase: assetIdentityKey(CANONICAL_EXAMPLE_ASSETS.usdcBase),
     usdcBnb: assetIdentityKey(CANONICAL_EXAMPLE_ASSETS.usdcBnb),
+    usdcEthereum: assetIdentityKey(CANONICAL_EXAMPLE_ASSETS.usdcEthereum),
     usdcSolana: assetIdentityKey(CANONICAL_EXAMPLE_ASSETS.usdcSolana),
   }
 }
