@@ -117,6 +117,9 @@ export function createExternalEvmVenueAdapter(
         productionExecutionCapable: false,
       } satisfies NormalizedQuote
     },
+    async simulate() {
+      return { ok: false, reason: 'CANONICAL_EXECUTOR_REQUIRED' }
+    },
     prepareExecution: refuseV2Execution,
     execute: refuseV2Execution,
     async verifyReceipt() {
