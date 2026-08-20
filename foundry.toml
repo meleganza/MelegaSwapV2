@@ -8,7 +8,38 @@ solc_version = "0.8.20"
 optimizer = true
 optimizer_runs = 200
 via_ir = true
+fs_permissions = [{ access = "read", path = "./deployments" }]
 
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+# Isolated SmartSwapExecutorV1 certification profile. Does not change default developer/test builds.
+# bytecode_hash=none + cbor_metadata=false removes IPFS compiler-input CID from creation/runtime bytecode.
+# src is narrowed so unrelated repository contracts cannot enter the executor compilation unit.
+[profile.smartswap_executor_release]
+src = "contracts/smartswap"
+out = "out-smartswap-executor-release"
+cache_path = "cache-smartswap-executor-release"
+libs = ["lib"]
+test = "test/smartswap"
+script = "script"
+solc_version = "0.8.20"
+auto_detect_solc = false
+auto_detect_remappings = false
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+evm_version = "shanghai"
+bytecode_hash = "none"
+cbor_metadata = false
+use_literal_content = true
+sparse_mode = true
+offline = false
+build_info = true
+extra_output = ["metadata"]
+fs_permissions = [{ access = "read", path = "./deployments" }]
 remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
     "forge-std/=lib/forge-std/src/"
