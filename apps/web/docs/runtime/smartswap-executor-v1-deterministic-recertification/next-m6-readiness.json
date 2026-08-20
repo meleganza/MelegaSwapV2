@@ -1,0 +1,29 @@
+{
+  "schema": "melega.smartswap.next-m6-readiness.v1",
+  "recertificationVerdict": "MELEGASWAP_V2_SMARTSWAP_EXECUTOR_V1_DETERMINISTIC_ARTIFACT_RECERTIFIED",
+  "m6BroadcastAuthorized": false,
+  "mustReauthorizeM6": true,
+  "reuseM5BytecodeHashes": false,
+  "reusePriorM6FounderAuthorization": false,
+  "artifact": "deployments/smartswap-executor-v1/smart-swap-executor-v1-artifact.json",
+  "creationBytecodeKeccak": "0xaa68423fc2a7e4fb80b54516bed42dccda8978ff4a5dd1d24180c5add2ad0791",
+  "deployedBytecodeKeccak": "0x22b936d04dda69aa1fc31e031793ce922a18013fa9c2f0587043a627e75da0e1",
+  "feeState": "FEE_ENFORCEABLE",
+  "FEE_VERIFIED": false,
+  "deployed": false,
+  "UX_DIFF": "ZERO",
+  "canonicalDeployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "balancesAtBlock117072549": {
+    "bnbWei": "18462459335635472",
+    "wbnbWei": "15000000000000000"
+  },
+  "canary": {
+    "venue": "pancakeswap",
+    "path": "WBNB->USDT",
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "inputWei": "10000000000000000",
+    "structuralRouteCostBps": 25,
+    "smartSwapFeeBps": 20
+  },
+  "hardStop": true
+}

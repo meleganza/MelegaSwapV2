@@ -26,6 +26,7 @@
     "updateLPsAPR": "yarn turbo run build --filter=@pancakeswap/sdk --filter=@pancakeswap/farm --filter=@pancakeswap/token-lists && NODE_PATH=./apps/web/src ts-node --project ./apps/web/tsconfig.json --compiler-options '{\"module\":\"commonjs\"}' scripts/updateLPsAPR.ts",
     "postinstall": "turbo run --filter=web postinstall",
     "clean": "turbo run clean && rm -rf node_modules",
+    "smartswap:executor:verify-artifact": "python3 scripts/smartswap/certify-executor-v1-artifact.py --verify",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release-packages": "turbo run build --filter=./packages/* && changeset version && changeset publish"
