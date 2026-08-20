@@ -4,7 +4,7 @@ import type { ExecutionIntent } from './executionIntent'
 import { V2_M4_FEE_VERIFIED_FORBIDDEN } from './m4OperatingState'
 
 export interface ExecutionReceiptEvidence {
-  txStatus: 'success' | 'reverted' | 'simulated'
+  txStatus: 'success' | 'reverted' | 'simulated' | 'fork'
   chainId: number
   executor: string | null
   venueId: string
@@ -54,8 +54,27 @@ export function receiptToFeeState(evidence: ExecutionReceiptEvidence): string {
   if (evidence.txStatus === 'success' && evidence.collectionProven) {
     throw new Error(V2_M4_FEE_VERIFIED_FORBIDDEN)
   }
-  if (evidence.txStatus === 'simulated' && evidence.treasuryDelta && evidence.minSatisfied) {
+  if (
+    (evidence.txStatus === 'simulated' || evidence.txStatus === 'fork') &&
+    evidence.treasuryDelta &&
+    evidence.minSatisfied
+  ) {
     return PROTOCOL_FEE_STATE.FEE_ENFORCEABLE
   }
   return PROTOCOL_FEE_STATE.FEE_PREVIEW_ONLY
+}
+
+/** Fork/local success never proves a mainnet fee. collectionProven stays false. */
+export function verifyForkEconomics(input: {
+  intent: ExecutionIntent
+  treasuryDelta: string
+  userOutput: string
+  chainId: number
+  executor?: string | null
+}): ExecutionReceiptEvidence {
+  return {
+    ...verifySimulatedEconomics(input),
+    txStatus: 'fork',
+    collectionProven: false,
+  }
 }
