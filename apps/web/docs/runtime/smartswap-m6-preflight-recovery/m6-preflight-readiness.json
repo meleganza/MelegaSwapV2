@@ -1,0 +1,31 @@
+{
+  "schema": "melega.smartswap.m6-preflight-readiness.v1",
+  "verdict": "SMARTSWAP_M6_PREFLIGHT_BLOCKED_BYTECODE_REPRODUCTION",
+  "m6FounderBroadcastAuthorizationReused": false,
+  "broadcast": {
+    "deploy": false,
+    "wrap": false,
+    "approval": false,
+    "swap": false
+  },
+  "sourceMatchesM5": true,
+  "bytecodeMatchesM5": false,
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "deployerNonceObserved": 3193,
+  "balances": {
+    "bnbWei": "18462459335635472",
+    "wbnbWei": "15000000000000000"
+  },
+  "route": {
+    "chainId": 56,
+    "block": 117066237,
+    "structuralRouteCostBps": 25,
+    "feeBps": 20,
+    "expectedFeeWei": "20000000000000",
+    "grossQuote": "6469960151316933559",
+    "netQuote": "6456956296307036867"
+  },
+  "unsignedDeploymentPackage": false,
+  "uxDiff": "ZERO"
+}
