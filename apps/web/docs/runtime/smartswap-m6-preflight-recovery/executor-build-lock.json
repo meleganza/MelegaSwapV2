@@ -1,0 +1,30 @@
+{
+  "schema": "melega.smartswap.executor-build-lock.v1",
+  "m5ExactMatch": false,
+  "doNotDeploy": true,
+  "solc": "0.8.20+commit.a1b79de6",
+  "forge": "1.7.1",
+  "forgeCommit": "4072e48705af9d93e3c0f6e29e93b5e9a40caed8",
+  "profile": "default",
+  "optimizer": true,
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "evmVersion": "shanghai",
+  "bytecodeHash": "ipfs",
+  "openzeppelin": "5fd1781b1454fd1ef8e722282f86f9293cacf256",
+  "forgeStd": "bf647bd6046f2f7da30d0c2bf435e5c76a780c1b",
+  "sourceGitBlob": "7869980ca19ce62bebc99e17670c99cc7e637172",
+  "sourceSha256": "5ecdeb832ad0990a1ed7a6a024b8a60bbf1b683afc2738adceadefa5150b8cee",
+  "m5CreationKeccak": "0x044040c2af494c8d1e34f1de7e3dd3071ae9cdf39df0fdfec908b9d4d261510c",
+  "m5DeployedKeccak": "0x0f0b418f1b3f1a7a0897864c271eacedd6ebeb4bf226fcfc3c23aa2153b74fa3",
+  "measured": {
+    "withTestsScripts": {
+      "creationKeccak": "0xd0534f444328674466c9bc6c1b72cb2ebd26d870f564c0cb8b85bc8566cb74c9",
+      "deployedKeccak": "0x49a9a3b7ff50e96b7bdd29687bafd40c05edb9e6b42b145407d025afa020cd5f"
+    },
+    "skipTestScript": {
+      "creationKeccak": "0x94a549a0651b0d50d82e591120b62d8fd6a8ac81f624ea649714d09a44d671b8",
+      "deployedKeccak": "0x5f7229ea1adaf83e73e1f045ec5948a23bff48e3de0202f6a4c5678d50ed817a"
+    }
+  }
+}

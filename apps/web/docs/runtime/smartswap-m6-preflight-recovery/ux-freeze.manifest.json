@@ -1,0 +1,30 @@
+{
+  "schema": "melega.smartswap.ux-freeze.v1",
+  "mission": "SMARTSWAP_M6_PREFLIGHT_RECOVERY",
+  "baseline": "apps/web/docs/runtime/smartswap-universal-engine-m1/ux-freeze.manifest.json",
+  "UX_DIFF": "ZERO",
+  "files": {
+    "src/views/Swap/SmartSwap/index.tsx": "347fc4a09638cf44d60bc147b977ff9dcf9d074f85b0ca833be803715a08ae99",
+    "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx": "f50b8371643276b46c265fbf87167fc50cf9fd34e05086cabbcd74855ce2b64c",
+    "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "3142af2ec927369f7cf3831d556998c4dfbd9b8c1c8c70d1737d63354bd5c9e4",
+    "src/views/Swap/SmartSwap/components/SwapModalFooter.tsx": "9a4c7fcd12928403d4c5b06b35cdae42661e44b0c4183115de4c71c80480f4f4",
+    "src/views/Swap/SmartSwap/components/TransactionConfirmSwapContent.tsx": "ae3a55d0a80eaf85742d57a5d095bcdbfe5c17085f61249339a3af263cb7b7a3",
+    "src/views/SmartSwapStudio/SmartSwapProductActions.tsx": "f3e97ced632372ae332cfb9b02ae2e47fdeb1a3b812e44abb40bb1ee99b75759",
+    "src/views/SmartSwapStudio/modules/SmartSwapHeroModule.tsx": "289de76dab34f8552516f050458b43db3b5dd2a2fc551e35986c1c2a07848810",
+    "src/views/SmartSwapStudio/modules/SmartSwapHeroArtwork.tsx": "97db9f515ee018162e682888dd06dd88f07cfe580afc22ebaed18d1154574ac7",
+    "src/views/SmartSwapStudio/modules/SmartSwapHeroTrustPanel.tsx": "acd82c0599bd74bffa5e923b805e922b2be2a3cdde0ed9975f919574d1d3dea6",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapVisualRoute.tsx": "9af44549802f891bab2b49d217739e9a5924340ae4856a4897d8d07688619885",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewPanel.tsx": "304c3acafc9c07233251facac8173af1ab9fd340589c078a50ad30caa57d2405",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx": "e7cedaafe9f9446d79dda3f440875d145fc270a671067d305a63dee5974aa8bf",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapCompactMetrics.tsx": "dd16f5d6ab2594f6075b4c998fcfae74d2dca189726733b473ce39d46befd0f4",
+    "src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/SmartSwapFeeTransparencyPanel.tsx": "d758f00239c2fb6d9b3d2d221c868669eef979718f748e1bafb116229523e5e3",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionHandoff/SmartSwapExecutionHandoffPanel.tsx": "f5516361e92917c03543fb765bc62edb919aee0f6d53e2da6afc8bdd2a12c431",
+    "src/views/SmartSwapStudio/modules/SmartSwapHistory/SmartSwapHistoryPanel.tsx": "6d12f597a14ec784d2cbf7e67536565aef087a761004bad8a189393f7a86c9ef",
+    "src/views/SmartSwapStudio/modules/SmartSwapAIAssistance/SmartSwapAIAssistancePanel.tsx": "aed0783d42682abeea2ab15e8edf38766225daf7f452dbcd1e322206fb682ce4",
+    "src/views/Trade/TradeCockpit.tsx": "fd0ba8c537658d7c6691d3b596a3ddb2eabb3d734aae18708e1ccd8bd00a02ef",
+    "src/views/Trade/TradeTerminalScreen.tsx": "13a297c27bccdd6cfe6ca3db148e5516156702990f4e3b2be27b9441882c98c0",
+    "src/views/HomeTrade/HomeSwapPanel.tsx": "efbcc28672750761580be0bd78d52e873c38c6ccd493d593be20dc034500d45f",
+    "src/views/HomeTrade/HomeSwapPanelShell.tsx": "dabf33aa19dcb554212cc828abd4aa7d32251abf60f412491cf56947266fd331",
+    "src/components/DexPricing/DexSwapFeeDisclosure.tsx": "d062f566342ee13aa66603c0e165b8d3f3aca4a11bdd31d1b59b69496e25f467"
+  }
+}
