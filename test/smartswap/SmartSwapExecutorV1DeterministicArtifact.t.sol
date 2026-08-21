@@ -108,6 +108,18 @@ contract SmartSwapExecutorV1DeterministicArtifactTest is Test {
         assertEq(executor.MAX_PROTOCOL_FEE_BPS(), 25);
     }
 
+    function testForkCanonicalConstructorRuntime() public forkOnly {
+        address deployed = _deployArtifact(TREASURY, 0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0, WBNB, 0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0);
+        SmartSwapExecutorV1 exec = SmartSwapExecutorV1(payable(deployed));
+        assertEq(exec.treasury(), TREASURY);
+        assertEq(exec.intentSigner(), 0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0);
+        assertEq(exec.wrappedNative(), WBNB);
+        assertEq(exec.owner(), 0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0);
+        assertEq(address(exec).code.length, deployedTemplate.length);
+        console2.logBytes32(keccak256(address(exec).code));
+        console2.log("canonicalRuntimeLen", address(exec).code.length);
+    }
+
     function testForkCanaryFromDeterministicArtifact() public forkOnly {
         assertEq(block.chainid, 56);
         assertEq(IPancakeFactory(FACTORY).getPair(WBNB, USDT), PAIR);

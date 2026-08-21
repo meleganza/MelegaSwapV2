@@ -1,3 +1,3 @@
 # POST_STATE
 
-No mainnet mutation. Legacy production unchanged.
+Not applicable. No canary transaction.
