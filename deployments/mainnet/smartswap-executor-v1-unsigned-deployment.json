@@ -19,13 +19,12 @@
     ],
     "frozen": {
       "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-      "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      "intentSigner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
     },
-    "setAtAuthorizedDeploy": [
-      "intentSigner",
-      "owner"
-    ],
-    "encoding": "SET_AT_AUTHORIZED_DEPLOY: concat(creationBytecode, abi.encode(treasury, intentSigner, wrappedNative, owner))"
+    "setAtAuthorizedDeploy": [],
+    "encoding": "0x000000000000000000000000b6436ef4c7f76be0f26c0c5c9db72f2689abf65b000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
   },
   "postDeployTransactions": [
     {
@@ -41,7 +40,7 @@
   "gasEstimateUnits": 1862961,
   "gasEstimateMethod": "eth_estimateGas create from canonical deployer with owner=signer=deployer placeholders only; not a broadcast",
   "observedGasPriceWei": "50000000",
-  "nonce": "SET_AT_AUTHORIZED_DEPLOY",
+  "nonce": 3194,
   "observedNonceAtBlock": {
     "block": 117072549,
     "nonce": 3193
@@ -49,8 +48,9 @@
   "createAddress": {
     "frozen": false,
     "formula": "address = keccak256(rlp([deployer, nonce]))[12:]",
-    "ifNonceRemains3193": "0x8A591dbA8532f71Ba3A503BC42F1CFbDF2e645F4",
-    "note": "Address cannot be frozen until the authorized deployment nonce is known."
+    "ifNonceRemains3194": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
+    "note": "Address cannot be frozen until the Founder-signed CREATE is mined. If nonce != 3194 at sign time, STOP and rebuild."
   },
-  "artifact": "deployments/smartswap-executor-v1/smart-swap-executor-v1-artifact.json"
+  "artifact": "deployments/smartswap-executor-v1/smart-swap-executor-v1-artifact.json",
+  "unsignedCreatePackage": "deployments/mainnet/m6-unsigned-create-tx.json"
 }
