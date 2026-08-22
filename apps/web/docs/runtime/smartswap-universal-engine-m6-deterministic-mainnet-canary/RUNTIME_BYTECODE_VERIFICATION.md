@@ -1,24 +1,18 @@
 # RUNTIME_BYTECODE_VERIFICATION
 
-Status: **not yet on-chain**. Expected post-CREATE check is frozen.
+Status: **BYTE_FOR_BYTE_MATCH**
 
-The certified runtime keccak `0x22b936d04dda69aa1fc31e031793ce922a18013fa9c2f0587043a627e75da0e1` is the **solc template** (immutables zero). After CREATE, `eth_getCode` writes treasury, intentSigner, and wrappedNative into that template.
-
-Required post-deploy procedure (from recertification `BYTECODE_CERTIFICATION.md`):
-
-1. Confirm mined CREATE `input` starts with the certified creation bytecode.
-2. Reconstruct expected runtime by inserting constructor immutables at `immutableReferences` (`65` treasury, `67` intentSigner, `69` wrappedNative).
-3. Require `eth_getCode(executor) == expectedRuntime` **byte-for-byte**.
-4. Call `treasury()`, `intentSigner()`, `wrappedNative()`, `owner()`, `paused()`, `MAX_PROTOCOL_FEE_BPS()`, `allowedVenue(pancake)`.
-
-Fork simulation with the authorized constructor (`testForkCanonicalConstructorRuntime`) produced:
+`eth_getCode(0x296015b106F4b2FB94249cf398cbF05d4CcE0391)` equals `deployments/mainnet/m6-expected-onchain-runtime.hex` (8062 bytes).
 
 | | |
 |--|--|
-| Runtime length | 8062 |
-| Expected on-chain keccak | `0xd241f1e4dba3a04ed2f17f2d338db37e6adb9235a7de7e658554170a95885801` |
-| File | `deployments/mainnet/m6-expected-onchain-runtime.hex` |
-
-Python reconstruction of the stored template with the same immutables produced the **same** keccak.
-
-If on-chain code differs by one byte: **STOP** with `MELEGASWAP_V2_SMARTSWAP_M6_EXECUTOR_DEPLOYMENT_CERTIFICATION_FAILED`. No approval. No canary.
+| On-chain runtime keccak | `0xd241f1e4dba3a04ed2f17f2d338db37e6adb9235a7de7e658554170a95885801` |
+| Expected | `0xd241f1e4dba3a04ed2f17f2d338db37e6adb9235a7de7e658554170a95885801` |
+| `treasury()` | `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b` |
+| `intentSigner()` | `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` |
+| `wrappedNative()` | `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` |
+| `owner()` | `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` |
+| `paused()` | false |
+| `MAX_PROTOCOL_FEE_BPS()` | 25 |
+| Pancake allowlisted | false |
+| Trapped BNB / WBNB / USDT | `0` / `0` / `0` |

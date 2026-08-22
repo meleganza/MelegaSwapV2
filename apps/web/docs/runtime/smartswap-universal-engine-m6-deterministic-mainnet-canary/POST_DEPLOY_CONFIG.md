@@ -1,8 +1,8 @@
 # POST_DEPLOY_CONFIG
 
-Not executed. `setRouter` is prepared as an unsigned follow-up only.
+`setRouter` is the next Founder-gated mutation. Not signed. Not broadcast.
 
-Unsigned calldata (broadcast only after runtime certification):
+Package: `deployments/mainnet/m6-unsigned-set-router-tx.json`
 
 ```
 setRouter(
@@ -12,6 +12,14 @@ setRouter(
 )
 ```
 
-If nonce 3194 CREATE succeeds, this would be nonce **3195** to `0x296015b106F4b2FB94249cf398cbF05d4CcE0391`. Rebuild if the CREATE address changes.
+| | |
+|--|--|
+| chainId | 56 |
+| from | `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` |
+| to | `0x296015b106F4b2FB94249cf398cbF05d4CcE0391` |
+| value | 0 |
+| nonce | **3195** |
+| gas | 80000 (estimate 48875) |
+| gasPrice | 50000000 wei |
 
-Melega DEX router must remain unallowlisted for this canary.
+Stop if nonce ≠ 3195. Melega DEX router must remain unallowlisted. Do not send approve or execute.

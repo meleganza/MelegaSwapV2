@@ -14,6 +14,7 @@ import {
   M6_REAUTHORIZED_FEE_STATE,
   M6_REAUTHORIZED_VERDICT,
   M6_UNSIGNED_CREATE,
+  M6_UNSIGNED_SET_ROUTER,
   PRIOR_M6_AUTHORIZATION,
   REQUIRED_REAUTHORIZATION_SCOPE,
   freshFounderReauthorizationPresent,
@@ -30,17 +31,10 @@ const CERT = path.join(
   'docs/runtime/smartswap-universal-engine-m6-deterministic-mainnet-canary/m6-mainnet-certification.json',
 )
 
-describe('SmartSwap M6 deterministic canary reauthorization gate', () => {
-  it('accepts the fresh Founder grant for this artifact and does not broadcast without the canonical signer', () => {
+describe('SmartSwap M6 deterministic canary post-CREATE gate', () => {
+  it('records the mined CREATE and holds the next gate at unsigned setRouter', () => {
     expect(PRIOR_M6_AUTHORIZATION.reusable).toBe(false)
     expect(m5ArtifactMayBeReusedForM6()).toBe(false)
-    expect(
-      freshFounderReauthorizationPresent({
-        explicitAuthorize: false,
-        namesCreationKeccak: DETERMINISTIC_BYTECODE.creationKeccak,
-        namesDeployedKeccak: DETERMINISTIC_BYTECODE.deployedKeccak,
-      }),
-    ).toBe(false)
     expect(
       freshFounderReauthorizationPresent({
         explicitAuthorize: FRESH_FOUNDER_REAUTHORIZATION.explicitAuthorize,
@@ -48,51 +42,82 @@ describe('SmartSwap M6 deterministic canary reauthorization gate', () => {
         namesDeployedKeccak: FRESH_FOUNDER_REAUTHORIZATION.namesDeployedKeccak,
       }),
     ).toBe(true)
-    expect(M6_REAUTHORIZED_ACTIVE_VERDICT).toBe(M6_REAUTHORIZED_VERDICT.UNSIGNED_DEPLOYMENT_PACKAGE_READY)
-    expect(M6_REAUTHORIZED_BROADCAST.deploy).toBe(false)
+    expect(M6_REAUTHORIZED_ACTIVE_VERDICT).toBe(
+      M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER,
+    )
+    expect(M6_REAUTHORIZED_BROADCAST.setRouter).toBe(false)
+    expect(M6_REAUTHORIZED_BROADCAST.approval).toBe(false)
     expect(M6_REAUTHORIZED_BROADCAST.swap).toBe(false)
     expect(M6_REAUTHORIZED_BROADCAST.signMainnet).toBe(false)
-    expect(REQUIRED_REAUTHORIZATION_SCOPE.creationKeccak).toBe(DETERMINISTIC_BYTECODE.creationKeccak)
-    expect(REQUIRED_REAUTHORIZATION_SCOPE.deployedKeccak).toBe(DETERMINISTIC_BYTECODE.deployedKeccak)
     expect(REQUIRED_REAUTHORIZATION_SCOPE.treasury).toBe(CANONICAL_SMARTSWAP_FEE_BENEFICIARY)
-    expect(REQUIRED_REAUTHORIZATION_SCOPE.deployer).toBe('0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0')
     expect(M6_REAUTHORIZED_FEE_STATE.after).toBe(PROTOCOL_FEE_STATE.FEE_ENFORCEABLE)
     expect(m6ReauthorizedLegacyProduction()).toBe(true)
     expect(ACTIVE_V2_ROLLOUT).toBe(V2_ROLLOUT_STATE.LEGACY_PRODUCTION)
     expect(isProductionCutoverAllowed()).toBe(false)
   })
 
-  it('freezes the unsigned CREATE package for founder signing at nonce 3194', () => {
-    const pkgPath = path.join(REPO, M6_UNSIGNED_CREATE.package)
+  it('locks the mined CREATE evidence and the unsigned setRouter package at nonce 3195', () => {
+    const createPath = path.join(REPO, M6_UNSIGNED_CREATE.package)
+    const setPath = path.join(REPO, M6_UNSIGNED_SET_ROUTER.package)
     const dataPath = path.join(REPO, M6_UNSIGNED_CREATE.dataFile)
-    expect(existsSync(pkgPath)).toBe(true)
+    expect(existsSync(createPath)).toBe(true)
+    expect(existsSync(setPath)).toBe(true)
     expect(existsSync(dataPath)).toBe(true)
-    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
+    const created = JSON.parse(readFileSync(createPath, 'utf8')) as {
+      signed: boolean
+      broadcast: boolean
+      mined: boolean
+      deploymentTx: string
+      actualExecutorAddress: string
+      runtimeByteForByte: boolean
+      onChainRuntimeKeccak: string
+    }
+    expect(created.signed).toBe(true)
+    expect(created.broadcast).toBe(true)
+    expect(created.mined).toBe(true)
+    expect(created.deploymentTx).toBe(M6_UNSIGNED_CREATE.minedTx)
+    expect(created.actualExecutorAddress).toBe(M6_UNSIGNED_CREATE.actualAddress)
+    expect(created.runtimeByteForByte).toBe(true)
+    expect(created.onChainRuntimeKeccak).toBe(M6_UNSIGNED_CREATE.expectedOnChainRuntimeKeccak)
+    const dataHex = readFileSync(dataPath, 'utf8').trim()
+    expect(keccak256(dataHex).toLowerCase()).toBe(M6_UNSIGNED_CREATE.dataKeccak)
+    const setRouter = JSON.parse(readFileSync(setPath, 'utf8')) as {
       signed: boolean
       broadcast: boolean
       nonce: number
       from: string
-      dataKeccak: string
-      creationBytecodeKeccak: string
-      expectedCreateAddressIfNonce3194: string
-      expectedOnChainRuntimeKeccak: string
-      runtimeTemplateKeccak: string
+      to: string
+      value: string
+      chainId: number
+      data: string
+      args: { router: string; allowed: boolean }
     }
-    expect(pkg.signed).toBe(false)
-    expect(pkg.broadcast).toBe(false)
-    expect(pkg.nonce).toBe(M6_UNSIGNED_CREATE.nonce)
-    expect(pkg.from).toBe(REQUIRED_REAUTHORIZATION_SCOPE.deployer)
-    expect(pkg.dataKeccak).toBe(M6_UNSIGNED_CREATE.dataKeccak)
-    expect(pkg.creationBytecodeKeccak).toBe(DETERMINISTIC_BYTECODE.creationKeccak)
-    expect(pkg.expectedCreateAddressIfNonce3194).toBe(M6_UNSIGNED_CREATE.expectedAddressIfNonce3194)
-    expect(pkg.expectedOnChainRuntimeKeccak).toBe(M6_UNSIGNED_CREATE.expectedOnChainRuntimeKeccak)
-    expect(pkg.runtimeTemplateKeccak).toBe(DETERMINISTIC_BYTECODE.deployedKeccak)
-    expect(pkg.expectedOnChainRuntimeKeccak).not.toBe(DETERMINISTIC_BYTECODE.deployedKeccak)
-    const dataHex = readFileSync(dataPath, 'utf8').trim()
-    expect(keccak256(dataHex).toLowerCase()).toBe(M6_UNSIGNED_CREATE.dataKeccak)
-    const cert = JSON.parse(readFileSync(CERT, 'utf8')) as { verdict: string; broadcast: boolean }
-    expect(cert.verdict).toBe(M6_REAUTHORIZED_VERDICT.UNSIGNED_DEPLOYMENT_PACKAGE_READY)
-    expect(cert.broadcast).toBe(false)
+    expect(setRouter.signed).toBe(false)
+    expect(setRouter.broadcast).toBe(false)
+    expect(setRouter.nonce).toBe(M6_UNSIGNED_SET_ROUTER.nonce)
+    expect(setRouter.from).toBe(REQUIRED_REAUTHORIZATION_SCOPE.deployer)
+    expect(setRouter.to).toBe(M6_UNSIGNED_SET_ROUTER.to)
+    expect(setRouter.value).toBe('0')
+    expect(setRouter.chainId).toBe(56)
+    expect(setRouter.data).toBe(
+      '0x1bdbc79b00000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024ed7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba30000000000000000000000000000000000000000000000000000000000000001',
+    )
+    expect(setRouter.args.router).toBe(M6_UNSIGNED_SET_ROUTER.router)
+    expect(setRouter.args.allowed).toBe(true)
+    const cert = JSON.parse(readFileSync(CERT, 'utf8')) as {
+      verdict: string
+      classification: string
+      setRouterBroadcast: boolean
+      approvalTx: string | null
+      canaryTx: string | null
+      UNAUTHORIZED_UI_CHANGE: number
+    }
+    expect(cert.verdict).toBe(M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER)
+    expect(cert.classification).toBe('DEPLOYMENT_VERIFIED_AWAITING_SETROUTER')
+    expect(cert.setRouterBroadcast).toBe(false)
+    expect(cert.approvalTx).toBeNull()
+    expect(cert.canaryTx).toBeNull()
+    expect(cert.UNAUTHORIZED_UI_CHANGE).toBe(0)
   })
 
   it('keeps frozen SmartSwap UX at SHA-256 zero diff', () => {
