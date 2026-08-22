@@ -18,8 +18,8 @@ setRouter(
 | from | `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` |
 | to | `0x296015b106F4b2FB94249cf398cbF05d4CcE0391` |
 | value | 0 |
-| nonce | **3195** |
+| nonce | **3199** |
 | gas | 80000 (estimate 48875) |
 | gasPrice | 50000000 wei |
 
-Stop if nonce ≠ 3195. Melega DEX router must remain unallowlisted. Do not send approve or execute.
+Stop if nonce ≠ 3199. Melega DEX router must remain unallowlisted. Do not send approve or execute. Do not reuse stale nonce 3195.

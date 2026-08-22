@@ -79,7 +79,7 @@ export const M6_UNSIGNED_CREATE = {
 
 export const M6_UNSIGNED_SET_ROUTER = {
   package: 'deployments/mainnet/m6-unsigned-set-router-tx.json',
-  nonce: 3195,
+  nonce: 3199,
   to: '0x296015b106F4b2FB94249cf398cbF05d4CcE0391',
   router: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
   venueId: '0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3',
