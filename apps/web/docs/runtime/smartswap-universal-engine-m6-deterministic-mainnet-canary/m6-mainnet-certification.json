@@ -21,8 +21,8 @@
   "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
   "paused": false,
   "maxProtocolFeeBps": 25,
-  "deployerNonce": 3195,
-  "pendingNonce": 3195,
+  "deployerNonce": 3199,
+  "pendingNonce": 3199,
   "observedBlock": 117392440,
   "expectedExecutorAddress": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
   "actualExecutorAddress": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
@@ -68,7 +68,7 @@
     "setRouterLimitUnits": 80000,
     "deployerBnbWei": "18357300635635472"
   },
-  "nonce": 3195,
+  "nonce": 3199,
   "atomicity": "CREATE_MINED_SETROUTER_PENDING",
   "trappedBalances": {
     "bnbWei": "0",

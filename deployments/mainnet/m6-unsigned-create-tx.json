@@ -45,7 +45,7 @@
     "setRouter": {
       "package": "deployments/mainnet/m6-unsigned-set-router-tx.json",
       "to": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
-      "nonce": 3195,
+      "nonce": 3199,
       "data": "0x1bdbc79b00000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024ed7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba30000000000000000000000000000000000000000000000000000000000000001",
       "function": "setRouter(address,bytes32,bool)",
       "args": {

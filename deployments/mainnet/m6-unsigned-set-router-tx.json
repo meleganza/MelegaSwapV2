@@ -6,8 +6,8 @@
   "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "to": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
   "value": "0",
-  "nonce": 3195,
-  "nonceHex": "0xc7b",
+  "nonce": 3199,
+  "nonceHex": "0xc7f",
   "gas": 80000,
   "gasEstimateUnits": 48875,
   "gasPriceWei": "50000000",
@@ -28,5 +28,5 @@
   "doNotBroadcastIfNonceChanged": true,
   "doNotSendApprovalOrCanary": true,
   "agentCannotSign": true,
-  "note": "Next Founder-gated mutation only. Melega DEX router must remain unallowlisted. Founder may use type 2 as with the mined CREATE; stop if nonce != 3195."
+  "note": "Next Founder-gated mutation only. Melega DEX router must remain unallowlisted. Founder may use type 2 as with the mined CREATE; stop if nonce != 3199. Stale nonce 3195 must not be reused."
 }

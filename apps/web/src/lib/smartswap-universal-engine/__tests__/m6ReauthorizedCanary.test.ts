@@ -56,7 +56,7 @@ describe('SmartSwap M6 deterministic canary post-CREATE gate', () => {
     expect(isProductionCutoverAllowed()).toBe(false)
   })
 
-  it('locks the mined CREATE evidence and the unsigned setRouter package at nonce 3195', () => {
+  it('locks the mined CREATE evidence and the unsigned setRouter package at the current live nonce', () => {
     const createPath = path.join(REPO, M6_UNSIGNED_CREATE.package)
     const setPath = path.join(REPO, M6_UNSIGNED_SET_ROUTER.package)
     const dataPath = path.join(REPO, M6_UNSIGNED_CREATE.dataFile)
