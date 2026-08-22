@@ -1,0 +1,32 @@
+{
+  "schema": "melega.smartswap.m6.unsigned-set-router.v1",
+  "signed": false,
+  "broadcast": false,
+  "chainId": 56,
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "to": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
+  "value": "0",
+  "nonce": 3195,
+  "nonceHex": "0xc7b",
+  "gas": 80000,
+  "gasEstimateUnits": 48875,
+  "gasPriceWei": "50000000",
+  "function": "setRouter(address,bytes32,bool)",
+  "data": "0x1bdbc79b00000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024ed7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba30000000000000000000000000000000000000000000000000000000000000001",
+  "args": {
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "venueId": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+    "venueIdPreimage": "pancakeswap",
+    "allowed": true
+  },
+  "precondition": {
+    "createTx": "0x3f9d56f0e0d1094a304ed66d256db2e3e55539ae022128e8be7d2ca4d6664b70",
+    "runtimeByteForByte": true,
+    "onChainRuntimeKeccak": "0xd241f1e4dba3a04ed2f17f2d338db37e6adb9235a7de7e658554170a95885801",
+    "pancakeAlreadyAllowlisted": false
+  },
+  "doNotBroadcastIfNonceChanged": true,
+  "doNotSendApprovalOrCanary": true,
+  "agentCannotSign": true,
+  "note": "Next Founder-gated mutation only. Melega DEX router must remain unallowlisted. Founder may use type 2 as with the mined CREATE; stop if nonce != 3195."
+}

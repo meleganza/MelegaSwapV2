@@ -1,3 +1,3 @@
 # POST_STATE
 
-Not applicable. No canary transaction.
+CREATE mined. No canary transaction. Executor holds 0 BNB / 0 WBNB / 0 USDT.

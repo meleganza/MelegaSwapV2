@@ -30,4 +30,4 @@ Prior 20 Aug 2026 grant against superseded M5 hashes is **not reused**.
 
 This grant does **not** authorize production cutover, UX change, merge to main, a second canary, or any other venue/pair/chain.
 
-Broadcast from this agent: **none**. The agent cannot sign as the canonical deployer. See `deployments/mainnet/m6-unsigned-create-tx.json`.
+CREATE was Founder-broadcast. Agent broadcast remains **none**. Next mutation is unsigned `setRouter` only. See `deployments/mainnet/m6-unsigned-set-router-tx.json`.

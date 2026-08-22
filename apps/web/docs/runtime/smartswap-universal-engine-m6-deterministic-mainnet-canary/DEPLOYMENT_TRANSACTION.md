@@ -1,27 +1,19 @@
 # DEPLOYMENT_TRANSACTION
 
-Status: **unsigned package ready. not signed. not broadcast.**
-
-The agent cannot access the canonical deployer key. Per mission rules the unsigned CREATE is prepared for Founder signing from `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` only.
+Status: **CREATE mined. runtime certified. setRouter not signed.**
 
 | | |
 |--|--|
-| Package | `deployments/mainnet/m6-unsigned-create-tx.json` |
-| Data | `deployments/mainnet/m6-unsigned-create.data.hex` |
-| Type | legacy (`type: 0`) |
-| Chain | 56 |
-| `to` | `null` (CREATE) |
-| Value | `0` |
-| Nonce | **3194** |
-| Gas limit | `2250000` (estimate `1862961`) |
-| Gas price | `50000000` wei |
-| Data keccak | `0xb1c93b60890386532429a93495c3e5f3be87600096646cb1e3da7032db84a1fe` |
-| Creation prefix keccak | `0xaa68423fc2a7e4fb80b54516bed42dccda8978ff4a5dd1d24180c5add2ad0791` |
-| Constructor | treasury + intentSigner=deployer + WBNB + owner=deployer |
-| Predicted address | `0x296015b106F4b2FB94249cf398cbF05d4CcE0391` |
+| Tx | `0x3f9d56f0e0d1094a304ed66d256db2e3e55539ae022128e8be7d2ca4d6664b70` |
+| Block | `117392440` |
+| Status | `0x1` |
+| From | `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` |
+| Nonce used | **3194** |
+| Contract | `0x296015b106F4b2FB94249cf398cbF05d4CcE0391` |
+| Creation prefix | match |
+| On-chain runtime keccak | `0xd241f1e4dba3a04ed2f17f2d338db37e6adb9235a7de7e658554170a95885801` |
+| Byte-for-byte | **match** `deployments/mainnet/m6-expected-onchain-runtime.hex` |
 
-Data is `creationBytecode || abi.encode(treasury, intentSigner, wrappedNative, owner)`. Creation prefix matches the certified artifact.
+Explorer: `https://bscscan.com/tx/0x3f9d56f0e0d1094a304ed66d256db2e3e55539ae022128e8be7d2ca4d6664b70`
 
-Do **not** broadcast if nonce ≠ 3194. Rebuild first.
-
-Do **not** send setRouter, approve, or execute until this CREATE is mined and runtime certification passes.
+Do **not** send approve or execute. Next mutation is unsigned `setRouter` only.

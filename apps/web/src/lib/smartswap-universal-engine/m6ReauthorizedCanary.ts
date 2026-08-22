@@ -1,7 +1,6 @@
 /**
- * M6 reauthorized canary. Previous M6 grant targeted superseded M5 hashes and is not reused.
- * Founder reauthorization is present for the deterministic artifact. Agent cannot sign as the
- * canonical deployer, so broadcast stays forbidden and the unsigned CREATE package is frozen.
+ * M6 reauthorized canary. CREATE is mined and runtime-certified. Next Founder-gated
+ * mutation is unsigned setRouter only. Agent cannot sign. No approval/canary in this gate.
  */
 
 import { DETERMINISTIC_BYTECODE } from './executorDeterministicArtifact'
@@ -11,6 +10,7 @@ import { ACTIVE_V2_ROLLOUT, V2_ROLLOUT_STATE } from './m4OperatingState'
 export const M6_REAUTHORIZED_VERDICT = {
   AWAITING_FOUNDER_REAUTHORIZATION: 'MELEGASWAP_V2_SMARTSWAP_M6_AWAITING_FOUNDER_REAUTHORIZATION',
   UNSIGNED_DEPLOYMENT_PACKAGE_READY: 'MELEGASWAP_V2_SMARTSWAP_M6_UNSIGNED_DEPLOYMENT_PACKAGE_READY',
+  DEPLOYMENT_VERIFIED_AWAITING_SETROUTER: 'MELEGASWAP_V2_SMARTSWAP_M6_DEPLOYMENT_VERIFIED_AWAITING_SETROUTER',
   BLOCKED_ARTIFACT_DRIFT: 'MELEGASWAP_V2_SMARTSWAP_M6_BLOCKED_ARTIFACT_DRIFT',
   BLOCKED_SIGNER_MISMATCH: 'MELEGASWAP_V2_SMARTSWAP_M6_BLOCKED_SIGNER_MISMATCH',
   BLOCKED_INSUFFICIENT_FUNDS: 'MELEGASWAP_V2_SMARTSWAP_M6_BLOCKED_INSUFFICIENT_FUNDS',
@@ -72,12 +72,27 @@ export const M6_UNSIGNED_CREATE = {
   runtimeTemplateKeccak: DETERMINISTIC_BYTECODE.deployedKeccak,
   intentSigner: REQUIRED_REAUTHORIZATION_SCOPE.deployer,
   owner: REQUIRED_REAUTHORIZATION_SCOPE.deployer,
+  minedTx: '0x3f9d56f0e0d1094a304ed66d256db2e3e55539ae022128e8be7d2ca4d6664b70',
+  minedBlock: 117392440,
+  actualAddress: '0x296015b106F4b2FB94249cf398cbF05d4CcE0391',
 } as const
 
-export const M6_REAUTHORIZED_ACTIVE_VERDICT = M6_REAUTHORIZED_VERDICT.UNSIGNED_DEPLOYMENT_PACKAGE_READY
+export const M6_UNSIGNED_SET_ROUTER = {
+  package: 'deployments/mainnet/m6-unsigned-set-router-tx.json',
+  nonce: 3195,
+  to: '0x296015b106F4b2FB94249cf398cbF05d4CcE0391',
+  router: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+  venueId: '0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3',
+  gas: 80000,
+  gasEstimateUnits: 48875,
+} as const
+
+export const M6_REAUTHORIZED_ACTIVE_VERDICT =
+  M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER
 
 export const M6_REAUTHORIZED_BROADCAST = {
   deploy: false,
+  setRouter: false,
   approval: false,
   swap: false,
   signMainnet: false,
