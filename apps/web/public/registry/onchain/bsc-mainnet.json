@@ -10094,12 +10094,13 @@
         "sousId": 47,
         "stakedToken": "cake",
         "rewardToken": "luck",
-        "startBlock": 89679461,
-        "endBlock": 99679440,
-        "active": false,
-        "state": "finished",
+        "startBlock": 112923144,
+        "endBlock": 132923144,
+        "rewardBalance": "44235292232453953583882628",
+        "active": true,
+        "state": "active",
         "dataSource": "pools-canonical-inventory+on-chain-verified",
-        "lastVerified": "2026-07-10T16:37:35.409Z",
+        "lastVerified": "2026-08-24T22:51:36.638Z",
         "bscscanUrl": "https://bscscan.com/address/0x46d2f9a96cbbddc7e73678c716a088fe5714a19a"
       },
       {
