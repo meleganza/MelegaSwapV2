@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { Currency, CurrencyAmount, ERC20Token, Pair, Percent, Token } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ERC20Token, Pair, Percent, Price, Token } from '@pancakeswap/sdk'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { PairState, usePairs } from 'hooks/usePairs'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
+import { useMultipleContractSingleData } from 'state/multicall/hooks'
+import ERC20_INTERFACE from 'config/abi/erc20'
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks'
 import { useLPTokensWithBalanceByAccount } from 'views/Swap/StableSwap/hooks/useStableConfig'
 import { multiplyPriceByAmount } from 'utils/prices'
@@ -35,16 +37,56 @@ export interface LiquidityPositionRow {
   pairAddress?: string
   walletAddress?: string
   ownershipSource?: WalletLpOwnershipSource
+  totalSupply?: CurrencyAmount<Token>
+  totalSupplyRaw?: string
 }
 
-function usePositionUsdValue(
-  currency0?: Currency,
-  currency1?: Currency,
+/** Batched LP totalSupply is authoritative when present and nonzero. */
+export function resolvePositionTotalSupply(
+  batched?: CurrencyAmount<Token>,
+  fallback?: CurrencyAmount<Token>,
+): CurrencyAmount<Token> | undefined {
+  if (batched && !batched.equalTo(0)) return batched
+  if (fallback && !fallback.equalTo(0)) return fallback
+  return undefined
+}
+
+export function computePositionPoolShare(
+  totalSupply?: CurrencyAmount<Token>,
+  userBalance?: CurrencyAmount<Token>,
+): Percent | undefined {
+  if (!totalSupply || !userBalance || totalSupply.equalTo(0)) return undefined
+  return new Percent(userBalance.quotient, totalSupply.quotient)
+}
+
+/** Isolate SDK LIQUIDITY/invariant throws so one metric cannot blank sibling state. */
+export function safeGetLiquidityDeposited(
+  pair?: Pair,
+  totalSupply?: CurrencyAmount<Token>,
+  userBalance?: CurrencyAmount<Token>,
+): [CurrencyAmount<Currency> | undefined, CurrencyAmount<Currency> | undefined] {
+  if (!pair || !totalSupply || !userBalance) return [undefined, undefined]
+  let token0Deposited: CurrencyAmount<Currency> | undefined
+  let token1Deposited: CurrencyAmount<Currency> | undefined
+  try {
+    token0Deposited = pair.getLiquidityValue(pair.token0, totalSupply, userBalance, false)
+  } catch {
+    token0Deposited = undefined
+  }
+  try {
+    token1Deposited = pair.getLiquidityValue(pair.token1, totalSupply, userBalance, false)
+  } catch {
+    token1Deposited = undefined
+  }
+  return [token0Deposited, token1Deposited]
+}
+
+export function depositedUsdFromPricedSides(
   token0Deposited?: CurrencyAmount<Currency>,
   token1Deposited?: CurrencyAmount<Currency>,
+  token0Price?: Price<Currency, Currency>,
+  token1Price?: Price<Currency, Currency>,
 ): number | undefined {
-  const token0Price = useBUSDPrice(currency0)
-  const token1Price = useBUSDPrice(currency1)
   const token0USD =
     token0Deposited && token0Price
       ? multiplyPriceByAmount(token0Price, parseFloat(token0Deposited.toSignificant(6)))
@@ -55,6 +97,27 @@ function usePositionUsdValue(
       : null
   if (token0USD != null && token1USD != null) return token0USD + token1USD
   return token0USD ?? token1USD ?? undefined
+}
+
+function liquidityTotalSupplyFromRaw(token: Token, raw?: string): CurrencyAmount<Token> | undefined {
+  if (!raw) return undefined
+  try {
+    const amount = CurrencyAmount.fromRawAmount(token, raw)
+    return amount.equalTo(0) ? undefined : amount
+  } catch {
+    return undefined
+  }
+}
+
+function usePositionUsdValue(
+  currency0?: Currency,
+  currency1?: Currency,
+  token0Deposited?: CurrencyAmount<Currency>,
+  token1Deposited?: CurrencyAmount<Currency>,
+): number | undefined {
+  const token0Price = useBUSDPrice(currency0)
+  const token1Price = useBUSDPrice(currency1)
+  return depositedUsdFromPricedSides(token0Deposited, token1Deposited, token0Price, token1Price)
 }
 
 export function useLiquidityPositions(enabled = true) {
@@ -131,6 +194,20 @@ export function useLiquidityPositions(enabled = true) {
     [tokenPairsWithLiquidityTokens, effectiveV2PairBalances],
   )
 
+  const lpSupplyAddresses = useMemo(
+    () => liquidityTokensWithBalances.map(({ liquidityToken }) => liquidityToken.address),
+    [liquidityTokensWithBalances],
+  )
+  const lpTotalSupplyCalls = useMultipleContractSingleData(lpSupplyAddresses, ERC20_INTERFACE, 'totalSupply')
+  const batchedTotalSupplyRawByAddress = useMemo(() => {
+    const out: Record<string, string> = {}
+    liquidityTokensWithBalances.forEach(({ liquidityToken }, i) => {
+      const raw = lpTotalSupplyCalls?.[i]?.result?.[0]?.toString()
+      if (raw) out[liquidityToken.address.toLowerCase()] = raw
+    })
+    return out
+  }, [liquidityTokensWithBalances, lpTotalSupplyCalls])
+
   const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
   const v2IsLoading =
     (!factoryScanComplete && fetchingV2PairBalances) ||
@@ -149,6 +226,7 @@ export function useLiquidityPositions(enabled = true) {
       if (!userBalance?.greaterThan(0)) return
       const key = pairAddress.toLowerCase()
       if (byPair.has(key)) return
+      const totalSupplyRaw = batchedTotalSupplyRawByAddress[key]
       byPair.set(key, {
         id: pairAddress,
         pair,
@@ -159,10 +237,12 @@ export function useLiquidityPositions(enabled = true) {
         pairAddress,
         walletAddress: account,
         ownershipSource: OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
+        totalSupplyRaw,
+        totalSupply: liquidityTotalSupplyFromRaw(pair.liquidityToken, totalSupplyRaw),
       })
     })
     return [...byPair.values()]
-  }, [v2Pairs, effectiveV2PairBalances, account])
+  }, [v2Pairs, effectiveV2PairBalances, account, batchedTotalSupplyRawByAddress])
 
   const stablePositions = useMemo((): LiquidityPositionRow[] => {
     if (!stablePairs?.length) return []
@@ -170,16 +250,20 @@ export function useLiquidityPositions(enabled = true) {
       .map((stablePair) => {
         const balance = effectiveV2PairBalances[stablePair.liquidityToken.address]
         if (!balance?.greaterThan(0)) return null
+        const totalSupplyRaw = batchedTotalSupplyRawByAddress[stablePair.liquidityToken.address.toLowerCase()]
+        const pair = stablePair as unknown as Pair
         return {
           id: stablePair.liquidityToken.address,
-          pair: stablePair as unknown as Pair,
+          pair,
           pairLabel: `${stablePair.token0.symbol} / ${stablePair.token1.symbol}`,
           lpBalance: balance,
           isStable: true,
+          totalSupplyRaw,
+          totalSupply: liquidityTotalSupplyFromRaw(pair.liquidityToken, totalSupplyRaw),
         }
       })
       .filter(Boolean) as LiquidityPositionRow[]
-  }, [stablePairs, effectiveV2PairBalances])
+  }, [stablePairs, effectiveV2PairBalances, batchedTotalSupplyRawByAddress])
 
   const positions = useMemo(() => [...v2Positions, ...stablePositions], [v2Positions, stablePositions])
   const rawLoading = enabled && Boolean(effectiveAccount) && v2IsLoading
@@ -240,23 +324,21 @@ export function useLiquidityPositions(enabled = true) {
 }
 
 export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {
-  const totalSupply = useTotalSupply(position?.pair.liquidityToken)
+  const fallbackTotalSupply = useTotalSupply(position?.pair.liquidityToken)
   const userBalance = position?.lpBalance
+  const totalSupply = resolvePositionTotalSupply(position?.totalSupply, fallbackTotalSupply)
 
-  const [token0Deposited, token1Deposited] = useMemo(() => {
-    if (!position?.pair || !totalSupply || !userBalance) return [undefined, undefined]
-    return [
-      position.pair.getLiquidityValue(position.pair.token0, totalSupply, userBalance, false),
-      position.pair.getLiquidityValue(position.pair.token1, totalSupply, userBalance, false),
-    ]
-  }, [position?.pair, totalSupply, userBalance])
+  const [token0Deposited, token1Deposited] = useMemo(
+    () => safeGetLiquidityDeposited(position?.pair, totalSupply, userBalance),
+    [position?.pair, totalSupply, userBalance],
+  )
 
   const usdValue = usePositionUsdValue(position?.pair.token0, position?.pair.token1, token0Deposited, token1Deposited)
 
-  const poolShare = useMemo(() => {
-    if (!totalSupply || !userBalance || totalSupply.equalTo(0)) return undefined
-    return new Percent(userBalance.quotient, totalSupply.quotient)
-  }, [totalSupply, userBalance])
+  const poolShare = useMemo(
+    () => computePositionPoolShare(totalSupply, userBalance),
+    [totalSupply, userBalance],
+  )
 
   return { token0Deposited, token1Deposited, usdValue, poolShare }
 }

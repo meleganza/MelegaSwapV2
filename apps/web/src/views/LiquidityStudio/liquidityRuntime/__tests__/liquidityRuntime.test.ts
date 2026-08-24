@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
+import { CurrencyAmount, ERC20Token, Pair, Price } from '@pancakeswap/sdk'
 import {
   computeUnderlyingAmount,
   OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
@@ -11,6 +12,12 @@ import {
 } from '../walletLpPositionMath'
 import { estimateImpermanentLossPct, formatPercentShare, formatSlippage, pairLabel, ratioLabels } from '../formatLiquidityRuntime'
 import type { LiquidityStudioMode, SetLiquidityModeOptions } from '../useLiquidityMintRuntime'
+import {
+  computePositionPoolShare,
+  depositedUsdFromPricedSides,
+  resolvePositionTotalSupply,
+  safeGetLiquidityDeposited,
+} from '../useLiquidityPositions'
 
 const MM72 = '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E'
 const MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
@@ -228,5 +235,89 @@ describe('Manage / Add More selected-pair context', () => {
     expect(resolveLiquidityStudioPairLabel('Remove Liquidity', undefined, undefined, undefined)).toBe(
       'Select a liquidity position',
     )
+  })
+})
+
+const MXMX = '0xc93B7e6d6445f8e7de92abDDbFBC8057CdCaA1a6'
+const USDT = '0x55d398326f99059fF775485246999027B3197955'
+const e18 = '000000000000000000'
+
+function mm72MxmxFixture() {
+  const tokenMm72 = new ERC20Token(56, MM72, 18, 'MM72')
+  const tokenMxmx = new ERC20Token(56, MXMX, 18, 'MXMX')
+  const tokenUsdt = new ERC20Token(56, USDT, 18, 'USDT')
+  const pair = new Pair(
+    CurrencyAmount.fromRawAmount(tokenMm72, `1000${e18}`),
+    CurrencyAmount.fromRawAmount(tokenMxmx, `2000${e18}`),
+  )
+  const batchedRaw = `10000${e18}`
+  const batchedSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, batchedRaw)
+  const userBalance = CurrencyAmount.fromRawAmount(pair.liquidityToken, `1000${e18}`)
+  return { tokenMm72, tokenMxmx, tokenUsdt, pair, batchedRaw, batchedSupply, userBalance }
+}
+
+describe('LP share + position value — batched totalSupply', () => {
+  it('wires batched totalSupply via existing multicall on discovered LP rows', () => {
+    const src = readFileSync(path.join(__dirname, '../useLiquidityPositions.ts'), 'utf8')
+    expect(src).toContain('useMultipleContractSingleData')
+    expect(src).toContain("ERC20_INTERFACE, 'totalSupply'")
+    expect(src).toContain('resolvePositionTotalSupply(position?.totalSupply, fallbackTotalSupply)')
+  })
+
+  it('batched supply + nonzero LP yields a finite pool share', () => {
+    const { batchedSupply, userBalance } = mm72MxmxFixture()
+    const supply = resolvePositionTotalSupply(batchedSupply, undefined)
+    const share = computePositionPoolShare(supply, userBalance)
+    expect(share).toBeDefined()
+    const n = Number(share!.toFixed(4))
+    expect(Number.isFinite(n)).toBe(true)
+    expect(n).toBeGreaterThan(0)
+  })
+
+  it('one-sided MM72/MXMX USDT price yields finite USD when supply exists', () => {
+    const { pair, batchedSupply, userBalance, tokenMm72, tokenUsdt } = mm72MxmxFixture()
+    const supply = resolvePositionTotalSupply(batchedSupply, undefined)
+    const [token0Deposited, token1Deposited] = safeGetLiquidityDeposited(pair, supply, userBalance)
+    expect(token0Deposited || token1Deposited).toBeTruthy()
+    const mm72IsToken0 = pair.token0.equals(tokenMm72)
+    const usdtPrice = new Price(tokenMm72, tokenUsdt, `1${e18}`, `1${e18}`)
+    const usd = depositedUsdFromPricedSides(
+      token0Deposited,
+      token1Deposited,
+      mm72IsToken0 ? usdtPrice : undefined,
+      mm72IsToken0 ? undefined : usdtPrice,
+    )
+    expect(usd).toBeDefined()
+    expect(Number.isFinite(usd!)).toBe(true)
+    expect(usd!).toBeGreaterThan(0)
+  })
+
+  it('missing or invalid supply stays undefined/partial (not fabricated)', () => {
+    const { pair, userBalance, batchedSupply } = mm72MxmxFixture()
+    const zeroSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, '0')
+    expect(resolvePositionTotalSupply(undefined, undefined)).toBeUndefined()
+    expect(resolvePositionTotalSupply(zeroSupply, undefined)).toBeUndefined()
+    expect(computePositionPoolShare(undefined, userBalance)).toBeUndefined()
+    expect(computePositionPoolShare(zeroSupply, userBalance)).toBeUndefined()
+    expect(safeGetLiquidityDeposited(pair, undefined, userBalance)).toEqual([undefined, undefined])
+    expect(depositedUsdFromPricedSides(undefined, undefined, undefined, undefined)).toBeUndefined()
+    // fallback only when batched is missing/invalid
+    expect(resolvePositionTotalSupply(undefined, batchedSupply)).toBe(batchedSupply)
+    expect(resolvePositionTotalSupply(zeroSupply, batchedSupply)).toBe(batchedSupply)
+  })
+
+  it('getLiquidityValue throw does not propagate', () => {
+    const { pair, userBalance, tokenMm72 } = mm72MxmxFixture()
+    const mismatchedSupply = CurrencyAmount.fromRawAmount(tokenMm72, `10000${e18}`)
+    expect(() => safeGetLiquidityDeposited(pair, mismatchedSupply, userBalance)).not.toThrow()
+    expect(safeGetLiquidityDeposited(pair, mismatchedSupply, userBalance)).toEqual([undefined, undefined])
+
+    const oversizeLp = CurrencyAmount.fromRawAmount(pair.liquidityToken, `100000${e18}`)
+    const smallSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, `1${e18}`)
+    expect(() => {
+      pair.getLiquidityValue(pair.token0, smallSupply, oversizeLp, false)
+    }).toThrow()
+    expect(() => safeGetLiquidityDeposited(pair, smallSupply, oversizeLp)).not.toThrow()
+    expect(safeGetLiquidityDeposited(pair, smallSupply, oversizeLp)).toEqual([undefined, undefined])
   })
 })
