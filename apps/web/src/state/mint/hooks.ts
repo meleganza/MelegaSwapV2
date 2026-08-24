@@ -17,7 +17,7 @@ import { FetchStatus } from 'config/constants/types'
 import { useTradeExactIn } from 'hooks/Trades'
 import { useZapContract } from 'hooks/useContract'
 import useNativeCurrency from 'hooks/useNativeCurrency'
-import { PairState, usePair } from 'hooks/usePairs'
+import { PairState, safePairPriceOf, usePair } from 'hooks/usePairs'
 import { useCanonicalMarcoPair } from 'hooks/useCanonicalMarcoPair'
 import { usePreviousValue } from '@pancakeswap/hooks'
 import { useSWRContract } from 'hooks/useSWRContract'
@@ -147,14 +147,20 @@ export function useDerivedMintInfo(
       const wrappedIndependentAmount = independentAmount?.wrapped
       const [tokenA, tokenB] = [currencyA?.wrapped, currencyB?.wrapped]
       if (tokenA && tokenB && wrappedIndependentAmount && pair) {
-        const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA
-        const dependentTokenAmount =
-          dependentField === Field.CURRENCY_B
-            ? pair.priceOf(tokenA).quote(wrappedIndependentAmount)
-            : pair.priceOf(tokenB).quote(wrappedIndependentAmount)
-        return dependentCurrency?.isNative
-          ? CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient)
-          : dependentTokenAmount
+        try {
+          const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA
+          const pricedToken = dependentField === Field.CURRENCY_B ? tokenA : tokenB
+          const pairPrice = safePairPriceOf(pair, pricedToken)
+          if (!pairPrice) {
+            return undefined
+          }
+          const dependentTokenAmount = pairPrice.quote(wrappedIndependentAmount)
+          return dependentCurrency?.isNative
+            ? CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient)
+            : dependentTokenAmount
+        } catch {
+          return undefined
+        }
       }
       return undefined
     }
@@ -183,7 +189,7 @@ export function useDerivedMintInfo(
       return undefined
     }
     const wrappedCurrencyA = currencyA?.wrapped
-    return pair && wrappedCurrencyA ? pair.priceOf(wrappedCurrencyA) : undefined
+    return pair && wrappedCurrencyA ? safePairPriceOf(pair, wrappedCurrencyA) : undefined
   }, [currencyA, noLiquidity, pair, parsedAmounts])
 
   // liquidity minted

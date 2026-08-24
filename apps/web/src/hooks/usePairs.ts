@@ -1,4 +1,4 @@
-import { CurrencyAmount, Pair, Currency } from '@pancakeswap/sdk'
+import { CurrencyAmount, Pair, Currency, Token } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import IPancakePairABI from 'config/abi/IPancakePair.json'
 import { Interface } from '@ethersproject/abi'
@@ -71,12 +71,35 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
   }, [results, tokens])
 }
 
+export function isCurrentDirectPair(
+  directPair: Pair | null | undefined,
+  tokenA?: Currency,
+  tokenB?: Currency,
+): boolean {
+  if (!directPair || !tokenA || !tokenB) {
+    return false
+  }
+  const wrappedA = wrappedCurrency(tokenA, tokenA.chainId)
+  const wrappedB = wrappedCurrency(tokenB, tokenB.chainId)
+  return Boolean(wrappedA && wrappedB && directPair.involvesToken(wrappedA) && directPair.involvesToken(wrappedB))
+}
+
+export function safePairPriceOf(pair: Pair | null | undefined, token?: Token) {
+  if (!pair || !token || !pair.involvesToken(token)) {
+    return undefined
+  }
+  try {
+    return pair.priceOf(token)
+  } catch {
+    return undefined
+  }
+}
+
 export function usePair(tokenA?: Currency, tokenB?: Currency): [PairState, Pair | null] {
   const pairCurrencies = useMemo<[Currency, Currency][]>(() => [[tokenA, tokenB]], [tokenA, tokenB])
   const discovered = usePairs(pairCurrencies)[0]
-  const directPair = useDirectMelegaPair(
-    wrappedCurrency(tokenA, tokenA?.chainId),
-    wrappedCurrency(tokenB, tokenB?.chainId),
-  )
-  return directPair ? [PairState.EXISTS, directPair] : discovered
+  const wrappedA = wrappedCurrency(tokenA, tokenA?.chainId)
+  const wrappedB = wrappedCurrency(tokenB, tokenB?.chainId)
+  const directPair = useDirectMelegaPair(wrappedA, wrappedB)
+  return isCurrentDirectPair(directPair, tokenA, tokenB) ? [PairState.EXISTS, directPair] : discovered
 }
