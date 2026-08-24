@@ -18,6 +18,12 @@ export interface PoolClassificationSummary {
   generatedAt?: string
   currentBlock?: number
   errorDetail?: string
+  rewardTokenBalanceByChef?: Record<string, string>
+}
+
+export interface ClassificationApiRow {
+  address?: string
+  rewardTokenBalance?: string
 }
 
 export interface ClassificationApiResponse {
@@ -27,6 +33,7 @@ export interface ClassificationApiResponse {
     dataSource?: string
     note?: string
   }
+  rows?: ClassificationApiRow[]
 }
 
 export function parseClassificationCounts(raw: ClassificationApiResponse | null | undefined): PoolClassificationCounts | null {
@@ -48,6 +55,25 @@ export function parseClassificationCounts(raw: ClassificationApiResponse | null 
 function finiteCount(value: unknown, fallback: number): number {
   const n = Number(value)
   return Number.isFinite(n) ? n : fallback
+}
+
+const CHEF_ADDRESS = /^0x[a-fA-F0-9]{40}$/
+const WEI_STRING = /^(?:0|[1-9]\d*)$/
+
+export function parseRewardTokenBalanceByChef(
+  raw: ClassificationApiResponse | null | undefined,
+): Record<string, string> {
+  const rows = raw?.rows
+  if (!Array.isArray(rows)) return {}
+  const byChef: Record<string, string> = {}
+  for (const row of rows) {
+    const address = typeof row?.address === 'string' ? row.address.trim() : ''
+    const balance = row?.rewardTokenBalance
+    if (!CHEF_ADDRESS.test(address)) continue
+    if (typeof balance !== 'string' || !WEI_STRING.test(balance)) continue
+    byChef[address.toLowerCase()] = balance
+  }
+  return byChef
 }
 
 export function buildLifecycleSecondaryCopy(counts: PoolClassificationCounts): string {

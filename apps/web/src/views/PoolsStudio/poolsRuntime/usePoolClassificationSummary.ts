@@ -2,6 +2,7 @@ import useSWR from 'swr'
 import { useMemo } from 'react'
 import {
   parseClassificationCounts,
+  parseRewardTokenBalanceByChef,
   type ClassificationApiResponse,
   type PoolClassificationSummary,
 } from './poolClassificationSummary'
@@ -44,6 +45,7 @@ export function usePoolClassificationSummary(): PoolClassificationSummary {
       counts,
       generatedAt: data?.generatedAt,
       currentBlock: data?.currentBlock,
+      rewardTokenBalanceByChef: parseRewardTokenBalanceByChef(data),
     }
   }, [data, error, isLoading])
 }

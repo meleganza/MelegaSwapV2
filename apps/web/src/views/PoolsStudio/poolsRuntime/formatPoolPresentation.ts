@@ -131,18 +131,13 @@ export function getRemainingRewardsRaw(
 export function getRemainingRewards(
   pool: Pool.DeserializedPool<Token>,
   currentBlock: number,
+  fundedRewardTokens?: number,
 ): { label: string; pct: number; tone: 'green' | 'yellow' | 'red'; raw: number } {
-  const remaining = getRemainingRewardsRaw(pool, currentBlock)
+  const scheduleRaw = getRemainingRewardsRaw(pool, currentBlock)
+  const fundedIsValid =
+    fundedRewardTokens !== undefined && Number.isFinite(fundedRewardTokens) && fundedRewardTokens >= 0
+  const remaining = fundedIsValid ? Math.min(scheduleRaw, fundedRewardTokens) : scheduleRaw
   const sym = pool.earningToken?.symbol ?? ''
-  if (remaining < 0.01) {
-    return { label: '—', pct: 0, tone: 'red', raw: 0 }
-  }
-  const text =
-    remaining >= 1_000_000
-      ? `${(remaining / 1_000_000).toFixed(2)}M ${sym}`
-      : remaining >= 1_000
-        ? `${(remaining / 1_000).toFixed(1)}K ${sym}`
-        : `${remaining.toLocaleString(undefined, { maximumFractionDigits: 0 })} ${sym}`
 
   const start = pool.startBlock ?? 0
   const end = pool.endBlock ?? 0
@@ -153,6 +148,20 @@ export function getRemainingRewards(
       ? Math.min(100, Math.max(0, (blocksRemaining / total) * 100))
       : 50
   const tone: 'green' | 'yellow' | 'red' = pct > 50 ? 'green' : pct > 20 ? 'yellow' : 'red'
+
+  if (remaining < 0.01) {
+    if (!fundedIsValid) {
+      return { label: '—', pct: 0, tone: 'red', raw: 0 }
+    }
+    return { label: '—', pct, tone, raw: 0 }
+  }
+  const text =
+    remaining >= 1_000_000
+      ? `${(remaining / 1_000_000).toFixed(2)}M ${sym}`
+      : remaining >= 1_000
+        ? `${(remaining / 1_000).toFixed(1)}K ${sym}`
+        : `${remaining.toLocaleString(undefined, { maximumFractionDigits: 0 })} ${sym}`
+
   return { label: text, pct, tone, raw: remaining }
 }
 
