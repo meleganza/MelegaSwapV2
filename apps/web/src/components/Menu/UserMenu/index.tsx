@@ -11,6 +11,7 @@ import {
   UserMenuItem,
   UserMenuVariant,
 } from '@pancakeswap/uikit'
+import { COLLECTIBLES_ROUTE } from 'app-shell/config/navigation'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Trans from 'components/Trans'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -33,7 +34,6 @@ const UserMenuItems = () => {
   const { t } = useTranslation()
   const { chainId, isWrongNetwork } = useActiveChainId()
   const { logout } = useAuth()
-  const { address: account } = useAccount()
   const { hasPendingTransactions } = usePendingTransactions()
   // const { isInitialized, isLoading, profile } = useProfile()
   const [onPresentWalletModal] = useModal(<WalletModal initialView={WALLET_INFO_VIEW} />)
@@ -57,7 +57,7 @@ const UserMenuItems = () => {
         {hasPendingTransactions && <RefreshIcon spin />}
       </UserMenuItem>
       <UserMenuDivider />
-      <NextLink href={`/profile/${account?.toLowerCase()}`} passHref>
+      <NextLink href={COLLECTIBLES_ROUTE} passHref>
         <UserMenuItem as="a" disabled={isWrongNetwork || chainId !== ChainId.BSC}>
           {t('Your NFTs')}
         </UserMenuItem>
