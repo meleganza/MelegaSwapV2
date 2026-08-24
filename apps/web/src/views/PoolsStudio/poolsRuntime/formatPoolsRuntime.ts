@@ -204,6 +204,7 @@ export function mapPoolToPreviewCard(
   pool: Pool.DeserializedPool<Token>,
   currentBlock: number,
   performanceFee = 0,
+  rewardTokenBalanceByChef?: Record<string, string>,
 ): PoolPreviewCard | null {
   if (!pool?.earningToken?.decimals || !pool?.stakingToken?.decimals) return null
 
@@ -213,9 +214,23 @@ export function mapPoolToPreviewCard(
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   const status = poolStatus(pool, currentBlock)
   const aprDisplay = displayPoolApr(pool, apr, status, currentBlock)
-  const remaining = getRemainingRewards(pool, currentBlock)
-  const sustainability = getRewardSustainability(pool, currentBlock)
   const contract = getContractRef(pool)
+  const rawWei = rewardTokenBalanceByChef?.[contract.address.toLowerCase()]
+  let fundedRewardTokens: number | undefined
+  if (typeof rawWei === 'string' && rawWei.length > 0) {
+    const weiBn = new BigNumber(rawWei)
+    if (weiBn.isFinite() && !weiBn.isNegative()) {
+      const funded = getBalanceNumber(weiBn, pool.earningToken.decimals)
+      if (Number.isFinite(funded) && funded >= 0) {
+        fundedRewardTokens = funded
+      }
+    }
+  }
+  const remaining =
+    fundedRewardTokens === undefined
+      ? getRemainingRewards(pool, currentBlock)
+      : getRemainingRewards(pool, currentBlock, fundedRewardTokens)
+  const sustainability = getRewardSustainability(pool, currentBlock)
   const stakeAddr = normalizeAddress(pool.stakingToken?.address)
   const rewardAddr = normalizeAddress(pool.earningToken?.address)
   const budgetUsd = getRewardBudgetUsd(pool, currentBlock)
