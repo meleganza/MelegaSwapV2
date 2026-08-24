@@ -555,7 +555,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
       setSelectedPositionId(row.id)
       setCurrencyA(row.pair.token0)
       setCurrencyB(row.pair.token1)
-      setMode('Add Liquidity', { syncUrl: false })
+      setMode('Add Liquidity', { syncUrl: false, preservePair: true })
       focusLiquidityEditor()
     },
     [setSelectedPositionId, setCurrencyA, setCurrencyB, setMode],

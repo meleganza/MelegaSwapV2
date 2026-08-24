@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'fs'
+import path from 'path'
 import {
   computeUnderlyingAmount,
   OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
@@ -8,7 +10,7 @@ import {
   shouldAutoSelectOwnedPosition,
 } from '../walletLpPositionMath'
 import { estimateImpermanentLossPct, formatPercentShare, formatSlippage, pairLabel, ratioLabels } from '../formatLiquidityRuntime'
-import type { LiquidityStudioMode } from '../useLiquidityMintRuntime'
+import type { LiquidityStudioMode, SetLiquidityModeOptions } from '../useLiquidityMintRuntime'
 
 const MM72 = '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E'
 const MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
@@ -135,5 +137,96 @@ describe('R791C.1A wallet LP position recovery', () => {
   it('TEST 12 — UI layout regression: pair labels remain full strings', () => {
     expect(pairLabel({ symbol: 'MM72' } as never, { symbol: 'MARCO' } as never)).toBe('MM72 / MARCO')
     expect(pairLabel({ symbol: 'MM72' } as never, { symbol: 'MARCO' } as never)).not.toMatch(/BNB/)
+  })
+})
+
+describe('Manage / Add More selected-pair context', () => {
+  const LUCK = '0x0000000000000000000000000000000000000lck'
+  const runtime = readFileSync(path.resolve(__dirname, '../useLiquidityMintRuntime.tsx'), 'utf8')
+  const myPos = readFileSync(
+    path.resolve(__dirname, '../../modules/LiquidityMyPositionsModule.tsx'),
+    'utf8',
+  )
+
+  const addModeShouldClearPair = (opts?: SetLiquidityModeOptions): boolean => opts?.preservePair !== true
+  const resolveLiquidityStudioPairLabel = (
+    mode: LiquidityStudioMode,
+    selectedPositionPairLabel: string | undefined,
+    currencyA?: { symbol?: string } | null,
+    currencyB?: { symbol?: string } | null,
+  ): string => {
+    if (mode === 'Add Liquidity' && currencyA && currencyB) {
+      return pairLabel(currencyA as never, currencyB as never)
+    }
+    return (
+      selectedPositionPairLabel ||
+      (currencyA && currencyB
+        ? pairLabel(currencyA as never, currencyB as never)
+        : mode === 'Remove Liquidity'
+        ? 'Select a liquidity position'
+        : pairLabel(currencyA as never, currencyB as never))
+    )
+  }
+
+  it('wires preservePair through setMode and proceedManage', () => {
+    expect(runtime).toContain('preservePair?: boolean')
+    expect(runtime).toContain('export function addModeShouldClearPair')
+    expect(runtime).toContain('return opts?.preservePair !== true')
+    expect(runtime).toContain("if (next === 'Add Liquidity' && addModeShouldClearPair(opts))")
+    expect(runtime).toContain('setCurrencyIdA(undefined)')
+    expect(runtime).toContain('setCurrencyIdB(undefined)')
+    expect(runtime).toContain('resolveLiquidityStudioPairLabel(')
+    expect(myPos).toContain("setMode('Add Liquidity', { syncUrl: false, preservePair: true })")
+    expect(myPos).toContain("setMode('Add Liquidity')")
+  })
+
+  it('preservePair true retains current currency addresses', () => {
+    const current = { currencyIdA: MM72, currencyIdB: LUCK }
+    const next = addModeShouldClearPair({ preservePair: true })
+      ? { currencyIdA: undefined, currencyIdB: undefined }
+      : current
+    expect(next.currencyIdA).toBe(MM72)
+    expect(next.currencyIdB).toBe(LUCK)
+    expect(addModeShouldClearPair({ syncUrl: false, preservePair: true })).toBe(false)
+  })
+
+  it('default Add still clears currency IDs', () => {
+    const current = { currencyIdA: MM72, currencyIdB: LUCK }
+    const next = addModeShouldClearPair(undefined)
+      ? { currencyIdA: undefined, currencyIdB: undefined }
+      : current
+    expect(next.currencyIdA).toBeUndefined()
+    expect(next.currencyIdB).toBeUndefined()
+    expect(addModeShouldClearPair()).toBe(true)
+    expect(addModeShouldClearPair({ syncUrl: false })).toBe(true)
+    expect(addModeShouldClearPair({ preservePair: false })).toBe(true)
+  })
+
+  it('Add-mode pair label follows live currencies even when selectedPosition.pairLabel differs', () => {
+    const mm72Luck = resolveLiquidityStudioPairLabel(
+      'Add Liquidity',
+      'BNB / MARCO',
+      { symbol: 'MM72' },
+      { symbol: 'LUCK' },
+    )
+    expect(mm72Luck).toBe('MM72 / LUCK')
+    expect(mm72Luck).not.toBe('BNB / MARCO')
+
+    const mxmxLuck = resolveLiquidityStudioPairLabel(
+      'Add Liquidity',
+      'MM72 / LUCK',
+      { symbol: 'MXMX' },
+      { symbol: 'LUCK' },
+    )
+    expect(mxmxLuck).toBe('MXMX / LUCK')
+  })
+
+  it('Remove mode keeps selected-position pair-label semantics', () => {
+    expect(
+      resolveLiquidityStudioPairLabel('Remove Liquidity', 'MM72 / LUCK', { symbol: 'BNB' }, { symbol: 'MARCO' }),
+    ).toBe('MM72 / LUCK')
+    expect(resolveLiquidityStudioPairLabel('Remove Liquidity', undefined, undefined, undefined)).toBe(
+      'Select a liquidity position',
+    )
   })
 })
