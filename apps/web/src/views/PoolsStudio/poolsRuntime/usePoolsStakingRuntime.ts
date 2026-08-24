@@ -292,6 +292,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const { snapshot: participantSnapshot } = useYieldParticipants()
   const poolClassificationSummary = usePoolClassificationSummary()
   const factoryPools = useMelegaFactoryPools(chainId)
+  const rewardTokenBalanceByChef = poolClassificationSummary.rewardTokenBalanceByChef
 
   const performanceFee = 0
 
@@ -315,7 +316,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     }
     const cards = rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
-      .map((p) => mapPoolToPreviewCard(p, currentBlockRef.current, performanceFee))
+      .map((p) => mapPoolToPreviewCard(p, currentBlockRef.current, performanceFee, rewardTokenBalanceByChef))
       .filter((c): c is PoolPreviewCard => c !== null)
     const next = deduplicatePoolPreviewCards(cards, chainId ?? 56)
     if (next.length > 0) {
@@ -323,7 +324,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       return next
     }
     return cached
-  }, [rawPools, chainId])
+  }, [rawPools, chainId, rewardTokenBalanceByChef])
 
   const participantStakingCards = useMemo(
     () => enrichPoolParticipantCounts(realPreviewCards, participantSnapshot, chainId ?? 56),

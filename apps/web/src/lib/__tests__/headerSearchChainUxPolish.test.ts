@@ -65,6 +65,16 @@ describe('MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH', () => {
     expect(ui).toContain('data-global-search-actions')
   })
 
+  it('WrongNetworkSelect invokes useHover before the localChainId null guard', () => {
+    const switcher = load('components/NetworkSwitcher.tsx')
+    const fn = switcher.slice(switcher.indexOf('const WrongNetworkSelect'))
+    const hover = fn.indexOf('useHover<HTMLButtonElement>()')
+    const guard = fn.indexOf('if (localChainId == null) return null')
+    expect(hover).toBeGreaterThan(-1)
+    expect(guard).toBeGreaterThan(-1)
+    expect(hover).toBeLessThan(guard)
+  })
+
   it('wallet wrong-network targets local chain — no hardcoded BSC switch', () => {
     const wrong = load('components/Menu/UserMenu/WalletWrongNetwork.tsx')
     expect(wrong).toContain('useLocalNetworkChain')

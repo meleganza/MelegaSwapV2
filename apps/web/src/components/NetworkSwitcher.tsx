@@ -102,12 +102,12 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
   const localChainId = useLocalNetworkChain() ?? filterMelegaVisibleSwitcherChains(chains)[0]?.id
   const [, setSessionChainId] = useSessionChainId()
 
+  const [ref1, isHover] = useHover<HTMLButtonElement>()
+
   if (localChainId == null) return null
 
   const localChainName = headerChainLabel(localChainId)
   const localChainTitle = headerChainTitle(localChainId)
-
-  const [ref1, isHover] = useHover<HTMLButtonElement>()
 
   return (
     <>

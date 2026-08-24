@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'fs'
+import path from 'path'
+import { CurrencyAmount, ERC20Token, Pair, Price } from '@pancakeswap/sdk'
 import {
   computeUnderlyingAmount,
   OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
@@ -8,7 +11,13 @@ import {
   shouldAutoSelectOwnedPosition,
 } from '../walletLpPositionMath'
 import { estimateImpermanentLossPct, formatPercentShare, formatSlippage, pairLabel, ratioLabels } from '../formatLiquidityRuntime'
-import type { LiquidityStudioMode } from '../useLiquidityMintRuntime'
+import type { LiquidityStudioMode, SetLiquidityModeOptions } from '../useLiquidityMintRuntime'
+import {
+  computePositionPoolShare,
+  depositedUsdFromPricedSides,
+  resolvePositionTotalSupply,
+  safeGetLiquidityDeposited,
+} from '../useLiquidityPositions'
 
 const MM72 = '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E'
 const MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
@@ -135,5 +144,180 @@ describe('R791C.1A wallet LP position recovery', () => {
   it('TEST 12 — UI layout regression: pair labels remain full strings', () => {
     expect(pairLabel({ symbol: 'MM72' } as never, { symbol: 'MARCO' } as never)).toBe('MM72 / MARCO')
     expect(pairLabel({ symbol: 'MM72' } as never, { symbol: 'MARCO' } as never)).not.toMatch(/BNB/)
+  })
+})
+
+describe('Manage / Add More selected-pair context', () => {
+  const LUCK = '0x0000000000000000000000000000000000000lck'
+  const runtime = readFileSync(path.resolve(__dirname, '../useLiquidityMintRuntime.tsx'), 'utf8')
+  const myPos = readFileSync(
+    path.resolve(__dirname, '../../modules/LiquidityMyPositionsModule.tsx'),
+    'utf8',
+  )
+
+  const addModeShouldClearPair = (opts?: SetLiquidityModeOptions): boolean => opts?.preservePair !== true
+  const resolveLiquidityStudioPairLabel = (
+    mode: LiquidityStudioMode,
+    selectedPositionPairLabel: string | undefined,
+    currencyA?: { symbol?: string } | null,
+    currencyB?: { symbol?: string } | null,
+  ): string => {
+    if (mode === 'Add Liquidity' && currencyA && currencyB) {
+      return pairLabel(currencyA as never, currencyB as never)
+    }
+    return (
+      selectedPositionPairLabel ||
+      (currencyA && currencyB
+        ? pairLabel(currencyA as never, currencyB as never)
+        : mode === 'Remove Liquidity'
+        ? 'Select a liquidity position'
+        : pairLabel(currencyA as never, currencyB as never))
+    )
+  }
+
+  it('wires preservePair through setMode and proceedManage', () => {
+    expect(runtime).toContain('preservePair?: boolean')
+    expect(runtime).toContain('export function addModeShouldClearPair')
+    expect(runtime).toContain('return opts?.preservePair !== true')
+    expect(runtime).toContain("if (next === 'Add Liquidity' && addModeShouldClearPair(opts))")
+    expect(runtime).toContain('setCurrencyIdA(undefined)')
+    expect(runtime).toContain('setCurrencyIdB(undefined)')
+    expect(runtime).toContain('resolveLiquidityStudioPairLabel(')
+    expect(myPos).toContain("setMode('Add Liquidity', { syncUrl: false, preservePair: true })")
+    expect(myPos).toContain("setMode('Add Liquidity')")
+  })
+
+  it('preservePair true retains current currency addresses', () => {
+    const current = { currencyIdA: MM72, currencyIdB: LUCK }
+    const next = addModeShouldClearPair({ preservePair: true })
+      ? { currencyIdA: undefined, currencyIdB: undefined }
+      : current
+    expect(next.currencyIdA).toBe(MM72)
+    expect(next.currencyIdB).toBe(LUCK)
+    expect(addModeShouldClearPair({ syncUrl: false, preservePair: true })).toBe(false)
+  })
+
+  it('default Add still clears currency IDs', () => {
+    const current = { currencyIdA: MM72, currencyIdB: LUCK }
+    const next = addModeShouldClearPair(undefined)
+      ? { currencyIdA: undefined, currencyIdB: undefined }
+      : current
+    expect(next.currencyIdA).toBeUndefined()
+    expect(next.currencyIdB).toBeUndefined()
+    expect(addModeShouldClearPair()).toBe(true)
+    expect(addModeShouldClearPair({ syncUrl: false })).toBe(true)
+    expect(addModeShouldClearPair({ preservePair: false })).toBe(true)
+  })
+
+  it('Add-mode pair label follows live currencies even when selectedPosition.pairLabel differs', () => {
+    const mm72Luck = resolveLiquidityStudioPairLabel(
+      'Add Liquidity',
+      'BNB / MARCO',
+      { symbol: 'MM72' },
+      { symbol: 'LUCK' },
+    )
+    expect(mm72Luck).toBe('MM72 / LUCK')
+    expect(mm72Luck).not.toBe('BNB / MARCO')
+
+    const mxmxLuck = resolveLiquidityStudioPairLabel(
+      'Add Liquidity',
+      'MM72 / LUCK',
+      { symbol: 'MXMX' },
+      { symbol: 'LUCK' },
+    )
+    expect(mxmxLuck).toBe('MXMX / LUCK')
+  })
+
+  it('Remove mode keeps selected-position pair-label semantics', () => {
+    expect(
+      resolveLiquidityStudioPairLabel('Remove Liquidity', 'MM72 / LUCK', { symbol: 'BNB' }, { symbol: 'MARCO' }),
+    ).toBe('MM72 / LUCK')
+    expect(resolveLiquidityStudioPairLabel('Remove Liquidity', undefined, undefined, undefined)).toBe(
+      'Select a liquidity position',
+    )
+  })
+})
+
+const MXMX = '0xc93B7e6d6445f8e7de92abDDbFBC8057CdCaA1a6'
+const USDT = '0x55d398326f99059fF775485246999027B3197955'
+const e18 = '000000000000000000'
+
+function mm72MxmxFixture() {
+  const tokenMm72 = new ERC20Token(56, MM72, 18, 'MM72')
+  const tokenMxmx = new ERC20Token(56, MXMX, 18, 'MXMX')
+  const tokenUsdt = new ERC20Token(56, USDT, 18, 'USDT')
+  const pair = new Pair(
+    CurrencyAmount.fromRawAmount(tokenMm72, `1000${e18}`),
+    CurrencyAmount.fromRawAmount(tokenMxmx, `2000${e18}`),
+  )
+  const batchedRaw = `10000${e18}`
+  const batchedSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, batchedRaw)
+  const userBalance = CurrencyAmount.fromRawAmount(pair.liquidityToken, `1000${e18}`)
+  return { tokenMm72, tokenMxmx, tokenUsdt, pair, batchedRaw, batchedSupply, userBalance }
+}
+
+describe('LP share + position value — batched totalSupply', () => {
+  it('wires batched totalSupply via existing multicall on discovered LP rows', () => {
+    const src = readFileSync(path.join(__dirname, '../useLiquidityPositions.ts'), 'utf8')
+    expect(src).toContain('useMultipleContractSingleData')
+    expect(src).toContain("ERC20_INTERFACE, 'totalSupply'")
+    expect(src).toContain('resolvePositionTotalSupply(position?.totalSupply, fallbackTotalSupply)')
+  })
+
+  it('batched supply + nonzero LP yields a finite pool share', () => {
+    const { batchedSupply, userBalance } = mm72MxmxFixture()
+    const supply = resolvePositionTotalSupply(batchedSupply, undefined)
+    const share = computePositionPoolShare(supply, userBalance)
+    expect(share).toBeDefined()
+    const n = Number(share!.toFixed(4))
+    expect(Number.isFinite(n)).toBe(true)
+    expect(n).toBeGreaterThan(0)
+  })
+
+  it('one-sided MM72/MXMX USDT price yields finite USD when supply exists', () => {
+    const { pair, batchedSupply, userBalance, tokenMm72, tokenUsdt } = mm72MxmxFixture()
+    const supply = resolvePositionTotalSupply(batchedSupply, undefined)
+    const [token0Deposited, token1Deposited] = safeGetLiquidityDeposited(pair, supply, userBalance)
+    expect(token0Deposited || token1Deposited).toBeTruthy()
+    const mm72IsToken0 = pair.token0.equals(tokenMm72)
+    const usdtPrice = new Price(tokenMm72, tokenUsdt, `1${e18}`, `1${e18}`)
+    const usd = depositedUsdFromPricedSides(
+      token0Deposited,
+      token1Deposited,
+      mm72IsToken0 ? usdtPrice : undefined,
+      mm72IsToken0 ? undefined : usdtPrice,
+    )
+    expect(usd).toBeDefined()
+    expect(Number.isFinite(usd!)).toBe(true)
+    expect(usd!).toBeGreaterThan(0)
+  })
+
+  it('missing or invalid supply stays undefined/partial (not fabricated)', () => {
+    const { pair, userBalance, batchedSupply } = mm72MxmxFixture()
+    const zeroSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, '0')
+    expect(resolvePositionTotalSupply(undefined, undefined)).toBeUndefined()
+    expect(resolvePositionTotalSupply(zeroSupply, undefined)).toBeUndefined()
+    expect(computePositionPoolShare(undefined, userBalance)).toBeUndefined()
+    expect(computePositionPoolShare(zeroSupply, userBalance)).toBeUndefined()
+    expect(safeGetLiquidityDeposited(pair, undefined, userBalance)).toEqual([undefined, undefined])
+    expect(depositedUsdFromPricedSides(undefined, undefined, undefined, undefined)).toBeUndefined()
+    // fallback only when batched is missing/invalid
+    expect(resolvePositionTotalSupply(undefined, batchedSupply)).toBe(batchedSupply)
+    expect(resolvePositionTotalSupply(zeroSupply, batchedSupply)).toBe(batchedSupply)
+  })
+
+  it('getLiquidityValue throw does not propagate', () => {
+    const { pair, userBalance, tokenMm72 } = mm72MxmxFixture()
+    const mismatchedSupply = CurrencyAmount.fromRawAmount(tokenMm72, `10000${e18}`)
+    expect(() => safeGetLiquidityDeposited(pair, mismatchedSupply, userBalance)).not.toThrow()
+    expect(safeGetLiquidityDeposited(pair, mismatchedSupply, userBalance)).toEqual([undefined, undefined])
+
+    const oversizeLp = CurrencyAmount.fromRawAmount(pair.liquidityToken, `100000${e18}`)
+    const smallSupply = CurrencyAmount.fromRawAmount(pair.liquidityToken, `1${e18}`)
+    expect(() => {
+      pair.getLiquidityValue(pair.token0, smallSupply, oversizeLp, false)
+    }).toThrow()
+    expect(() => safeGetLiquidityDeposited(pair, smallSupply, oversizeLp)).not.toThrow()
+    expect(safeGetLiquidityDeposited(pair, smallSupply, oversizeLp)).toEqual([undefined, undefined])
   })
 })
