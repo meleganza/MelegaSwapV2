@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
+import { ChainId } from '@pancakeswap/sdk'
 import { BLOCKS_PER_DAY } from 'config'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useFarms } from 'state/farms/hooks'
 import { MELEGA_PRODUCTION_CONTRACTS } from './ontology'
 import {
@@ -65,17 +67,25 @@ async function fetchMasterChefEmission(pids?: number[]): Promise<MasterChefEmiss
 
 /** Canonical MARCO emission from MasterChef dexTokenPerBlock (API-first, Redux fallback for APR only). */
 export function useMasterChefEmission(farmPids?: number[]): MasterChefEmission {
+  const { chainId } = useActiveChainId()
+  const isBsc = chainId === ChainId.BSC
   const { regularCakePerBlock } = useFarms()
-  const swrKey = farmPids?.length ? `masterchef-emission-${farmPids.join(',')}` : 'masterchef-emission-api'
+  // Null SWR key disables the fetcher; BSC keys stay byte-identical to the prior cache.
+  const swrKey = isBsc
+    ? farmPids?.length
+      ? `masterchef-emission-${farmPids.join(',')}`
+      : 'masterchef-emission-api'
+    : null
   const { data: apiEmission, error: swrError } = useSWR(swrKey, () => fetchMasterChefEmission(farmPids), {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
 
   return useMemo(() => {
-    const mapped = apiEmission ?? null
+    const mapped = isBsc ? apiEmission ?? null : null
+    const cakePerBlock = isBsc ? regularCakePerBlock : 0
     const apiReady = mapped?.status === 'ready' && mapped.perBlock > 0
-    const perBlock = apiReady ? mapped!.perBlock : regularCakePerBlock > 0 ? regularCakePerBlock : 0
+    const perBlock = apiReady ? mapped!.perBlock : cakePerBlock > 0 ? cakePerBlock : 0
     const bonusMultiplier = mapped?.bonusMultiplier ?? 1
     const blocksPerDay = mapped?.blocksPerDay ?? BLOCKS_PER_DAY
     const perDay = mapped?.perDay ?? (perBlock > 0 ? perBlock * blocksPerDay * bonusMultiplier : 0)
@@ -106,8 +116,8 @@ export function useMasterChefEmission(farmPids?: number[]): MasterChefEmission {
       poolAllocations: mapped?.poolAllocations ?? {},
       readError,
       reason: mapped?.reason ?? readError,
-      source: apiReady ? mapped!.source : regularCakePerBlock > 0 ? 'redux-farms-fallback' : 'unavailable',
+      source: apiReady ? mapped!.source : cakePerBlock > 0 ? 'redux-farms-fallback' : 'unavailable',
       perDayLabel: status === 'ready' && perDay > 0 ? `${perDay.toLocaleString(undefined, { maximumFractionDigits: 2 })} MARCO` : '',
     }
-  }, [regularCakePerBlock, apiEmission, swrError])
+  }, [isBsc, regularCakePerBlock, apiEmission, swrError])
 }

@@ -1,5 +1,7 @@
 import useSWR from 'swr'
 import { useMemo } from 'react'
+import { ChainId } from '@pancakeswap/sdk'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import {
   parseClassificationCounts,
   parseRewardTokenBalanceByChef,
@@ -16,12 +18,18 @@ async function fetchPoolClassification(): Promise<ClassificationApiResponse> {
 }
 
 export function usePoolClassificationSummary(): PoolClassificationSummary {
-  const { data, error, isLoading } = useSWR('pool-classification-summary', fetchPoolClassification, {
+  const { chainId } = useActiveChainId()
+  const isBsc = chainId === ChainId.BSC
+  // Null SWR key disables the fetcher; BSC cache key stays byte-identical.
+  const { data, error, isLoading } = useSWR(isBsc ? 'pool-classification-summary' : null, fetchPoolClassification, {
     revalidateOnFocus: false,
     dedupingInterval: 60_000,
   })
 
   return useMemo((): PoolClassificationSummary => {
+    if (!isBsc) {
+      return { status: 'unavailable' }
+    }
     if (isLoading && !data) {
       return { status: 'loading' }
     }
@@ -47,5 +55,5 @@ export function usePoolClassificationSummary(): PoolClassificationSummary {
       currentBlock: data?.currentBlock,
       rewardTokenBalanceByChef: parseRewardTokenBalanceByChef(data),
     }
-  }, [data, error, isLoading])
+  }, [isBsc, data, error, isLoading])
 }
