@@ -118,6 +118,33 @@ export interface LiquidityMachinePayload {
 export type SetLiquidityModeOptions = {
   /** Default true. V3 tab chrome passes false and owns URL separately to avoid replace races. */
   syncUrl?: boolean
+  /** Keep current currency IDs when entering Add Liquidity (Manage / Add More). */
+  preservePair?: boolean
+}
+
+/** Default Add clears the pair so BNB/MARCO (or chain default) hydrates. Manage keeps the clicked LP. */
+export function addModeShouldClearPair(opts?: SetLiquidityModeOptions): boolean {
+  return opts?.preservePair !== true
+}
+
+/** Add-mode header follows live selects; Remove/other modes keep position-label semantics. */
+export function resolveLiquidityStudioPairLabel(
+  mode: LiquidityStudioMode,
+  selectedPositionPairLabel: string | undefined,
+  currencyA?: Currency | null,
+  currencyB?: Currency | null,
+): string {
+  if (mode === 'Add Liquidity' && currencyA && currencyB) {
+    return pairLabel(currencyA, currencyB)
+  }
+  return (
+    selectedPositionPairLabel ||
+    (currencyA && currencyB
+      ? pairLabel(currencyA, currencyB)
+      : mode === 'Remove Liquidity'
+      ? 'Select a liquidity position'
+      : pairLabel(currencyA, currencyB))
+  )
 }
 
 export interface LiquidityMintRuntime {
@@ -233,7 +260,7 @@ export function useLiquidityMintRuntime({
   const setMode = useCallback(
     (next: LiquidityStudioMode, opts?: SetLiquidityModeOptions) => {
       setModeState(next)
-      if (next === 'Add Liquidity') {
+      if (next === 'Add Liquidity' && addModeShouldClearPair(opts)) {
         setCurrencyIdA(undefined)
         setCurrencyIdB(undefined)
       }
@@ -949,13 +976,12 @@ export function useLiquidityMintRuntime({
       ? 'Broadcasting…'
       : undefined
 
-  const resolvedPairLabel =
-    selectedPosition?.pairLabel ||
-    (currencyA && currencyB
-      ? pairLabel(currencyA, currencyB)
-      : isRemove
-      ? 'Select a liquidity position'
-      : pairLabel(currencyA, currencyB))
+  const resolvedPairLabel = resolveLiquidityStudioPairLabel(
+    mode,
+    selectedPosition?.pairLabel,
+    currencyA,
+    currencyB,
+  )
 
   return {
     mode,
