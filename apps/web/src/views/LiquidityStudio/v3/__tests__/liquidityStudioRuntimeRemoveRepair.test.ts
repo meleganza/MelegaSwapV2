@@ -75,7 +75,7 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
   })
 
   it('position actions stay in the one-page workspace and reveal the editor', () => {
-    expect(myPos).toContain("setMode('Add Liquidity', { syncUrl: false })")
+    expect(myPos).toContain("setMode('Add Liquidity', { syncUrl: false, preservePair: true })")
     expect(myPos).toContain("setMode('Remove Liquidity', { syncUrl: false })")
     expect(myPos).toContain('focusLiquidityEditor()')
     expect(myPos).toContain("getElementById('liquidity-add')")
