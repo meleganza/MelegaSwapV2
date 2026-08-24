@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { getNow } from 'utils/getNow'
 import { AppState } from '../state'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 
@@ -9,7 +10,8 @@ export default function useTransactionDeadline(): BigNumber | undefined {
   const ttl = useSelector<AppState, number>((state) => state.user.userDeadline)
   const blockTimestamp = useCurrentBlockTimestamp()
   return useMemo(() => {
-    if (blockTimestamp && ttl) return blockTimestamp.add(ttl)
-    return undefined
+    if (!ttl) return undefined
+    const base = blockTimestamp ?? BigNumber.from(getNow())
+    return base.add(ttl)
   }, [blockTimestamp, ttl])
 }
