@@ -22,7 +22,11 @@ import {
 import { unionPositionsByWallet } from 'lib/data-truth/multichainPositions'
 import { resolveTokenMetaLocal, shortAddressLabel } from 'lib/data-truth/tokenMetadataResolution'
 import { mergeTickerWithPaidPlacements, tickerItemIsEligible } from 'lib/trending/paidTickerPlacements'
-import { dedupeExploreFarms } from 'views/FarmsStudio/modules/buildFarmsExploreFarms'
+import {
+  buildFarmsExploreFarmsViewModel,
+  dedupeExploreFarms,
+  isActiveStakeableExploreFarm,
+} from 'views/FarmsStudio/modules/buildFarmsExploreFarms'
 
 const ROOT = path.resolve(__dirname, '../..')
 
@@ -53,6 +57,35 @@ describe('multichain farm inventory normalization', () => {
       merged.map((c) => c.rawFarm?.token?.chainId).filter((n): n is number => typeof n === 'number'),
     )
     expect(chains.size).toBeGreaterThan(1)
+  })
+
+  it('does not expose Arbitrum 42161 config stubs as stakeable from a BSC wallet', () => {
+    const global = buildGlobalFarmPreviewCards()
+    const arbStubs = global.filter((c) => c.rawFarm?.token?.chainId === 42161 || String(c.id).startsWith('42161:'))
+    expect(arbStubs.length).toBeGreaterThan(0)
+    expect(arbStubs.every((card) => isActiveStakeableExploreFarm(card) === false)).toBe(true)
+
+    const fromBsc = {
+      portfolioFarms: global,
+      farmsLoading: false,
+      chainId: 56,
+      userDataLoaded: true,
+      filter: 'All' as const,
+      sort: 'Highest Sustainable APR' as const,
+      search: '',
+    }
+    const exploreAll = buildFarmsExploreFarmsViewModel({ ...fromBsc, chainFilter: 'all' })
+    expect(exploreAll.registry.every((f) => f.chainId !== 42161)).toBe(true)
+    expect(exploreAll.farms.every((f) => f.chainId !== 42161)).toBe(true)
+
+    const exploreArb = buildFarmsExploreFarmsViewModel({ ...fromBsc, chainFilter: 42161 })
+    expect(exploreArb.registry).toHaveLength(0)
+    expect(exploreArb.farms).toHaveLength(0)
+    expect(exploreArb.totalActive).toBe(0)
+
+    const bscCards = global.filter((c) => c.rawFarm?.token?.chainId === 56 || String(c.id).startsWith('56:'))
+    expect(bscCards.some((card) => isActiveStakeableExploreFarm(card))).toBe(true)
+    expect(exploreAll.farms.some((f) => f.chainId === 56 && f.stakeEnabled)).toBe(true)
   })
 
   it('dedupes explore farms by canonical identity not pid alone', () => {
