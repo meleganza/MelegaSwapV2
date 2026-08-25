@@ -27,6 +27,10 @@ const Root = styled.div`
   justify-content: center;
   min-height: 40px;
   flex: 0 0 auto;
+
+  &[hidden] {
+    display: none;
+  }
 `
 
 const Host = styled.div`
@@ -40,11 +44,17 @@ const Fallback = styled.div<{ $hidden: boolean }>`
   display: ${({ $hidden }) => ($hidden ? 'none' : 'inline-flex')};
 `
 
+const sweepFloatingFallbackAnchors = () => {
+  if (typeof document === 'undefined') return
+  document.querySelectorAll('[data-marco-connect-fallback-anchor]').forEach((node) => node.remove())
+}
+
 export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: string }> = ({
   size = 'navbar',
   className,
 }) => {
   const hostRef = useRef<HTMLDivElement | null>(null)
+  const syncWalletSessionRef = useRef<() => Promise<void>>(async () => undefined)
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const { address } = useAccount()
@@ -64,8 +74,10 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
     }
   }, [address, connectAsync, connectors])
 
+  syncWalletSessionRef.current = syncWalletSession
+
   useEffect(() => {
-    if (!hostRef.current || address) return undefined
+    if (!hostRef.current) return undefined
     let cancelled = false
     let sdk: MarcoConnectSdk | null = null
     const unsubscribers: Array<() => void> = []
@@ -83,7 +95,7 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
           size,
           signature: false,
         })
-        const unsubscribe = sdk.on('connect', () => void syncWalletSession())
+        const unsubscribe = sdk.on('connect', () => void syncWalletSessionRef.current())
         if (unsubscribe) unsubscribers.push(unsubscribe)
         setReady(true)
       },
@@ -97,15 +109,20 @@ export const MarcoConnect: React.FC<{ size?: MarcoConnectSize; className?: strin
       unsubscribers.forEach((unsubscribe) => unsubscribe())
       sdk?.destroy()
       hostRef.current?.replaceChildren()
+      sweepFloatingFallbackAnchors()
     }
-  }, [address, size, syncWalletSession])
-
-  if (address) return null
+  }, [size])
 
   return (
-    <Root className={className} data-testid="marco-connect" data-marco-connect-ready={ready ? 'true' : 'false'}>
+    <Root
+      className={className}
+      data-testid="marco-connect"
+      data-marco-connect-ready={ready ? 'true' : 'false'}
+      data-marco-connect-parked={address ? 'true' : 'false'}
+      hidden={Boolean(address)}
+    >
       <Host ref={hostRef} />
-      <Fallback $hidden={ready && !failed}>
+      <Fallback $hidden={Boolean(address) || (ready && !failed)}>
         <ConnectWalletButton className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}>
           {size === 'icon' ? 'Connect' : 'Connect Wallet'}
         </ConnectWalletButton>
