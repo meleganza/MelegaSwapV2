@@ -4,6 +4,7 @@
  */
 
 import BigNumber from 'bignumber.js'
+import { supportedChainId } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { auditFarmProvenance } from 'lib/data-truth/yieldProvenanceAudit'
@@ -77,6 +78,8 @@ export function isActiveStakeableExploreFarm(card: FarmPreviewCard): boolean {
   }
   if (card.cta !== 'stake') return false
   if (card.status !== 'live' && card.status !== 'indexing') return false
+  const farmChainId = resolveFarmChainId(card, 56)
+  if (!supportedChainId.includes(farmChainId)) return false
   return true
 }
 

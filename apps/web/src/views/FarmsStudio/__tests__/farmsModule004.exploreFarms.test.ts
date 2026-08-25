@@ -168,6 +168,58 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(vm.farms[0].stakeEnabled).toBe(true)
   })
 
+  it('rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable', () => {
+    const arbStub = makeCard({
+      id: '42161:0x0ac09abdc688fd67863bf0f62dd0e243dbdf6894:1',
+      pid: 1,
+      rawFarm: {
+        pid: 1,
+        multiplier: '1X',
+        lpAddress: '0xd658b8ea0175422a069358c388b9880a755055ad',
+        token: {
+          symbol: 'MARCO',
+          address: '0x963556de0eb8138e97a85f0a86ee0acd159d210b',
+          chainId: 42161,
+        },
+        quoteToken: {
+          symbol: 'ETH',
+          address: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
+          chainId: 42161,
+        },
+      } as any,
+    })
+    expect(isActiveStakeableExploreFarm(arbStub)).toBe(false)
+
+    const bsc = makeCard({
+      id: '56:0x41d5487836452d23f2c467070244e5842b412794:1',
+      rawFarm: {
+        pid: 1,
+        multiplier: '2X',
+        lpAddress: '0x1111111111111111111111111111111111111111',
+        token: { symbol: 'MARCO', address: '0x2222222222222222222222222222222222222222', chainId: 56 },
+        quoteToken: { symbol: 'ASTER', address: '0x3333333333333333333333333333333333333333', chainId: 56 },
+      } as any,
+    })
+    expect(isActiveStakeableExploreFarm(bsc)).toBe(true)
+
+    for (const chainId of [1, 8453, 137]) {
+      expect(
+        isActiveStakeableExploreFarm(
+          makeCard({
+            id: `${chainId}:0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:1`,
+            rawFarm: {
+              pid: 1,
+              multiplier: '1X',
+              lpAddress: '0x1111111111111111111111111111111111111111',
+              token: { symbol: 'A', address: '0x2222222222222222222222222222222222222222', chainId },
+              quoteToken: { symbol: 'B', address: '0x3333333333333333333333333333333333333333', chainId },
+            } as any,
+          }),
+        ),
+      ).toBe(true)
+    }
+  })
+
   it('models loading, empty, unavailable, partial, and stale retention', () => {
     expect(
       buildFarmsExploreFarmsViewModel({
