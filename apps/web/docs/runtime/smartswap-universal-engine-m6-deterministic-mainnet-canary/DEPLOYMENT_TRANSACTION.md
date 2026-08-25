@@ -1,6 +1,6 @@
 # DEPLOYMENT_TRANSACTION
 
-Status: **CREATE mined. runtime certified. setRouter not signed.**
+Status: **CREATE mined. runtime certified. setRouter, approval, and the single canary are also mined.**
 
 | | |
 |--|--|
@@ -16,4 +16,4 @@ Status: **CREATE mined. runtime certified. setRouter not signed.**
 
 Explorer: `https://bscscan.com/tx/0x3f9d56f0e0d1094a304ed66d256db2e3e55539ae022128e8be7d2ca4d6664b70`
 
-Do **not** send approve or execute. Next mutation is unsigned `setRouter` only.
+Do **not** send another approve or execute under the M6 grant. The single authorized canary is already mined.

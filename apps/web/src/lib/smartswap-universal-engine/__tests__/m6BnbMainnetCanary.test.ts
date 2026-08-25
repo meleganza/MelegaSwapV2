@@ -55,7 +55,7 @@ describe('SmartSwap Universal Engine M6 BNB mainnet canary preflight', () => {
       }),
     ).toBe(false)
     expect(m6PreflightVerdict()).toBe(M6_VERDICT.BLOCKED_PREFLIGHT_DRIFT)
-    expect(M6_ACTIVE_VERDICT).toBe(M6_VERDICT.BLOCKED_PREFLIGHT_DRIFT)
+    expect(M6_ACTIVE_VERDICT).toBe(M6_VERDICT.CERTIFIED)
     expect(M6_BROADCAST.deploy).toBe(false)
     expect(M6_BROADCAST.swap).toBe(false)
     expect(() => assertM6NoBroadcast()).toThrow(V2_M6_BROADCAST_FORBIDDEN)
@@ -75,9 +75,9 @@ describe('SmartSwap Universal Engine M6 BNB mainnet canary preflight', () => {
     expect(M5_HARD_STOP.broadcast).toBe(false)
   })
 
-  it('does not upgrade to FEE_VERIFIED without a mainnet proof', () => {
+  it('records exact-path FEE_VERIFIED and still forbids unverified claims', () => {
     expect(M6_FEE_STATE.before).toBe(PROTOCOL_FEE_STATE.FEE_ENFORCEABLE)
-    expect(M6_FEE_STATE.after).toBe(PROTOCOL_FEE_STATE.FEE_ENFORCEABLE)
+    expect(M6_FEE_STATE.after).toBe(PROTOCOL_FEE_STATE.FEE_VERIFIED)
     expect(() => assertM6NeverFeeVerifiedWithoutMainnetProof()).toThrow(V2_M6_FEE_VERIFIED_FORBIDDEN)
     expect(() =>
       markFeeCollected({
