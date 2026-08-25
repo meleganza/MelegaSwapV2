@@ -1,7 +1,12 @@
 # SEALED_INTENT
 
-Not sealed.
+Sealed intent for the single M6 canary was consumed on-chain.
 
-CREATE mined and runtime certified. Seal only after `setRouter` confirms, then a fresh quote, deadline, and unused nonce.
+| | |
+|--|--|
+| intentHash | `0xcd59541eb34973bb4ce19d6f27b0ef282a3791a0e78ca7ab57d5177b70bd4f9b` |
+| nonce | 1 consumed once |
+| minUserOut | `6902565143504913705` |
+| userOut | `6946714420281522671` |
 
-No automatic retry. Do not mutate a sealed intent.
+Do not mutate this sealed intent. No automatic retry.

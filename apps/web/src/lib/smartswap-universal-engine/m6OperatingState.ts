@@ -1,6 +1,7 @@
 /**
  * M6 mainnet canary operating state.
- * Broadcast is forbidden unless preflight matches M5 bytecode and a signer is present.
+ * Exact-path FEE_VERIFIED after independently proven BNB canary.
+ * Production remains LEGACY_PRODUCTION. No global V2 activation.
  */
 
 import { PROTOCOL_FEE_STATE } from './fee'
@@ -14,7 +15,7 @@ export const M6_VERDICT = {
   CERTIFIED: 'MELEGASWAP_V2_SMARTSWAP_UNIVERSAL_ENGINE_M6_BNB_MAINNET_CANARY_CERTIFIED',
 } as const
 
-export const M6_ACTIVE_VERDICT = M6_VERDICT.BLOCKED_PREFLIGHT_DRIFT
+export const M6_ACTIVE_VERDICT = M6_VERDICT.CERTIFIED
 
 export const V2_M6_BROADCAST_FORBIDDEN = 'V2_M6_BROADCAST_FORBIDDEN' as const
 export const V2_M6_FEE_VERIFIED_FORBIDDEN = 'V2_M6_FEE_VERIFIED_FORBIDDEN' as const
@@ -23,6 +24,7 @@ export function assertM6NoBroadcast(): never {
   throw new Error(V2_M6_BROADCAST_FORBIDDEN)
 }
 
+/** Claims of FEE_VERIFIED without the exact mined M6 proof remain forbidden. */
 export function assertM6NeverFeeVerifiedWithoutMainnetProof(): never {
   throw new Error(V2_M6_FEE_VERIFIED_FORBIDDEN)
 }
@@ -33,5 +35,5 @@ export function m6LegacyProductionStillAuthoritative(): boolean {
 
 export const M6_FEE_STATE = {
   before: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
-  after: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
+  after: PROTOCOL_FEE_STATE.FEE_VERIFIED,
 } as const

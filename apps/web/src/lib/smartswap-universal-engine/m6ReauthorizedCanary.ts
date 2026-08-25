@@ -1,6 +1,7 @@
 /**
- * M6 reauthorized canary. CREATE is mined and runtime-certified. Next Founder-gated
- * mutation is unsigned setRouter only. Agent cannot sign. No approval/canary in this gate.
+ * M6 reauthorized canary. CREATE, setRouter, approval, and the single WBNB→USDT
+ * canary are mined. Exact-path FEE_VERIFIED. Agent still cannot sign or broadcast.
+ * ACTIVE_V2_ROLLOUT remains LEGACY_PRODUCTION.
  */
 
 import { DETERMINISTIC_BYTECODE } from './executorDeterministicArtifact'
@@ -79,17 +80,38 @@ export const M6_UNSIGNED_CREATE = {
 
 export const M6_UNSIGNED_SET_ROUTER = {
   package: 'deployments/mainnet/m6-unsigned-set-router-tx.json',
-  nonce: 3199,
+  nonce: 3202,
   to: '0x296015b106F4b2FB94249cf398cbF05d4CcE0391',
   router: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
   venueId: '0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3',
   gas: 80000,
   gasEstimateUnits: 48875,
+  minedTx: '0xbc9b4f30c7aca55679a6002d2c4ac3b56a969d498cd0e97ab37dc917e4fcdbbc',
+  minedBlock: 117988109,
 } as const
 
-export const M6_REAUTHORIZED_ACTIVE_VERDICT =
-  M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER
+export const M6_MINED_APPROVAL = {
+  tx: '0x25b28862e960a0e1606c97279c797ba34af0c4cd7301cf677b319b0a763f41e1',
+  nonce: 3203,
+  block: 117991454,
+  spender: '0x296015b106F4b2FB94249cf398cbF05d4CcE0391',
+  amount: '10000000000000000',
+  unlimited: false,
+} as const
 
+export const M6_MINED_CANARY = {
+  tx: '0x5c0ded0d0381529d8c4d6edcde2e34f0360d4f8b1a60969e92ab7ae09fb9a4fd',
+  nonce: 3204,
+  block: 117993157,
+  intentNonce: 1,
+  feeAmountWbnb: '20000000000000',
+  venueInputWbnb: '9980000000000000',
+  userOutUsdt: '6946714420281522671',
+} as const
+
+export const M6_REAUTHORIZED_ACTIVE_VERDICT = M6_REAUTHORIZED_VERDICT.CERTIFIED
+
+/** Agent broadcast remains forbidden. Founder already mined the M6 sequence. */
 export const M6_REAUTHORIZED_BROADCAST = {
   deploy: false,
   setRouter: false,
@@ -100,7 +122,7 @@ export const M6_REAUTHORIZED_BROADCAST = {
 
 export const M6_REAUTHORIZED_FEE_STATE = {
   before: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
-  after: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
+  after: PROTOCOL_FEE_STATE.FEE_VERIFIED,
 } as const
 
 export function m6ReauthorizedLegacyProduction(): boolean {

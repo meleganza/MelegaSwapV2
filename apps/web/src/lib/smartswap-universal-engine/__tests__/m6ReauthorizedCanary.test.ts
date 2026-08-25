@@ -9,6 +9,8 @@ import { ACTIVE_V2_ROLLOUT, V2_ROLLOUT_STATE } from '../m4OperatingState'
 import { DETERMINISTIC_BYTECODE, m5ArtifactMayBeReusedForM6 } from '../executorDeterministicArtifact'
 import {
   FRESH_FOUNDER_REAUTHORIZATION,
+  M6_MINED_APPROVAL,
+  M6_MINED_CANARY,
   M6_REAUTHORIZED_ACTIVE_VERDICT,
   M6_REAUTHORIZED_BROADCAST,
   M6_REAUTHORIZED_FEE_STATE,
@@ -32,7 +34,7 @@ const CERT = path.join(
 )
 
 describe('SmartSwap M6 deterministic canary post-CREATE gate', () => {
-  it('records the mined CREATE and holds the next gate at unsigned setRouter', () => {
+  it('records the mined M6 sequence as CERTIFIED without enabling agent broadcast', () => {
     expect(PRIOR_M6_AUTHORIZATION.reusable).toBe(false)
     expect(m5ArtifactMayBeReusedForM6()).toBe(false)
     expect(
@@ -42,15 +44,21 @@ describe('SmartSwap M6 deterministic canary post-CREATE gate', () => {
         namesDeployedKeccak: FRESH_FOUNDER_REAUTHORIZATION.namesDeployedKeccak,
       }),
     ).toBe(true)
-    expect(M6_REAUTHORIZED_ACTIVE_VERDICT).toBe(
-      M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER,
-    )
+    expect(M6_REAUTHORIZED_ACTIVE_VERDICT).toBe(M6_REAUTHORIZED_VERDICT.CERTIFIED)
     expect(M6_REAUTHORIZED_BROADCAST.setRouter).toBe(false)
     expect(M6_REAUTHORIZED_BROADCAST.approval).toBe(false)
     expect(M6_REAUTHORIZED_BROADCAST.swap).toBe(false)
     expect(M6_REAUTHORIZED_BROADCAST.signMainnet).toBe(false)
     expect(REQUIRED_REAUTHORIZATION_SCOPE.treasury).toBe(CANONICAL_SMARTSWAP_FEE_BENEFICIARY)
-    expect(M6_REAUTHORIZED_FEE_STATE.after).toBe(PROTOCOL_FEE_STATE.FEE_ENFORCEABLE)
+    expect(M6_REAUTHORIZED_FEE_STATE.after).toBe(PROTOCOL_FEE_STATE.FEE_VERIFIED)
+    expect(M6_UNSIGNED_SET_ROUTER.minedTx).toBe(
+      '0xbc9b4f30c7aca55679a6002d2c4ac3b56a969d498cd0e97ab37dc917e4fcdbbc',
+    )
+    expect(M6_MINED_APPROVAL.tx).toBe('0x25b28862e960a0e1606c97279c797ba34af0c4cd7301cf677b319b0a763f41e1')
+    expect(M6_MINED_CANARY.tx).toBe('0x5c0ded0d0381529d8c4d6edcde2e34f0360d4f8b1a60969e92ab7ae09fb9a4fd')
+    expect(M6_MINED_CANARY.feeAmountWbnb).toBe('20000000000000')
+    expect(M6_MINED_CANARY.venueInputWbnb).toBe('9980000000000000')
+    expect(M6_MINED_CANARY.userOutUsdt).toBe('6946714420281522671')
     expect(m6ReauthorizedLegacyProduction()).toBe(true)
     expect(ACTIVE_V2_ROLLOUT).toBe(V2_ROLLOUT_STATE.LEGACY_PRODUCTION)
     expect(isProductionCutoverAllowed()).toBe(false)
@@ -107,16 +115,26 @@ describe('SmartSwap M6 deterministic canary post-CREATE gate', () => {
     const cert = JSON.parse(readFileSync(CERT, 'utf8')) as {
       verdict: string
       classification: string
+      feeStateAfter: string
       setRouterBroadcast: boolean
       approvalTx: string | null
       canaryTx: string | null
+      actualFee: string
+      venueInput: string
+      userOutput: string
+      ACTIVE_V2_ROLLOUT: string
       UNAUTHORIZED_UI_CHANGE: number
     }
-    expect(cert.verdict).toBe(M6_REAUTHORIZED_VERDICT.DEPLOYMENT_VERIFIED_AWAITING_SETROUTER)
-    expect(cert.classification).toBe('DEPLOYMENT_VERIFIED_AWAITING_SETROUTER')
-    expect(cert.setRouterBroadcast).toBe(false)
-    expect(cert.approvalTx).toBeNull()
-    expect(cert.canaryTx).toBeNull()
+    expect(cert.verdict).toBe(M6_REAUTHORIZED_VERDICT.CERTIFIED)
+    expect(cert.classification).toBe('M6_BNB_MAINNET_CANARY_CERTIFIED')
+    expect(cert.feeStateAfter).toBe(PROTOCOL_FEE_STATE.FEE_VERIFIED)
+    expect(cert.setRouterBroadcast).toBe(true)
+    expect(cert.approvalTx).toBe(M6_MINED_APPROVAL.tx)
+    expect(cert.canaryTx).toBe(M6_MINED_CANARY.tx)
+    expect(cert.actualFee).toBe('20000000000000')
+    expect(cert.venueInput).toBe('9980000000000000')
+    expect(cert.userOutput).toBe('6946714420281522671')
+    expect(cert.ACTIVE_V2_ROLLOUT).toBe(V2_ROLLOUT_STATE.LEGACY_PRODUCTION)
     expect(cert.UNAUTHORIZED_UI_CHANGE).toBe(0)
   })
 
