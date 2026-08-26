@@ -313,7 +313,7 @@ export const MarcoConnect: React.FC<{
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
           aria-label="MARCO Connect"
-          onClick={() => {
+          onClickCapture={() => {
             passportIntentRef.current = true
           }}
         >

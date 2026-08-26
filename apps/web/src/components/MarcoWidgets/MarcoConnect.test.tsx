@@ -46,5 +46,6 @@ describe('openMarcoPassport', () => {
     const source = readFileSync(path.join(__dirname, 'MarcoConnect.tsx'), 'utf8')
     expect(source).toContain('launcher: false')
     expect(source).toContain('aria-label="MARCO Connect"')
+    expect(source).toContain('onClickCapture')
   })
 })
