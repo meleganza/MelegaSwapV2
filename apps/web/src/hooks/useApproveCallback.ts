@@ -31,6 +31,10 @@ export type ApproveCallbackOptions = {
    * explicit and wallet-signed.
    */
   unknownAllowanceTimeoutMs?: number
+  /** Refresh allowance directly while a locally recorded approval is pending. */
+  pendingAllowancePollMs?: number
+  /** Stop trusting an unconfirmed local transaction record after this bounded interval. */
+  pendingApprovalTimeoutMs?: number
 }
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
@@ -44,13 +48,26 @@ export function useApproveCallback(
   const { t } = useTranslation()
   const { toastError } = useToast()
   const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined
-  const currentAllowance = useTokenAllowance(token, account ?? undefined, spender)
   const pendingApproval = useHasPendingApproval(token?.address, spender)
   const [unknownAllowanceTimedOut, setUnknownAllowanceTimedOut] = useState(false)
+  const [pendingApprovalTimedOut, setPendingApprovalTimedOut] = useState(false)
+  const [pendingApprovalCycle, setPendingApprovalCycle] = useState(0)
   const approvalRequestKey =
     amountToApprove && spender
       ? `${amountToApprove.currency.chainId}:${amountToApprove.currency.wrapped.address}:${amountToApprove.quotient}:${spender}`
       : undefined
+
+  useEffect(() => {
+    setPendingApprovalTimedOut(false)
+    if (!pendingApproval || !options?.pendingApprovalTimeoutMs) return undefined
+    const timer = window.setTimeout(() => setPendingApprovalTimedOut(true), options.pendingApprovalTimeoutMs)
+    return () => window.clearTimeout(timer)
+  }, [pendingApproval, pendingApprovalCycle, options?.pendingApprovalTimeoutMs])
+
+  const effectivePendingApproval = pendingApproval && !pendingApprovalTimedOut
+  const currentAllowance = useTokenAllowance(token, account ?? undefined, spender, {
+    pollIntervalMs: effectivePendingApproval ? options?.pendingAllowancePollMs : undefined,
+  })
 
   useEffect(() => {
     setUnknownAllowanceTimedOut(false)
@@ -65,7 +82,13 @@ export function useApproveCallback(
     }
     const timer = window.setTimeout(() => setUnknownAllowanceTimedOut(true), options.unknownAllowanceTimeoutMs)
     return () => window.clearTimeout(timer)
-  }, [approvalRequestKey, amountToApprove?.currency?.isNative, spender, currentAllowance, options?.unknownAllowanceTimeoutMs])
+  }, [
+    approvalRequestKey,
+    amountToApprove?.currency?.isNative,
+    spender,
+    currentAllowance,
+    options?.unknownAllowanceTimeoutMs,
+  ])
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
@@ -74,16 +97,16 @@ export function useApproveCallback(
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) {
       if (!unknownAllowanceTimedOut) return ApprovalState.UNKNOWN
-      return pendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED
+      return effectivePendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED
     }
 
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
-      ? pendingApproval
+      ? effectivePendingApproval
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED
-  }, [amountToApprove, currentAllowance, pendingApproval, spender, unknownAllowanceTimedOut])
+  }, [amountToApprove, currentAllowance, effectivePendingApproval, spender, unknownAllowanceTimedOut])
 
   const tokenContract = useTokenContract(token?.address)
   const addTransaction = useTransactionAdder()
@@ -141,6 +164,7 @@ export function useApproveCallback(
       },
     )
       .then((response: TransactionResponse) => {
+        setPendingApprovalCycle((cycle) => cycle + 1)
         addTransaction(response, {
           summary: `Approve ${amountToApprove.currency.symbol}`,
           translatableSummary: { text: 'Approve %symbol%', data: { symbol: amountToApprove.currency.symbol } },

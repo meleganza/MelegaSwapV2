@@ -4,7 +4,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTokenContract } from './useContract'
 import { useSingleCallResult } from '../state/multicall/hooks'
 
-function useTokenAllowance(token?: Token, owner?: string, spender?: string): CurrencyAmount<Token> | undefined {
+type TokenAllowanceOptions = {
+  /** Re-read while an approval transaction is pending so confirmation is reflected without the legacy block feed. */
+  pollIntervalMs?: number
+}
+
+function useTokenAllowance(
+  token?: Token,
+  owner?: string,
+  spender?: string,
+  options?: TokenAllowanceOptions,
+): CurrencyAmount<Token> | undefined {
   const contract = useTokenContract(token?.address, false)
 
   const inputs = useMemo(() => [owner, spender], [owner, spender])
@@ -22,30 +32,35 @@ function useTokenAllowance(token?: Token, owner?: string, spender?: string): Cur
     let cancelled = false
     if (!allowanceRequestKey || !contract || !owner || !spender) return undefined
 
-    void contract
-      .allowance(owner, spender)
-      .then((value) => {
-        if (!cancelled) setDirectAllowance({ key: allowanceRequestKey, raw: value.toString() })
-      })
-      .catch(() => {
-        // The approval hook owns the bounded fail-closed timeout. Keeping the
-        // last direct result scoped by key prevents stale allowance reuse.
-      })
+    const readDirectAllowance = () => {
+      void contract
+        .allowance(owner, spender)
+        .then((value) => {
+          if (!cancelled) setDirectAllowance({ key: allowanceRequestKey, raw: value.toString() })
+        })
+        .catch(() => {
+          // The approval hook owns the bounded fail-closed timeout. Keeping the
+          // last direct result scoped by key prevents stale allowance reuse.
+        })
+    }
+
+    readDirectAllowance()
+    const interval = options?.pollIntervalMs
+      ? window.setInterval(readDirectAllowance, options.pollIntervalMs)
+      : undefined
 
     return () => {
       cancelled = true
+      if (interval) window.clearInterval(interval)
     }
-  }, [allowanceRequestKey, contract, owner, spender])
+  }, [allowanceRequestKey, contract, owner, spender, options?.pollIntervalMs])
 
-  return useMemo(
-    () => {
-      if (!token) return undefined
-      const raw =
-        allowance?.toString() ?? (directAllowance?.key === allowanceRequestKey ? directAllowance.raw : undefined)
-      return raw != null ? CurrencyAmount.fromRawAmount(token, raw) : undefined
-    },
-    [token, allowance, directAllowance, allowanceRequestKey],
-  )
+  return useMemo(() => {
+    if (!token) return undefined
+    const raw =
+      allowance?.toString() ?? (directAllowance?.key === allowanceRequestKey ? directAllowance.raw : undefined)
+    return raw != null ? CurrencyAmount.fromRawAmount(token, raw) : undefined
+  }, [token, allowance, directAllowance, allowanceRequestKey])
 }
 
 export default useTokenAllowance
