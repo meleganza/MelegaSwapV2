@@ -27,10 +27,17 @@ function isAddress(value?: string | null): value is string {
 }
 
 /** Public OHLCV fallback for real pairs not yet covered by the durable Melega indexer. */
-export function usePairOhlcv(chainId: number | undefined, pairAddress?: string | null) {
+export function usePairOhlcv(
+  chainId: number | undefined,
+  pairAddress?: string | null,
+  tokenAddress?: string | null,
+) {
   const valid = Number.isFinite(chainId) && isAddress(pairAddress)
+  const targetToken = isAddress(tokenAddress) ? tokenAddress.toLowerCase() : undefined
   const key = valid
-    ? `/api/market-data/pair-ohlcv?chainId=${chainId}&pairAddress=${encodeURIComponent(pairAddress!)}`
+    ? `/api/market-data/pair-ohlcv?chainId=${chainId}&pairAddress=${encodeURIComponent(pairAddress!)}${
+        targetToken ? `&tokenAddress=${encodeURIComponent(targetToken)}` : ''
+      }`
     : null
   const { data, error, isValidating } = useSWR<PairOhlcvResponse>(key, fetchPairOhlcv, {
     revalidateOnFocus: false,

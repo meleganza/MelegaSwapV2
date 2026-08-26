@@ -1,4 +1,5 @@
 import type { NextApiHandler } from 'next'
+import { resolveOhlcvTokenSide } from 'lib/market-data/ohlcvTokenSide'
 
 const GECKO_NETWORK_BY_CHAIN: Record<number, string> = {
   1: 'eth',
@@ -13,6 +14,15 @@ type GeckoOhlcvPayload = {
   data?: {
     attributes?: {
       ohlcv_list?: unknown[][]
+    }
+  }
+}
+
+type GeckoPoolPayload = {
+  data?: {
+    relationships?: {
+      base_token?: { data?: { id?: string } }
+      quote_token?: { data?: { id?: string } }
     }
   }
 }
@@ -48,10 +58,50 @@ const handler: NextApiHandler = async (req, res) => {
 
   const chainId = Number(req.query.chainId)
   const pairAddress = String(req.query.pairAddress || '').trim().toLowerCase()
+  const tokenAddress = String(req.query.tokenAddress || '').trim().toLowerCase()
   const network = GECKO_NETWORK_BY_CHAIN[chainId]
 
-  if (!network || !/^0x[a-f0-9]{40}$/.test(pairAddress)) {
+  if (
+    !network ||
+    !/^0x[a-f0-9]{40}$/.test(pairAddress) ||
+    (tokenAddress.length > 0 && !/^0x[a-f0-9]{40}$/.test(tokenAddress))
+  ) {
     return res.status(400).json({ error: 'INVALID_CHAIN_OR_PAIR' })
+  }
+
+  let tokenSide: 'base' | 'quote' | null = null
+  if (tokenAddress) {
+    try {
+      const poolResponse = await fetch(
+        `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${pairAddress}`,
+        {
+          headers: { accept: 'application/json;version=20230203' },
+          signal: AbortSignal.timeout(3500),
+        },
+      )
+      if (!poolResponse.ok) throw new Error(`POOL_METADATA_HTTP_${poolResponse.status}`)
+      const pool = (await poolResponse.json()) as GeckoPoolPayload
+      tokenSide = resolveOhlcvTokenSide(
+        tokenAddress,
+        pool.data?.relationships?.base_token?.data?.id,
+        pool.data?.relationships?.quote_token?.data?.id,
+      )
+      if (!tokenSide) {
+        return res.status(400).json({ error: 'TOKEN_NOT_IN_PAIR' })
+      }
+    } catch (error) {
+      res.setHeader('Cache-Control', 'public, s-maxage=20, stale-while-revalidate=60')
+      return res.status(200).json({
+        status: 'unavailable',
+        chainId,
+        pairAddress,
+        tokenAddress,
+        candles: [],
+        volume24hUsd: null,
+        source: 'geckoterminal-public-ohlcv',
+        reason: error instanceof Error ? error.message : 'Pool orientation unavailable',
+      })
+    }
   }
 
   const query = new URLSearchParams({
@@ -60,6 +110,7 @@ const handler: NextApiHandler = async (req, res) => {
     currency: 'usd',
     include_empty_intervals: 'true',
   })
+  if (tokenSide) query.set('token', tokenSide)
   const endpoint = `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${pairAddress}/ohlcv/hour?${query}`
 
   try {
@@ -97,6 +148,8 @@ const handler: NextApiHandler = async (req, res) => {
       status: candles.length >= 2 ? 'ready' : 'empty',
       chainId,
       pairAddress,
+      tokenAddress: tokenAddress || null,
+      tokenSide,
       candles,
       volume24hUsd,
       source: 'geckoterminal-public-ohlcv',

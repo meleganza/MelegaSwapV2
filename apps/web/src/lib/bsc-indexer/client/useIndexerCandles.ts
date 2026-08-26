@@ -1,5 +1,4 @@
 import useSWR from 'swr'
-import { MARCO_WBNB_PAIR_BSC } from '../constants'
 import { fetchIndexerCandles } from './fetchDurableIndexer'
 import type { OhlcvCandle } from '../types'
 import type { PriceChartEntry } from 'state/info/types'
@@ -21,15 +20,16 @@ export function useIndexerCandles(
   interval: OhlcvCandle['interval'] = '1H',
   enabled = true,
 ) {
-  const pair = pairAddress?.toLowerCase() ?? MARCO_WBNB_PAIR_BSC.toLowerCase()
+  const pair = pairAddress?.toLowerCase()
+  const shouldFetch = Boolean(enabled && pair)
   const { data, error, isValidating } = useSWR(
-    enabled ? ['indexer-candles', pair, interval] : null,
-    () => fetchIndexerCandles(pair, interval),
+    shouldFetch ? ['indexer-candles', pair, interval] : null,
+    () => fetchIndexerCandles(pair!, interval),
     { refreshInterval: 60_000, revalidateOnFocus: false },
   )
 
   const chartEntries = candlesToChartEntries(data?.candles ?? [])
-  const status = enabled ? data?.status ?? (isValidating ? 'loading' : 'unavailable') : 'disabled'
+  const status = shouldFetch ? data?.status ?? (isValidating ? 'loading' : 'unavailable') : 'disabled'
 
   return {
     chartEntries,

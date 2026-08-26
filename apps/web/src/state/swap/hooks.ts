@@ -74,7 +74,7 @@ export function useSingleTokenSwapInfo(
     return null
   }
 
-  const inputTokenPrice = parseFloat(bestTradeExactIn?.executionPrice?.toSignificant(6))
+  const inputTokenPrice = parseFloat(bestTradeExactIn?.executionPrice?.toSignificant(18))
   const outputTokenPrice = 1 / inputTokenPrice
 
   return {

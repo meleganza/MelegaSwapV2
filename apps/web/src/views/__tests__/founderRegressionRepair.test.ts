@@ -44,7 +44,7 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(formatFeaturedChange({ status: 'NO_RECENT_TRADES', changePct: null } as never).text).toBe('')
     expect(formatFeaturedVolume({ status: 'NO_RECENT_TRADES' } as never)).toBe('$0.00')
     expect(formatFeaturedVolume({ status: 'STALE' } as never)).toBe('—')
-    expect(formatUsdPrice(0.000000259849)).toBe('$0.000000259849')
+    expect(formatUsdPrice(0.000000259849)).toBe('$0.0₆259849')
   })
 
   it('durable trending snapshot prefers live and falls back to last-good', () => {

@@ -25,6 +25,7 @@ import { PairState, usePairs } from 'hooks/usePairs'
 import type { MarcoPairLiquiditySnapshot } from 'lib/trade-market/fetchMarcoPairLiquidity'
 import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
 import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const SECONDS_24H = 86_400
 
@@ -190,7 +191,6 @@ export const useTradeTerminalData = (
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured)
-  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
   const resolvedInput = resolveCanonicalOutputAddress(chainId, inputSymbol, inputAddress)
   const outputIsNative = Boolean(outputAddress && !/^0x[a-fA-F0-9]{40}$/.test(outputAddress))
@@ -210,6 +210,11 @@ export const useTradeTerminalData = (
   const isMarcoRoute = tokenAddress
     ? tokenAddress.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
     : isMarcoSymbol(outputSymbol) || isMarcoSymbol(inputSymbol) || !outputSymbol
+  const indexedPairAddress = isMarcoRoute ? MARCO_WBNB_PAIR_BSC : externalDex?.primaryPairAddress ?? undefined
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer(
+    indexedPairAddress,
+    Boolean(indexedPairAddress),
+  )
   const { data: publicMarket } = useSWR(isMarcoRoute ? 'trade-marco-coingecko-market' : null, fetchMarcoPublicMarket, {
     refreshInterval: 120_000,
     revalidateOnFocus: false,
@@ -217,6 +222,7 @@ export const useTradeTerminalData = (
   const { candles: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
     useDurableIndexer && isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined,
     '1H',
+    useDurableIndexer && isMarcoRoute,
   )
   const { data: bnbUsdPrice } = useSWR(
     useDurableIndexer && isMarcoRoute ? 'trade-bnb-usd-coingecko' : null,
@@ -311,8 +317,7 @@ export const useTradeTerminalData = (
     if (!transactions?.length) return []
     const swapTxs = transactions.filter((tx) => tx.type === TransactionType.SWAP)
     const pairFiltered = swapTxs.filter((tx) => matchesPair(tx, displayInput, displayOutput))
-    const source = pairFiltered.length > 0 ? pairFiltered : swapTxs
-    return [...source]
+    return [...pairFiltered]
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       .slice(0, 12)
       .map((tx) => {
@@ -511,25 +516,21 @@ export const useTradeTerminalData = (
       return {
         value: onChain,
         change24h: marcoChange ? parseFloat(marcoChange.text.replace(/[^0-9.-]/g, '')) : undefined,
-        formatted: `$${onChain < 0.01 ? onChain.toFixed(6) : onChain.toFixed(4)}`,
+        formatted: formatCompactPriceUsd(onChain),
       }
     }
     if (tokenData?.priceUSD) {
       return {
         value: tokenData.priceUSD,
         change24h: tokenData.priceUSDChange,
-        formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+        formatted: formatCompactPriceUsd(tokenData.priceUSD),
       }
     }
     if (externalDex?.priceUsd != null && externalDex.priceUsd > 0) {
       return {
         value: externalDex.priceUsd,
         change24h: externalDex.priceChange24h ?? undefined,
-        formatted: `$${
-          externalDex.priceUsd < 0.01
-            ? externalDex.priceUsd.toLocaleString('en-US', { maximumSignificantDigits: 8 })
-            : externalDex.priceUsd.toLocaleString('en-US', { maximumFractionDigits: 6 })
-        }`,
+        formatted: formatCompactPriceUsd(externalDex.priceUsd),
       }
     }
     const close = indexerMetrics24h?.lastClose
@@ -540,7 +541,7 @@ export const useTradeTerminalData = (
           return {
             value: priceUsd,
             change24h: undefined,
-            formatted: `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(4)}`,
+            formatted: formatCompactPriceUsd(priceUsd),
           }
         }
       }
@@ -730,7 +731,7 @@ export const useTradeTerminalData = (
         ? indexerState
         : undefined,
     chartUnavailableDetail,
-    primaryPairAddress: externalDex?.primaryPairAddress ?? (isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined),
+    primaryPairAddress: isMarcoRoute ? MARCO_WBNB_PAIR_BSC : externalDex?.primaryPairAddress,
     indexerState,
     tokenExists: tokenData?.exists,
   }

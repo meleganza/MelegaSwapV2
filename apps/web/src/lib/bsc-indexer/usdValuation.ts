@@ -2,6 +2,7 @@
  * Decimal-safe USD valuation helpers for Featured / market surfaces.
  * Raw reserve ratios should use bigint; display conversion uses number only after scaling.
  */
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 
@@ -42,13 +43,5 @@ export function formatUsdCompact(value?: number | null): string {
 
 export function formatUsdPrice(value?: number | null): string {
   if (value == null || !Number.isFinite(value) || !(value > 0)) return 'Price updating'
-  // Preserve enough verified reserve-price precision for micro-priced assets.
-  // Fixed-point output avoids both a vague "<$0.000001" label and scientific notation.
-  if (value < 0.000001) {
-    const fixed = value.toFixed(12).replace(/0+$/, '').replace(/\.$/, '')
-    return fixed && fixed !== '0' ? `$${fixed}` : '<$0.000000000001'
-  }
-  if (value < 0.01) return `$${value.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
-  if (value < 1) return `$${value.toFixed(4)}`
-  return `$${value.toFixed(2)}`
+  return formatCompactPriceUsd(value)
 }
