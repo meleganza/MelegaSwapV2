@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, { livePools1, livePools56, livePools8453, livePools137, livePools42161, livePools43114 } from 'config/constants/pools'
+import poolsConfig, { getPoolsConfigForChain } from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -88,14 +88,9 @@ const initialState: PoolsState = {
 export const fetchCakePoolPublicDataAsync = (chainId?: number) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
-  const pools =
-    chainId === 1 ? livePools1
-      : chainId === 137 ? livePools137
-        : chainId === 8453 ? livePools8453
-          : chainId === 42161 ? livePools42161
-            : chainId === 43114 ? livePools43114
-              : poolsConfig
+  const pools = getPoolsConfigForChain(chainId ?? 56)
   const cakePool = pools.filter((p) => p.sousId === 0)[0]
+  if (!cakePool) return
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
   const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
@@ -142,13 +137,7 @@ export const fetchCakePoolUserDataAsync = (account: string, chainId: number) => 
 export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
-      const pools =
-        chainId === 1 ? livePools1
-          : chainId === 137 ? livePools137
-            : chainId === 8453 ? livePools8453
-              : chainId === 42161 ? livePools42161
-                : chainId === 43114 ? livePools43114
-                  : poolsConfig
+      const pools = getPoolsConfigForChain(chainId)
       
       const [blockLimits, totalStakings, rewardPerBlocks, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
@@ -288,13 +277,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-    const pools =
-      chainId === 1 ? livePools1
-        : chainId === 137 ? livePools137
-          : chainId === 8453 ? livePools8453
-            : chainId === 42161 ? livePools42161
-              : chainId === 43114 ? livePools43114
-                : poolsConfig
+    const pools = getPoolsConfigForChain(chainId)
             
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,

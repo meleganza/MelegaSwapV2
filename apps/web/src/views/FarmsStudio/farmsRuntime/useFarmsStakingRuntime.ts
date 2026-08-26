@@ -25,6 +25,7 @@ import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErr
 import { useFarmsTerminalData } from './useFarmsTerminalData'
 import { useMasterChefEmission, type MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { getMasterChefAddress } from 'utils/addressHelpers'
+import { getMelegaChain } from 'config/melegaChainRegistry'
 import { enrichFarmParticipantCounts } from 'lib/yield-participants/enrichYieldParticipantCards'
 import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
 
@@ -240,24 +241,31 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   const terminal = useFarmsTerminalData()
   const { snapshot: participantSnapshot } = useYieldParticipants()
 
-  const enrichedFarms = useMemo(() => {
+  const portfolioEnrichedFarms = useMemo(() => {
     if (!farmsLP?.length || !chainId) return []
-    const active = farmsLP.filter((farm) => farm.pid !== 0 && !isArchivedPid(farm.pid))
+    const active = farmsLP.filter((farm) => !isArchivedPid(farm.pid))
     return enrichFarmsWithApr(active, chainId, cakePrice, canonicalPerBlock)
   }, [farmsLP, chainId, cakePrice, canonicalPerBlock])
 
-  const previewCards = useMemo(() => {
-    if (!enrichedFarms.length) return []
-    const cards = enrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
+  const portfolioPreviewCards = useMemo(() => {
+    if (!portfolioEnrichedFarms.length) return []
+    const cards = portfolioEnrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
     return enrichFarmParticipantCounts(
       cards,
       participantSnapshot,
       chainId ?? 56,
       getMasterChefAddress(chainId),
     )
-  }, [enrichedFarms, masterChefEmission, participantSnapshot, chainId])
+  }, [portfolioEnrichedFarms, masterChefEmission, participantSnapshot, chainId])
 
-  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+  // Keep the historical pid-0 presentation rule for Explore, but never hide
+  // a wallet-owned pid-0 stake from My Farms (notably Arbitrum/Avalanche).
+  const previewCards = useMemo(
+    () => portfolioPreviewCards.filter((card) => (card.pid ?? card.rawFarm?.pid) !== 0),
+    [portfolioPreviewCards],
+  )
+
+  const chainName = getMelegaChain(chainId)?.name ?? (chainId === 97 ? 'BNB Testnet' : 'Unknown')
   const positionsLoading = Boolean(account) && !userDataLoaded
   const farmsWalletPortfolio = useMemo(
     () =>
@@ -266,10 +274,10 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
         chainId: chainId ?? null,
         chainName,
         generatedAt: '1970-01-01T00:00:00.000Z',
-        farmCards: previewCards,
+        farmCards: portfolioPreviewCards,
         positionsLoading,
       }),
-    [account, chainId, chainName, positionsLoading, previewCards],
+    [account, chainId, chainName, positionsLoading, portfolioPreviewCards],
   )
 
   const filteredFarms = useMemo(() => filterFarms(previewCards, filter), [previewCards, filter])
@@ -297,13 +305,13 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
       rewardToken: card?.rewardToken ?? 'MARCO',
       participants: displayFarmMetric(card?.participants),
       card,
-      sparkline: buildAprSparkline(enrichedFarms),
+      sparkline: buildAprSparkline(portfolioEnrichedFarms),
     }
-  }, [featuredCard, enrichedFarms])
+  }, [featuredCard, portfolioEnrichedFarms])
 
   const kpis = useMemo(
-    () => aggregateKpis(enrichedFarms, masterChefEmission, featured.pair),
-    [enrichedFarms, masterChefEmission, featured.pair],
+    () => aggregateKpis(portfolioEnrichedFarms, masterChefEmission, featured.pair),
+    [portfolioEnrichedFarms, masterChefEmission, featured.pair],
   )
 
   const advisorItems = useMemo((): FarmsAdvisorItem[] => {
@@ -399,7 +407,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     filter,
     setFilter: setFilterSynced,
     farms: filteredFarms,
-    portfolioFarms: previewCards,
+    portfolioFarms: portfolioPreviewCards,
     farmsWalletPortfolio,
     portfolioViewMode,
     setPortfolioViewMode,

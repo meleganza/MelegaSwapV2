@@ -8,7 +8,7 @@ import { featureFarmApiAtom, useFeatureFlag } from 'hooks/useFeatureFlag'
 import { FAST_INTERVAL } from 'config/constants'
 import useSWRImmutable from 'swr/immutable'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
-import { livePools1, livePools56, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
+import { getPoolsConfigForChain } from 'config/constants/pools'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 
@@ -90,12 +90,9 @@ export const useFetchPublicPoolsData = (chainId: number) => {
   const dispatch = useAppDispatch()
   // const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
-  const lPoolAddresses =
-    chainId == 1 ? livePools1.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-    : chainId == 56 ? livePools56.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-      : chainId == 137 ? livePools137.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-        : chainId == 42161 ? livePools42161.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-          : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+  const lPoolAddresses = getPoolsConfigForChain(chainId)
+    .filter(({ sousId }) => sousId !== 0)
+    .map(({ earningToken }) => earningToken.address)
 
   useSlowRefreshEffect(
     (currentBlock) => {

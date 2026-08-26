@@ -3654,4 +3654,17 @@ const finishedPools = [
   earningToken: p.earningToken.serialize,
 }))
 
-export default [...livePools56, ...finishedPools] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]
+const poolsConfig = [...livePools56, ...finishedPools] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]
+
+/** Exact chain inventory. Unknown/empty chains never inherit BNB contracts. */
+export function getPoolsConfigForChain(chainId: number): Pool.SerializedPoolConfig<SerializedWrappedToken>[] {
+  if (chainId === 1) return livePools1
+  if (chainId === 56) return poolsConfig
+  if (chainId === 137) return livePools137
+  if (chainId === 8453) return livePools8453
+  if (chainId === 42161) return livePools42161
+  if (chainId === 43114) return livePools43114
+  return []
+}
+
+export default poolsConfig

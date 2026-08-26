@@ -4,7 +4,14 @@ import { ChainId } from '@pancakeswap/sdk'
 import { masterChefAddresses } from './const'
 import { farmV2FetchFarms, FetchFarmsParams, fetchMasterChefV2Data } from './fetchFarms'
 
-export const supportedChainId = [ChainId.BSC, ChainId.ETHEREUM, ChainId.BASE, ChainId.POLYGON]
+export const supportedChainId = [
+  ChainId.BSC,
+  ChainId.ETHEREUM,
+  ChainId.BASE,
+  ChainId.POLYGON,
+  ChainId.ARBITRUM,
+  ChainId.AVAX,
+]
 export const bCakeSupportedChainId = [ChainId.BSC]
 
 export function createFarmFetcher(multicallv2: MultiCallV2) {
@@ -41,7 +48,7 @@ export function createFarmFetcher(multicallv2: MultiCallV2) {
     fetchFarms,
     isChainSupported: (chainId: number) => supportedChainId.includes(chainId),
     supportedChainId,
-    isTestnet: (chainId: number) => ![ChainId.BSC, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.BASE].includes(chainId),
+    isTestnet: (chainId: number) => !supportedChainId.includes(chainId),
   }
 }
 

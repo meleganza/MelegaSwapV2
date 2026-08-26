@@ -1,4 +1,4 @@
-import poolsConfig, { livePools1, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
+import { getPoolsConfigForChain } from 'config/constants/pools'
 import masterChef from 'config/abi/masterchef.json'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
@@ -15,22 +15,13 @@ import { Masterchef__factory } from 'config/abi/types'
 // const masterChefContract = getMasterchefContract()
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 
-// base
-const nonBnbPoolsOnEth = livePools1.filter((pool) => pool.stakingToken.symbol !== 'WETH')
-const bnbPoolsOnEth = livePools1.filter((pool) => pool.stakingToken.symbol === 'WETH')
-const nonMasterPoolsOnEth = livePools1.filter((pool) => pool.sousId !== 0)
-// BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
-const nonBnbPools = poolsConfig.filter((pool) => pool.stakingToken.symbol !== 'WBNB')
-const bnbPools = poolsConfig.filter((pool) => pool.stakingToken.symbol === 'WBNB')
-const nonMasterPoolsBnb = poolsConfig.filter((pool) => pool.sousId !== 0)
-// base
-const nonBnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbol !== 'WETH')
-const bnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbol === 'WETH')
-const nonMasterPoolsOnBase = livePools8453.filter((pool) => pool.sousId !== 0)
-// Polygon
-const nonBnbPoolsOnPolygon = livePools137.filter((pool) => pool.stakingToken.symbol !== 'WMATIC')
-const bnbPoolsOnPolygon = livePools137.filter((pool) => pool.stakingToken.symbol === 'WMATIC')
-const nonMasterPoolsOnPolygon = livePools137.filter((pool) => pool.sousId !== 0)
+function poolsForChain(chainId: number) {
+  return getPoolsConfigForChain(chainId)
+}
+
+function isNativeStakeSymbol(symbol?: string) {
+  return symbol === 'WBNB' || symbol === 'WETH' || symbol === 'WMATIC' || symbol === 'WAVAX'
+}
 
 export const fetchUserMasterChefStakeBalance = async (account, chainId) => {
   const masterChefContract = getMasterchefContract(undefined, chainId)
@@ -62,11 +53,7 @@ export const fetchUserMasterChefPendingReward = async (account, chainId?: number
 }
 
 export const fetchPoolsAllowance = async (account, chainId) => {
-  const nonNativePools =
-    chainId === 1 ? nonBnbPoolsOnEth
-      : chainId === 137 ? nonBnbPoolsOnPolygon
-        : chainId === 8453 ? nonBnbPoolsOnBase
-          : nonBnbPools
+  const nonNativePools = poolsForChain(chainId).filter((pool) => !isNativeStakeSymbol(pool.stakingToken.symbol))
 
   const calls = nonNativePools.map((pool) => ({
     address: pool.stakingToken.address,
@@ -80,11 +67,9 @@ export const fetchPoolsAllowance = async (account, chainId) => {
 
 export const fetchUserBalances = async (account, chainId?: number) => {
   // Non BNB pools
-  const nonNativePools =
-    chainId === 1 ? nonBnbPoolsOnEth
-      : chainId === 137 ? nonBnbPoolsOnPolygon
-        : chainId === 8453 ? nonBnbPoolsOnBase
-          : nonBnbPools
+  const nonNativePools = poolsForChain(chainId as number).filter(
+    (pool) => !isNativeStakeSymbol(pool.stakingToken.symbol),
+  )
 
   const tokens = uniq(nonNativePools.map((pool) => pool.stakingToken.address))
 
@@ -119,11 +104,7 @@ export const fetchUserBalances = async (account, chainId?: number) => {
 
 
   // BNB pools
-  const nativePools =
-    chainId === 1 ? bnbPoolsOnEth
-      : chainId === 137 ? bnbPoolsOnPolygon
-        : chainId === 8453 ? bnbPoolsOnBase
-          : bnbPools
+  const nativePools = poolsForChain(chainId as number).filter((pool) => isNativeStakeSymbol(pool.stakingToken.symbol))
   const bnbBalanceJson = new BigNumber(bnbBalance.toString()).toJSON()
   const bnbBalances = fromPairs(nativePools.map((pool) => [pool.sousId, bnbBalanceJson]))
 
@@ -136,11 +117,7 @@ export const fetchUserBalances = async (account, chainId?: number) => {
 
 export const fetchUserStakeBalances = async (account, chainId: number) => {
 
-  const nonMasterPools =
-    chainId === 1 ? nonMasterPoolsOnEth
-      : chainId === 137 ? nonMasterPoolsOnPolygon
-        : chainId === 8453 ? nonMasterPoolsOnBase
-          : nonMasterPoolsBnb
+  const nonMasterPools = poolsForChain(chainId).filter((pool) => pool.sousId !== 0)
   const calls = nonMasterPools.map((p) => ({
     address: getAddress(p.contractAddress, chainId),
     name: 'userInfo',
@@ -158,11 +135,7 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
 }
 
 export const fetchUserPendingRewards = async (account: string, chainId?: number) => {
-  const nonMasterPools =
-    chainId === 1 ? nonMasterPoolsOnEth
-      : chainId === 137 ? nonMasterPoolsOnPolygon
-        : chainId === 8453 ? nonMasterPoolsOnBase
-          : nonMasterPoolsBnb
+  const nonMasterPools = poolsForChain(chainId as number).filter((pool) => pool.sousId !== 0)
   const calls = nonMasterPools.map((p) => ({
     address: getAddress(p.contractAddress, chainId),
     name: 'pendingReward',

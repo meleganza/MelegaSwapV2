@@ -20,13 +20,6 @@ export type LiquidityPositionsPhase = 'connecting' | 'fetching' | 'ready' | 'emp
 
 const POSITIONS_FETCH_TIMEOUT_MS = 12_000
 
-function pairKey(tokens: [ERC20Token, ERC20Token]): string {
-  return [tokens[0].address, tokens[1].address]
-    .map((a) => a.toLowerCase())
-    .sort()
-    .join('-')
-}
-
 export interface LiquidityPositionRow {
   id: string
   pair: Pair
@@ -128,8 +121,9 @@ export function useLiquidityPositions(enabled = true) {
   const [retryNonce, setRetryNonce] = useState(0)
   const trackedTokenPairs = useTrackedTokenPairs()
   const {
-    factoryTokenPairs,
+    factoryPairEntries,
     factoryLpBalancesRaw,
+    factoryPairsByAddress,
     factoryPairCount,
     isLoading: factoryLoading,
     factoryEnabled,
@@ -137,28 +131,25 @@ export function useLiquidityPositions(enabled = true) {
   } = useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId, effectiveAccount, retryNonce)
   const factoryScanComplete = factoryEnabled && factoryPairCount !== null && !factoryError
 
-  /**
-   * Once the wallet-scoped factory scan completes it is the authoritative BNB
-   * result. Falling back to the legacy tracked set after that point would make
-   * an empty wallet wait forever on the old global multicall.
-   */
-  const discoveryTokenPairs = useMemo(() => {
-    const seen = new Set<string>()
-    const out: [ERC20Token, ERC20Token][] = []
-    if (!enabled) return out
-    const sourcePairs = factoryScanComplete ? factoryTokenPairs : [...trackedTokenPairs, ...factoryTokenPairs]
-    for (const tokens of sourcePairs) {
-      const key = pairKey(tokens)
-      if (seen.has(key)) continue
-      seen.add(key)
-      out.push(tokens)
-    }
-    return out
-  }, [enabled, trackedTokenPairs, factoryTokenPairs, factoryEnabled, factoryPairCount, factoryError])
-
   const tokenPairsWithLiquidityTokens = useMemo(
-    () => discoveryTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [discoveryTokenPairs],
+    () => {
+      if (!enabled) return []
+      const out = factoryPairEntries.map(({ tokens, pairAddress }) => ({
+        tokens,
+        liquidityToken: new ERC20Token(tokens[0].chainId, pairAddress, 18, 'MLP', 'Melega LP Token'),
+      }))
+      if (factoryScanComplete) return out
+
+      const seenAddresses = new Set(out.map(({ liquidityToken }) => liquidityToken.address.toLowerCase()))
+      for (const tokens of trackedTokenPairs) {
+        const liquidityToken = toV2LiquidityToken(tokens)
+        if (seenAddresses.has(liquidityToken.address.toLowerCase())) continue
+        seenAddresses.add(liquidityToken.address.toLowerCase())
+        out.push({ tokens, liquidityToken })
+      }
+      return out
+    },
+    [enabled, factoryPairEntries, factoryScanComplete, trackedTokenPairs],
   )
 
   const liquidityTokens = useMemo(
@@ -209,19 +200,26 @@ export function useLiquidityPositions(enabled = true) {
   }, [liquidityTokensWithBalances, lpTotalSupplyCalls])
 
   const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
+  const factoryOwnedPairsHydrated =
+    liquidityTokensWithBalances.length > 0 &&
+    liquidityTokensWithBalances.every(({ liquidityToken }) =>
+      Boolean(factoryPairsByAddress[liquidityToken.address.toLowerCase()]),
+    )
   const v2IsLoading =
     (!factoryScanComplete && fetchingV2PairBalances) ||
     factoryLoading ||
-    v2Pairs?.length < liquidityTokensWithBalances.length ||
-    Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))
+    (!factoryOwnedPairsHydrated &&
+      (v2Pairs?.length < liquidityTokensWithBalances.length ||
+        Boolean(v2Pairs?.length && v2Pairs.every(([pairState]) => pairState === PairState.LOADING))))
 
   const v2Positions = useMemo((): LiquidityPositionRow[] => {
     if (!v2Pairs) return []
     const byPair = new Map<string, LiquidityPositionRow>()
-    v2Pairs.forEach((entry) => {
-      const [, pair] = entry
+    liquidityTokensWithBalances.forEach(({ liquidityToken }, index) => {
+      const [, livePair] = v2Pairs[index] ?? []
+      const pair = factoryPairsByAddress[liquidityToken.address.toLowerCase()] ?? livePair
       if (!pair) return
-      const pairAddress = pair.liquidityToken.address
+      const pairAddress = liquidityToken.address
       const userBalance = effectiveV2PairBalances[pairAddress]
       if (!userBalance?.greaterThan(0)) return
       const key = pairAddress.toLowerCase()
@@ -233,16 +231,23 @@ export function useLiquidityPositions(enabled = true) {
         pairLabel: `${pair.token0.symbol} / ${pair.token1.symbol}`,
         lpBalance: userBalance,
         isStable: false,
-        chainId: pair.liquidityToken.chainId,
+        chainId: liquidityToken.chainId,
         pairAddress,
         walletAddress: account,
         ownershipSource: OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
         totalSupplyRaw,
-        totalSupply: liquidityTotalSupplyFromRaw(pair.liquidityToken, totalSupplyRaw),
+        totalSupply: liquidityTotalSupplyFromRaw(liquidityToken, totalSupplyRaw),
       })
     })
     return [...byPair.values()]
-  }, [v2Pairs, effectiveV2PairBalances, account, batchedTotalSupplyRawByAddress])
+  }, [
+    v2Pairs,
+    effectiveV2PairBalances,
+    account,
+    batchedTotalSupplyRawByAddress,
+    factoryPairsByAddress,
+    liquidityTokensWithBalances,
+  ])
 
   const stablePositions = useMemo((): LiquidityPositionRow[] => {
     if (!stablePairs?.length) return []
@@ -318,7 +323,7 @@ export function useLiquidityPositions(enabled = true) {
     retryPositions,
     account,
     factoryPairCount,
-    discoveryPairCount: discoveryTokenPairs.length,
+    discoveryPairCount: tokenPairsWithLiquidityTokens.length,
     factoryEnabled,
   }
 }
