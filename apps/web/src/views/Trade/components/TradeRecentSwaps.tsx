@@ -50,10 +50,16 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
 
   const technicalDetail = useMemo(() => {
     if (isIndexing) {
-      return `Indexer request in progress · Source: ${swapDiagnostic?.source ?? 'melega-indexer'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'}`
+      return `Indexer request in progress · Source: ${swapDiagnostic?.source ?? 'melega-indexer'} · Indexer: ${
+        swapDiagnostic?.indexer ?? 'loading'
+      } · Last attempt: ${
+        swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'
+      }`
     }
     if (swapDiagnostic) {
-      return `Reason: ${swapDiagnostic.reason ?? DATA_REASON_LABELS.NO_EVENTS_INDEXED} · Source: ${swapDiagnostic.source} · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()}`
+      return `Reason: ${swapDiagnostic.reason ?? DATA_REASON_LABELS.NO_EVENTS_INDEXED} · Source: ${
+        swapDiagnostic.source
+      } · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()}`
     }
     return missingReasonDetail
   }, [isIndexing, swapDiagnostic, missingReasonDetail])
@@ -62,7 +68,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
     <TradeSwapsTable
       rows={rows}
       isIndexing={isIndexing}
-      emptyTitle="No indexed swaps yet"
+      emptyTitle="No recent swaps yet"
       emptyDescription={emptyDescription}
       technicalDetail={technicalDetail}
     />

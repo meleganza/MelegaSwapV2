@@ -25,6 +25,7 @@ import { PairState, usePairs } from 'hooks/usePairs'
 import type { MarcoPairLiquiditySnapshot } from 'lib/trade-market/fetchMarcoPairLiquidity'
 import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
 import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
+import { usePairTrades } from 'lib/market-data/usePairTrades'
 import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const SECONDS_24H = 86_400
@@ -157,7 +158,21 @@ const formatTokenAmount = (value: number, symbol: string): string | undefined =>
   return `${value.toFixed(4)} ${symbol}`
 }
 
-const bscExplorerTx = (hash: string): string => `https://bscscan.com/tx/${hash}`
+const explorerTx = (chainId: number | undefined, hash: string): string => {
+  const base =
+    chainId === 1
+      ? 'https://etherscan.io'
+      : chainId === 137
+      ? 'https://polygonscan.com'
+      : chainId === 8453
+      ? 'https://basescan.org'
+      : chainId === 42161
+      ? 'https://arbiscan.io'
+      : chainId === 43114
+      ? 'https://snowtrace.io'
+      : 'https://bscscan.com'
+  return `${base}/tx/${hash}`
+}
 
 const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean => {
   if (!token0 || !token1) return true
@@ -205,6 +220,7 @@ export const useTradeTerminalData = (
     { refreshInterval: 60_000, revalidateOnFocus: false, dedupingInterval: 45_000 },
   )
   const externalDex = tokenPairsData?.analytics
+  const publicPairTrades = usePairTrades(chainId, externalDex?.primaryPairAddress, tokenAddress)
   const tokenData = useTokenDataSWR(tokenAddress)
   const { data: holderCount, isLoading: holderLoading } = useHolderCount(chainId, tokenAddress)
   const isMarcoRoute = tokenAddress
@@ -314,13 +330,12 @@ export const useTradeTerminalData = (
   const displayOutput = isMarcoSymbol(outputSymbol) || !outputSymbol ? 'MARCO' : outputSymbol
 
   const recentSwaps = useMemo((): TradeSwapRow[] => {
-    if (!transactions?.length) return []
-    const swapTxs = transactions.filter((tx) => tx.type === TransactionType.SWAP)
+    const swapTxs = transactions?.filter((tx) => tx.type === TransactionType.SWAP) ?? []
     const pairFiltered = swapTxs.filter((tx) => matchesPair(tx, displayInput, displayOutput))
-    return [...pairFiltered]
+    const indexedRows = [...pairFiltered]
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       .slice(0, 12)
-      .map((tx) => {
+      .map((tx): TradeSwapRow => {
         const receivedSymbol = displayOutput ?? tx.token1Symbol
         const receivedAmount =
           receivedSymbol === tx.token1Symbol
@@ -343,10 +358,34 @@ export const useTradeTerminalData = (
           received: receivedAmount,
           receivedReason: receivedAmount ? undefined : 'Swap output amount not indexed',
           direction: swapDirection(tx, displayOutput),
-          explorerUrl: bscExplorerTx(tx.hash),
+          explorerUrl: explorerTx(chainId, tx.hash),
         }
       })
-  }, [transactions, displayInput, displayOutput])
+    if (indexedRows.length > 0) return indexedRows
+
+    return publicPairTrades.trades.slice(0, 12).map((trade): TradeSwapRow => {
+      const selectedIsBase = trade.selectedTokenAddress === trade.baseTokenAddress
+      const token0Symbol = trade.selectedTokenSymbol
+      const token1Symbol = selectedIsBase ? trade.quoteTokenSymbol : trade.baseTokenSymbol
+      const token0Address = selectedIsBase ? trade.baseTokenAddress : trade.quoteTokenAddress
+      const token1Address = selectedIsBase ? trade.quoteTokenAddress : trade.baseTokenAddress
+      const selectedAmount = formatTokenAmount(Number(trade.selectedTokenAmount), trade.selectedTokenSymbol)
+      return {
+        id: trade.id,
+        time: formatTimeAgo(String(trade.timestamp)),
+        wallet: shortenWallet(trade.wallet),
+        pair: `${token0Symbol} / ${token1Symbol}`,
+        token0Symbol,
+        token1Symbol,
+        token0Address,
+        token1Address,
+        amount: formatUsd(trade.amountUsd ?? 0) ?? selectedAmount ?? '—',
+        amountReason: trade.amountUsd != null ? undefined : 'USD volume unavailable from public pair feed',
+        direction: trade.direction,
+        explorerUrl: explorerTx(chainId, trade.txHash),
+      }
+    })
+  }, [transactions, displayInput, displayOutput, publicPairTrades.trades, chainId])
 
   const pairStats = useMemo((): TradePairStat[] => {
     const useCanonicalIndexerStats = useDurableIndexer && isMarcoRoute
@@ -623,7 +662,9 @@ export const useTradeTerminalData = (
       subgraphBlocker: indexerState.blockerCode,
       tokenMetrics: tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
-      dataSources: useDurableIndexer
+      dataSources: externalDex?.primaryPairAddress
+        ? ['geckoterminal-public-pair', 'on-chain-multicall', 'presence-registry']
+        : useDurableIndexer
         ? ['bsc-durable-indexer', 'on-chain-multicall', 'presence-registry']
         : ['melega-subgraph', 'on-chain-multicall', 'presence-registry'],
       primaryActions: ['view_chart', 'view_recent_swaps', 'swap'],
@@ -643,9 +684,10 @@ export const useTradeTerminalData = (
     holderCount,
     subgraphReport,
     useDurableIndexer,
+    externalDex?.primaryPairAddress,
   ])
 
-  const isIndexingSwaps = isActivityIndexing && recentSwaps.length === 0
+  const isIndexingSwaps = (isActivityIndexing || publicPairTrades.status === 'loading') && recentSwaps.length === 0
   const isIndexingMetrics =
     !useDurableIndexer &&
     subgraphReport.melegaNativeConfigured &&
@@ -706,7 +748,7 @@ export const useTradeTerminalData = (
     displayOutput,
     isIndexing: isIndexingSwaps,
     isIndexingMetrics,
-    hasSwapData: indexerState.status === 'ready',
+    hasSwapData: indexerState.status === 'ready' || publicPairTrades.status === 'ready',
     reconciliationStatus,
     tradeReconciliation,
     swapEmptyReason:
@@ -726,6 +768,15 @@ export const useTradeTerminalData = (
         ? {
             ...indexerState,
             reason: 'Indexer sources are reconciling. Independently verified metrics remain visible.',
+          }
+        : externalDex?.primaryPairAddress && !isIndexingSwaps && recentSwaps.length === 0
+        ? {
+            source: publicPairTrades.source,
+            indexer: externalDex.primaryPairAddress,
+            lastAttempt: publicPairTrades.generatedAt ?? new Date().toISOString(),
+            reason:
+              publicPairTrades.reason ??
+              (publicPairTrades.status === 'empty' ? 'No recent swaps returned for the selected pool' : undefined),
           }
         : !isActivityIndexing && recentSwaps.length === 0
         ? indexerState
