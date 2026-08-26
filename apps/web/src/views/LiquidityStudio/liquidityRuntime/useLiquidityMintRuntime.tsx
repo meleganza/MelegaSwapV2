@@ -426,6 +426,7 @@ export function useLiquidityMintRuntime({
   const [liquidityApproval, approveLiquidityCallback] = useApproveCallback(
     removeParsedAmounts[BurnField.LIQUIDITY],
     chainId ? ROUTER_ADDRESS[chainId] : undefined,
+    { unknownAllowanceTimeoutMs: 5_000 },
   )
 
   const isRemove = mode === 'Remove Liquidity'

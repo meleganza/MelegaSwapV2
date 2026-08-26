@@ -67,5 +67,16 @@ describe('wallet position visibility regression', () => {
     expect(runtime).toContain('[BurnField.CURRENCY_A]: multiplyByPercent(positionDetails.token0Deposited)')
     expect(runtime).toContain('removeParsedAmounts[BurnField.LIQUIDITY]')
     expect(runtime).toContain("return 'Checking LP approval…'")
+    expect(runtime).toContain('{ unknownAllowanceTimeoutMs: 5_000 }')
+  })
+
+  it('never leaves LP approval dependent only on the legacy multicall feed', () => {
+    const allowance = fs.readFileSync(path.join(WEB, 'src/hooks/useTokenAllowance.ts'), 'utf8')
+    const approval = fs.readFileSync(path.join(WEB, 'src/hooks/useApproveCallback.ts'), 'utf8')
+    expect(allowance).toContain('contract')
+    expect(allowance).toContain('.allowance(owner, spender)')
+    expect(allowance).toContain('directAllowance?.key === allowanceRequestKey')
+    expect(approval).toContain('unknownAllowanceTimedOut')
+    expect(approval).toContain('return pendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED')
   })
 })

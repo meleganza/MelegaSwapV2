@@ -5,7 +5,7 @@ import { Currency, CurrencyAmount, Trade, TradeType } from '@pancakeswap/sdk'
 import { useToast } from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { logError } from 'utils/sentry'
 import { Field } from '../state/swap/actions'
 import { useHasPendingApproval, useTransactionAdder } from '../state/transactions/hooks'
@@ -23,10 +23,21 @@ export enum ApprovalState {
   APPROVED,
 }
 
+export type ApproveCallbackOptions = {
+  /**
+   * Bounded escape hatch for safety-critical actions. If every allowance read
+   * is unavailable, treat the token as requiring approval instead of leaving
+   * the user permanently blocked in UNKNOWN. The approval transaction remains
+   * explicit and wallet-signed.
+   */
+  unknownAllowanceTimeoutMs?: number
+}
+
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useApproveCallback(
   amountToApprove?: CurrencyAmount<Currency>,
   spender?: string,
+  options?: ApproveCallbackOptions,
 ): [ApprovalState, () => Promise<void>] {
   const { address: account } = useAccount()
   const { callWithGasPrice } = useCallWithGasPrice()
@@ -35,13 +46,36 @@ export function useApproveCallback(
   const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined
   const currentAllowance = useTokenAllowance(token, account ?? undefined, spender)
   const pendingApproval = useHasPendingApproval(token?.address, spender)
+  const [unknownAllowanceTimedOut, setUnknownAllowanceTimedOut] = useState(false)
+  const approvalRequestKey =
+    amountToApprove && spender
+      ? `${amountToApprove.currency.chainId}:${amountToApprove.currency.wrapped.address}:${amountToApprove.quotient}:${spender}`
+      : undefined
+
+  useEffect(() => {
+    setUnknownAllowanceTimedOut(false)
+    if (
+      !options?.unknownAllowanceTimeoutMs ||
+      !amountToApprove ||
+      !spender ||
+      amountToApprove.currency?.isNative ||
+      currentAllowance
+    ) {
+      return undefined
+    }
+    const timer = window.setTimeout(() => setUnknownAllowanceTimedOut(true), options.unknownAllowanceTimeoutMs)
+    return () => window.clearTimeout(timer)
+  }, [approvalRequestKey, amountToApprove?.currency?.isNative, spender, currentAllowance, options?.unknownAllowanceTimeoutMs])
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN
     if (amountToApprove.currency?.isNative) return ApprovalState.APPROVED
     // we might not have enough data to know whether or not we need to approve
-    if (!currentAllowance) return ApprovalState.UNKNOWN
+    if (!currentAllowance) {
+      if (!unknownAllowanceTimedOut) return ApprovalState.UNKNOWN
+      return pendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED
+    }
 
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
@@ -49,7 +83,7 @@ export function useApproveCallback(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED
-  }, [amountToApprove, currentAllowance, pendingApproval, spender])
+  }, [amountToApprove, currentAllowance, pendingApproval, spender, unknownAllowanceTimedOut])
 
   const tokenContract = useTokenContract(token?.address)
   const addTransaction = useTransactionAdder()
