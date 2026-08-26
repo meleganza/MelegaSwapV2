@@ -1,5 +1,6 @@
 import type { NextApiHandler } from 'next'
 import { resolveOhlcvTokenSide } from 'lib/market-data/ohlcvTokenSide'
+import { resolveOhlcvTimeframe } from 'lib/market-data/ohlcvTimeframe'
 
 const GECKO_NETWORK_BY_CHAIN: Record<number, string> = {
   1: 'eth',
@@ -60,11 +61,13 @@ const handler: NextApiHandler = async (req, res) => {
   const pairAddress = String(req.query.pairAddress || '').trim().toLowerCase()
   const tokenAddress = String(req.query.tokenAddress || '').trim().toLowerCase()
   const network = GECKO_NETWORK_BY_CHAIN[chainId]
+  const timeframe = resolveOhlcvTimeframe(req.query.timeframe)
 
   if (
     !network ||
     !/^0x[a-f0-9]{40}$/.test(pairAddress) ||
-    (tokenAddress.length > 0 && !/^0x[a-f0-9]{40}$/.test(tokenAddress))
+    (tokenAddress.length > 0 && !/^0x[a-f0-9]{40}$/.test(tokenAddress)) ||
+    !timeframe
   ) {
     return res.status(400).json({ error: 'INVALID_CHAIN_OR_PAIR' })
   }
@@ -105,13 +108,13 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const query = new URLSearchParams({
-    aggregate: '1',
-    limit: '24',
+    aggregate: timeframe.aggregate,
+    limit: timeframe.limit,
     currency: 'usd',
     include_empty_intervals: 'true',
   })
   if (tokenSide) query.set('token', tokenSide)
-  const endpoint = `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${pairAddress}/ohlcv/hour?${query}`
+  const endpoint = `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${pairAddress}/ohlcv/${timeframe.path}?${query}`
 
   try {
     const response = await fetch(endpoint, {
@@ -150,6 +153,7 @@ const handler: NextApiHandler = async (req, res) => {
       pairAddress,
       tokenAddress: tokenAddress || null,
       tokenSide,
+      timeframe: req.query.timeframe || '1h',
       candles,
       volume24hUsd,
       source: 'geckoterminal-public-ohlcv',

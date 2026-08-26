@@ -170,12 +170,13 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
 
   const indexerInterval = timeframeToIndexerInterval(timeframe)
   const pairForIndexer = isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
+  const indexerSupportsTimeframe = timeframe === '1h' || timeframe === '4h' || timeframe === '1d'
   const { chartEntries: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
     pairForIndexer,
     indexerInterval,
-    Boolean(pairForIndexer),
+    Boolean(pairForIndexer && indexerSupportsTimeframe),
   )
-  const publicPair = usePairOhlcv(activeChainId, pairAddress ?? pairForIndexer, token0Address)
+  const publicPair = usePairOhlcv(activeChainId, pairAddress ?? pairForIndexer, token0Address, timeframe)
 
   const pairPrices = useMemo(() => {
     if (indexerCandles.length >= 2) {

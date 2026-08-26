@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import type { PublicOhlcvTimeframe } from './ohlcvTimeframe'
 
 export type PublicPairCandle = {
   timestamp: number
@@ -31,13 +32,14 @@ export function usePairOhlcv(
   chainId: number | undefined,
   pairAddress?: string | null,
   tokenAddress?: string | null,
+  timeframe: PublicOhlcvTimeframe = '1h',
 ) {
   const valid = Number.isFinite(chainId) && isAddress(pairAddress)
   const targetToken = isAddress(tokenAddress) ? tokenAddress.toLowerCase() : undefined
   const key = valid
     ? `/api/market-data/pair-ohlcv?chainId=${chainId}&pairAddress=${encodeURIComponent(pairAddress!)}${
         targetToken ? `&tokenAddress=${encodeURIComponent(targetToken)}` : ''
-      }`
+      }&timeframe=${timeframe}`
     : null
   const { data, error, isValidating } = useSWR<PairOhlcvResponse>(key, fetchPairOhlcv, {
     revalidateOnFocus: false,
