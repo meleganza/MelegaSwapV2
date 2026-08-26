@@ -52,6 +52,7 @@ import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
 import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 import { resolveReceiptOutcome } from 'lib/transactions/resolveReceiptOutcome'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { computeProRataAmountRaw } from './walletLpPositionMath'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -186,6 +187,7 @@ export interface LiquidityMintRuntime {
   onPrimaryAction: () => void
   onRemovePercent: (pct: string) => void
   removePercent: string
+  removeActionReady: boolean
   openAddModal: () => void
   openRemoveModal: () => void
   removeConfirmOpen: boolean
@@ -300,7 +302,7 @@ export function useLiquidityMintRuntime({
 
   const burnInfo = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
   const lpAprData = useLPApr(pair ?? undefined)
-  const poolAddress = pair?.liquidityToken?.address
+  const mintPoolAddress = pair?.liquidityToken?.address
 
   const {
     positions,
@@ -345,6 +347,48 @@ export function useLiquidityMintRuntime({
     [positions, selectedPositionId, isRemoveMode, isPositionsMode],
   )
   const positionDetails = useLiquidityPositionDetails(selectedPosition)
+  const poolAddress = isRemoveMode ? selectedPosition?.pairAddress : mintPoolAddress
+
+  // The wallet-scoped position scan is authoritative for removal. Derive the
+  // LP amount and underlying outputs from that exact pair instead of waiting
+  // for the broad tracked-pair multicall used by the legacy burn hook.
+  const removeParsedAmounts = useMemo(() => {
+    const fallback = burnInfo.parsedAmounts
+    const percent = fallback[BurnField.LIQUIDITY_PERCENT]
+    if (!isRemoveMode || !selectedPosition || !percent?.greaterThan('0')) return fallback
+
+    const multiplyByPercent = <T extends Currency | Token>(amount?: CurrencyAmount<T>) =>
+      amount
+        ? CurrencyAmount.fromRawAmount(
+            amount.currency,
+            computeProRataAmountRaw(
+              amount.quotient.toString(),
+              percent.numerator.toString(),
+              percent.denominator.toString(),
+            ),
+          )
+        : undefined
+
+    return {
+      ...fallback,
+      [BurnField.LIQUIDITY]: multiplyByPercent(selectedPosition.lpBalance),
+      [BurnField.CURRENCY_A]: multiplyByPercent(positionDetails.token0Deposited),
+      [BurnField.CURRENCY_B]: multiplyByPercent(positionDetails.token1Deposited),
+    }
+  }, [burnInfo.parsedAmounts, isRemoveMode, selectedPosition, positionDetails])
+
+  const removeError = useMemo(() => {
+    if (!account) return t('Connect Wallet')
+    if (!selectedPosition) return 'Select a liquidity position'
+    if (
+      !removeParsedAmounts[BurnField.LIQUIDITY] ||
+      !removeParsedAmounts[BurnField.CURRENCY_A] ||
+      !removeParsedAmounts[BurnField.CURRENCY_B]
+    ) {
+      return t('Enter an amount')
+    }
+    return undefined
+  }, [account, selectedPosition, removeParsedAmounts, t])
 
   // Auto-select the sole direct-wallet LP and sync burn currencies from that pair.
   useEffect(() => {
@@ -380,14 +424,14 @@ export function useLiquidityMintRuntime({
     chainId ? ROUTER_ADDRESS[chainId] : undefined,
   )
   const [liquidityApproval, approveLiquidityCallback] = useApproveCallback(
-    burnInfo.parsedAmounts[BurnField.LIQUIDITY],
+    removeParsedAmounts[BurnField.LIQUIDITY],
     chainId ? ROUTER_ADDRESS[chainId] : undefined,
   )
 
   const isRemove = mode === 'Remove Liquidity'
   const isPositions = mode === 'My Positions'
   const isSimulation = mode === 'Simulation'
-  const calculating = pairState === PairState.LOADING || terminal.isLoadingPools
+  const calculating = isRemoveMode ? positionsLoading : pairState === PairState.LOADING || terminal.isLoadingPools
 
   const phase: LiquidityRuntimePhase = useMemo(() => {
     if (isSimulation) {
@@ -412,10 +456,10 @@ export function useLiquidityMintRuntime({
       if (mintError) return 'error'
       if (liquidityMinted && typedValue) return 'ready'
     } else {
-      if (liquidityApproval === ApprovalState.NOT_APPROVED && burnInfo.parsedAmounts[BurnField.LIQUIDITY]) {
+      if (liquidityApproval === ApprovalState.NOT_APPROVED && removeParsedAmounts[BurnField.LIQUIDITY]) {
         return 'approval_required'
       }
-      if (burnInfo.error) return 'error'
+      if (removeError) return 'error'
       if (burnTypedValue) return 'ready'
     }
     return 'idle'
@@ -433,16 +477,16 @@ export function useLiquidityMintRuntime({
     approvalA,
     approvalB,
     liquidityApproval,
-    burnInfo.parsedAmounts,
+    removeParsedAmounts,
     parsedAmounts,
     mintError,
     liquidityMinted,
-    burnInfo.error,
+    removeError,
   ])
 
   const error = useMemo(
-    () => runtimeErrorFromPhase(phase, isRemove ? burnInfo.error : mintError),
-    [phase, isRemove, burnInfo.error, mintError],
+    () => runtimeErrorFromPhase(phase, isRemove ? removeError : mintError),
+    [phase, isRemove, removeError, mintError],
   )
 
   const ratios = useMemo(
@@ -468,7 +512,7 @@ export function useLiquidityMintRuntime({
     if ((isPositions || isRemove) && selectedPosition) {
       const share = formatPercentShare(positionDetails.poolShare)
       const lpApr = lpAprData?.lpApr7d
-      const removeParsed = burnInfo.parsedAmounts
+      const removeParsed = removeParsedAmounts
       return {
         expectedLp: isRemove
           ? formatAmount(removeParsed[BurnField.LIQUIDITY], '0.0000') ||
@@ -504,7 +548,7 @@ export function useLiquidityMintRuntime({
       }
     }
 
-    const removeParsed = burnInfo.parsedAmounts
+    const removeParsed = removeParsedAmounts
     return {
       expectedLp: isRemove
         ? formatAmount(removeParsed[BurnField.LIQUIDITY], '0.0000')
@@ -532,7 +576,7 @@ export function useLiquidityMintRuntime({
     positionDetails,
     lpAprData,
     terminal,
-    burnInfo.parsedAmounts,
+    removeParsedAmounts,
     liquidityMinted,
     poolTokenPercentage,
     ratios,
@@ -712,7 +756,7 @@ export function useLiquidityMintRuntime({
   }, [onAdd])
 
   const onRemove = useCallback(async () => {
-    if (!chainId || !account || !routerContract || !pair) {
+    if (!chainId || !account || !routerContract || !selectedPosition) {
       setRemoveTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
@@ -721,9 +765,9 @@ export function useLiquidityMintRuntime({
       })
       return
     }
-    const liquidityAmount = burnInfo.parsedAmounts[BurnField.LIQUIDITY]
-    const amountA = burnInfo.parsedAmounts[BurnField.CURRENCY_A]
-    const amountB = burnInfo.parsedAmounts[BurnField.CURRENCY_B]
+    const liquidityAmount = removeParsedAmounts[BurnField.LIQUIDITY]
+    const amountA = removeParsedAmounts[BurnField.CURRENCY_A]
+    const amountB = removeParsedAmounts[BurnField.CURRENCY_B]
     if (!liquidityAmount || !amountA || !amountB || !deadline) {
       setRemoveTxLifecycle('failed')
       setLiquidityState({
@@ -807,8 +851,8 @@ export function useLiquidityMintRuntime({
     chainId,
     account,
     routerContract,
-    pair,
-    burnInfo.parsedAmounts,
+    selectedPosition,
+    removeParsedAmounts,
     deadline,
     currencyA,
     currencyB,
@@ -836,8 +880,8 @@ export function useLiquidityMintRuntime({
   }, [onRemove])
 
   const removeMinReceivedLabel = useMemo(() => {
-    const amountA = burnInfo.parsedAmounts[BurnField.CURRENCY_A]
-    const amountB = burnInfo.parsedAmounts[BurnField.CURRENCY_B]
+    const amountA = removeParsedAmounts[BurnField.CURRENCY_A]
+    const amountB = removeParsedAmounts[BurnField.CURRENCY_B]
     if (!amountA || !amountB) return '—'
     try {
       const minA = CurrencyAmount.fromRawAmount(amountA.currency, calculateSlippageAmount(amountA, allowedSlippage)[0])
@@ -848,13 +892,21 @@ export function useLiquidityMintRuntime({
     } catch {
       return '—'
     }
-  }, [burnInfo.parsedAmounts, allowedSlippage, currencyA?.symbol, currencyB?.symbol])
+  }, [removeParsedAmounts, allowedSlippage, currencyA?.symbol, currencyB?.symbol])
 
   const onPrimaryAction = useCallback(() => {
     if (isSimulation) return
     if (!account) return
     if (isRemove) {
-      if (liquidityApproval === ApprovalState.NOT_APPROVED && burnInfo.parsedAmounts[BurnField.LIQUIDITY]) {
+      if (
+        !removeParsedAmounts[BurnField.LIQUIDITY] ||
+        !removeParsedAmounts[BurnField.CURRENCY_A] ||
+        !removeParsedAmounts[BurnField.CURRENCY_B] ||
+        liquidityApproval === ApprovalState.UNKNOWN
+      ) {
+        return
+      }
+      if (liquidityApproval === ApprovalState.NOT_APPROVED && removeParsedAmounts[BurnField.LIQUIDITY]) {
         approveLiquidityCallback()
         return
       }
@@ -878,7 +930,7 @@ export function useLiquidityMintRuntime({
     approvalA,
     approvalB,
     liquidityApproval,
-    burnInfo.parsedAmounts,
+    removeParsedAmounts,
     parsedAmounts,
     approveACallback,
     approveBCallback,
@@ -890,11 +942,23 @@ export function useLiquidityMintRuntime({
   const primaryCtaLabel = useMemo(() => {
     if (isSimulation) return 'Simulation only — no execution'
     if (!account) return 'Connect Wallet'
+    if (isRemove && !removeParsedAmounts[BurnField.LIQUIDITY]) return 'Calculating withdrawal…'
+    if (isRemove && liquidityApproval === ApprovalState.UNKNOWN) return 'Checking LP approval…'
+    if (isRemove && liquidityApproval === ApprovalState.PENDING) return 'Approving LP Token…'
     if (phase === 'approval_required') return isRemove ? 'Approve LP Token' : 'Approve Token'
     if (isRemove) return 'Remove Liquidity'
     if (isPositions) return 'Manage on /liquidity'
     return 'Add Liquidity'
-  }, [account, phase, isRemove, isPositions, isSimulation])
+  }, [account, phase, isRemove, isPositions, isSimulation, removeParsedAmounts, liquidityApproval])
+
+  const removeActionReady = Boolean(
+    selectedPosition?.lpBalance?.greaterThan(0) &&
+      removeParsedAmounts[BurnField.LIQUIDITY] &&
+      removeParsedAmounts[BurnField.CURRENCY_A] &&
+      removeParsedAmounts[BurnField.CURRENCY_B] &&
+      liquidityApproval !== ApprovalState.UNKNOWN &&
+      liquidityApproval !== ApprovalState.PENDING,
+  )
 
   const opportunityRef = useMemo(
     () => consumeOpportunityRef(parseOpportunityRefFromQuery(router.query)),
@@ -976,12 +1040,7 @@ export function useLiquidityMintRuntime({
       ? 'Broadcasting…'
       : undefined
 
-  const resolvedPairLabel = resolveLiquidityStudioPairLabel(
-    mode,
-    selectedPosition?.pairLabel,
-    currencyA,
-    currencyB,
-  )
+  const resolvedPairLabel = resolveLiquidityStudioPairLabel(mode, selectedPosition?.pairLabel, currencyA, currencyB)
 
   return {
     mode,
@@ -996,8 +1055,8 @@ export function useLiquidityMintRuntime({
     onFieldAInput,
     onFieldBInput,
     onSwapTokens,
-    typedValueA: isRemove ? burnInfo.parsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6) ?? '0.0' : typedValueA,
-    typedValueB: isRemove ? burnInfo.parsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6) ?? '0.0' : typedValueB,
+    typedValueA: isRemove ? removeParsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6) ?? '0.0' : typedValueA,
+    typedValueB: isRemove ? removeParsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6) ?? '0.0' : typedValueB,
     slippageLabel: formatSlippage(allowedSlippage),
     preview,
     pairLabel: resolvedPairLabel,
@@ -1021,6 +1080,7 @@ export function useLiquidityMintRuntime({
     onPrimaryAction,
     onRemovePercent,
     removePercent: burnTypedValue || '50',
+    removeActionReady,
     openAddModal,
     openRemoveModal,
     removeConfirmOpen,
@@ -1037,8 +1097,8 @@ export function useLiquidityMintRuntime({
         removePercent={burnTypedValue || '50'}
         tokenASymbol={currencyA?.symbol}
         tokenBSymbol={currencyB?.symbol}
-        amountA={burnInfo.parsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6)}
-        amountB={burnInfo.parsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6)}
+        amountA={removeParsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6)}
+        amountB={removeParsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6)}
         minimumReceived={removeMinReceivedLabel}
         priceImpact="—"
         slippageLabel={formatSlippage(allowedSlippage)}
@@ -1046,7 +1106,10 @@ export function useLiquidityMintRuntime({
         errorMessage={liquidityErrorMessage}
         txHash={txHash}
         canConfirm={Boolean(
-          burnInfo.parsedAmounts[BurnField.LIQUIDITY] && liquidityApproval === ApprovalState.APPROVED,
+          removeParsedAmounts[BurnField.LIQUIDITY] &&
+            removeParsedAmounts[BurnField.CURRENCY_A] &&
+            removeParsedAmounts[BurnField.CURRENCY_B] &&
+            liquidityApproval === ApprovalState.APPROVED,
         )}
       />
     ),

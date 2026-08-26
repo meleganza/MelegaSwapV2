@@ -12,13 +12,22 @@ export function positionIdentityKey(chainId: number, pairAddress: string, wallet
 }
 
 /** underlying = reserve * walletLp / totalSupply (floor division). */
-export function computeUnderlyingAmount(
-  reserveRaw: bigint,
-  walletLpRaw: bigint,
-  totalSupplyRaw: bigint,
-): bigint {
+export function computeUnderlyingAmount(reserveRaw: bigint, walletLpRaw: bigint, totalSupplyRaw: bigint): bigint {
   if (totalSupplyRaw <= BigInt(0) || walletLpRaw <= BigInt(0) || reserveRaw <= BigInt(0)) return BigInt(0)
   return (reserveRaw * walletLpRaw) / totalSupplyRaw
+}
+
+/** Integer-safe proportional amount used by the selected-position removal path. */
+export function computeProRataAmountRaw(amountRaw: string, numeratorRaw: string, denominatorRaw: string): string {
+  try {
+    const amount = BigInt(amountRaw)
+    const numerator = BigInt(numeratorRaw)
+    const denominator = BigInt(denominatorRaw)
+    if (amount <= BigInt(0) || numerator <= BigInt(0) || denominator <= BigInt(0)) return '0'
+    return ((amount * numerator) / denominator).toString()
+  } catch {
+    return '0'
+  }
 }
 
 export function resolveRemoveLiquidityMethod(opts: {

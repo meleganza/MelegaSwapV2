@@ -188,6 +188,7 @@ export const LiquidityRemovePanel: React.FC = () => {
     currencyA,
     currencyB,
     removePercent,
+    removeActionReady,
     onRemovePercent,
     onPrimaryAction,
     primaryCtaLabel,
@@ -272,7 +273,7 @@ export const LiquidityRemovePanel: React.FC = () => {
         <Cta
           type="button"
           onClick={onPrimaryAction}
-          disabled={!hasRemovablePosition}
+          disabled={!hasRemovablePosition || !removeActionReady}
           data-testid="liquidity-remove-cta"
         >
           {hasRemovablePosition ? primaryCtaLabel || 'Remove Liquidity' : 'Select a position to remove'}

@@ -4,13 +4,20 @@ import path from 'path'
 import { CurrencyAmount, ERC20Token, Pair, Price } from '@pancakeswap/sdk'
 import {
   computeUnderlyingAmount,
+  computeProRataAmountRaw,
   OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
   positionIdentityKey,
   removeLiquidityDefaultPairIds,
   resolveRemoveLiquidityMethod,
   shouldAutoSelectOwnedPosition,
 } from '../walletLpPositionMath'
-import { estimateImpermanentLossPct, formatPercentShare, formatSlippage, pairLabel, ratioLabels } from '../formatLiquidityRuntime'
+import {
+  estimateImpermanentLossPct,
+  formatPercentShare,
+  formatSlippage,
+  pairLabel,
+  ratioLabels,
+} from '../formatLiquidityRuntime'
 import type { LiquidityStudioMode, SetLiquidityModeOptions } from '../useLiquidityMintRuntime'
 import {
   computePositionPoolShare,
@@ -66,9 +73,7 @@ describe('R791C.1A wallet LP position recovery', () => {
   })
 
   it('TEST 3 — Pair selector supports token/token (method not ETH)', () => {
-    expect(
-      resolveRemoveLiquidityMethod({ tokenAIsNative: false, tokenBIsNative: false }),
-    ).toBe('removeLiquidity')
+    expect(resolveRemoveLiquidityMethod({ tokenAIsNative: false, tokenBIsNative: false })).toBe('removeLiquidity')
   })
 
   it('TEST 4 — No hardcoded BNB default when owned positions exist', () => {
@@ -99,6 +104,16 @@ describe('R791C.1A wallet LP position recovery', () => {
     expect(computeUnderlyingAmount(reserve1, walletLp, totalSupply)).toBe(BigInt(200_000) * e18)
     expect(computeUnderlyingAmount(reserve0, BigInt(0), totalSupply)).toBe(BigInt(0))
     expect(computeUnderlyingAmount(reserve0, walletLp, BigInt(0))).toBe(BigInt(0))
+  })
+
+  it('TEST 6B — Fwc/BUSD MAX removal preserves exact integer amounts', () => {
+    const lpBalance = '6156180495365080454'
+    const reserveFwc = '226563697354041982516'
+    const reserveBusd = '175560548107283565'
+    expect(computeProRataAmountRaw(lpBalance, '100', '100')).toBe(lpBalance)
+    expect(computeProRataAmountRaw(reserveFwc, '100', '100')).toBe(reserveFwc)
+    expect(computeProRataAmountRaw(reserveBusd, '100', '100')).toBe(reserveBusd)
+    expect(computeProRataAmountRaw(lpBalance, '50', '100')).toBe('3078090247682540227')
   })
 
   it('TEST 7 — Token/token removal method for MM72/MARCO', () => {
@@ -150,10 +165,7 @@ describe('R791C.1A wallet LP position recovery', () => {
 describe('Manage / Add More selected-pair context', () => {
   const LUCK = '0x0000000000000000000000000000000000000lck'
   const runtime = readFileSync(path.resolve(__dirname, '../useLiquidityMintRuntime.tsx'), 'utf8')
-  const myPos = readFileSync(
-    path.resolve(__dirname, '../../modules/LiquidityMyPositionsModule.tsx'),
-    'utf8',
-  )
+  const myPos = readFileSync(path.resolve(__dirname, '../../modules/LiquidityMyPositionsModule.tsx'), 'utf8')
 
   const addModeShouldClearPair = (opts?: SetLiquidityModeOptions): boolean => opts?.preservePair !== true
   const resolveLiquidityStudioPairLabel = (
@@ -199,9 +211,7 @@ describe('Manage / Add More selected-pair context', () => {
 
   it('default Add still clears currency IDs', () => {
     const current = { currencyIdA: MM72, currencyIdB: LUCK }
-    const next = addModeShouldClearPair(undefined)
-      ? { currencyIdA: undefined, currencyIdB: undefined }
-      : current
+    const next = addModeShouldClearPair(undefined) ? { currencyIdA: undefined, currencyIdB: undefined } : current
     expect(next.currencyIdA).toBeUndefined()
     expect(next.currencyIdB).toBeUndefined()
     expect(addModeShouldClearPair()).toBe(true)

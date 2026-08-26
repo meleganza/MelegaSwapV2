@@ -22,6 +22,7 @@ type WalletPositionPair = {
   token1Decimals?: number
   reserve0Raw?: string
   reserve1Raw?: string
+  totalSupplyRaw?: string
   lpBalanceRaw?: string
 }
 
@@ -35,6 +36,7 @@ type PositionsResponse = {
 export type FactoryLiquidityPairEntry = {
   tokens: [ERC20Token, ERC20Token]
   pairAddress: string
+  totalSupplyRaw?: string
 }
 
 const FACTORY_FETCH_TIMEOUT_MS = 25_000
@@ -71,20 +73,8 @@ function pairToTokens(pair: WalletPositionPair, chainId: number): [ERC20Token, E
   const a = safeAddress(pair.token0)
   const b = safeAddress(pair.token1)
   if (!a || !b) return null
-  const t0 = new ERC20Token(
-    chainId,
-    a,
-    pair.token0Decimals ?? 18,
-    pair.symbol0 || 'T0',
-    pair.symbol0 || 'Token0',
-  )
-  const t1 = new ERC20Token(
-    chainId,
-    b,
-    pair.token1Decimals ?? 18,
-    pair.symbol1 || 'T1',
-    pair.symbol1 || 'Token1',
-  )
+  const t0 = new ERC20Token(chainId, a, pair.token0Decimals ?? 18, pair.symbol0 || 'T0', pair.symbol0 || 'Token0')
+  const t1 = new ERC20Token(chainId, b, pair.token1Decimals ?? 18, pair.symbol1 || 'T1', pair.symbol1 || 'Token1')
   return [t0, t1]
 }
 
@@ -141,7 +131,7 @@ export function useFactoryLiquidityTokenPairs(
       const key = pairAddress.toLowerCase()
       if (seen.has(key)) continue
       seen.add(key)
-      out.push({ tokens, pairAddress })
+      out.push({ tokens, pairAddress, totalSupplyRaw: row.totalSupplyRaw })
     }
     return out
   }, [data, chainId])

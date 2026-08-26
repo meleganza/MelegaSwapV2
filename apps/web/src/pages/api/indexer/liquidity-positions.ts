@@ -18,6 +18,7 @@ const pairContract = new Interface([
   'function token0() view returns (address)',
   'function token1() view returns (address)',
   'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
+  'function totalSupply() view returns (uint256)',
 ])
 const factoryContract = new Interface([
   'function allPairsLength() view returns (uint256)',
@@ -40,6 +41,7 @@ type PositionRow = PairCandidate & {
   token1Decimals?: number
   reserve0Raw?: string
   reserve1Raw?: string
+  totalSupplyRaw?: string
   lpBalanceRaw: string
 }
 
@@ -73,8 +75,8 @@ const ENV_RPC_BY_CHAIN: Record<number, Array<string | undefined>> = {
 export function resolveLiquidityChainConfig(chainId: number): LiquidityChainConfig | null {
   const chain = getMelegaChain(chainId)
   if (!chain || !isMelegaCapabilityEnabled(chainId, 'swap') || !chain.contracts.factory) return null
-  const rpcUrls = [...(ENV_RPC_BY_CHAIN[chainId] ?? []), PUBLIC_RPC_BY_CHAIN[chainId]].filter(
-    (url): url is string => Boolean(url),
+  const rpcUrls = [...(ENV_RPC_BY_CHAIN[chainId] ?? []), PUBLIC_RPC_BY_CHAIN[chainId]].filter((url): url is string =>
+    Boolean(url),
   )
   if (!rpcUrls.length) return null
   return {
@@ -186,12 +188,14 @@ async function hydrateOwnedPairs(config: LiquidityChainConfig, rows: PositionRow
       [row.pairAddress, pairContract.encodeFunctionData('token0')],
       [row.pairAddress, pairContract.encodeFunctionData('token1')],
       [row.pairAddress, pairContract.encodeFunctionData('getReserves')],
+      [row.pairAddress, pairContract.encodeFunctionData('totalSupply')],
     ]) as Array<[string, string]>
     const results = await aggregate(config, calls)
     batch.forEach((row, index) => {
-      const token0Result = results[index * 3]
-      const token1Result = results[index * 3 + 1]
-      const reservesResult = results[index * 3 + 2]
+      const token0Result = results[index * 4]
+      const token1Result = results[index * 4 + 1]
+      const reservesResult = results[index * 4 + 2]
+      const totalSupplyResult = results[index * 4 + 3]
       try {
         if (token0Result?.success && token0Result.returnData !== '0x') {
           const [token0] = pairContract.decodeFunctionResult('token0', token0Result.returnData)
@@ -205,6 +209,10 @@ async function hydrateOwnedPairs(config: LiquidityChainConfig, rows: PositionRow
           const [reserve0, reserve1] = pairContract.decodeFunctionResult('getReserves', reservesResult.returnData)
           row.reserve0Raw = reserve0.toString()
           row.reserve1Raw = reserve1.toString()
+        }
+        if (totalSupplyResult?.success && totalSupplyResult.returnData !== '0x') {
+          const [totalSupply] = pairContract.decodeFunctionResult('totalSupply', totalSupplyResult.returnData)
+          row.totalSupplyRaw = totalSupply.toString()
         }
       } catch {
         // Leave only the failed enrichment absent; the LP ownership remains factual.

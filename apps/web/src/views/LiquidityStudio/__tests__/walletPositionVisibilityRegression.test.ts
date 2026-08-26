@@ -6,14 +6,7 @@ import { getPoolsConfigForChain } from 'config/constants/pools'
 const WEB = path.resolve(__dirname, '../../../..')
 
 describe('wallet position visibility regression', () => {
-  const liveChains = [
-    ChainId.BSC,
-    ChainId.BASE,
-    ChainId.POLYGON,
-    ChainId.ETHEREUM,
-    ChainId.ARBITRUM,
-    ChainId.AVAX,
-  ]
+  const liveChains = [ChainId.BSC, ChainId.BASE, ChainId.POLYGON, ChainId.ETHEREUM, ChainId.ARBITRUM, ChainId.AVAX]
 
   it('binds wallet LP discovery to the canonical factory on every LIVE chain', () => {
     const api = fs.readFileSync(path.join(WEB, 'src/pages/api/indexer/liquidity-positions.ts'), 'utf8')
@@ -58,7 +51,21 @@ describe('wallet position visibility regression', () => {
     expect(hook).toContain('factoryPairEntries')
     expect(hook).toContain('factoryPairsByAddress')
     expect(api).toContain("pairContract.encodeFunctionData('getReserves')")
+    expect(api).toContain("pairContract.encodeFunctionData('totalSupply')")
     expect(api).toContain('reserve0Raw')
+    expect(api).toContain('totalSupplyRaw')
     expect(api).toContain('chainId,')
+  })
+
+  it('derives remove approval and outputs from the exact wallet-owned position', () => {
+    const runtime = fs.readFileSync(
+      path.join(WEB, 'src/views/LiquidityStudio/liquidityRuntime/useLiquidityMintRuntime.tsx'),
+      'utf8',
+    )
+    expect(runtime).toContain('computeProRataAmountRaw')
+    expect(runtime).toContain('[BurnField.LIQUIDITY]: multiplyByPercent(selectedPosition.lpBalance)')
+    expect(runtime).toContain('[BurnField.CURRENCY_A]: multiplyByPercent(positionDetails.token0Deposited)')
+    expect(runtime).toContain('removeParsedAmounts[BurnField.LIQUIDITY]')
+    expect(runtime).toContain("return 'Checking LP approval…'")
   })
 })

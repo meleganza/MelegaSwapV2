@@ -131,26 +131,24 @@ export function useLiquidityPositions(enabled = true) {
   } = useFactoryLiquidityTokenPairs(Boolean(effectiveAccount), chainId, effectiveAccount, retryNonce)
   const factoryScanComplete = factoryEnabled && factoryPairCount !== null && !factoryError
 
-  const tokenPairsWithLiquidityTokens = useMemo(
-    () => {
-      if (!enabled) return []
-      const out = factoryPairEntries.map(({ tokens, pairAddress }) => ({
-        tokens,
-        liquidityToken: new ERC20Token(tokens[0].chainId, pairAddress, 18, 'MLP', 'Melega LP Token'),
-      }))
-      if (factoryScanComplete) return out
+  const tokenPairsWithLiquidityTokens = useMemo(() => {
+    if (!enabled) return []
+    const out = factoryPairEntries.map(({ tokens, pairAddress, totalSupplyRaw }) => ({
+      tokens,
+      liquidityToken: new ERC20Token(tokens[0].chainId, pairAddress, 18, 'MLP', 'Melega LP Token'),
+      totalSupplyRaw,
+    }))
+    if (factoryScanComplete) return out
 
-      const seenAddresses = new Set(out.map(({ liquidityToken }) => liquidityToken.address.toLowerCase()))
-      for (const tokens of trackedTokenPairs) {
-        const liquidityToken = toV2LiquidityToken(tokens)
-        if (seenAddresses.has(liquidityToken.address.toLowerCase())) continue
-        seenAddresses.add(liquidityToken.address.toLowerCase())
-        out.push({ tokens, liquidityToken })
-      }
-      return out
-    },
-    [enabled, factoryPairEntries, factoryScanComplete, trackedTokenPairs],
-  )
+    const seenAddresses = new Set(out.map(({ liquidityToken }) => liquidityToken.address.toLowerCase()))
+    for (const tokens of trackedTokenPairs) {
+      const liquidityToken = toV2LiquidityToken(tokens)
+      if (seenAddresses.has(liquidityToken.address.toLowerCase())) continue
+      seenAddresses.add(liquidityToken.address.toLowerCase())
+      out.push({ tokens, liquidityToken, totalSupplyRaw: undefined })
+    }
+    return out
+  }, [enabled, factoryPairEntries, factoryScanComplete, trackedTokenPairs])
 
   const liquidityTokens = useMemo(
     () => tokenPairsWithLiquidityTokens.map((tpwlt) => tpwlt.liquidityToken),
@@ -215,7 +213,7 @@ export function useLiquidityPositions(enabled = true) {
   const v2Positions = useMemo((): LiquidityPositionRow[] => {
     if (!v2Pairs) return []
     const byPair = new Map<string, LiquidityPositionRow>()
-    liquidityTokensWithBalances.forEach(({ liquidityToken }, index) => {
+    liquidityTokensWithBalances.forEach(({ liquidityToken, totalSupplyRaw: serverTotalSupplyRaw }, index) => {
       const [, livePair] = v2Pairs[index] ?? []
       const pair = factoryPairsByAddress[liquidityToken.address.toLowerCase()] ?? livePair
       if (!pair) return
@@ -235,8 +233,8 @@ export function useLiquidityPositions(enabled = true) {
         pairAddress,
         walletAddress: account,
         ownershipSource: OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
-        totalSupplyRaw,
-        totalSupply: liquidityTotalSupplyFromRaw(liquidityToken, totalSupplyRaw),
+        totalSupplyRaw: serverTotalSupplyRaw ?? totalSupplyRaw,
+        totalSupply: liquidityTotalSupplyFromRaw(liquidityToken, serverTotalSupplyRaw ?? totalSupplyRaw),
       })
     })
     return [...byPair.values()]
@@ -340,10 +338,7 @@ export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {
 
   const usdValue = usePositionUsdValue(position?.pair.token0, position?.pair.token1, token0Deposited, token1Deposited)
 
-  const poolShare = useMemo(
-    () => computePositionPoolShare(totalSupply, userBalance),
-    [totalSupply, userBalance],
-  )
+  const poolShare = useMemo(() => computePositionPoolShare(totalSupply, userBalance), [totalSupply, userBalance])
 
   return { token0Deposited, token1Deposited, usdValue, poolShare }
 }
