@@ -3,9 +3,8 @@ import type { MarcoBridgeNetwork, MarcoBridgeNetworkId, MarcoBridgeRoute } from 
 /**
  * The single consumer-side source of truth for MARCO Wave-1.
  *
- * Protocol identities intentionally remain null until the certified MMN artifact is
- * imported during the explicit public-activation gate. The UI therefore fails closed
- * and cannot fabricate a quote or submit a transaction from incomplete configuration.
+ * These values mirror the canonical public MMN route authority. Every live quote
+ * revalidates them against that authority before performing an eth_call.
  */
 export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwork> = {
   bnb: {
@@ -14,8 +13,12 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     shortLabel: 'BNB',
     walletFamily: 'evm',
     chainId: 56,
-    layerZeroEid: null,
-    marcoIdentity: null,
+    layerZeroEid: 30102,
+    marcoIdentity: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+    endpointContract: '0xC92B49ddF9312cbfc01Ad397963dF915C7a2399E',
+    tokenDecimals: 18,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'BNB',
     explorerUrl: 'https://bscscan.com',
   },
   base: {
@@ -24,8 +27,12 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     shortLabel: 'Base',
     walletFamily: 'evm',
     chainId: 8453,
-    layerZeroEid: null,
-    marcoIdentity: null,
+    layerZeroEid: 30184,
+    marcoIdentity: '0xa2c8b941542AE0599774D1661CB7B773BC0e79C7',
+    endpointContract: '0xa2c8b941542AE0599774D1661CB7B773BC0e79C7',
+    tokenDecimals: 18,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'ETH',
     explorerUrl: 'https://basescan.org',
   },
   solana: {
@@ -34,8 +41,12 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     shortLabel: 'Solana',
     walletFamily: 'solana',
     chainId: null,
-    layerZeroEid: null,
-    marcoIdentity: null,
+    layerZeroEid: 30168,
+    marcoIdentity: '6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF',
+    endpointContract: '7L8x99W1yVVgtsu3wWy9DgD9ysnnfF4XXhdKhUrQxEuW',
+    tokenDecimals: 9,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'SOL',
     explorerUrl: 'https://solscan.io',
     protectivePaused: true,
   },
@@ -44,9 +55,13 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     label: 'Robinhood Chain',
     shortLabel: 'Robinhood',
     walletFamily: 'evm',
-    chainId: null,
-    layerZeroEid: null,
-    marcoIdentity: null,
+    chainId: 4663,
+    layerZeroEid: 30416,
+    marcoIdentity: '0x803925DacEcCc32343cdac0C731dB07a1A384bFB',
+    endpointContract: '0x803925DacEcCc32343cdac0C731dB07a1A384bFB',
+    tokenDecimals: 18,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'ETH',
     explorerUrl: null,
   },
 }
@@ -74,13 +89,8 @@ export const MARCO_WAVE1_PUBLIC_ACTIVATION = {
 } as const
 
 export function wave1ActivationBlockers(): string[] {
-  const missing = Object.values(MARCO_WAVE1_NETWORKS).flatMap((network) => {
-    const rows: string[] = []
-    if (network.layerZeroEid == null) rows.push(`${network.label}: LayerZero EID`)
-    if (!network.marcoIdentity) rows.push(`${network.label}: canonical MARCO identity`)
-    if (network.walletFamily === 'evm' && network.chainId == null) rows.push(`${network.label}: chain ID`)
-    return rows
-  })
-  if (!MARCO_WAVE1_PUBLIC_ACTIVATION.enabled) missing.push('Explicit public activation gate')
-  return missing
+  const blockers: string[] = []
+  if (!MARCO_WAVE1_PUBLIC_ACTIVATION.enabled) blockers.push('Explicit public activation gate')
+  if (MARCO_WAVE1_NETWORKS.solana.protectivePaused) blockers.push('Solana infrastructure pause')
+  return blockers
 }

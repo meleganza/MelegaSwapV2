@@ -7,7 +7,7 @@ import { isValidMarcoDestination, requiresExplicitDestination } from '../validat
 import { MARCO_WAVE1_NETWORKS, MARCO_WAVE1_PUBLIC_ACTIVATION, wave1ActivationBlockers } from '../wave1Registry'
 
 const evm = '0x1111111111111111111111111111111111111111'
-const solana = '2LxB111111111111111111111111111111111Rzb'
+const solana = '6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF'
 
 describe('MARCO Wave-1 bridge product', () => {
   it('supports the certified EVM to EVM direct route', () => {
@@ -113,7 +113,21 @@ describe('MARCO Wave-1 bridge product', () => {
     expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(true)
     expect(wave1ActivationBlockers().length).toBeGreaterThan(1)
     await expect(
-      marcoBridgeService.quote({ from: 'bnb', to: 'base', amount: '1', sourceWallet: evm, destinationWallet: evm }),
-    ).rejects.toThrow('configuration')
+      marcoBridgeService.submit(
+        { from: 'bnb', to: 'base', amount: '1', sourceWallet: evm, destinationWallet: evm },
+        {
+          amount: '1',
+          expectedReceive: '1',
+          nativeFee: '0.001',
+          nativeFeeSymbol: 'BNB',
+          routeLabel: 'BNB → Base',
+          quotedAt: '2026-08-26T00:00:00.000Z',
+          live: true,
+          routePaused: false,
+          publiclyActive: false,
+          executionEnabled: false,
+        },
+      ),
+    ).rejects.toThrow('submission is disabled')
   })
 })

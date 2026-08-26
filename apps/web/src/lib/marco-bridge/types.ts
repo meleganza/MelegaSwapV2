@@ -7,8 +7,12 @@ export type MarcoBridgeNetwork = {
   shortLabel: string
   walletFamily: MarcoWalletFamily
   chainId: number | null
-  layerZeroEid: number | null
-  marcoIdentity: string | null
+  layerZeroEid: number
+  marcoIdentity: string
+  endpointContract: string
+  tokenDecimals: 9 | 18
+  sharedDecimals: 6
+  nativeFeeSymbol: 'BNB' | 'ETH' | 'SOL'
   explorerUrl: string | null
   protectivePaused?: boolean
 }
@@ -25,8 +29,12 @@ export type MarcoBridgeQuote = {
   expectedReceive: string
   nativeFee: string
   nativeFeeSymbol: string
-  estimatedSeconds: number
   routeLabel: string
+  quotedAt: string
+  live: true
+  routePaused: boolean
+  publiclyActive: false
+  executionEnabled: false
 }
 
 export type MarcoBridgeProgress =

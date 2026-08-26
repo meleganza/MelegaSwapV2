@@ -1,6 +1,6 @@
 import { planMarcoBridgeRoute } from './routePolicy'
 import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote, type MarcoBridgeTracking } from './types'
-import { MARCO_WAVE1_NETWORKS, MARCO_WAVE1_PUBLIC_ACTIVATION, wave1ActivationBlockers } from './wave1Registry'
+import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import { isValidMarcoDestination, validateBridgeAmount } from './validation'
 
 export type MarcoBridgeQuoteRequest = {
@@ -17,36 +17,53 @@ export interface MarcoBridgeService {
   track(guid: string): Promise<MarcoBridgeTracking>
 }
 
-function assertReady(request: MarcoBridgeQuoteRequest) {
+type QuoteFetch = (
+  input: string,
+  init: { method: 'POST'; headers: { 'content-type': 'application/json' }; body: string },
+) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>
+
+function assertQuoteReady(request: MarcoBridgeQuoteRequest) {
   const route = planMarcoBridgeRoute(request.from, request.to)
-  if (route.kind !== 'direct')
+  if (route.kind !== 'direct') {
     throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'This route requires a BNB intermediate step.')
-  if (!validateBridgeAmount(request.amount)) throw new MarcoBridgeError('QUOTE_FAILED', 'Enter a valid MARCO amount.')
+  }
+  const source = MARCO_WAVE1_NETWORKS[request.from]
   const destination = MARCO_WAVE1_NETWORKS[request.to]
+  if (!validateBridgeAmount(request.amount, source.tokenDecimals)) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'Enter a dust-free MARCO amount with at most 6 decimal places.')
+  }
+  if (!isValidMarcoDestination(request.sourceWallet, source.walletFamily)) {
+    throw new MarcoBridgeError('QUOTE_FAILED', `Enter a valid ${source.label} source wallet.`)
+  }
   if (!isValidMarcoDestination(request.destinationWallet, destination.walletFamily)) {
     throw new MarcoBridgeError('INVALID_DESTINATION', `Enter a valid ${destination.label} destination wallet.`)
   }
-  const blockers = wave1ActivationBlockers()
-  if (blockers.some((item) => item !== 'Explicit public activation gate')) {
-    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Certified bridge configuration has not been imported.')
-  }
-  if (!MARCO_WAVE1_PUBLIC_ACTIVATION.enabled || !route.enabled) {
-    throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'This route is certified but not publicly activated.')
-  }
 }
 
-/**
- * Fail-closed production adapter. A live quote/submit transport is deliberately not
- * selected until activation imports the canonical MMN artifact and approved API endpoint.
- */
+export async function requestMarcoBridgeQuote(
+  request: MarcoBridgeQuoteRequest,
+  fetcher: QuoteFetch = fetch as QuoteFetch,
+): Promise<MarcoBridgeQuote> {
+  assertQuoteReady(request)
+  const response = await fetcher('/api/marco-bridge/quote', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  const payload = (await response.json()) as Partial<MarcoBridgeQuote> & { message?: string }
+  if (!response.ok || payload.live !== true) {
+    throw new MarcoBridgeError(
+      'QUOTE_FAILED',
+      payload.message || `LayerZero quote failed with HTTP ${response.status}.`,
+    )
+  }
+  return payload as MarcoBridgeQuote
+}
+
 export const marcoBridgeService: MarcoBridgeService = {
-  async quote(request) {
-    assertReady(request)
-    throw new MarcoBridgeError('QUOTE_FAILED', 'Bridge quote transport is not activated.')
-  },
-  async submit(request) {
-    assertReady(request)
-    throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'Public bridge submission is not activated.')
+  quote: requestMarcoBridgeQuote,
+  async submit() {
+    throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'Public bridge submission is disabled.')
   },
   async track(guid) {
     if (!guid) throw new MarcoBridgeError('QUOTE_FAILED', 'A LayerZero transfer identifier is required.')

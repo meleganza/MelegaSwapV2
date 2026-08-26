@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { useAccount, useNetwork } from 'wagmi'
@@ -8,7 +8,8 @@ import { typography } from 'design-system/melega'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
-import type { MarcoBridgeNetworkId, MarcoBridgeTracking } from 'lib/marco-bridge/types'
+import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
+import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
 import {
   MARCO_WAVE1_NETWORKS,
   MARCO_WAVE1_PUBLIC_ACTIVATION,
@@ -404,6 +405,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [destination, setDestination] = useState('')
   const [solanaWallet, setSolanaWallet] = useState('')
   const [review, setReview] = useState(false)
+  const [quote, setQuote] = useState<MarcoBridgeQuote | null>(null)
+  const [quoteLoading, setQuoteLoading] = useState(false)
+  const [routeAuthority, setRouteAuthority] = useState<CanonicalMmnRouteState | null>(null)
+  const [routeAuthorityError, setRouteAuthorityError] = useState('')
   const [tracking, setTracking] = useState<MarcoBridgeTracking>({ status: 'idle' })
   const [error, setError] = useState('')
   const fromNetwork = MARCO_WAVE1_NETWORKS[from]
@@ -413,7 +418,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const resolvedDestination = destination || (sameFamily ? sourceWallet : '')
   const route = useMemo(() => planMarcoBridgeRoute(from, to), [from, to])
   const validDestination = isValidMarcoDestination(resolvedDestination, toNetwork.walletFamily)
-  const validAmount = validateBridgeAmount(amount)
+  const validAmount = validateBridgeAmount(amount, fromNetwork.tokenDecimals)
   const sourceNetworkCorrect = fromNetwork.walletFamily === 'solana' || chain?.id === fromNetwork.chainId
   const canReview = Boolean(sourceWallet && validDestination && validAmount && route.kind === 'direct')
   const routeText =
@@ -423,6 +428,34 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       ? `${fromNetwork.shortLabel} → BNB → ${toNetwork.shortLabel}`
       : 'Select two different networks'
 
+  useEffect(() => {
+    let cancelled = false
+    void fetch('/api/marco-bridge/route-state', { cache: 'no-store' })
+      .then(async (response) => {
+        const payload = (await response.json()) as CanonicalMmnRouteState & { message?: string }
+        if (!response.ok) throw new Error(payload.message || 'Canonical route authority is unavailable.')
+        if (!cancelled) setRouteAuthority(payload)
+      })
+      .catch((cause) => {
+        if (!cancelled) setRouteAuthorityError(cause instanceof Error ? cause.message : 'Route authority unavailable.')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const resetQuote = () => {
+    setQuote(null)
+    setQuoteLoading(false)
+    setReview(false)
+  }
+
+  useEffect(() => {
+    setQuote(null)
+    setQuoteLoading(false)
+    setReview(false)
+  }, [sourceWallet])
+
   const connectSolana = async () => {
     setError('')
     try {
@@ -430,32 +463,32 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const next = response?.publicKey?.toString() ?? window.solana?.publicKey?.toString() ?? ''
       if (!next) throw new Error('No compatible Solana wallet was detected.')
       setSolanaWallet(next)
+      resetQuote()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Solana wallet connection was rejected.')
     }
   }
 
-  const openReview = () => {
+  const openReview = async () => {
     setError('')
     if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch) {
       void switchNetworkAsync(fromNetwork.chainId)
       return
     }
     if (!canReview) return
-    setReview(true)
-    setTracking({ status: 'review' })
-  }
-
-  const confirmBridge = async () => {
-    setError('')
+    setQuoteLoading(true)
+    setQuote(null)
     try {
       const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
-      const quote = await marcoBridgeService.quote(request)
-      setTracking({ status: 'confirming' })
-      setTracking(await marcoBridgeService.submit(request, quote))
+      const nextQuote = await marcoBridgeService.quote(request)
+      setQuote(nextQuote)
+      setReview(true)
+      setTracking({ status: 'review' })
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Bridge is currently unavailable.')
+      setError(cause instanceof Error ? cause.message : 'Live quote is currently unavailable.')
       setTracking({ status: 'action-required' })
+    } finally {
+      setQuoteLoading(false)
     }
   }
 
@@ -473,7 +506,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     ? 'BRIDGE TO BNB FIRST'
     : route.kind === 'same-network'
     ? 'CHOOSE ANOTHER NETWORK'
-    : 'REVIEW BRIDGE'
+    : quoteLoading
+    ? 'FETCHING LIVE QUOTE'
+    : 'GET LIVE QUOTE'
 
   return (
     <Page
@@ -481,6 +516,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-testid="marco-wave1-bridge"
       data-embedded={embedded ? 'true' : 'false'}
       data-public-activation={MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}
+      data-route-authority={routeAuthority ? 'canonical-live' : routeAuthorityError ? 'unavailable' : 'loading'}
+      data-live-quote={quote?.live ? 'available' : 'unavailable'}
+      data-solana-paused={MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'true' : 'false'}
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -506,7 +544,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   onChange={(event) => {
                     setFrom(event.target.value as MarcoBridgeNetworkId)
                     setDestination('')
-                    setReview(false)
+                    resetQuote()
                   }}
                 >
                   {networkEntries.map((network) => (
@@ -523,7 +561,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   setFrom(to)
                   setTo(from)
                   setDestination('')
-                  setReview(false)
+                  resetQuote()
                 }}
               >
                 ⇄
@@ -535,7 +573,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   onChange={(event) => {
                     setTo(event.target.value as MarcoBridgeNetworkId)
                     setDestination('')
-                    setReview(false)
+                    resetQuote()
                   }}
                 >
                   {networkEntries.map((network) => (
@@ -562,7 +600,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 value={resolvedDestination}
                 readOnly={sameFamily && Boolean(sourceWallet) && !destination}
                 placeholder={toNetwork.walletFamily === 'evm' ? '0x…' : 'Solana address'}
-                onChange={(event) => setDestination(event.target.value)}
+                onChange={(event) => {
+                  setDestination(event.target.value)
+                  resetQuote()
+                }}
               />
             </Field>
             <AmountRow>
@@ -572,7 +613,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   inputMode="decimal"
                   aria-label="MARCO amount"
                   value={amount}
-                  onChange={(event) => setAmount(event.target.value.replace(/[^0-9.]/g, ''))}
+                  onChange={(event) => {
+                    setAmount(event.target.value.replace(/[^0-9.]/g, ''))
+                    resetQuote()
+                  }}
                   placeholder="0.0 MARCO"
                 />
               </Field>
@@ -583,15 +627,23 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             <Summary>
               <SummaryCell>
                 <span>You receive</span>
-                <strong>{validAmount ? `${amount} MARCO` : '—'}</strong>
+                <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : 'QUOTE UNAVAILABLE'}</strong>
               </SummaryCell>
               <SummaryCell>
                 <span>Fees</span>
-                <strong>Calculated before signing</strong>
+                <strong>
+                  {quote?.live
+                    ? `${quote.nativeFee} ${quote.nativeFeeSymbol}`
+                    : quoteLoading
+                    ? 'FETCHING LIVE QUOTE'
+                    : 'QUOTE UNAVAILABLE'}
+                </strong>
               </SummaryCell>
               <SummaryCell>
-                <span>Delivery</span>
-                <strong>Estimated with live quote</strong>
+                <span>Quote state</span>
+                <strong>
+                  {quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : 'QUOTE UNAVAILABLE'}
+                </strong>
               </SummaryCell>
               <SummaryCell>
                 <span>Route</span>
@@ -616,7 +668,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             ) : (
               <Primary
                 type="button"
-                disabled={!canReview && sourceNetworkCorrect}
+                disabled={quoteLoading || (!canReview && sourceNetworkCorrect)}
                 onClick={fromNetwork.walletFamily === 'solana' && !sourceWallet ? connectSolana : openReview}
               >
                 {cta}
@@ -652,23 +704,25 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 </ReviewRow>
                 <ReviewRow>
                   <span>Expected receive</span>
-                  <strong>Live quote required</strong>
+                  <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : 'QUOTE UNAVAILABLE'}</strong>
                 </ReviewRow>
                 <ReviewRow>
-                  <span>Estimated fee</span>
-                  <strong>Live quote required</strong>
+                  <span>LayerZero fee</span>
+                  <strong>{quote?.live ? `${quote.nativeFee} ${quote.nativeFeeSymbol}` : 'QUOTE UNAVAILABLE'}</strong>
+                </ReviewRow>
+                <ReviewRow>
+                  <span>Quote state</span>
+                  <strong>
+                    {quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : 'UNAVAILABLE'}
+                  </strong>
                 </ReviewRow>
                 <Notice>
-                  Review is available. Bridge submission remains safely locked until Wave‑1 public activation.
+                  {quote?.routePaused
+                    ? 'Live quote obtained. This route is operationally paused and submission remains disabled.'
+                    : 'Live quote obtained. Bridge submission remains disabled until explicit public activation.'}
                 </Notice>
-                <Primary
-                  type="button"
-                  disabled={!MARCO_WAVE1_PUBLIC_ACTIVATION.enabled || route.kind !== 'direct' || !route.enabled}
-                  onClick={confirmBridge}
-                >
-                  {MARCO_WAVE1_PUBLIC_ACTIVATION.enabled && route.kind === 'direct' && route.enabled
-                    ? 'CONFIRM & BRIDGE'
-                    : 'ACTIVATION PENDING'}
+                <Primary type="button" disabled>
+                  SUBMISSION DISABLED
                 </Primary>
               </Review>
             ) : (
@@ -690,6 +744,32 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 <li>Source transaction: {tracking.sourceTx ?? '—'}</li>
                 <li>Transfer GUID: {tracking.guid ?? '—'}</li>
                 <li>Destination transaction: {tracking.destinationTx ?? '—'}</li>
+                <li>
+                  Route authority:{' '}
+                  {routeAuthority
+                    ? `${routeAuthority.binding_version} · canonical live · updated ${routeAuthority.updated_at}`
+                    : routeAuthorityError || 'Loading canonical MMN authority…'}
+                </li>
+                <li>
+                  LayerZero EIDs: BNB {MARCO_WAVE1_NETWORKS.bnb.layerZeroEid} · Base{' '}
+                  {MARCO_WAVE1_NETWORKS.base.layerZeroEid} · Solana {MARCO_WAVE1_NETWORKS.solana.layerZeroEid} ·
+                  Robinhood {MARCO_WAVE1_NETWORKS.robinhood.layerZeroEid}
+                </li>
+                <li>Robinhood chain ID: {MARCO_WAVE1_NETWORKS.robinhood.chainId}</li>
+                <li>
+                  Canonical MARCO: BNB {MARCO_WAVE1_NETWORKS.bnb.marcoIdentity} · Base{' '}
+                  {MARCO_WAVE1_NETWORKS.base.marcoIdentity} · Robinhood {MARCO_WAVE1_NETWORKS.robinhood.marcoIdentity}
+                </li>
+                <li>
+                  Solana mint/store: {MARCO_WAVE1_NETWORKS.solana.marcoIdentity} ·{' '}
+                  {MARCO_WAVE1_NETWORKS.solana.endpointContract}
+                </li>
+                <li>
+                  Global execution:{' '}
+                  {routeAuthority ? (routeAuthority.global_execution_enabled ? 'enabled' : 'disabled') : 'unavailable'}
+                </li>
+                <li>Public activation: {MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}</li>
+                <li>Solana: {MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'paused' : 'active'}</li>
                 <li>Activation blockers: {wave1ActivationBlockers().join(' · ')}</li>
               </ul>
             </Advanced>
