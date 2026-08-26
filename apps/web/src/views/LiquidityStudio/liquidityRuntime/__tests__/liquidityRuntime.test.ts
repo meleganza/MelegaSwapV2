@@ -22,8 +22,10 @@ import type { LiquidityStudioMode, SetLiquidityModeOptions } from '../useLiquidi
 import {
   computePositionPoolShare,
   depositedUsdFromPricedSides,
+  deriveUsdUnitPrices,
   resolvePositionTotalSupply,
   safeGetLiquidityDeposited,
+  safeGetLiquidityDepositedFromRaw,
 } from '../useLiquidityPositions'
 
 const MM72 = '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E'
@@ -114,6 +116,38 @@ describe('R791C.1A wallet LP position recovery', () => {
     expect(computeProRataAmountRaw(reserveFwc, '100', '100')).toBe(reserveFwc)
     expect(computeProRataAmountRaw(reserveBusd, '100', '100')).toBe(reserveBusd)
     expect(computeProRataAmountRaw(lpBalance, '50', '100')).toBe('3078090247682540227')
+  })
+
+  it('TEST 6C — real factory LP identity unlocks VAI/MARCO withdrawal amounts', () => {
+    const vai = new ERC20Token(56, '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7', 18, 'VAI')
+    const marco = new ERC20Token(56, MARCO, 18, 'MARCO')
+    const pair = new Pair(
+      CurrencyAmount.fromRawAmount(vai, '39358913455065897'),
+      CurrencyAmount.fromRawAmount(marco, '108891595574646199959'),
+    )
+    const actualFactoryLp = new ERC20Token(56, '0x4c4666572e3a315fa3cf732e455da77073ce5b2b', 18, 'MLP')
+    const walletLp = CurrencyAmount.fromRawAmount(actualFactoryLp, '2007104944504002811')
+    const supply = '2007104944504003811'
+
+    const [vaiOut, marcoOut] = safeGetLiquidityDepositedFromRaw(pair, supply, walletLp)
+    expect(vaiOut?.quotient.toString()).toBe('39358913455065877')
+    expect(marcoOut?.quotient.toString()).toBe('108891595574646145705')
+  })
+
+  it('TEST 6D — trusted stable anchor produces the VAI/MARCO USD price graph', () => {
+    const prices = deriveUsdUnitPrices(
+      [
+        {
+          token0: '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7',
+          token1: MARCO,
+          reserve0: 0.039358913455065897,
+          reserve1: 108.8915955746462,
+        },
+      ],
+      { '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7': 1 },
+    )
+    expect(prices[MARCO.toLowerCase()]).toBeGreaterThan(0)
+    expect(prices[MARCO.toLowerCase()]).toBeCloseTo(0.039358913455065897 / 108.8915955746462, 12)
   })
 
   it('TEST 7 — Token/token removal method for MM72/MARCO', () => {

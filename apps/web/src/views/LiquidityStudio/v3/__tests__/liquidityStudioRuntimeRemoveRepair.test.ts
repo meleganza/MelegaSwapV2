@@ -23,9 +23,9 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(runtime).not.toMatch(/onBurnInput\(\s*pct\s*\)/)
   })
 
-  it('wallet-scoped factory indexer is BNB-only (Base must not hydrate via BSC pairs)', () => {
-    expect(factory).toContain('isBnbFactoryChain')
-    expect(factory).toContain('chainId === 56')
+  it('wallet-scoped factory indexer is chain-scoped and never hydrates one chain with another', () => {
+    expect(factory).toContain('isSupportedFactoryChain')
+    expect(factory).toContain("isMelegaCapabilityEnabled(chainId, 'swap')")
     expect(factory).toContain('FACTORY_FETCH_TIMEOUT_MS')
     expect(factory).toContain('/api/indexer/liquidity-positions?account=')
     expect(factory).toContain('factoryLpBalancesRaw')
