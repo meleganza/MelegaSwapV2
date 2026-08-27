@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, JSBI, Native, Token } from '@pancakeswap/sdk'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAccount, useBalance } from 'wagmi'
 import ERC20_INTERFACE from 'config/abi/erc20'
 import { useAllTokens } from 'hooks/Tokens'
@@ -146,6 +146,7 @@ export function useLiveCurrencyBalance(account?: string, currency?: Currency): {
   loading: boolean
   error: boolean
 } {
+  const legacyBalance = useCurrencyBalance(account, currency)
   const enabled = Boolean(account && currency)
   const query = useBalance({
     address: account as `0x${string}` | undefined,
@@ -155,15 +156,29 @@ export function useLiveCurrencyBalance(account?: string, currency?: Currency): {
     watch: true,
   })
 
-  const balance = useMemo(() => {
+  const directBalance = useMemo(() => {
     if (!currency || !query.data) return undefined
     return CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(query.data.value.toString()))
   }, [currency, query.data])
 
+  const balance = directBalance ?? legacyBalance
+  const requestKey = `${account ?? ''}:${currency?.chainId ?? ''}:${
+    currency?.isToken ? currency.address : currency?.symbol ?? ''
+  }`
+  const [timedOut, setTimedOut] = useState(false)
+
+  useEffect(() => {
+    setTimedOut(false)
+    if (!enabled || balance) return undefined
+
+    const timeout = window.setTimeout(() => setTimedOut(true), 12_000)
+    return () => window.clearTimeout(timeout)
+  }, [balance, enabled, requestKey])
+
   return {
     balance,
-    loading: Boolean(enabled && !balance && (query.isLoading || query.isFetching)),
-    error: Boolean(enabled && query.isError),
+    loading: Boolean(enabled && !balance && !query.isError && !timedOut && (query.isLoading || query.isFetching)),
+    error: Boolean(enabled && !balance && (query.isError || timedOut)),
   }
 }
 

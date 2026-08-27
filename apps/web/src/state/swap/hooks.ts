@@ -19,7 +19,7 @@ import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { useAccount } from 'wagmi'
 import { AppState, useAppDispatch } from '../index'
 import { useUserSlippageTolerance } from '../user/hooks'
-import { useCurrencyBalances } from '../wallet/hooks'
+import { useLiveCurrencyBalance } from '../wallet/hooks'
 import { Field, replaceBridgeState, replaceSwapState, updateDerivedPairData, updatePairData } from './actions'
 import fetchDerivedPriceData from './fetch/fetchDerivedPriceData'
 import fetchPairPriceData from './fetch/fetchPairPriceData'
@@ -102,10 +102,8 @@ export function useDerivedSwapInfo(
 
   const to: string | null = (recipient === null ? account : isAddress(recipient) || null) ?? null
 
-  const relevantTokenBalances = useCurrencyBalances(
-    account ?? undefined,
-    useMemo(() => [inputCurrency ?? undefined, outputCurrency ?? undefined], [inputCurrency, outputCurrency]),
-  )
+  const inputBalance = useLiveCurrencyBalance(account ?? undefined, inputCurrency)
+  const outputBalance = useLiveCurrencyBalance(account ?? undefined, outputCurrency)
 
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
@@ -116,8 +114,8 @@ export function useDerivedSwapInfo(
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
 
   const currencyBalances = {
-    [Field.INPUT]: relevantTokenBalances[0],
-    [Field.OUTPUT]: relevantTokenBalances[1],
+    [Field.INPUT]: inputBalance.balance,
+    [Field.OUTPUT]: outputBalance.balance,
   }
 
   const currencies: { [field in Field]?: Currency } = {

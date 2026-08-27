@@ -11,7 +11,7 @@ import { useAccount } from 'wagmi'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCombinedActiveList } from '../../state/lists/hooks'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { useLiveCurrencyBalance } from '../../state/wallet/hooks'
 import { useIsUserAddedToken } from '../../hooks/Tokens'
 import Column from '../Layout/Column'
 import { RowFixed, RowBetween } from '../Layout/Row'
@@ -76,7 +76,7 @@ function CurrencyRow({
   const selectedTokenList = useCombinedActiveList()
   const isOnSelectedList = isTokenOnList(selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
-  const balance = useCurrencyBalance(account ?? undefined, currency)
+  const { balance, loading, error: balanceError } = useLiveCurrencyBalance(account ?? undefined, currency)
 
   // only show add or remove buttons if not on selected list
   return (
@@ -95,7 +95,15 @@ function CurrencyRow({
         </Text>
       </Column>
       <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {balance ? <Balance balance={balance} /> : account ? <CircleLoader /> : null}
+        {balance ? (
+          <Balance balance={balance} />
+        ) : account && loading ? (
+          <CircleLoader />
+        ) : account ? (
+          <StyledBalanceText color="textSubtle" title={balanceError ? t('Balance unavailable') : undefined}>
+            —
+          </StyledBalanceText>
+        ) : null}
       </RowFixed>
     </MenuItem>
   )

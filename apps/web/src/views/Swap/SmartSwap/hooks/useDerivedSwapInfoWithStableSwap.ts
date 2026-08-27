@@ -1,7 +1,7 @@
 import { Currency, CurrencyAmount, Pair, TradeType } from '@pancakeswap/sdk'
 import { StableSwapPair, TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { Field } from 'state/swap/actions'
-import { useCurrencyBalances, useLiveCurrencyBalance } from 'state/wallet/hooks'
+import { useLiveCurrencyBalance } from 'state/wallet/hooks'
 import { useTranslation } from '@pancakeswap/localization'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -61,10 +61,6 @@ export function useDerivedSwapInfoWithStableSwap(
 
   const to: string | null = (recipient === null ? account : isAddress(recipient) || null) ?? null
 
-  const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
-    inputCurrency ?? undefined,
-    outputCurrency ?? undefined,
-  ])
   const liveInputBalance = useLiveCurrencyBalance(account ?? undefined, inputCurrency)
   const liveOutputBalance = useLiveCurrencyBalance(account ?? undefined, outputCurrency)
 
@@ -92,12 +88,12 @@ export function useDerivedSwapInfoWithStableSwap(
   // TODO add invariant make sure v2 trade has the same input & output amount as trade with stable swap
 
   const currencyBalances = {
-    [Field.INPUT]: liveInputBalance.balance ?? relevantTokenBalances[0],
-    [Field.OUTPUT]: liveOutputBalance.balance ?? relevantTokenBalances[1],
+    [Field.INPUT]: liveInputBalance.balance,
+    [Field.OUTPUT]: liveOutputBalance.balance,
   }
   const currencyBalanceLoading = {
-    [Field.INPUT]: liveInputBalance.loading && !relevantTokenBalances[0],
-    [Field.OUTPUT]: liveOutputBalance.loading && !relevantTokenBalances[1],
+    [Field.INPUT]: liveInputBalance.loading,
+    [Field.OUTPUT]: liveOutputBalance.loading,
   }
 
   const currencies: { [field in Field]?: Currency } = {

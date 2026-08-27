@@ -12,7 +12,7 @@ import { formatNumber } from '@pancakeswap/utils/formatBalance'
 import { StablePair } from 'views/AddLiquidity/AddStableLiquidity/hooks/useStableLPDerivedMintInfo'
 
 import { useAccount } from 'wagmi'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { useLiveCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
@@ -149,11 +149,12 @@ export default function CurrencyInputPanel({
   balanceLoading = false,
 }: CurrencyInputPanelProps) {
   const { address: account } = useAccount()
-  const legacyCurrencyBalance = useCurrencyBalance(
+  const liveCurrencyBalance = useLiveCurrencyBalance(
     account ?? undefined,
     balanceOverride ? undefined : currency ?? undefined,
   )
-  const selectedCurrencyBalance = balanceOverride ?? legacyCurrencyBalance
+  const selectedCurrencyBalance = balanceOverride ?? liveCurrencyBalance.balance
+  const selectedCurrencyBalanceLoading = balanceLoading || liveCurrencyBalance.loading
   const { t } = useTranslation()
 
   const token = pair ? pair.liquidityToken : currency?.isToken ? currency : null
@@ -273,7 +274,11 @@ export default function CurrencyInputPanel({
                 style={{ display: 'inline', cursor: 'pointer' }}
               >
                 {!hideBalance && !!currency
-                  ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
+                  ? t('Balance: %balance%', {
+                      balance:
+                        selectedCurrencyBalance?.toSignificant(6) ??
+                        (selectedCurrencyBalanceLoading ? t('Loading') : '—'),
+                    })
                   : ' -'}
               </Text>
               {token && tokenAddress ? (
@@ -364,7 +369,9 @@ export default function CurrencyInputPanel({
           <Text color="textSubtle" fontSize="11px" data-wallet-balance>
             {!hideBalance && currency
               ? t('Balance: %balance%', {
-                  balance: selectedCurrencyBalance?.toSignificant(6) ?? (balanceLoading ? t('Loading') : '—'),
+                  balance:
+                    selectedCurrencyBalance?.toSignificant(6) ??
+                    (selectedCurrencyBalanceLoading ? t('Loading') : '—'),
                 })
               : '—'}
           </Text>

@@ -3,7 +3,7 @@ import { ArrowDropDownIcon, Box, Button, Text, useModal, Flex, BoxProps } from '
 import CurrencySearchModal, { CurrencySearchModalProps } from 'components/SearchModal/CurrencySearchModal'
 import { useTranslation } from '@pancakeswap/localization'
 import { formatNumber } from '@pancakeswap/utils/formatBalance'
-import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useLiveCurrencyBalance } from 'state/wallet/hooks'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { useAccount } from 'wagmi'
 import { CurrencyLogo } from '../Logo'
@@ -61,10 +61,11 @@ export const CurrencySelect = ({
 }: CurrencySelectProps) => {
   const { address: account } = useAccount()
 
-  const selectedCurrencyBalance = useCurrencyBalance(
+  const selectedCurrencyBalanceQuery = useLiveCurrencyBalance(
     account ?? undefined,
     !hideBalance && selectedCurrency ? selectedCurrency : undefined,
   )
+  const selectedCurrencyBalance = selectedCurrencyBalanceQuery.balance
 
   const { t } = useTranslation()
 
@@ -111,7 +112,10 @@ export const CurrencySelect = ({
             <Text color="textSubtle" fontSize="12px">
               {t('Balance')}:
             </Text>
-            <Text fontSize="12px">{selectedCurrencyBalance?.toSignificant(6) ?? t('Loading')}</Text>
+            <Text fontSize="12px">
+              {selectedCurrencyBalance?.toSignificant(6) ??
+                (selectedCurrencyBalanceQuery.loading ? t('Loading') : '—')}
+            </Text>
           </AutoRow>
           <RowBetween>
             <div />
