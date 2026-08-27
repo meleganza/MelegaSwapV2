@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, CurrencyAmount, Token } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Token, WNATIVE } from '@pancakeswap/sdk'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -188,6 +188,12 @@ export interface LiquidityMintRuntime {
   onRemovePercent: (pct: string) => void
   removePercent: string
   removeActionReady: boolean
+  removeMinimumReceived: string
+  canReceiveNative: boolean
+  receiveNative: boolean
+  setReceiveNative: (receiveNative: boolean) => void
+  removeOutputSymbolA?: string
+  removeOutputSymbolB?: string
   openAddModal: () => void
   openRemoveModal: () => void
   removeConfirmOpen: boolean
@@ -234,6 +240,7 @@ export function useLiquidityMintRuntime({
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
+  const [receiveNative, setReceiveNative] = useState(false)
 
   // Intentionally no continuous URL→mode sync. The shell consumes the initial
   // query once; continuous sync raced local tabs and snapped wrong panels.
@@ -253,6 +260,16 @@ export function useLiquidityMintRuntime({
 
   const currencyA = useCurrency(resolvedIdA)
   const currencyB = useCurrency(resolvedIdB)
+  const wrappedNative = chainId ? WNATIVE[chainId] : undefined
+  const currencyAIsWrappedNative = Boolean(
+    wrappedNative && currencyA?.wrapped && wrappedNative.equals(currencyA.wrapped),
+  )
+  const currencyBIsWrappedNative = Boolean(
+    wrappedNative && currencyB?.wrapped && wrappedNative.equals(currencyB.wrapped),
+  )
+  const canReceiveNative = currencyAIsWrappedNative || currencyBIsWrappedNative
+  const removeOutputSymbolA = receiveNative && currencyAIsWrappedNative ? native.symbol : currencyA?.symbol
+  const removeOutputSymbolB = receiveNative && currencyBIsWrappedNative ? native.symbol : currencyB?.symbol
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(undefined)
@@ -412,6 +429,10 @@ export function useLiquidityMintRuntime({
     if (currencyIdA !== nextA) setCurrencyIdA(nextA)
     if (currencyIdB !== nextB) setCurrencyIdB(nextB)
   }, [selectedPosition, isRemoveMode, currencyIdA, currencyIdB])
+
+  useEffect(() => {
+    if (!canReceiveNative && receiveNative) setReceiveNative(false)
+  }, [canReceiveNative, receiveNative])
 
   const terminal = useLiquidityTerminalData(poolAddress, currencyA?.symbol, currencyB?.symbol, terminalEnabled)
 
@@ -794,20 +815,60 @@ export function useLiquidityMintRuntime({
       }
       let response: TransactionResponse
       setRemoveTxLifecycle('waiting_wallet')
-      if (currencyA?.isNative || currencyB?.isNative) {
-        const tokenBIsNative = currencyB?.isNative
-        const estimate = routerContract.estimateGas.removeLiquidityETH
-        const method = routerContract.removeLiquidityETH
-        const args = [
-          (tokenBIsNative ? tokenA : tokenB)?.address ?? '',
-          liquidityAmount.quotient.toString(),
-          amountsMin[tokenBIsNative ? BurnField.CURRENCY_A : BurnField.CURRENCY_B].toString(),
-          amountsMin[tokenBIsNative ? BurnField.CURRENCY_B : BurnField.CURRENCY_A].toString(),
-          account,
-          deadline.toHexString(),
-        ]
-        const estimatedGasLimit = await estimate(...args)
-        response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit) })
+      const removeAsNative = receiveNative && (currencyAIsWrappedNative || currencyBIsWrappedNative)
+      if (removeAsNative) {
+        const tokenBIsNative = currencyBIsWrappedNative
+        const tokenAddress = (tokenBIsNative ? tokenA : tokenB)?.address ?? ''
+        const liquidityRaw = liquidityAmount.quotient.toString()
+        const tokenMinimum = amountsMin[tokenBIsNative ? BurnField.CURRENCY_A : BurnField.CURRENCY_B].toString()
+        const nativeMinimum = amountsMin[tokenBIsNative ? BurnField.CURRENCY_B : BurnField.CURRENCY_A].toString()
+        const deadlineHex = deadline.toHexString()
+        let estimatedGasLimit: BigNumber
+        let supportsFeeOnTransfer = false
+        try {
+          estimatedGasLimit = calculateGasMargin(
+            await routerContract.estimateGas.removeLiquidityETH(
+              tokenAddress,
+              liquidityRaw,
+              tokenMinimum,
+              nativeMinimum,
+              account,
+              deadlineHex,
+            ),
+          )
+        } catch {
+          // Router02 fallback is required for fee-on-transfer token pairs.
+          supportsFeeOnTransfer = true
+          estimatedGasLimit = calculateGasMargin(
+            await routerContract.estimateGas.removeLiquidityETHSupportingFeeOnTransferTokens(
+              tokenAddress,
+              liquidityRaw,
+              tokenMinimum,
+              nativeMinimum,
+              account,
+              deadlineHex,
+            ),
+          )
+        }
+        response = supportsFeeOnTransfer
+          ? await routerContract.removeLiquidityETHSupportingFeeOnTransferTokens(
+              tokenAddress,
+              liquidityRaw,
+              tokenMinimum,
+              nativeMinimum,
+              account,
+              deadlineHex,
+              { gasLimit: estimatedGasLimit },
+            )
+          : await routerContract.removeLiquidityETH(
+              tokenAddress,
+              liquidityRaw,
+              tokenMinimum,
+              nativeMinimum,
+              account,
+              deadlineHex,
+              { gasLimit: estimatedGasLimit },
+            )
       } else {
         const estimate = routerContract.estimateGas.removeLiquidity
         const method = routerContract.removeLiquidity
@@ -826,7 +887,7 @@ export function useLiquidityMintRuntime({
       setRemoveTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
       addTransaction(response, {
-        summary: `Remove ${currencyA?.symbol}/${currencyB?.symbol} liquidity`,
+        summary: `Remove ${removeOutputSymbolA}/${removeOutputSymbolB} liquidity`,
         type: 'remove-liquidity',
       })
       const receiptOutcome = await resolveReceiptOutcome(response)
@@ -861,6 +922,11 @@ export function useLiquidityMintRuntime({
     deadline,
     currencyA,
     currencyB,
+    receiveNative,
+    currencyAIsWrappedNative,
+    currencyBIsWrappedNative,
+    removeOutputSymbolA,
+    removeOutputSymbolB,
     allowedSlippage,
     addTransaction,
     onBurnInput,
@@ -891,13 +957,13 @@ export function useLiquidityMintRuntime({
     try {
       const minA = CurrencyAmount.fromRawAmount(amountA.currency, calculateSlippageAmount(amountA, allowedSlippage)[0])
       const minB = CurrencyAmount.fromRawAmount(amountB.currency, calculateSlippageAmount(amountB, allowedSlippage)[0])
-      return `${minA.toSignificant(6)} ${currencyA?.symbol ?? ''} + ${minB.toSignificant(6)} ${
-        currencyB?.symbol ?? ''
+      return `${minA.toSignificant(6)} ${removeOutputSymbolA ?? ''} + ${minB.toSignificant(6)} ${
+        removeOutputSymbolB ?? ''
       }`.trim()
     } catch {
       return '—'
     }
-  }, [removeParsedAmounts, allowedSlippage, currencyA?.symbol, currencyB?.symbol])
+  }, [removeParsedAmounts, allowedSlippage, removeOutputSymbolA, removeOutputSymbolB])
 
   const onPrimaryAction = useCallback(() => {
     if (isSimulation) return
@@ -1086,6 +1152,12 @@ export function useLiquidityMintRuntime({
     onRemovePercent,
     removePercent: burnTypedValue || '50',
     removeActionReady,
+    removeMinimumReceived: removeMinReceivedLabel,
+    canReceiveNative,
+    receiveNative,
+    setReceiveNative,
+    removeOutputSymbolA,
+    removeOutputSymbolB,
     openAddModal,
     openRemoveModal,
     removeConfirmOpen,
@@ -1100,8 +1172,8 @@ export function useLiquidityMintRuntime({
         pairLabel={resolvedPairLabel}
         chainId={chainId}
         removePercent={burnTypedValue || '50'}
-        tokenASymbol={currencyA?.symbol}
-        tokenBSymbol={currencyB?.symbol}
+        tokenASymbol={removeOutputSymbolA}
+        tokenBSymbol={removeOutputSymbolB}
         amountA={removeParsedAmounts[BurnField.CURRENCY_A]?.toSignificant(6)}
         amountB={removeParsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6)}
         minimumReceived={removeMinReceivedLabel}

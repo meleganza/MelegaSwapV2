@@ -8,7 +8,6 @@ import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-tr
 import { tradeColors, TRADE_TIMEFRAMES, tradeTypography, type TradeTimeframeId } from '../tradeTokens'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
-import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import TradeChartPanel from './TradeChartPanel'
 import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 import { formatCompactPriceNumber, formatFullPriceNumber } from 'utils/formatCompactPrice'
@@ -169,14 +168,13 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   }, [inputSymbol, activeChainId, token0Address])
 
   const indexerInterval = timeframeToIndexerInterval(timeframe)
-  const pairForIndexer = isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
   const indexerSupportsTimeframe = timeframe === '1h' || timeframe === '4h' || timeframe === '1d'
   const { chartEntries: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
-    pairForIndexer,
+    pairAddress ?? undefined,
     indexerInterval,
-    Boolean(pairForIndexer && indexerSupportsTimeframe),
+    Boolean(pairAddress && indexerSupportsTimeframe),
   )
-  const publicPair = usePairOhlcv(activeChainId, pairAddress ?? pairForIndexer, token0Address, timeframe)
+  const publicPair = usePairOhlcv(activeChainId, pairAddress, token0Address, timeframe)
 
   const pairPrices = useMemo(() => {
     if (indexerCandles.length >= 2) {
@@ -194,14 +192,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const chartLoading = indexerCandleStatus === 'loading' || (pairPrices.length < 2 && publicPair.status === 'loading')
 
   const resolvedChartEmptyReason =
-    chartEmptyReason ??
-    (pairPrices.length > 0 && pairPrices.length < 2
-      ? 'insufficient_history'
-      : pairPrices.length < 1 && chartLoading
-      ? 'loading'
-      : pairPrices.length < 1
-      ? 'insufficient_history'
-      : null)
+    pairPrices.length > 0 ? null : chartEmptyReason ?? (chartLoading ? 'loading' : 'insufficient_history')
 
   const displayPrice = priceUsd
   const validChange =

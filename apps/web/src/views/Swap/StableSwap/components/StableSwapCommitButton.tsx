@@ -194,7 +194,7 @@ export default function StableSwapCommitButton({
   if (showApproveFlow) {
     return (
       <>
-        <RowBetween>
+        <RowBetween data-swap-approval-actions>
           <CommitButton
             variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
             onClick={approveCallback}

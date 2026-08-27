@@ -4,6 +4,10 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import { useModal } from '@pancakeswap/uikit'
+import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
+import { SettingsMode } from 'components/Menu/GlobalSettings/types'
+import { useUserTransactionTTL } from 'state/user/hooks'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { formatPoolShare, formatPositionUsd } from '../modules/liquidityMyPositionsModel'
 import { liqV3 } from './liquidityV3Tokens'
@@ -114,6 +118,44 @@ const Percents = styled.div`
   margin: 12px 0;
 `
 
+const AmountControl = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+
+  input[type='range'] {
+    width: 100%;
+    accent-color: ${liqV3.gold};
+    cursor: pointer;
+  }
+`
+
+const PercentInput = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid ${liqV3.line};
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: ${liqV3.text};
+
+  input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #fff;
+    text-align: right;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+`
+
 const PctBtn = styled.button<{ $on?: boolean }>`
   appearance: none;
   cursor: pointer;
@@ -157,6 +199,56 @@ const Advanced = styled.details`
   }
 `
 
+const SettingsList = styled.div`
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+`
+
+const SettingsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 32px;
+  padding: 7px 9px;
+  border: 1px solid ${liqV3.line};
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+`
+
+const EditButton = styled.button`
+  appearance: none;
+  cursor: pointer;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid ${liqV3.goldLine};
+  background: rgba(221, 185, 47, 0.12);
+  color: ${liqV3.gold};
+  font-size: 12px;
+  font-weight: 800;
+`
+
+const ReceiveToggle = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+`
+
+const ReceiveButton = styled.button<{ $on?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid ${({ $on }) => ($on ? liqV3.goldLine : liqV3.line)};
+  background: ${({ $on }) => ($on ? 'rgba(221,185,47,0.14)' : 'rgba(255,255,255,0.02)')};
+  color: ${({ $on }) => ($on ? liqV3.gold : liqV3.text)};
+  font-size: 11px;
+  font-weight: 750;
+`
+
 const ExpectedGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -193,14 +285,38 @@ export const LiquidityRemovePanel: React.FC = () => {
     onPrimaryAction,
     primaryCtaLabel,
     slippageLabel,
+    removeMinimumReceived,
+    canReceiveNative,
+    receiveNative,
+    setReceiveNative,
+    removeOutputSymbolA,
+    removeOutputSymbolB,
     removeConfirmModal,
   } = useLiquidityRuntime()
+  const [transactionTtl] = useUserTransactionTTL()
+  const [onPresentSettings] = useModal(
+    <SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />,
+    true,
+    false,
+    'liquidity-remove-settings',
+  )
 
   const deposited = formatPositionUsd(positionDetails?.usdValue)
   const share = formatPoolShare(positionDetails?.poolShare)
   const lpBal = selectedPosition?.lpBalance?.greaterThan(0) ? selectedPosition.lpBalance.toSignificant(6) : '—'
   const removalLabel = removePercent === '100' ? 'MAX' : `${removePercent}%`
   const hasRemovablePosition = Boolean(selectedPosition?.lpBalance?.greaterThan(0))
+  const numericPercent = Number.parseFloat(removePercent)
+
+  const handlePercentInput = (value: string) => {
+    if (!/^\d{0,3}(?:\.\d{0,2})?$/.test(value)) return
+    if (value === '') {
+      onRemovePercent('0')
+      return
+    }
+    const next = Number.parseFloat(value)
+    if (Number.isFinite(next) && next >= 0 && next <= 100) onRemovePercent(value)
+  }
 
   return (
     <Shell
@@ -250,24 +366,77 @@ export const LiquidityRemovePanel: React.FC = () => {
             </PctBtn>
           ))}
         </Percents>
+
+        <AmountControl data-testid="liquidity-remove-amount-control">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={Number.isFinite(numericPercent) ? numericPercent : 0}
+            aria-label="Liquidity percentage to remove"
+            onChange={(event) => onRemovePercent(event.currentTarget.value)}
+            data-testid="liquidity-remove-slider"
+          />
+          <PercentInput>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={removePercent}
+              aria-label="Custom removal percentage"
+              onChange={(event) => handlePercentInput(event.currentTarget.value)}
+              data-testid="liquidity-remove-custom-percent"
+            />
+            <span>%</span>
+          </PercentInput>
+        </AmountControl>
       </Panel>
 
       <SummaryRail data-testid="liquidity-remove-preview" data-liquidity-preview="integrated">
         <Title style={{ fontSize: 14 }}>Expected receive</Title>
         <ExpectedGrid>
           <Row>
-            <Label>{currencyA?.symbol || 'Token A'}</Label>
+            <Label>{removeOutputSymbolA || currencyA?.symbol || 'Token A'}</Label>
             <Value data-testid="liquidity-remove-out-a">{typedValueA || '—'}</Value>
           </Row>
           <Row>
-            <Label>{currencyB?.symbol || 'Token B'}</Label>
+            <Label>{removeOutputSymbolB || currencyB?.symbol || 'Token B'}</Label>
             <Value data-testid="liquidity-remove-out-b">{typedValueB || '—'}</Value>
           </Row>
         </ExpectedGrid>
 
         <Advanced data-testid="liquidity-remove-advanced">
           <summary>Advanced</summary>
-          <div style={{ marginTop: 8 }}>Slippage: {slippageLabel}</div>
+          <SettingsList>
+            <SettingsRow>
+              <span>Slippage tolerance</span>
+              <Value>{slippageLabel}</Value>
+            </SettingsRow>
+            <SettingsRow>
+              <span>Transaction deadline</span>
+              <Value>{Math.round(transactionTtl / 60)} min</Value>
+            </SettingsRow>
+            <SettingsRow>
+              <span>Minimum received</span>
+              <Value>{removeMinimumReceived}</Value>
+            </SettingsRow>
+            {canReceiveNative ? (
+              <SettingsRow data-testid="liquidity-remove-receive-native">
+                <span>Receive as</span>
+                <ReceiveToggle role="group" aria-label="Receive wrapped or native token">
+                  <ReceiveButton type="button" $on={!receiveNative} onClick={() => setReceiveNative(false)}>
+                    Wrapped
+                  </ReceiveButton>
+                  <ReceiveButton type="button" $on={receiveNative} onClick={() => setReceiveNative(true)}>
+                    Native
+                  </ReceiveButton>
+                </ReceiveToggle>
+              </SettingsRow>
+            ) : null}
+            <EditButton type="button" onClick={onPresentSettings} data-testid="liquidity-remove-settings">
+              Edit slippage &amp; deadline
+            </EditButton>
+          </SettingsList>
         </Advanced>
 
         <Cta

@@ -477,6 +477,24 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     transition: transform 150ms ease, filter 150ms ease !important;
   }
 
+  .trade-terminal-swap [data-swap-approval-actions] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .trade-terminal-swap [data-swap-approval-actions] > button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
   .trade-terminal-swap .pancake-button--primary:hover,
   .trade-terminal-swap button[id='swap-button']:hover,
   .trade-terminal-swap [class*='CommitButton'] button:hover,

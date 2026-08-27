@@ -82,10 +82,10 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
   return (
     <Shell data-trade-center-panel>
       <TradePriceChart
-        inputSymbol={outputSymbol}
-        outputSymbol={inputSymbol}
-        inputCurrencyId={outputCurrencyId}
-        outputCurrencyId={inputCurrencyId}
+        inputSymbol={data.marketBaseSymbol ?? inputSymbol}
+        outputSymbol={data.marketQuoteSymbol ?? outputSymbol}
+        inputCurrencyId={data.marketBaseCurrencyId ?? inputCurrencyId}
+        outputCurrencyId={data.marketQuoteCurrencyId ?? outputCurrencyId}
         priceUsd={pairPrice?.value}
         change24h={pairPrice?.change24h}
         chartEmptyReason={missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)}
