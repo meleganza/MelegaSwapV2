@@ -37,4 +37,16 @@ describe('Smart Swap wallet controls layout', () => {
     expect(screen).not.toContain('grid-area: cockpit;\n  ${stretchColumn}')
     expect(center).toContain('gap: ${tradeLayout.verticalRhythm}')
   })
+
+  it('keeps approval and swap actions inside the cockpit', () => {
+    const tradeStyle = readFileSync(path.join(WEB, 'views/Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
+    const smartCommit = readFileSync(
+      path.join(WEB, 'views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx'),
+      'utf8',
+    )
+
+    expect(smartCommit).toContain('<RowBetween data-swap-approval-actions>')
+    expect(tradeStyle).toContain('.trade-terminal-swap [data-swap-approval-actions]')
+    expect(tradeStyle).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
+  })
 })

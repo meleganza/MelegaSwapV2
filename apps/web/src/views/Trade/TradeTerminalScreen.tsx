@@ -126,7 +126,7 @@ export const TradeTerminalScreen: React.FC = () => {
   const outputCurrency = useCurrency(outputCurrencyId)
 
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
-  const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
+  const outputSymbol = outputCurrency?.symbol ?? 'Select token'
 
   // Market/indexer reads are intentionally created once for the whole terminal.
   // TradeCenterPanel used to create a second identical runtime (SWR, multicall,

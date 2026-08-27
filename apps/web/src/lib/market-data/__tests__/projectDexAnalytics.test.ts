@@ -46,6 +46,14 @@ describe('project multi-DEX analytics', () => {
     expect(result.pairs.map((pair) => pair.label)).toEqual(['PROJ / USDT', 'PROJ / BNB'])
     expect(result.pairs[0].liquiditySharePct).toBeCloseTo(71.43, 2)
     expect(result.pairs[1].liquiditySharePct).toBeCloseTo(28.57, 2)
+    expect(result.pairs[0]).toMatchObject({
+      volume24hUsd: 75,
+      transactions24h: 5,
+      priceUsd: 0.25,
+      priceChange24h: 4.2,
+      marketCapUsd: 250000,
+      fdvUsd: 300000,
+    })
   })
 
   it('preserves unknown metrics as null instead of rendering fake zeroes', () => {

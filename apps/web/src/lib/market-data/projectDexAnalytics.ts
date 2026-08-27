@@ -28,8 +28,16 @@ export type ProjectDexPairBreakdown = {
   label: string
   baseTokenAddress: string | null
   quoteTokenAddress: string | null
+  baseTokenSymbol: string | null
+  quoteTokenSymbol: string | null
   counterpartAddress: string | null
   liquidityUsd: number | null
+  volume24hUsd: number | null
+  transactions24h: number | null
+  priceUsd: number | null
+  priceChange24h: number | null
+  marketCapUsd: number | null
+  fdvUsd: number | null
   liquiditySharePct: number | null
 }
 
@@ -117,12 +125,17 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[], projectAddress
           : normalizedProject && quoteAddress === normalizedProject
           ? row.quoteToken?.symbol
           : row.baseToken?.symbol
+      const buys = finiteNonNegative(row.txns?.h24?.buys)
+      const sells = finiteNonNegative(row.txns?.h24?.sells)
+      const parsedPrice = row.priceUsd == null ? null : Number(row.priceUsd)
       return {
         pairAddress: row.pairAddress!,
         dexId: row.dexId!,
         label: [projectSymbol, counterpart].filter(Boolean).join(' / ') || row.pairAddress!,
         baseTokenAddress: baseAddress ?? null,
         quoteTokenAddress: quoteAddress ?? null,
+        baseTokenSymbol: row.baseToken?.symbol ?? null,
+        quoteTokenSymbol: row.quoteToken?.symbol ?? null,
         counterpartAddress:
           normalizedProject && baseAddress === normalizedProject
             ? quoteAddress ?? null
@@ -130,6 +143,13 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[], projectAddress
             ? baseAddress ?? null
             : null,
         liquidityUsd,
+        volume24hUsd: finiteNonNegative(row.volume?.h24),
+        transactions24h: buys != null && sells != null ? buys + sells : null,
+        priceUsd: finiteNonNegative(parsedPrice),
+        priceChange24h:
+          typeof row.priceChange?.h24 === 'number' && Number.isFinite(row.priceChange.h24) ? row.priceChange.h24 : null,
+        marketCapUsd: finiteNonNegative(row.marketCap),
+        fdvUsd: finiteNonNegative(row.fdv),
         liquiditySharePct:
           liquidityUsd != null && totalPairLiquidity > 0 ? (liquidityUsd / totalPairLiquidity) * 100 : null,
       }
@@ -153,4 +173,13 @@ export function aggregateProjectDexPairs(rows: DexScreenerPair[], projectAddress
     venues: mapped,
     pairs,
   }
+}
+
+export function findExactProjectDexPair(
+  analytics: ProjectDexAnalytics | undefined,
+  pairAddress?: string | null,
+): ProjectDexPairBreakdown | undefined {
+  const normalizedPair = pairAddress?.trim().toLowerCase()
+  if (!normalizedPair) return undefined
+  return analytics?.pairs.find((pair) => pair.pairAddress.toLowerCase() === normalizedPair)
 }
