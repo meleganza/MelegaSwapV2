@@ -66,6 +66,19 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(removePanel).toContain('onRemovePercent(p)')
     expect(removePanel).toContain('data-remove-percent')
     expect(removePanel).toContain('removeConfirmModal')
+    expect(removePanel).toContain('liquidity-remove-slider')
+    expect(removePanel).toContain('liquidity-remove-custom-percent')
+  })
+
+  it('exposes the live V2 slippage, deadline, minimum receive, and native output settings', () => {
+    expect(removePanel).toContain('SettingsMode.SWAP_LIQUIDITY')
+    expect(removePanel).toContain('useUserTransactionTTL')
+    expect(removePanel).toContain('Edit slippage &amp; deadline')
+    expect(removePanel).toContain('removeMinimumReceived')
+    expect(removePanel).toContain('liquidity-remove-receive-native')
+    expect(runtime).toContain('receiveNative && (currencyAIsWrappedNative || currencyBIsWrappedNative)')
+    expect(runtime).toContain('removeLiquidityETHSupportingFeeOnTransferTokens')
+    expect(runtime).toContain('removeOutputSymbolA')
   })
 
   it('cross-chain switch resumes Remove intent (not always Add)', () => {
