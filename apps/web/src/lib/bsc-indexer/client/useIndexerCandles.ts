@@ -27,15 +27,16 @@ export function useIndexerCandles(
     () => fetchIndexerCandles(pair!, interval),
     { refreshInterval: 60_000, revalidateOnFocus: false },
   )
+  const currentData = data?.pairAddress === pair ? data : undefined
 
-  const chartEntries = candlesToChartEntries(data?.candles ?? [])
-  const status = shouldFetch ? data?.status ?? (isValidating ? 'loading' : 'unavailable') : 'disabled'
+  const chartEntries = candlesToChartEntries(currentData?.candles ?? [])
+  const status = shouldFetch ? currentData?.status ?? (isValidating ? 'loading' : 'unavailable') : 'disabled'
 
   return {
     chartEntries,
-    candles: data?.candles ?? [],
+    candles: currentData?.candles ?? [],
     status,
-    reason: data?.reason ?? (error instanceof Error ? error.message : undefined),
+    reason: currentData?.reason ?? (error instanceof Error ? error.message : undefined),
     isValidating,
   }
 }

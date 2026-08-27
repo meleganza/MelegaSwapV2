@@ -25,12 +25,14 @@ describe('Swap market data truth', () => {
   it('fails closed instead of showing unrelated recent swaps', () => {
     expect(terminalDataSource).toContain('Boolean(selectedPairAddress)')
     expect(terminalDataSource).toContain('transactionMatchesPair(')
+    expect(terminalDataSource).toContain('publicTradeMatchesPair(')
     expect(terminalDataSource).toContain('const indexedRows = [...pairFiltered]')
     expect(terminalDataSource).not.toContain('pairFiltered.length > 0 ? pairFiltered : swapTxs')
   })
 
   it('uses the exact on-chain pair instead of a token-wide primary market', () => {
     expect(terminalDataSource).toContain('selectedPair?.liquidityToken.address')
+    expect(terminalDataSource).toContain('Pair.getAddress(tokenA, tokenB)')
     expect(terminalDataSource).toContain('findExactProjectDexPair(externalDex, selectedPairAddress)')
     expect(terminalDataSource).not.toContain('externalDex?.primaryPairAddress')
   })

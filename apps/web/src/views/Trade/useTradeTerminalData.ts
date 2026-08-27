@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { Token, WBNB, WNATIVE } from '@pancakeswap/sdk'
+import { Pair, Token, WBNB, WNATIVE } from '@pancakeswap/sdk'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCurrency } from 'hooks/Tokens'
@@ -28,7 +28,7 @@ import { computeMarcoPairMarket } from 'lib/trade-market/computeMarcoPairMarket'
 import { findExactProjectDexPair, type ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
 import { usePairTrades } from 'lib/market-data/usePairTrades'
 import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
-import { resolveTradeMarketOrientation, transactionMatchesPair } from './tradePairTruth'
+import { publicTradeMatchesPair, resolveTradeMarketOrientation, transactionMatchesPair } from './tradePairTruth'
 
 const SECONDS_24H = 86_400
 
@@ -215,6 +215,16 @@ export const useTradeTerminalData = (
   const tokenAddress = marketBaseAddress
   const [selectedPairState, selectedPair] = usePair(inputCurrency, outputCurrency)
   const exactPairAddress = selectedPairState === PairState.EXISTS ? selectedPair?.liquidityToken.address : undefined
+  const deterministicPairAddress = useMemo(() => {
+    const tokenA = inputCurrency?.wrapped
+    const tokenB = outputCurrency?.wrapped
+    if (!tokenA || !tokenB || tokenA.equals(tokenB)) return undefined
+    try {
+      return Pair.getAddress(tokenA, tokenB)
+    } catch {
+      return undefined
+    }
+  }, [inputCurrency, outputCurrency])
   const wrappedInputAddress = inputCurrency?.wrapped.address.toLowerCase()
   const wrappedOutputAddress = outputCurrency?.wrapped.address.toLowerCase()
   const canonicalMarco = MARCO_BSC_ADDRESS.toLowerCase()
@@ -225,7 +235,10 @@ export const useTradeTerminalData = (
       [wrappedInputAddress, wrappedOutputAddress].includes(canonicalMarco) &&
       [wrappedInputAddress, wrappedOutputAddress].includes(canonicalWbnb),
   )
-  const selectedPairAddress = exactPairAddress ?? (isCanonicalMarcoWbnbPair ? MARCO_WBNB_PAIR_BSC : undefined)
+  const selectedPairAddress =
+    exactPairAddress ??
+    (isCanonicalMarcoWbnbPair ? MARCO_WBNB_PAIR_BSC : undefined) ??
+    (selectedPairState === PairState.LOADING ? deterministicPairAddress : undefined)
   const { data: tokenPairsData } = useSWR<TokenPairsResponse>(
     chainId && tokenAddress
       ? `/api/market-data/token-pairs?chainId=${chainId}&address=${encodeURIComponent(tokenAddress)}`
@@ -393,28 +406,31 @@ export const useTradeTerminalData = (
       })
     if (indexedRows.length > 0) return indexedRows
 
-    return publicPairTrades.trades.slice(0, 12).map((trade): TradeSwapRow => {
-      const selectedIsBase = trade.selectedTokenAddress === trade.baseTokenAddress
-      const token0Symbol = trade.selectedTokenSymbol
-      const token1Symbol = selectedIsBase ? trade.quoteTokenSymbol : trade.baseTokenSymbol
-      const token0Address = selectedIsBase ? trade.baseTokenAddress : trade.quoteTokenAddress
-      const token1Address = selectedIsBase ? trade.quoteTokenAddress : trade.baseTokenAddress
-      const selectedAmount = formatTokenAmount(Number(trade.selectedTokenAmount), trade.selectedTokenSymbol)
-      return {
-        id: trade.id,
-        time: formatTimeAgo(String(trade.timestamp)),
-        wallet: shortenWallet(trade.wallet),
-        pair: `${token0Symbol} / ${token1Symbol}`,
-        token0Symbol,
-        token1Symbol,
-        token0Address,
-        token1Address,
-        amount: formatUsd(trade.amountUsd ?? 0) ?? selectedAmount ?? '—',
-        amountReason: trade.amountUsd != null ? undefined : 'USD volume unavailable from public pair feed',
-        direction: trade.direction,
-        explorerUrl: explorerTx(chainId, trade.txHash),
-      }
-    })
+    return publicPairTrades.trades
+      .filter((trade) => publicTradeMatchesPair(trade, marketBaseAddress, marketQuoteAddress))
+      .slice(0, 12)
+      .map((trade): TradeSwapRow => {
+        const selectedIsBase = trade.selectedTokenAddress === trade.baseTokenAddress
+        const token0Symbol = trade.selectedTokenSymbol
+        const token1Symbol = selectedIsBase ? trade.quoteTokenSymbol : trade.baseTokenSymbol
+        const token0Address = selectedIsBase ? trade.baseTokenAddress : trade.quoteTokenAddress
+        const token1Address = selectedIsBase ? trade.quoteTokenAddress : trade.baseTokenAddress
+        const selectedAmount = formatTokenAmount(Number(trade.selectedTokenAmount), trade.selectedTokenSymbol)
+        return {
+          id: trade.id,
+          time: formatTimeAgo(String(trade.timestamp)),
+          wallet: shortenWallet(trade.wallet),
+          pair: `${token0Symbol} / ${token1Symbol}`,
+          token0Symbol,
+          token1Symbol,
+          token0Address,
+          token1Address,
+          amount: formatUsd(trade.amountUsd ?? 0) ?? selectedAmount ?? '—',
+          amountReason: trade.amountUsd != null ? undefined : 'USD volume unavailable from public pair feed',
+          direction: trade.direction,
+          explorerUrl: explorerTx(chainId, trade.txHash),
+        }
+      })
   }, [
     transactions,
     marketBaseAddress,

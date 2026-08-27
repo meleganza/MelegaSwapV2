@@ -1,8 +1,12 @@
 import useSWR from 'swr'
 import type { PublicPairTrade } from './pairTrades'
+import { pairResponseMatchesRequest } from './pairResponseIdentity'
 
 type PairTradesResponse = {
   status: 'ready' | 'empty' | 'unavailable'
+  chainId: number
+  pairAddress: string
+  tokenAddress: string
   trades: PublicPairTrade[]
   source: string
   reason?: string
@@ -33,13 +37,14 @@ export function usePairTrades(chainId: number | undefined, pairAddress?: string 
     dedupingInterval: 25_000,
     shouldRetryOnError: false,
   })
+  const currentData = pairResponseMatchesRequest(data, chainId, pairAddress, tokenAddress) ? data : undefined
 
   return {
-    trades: data?.trades ?? [],
-    status: data?.status ?? (isValidating ? 'loading' : error ? 'unavailable' : 'idle'),
-    source: data?.source ?? 'geckoterminal-public-trades',
-    reason: data?.reason,
-    generatedAt: data?.generatedAt,
+    trades: currentData?.trades ?? [],
+    status: currentData?.status ?? (isValidating ? 'loading' : error ? 'unavailable' : valid ? 'loading' : 'idle'),
+    source: currentData?.source ?? 'geckoterminal-public-trades',
+    reason: currentData?.reason,
+    generatedAt: currentData?.generatedAt,
   }
 }
 

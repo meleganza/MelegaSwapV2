@@ -112,16 +112,18 @@ export async function fetchDurableIndexerTransactions(params?: {
 export async function fetchIndexerCandles(
   pairAddress: string,
   interval: OhlcvCandle['interval'] = '1H',
-): Promise<{ status: string; candles: OhlcvCandle[]; reason?: string }> {
+): Promise<{ status: string; pairAddress: string; candles: OhlcvCandle[]; reason?: string }> {
+  const requestedPair = pairAddress.toLowerCase()
   try {
     const qs = new URLSearchParams({ pair: pairAddress, interval })
     const res = await fetch(`/api/indexer/candles?${qs.toString()}`)
-    if (!res.ok) return { status: 'unavailable', candles: [], reason: `HTTP ${res.status}` }
+    if (!res.ok) return { status: 'unavailable', pairAddress: requestedPair, candles: [], reason: `HTTP ${res.status}` }
     const json = (await res.json()) as { status: string; candles: OhlcvCandle[]; meta?: { reason?: string } }
-    return { status: json.status, candles: json.candles ?? [], reason: json.meta?.reason }
+    return { status: json.status, pairAddress: requestedPair, candles: json.candles ?? [], reason: json.meta?.reason }
   } catch (e) {
     return {
       status: 'unavailable',
+      pairAddress: requestedPair,
       candles: [],
       reason: e instanceof Error ? e.message : 'Candle fetch failed',
     }

@@ -73,3 +73,17 @@ export function transactionMatchesPair(
   const transactionSymbols = new Set([normalizedSymbol(tx.token0Symbol), normalizedSymbol(tx.token1Symbol)])
   return transactionSymbols.has(normalizedSymbol(baseSymbol)) && transactionSymbols.has(normalizedSymbol(quoteSymbol))
 }
+
+export function publicTradeMatchesPair(
+  trade: { baseTokenAddress?: string | null; quoteTokenAddress?: string | null },
+  baseAddress?: string,
+  quoteAddress?: string,
+): boolean {
+  const expectedAddresses = [normalizedAddress(baseAddress), normalizedAddress(quoteAddress)]
+  if (!expectedAddresses.every(Boolean)) return false
+  const tradeAddresses = new Set([
+    normalizedAddress(trade.baseTokenAddress),
+    normalizedAddress(trade.quoteTokenAddress),
+  ])
+  return expectedAddresses.every((address) => tradeAddresses.has(address))
+}

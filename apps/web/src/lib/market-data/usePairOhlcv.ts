@@ -1,5 +1,6 @@
 import useSWR from 'swr'
 import type { PublicOhlcvTimeframe } from './ohlcvTimeframe'
+import { pairResponseMatchesRequest } from './pairResponseIdentity'
 
 export type PublicPairCandle = {
   timestamp: number
@@ -12,6 +13,9 @@ export type PublicPairCandle = {
 
 type PairOhlcvResponse = {
   status: 'ready' | 'empty' | 'unavailable'
+  chainId: number
+  pairAddress: string
+  tokenAddress?: string | null
   candles: PublicPairCandle[]
   volume24hUsd: number | null
   source: string
@@ -47,15 +51,16 @@ export function usePairOhlcv(
     dedupingInterval: 55_000,
     shouldRetryOnError: false,
   })
+  const currentData = pairResponseMatchesRequest(data, chainId, pairAddress, targetToken) ? data : undefined
 
   return {
-    candles: data?.candles ?? [],
+    candles: currentData?.candles ?? [],
     volume24hUsd:
-      data?.volume24hUsd != null && Number.isFinite(data.volume24hUsd) && data.volume24hUsd >= 0
-        ? data.volume24hUsd
+      currentData?.volume24hUsd != null && Number.isFinite(currentData.volume24hUsd) && currentData.volume24hUsd >= 0
+        ? currentData.volume24hUsd
         : null,
-    status: data?.status ?? (isValidating ? 'loading' : error ? 'unavailable' : 'idle'),
-    source: data?.source ?? null,
+    status: currentData?.status ?? (isValidating ? 'loading' : error ? 'unavailable' : valid ? 'loading' : 'idle'),
+    source: currentData?.source ?? null,
   }
 }
 
