@@ -40,6 +40,7 @@ import {
 } from '../productionIsolation'
 import type { NormalizedQuote, SmartSwapRequest } from '../quote'
 import { SMARTSWAP_REVENUE_POLICY_V1 } from '../revenuePolicy'
+import { selectBestNetRoute } from '../routeSelection'
 import { ScopedVenueHealth, healthScopeKey } from '../scopedHealth'
 import {
   CROSS_CHAIN_FORBIDDEN,
@@ -649,5 +650,237 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       current[rel] = createHash('sha256').update(readFileSync(abs)).digest('hex')
     }
     expect(current).toEqual(manifest.files)
+  })
+
+  it('serializes decisionEvidence through JSON without transforms', async () => {
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('800000000000000000000'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const result = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      nowIso: NOW,
+    })
+    expect(JSON.parse(JSON.stringify(result.decisionEvidence))).toEqual(result.decisionEvidence)
+    expect(result.decisionEvidence.candidates.map((row) => row.venueId)).toEqual(
+      result.candidates.map((row) => row.venueId),
+    )
+    expect(result.decisionEvidence.chainId).toBe(56)
+    expect(result.decisionEvidence.inputAsset).toEqual(bscRequest().inputAsset)
+    expect(result.decisionEvidence.outputAsset).toEqual(bscRequest().outputAsset)
+  })
+
+  it('binds decisionEvidence selected identity to shadowWinner and keeps production inert', async () => {
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('800000000000000000000'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const result = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      nowIso: NOW,
+    })
+    expect(result.decisionEvidence.selectedQuoteId).toBe(result.shadowWinner?.quote?.quoteId ?? null)
+    expect(result.decisionEvidence.selectedVenueId).toBe(result.shadowWinner?.venueId ?? null)
+    expect(result.decisionEvidence.productionMutated).toBe(false)
+    expect(result.decisionEvidence.productionActivation).toBe(false)
+    expect(result.decisionEvidence.sameChain).toBe(true)
+    expect(result.productionMutated).toBe(false)
+  })
+
+  it('copies A5 fallback identity when two or more usable rows exist and nulls it otherwise', async () => {
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const twoUsable = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('800000000000000000000'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const rankedTwo = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters: twoUsable.adapters,
+      nowIso: NOW,
+    })
+    const a5Two = selectBestNetRoute(
+      rankedTwo.candidates
+        .filter(
+          (row) =>
+            row.status === 'ok' &&
+            row.net?.netUserOutputRaw &&
+            row.quote &&
+            row.quote.productionExecutionCapable === false,
+        )
+        .map((row) => ({
+          quoteId: row.quote!.quoteId,
+          venueId: row.venueId,
+          netUserOutputRaw: row.net!.netUserOutputRaw,
+          confidenceOk: true,
+        })),
+    )
+    expect(a5Two.fallbackQuoteId).not.toBeNull()
+    expect(a5Two.fallbackVenueId).not.toBeNull()
+    expect(rankedTwo.decisionEvidence.fallbackQuoteId).toBe(a5Two.fallbackQuoteId)
+    expect(rankedTwo.decisionEvidence.fallbackVenueId).toBe(a5Two.fallbackVenueId)
+
+    const slowPancake = createSyntheticQuoteSource({
+      [`56:${WBNB}>${USDC_BSC}`]: { amountOutRaw: '700000000000000000000' },
+    })
+    const pancake = createPancakeSwapVenueAdapter({
+      async fetch(request) {
+        await new Promise<void>((resolve, reject) => {
+          const timer = setTimeout(resolve, 5_000)
+          request.signal.addEventListener('abort', () => {
+            clearTimeout(timer)
+            reject(new Error('ADAPTER_TIMEOUT'))
+          })
+        })
+        return slowPancake.fetch(request)
+      },
+    })
+    const timed = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('1'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    timed.adapters[1] = pancake
+    const oneUsable = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters: timed.adapters,
+      budget: { ...DEFAULT_LATENCY_BUDGET, quoteTimeoutMs: 40, overallBudgetMs: 120 },
+      nowIso: NOW,
+    })
+    const usableCount = oneUsable.candidates.filter(
+      (row) =>
+        row.status === 'ok' &&
+        row.net?.netUserOutputRaw &&
+        row.quote &&
+        row.quote.productionExecutionCapable === false,
+    ).length
+    expect(usableCount).toBeLessThan(2)
+    expect(oneUsable.decisionEvidence.fallbackQuoteId).toBeNull()
+    expect(oneUsable.decisionEvidence.fallbackVenueId).toBeNull()
+  })
+
+  it('preserves timeout candidate status, error, duration, and snapshot health on evidence', async () => {
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const health = new ScopedVenueHealth()
+    const slowPancake = createSyntheticQuoteSource({
+      [`56:${WBNB}>${USDC_BSC}`]: { amountOutRaw: '700000000000000000000' },
+    })
+    const pancake = createPancakeSwapVenueAdapter({
+      async fetch(request) {
+        await new Promise<void>((resolve, reject) => {
+          const timer = setTimeout(resolve, 5_000)
+          request.signal.addEventListener('abort', () => {
+            clearTimeout(timer)
+            reject(new Error('ADAPTER_TIMEOUT'))
+          })
+        })
+        return slowPancake.fetch(request)
+      },
+    })
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('1'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    adapters[1] = pancake
+    const result = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      budget: { ...DEFAULT_LATENCY_BUDGET, quoteTimeoutMs: 40, overallBudgetMs: 120 },
+      nowIso: NOW,
+    })
+    const pancakeCandidate = result.pancake
+    const pancakeEvidence = result.decisionEvidence.candidates.find((row) => row.venueId === 'pancakeswap')
+    expect(pancakeCandidate?.status).toBe('timeout')
+    expect(pancakeEvidence?.status).toBe(pancakeCandidate?.status)
+    expect(pancakeEvidence?.error).toBe(pancakeCandidate?.error)
+    expect(pancakeEvidence?.durationMs).toBe(pancakeCandidate?.durationMs)
+    const snap = health.snapshot(healthScopeKey('pancakeswap', 56), 'pancakeswap', NOW)
+    expect(pancakeEvidence?.healthState).toBe(snap.state)
+    expect(pancakeEvidence?.healthReason).toBe(snap.reason)
+    expect(pancakeEvidence?.circuitBreakerOpen).toBe(snap.signals.circuitBreakerOpen)
+  })
+
+  it('preserves breaker-open skip evidence from the existing health snapshot', async () => {
+    const health = new ScopedVenueHealth({ failureThreshold: 2, cooldownMs: 60_000 })
+    const failing = createPancakeSwapVenueAdapter({
+      async fetch() {
+        throw new Error('RPC_DOWN')
+      },
+    })
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('1'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    adapters[1] = failing
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    await runEvmShadowCompetition({ request: bscRequest(), productionQuote: production, adapters, health, nowIso: NOW })
+    await runEvmShadowCompetition({ request: bscRequest(), productionQuote: production, adapters, health, nowIso: NOW })
+    const skipped = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      nowIso: NOW,
+    })
+    const pancakeEvidence = skipped.decisionEvidence.candidates.find((row) => row.venueId === 'pancakeswap')
+    expect(pancakeEvidence?.status).toBe('skipped')
+    expect(pancakeEvidence?.error).toContain('CIRCUIT_BREAKER_OPEN')
+    const snap = health.snapshot(healthScopeKey('pancakeswap', 56), 'pancakeswap', NOW)
+    expect(pancakeEvidence?.circuitBreakerOpen).toBe(true)
+    expect(pancakeEvidence?.circuitBreakerOpen).toBe(snap.signals.circuitBreakerOpen)
+    expect(pancakeEvidence?.healthState).toBe(snap.state)
+    expect(pancakeEvidence?.healthReason).toBe(snap.reason)
+  })
+
+  it('preserves readiness-blocked candidate evidence without changing the winner', async () => {
+    const health = new ScopedVenueHealth()
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('610000000000000000000'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const result = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      nowIso: NOW,
+      readinessProbe: async ({ adapter }) => {
+        if (adapter.identity().venueId === 'pancakeswap') {
+          return healthSnapshot('pancakeswap', VENUE_HEALTH_STATE.UNAVAILABLE, 'rpc-unavailable', {
+            providerHealthy: false,
+          }, NOW)
+        }
+        return null
+      },
+    })
+    const pancakeCandidate = result.pancake
+    const pancakeEvidence = result.decisionEvidence.candidates.find((row) => row.venueId === 'pancakeswap')
+    expect(pancakeCandidate?.status).toBe('skipped')
+    expect(pancakeCandidate?.error).toBe('VENUE_READINESS_BLOCKED:rpc-unavailable')
+    expect(pancakeEvidence?.status).toBe(pancakeCandidate?.status)
+    expect(pancakeEvidence?.error).toBe(pancakeCandidate?.error)
+    const snap = health.snapshot(healthScopeKey('pancakeswap', 56), 'pancakeswap', NOW)
+    expect(pancakeEvidence?.healthState).toBe(snap.state)
+    expect(pancakeEvidence?.healthReason).toBe(snap.reason)
+    expect(pancakeEvidence?.circuitBreakerOpen).toBe(snap.signals.circuitBreakerOpen)
+    expect(result.shadowWinner?.venueId).toBe('melega-dex')
+    expect(result.decisionEvidence.selectedVenueId).toBe('melega-dex')
+    expect(result.melega?.status).toBe('ok')
   })
 })

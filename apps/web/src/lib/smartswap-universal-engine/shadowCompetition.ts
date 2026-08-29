@@ -12,9 +12,9 @@ import { FEE_ASSET_SOURCE, sealSmartSwapFee, type SealedSmartSwapFee } from './q
 import { selectBestNetRoute } from './routeSelection'
 import { quoteIfCapable, type SmartSwapVenueAdapter } from './venueAdapter'
 import { quoteIsStale, type NormalizedQuote, type SmartSwapRequest } from './quote'
-import { isQuoteEligible, type VenueHealthSnapshot } from './health'
+import { isQuoteEligible, type VenueHealthSnapshot, type VenueHealthState } from './health'
 import { isEvmNetwork } from './domain'
-import { assetsEqual } from './assetIdentity'
+import { assetsEqual, type CanonicalAssetId } from './assetIdentity'
 import { HEALTH_EVENT, ScopedVenueHealth, classifyAdapterError, healthScopeKey } from './scopedHealth'
 import { VENUE_FEE_SEMANTICS_BY_ID, VENUE_STRUCTURAL_FEE_BPS, type VenueFeeSemantics } from './venueFeeSemantics'
 import { cloneProductionQuote } from './productionIsolation'
@@ -42,6 +42,32 @@ export interface ShadowCandidate {
   kind: 'SYNTHETIC' | 'FACTUAL' | 'LEGACY_MELEGA' | null
 }
 
+export interface ShadowDecisionEvidence {
+  chainId: number
+  inputAsset: CanonicalAssetId
+  outputAsset: CanonicalAssetId
+  selectedQuoteId: string | null
+  selectedVenueId: string | null
+  fallbackQuoteId: string | null
+  fallbackVenueId: string | null
+  productionMutated: false
+  productionActivation: false
+  sameChain: true
+  candidates: Array<{
+    venueId: string
+    status: ShadowCandidate['status']
+    error: string | null
+    durationMs: number
+    netUserOutputRaw: string | null
+    feeEnforcementState: string
+    smartSwapFeeBps: number | null
+    feeBand: string | null
+    healthState: VenueHealthState | null
+    healthReason: string | null
+    circuitBreakerOpen: boolean | null
+  }>
+}
+
 export interface ShadowCompetitionResult {
   productionQuote: NormalizedQuote | null
   melega: ShadowCandidate | null
@@ -54,6 +80,7 @@ export interface ShadowCompetitionResult {
   latencyDifferenceMs: number | null
   productionMutated: false
   sameChain: true
+  decisionEvidence: ShadowDecisionEvidence
 }
 
 function assertSameChainRequest(request: SmartSwapRequest): void {
@@ -279,6 +306,36 @@ export async function runEvmShadowCompetition(input: {
   const winnerGross = shadowWinner?.quote?.grossOutputRaw ?? null
   const winnerNet = shadowWinner?.net?.netUserOutputRaw ?? null
   const productionGross = productionQuote?.grossOutputRaw ?? null
+  const request = input.request
+  const decisionEvidence: ShadowDecisionEvidence = {
+    chainId: isEvmNetwork(request.network) ? request.network.chainId : (chainId as number),
+    inputAsset: request.inputAsset,
+    outputAsset: request.outputAsset,
+    selectedQuoteId: winnerPick.selectedQuoteId,
+    selectedVenueId: winnerPick.selectedVenueId,
+    fallbackQuoteId: winnerPick.fallbackQuoteId,
+    fallbackVenueId: winnerPick.fallbackVenueId,
+    productionMutated: false,
+    productionActivation: false,
+    sameChain: true,
+    candidates: candidates.map((candidate) => {
+      const scope = healthScopeKey(candidate.venueId, chainId)
+      const snap = health.snapshot(scope, candidate.venueId, nowIso)
+      return {
+        venueId: candidate.venueId,
+        status: candidate.status,
+        error: candidate.error,
+        durationMs: candidate.durationMs,
+        netUserOutputRaw: candidate.net?.netUserOutputRaw ?? null,
+        feeEnforcementState: candidate.feeEnforcementState,
+        smartSwapFeeBps: candidate.smartSwapFeeBps,
+        feeBand: candidate.feeBand,
+        healthState: snap.state ?? null,
+        healthReason: snap.reason ?? null,
+        circuitBreakerOpen: snap.signals.circuitBreakerOpen ?? null,
+      }
+    }),
+  }
 
   return {
     productionQuote,
@@ -297,6 +354,7 @@ export async function runEvmShadowCompetition(input: {
       shadowWinner && productionQuote ? shadowWinner.durationMs : null,
     productionMutated: false,
     sameChain: true,
+    decisionEvidence,
   }
 }
 
