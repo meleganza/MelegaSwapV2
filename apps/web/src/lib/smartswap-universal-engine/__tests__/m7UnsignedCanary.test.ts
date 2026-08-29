@@ -20,7 +20,7 @@ const WEB = path.resolve(__dirname, '../../../..')
 const REPO = path.resolve(WEB, '../..')
 
 describe('SmartSwap M7 unsigned canary package', () => {
-  it('freezes the prepare-only grant, planned 0.01 WBNB, and funding shortfall', () => {
+  it('freezes the prepare-only grant, planned 0.01 WBNB, and funded reseal', () => {
     expect(m7PrepareOnlyAuthorized()).toBe(true)
     expect(M7_PREPARE_AUTHORIZATION.signAuthorized).toBe(false)
     expect(M7_PREPARE_AUTHORIZATION.broadcastAuthorized).toBe(false)
@@ -30,8 +30,8 @@ describe('SmartSwap M7 unsigned canary package', () => {
     expect(M7_UNSIGNED_CANARY.intentNonce).toBe(2)
     expect(M7_UNSIGNED_CANARY.signed).toBe(false)
     expect(M7_UNSIGNED_CANARY.broadcast).toBe(false)
-    expect(M7_FUNDING_SHORTFALL.observedWbnbWei).toBe('5000000000000000')
-    expect(M7_FUNDING_SHORTFALL.shortfallWbnbWei).toBe('5000000000000000')
+    expect(M7_FUNDING_SHORTFALL.observedWbnbWei).toBe('12000000000000000')
+    expect(M7_FUNDING_SHORTFALL.shortfallWbnbWei).toBe('0')
     expect(M7_FUNDING_SHORTFALL.amountReducedToFitBalance).toBe(false)
     expect(M7_FUNDING_SHORTFALL.packageRemainsUnsignedReady).toBe(true)
     expect(M7_BROADCAST.signMainnet).toBe(false)
@@ -53,7 +53,7 @@ describe('SmartSwap M7 unsigned canary package', () => {
     }
     expect(approve.signed).toBe(false)
     expect(approve.broadcast).toBe(false)
-    expect(approve.nonce).toBe(3206)
+    expect(approve.nonce).toBe(3207)
     expect(approve.args.amount).toBe('10000000000000000')
     expect(approve.args.spender).toBe('0x296015b106F4b2FB94249cf398cbF05d4CcE0391')
     const exec = JSON.parse(readFileSync(execPath, 'utf8')) as {
@@ -69,14 +69,14 @@ describe('SmartSwap M7 unsigned canary package', () => {
     }
     expect(exec.signed).toBe(false)
     expect(exec.broadcast).toBe(false)
-    expect(exec.nonce).toBe(3207)
+    expect(exec.nonce).toBe(3208)
     expect(exec.intentNonce).toBe(2)
     expect(exec.signature).toBeNull()
     expect(exec.executeCalldata).toBe('INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN')
     expect(exec.intent.inputAmount).toBe('10000000000000000')
     expect(exec.intent.minUserOut).toBe(M7_UNSIGNED_CANARY.minUserOut)
     expect(exec.funding.amountReducedToFitBalance).toBe(false)
-    expect(exec.funding.shortfallWbnbWei).toBe('5000000000000000')
+    expect(exec.funding.shortfallWbnbWei).toBe('0')
     const sealed = sealExecutionIntent({
       chainId: 56,
       user: '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0',
@@ -99,6 +99,9 @@ describe('SmartSwap M7 unsigned canary package', () => {
     expect(sealed.engineSeal).toBe(M7_UNSIGNED_CANARY.intentHash)
     expect(sealed.engineSeal).toBe(exec.intentHash)
     expect(sealed.routeHash).toBe(M7_UNSIGNED_CANARY.routeHash)
+    expect(exec.intentHash).not.toBe('0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2')
+    expect(exec.intent.deadline).not.toBe(1787984605)
+    expect(approve.nonce).not.toBe(3206)
   })
 
   it('does not modify any frozen SmartSwap UX file', () => {

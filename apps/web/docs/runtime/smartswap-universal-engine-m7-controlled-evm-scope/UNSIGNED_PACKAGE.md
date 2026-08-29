@@ -1,20 +1,24 @@
 # UNSIGNED_PACKAGE
 
-Prepared. Not signed. Not broadcast.
+Funded reseal. Prepared. Not signed. Not broadcast.
+
+Previous package `0c12c69e` is **STALE / unusable** (deadline `1787984605` elapsed; account nonce advanced). Its quote, deadline, intentHash, and approve/execute nonces were not reused.
 
 Fail-closed quotes (venue input `9980000000000000` WBNB):
 
 | RPC | Block | ts | net USDC |
 |--|--|--|--|
-| dataseed | 118714900 | 1787982805 | `6876753540336322738` |
-| 48.club | 118714910 | 1787982809 | `6876753540336322738` |
+| dataseed | 118724939 | 1787987323 | `6857780266557397410` |
+| 48.club | 118724944 | 1787987325 | `6857780266557397410` |
 
 | | |
 |--|--|
-| failClosedNetUsdcOut | `6876753540336322738` |
+| failClosedNetUsdcOut | `6857780266557397410` |
 | slippageBps | 50 (M6/M5 canary pattern) |
-| minUserOut | `6842369772634641124` |
-| deadline | `1787984605` (older quote ts + 1800s) |
-| intentHash | `0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2` |
+| minUserOut | `6823491365224610422` |
+| deadline | `1787989123` (older quote ts + 1800s) |
+| deadline UTC | 2026-08-29T07:38:43Z |
+| deadline Europe/Rome | 2026-08-29T09:38:43+02:00 |
+| intentHash | `0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef` |
 
 `executeCalldata` remains `INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN`.

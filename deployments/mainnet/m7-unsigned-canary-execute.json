@@ -9,8 +9,8 @@
   "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "to": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
   "value": "0",
-  "nonce": 3207,
-  "nonceHex": "0xc87",
+  "nonce": 3208,
+  "nonceHex": "0xc88",
   "gas": 400000,
   "gasPriceWei": "50000000",
   "function": "execute(ExecutionIntent,address[],bytes)",
@@ -20,10 +20,10 @@
   ],
   "pair": "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b",
   "intentNonce": 2,
-  "intentHash": "0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2",
+  "intentHash": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef",
   "signatureRequired": true,
   "signatureScheme": "personal_sign of the 32-byte intentHash; contract recovers ECDSA over keccak256(abi.encodePacked(hex'19457468657265756d205369676e6564204d6573736167653a0a3332', intentHash)) == intentSigner",
-  "founderMustPersonalSign": "0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2",
+  "founderMustPersonalSign": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef",
   "signature": null,
   "executeCalldata": "INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN",
   "intent": {
@@ -37,7 +37,7 @@
     "inputAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     "outputAsset": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
     "inputAmount": "10000000000000000",
-    "minUserOut": "6842369772634641124",
+    "minUserOut": "6823491365224610422",
     "venueId": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
     "venueIdPreimage": "pancakeswap",
     "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
@@ -47,11 +47,11 @@
     "feeAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
     "structuralRouteCostBps": 25,
-    "deadline": 1787984605,
+    "deadline": 1787989123,
     "nonce": 2,
     "nativeIn": false,
     "nativeOut": false,
-    "engineSeal": "0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2"
+    "engineSeal": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef"
   },
   "economics": {
     "feeBand": "BAND_11_25",
@@ -64,45 +64,53 @@
     "quotes": [
       {
         "rpc": "dataseed",
-        "block": 118714900,
-        "blockHash": "0x2221ad72012f614431fb17c5e30486659bb42d85cdd42c23697e2f2b14b0a7ad",
-        "ts": 1787982805,
-        "netUsdcOut": "6876753540336322738"
+        "block": 118724939,
+        "blockHash": "0x79cec072f9bee66632b7729e33dd5c57d1ab88cde4a079834cfabc1cef1e63d9",
+        "ts": 1787987323,
+        "netUsdcOut": "6857780266557397410"
       },
       {
         "rpc": "48club",
-        "block": 118714910,
-        "blockHash": "0x0c1fd30ba5a911c03fd99494155571c8933ac5d5bf4c451a05b930f68948b384",
-        "ts": 1787982809,
-        "netUsdcOut": "6876753540336322738"
+        "block": 118724944,
+        "blockHash": "0x988bf83dce77a733630821c352f76e31dbcfcc3d11bdda47edabab1c39b1d136",
+        "ts": 1787987325,
+        "netUsdcOut": "6857780266557397410"
       }
     ],
-    "failClosedNetUsdcOut": "6876753540336322738",
+    "failClosedNetUsdcOut": "6857780266557397410",
     "slippageBps": 50,
-    "minUserOut": "6842369772634641124",
+    "minUserOut": "6823491365224610422",
     "treasuryReceivesWbnbNotUsdc": true,
     "externalDexDoesNotSeeProtocolFee": true,
     "expectedTreasuryDeltaWbnbWei": "20000000000000"
   },
   "funding": {
     "requiredWbnbWei": "10000000000000000",
-    "observedWbnbWei": "5000000000000000",
-    "shortfallWbnbWei": "5000000000000000",
+    "observedWbnbWei": "12000000000000000",
+    "shortfallWbnbWei": "0",
     "allowanceWbnbWei": "0",
     "amountReducedToFitBalance": false,
-    "blocksBroadcast": true,
+    "blocksBroadcast": false,
     "packageRemainsUnsignedReady": true,
     "founderOnly": true
   },
   "precondition": {
     "unsignedApprovePackage": "deployments/mainnet/m7-unsigned-approve-tx.json",
-    "approveNonce": 3206,
+    "approveNonce": 3207,
     "setRouterTx": "0xbc9b4f30c7aca55679a6002d2c4ac3b56a969d498cd0e97ab37dc917e4fcdbbc",
     "pancakeAllowlisted": true,
     "melegaUnallowlisted": true,
     "runtimeByteForByte": true,
     "usedNonce2": false,
     "usedNonce1": true
+  },
+  "supersedesStalePackage": {
+    "commit": "0c12c69e435082f401228822cedb13d0dadafbd7",
+    "staleDeadline": 1787984605,
+    "staleIntentHash": "0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2",
+    "staleApproveNonce": 3206,
+    "staleExecuteNonce": 3207,
+    "reason": "DEADLINE_ELAPSED_AND_ACCOUNT_NONCE_ADVANCED"
   },
   "doNotBroadcastIfNonceChanged": true,
   "doNotBroadcastIfDeadlineElapsed": true,
@@ -112,5 +120,5 @@
   "agentCannotSign": true,
   "ACTIVE_V2_ROLLOUT": "LEGACY_PRODUCTION",
   "UNAUTHORIZED_UI_CHANGE": 0,
-  "note": "Founder funds WBNB shortfall first. Then signs only the exact approve at nonce 3206 and personal_signs intentHash before execute at nonce 3207. Stop if pending nonce != 3206 before approve, if deadline elapsed, or if a fresh getAmountsOut(9980000000000000) would breach minUserOut. Amount stays 10000000000000000. No second canary. Melega DEX router must remain unallowlisted."
+  "note": "Previous package 0c12c69e is STALE/unusable. Founder signs only the exact approve at nonce 3207 and personal_signs intentHash before execute at nonce 3208. Stop if pending nonce != 3207 before approve, if deadline elapsed, or if a fresh getAmountsOut(9980000000000000) would breach minUserOut. Amount stays 10000000000000000. No second canary. Melega DEX router must remain unallowlisted."
 }

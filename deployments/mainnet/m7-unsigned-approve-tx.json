@@ -6,8 +6,8 @@
   "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "to": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
   "value": "0",
-  "nonce": 3206,
-  "nonceHex": "0xc86",
+  "nonce": 3207,
+  "nonceHex": "0xc87",
   "gas": 80000,
   "gasPriceWei": "50000000",
   "function": "approve(address,uint256)",
@@ -19,12 +19,19 @@
   "unlimited": false,
   "funding": {
     "requiredWbnbWei": "10000000000000000",
-    "observedWbnbWei": "5000000000000000",
-    "shortfallWbnbWei": "5000000000000000",
+    "observedWbnbWei": "12000000000000000",
+    "shortfallWbnbWei": "0",
     "founderOnly": true
+  },
+  "supersedesStalePackage": {
+    "commit": "0c12c69e435082f401228822cedb13d0dadafbd7",
+    "staleApproveNonce": 3206,
+    "staleExecuteNonce": 3207,
+    "staleDeadline": 1787984605,
+    "staleIntentHash": "0x637825796aa0d15739e5a31dbaf9f650fe532acefdbd75a30bba07cd0e09e5f2"
   },
   "doNotBroadcastIfNonceChanged": true,
   "doNotBroadcastIfUnfunded": true,
   "agentCannotSign": true,
-  "note": "Minimum WBNB approval for the single M7 canary only. Not unlimited. Founder signs only after funding WBNB >= 10000000000000000. Stop if pending nonce != 3206."
+  "note": "Minimum WBNB approval for the single M7 canary only. Not unlimited. Founder signs only this exact approve at nonce 3207. Stop if pending nonce != 3207. Do not reuse stale approve nonce 3206."
 }
