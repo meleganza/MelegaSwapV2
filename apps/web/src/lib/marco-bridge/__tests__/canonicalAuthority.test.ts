@@ -106,13 +106,20 @@ describe('canonical MMN route authority binding', () => {
     expect(() => assertCanonicalRouteAuthority(wrongToken)).toThrow('binding mismatch')
   })
 
-  it('fails closed if public execution opens or Solana loses its pause', () => {
-    const publicRoute = canonicalEnvelope()
-    publicRoute.data.routes[0].publicly_active = true
-    expect(() => assertCanonicalRouteAuthority(publicRoute)).toThrow('must remain disabled')
+  it('fails closed if Base public execution opens, and allows BNB↔Robinhood plus Solana unpause', () => {
+    const publicBase = canonicalEnvelope()
+    publicBase.data.routes[0].publicly_active = true
+    expect(() => assertCanonicalRouteAuthority(publicBase)).toThrow('Base MMN routes must remain disabled')
+
+    const publicRobinhood = canonicalEnvelope()
+    publicRobinhood.data.routes[4].publicly_active = true
+    publicRobinhood.data.routes[4].execution_enabled = true
+    expect(assertCanonicalRouteAuthority(publicRobinhood).routes[4].publicly_active).toBe(true)
 
     const unpausedSolana = canonicalEnvelope()
     unpausedSolana.data.networks[2].paused = false
-    expect(() => assertCanonicalRouteAuthority(unpausedSolana)).toThrow('pause')
+    unpausedSolana.data.routes[2].paused = false
+    unpausedSolana.data.routes[3].paused = false
+    expect(assertCanonicalRouteAuthority(unpausedSolana).networks[2].paused).toBe(false)
   })
 })

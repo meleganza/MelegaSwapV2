@@ -62,7 +62,7 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     tokenDecimals: 18,
     sharedDecimals: 6,
     nativeFeeSymbol: 'ETH',
-    explorerUrl: null,
+    explorerUrl: 'https://robinhoodchain.blockscout.com',
   },
 }
 
@@ -83,14 +83,39 @@ export const MARCO_WAVE1_DIRECT_ROUTES: MarcoBridgeRoute[] = [
 ]
 
 export const MARCO_WAVE1_PUBLIC_ACTIVATION = {
-  enabled: false,
-  certification: 'product-integration',
+  enabled: true,
+  certification: 'bnb-robinhood-solana',
   solanaProtectivePauseRequired: true,
 } as const
 
+export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${MarcoBridgeNetworkId}`, boolean> = {
+  'bnb:robinhood': true,
+  'robinhood:bnb': true,
+  'bnb:solana': true,
+  'solana:bnb': true,
+  'bnb:base': false,
+  'base:bnb': false,
+  'base:solana': false,
+  'solana:base': false,
+  'base:robinhood': false,
+  'robinhood:base': false,
+  'solana:robinhood': false,
+  'robinhood:solana': false,
+  'bnb:bnb': false,
+  'base:base': false,
+  'solana:solana': false,
+  'robinhood:robinhood': false,
+}
+
+export function localRouteActivationEnabled(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
+  return MARCO_WAVE1_ROUTE_ACTIVATION[`${from}:${to}`] === true
+}
+
 export function wave1ActivationBlockers(): string[] {
   const blockers: string[] = []
-  if (!MARCO_WAVE1_PUBLIC_ACTIVATION.enabled) blockers.push('Explicit public activation gate')
+  if (!localRouteActivationEnabled('bnb', 'robinhood') || !localRouteActivationEnabled('robinhood', 'bnb')) {
+    blockers.push('BNB↔Robinhood public activation is off')
+  }
   if (MARCO_WAVE1_NETWORKS.solana.protectivePaused) blockers.push('Solana infrastructure pause')
   return blockers
 }

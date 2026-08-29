@@ -28,13 +28,14 @@ export type MarcoBridgeQuote = {
   amount: string
   expectedReceive: string
   nativeFee: string
+  nativeFeeWei: string
   nativeFeeSymbol: string
   routeLabel: string
   quotedAt: string
   live: true
   routePaused: boolean
-  publiclyActive: false
-  executionEnabled: false
+  publiclyActive: boolean
+  executionEnabled: boolean
 }
 
 export type MarcoBridgeProgress =
@@ -67,6 +68,8 @@ export type MarcoBridgeFailureCode =
   | 'INSUFFICIENT_GAS'
   | 'QUOTE_FAILED'
   | 'SOURCE_FAILED'
+  | 'SOLANA_PAUSED'
+  | 'WALLET_REQUIRED'
 
 export class MarcoBridgeError extends Error {
   constructor(public readonly code: MarcoBridgeFailureCode, message: string) {

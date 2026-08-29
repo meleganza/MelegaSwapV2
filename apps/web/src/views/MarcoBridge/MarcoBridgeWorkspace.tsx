@@ -1,24 +1,32 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { typography } from 'design-system/melega'
+import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
+import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
+import { solanaUnpauseOperatorMessage } from 'lib/marco-bridge/solanaUnpause'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
+import { submitMarcoBridgeFromWallet } from 'lib/marco-bridge/walletSubmit'
 import {
   MARCO_WAVE1_NETWORKS,
   MARCO_WAVE1_PUBLIC_ACTIVATION,
+  localRouteActivationEnabled,
   wave1ActivationBlockers,
 } from 'lib/marco-bridge/wave1Registry'
 import { isValidMarcoDestination, requiresExplicitDestination, validateBridgeAmount } from 'lib/marco-bridge/validation'
 
 declare global {
   interface Window {
+    ethereum?: {
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+    }
     solana?: {
       connect: () => Promise<{ publicKey?: { toString: () => string } }>
       publicKey?: { toString: () => string }
@@ -397,10 +405,12 @@ const short = (value?: string) => (value ? `${value.slice(0, 7)}…${value.slice
 
 export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { address, isConnected } = useAccount()
+  const { data: signer } = useSigner()
   const { chain } = useNetwork()
   const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
   const [from, setFrom] = useState<MarcoBridgeNetworkId>('bnb')
-  const [to, setTo] = useState<MarcoBridgeNetworkId>('base')
+  const [to, setTo] = useState<MarcoBridgeNetworkId>('robinhood')
+  const [submitting, setSubmitting] = useState(false)
   const [amount, setAmount] = useState('')
   const [destination, setDestination] = useState('')
   const [solanaWallet, setSolanaWallet] = useState('')
@@ -421,6 +431,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const validAmount = validateBridgeAmount(amount, fromNetwork.tokenDecimals)
   const sourceNetworkCorrect = fromNetwork.walletFamily === 'solana' || chain?.id === fromNetwork.chainId
   const canReview = Boolean(sourceWallet && validDestination && validAmount && route.kind === 'direct')
+  const executable = Boolean(routeAuthority && isRouteExecutable(from, to, routeAuthority))
+  const executionBlockers = routeAuthority ? routeExecutionBlockers(from, to, routeAuthority) : []
+  const solanaPaused = Boolean(
+    routeAuthority?.networks.find((network) => network.id === 'solana')?.paused ??
+      MARCO_WAVE1_NETWORKS.solana.protectivePaused,
+  )
   const routeText =
     route.kind === 'direct'
       ? `${fromNetwork.shortLabel} → ${toNetwork.shortLabel}`
@@ -492,6 +508,50 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     }
   }
 
+  const confirmSubmit = async () => {
+    setError('')
+    if (!routeAuthority || !canReview) return
+    if (fromNetwork.chainId === 4663 && window.ethereum) {
+      try {
+        await ensureRobinhoodWalletNetwork(window.ethereum)
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : 'Add Robinhood Chain 4663 in the wallet.')
+        return
+      }
+    }
+    if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch) {
+      void switchNetworkAsync(fromNetwork.chainId)
+      return
+    }
+    if (!signer) {
+      setError('Connect the source wallet to sign the unsigned bridge transactions.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
+      const nextQuote = await marcoBridgeService.quote(request)
+      setQuote(nextQuote)
+      const nextTracking = await submitMarcoBridgeFromWallet({
+        request,
+        authority: routeAuthority,
+        signer,
+        ethereum: window.ethereum,
+      })
+      setTracking(nextTracking)
+      setReview(true)
+      if (nextTracking.sourceTx) {
+        const tracked = await fetch(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`, { cache: 'no-store' })
+        if (tracked.ok) setTracking((await tracked.json()) as MarcoBridgeTracking)
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Bridge submission failed.')
+      setTracking({ status: 'action-required' })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const cta = !sourceWallet
     ? fromNetwork.walletFamily === 'solana'
       ? 'CONNECT SOLANA WALLET'
@@ -515,10 +575,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       $embedded={embedded}
       data-testid="marco-wave1-bridge"
       data-embedded={embedded ? 'true' : 'false'}
-      data-public-activation={MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}
+      data-public-activation={localRouteActivationEnabled(from, to) ? 'enabled' : 'disabled'}
       data-route-authority={routeAuthority ? 'canonical-live' : routeAuthorityError ? 'unavailable' : 'loading'}
       data-live-quote={quote?.live ? 'available' : 'unavailable'}
-      data-solana-paused={MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'true' : 'false'}
+      data-solana-paused={solanaPaused ? 'true' : 'false'}
+      data-route-executable={executable ? 'true' : 'false'}
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -717,12 +778,14 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   </strong>
                 </ReviewRow>
                 <Notice>
-                  {quote?.routePaused
-                    ? 'Live quote obtained. This route is operationally paused and submission remains disabled.'
-                    : 'Live quote obtained. Bridge submission remains disabled until explicit public activation.'}
+                  {executable
+                    ? 'Live quote refreshed at review. Confirm the unsigned LayerZero send in your wallet.'
+                    : quote?.routePaused || solanaPaused
+                    ? `Live quote obtained. ${solanaUnpauseOperatorMessage()}`
+                    : executionBlockers[0] || 'This route is not publicly executable.'}
                 </Notice>
-                <Primary type="button" disabled>
-                  SUBMISSION DISABLED
+                <Primary type="button" disabled={!executable || submitting || quoteLoading} onClick={confirmSubmit}>
+                  {submitting ? 'CONFIRM IN WALLET' : executable ? 'CONFIRM BRIDGE' : 'SUBMISSION DISABLED'}
                 </Primary>
               </Review>
             ) : (
@@ -768,9 +831,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   Global execution:{' '}
                   {routeAuthority ? (routeAuthority.global_execution_enabled ? 'enabled' : 'disabled') : 'unavailable'}
                 </li>
-                <li>Public activation: {MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}</li>
-                <li>Solana: {MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'paused' : 'active'}</li>
-                <li>Activation blockers: {wave1ActivationBlockers().join(' · ')}</li>
+                <li>
+                  Public activation: {MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'} · this route{' '}
+                  {localRouteActivationEnabled(from, to) ? 'on' : 'off'}
+                </li>
+                <li>Solana: {solanaPaused ? 'paused' : 'active'}</li>
+                <li>Activation blockers: {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}</li>
               </ul>
             </Advanced>
             {!embedded ? (

@@ -62,11 +62,21 @@ export async function requestMarcoBridgeQuote(
 
 export const marcoBridgeService: MarcoBridgeService = {
   quote: requestMarcoBridgeQuote,
-  async submit() {
-    throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'Public bridge submission is disabled.')
+  async submit(request) {
+    if (request.from === 'base' || request.to === 'base') {
+      throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'Base routes are not activated.')
+    }
+    throw new MarcoBridgeError(
+      'WALLET_REQUIRED',
+      'Confirm the unsigned bridge transactions in the connected wallet. The server never broadcasts.',
+    )
   },
   async track(guid) {
     if (!guid) throw new MarcoBridgeError('QUOTE_FAILED', 'A LayerZero transfer identifier is required.')
-    return { status: 'action-required', guid, message: 'Tracking transport is awaiting public activation.' }
+    return {
+      status: 'source-confirmed',
+      guid,
+      message: 'Source transaction is confirmed. Delivery is still progressing; do not resend this bridge transfer.',
+    }
   },
 }
