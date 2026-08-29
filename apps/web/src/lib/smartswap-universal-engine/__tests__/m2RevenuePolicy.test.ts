@@ -206,6 +206,62 @@ describe('SmartSwap Universal Engine M2 dynamic revenue policy', () => {
     expect(winner.productionActivation).toBe(false)
   })
 
+  it('exposes the second-ranked usable row as deterministic fallback', () => {
+    const ranked = selectBestNetRoute([
+      { quoteId: 'low', venueId: 'melega-dex', netUserOutputRaw: '100', confidenceOk: true },
+      { quoteId: 'mid', venueId: 'uniswap', netUserOutputRaw: '200', confidenceOk: true },
+      { quoteId: 'high', venueId: 'pancakeswap', netUserOutputRaw: '300', confidenceOk: true },
+    ])
+    expect(ranked.selectedQuoteId).toBe('high')
+    expect(ranked.selectedVenueId).toBe('pancakeswap')
+    expect(ranked.fallbackQuoteId).toBe('mid')
+    expect(ranked.fallbackVenueId).toBe('uniswap')
+    expect(ranked.productionActivation).toBe(false)
+  })
+
+  it('breaks equal-net winner and fallback with quoteId localeCompare', () => {
+    const tied = selectBestNetRoute([
+      { quoteId: 'zeta', venueId: 'uniswap', netUserOutputRaw: '500', confidenceOk: true },
+      { quoteId: 'alpha', venueId: 'pancakeswap', netUserOutputRaw: '500', confidenceOk: true },
+      { quoteId: 'mu', venueId: 'melega-dex', netUserOutputRaw: '400', confidenceOk: true },
+    ])
+    expect(tied.selectedQuoteId).toBe('alpha')
+    expect(tied.selectedVenueId).toBe('pancakeswap')
+    expect(tied.fallbackQuoteId).toBe('zeta')
+    expect(tied.fallbackVenueId).toBe('uniswap')
+    expect(tied.productionActivation).toBe(false)
+  })
+
+  it('returns null fallback with one usable row and all-null when none are usable', () => {
+    const single = selectBestNetRoute([
+      { quoteId: 'only', venueId: 'pancakeswap', netUserOutputRaw: '10', confidenceOk: true },
+    ])
+    expect(single.selectedQuoteId).toBe('only')
+    expect(single.selectedVenueId).toBe('pancakeswap')
+    expect(single.fallbackQuoteId).toBeNull()
+    expect(single.fallbackVenueId).toBeNull()
+    expect(single.productionActivation).toBe(false)
+    const empty = selectBestNetRoute([])
+    expect(empty.selectedQuoteId).toBeNull()
+    expect(empty.selectedVenueId).toBeNull()
+    expect(empty.fallbackQuoteId).toBeNull()
+    expect(empty.fallbackVenueId).toBeNull()
+    expect(empty.productionActivation).toBe(false)
+  })
+
+  it('cannot promote an unusable high-net row into fallback', () => {
+    const blocked = selectBestNetRoute([
+      { quoteId: 'winner', venueId: 'pancakeswap', netUserOutputRaw: '50', confidenceOk: true },
+      { quoteId: 'no-confidence', venueId: 'uniswap', netUserOutputRaw: '999', confidenceOk: false },
+      { quoteId: 'zero-net', venueId: 'melega-dex', netUserOutputRaw: '0', confidenceOk: true },
+      { quoteId: 'bad-net', venueId: 'uniswap', netUserOutputRaw: 'not-a-number', confidenceOk: true },
+    ])
+    expect(blocked.selectedQuoteId).toBe('winner')
+    expect(blocked.fallbackQuoteId).toBeNull()
+    expect(blocked.fallbackVenueId).toBeNull()
+    expect(blocked.productionActivation).toBe(false)
+  })
+
   it('rejects preview-only and unavailable fees for production execution', () => {
     const preview = evaluateProtocolFeeState({
       calculated: true,
