@@ -18,7 +18,7 @@ import {
   markFeeCollected,
 } from '../fee'
 import { normalizeSameChainGas } from '../gasNormalization'
-import { VENUE_HEALTH_STATE } from '../health'
+import { VENUE_HEALTH_STATE, healthSnapshot } from '../health'
 import { DEFAULT_LATENCY_BUDGET } from '../latency'
 import { INSUFFICIENT_SAMPLE, latencyPercentiles } from '../latencyStats'
 import { normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
@@ -48,6 +48,7 @@ import {
   assertSingleVenueRoute,
   potentialProtocolRevenueRaw,
   runEvmShadowCompetition,
+  type ShadowVenueReadinessProbe,
 } from '../shadowCompetition'
 import { createSyntheticQuoteSource } from '../shadowQuoteSource'
 import { createUniswapVenueAdapter } from '../uniswapAdapter'
@@ -291,6 +292,125 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(skipped.pancake?.status).toBe('skipped')
     expect(skipped.productionQuote?.grossOutputRaw).toBe(production.grossOutputRaw)
     expect(skipped.melega?.status).toBe('ok')
+  })
+
+  it('blocks a venue before quote when readiness is UNAVAILABLE', async () => {
+    let pancakeFetches = 0
+    const pancakeSource = {
+      async fetch(request: Parameters<ReturnType<typeof pancakeQuotes>['fetch']>[0]) {
+        pancakeFetches += 1
+        return pancakeQuotes('610000000000000000000').fetch(request)
+      },
+    }
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource,
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const result = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      nowIso: NOW,
+      readinessProbe: async ({ adapter }) => {
+        if (adapter.identity().venueId === 'pancakeswap') {
+          return healthSnapshot('pancakeswap', VENUE_HEALTH_STATE.UNAVAILABLE, 'rpc-unavailable', {
+            providerHealthy: false,
+          }, NOW)
+        }
+        return null
+      },
+    })
+    expect(result.pancake?.status).toBe('skipped')
+    expect(result.pancake?.error).toBe('VENUE_READINESS_BLOCKED:rpc-unavailable')
+    expect(pancakeFetches).toBe(0)
+    expect(result.melega?.status).toBe('ok')
+    expect(result.productionMutated).toBe(false)
+  })
+
+  it('feeds rpc-timeout readiness into the scoped breaker and skips without re-probing', async () => {
+    const health = new ScopedVenueHealth({ failureThreshold: 2, cooldownMs: 15_000 })
+    let pancakeFetches = 0
+    let pancakeReadinessCalls = 0
+    const pancakeSource = {
+      async fetch(request: Parameters<ReturnType<typeof pancakeQuotes>['fetch']>[0]) {
+        pancakeFetches += 1
+        return pancakeQuotes('610000000000000000000').fetch(request)
+      },
+    }
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource,
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const readinessProbe: ShadowVenueReadinessProbe = async ({ adapter }) => {
+      if (adapter.identity().venueId !== 'pancakeswap') return null
+      pancakeReadinessCalls += 1
+      return healthSnapshot('pancakeswap', VENUE_HEALTH_STATE.UNAVAILABLE, 'rpc-timeout', {
+        providerHealthy: false,
+      }, NOW)
+    }
+    await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      nowIso: NOW,
+      readinessProbe,
+    })
+    await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      nowIso: NOW,
+      readinessProbe,
+    })
+    const scope = healthScopeKey('pancakeswap', 56)
+    expect(health.snapshot(scope, 'pancakeswap').state).toBe(VENUE_HEALTH_STATE.UNAVAILABLE)
+    expect(health.snapshot(scope, 'pancakeswap').signals.circuitBreakerOpen).toBe(true)
+    const callsAfterOpen = pancakeReadinessCalls
+    expect(callsAfterOpen).toBe(2)
+    const third = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      health,
+      nowIso: NOW,
+      readinessProbe,
+    })
+    expect(third.pancake?.status).toBe('skipped')
+    expect(third.pancake?.error).toContain('CIRCUIT_BREAKER_OPEN')
+    expect(pancakeReadinessCalls).toBe(callsAfterOpen)
+    expect(pancakeFetches).toBe(0)
+  })
+
+  it('allows quote when readiness is HEALTHY or DEGRADED', async () => {
+    const { adapters } = buildEvmShadowVenueRegistry({
+      melegaSnapshot: LEGACY,
+      pancakeSource: pancakeQuotes('610000000000000000000'),
+      uniswapSource: uniswapQuotes('1'),
+    })
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const healthy = await runEvmShadowCompetition({
+      request: bscRequest(),
+      productionQuote: production,
+      adapters,
+      nowIso: NOW,
+      readinessProbe: async ({ adapter }) => {
+        if (adapter.identity().venueId === 'pancakeswap') {
+          return healthSnapshot('pancakeswap', VENUE_HEALTH_STATE.HEALTHY, null, { providerHealthy: true }, NOW)
+        }
+        return healthSnapshot(adapter.identity().venueId, VENUE_HEALTH_STATE.DEGRADED, 'rpc-degraded', {
+          providerHealthy: true,
+        }, NOW)
+      },
+    })
+    expect(healthy.pancake?.status).toBe('ok')
+    expect(healthy.melega?.status).toBe('ok')
+    expect(healthy.productionMutated).toBe(false)
   })
 
   it('distinguishes canonical USDC, ETH/WETH, and BNB/WBNB and rejects wrong-chain identity', async () => {

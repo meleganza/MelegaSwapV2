@@ -12,6 +12,7 @@ import { FEE_ASSET_SOURCE, sealSmartSwapFee, type SealedSmartSwapFee } from './q
 import { selectBestNetRoute } from './routeSelection'
 import { quoteIfCapable, type SmartSwapVenueAdapter } from './venueAdapter'
 import { quoteIsStale, type NormalizedQuote, type SmartSwapRequest } from './quote'
+import { isQuoteEligible, type VenueHealthSnapshot } from './health'
 import { isEvmNetwork } from './domain'
 import { assetsEqual } from './assetIdentity'
 import { HEALTH_EVENT, ScopedVenueHealth, classifyAdapterError, healthScopeKey } from './scopedHealth'
@@ -165,6 +166,13 @@ export function assertSameChainOnly(request: SmartSwapRequest): void {
   assertSameChainRequest(request)
 }
 
+export type ShadowVenueReadinessProbe = (input: {
+  adapter: SmartSwapVenueAdapter
+  request: SmartSwapRequest
+  signal: AbortSignal
+  nowIso: string
+}) => Promise<VenueHealthSnapshot | null>
+
 export async function runEvmShadowCompetition(input: {
   request: SmartSwapRequest
   productionQuote: NormalizedQuote | null
@@ -173,6 +181,7 @@ export async function runEvmShadowCompetition(input: {
   budget?: LatencyBudget
   nowIso?: string
   now?: () => number
+  readinessProbe?: ShadowVenueReadinessProbe
 }): Promise<ShadowCompetitionResult> {
   assertSameChainRequest(input.request)
   const productionQuote = cloneProductionQuote(input.productionQuote)
@@ -188,6 +197,20 @@ export async function runEvmShadowCompetition(input: {
         const scope = healthScopeKey(venueId, chainId)
         if (health.breaker.isOpen(scope)) {
           throw new Error('CIRCUIT_BREAKER_OPEN')
+        }
+        if (input.readinessProbe) {
+          const snapshot = await input.readinessProbe({
+            adapter,
+            request: input.request,
+            signal,
+            nowIso,
+          })
+          if (snapshot != null && !isQuoteEligible(snapshot)) {
+            const event =
+              snapshot.reason === 'rpc-timeout' ? HEALTH_EVENT.TIMEOUT : HEALTH_EVENT.QUOTE_FAILURE
+            health.record(scope, event, null)
+            throw new Error(`VENUE_READINESS_BLOCKED:${snapshot.reason ?? snapshot.state}`)
+          }
         }
         if (!adapter.supportsAssetPair(input.request)) {
           throw new Error(`VENUE_PAIR_UNSUPPORTED:${venueId}`)
@@ -220,6 +243,9 @@ export async function runEvmShadowCompetition(input: {
     }
     const message = row.status === 'timeout' ? 'ADAPTER_TIMEOUT' : row.status === 'error' ? row.error : row.status
     if (message.includes('CIRCUIT_BREAKER_OPEN')) {
+      return emptyCandidate(row.id, 'skipped', row.durationMs, message)
+    }
+    if (message.includes('VENUE_READINESS_BLOCKED:')) {
       return emptyCandidate(row.id, 'skipped', row.durationMs, message)
     }
     const event = row.status === 'timeout' ? HEALTH_EVENT.TIMEOUT : classifyAdapterError(message)
