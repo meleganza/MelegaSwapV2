@@ -40,8 +40,8 @@ export async function submitMarcoBridgeFromWallet(input: {
   const source = MARCO_WAVE1_NETWORKS[input.request.from]
   if (source.walletFamily === 'solana') {
     throw new MarcoBridgeError(
-      'SOLANA_PAUSED',
-      'Solana source send is prepared. Unpause the certified OFT store before signing.',
+      'WALLET_REQUIRED',
+      'Connect a Solana wallet and unpause the certified OFT store, then sign the Solana OFT send plan.',
     )
   }
   if (source.chainId === 4663 && input.ethereum) {
