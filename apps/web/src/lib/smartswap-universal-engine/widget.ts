@@ -82,3 +82,38 @@ export function assertAuthorizedHostContext(host: SmartSwapHostContext): void {
   assertAuthorizedRuntimeEnvironment(host.runtimeEnvironment)
   assertHostDoesNotSupplyFee(host)
 }
+
+const HOST_VENUE_OWNERSHIP_KEYS = [
+  'adapters',
+  'venues',
+  'pancakeSource',
+  'uniswapSource',
+  'selectBestNetRoute',
+] as const
+
+export function assertHostDoesNotOwnVenues(host: unknown): void {
+  if (host == null || typeof host !== 'object') return
+  for (const key of HOST_VENUE_OWNERSHIP_KEYS) {
+    if (key in host) throw new Error('HOST_CANNOT_OWN_VENUES')
+  }
+}
+
+export interface SmartSwapAuthorizedSession {
+  host: SmartSwapHostContext
+  engine: SmartSwapEnginePort
+  widget: SmartSwapWidgetPort
+  runtime: SmartSwapAuthorizedRuntime
+}
+
+export function bindAuthorizedHostSession(host: SmartSwapHostContext): SmartSwapAuthorizedSession {
+  assertAuthorizedHostContext(host)
+  assertHostDoesNotOwnVenues(host)
+  const { runtimeEnvironment } = host
+  assertAuthorizedRuntimeEnvironment(runtimeEnvironment)
+  return {
+    host,
+    engine: createShadowEnginePort(),
+    widget: createFrozenWidgetPort(),
+    runtime: runtimeEnvironment,
+  }
+}
