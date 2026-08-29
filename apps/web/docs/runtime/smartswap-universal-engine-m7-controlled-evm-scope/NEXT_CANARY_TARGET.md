@@ -2,7 +2,7 @@
 
 Status: **UNSIGNED_PACKAGE_PREPARED_NOT_SIGNED**
 
-Founder authorized **preparation only**. Not signing. Not broadcast. Not activation.
+Founder authorized **preparation only**. Not signing by the agent. Not broadcast. Not activation.
 
 | Field | Value |
 |-------|--------|
@@ -17,12 +17,9 @@ Founder authorized **preparation only**. Not signing. Not broadcast. Not activat
 | Treasury | `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b` |
 | Approve package | `deployments/mainnet/m7-unsigned-approve-tx.json` nonce **3207** |
 | Execute package | `deployments/mainnet/m7-unsigned-canary-execute.json` nonce **3208** |
+| Founder helper | `deployments/mainnet/m7-founder-helper.html` |
 | Production | `ACTIVE_V2_ROLLOUT=LEGACY_PRODUCTION` |
 
-## Funding (Founder-only, now complete)
-
-Observed deployer WBNB `12000000000000000`. Required `10000000000000000`. Shortfall `0`. Allowance `0`. Amount was not reduced.
-
-Package remains unsigned-ready. Broadcast is blocked until Founder signs and nonce/deadline still match.
+Observed deployer WBNB `12000000000000000`. Required `10000000000000000`. Shortfall `0`. Allowance `0`.
 
 `UNAUTHORIZED_UI_CHANGE=0`

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>M7 Founder helper — unsigned WBNB→USDC canary</title>
+  <style>
+    body { font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 24px; max-width: 880px; color: #111; }
+    h1 { font-size: 18px; }
+    button { font: inherit; margin: 0 8px 8px 0; padding: 6px 10px; }
+    button[disabled] { opacity: 0.45; }
+    pre { background: #f4f4f4; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .stop { color: #8a0000; font-weight: 700; }
+    .ok { color: #0a5a12; }
+    .warn { color: #7a4b00; }
+  </style>
+</head>
+<body>
+  <h1>M7 Founder helper (execution-only, one canary)</h1>
+  <p>Local static file. Connect Founder MetaMask on BNB Chain. No private key. No unlimited approval. No retry. No V2 activation. <code>ACTIVE_V2_ROLLOUT=LEGACY_PRODUCTION</code>.</p>
+  <p>Serve: <code>python3 -m http.server 8765 --directory deployments/mainnet</code> then open <code>http://127.0.0.1:8765/m7-founder-helper.html</code>.</p>
+  <p>
+    <button id="btnConnect">1. Connect MetaMask</button>
+    <button id="btnPreflight" disabled>2. Fail-closed preflight</button>
+    <button id="btnApprove" disabled>3. Send exact WBNB approve</button>
+    <button id="btnSign" disabled>4. personal_sign intentHash</button>
+    <button id="btnExecute" disabled>5. Send execute once</button>
+  </p>
+  <pre id="log">Ready. Do not open as file:// if MetaMask cannot inject; use the local server.</pre>
+
+  <script type="application/json" id="m7-approve-package">
+{
+  "schema": "melega.smartswap.m7.unsigned-approve.v1",
+  "signed": false,
+  "broadcast": false,
+  "chainId": 56,
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "to": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "value": "0",
+  "nonce": 3207,
+  "nonceHex": "0xc87",
+  "gas": 80000,
+  "gasPriceWei": "50000000",
+  "function": "approve(address,uint256)",
+  "data": "0x095ea7b3000000000000000000000000296015b106f4b2fb94249cf398cbf05d4cce0391000000000000000000000000000000000000000000000000002386f26fc10000",
+  "args": {
+    "spender": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
+    "amount": "10000000000000000"
+  },
+  "unlimited": false,
+  "funding": {
+    "requiredWbnbWei": "10000000000000000",
+    "observedWbnbWei": "12000000000000000",
+    "shortfallWbnbWei": "0",
+    "founderOnly": true
+  },
+  "supersedesStalePackage": {
+    "commit": "a6af056ea6026213badce17a2f59281446ab14ec",
+    "staleApproveNonce": 3207,
+    "staleExecuteNonce": 3208,
+    "staleDeadline": 1787989123,
+    "staleIntentHash": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef"
+  },
+  "doNotBroadcastIfNonceChanged": true,
+  "doNotBroadcastIfUnfunded": true,
+  "agentCannotSign": true,
+  "note": "Minimum WBNB approval for the single M7 canary only. Not unlimited. Founder signs only this exact approve at nonce 3207. Stop if pending nonce != 3207."
+}
+  </script>
+  <script type="application/json" id="m7-execute-package">
+{
+  "schema": "melega.smartswap.m7.unsigned-canary-execute.v1",
+  "signed": false,
+  "broadcast": false,
+  "intentSignaturePresent": false,
+  "oneCanaryOnly": true,
+  "noAutomaticRetry": true,
+  "chainId": 56,
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "to": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
+  "value": "0",
+  "nonce": 3208,
+  "nonceHex": "0xc88",
+  "gas": 400000,
+  "gasPriceWei": "50000000",
+  "function": "execute(ExecutionIntent,address[],bytes)",
+  "path": [
+    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+  ],
+  "pair": "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b",
+  "intentNonce": 2,
+  "intentHash": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe",
+  "signatureRequired": true,
+  "signatureScheme": "personal_sign of the 32-byte intentHash; contract recovers ECDSA over keccak256(abi.encodePacked(hex'19457468657265756d205369676e6564204d6573736167653a0a3332', intentHash)) == intentSigner",
+  "founderMustPersonalSign": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe",
+  "signature": null,
+  "executeCalldata": "INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN",
+  "intent": {
+    "version": 1,
+    "policyId": "0xed4e69ee8695367c5956b6771fabaff84aef24aea0107f8b3f49d8ad0c3d979c",
+    "policyIdPreimage": "SMARTSWAP_REVENUE_POLICY_V1",
+    "policyVersion": "0x06c015bd22b4c69690933c1058878ebdfef31f9aaae40bbe86d8a09fe1b2972c",
+    "policyVersionPreimage": "1.0.0",
+    "chainId": 56,
+    "user": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "inputAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "outputAsset": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "inputAmount": "10000000000000000",
+    "minUserOut": "6797523595135297013",
+    "venueId": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+    "venueIdPreimage": "pancakeswap",
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "routeHash": "0x03acd7f030e88592939ebd720a2704354c6dfd4d1d55e07e62bf3d18b6bc9e9f",
+    "feeBps": 20,
+    "feeAmount": "20000000000000",
+    "feeAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "structuralRouteCostBps": 25,
+    "deadline": 1787991074,
+    "nonce": 2,
+    "nativeIn": false,
+    "nativeOut": false,
+    "engineSeal": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe"
+  },
+  "economics": {
+    "feeBand": "BAND_11_25",
+    "reason": "MID_COST_ROUTE_REDUCED_FEE",
+    "structuralRouteCostBps": 25,
+    "policyFeeBps": 20,
+    "inputAmountWei": "10000000000000000",
+    "protocolFeeWbnbWei": "20000000000000",
+    "venueInputWbnbWei": "9980000000000000",
+    "quotes": [
+      {
+        "rpc": "dataseed",
+        "block": 118729273,
+        "blockHash": "0x442e3b8f527eead6f97c05ec8743bc47cb9addf9dfa8f917de03efcb9a1162e4",
+        "ts": 1787989274,
+        "netUsdcOut": "6831682005161102526"
+      },
+      {
+        "rpc": "48club",
+        "block": 118729278,
+        "blockHash": "0x394d76fd57d23fb1b5aa22c5e7fe7598dba1fb5b00517b3252f0290314ae47ed",
+        "ts": 1787989276,
+        "netUsdcOut": "6831682005161102526"
+      }
+    ],
+    "failClosedNetUsdcOut": "6831682005161102526",
+    "slippageBps": 50,
+    "minUserOut": "6797523595135297013",
+    "treasuryReceivesWbnbNotUsdc": true,
+    "externalDexDoesNotSeeProtocolFee": true,
+    "expectedTreasuryDeltaWbnbWei": "20000000000000"
+  },
+  "funding": {
+    "requiredWbnbWei": "10000000000000000",
+    "observedWbnbWei": "12000000000000000",
+    "shortfallWbnbWei": "0",
+    "allowanceWbnbWei": "0",
+    "amountReducedToFitBalance": false,
+    "blocksBroadcast": false,
+    "packageRemainsUnsignedReady": true,
+    "founderOnly": true
+  },
+  "precondition": {
+    "unsignedApprovePackage": "deployments/mainnet/m7-unsigned-approve-tx.json",
+    "approveNonce": 3207,
+    "setRouterTx": "0xbc9b4f30c7aca55679a6002d2c4ac3b56a969d498cd0e97ab37dc917e4fcdbbc",
+    "pancakeAllowlisted": true,
+    "melegaUnallowlisted": true,
+    "runtimeByteForByte": true,
+    "usedNonce2": false,
+    "usedNonce1": true
+  },
+  "supersedesStalePackage": {
+    "commit": "a6af056ea6026213badce17a2f59281446ab14ec",
+    "staleDeadline": 1787989123,
+    "staleIntentHash": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef",
+    "staleApproveNonce": 3207,
+    "staleExecuteNonce": 3208,
+    "reason": "DEADLINE_ELAPSED_FINAL_RESEAL_FOR_FOUNDER_HELPER"
+  },
+  "doNotBroadcastIfNonceChanged": true,
+  "doNotBroadcastIfDeadlineElapsed": true,
+  "doNotBroadcastIfUnfunded": true,
+  "doNotBroadcastIfFreshQuoteBreachesMinUserOut": true,
+  "doNotRetry": true,
+  "agentCannotSign": true,
+  "ACTIVE_V2_ROLLOUT": "LEGACY_PRODUCTION",
+  "UNAUTHORIZED_UI_CHANGE": 0,
+  "note": "a6af056e is STALE if used after 1787989123. Founder uses the helper to send exact approve at nonce 3207 then personal_sign intentHash and execute at nonce 3208. Stop if pending != 3207 before approve, if deadline elapsed, or if fresh getAmountsOut(9980000000000000) breaches minUserOut. Amount stays 10000000000000000. No second canary."
+}
+  </script>
+
+  <script>
+(function () {
+  var APPROVE = JSON.parse(document.getElementById('m7-approve-package').textContent)
+  var EXEC = JSON.parse(document.getElementById('m7-execute-package').textContent)
+  var FOUNDER = '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0'
+  var EXECUTOR = '0x296015b106F4b2FB94249cf398cbF05d4CcE0391'
+  var TREASURY = '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'
+  var WBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+  var USDC = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+  var PANCAKE = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
+  var MELEGA = '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3'
+  var PAIR = '0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b'
+  var VENUE = '0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3'
+  var REQUIRED = '10000000000000000'
+  var VENUE_IN = '9980000000000000'
+  var FEE = '20000000000000'
+  var EXPECTED_RUNTIME_BYTES = 8062
+  var RPCS = [
+    { name: 'dataseed', url: 'https://bsc-dataseed.binance.org' },
+    { name: '48club', url: 'https://rpc-bsc.48.club' }
+  ]
+  var account = null
+  var signature = null
+  var approveSent = false
+  var executeSent = false
+  var preflightOk = false
+
+  function log(msg, cls) {
+    var el = document.getElementById('log')
+    var line = (cls ? '[' + cls + '] ' : '') + msg
+    el.textContent = (el.textContent === 'Ready. Do not open as file:// if MetaMask cannot inject; use the local server.' ? '' : el.textContent + '\n') + line
+    if (cls === 'stop') el.className = 'stop'
+  }
+  function stop(code, detail) {
+    preflightOk = false
+    document.getElementById('btnApprove').disabled = true
+    document.getElementById('btnSign').disabled = true
+    document.getElementById('btnExecute').disabled = true
+    log('STOP ' + code + (detail ? ' — ' + detail : ''), 'stop')
+    throw new Error(code)
+  }
+  function hex(n) { return '0x' + BigInt(n).toString(16) }
+  function pad(addr) { return addr.toLowerCase().replace(/^0x/, '').padStart(64, '0') }
+  function u256(h) { return !h || h === '0x' ? 0n : BigInt(h) }
+  function addr(h) { return '0x' + h.slice(-40) }
+  function eq(a, b) { return String(a).toLowerCase() === String(b).toLowerCase() }
+
+  function strip0x(h) { return h.toLowerCase().startsWith('0x') ? h.slice(2) : h }
+  function encUint(v) {
+    var n = typeof v === 'boolean' ? (v ? 1n : 0n) : BigInt(v)
+    return n.toString(16).padStart(64, '0')
+  }
+  function encAddr(a) { return pad(a.toLowerCase()) }
+  function encBytes32(h) { return strip0x(h).padStart(64, '0') }
+
+  function assembleM7ExecuteCalldata(intent, path, sigHex) {
+    var sig = strip0x(sigHex)
+    if (sig.length !== 130) throw new Error('SIGNATURE_MUST_BE_65_BYTES')
+    var intentWords = [
+      encUint(intent.version), encBytes32(intent.policyId), encBytes32(intent.policyVersion),
+      encUint(intent.chainId), encAddr(intent.user), encAddr(intent.inputAsset), encAddr(intent.outputAsset),
+      encUint(intent.inputAmount), encUint(intent.minUserOut), encBytes32(intent.venueId),
+      encAddr(intent.router), encBytes32(intent.routeHash), encUint(intent.feeBps), encUint(intent.feeAmount),
+      encAddr(intent.feeAsset), encAddr(intent.beneficiary), encUint(intent.structuralRouteCostBps),
+      encUint(intent.deadline), encUint(intent.nonce), encUint(intent.nativeIn), encUint(intent.nativeOut)
+    ].join('')
+    var pathOffset = (21 + 2) * 32
+    var sigOffset = pathOffset + (1 + path.length) * 32
+    var pathData = encUint(path.length) + path.map(encAddr).join('')
+    var sigPadded = sig.padEnd(Math.ceil(sig.length / 64) * 64, '0')
+    return '0x66c9e651' + intentWords + encUint(pathOffset) + encUint(sigOffset) + pathData + encUint(65) + sigPadded
+  }
+  window.assembleM7ExecuteCalldata = assembleM7ExecuteCalldata
+
+  function assertPackage() {
+    if (EXEC.chainId !== 56 || APPROVE.chainId !== 56) stop('PACKAGE_MISMATCH', 'chainId')
+    if (!eq(EXEC.from, FOUNDER) || !eq(APPROVE.from, FOUNDER)) stop('PACKAGE_MISMATCH', 'from')
+    if (!eq(EXEC.to, EXECUTOR)) stop('PACKAGE_MISMATCH', 'executor')
+    if (!eq(EXEC.pair, PAIR)) stop('PACKAGE_MISMATCH', 'pair')
+    if (!eq(EXEC.intent.inputAsset, WBNB) || !eq(EXEC.intent.outputAsset, USDC)) stop('PACKAGE_MISMATCH', 'path tokens')
+    if (EXEC.intent.inputAmount !== REQUIRED || APPROVE.args.amount !== REQUIRED) stop('PACKAGE_MISMATCH', 'input')
+    if (EXEC.intent.feeBps !== 20 || EXEC.intent.feeAmount !== FEE) stop('PACKAGE_MISMATCH', 'fee')
+    if (EXEC.economics.venueInputWbnbWei !== VENUE_IN) stop('PACKAGE_MISMATCH', 'venue input')
+    if (EXEC.intent.nonce !== 2 || EXEC.intentNonce !== 2) stop('PACKAGE_MISMATCH', 'intent nonce')
+    if (EXEC.ACTIVE_V2_ROLLOUT !== 'LEGACY_PRODUCTION' || EXEC.UNAUTHORIZED_UI_CHANGE !== 0) stop('PACKAGE_MISMATCH', 'rollout')
+    if (APPROVE.unlimited !== false) stop('PACKAGE_MISMATCH', 'unlimited')
+    if (EXEC.oneCanaryOnly !== true || EXEC.doNotRetry !== true) stop('PACKAGE_MISMATCH', 'one canary')
+    if (EXEC.signed !== false || APPROVE.signed !== false) stop('PACKAGE_MISMATCH', 'signed flag')
+    if (EXEC.executeCalldata !== 'INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN') stop('PACKAGE_MISMATCH', 'calldata')
+    if (APPROVE.args.spender.toLowerCase() !== EXECUTOR.toLowerCase()) stop('PACKAGE_MISMATCH', 'spender')
+    if (APPROVE.args.amount !== REQUIRED) stop('PACKAGE_MISMATCH', 'approve amount')
+    if (APPROVE.data.toLowerCase().slice(-64) !== encUint(REQUIRED)) stop('PACKAGE_MISMATCH', 'approve calldata amount')
+  }
+
+  function rpc(url, method, params) {
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: method, params: params })
+    }).then(function (r) { return r.json() }).then(function (j) {
+      if (j.error) throw new Error(method + ' ' + JSON.stringify(j.error))
+      return j.result
+    })
+  }
+  function call(url, to, data) { return rpc(url, 'eth_call', [{ to: to, data: data }, 'latest']) }
+
+  function getAmountsOutData(amount, path) {
+    return '0xd06ca61f' + encUint(amount) + '0000000000000000000000000000000000000000000000000000000000000040' + encUint(path.length) + path.map(encAddr).join('')
+  }
+
+  async function readOne(rpcSpec) {
+    var url = rpcSpec.url
+    var latest = await rpc(url, 'eth_getBlockByNumber', ['latest', false])
+    var nonceLatest = u256(await rpc(url, 'eth_getTransactionCount', [FOUNDER, 'latest']))
+    var noncePending = u256(await rpc(url, 'eth_getTransactionCount', [FOUNDER, 'pending']))
+    var wbnb = u256(await call(url, WBNB, '0x70a08231' + pad(FOUNDER)))
+    var allow = u256(await call(url, WBNB, '0xdd62ed3e' + pad(FOUNDER) + pad(EXECUTOR)))
+    var used2 = u256(await call(url, EXECUTOR, '0xf90a2f30' + pad(FOUNDER) + encUint(2)))
+    var paused = u256(await call(url, EXECUTOR, '0x5c975abb'))
+    var pancake = await call(url, EXECUTOR, '0xa8ff4b2b' + pad(PANCAKE))
+    var melega = await call(url, EXECUTOR, '0xa8ff4b2b' + pad(MELEGA))
+    var treasury = addr(await call(url, EXECUTOR, '0x61d027b3'))
+    var owner = addr(await call(url, EXECUTOR, '0x8da5cb5b'))
+    var signer = addr(await call(url, EXECUTOR, '0x29ef5bdc'))
+    var wrapped = addr(await call(url, EXECUTOR, '0xeb6d3a11'))
+    var feeCap = u256(await call(url, EXECUTOR, '0x6d947e4b'))
+    var code = await rpc(url, 'eth_getCode', [EXECUTOR, 'latest'])
+    var amounts = await call(url, PANCAKE, getAmountsOutData(VENUE_IN, [WBNB, USDC]))
+    var words = []
+    for (var i = 2; i < amounts.length; i += 64) words.push(amounts.slice(i, i + 64))
+    return {
+      name: rpcSpec.name,
+      ts: u256(latest.timestamp),
+      nonceLatest: nonceLatest,
+      noncePending: noncePending,
+      wbnb: wbnb,
+      allow: allow,
+      used2: used2 !== 0n,
+      paused: paused !== 0n,
+      pancake: pancake,
+      melega: melega,
+      treasury: treasury,
+      owner: owner,
+      signer: signer,
+      wrapped: wrapped,
+      feeCap: feeCap,
+      runtimeBytes: (code.length - 2) / 2,
+      netOut: u256('0x' + words[words.length - 1])
+    }
+  }
+
+  async function preflight(stage) {
+    assertPackage()
+    var eth = window.ethereum
+    if (!eth) stop('PACKAGE_MISMATCH', 'MetaMask missing')
+    var chain = await eth.request({ method: 'eth_chainId' })
+    if (parseInt(chain, 16) !== 56) stop('WRONG_CHAIN', chain)
+    if (!account || !eq(account, FOUNDER)) stop('WRONG_ACCOUNT', account || 'none')
+    var now = Math.floor(Date.now() / 1000)
+    if (now > EXEC.intent.deadline) stop('DEADLINE_ELAPSED', String(EXEC.intent.deadline))
+
+    var a = await readOne(RPCS[0])
+    var b = await readOne(RPCS[1])
+    function both(fn, code, extra) {
+      if (!fn(a) || !fn(b)) stop(code, extra || (JSON.stringify(fn(a)) + ' / ' + JSON.stringify(fn(b))))
+    }
+    both(function (r) { return r.wbnb >= BigInt(REQUIRED) }, 'WBNB_BELOW_001')
+    both(function (r) { return !r.used2 }, 'USED_NONCE_2')
+    both(function (r) { return r.ts <= BigInt(EXEC.intent.deadline) }, 'DEADLINE_ELAPSED')
+    both(function (r) { return !r.paused && r.feeCap === 25n }, 'EXECUTOR_CONFIG_MISMATCH', 'paused/feeCap')
+    both(function (r) { return eq(r.treasury, TREASURY) && eq(r.owner, FOUNDER) && eq(r.signer, FOUNDER) && eq(r.wrapped, WBNB) }, 'EXECUTOR_CONFIG_MISMATCH', 'treasury/owner/signer/WBNB')
+    both(function (r) { return eq(r.pancake, VENUE) }, 'EXECUTOR_CONFIG_MISMATCH', 'pancake venue')
+    both(function (r) { return r.melega === '0x0000000000000000000000000000000000000000000000000000000000000000' }, 'MELEGA_VENUE_ALLOWLISTED')
+    both(function (r) { return r.runtimeBytes === EXPECTED_RUNTIME_BYTES }, 'EXECUTOR_CONFIG_MISMATCH', 'runtime bytes')
+    var failClosed = a.netOut < b.netOut ? a.netOut : b.netOut
+    if (failClosed < BigInt(EXEC.intent.minUserOut)) stop('QUOTE_BELOW_MIN_USER_OUT', String(failClosed))
+    if (a.noncePending !== b.noncePending || a.nonceLatest !== b.nonceLatest) stop('PENDING_NONCE_DRIFT', 'rpc disagree')
+    var pending = a.noncePending
+    if (stage === 'approve') {
+      if (pending !== BigInt(APPROVE.nonce)) stop('PENDING_NONCE_DRIFT', 'want ' + APPROVE.nonce + ' got ' + pending)
+      if (a.allow !== b.allow) stop('ALLOWANCE_STATE_INCONSISTENT', 'rpc disagree')
+    }
+    if (stage === 'execute') {
+      if (pending !== BigInt(EXEC.nonce)) stop('PENDING_NONCE_DRIFT', 'want ' + EXEC.nonce + ' got ' + pending)
+      if (a.allow < BigInt(REQUIRED) || b.allow < BigInt(REQUIRED)) stop('ALLOWANCE_STATE_INCONSISTENT', 'allowance < 0.01')
+    }
+    if (stage === 'sign') {
+      if (pending !== BigInt(APPROVE.nonce) && pending !== BigInt(EXEC.nonce)) stop('PENDING_NONCE_DRIFT', String(pending))
+    }
+    preflightOk = true
+    log('PREFLIGHT_OK stage=' + stage + ' pending=' + pending + ' wbnb=' + a.wbnb + ' allow=' + a.allow + ' failClosed=' + failClosed, 'ok')
+    return { pending: pending, allow: a.allow, failClosed: failClosed }
+  }
+
+  document.getElementById('btnConnect').onclick = async function () {
+    try {
+      assertPackage()
+      var eth = window.ethereum
+      if (!eth) stop('PACKAGE_MISMATCH', 'MetaMask missing')
+      var accs = await eth.request({ method: 'eth_requestAccounts' })
+      account = accs[0]
+      if (!eq(account, FOUNDER)) stop('WRONG_ACCOUNT', account)
+      try {
+        await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] })
+      } catch (e) {
+        stop('WRONG_CHAIN', e.message || String(e))
+      }
+      var chain = await eth.request({ method: 'eth_chainId' })
+      if (parseInt(chain, 16) !== 56) stop('WRONG_CHAIN', chain)
+      document.getElementById('btnPreflight').disabled = false
+      log('Connected ' + account + ' chain 56', 'ok')
+    } catch (e) {
+      if (!String(e.message).match(/WRONG_|WBNB_|PENDING_|ALLOWANCE_|USED_|DEADLINE_|QUOTE_|EXECUTOR_|MELEGA_|PACKAGE_/)) log(String(e.message || e), 'stop')
+    }
+  }
+
+  document.getElementById('btnPreflight').onclick = async function () {
+    try {
+      await preflight('sign')
+      document.getElementById('btnApprove').disabled = approveSent
+      document.getElementById('btnSign').disabled = false
+    } catch (e) {
+      if (!String(e.message).match(/WRONG_|WBNB_|PENDING_|ALLOWANCE_|USED_|DEADLINE_|QUOTE_|EXECUTOR_|MELEGA_|PACKAGE_/)) log(String(e.message || e), 'stop')
+    }
+  }
+
+  document.getElementById('btnApprove').onclick = async function () {
+    try {
+      if (approveSent) stop('PACKAGE_MISMATCH', 'no retry')
+      await preflight('approve')
+      var eth = window.ethereum
+      var tx = {
+        from: FOUNDER,
+        to: WBNB,
+        value: '0x0',
+        data: APPROVE.data,
+        nonce: hex(APPROVE.nonce),
+        gas: hex(APPROVE.gas),
+        gasPrice: hex(APPROVE.gasPriceWei),
+        chainId: '0x38'
+      }
+      log('Requesting MetaMask approve at nonce ' + APPROVE.nonce + ' amount ' + REQUIRED + ' (finite)')
+      var hash = await eth.request({ method: 'eth_sendTransaction', params: [tx] })
+      approveSent = true
+      document.getElementById('btnApprove').disabled = true
+      log('Approve submitted ' + hash + ' — wait for pending nonce ' + EXEC.nonce + ' then sign', 'ok')
+    } catch (e) {
+      if (!String(e.message).match(/WRONG_|WBNB_|PENDING_|ALLOWANCE_|USED_|DEADLINE_|QUOTE_|EXECUTOR_|MELEGA_|PACKAGE_/)) log(String(e.message || e), 'stop')
+    }
+  }
+
+  document.getElementById('btnSign').onclick = async function () {
+    try {
+      await preflight('sign')
+      var eth = window.ethereum
+      log('Requesting personal_sign of 32-byte intentHash ' + EXEC.intentHash)
+      signature = await eth.request({ method: 'personal_sign', params: [EXEC.intentHash, FOUNDER] })
+      if (!signature || strip0x(signature).length !== 130) stop('PACKAGE_MISMATCH', 'bad signature length')
+      document.getElementById('btnExecute').disabled = executeSent
+      log('Signature present. Review execute, then send once.', 'ok')
+    } catch (e) {
+      if (!String(e.message).match(/WRONG_|WBNB_|PENDING_|ALLOWANCE_|USED_|DEADLINE_|QUOTE_|EXECUTOR_|MELEGA_|PACKAGE_/)) log(String(e.message || e), 'stop')
+    }
+  }
+
+  document.getElementById('btnExecute').onclick = async function () {
+    try {
+      if (executeSent) stop('PACKAGE_MISMATCH', 'no retry')
+      if (!signature) stop('PACKAGE_MISMATCH', 'no signature')
+      await preflight('execute')
+      var data = assembleM7ExecuteCalldata(EXEC.intent, EXEC.path, signature)
+      var eth = window.ethereum
+      var tx = {
+        from: FOUNDER,
+        to: EXECUTOR,
+        value: '0x0',
+        data: data,
+        nonce: hex(EXEC.nonce),
+        gas: hex(EXEC.gas),
+        gasPrice: hex(EXEC.gasPriceWei),
+        chainId: '0x38'
+      }
+      log('Requesting MetaMask execute once at nonce ' + EXEC.nonce)
+      var hash = await eth.request({ method: 'eth_sendTransaction', params: [tx] })
+      executeSent = true
+      document.getElementById('btnExecute').disabled = true
+      document.getElementById('btnApprove').disabled = true
+      document.getElementById('btnSign').disabled = true
+      log('Execute submitted ' + hash + ' — stop. No second canary.', 'ok')
+    } catch (e) {
+      if (!String(e.message).match(/WRONG_|WBNB_|PENDING_|ALLOWANCE_|USED_|DEADLINE_|QUOTE_|EXECUTOR_|MELEGA_|PACKAGE_/)) log(String(e.message || e), 'stop')
+    }
+  }
+
+  try { assertPackage() } catch (e) {}
+})()
+  </script>
+</body>
+</html>

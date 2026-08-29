@@ -1,7 +1,7 @@
 /**
  * M7 unsigned canary package. Founder authorized preparation only.
  * Agent cannot sign, fund, approve, or broadcast.
- * 0c12c69e package is STALE (deadline elapsed); this is the funded reseal.
+ * 0c12c69e and a6af056e packages are STALE; this is the final funded reseal.
  */
 
 import { FIRST_CANARY_SPEC } from './canarySpec'
@@ -53,11 +53,11 @@ export const M7_UNSIGNED_CANARY = {
   inputAmount: FIRST_CANARY_SPEC.inputAmountRaw,
   feeAmountWbnb: '20000000000000',
   venueInputWbnb: '9980000000000000',
-  failClosedNetUsdcOut: '6857780266557397410',
+  failClosedNetUsdcOut: '6831682005161102526',
   slippageBps: CANARY_SLIPPAGE_BPS,
-  minUserOut: '6823491365224610422',
-  deadline: 1787989123,
-  intentHash: '0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef',
+  minUserOut: '6797523595135297013',
+  deadline: 1787991074,
+  intentHash: '0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe',
   routeHash: '0x03acd7f030e88592939ebd720a2704354c6dfd4d1d55e07e62bf3d18b6bc9e9f',
   pair: M7_NEXT_CONTROLLED_EVM_CANARY_TARGET.pairAddress,
   output: FIRST_CANARY_SPEC.pair.outputAddress,
