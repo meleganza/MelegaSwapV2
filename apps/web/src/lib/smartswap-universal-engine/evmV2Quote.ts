@@ -1,5 +1,6 @@
 import { Interface } from '@ethersproject/abi'
 import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './health'
+import { collectBoundedParallel, type LatencyBudget } from './latency'
 import { SHADOW_QUOTE_KIND, type ShadowQuoteObservation, type ShadowQuoteSource } from './shadowQuoteSource'
 
 const V2_ROUTER = new Interface([
@@ -195,4 +196,59 @@ export async function probeEvmRpcReadiness(input: EvmRpcReadinessProbeInput): Pr
   }
 
   return readinessSnapshot(input.venueId, VENUE_HEALTH_STATE.HEALTHY, null, true, input.nowIso)
+}
+
+export interface BoundedEvmRpcReadinessProbeInput {
+  venueId: string
+  chainId: number
+  rpcUrlByChain: Partial<Record<number, string>>
+  fetchImpl?: typeof fetch
+  nowIso?: string
+  budget?: LatencyBudget
+  now?: () => number
+}
+
+/**
+ * A1 probe wrapped in collectBoundedParallel. Timeout/cancel map to UNAVAILABLE / rpc-timeout.
+ * Does not add its own timer. Does not change unbounded probe semantics.
+ */
+export async function probeEvmRpcReadinessBounded(
+  input: BoundedEvmRpcReadinessProbeInput,
+): Promise<VenueHealthSnapshot> {
+  const tasks = [
+    {
+      id: `rpc-readiness:${input.venueId}:${input.chainId}`,
+      run: (signal: AbortSignal) =>
+        probeEvmRpcReadiness({
+          venueId: input.venueId,
+          chainId: input.chainId,
+          rpcUrlByChain: input.rpcUrlByChain,
+          signal,
+          fetchImpl: input.fetchImpl,
+          nowIso: input.nowIso,
+        }),
+    },
+  ]
+  const results =
+    input.now !== undefined
+      ? await collectBoundedParallel(tasks, input.budget, input.now)
+      : await collectBoundedParallel(tasks, input.budget)
+  const row = results[0]
+  if (row?.status === 'ok') return row.value
+  if (row?.status === 'timeout' || row?.status === 'cancelled') {
+    return healthSnapshot(
+      input.venueId,
+      VENUE_HEALTH_STATE.UNAVAILABLE,
+      'rpc-timeout',
+      { providerHealthy: false },
+      input.nowIso,
+    )
+  }
+  return healthSnapshot(
+    input.venueId,
+    VENUE_HEALTH_STATE.UNAVAILABLE,
+    'rpc-unavailable',
+    { providerHealthy: false },
+    input.nowIso,
+  )
 }

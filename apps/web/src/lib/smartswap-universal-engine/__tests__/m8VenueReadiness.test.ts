@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { probeEvmRpcReadiness } from '../evmV2Quote'
+import { probeEvmRpcReadiness, probeEvmRpcReadinessBounded } from '../evmV2Quote'
 import { VENUE_HEALTH_STATE } from '../health'
+import { DEFAULT_LATENCY_BUDGET } from '../latency'
 
 const NOW = '2026-08-29T19:00:00.000Z'
 const RPC = 'https://bsc-dataseed.binance.org'
@@ -179,5 +180,88 @@ describe('M8-A1 EVM RPC readiness probe', () => {
     expect(snapshot.signals.providerHealthy).toBe(false)
     expect(calls).toHaveLength(2)
     expect(JSON.parse(String(calls[1].init.body)).method).toBe('eth_blockNumber')
+  })
+})
+
+function neverResolvingFetch(): typeof fetch {
+  return (async () => new Promise<Response>(() => {})) as typeof fetch
+}
+
+function healthyFetch(): typeof fetch {
+  return recordFetch((call) => {
+    const body = JSON.parse(String(call.init.body)) as { method: string }
+    if (body.method === 'eth_chainId') return jsonResponse({ jsonrpc: '2.0', id: 1, result: '0x38' })
+    if (body.method === 'eth_blockNumber') return jsonResponse({ jsonrpc: '2.0', id: 1, result: '0x7123ab' })
+    throw new Error(`unexpected method ${body.method}`)
+  }).fetchImpl
+}
+
+describe('M8-A2 bounded EVM RPC readiness probe', () => {
+  it('returns the exact A1 HEALTHY snapshot and is not downgraded by the wrapper', async () => {
+    const fetchImpl = healthyFetch()
+    const bounded = await probeEvmRpcReadinessBounded({
+      venueId: VENUE,
+      chainId: 56,
+      rpcUrlByChain: { 56: RPC },
+      fetchImpl,
+      nowIso: NOW,
+    })
+    const unbounded = await probeEvmRpcReadiness({
+      venueId: VENUE,
+      chainId: 56,
+      rpcUrlByChain: { 56: RPC },
+      signal: new AbortController().signal,
+      fetchImpl: healthyFetch(),
+      nowIso: NOW,
+    })
+
+    expect(bounded.state).toBe(VENUE_HEALTH_STATE.HEALTHY)
+    expect(bounded.signals.providerHealthy).toBe(true)
+    expect(bounded.reason).toBeNull()
+    expect(bounded.updatedAt).toBe(NOW)
+    expect(bounded.venueId).toBe(VENUE)
+    expect(bounded).toEqual(unbounded)
+  })
+
+  it('maps a hung fetch to UNAVAILABLE / rpc-timeout when quoteTimeoutMs wins', async () => {
+    const started = Date.now()
+    const snapshot = await probeEvmRpcReadinessBounded({
+      venueId: VENUE,
+      chainId: 56,
+      rpcUrlByChain: { 56: RPC },
+      fetchImpl: neverResolvingFetch(),
+      nowIso: NOW,
+      budget: {
+        ...DEFAULT_LATENCY_BUDGET,
+        quoteTimeoutMs: 40,
+        overallBudgetMs: 200,
+      },
+    })
+    expect(Date.now() - started).toBeLessThan(1_000)
+    expect(snapshot.state).toBe(VENUE_HEALTH_STATE.UNAVAILABLE)
+    expect(snapshot.reason).toBe('rpc-timeout')
+    expect(snapshot.signals.providerHealthy).toBe(false)
+    expect(snapshot.updatedAt).toBe(NOW)
+  })
+
+  it('maps collector cancelled (overall budget wins) to the same rpc-timeout snapshot', async () => {
+    const started = Date.now()
+    const snapshot = await probeEvmRpcReadinessBounded({
+      venueId: VENUE,
+      chainId: 56,
+      rpcUrlByChain: { 56: RPC },
+      fetchImpl: neverResolvingFetch(),
+      nowIso: NOW,
+      budget: {
+        ...DEFAULT_LATENCY_BUDGET,
+        quoteTimeoutMs: 200,
+        overallBudgetMs: 40,
+      },
+    })
+    expect(Date.now() - started).toBeLessThan(1_000)
+    expect(snapshot.state).toBe(VENUE_HEALTH_STATE.UNAVAILABLE)
+    expect(snapshot.reason).toBe('rpc-timeout')
+    expect(snapshot.signals.providerHealthy).toBe(false)
+    expect(snapshot.updatedAt).toBe(NOW)
   })
 })
