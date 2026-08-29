@@ -47,8 +47,10 @@ import {
   SPLIT_ROUTE_FORBIDDEN,
   assertSameChainOnly,
   assertSingleVenueRoute,
+  evaluateShadowProgressiveReadiness,
   potentialProtocolRevenueRaw,
   runEvmShadowCompetition,
+  type ShadowDecisionEvidence,
   type ShadowVenueReadinessProbe,
 } from '../shadowCompetition'
 import { createSyntheticQuoteSource } from '../shadowQuoteSource'
@@ -728,6 +730,13 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(a5Two.fallbackVenueId).not.toBeNull()
     expect(rankedTwo.decisionEvidence.fallbackQuoteId).toBe(a5Two.fallbackQuoteId)
     expect(rankedTwo.decisionEvidence.fallbackVenueId).toBe(a5Two.fallbackVenueId)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.ready).toBe(false)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.productionMutated).toBe(false)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.productionActivation).toBe(false)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.productionCutoverAllowed).toBe(false)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.fallbackQuoteId).toBe(a5Two.fallbackQuoteId)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.fallbackVenueId).toBe(a5Two.fallbackVenueId)
+    expect(rankedTwo.decisionEvidence.progressiveReadiness.fallbackReady).toBe(false)
 
     const slowPancake = createSyntheticQuoteSource({
       [`56:${WBNB}>${USDC_BSC}`]: { amountOutRaw: '700000000000000000000' },
@@ -767,6 +776,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(usableCount).toBeLessThan(2)
     expect(oneUsable.decisionEvidence.fallbackQuoteId).toBeNull()
     expect(oneUsable.decisionEvidence.fallbackVenueId).toBeNull()
+    expect(oneUsable.decisionEvidence.progressiveReadiness.fallbackReady).toBeNull()
   })
 
   it('preserves timeout candidate status, error, duration, and snapshot health on evidence', async () => {
@@ -811,6 +821,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(pancakeEvidence?.healthState).toBe(snap.state)
     expect(pancakeEvidence?.healthReason).toBe(snap.reason)
     expect(pancakeEvidence?.circuitBreakerOpen).toBe(snap.signals.circuitBreakerOpen)
+    expect(result.decisionEvidence.progressiveReadiness.ready).toBe(false)
   })
 
   it('preserves breaker-open skip evidence from the existing health snapshot', async () => {
@@ -844,6 +855,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(pancakeEvidence?.circuitBreakerOpen).toBe(snap.signals.circuitBreakerOpen)
     expect(pancakeEvidence?.healthState).toBe(snap.state)
     expect(pancakeEvidence?.healthReason).toBe(snap.reason)
+    expect(skipped.decisionEvidence.progressiveReadiness.ready).toBe(false)
   })
 
   it('preserves readiness-blocked candidate evidence without changing the winner', async () => {
@@ -882,5 +894,84 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(result.shadowWinner?.venueId).toBe('melega-dex')
     expect(result.decisionEvidence.selectedVenueId).toBe('melega-dex')
     expect(result.melega?.status).toBe('ok')
+    expect(result.decisionEvidence.progressiveReadiness.ready).toBe(false)
+  })
+
+  it('marks progressive readiness true only on an enforceable selected fixture without activating production', () => {
+    const evidence = {
+      chainId: 56,
+      inputAsset: CANONICAL_EXAMPLE_ASSETS.wbnb,
+      outputAsset: CANONICAL_EXAMPLE_ASSETS.usdcBnb,
+      selectedQuoteId: 'sel-1',
+      selectedVenueId: 'pancakeswap',
+      fallbackQuoteId: null,
+      fallbackVenueId: null,
+      productionMutated: false as const,
+      productionActivation: false as const,
+      sameChain: true as const,
+      candidates: [
+        {
+          venueId: 'pancakeswap',
+          status: 'ok' as const,
+          error: null,
+          durationMs: 12,
+          netUserOutputRaw: '100',
+          feeEnforcementState: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
+          smartSwapFeeBps: 20,
+          feeBand: 'standard',
+          healthState: VENUE_HEALTH_STATE.HEALTHY,
+          healthReason: null,
+          circuitBreakerOpen: false,
+        },
+      ],
+    } as ShadowDecisionEvidence
+    const readiness = evaluateShadowProgressiveReadiness(evidence)
+    expect(readiness.ready).toBe(true)
+    expect(readiness.productionActivation).toBe(false)
+    expect(readiness.productionCutoverAllowed).toBe(false)
+    expect(readiness.fallbackReady).toBeNull()
+    expect(isProductionCutoverAllowed()).toBe(false)
+  })
+
+  it('keeps progressive readiness false for preview fee and open breaker fixtures', () => {
+    const base = {
+      chainId: 56,
+      inputAsset: CANONICAL_EXAMPLE_ASSETS.wbnb,
+      outputAsset: CANONICAL_EXAMPLE_ASSETS.usdcBnb,
+      selectedQuoteId: 'sel-1',
+      selectedVenueId: 'pancakeswap',
+      fallbackQuoteId: null,
+      fallbackVenueId: null,
+      productionMutated: false as const,
+      productionActivation: false as const,
+      sameChain: true as const,
+      candidates: [
+        {
+          venueId: 'pancakeswap',
+          status: 'ok' as const,
+          error: null,
+          durationMs: 12,
+          netUserOutputRaw: '100',
+          feeEnforcementState: PROTOCOL_FEE_STATE.FEE_ENFORCEABLE,
+          smartSwapFeeBps: 20,
+          feeBand: 'standard',
+          healthState: VENUE_HEALTH_STATE.HEALTHY,
+          healthReason: null,
+          circuitBreakerOpen: false,
+        },
+      ],
+    }
+    const preview = {
+      ...base,
+      candidates: [{ ...base.candidates[0], feeEnforcementState: PROTOCOL_FEE_STATE.FEE_PREVIEW_ONLY }],
+    } as ShadowDecisionEvidence
+    const breaker = {
+      ...base,
+      candidates: [{ ...base.candidates[0], circuitBreakerOpen: true }],
+    } as ShadowDecisionEvidence
+    expect(evaluateShadowProgressiveReadiness(preview).ready).toBe(false)
+    expect(evaluateShadowProgressiveReadiness(breaker).ready).toBe(false)
+    expect(evaluateShadowProgressiveReadiness(preview).productionActivation).toBe(false)
+    expect(isProductionCutoverAllowed()).toBe(false)
   })
 })

@@ -21,6 +21,7 @@ import { cloneProductionQuote } from './productionIsolation'
 import type { RevenuePolicyAssessment } from './evaluateRevenuePolicy'
 import { MELEGA_DEX_VENUE_ID } from './melegaDexAdapter'
 import { PANCAKESWAP_VENUE_ID, UNISWAP_VENUE_ID } from './certifiedVenues'
+import { isLegacyProductionAuthoritative, isProductionCutoverAllowed } from './operatingMode'
 
 export const CROSS_CHAIN_FORBIDDEN = 'CROSS_CHAIN_FORBIDDEN' as const
 export const SPLIT_ROUTE_FORBIDDEN = 'SPLIT_ROUTE_FORBIDDEN' as const
@@ -40,6 +41,18 @@ export interface ShadowCandidate {
   assessment: RevenuePolicyAssessment | null
   error: string | null
   kind: 'SYNTHETIC' | 'FACTUAL' | 'LEGACY_MELEGA' | null
+}
+
+export interface ShadowProgressiveReadiness {
+  ready: boolean
+  selectedQuoteId: string | null
+  selectedVenueId: string | null
+  fallbackQuoteId: string | null
+  fallbackVenueId: string | null
+  fallbackReady: boolean | null
+  productionMutated: false
+  productionActivation: false
+  productionCutoverAllowed: false
 }
 
 export interface ShadowDecisionEvidence {
@@ -66,6 +79,7 @@ export interface ShadowDecisionEvidence {
     healthReason: string | null
     circuitBreakerOpen: boolean | null
   }>
+  progressiveReadiness: ShadowProgressiveReadiness
 }
 
 export interface ShadowCompetitionResult {
@@ -81,6 +95,60 @@ export interface ShadowCompetitionResult {
   productionMutated: false
   sameChain: true
   decisionEvidence: ShadowDecisionEvidence
+}
+
+function isShadowEvidenceRowReady(
+  row: ShadowDecisionEvidence['candidates'][number] | undefined,
+): boolean {
+  if (row == null) return false
+  if (row.status !== 'ok') return false
+  if (row.circuitBreakerOpen === true) return false
+  if (row.healthState == null) return false
+  if (!isQuoteEligible({ state: row.healthState } as VenueHealthSnapshot)) return false
+  if (
+    row.feeEnforcementState !== PROTOCOL_FEE_STATE.FEE_ENFORCEABLE &&
+    row.feeEnforcementState !== PROTOCOL_FEE_STATE.FEE_VERIFIED
+  ) {
+    return false
+  }
+  if (row.netUserOutputRaw == null || !/^\d+$/.test(row.netUserOutputRaw) || row.netUserOutputRaw === '0') {
+    return false
+  }
+  return true
+}
+
+export function evaluateShadowProgressiveReadiness(evidence: ShadowDecisionEvidence): ShadowProgressiveReadiness {
+  const selected = evidence.candidates.find((row) => row.venueId === evidence.selectedVenueId)
+  const fallbackIdsNull = evidence.fallbackQuoteId == null && evidence.fallbackVenueId == null
+  const fallbackIdsBoth = evidence.fallbackQuoteId != null && evidence.fallbackVenueId != null
+  const fallback = fallbackIdsBoth
+    ? evidence.candidates.find((row) => row.venueId === evidence.fallbackVenueId)
+    : undefined
+  const fallbackPairConsistent = fallbackIdsNull || (fallbackIdsBoth && fallback != null)
+  const fallbackReady = fallbackIdsNull ? null : isShadowEvidenceRowReady(fallback)
+
+  const ready =
+    selected != null &&
+    isShadowEvidenceRowReady(selected) &&
+    evidence.selectedQuoteId != null &&
+    evidence.selectedVenueId != null &&
+    fallbackPairConsistent &&
+    evidence.productionMutated === false &&
+    evidence.productionActivation === false &&
+    isProductionCutoverAllowed() === false &&
+    isLegacyProductionAuthoritative() === true
+
+  return {
+    ready,
+    selectedQuoteId: evidence.selectedQuoteId,
+    selectedVenueId: evidence.selectedVenueId,
+    fallbackQuoteId: evidence.fallbackQuoteId,
+    fallbackVenueId: evidence.fallbackVenueId,
+    fallbackReady,
+    productionMutated: false,
+    productionActivation: false,
+    productionCutoverAllowed: false,
+  }
 }
 
 function assertSameChainRequest(request: SmartSwapRequest): void {
@@ -307,7 +375,7 @@ export async function runEvmShadowCompetition(input: {
   const winnerNet = shadowWinner?.net?.netUserOutputRaw ?? null
   const productionGross = productionQuote?.grossOutputRaw ?? null
   const request = input.request
-  const decisionEvidence: ShadowDecisionEvidence = {
+  const baseEvidence = {
     chainId: isEvmNetwork(request.network) ? request.network.chainId : (chainId as number),
     inputAsset: request.inputAsset,
     outputAsset: request.outputAsset,
@@ -315,9 +383,9 @@ export async function runEvmShadowCompetition(input: {
     selectedVenueId: winnerPick.selectedVenueId,
     fallbackQuoteId: winnerPick.fallbackQuoteId,
     fallbackVenueId: winnerPick.fallbackVenueId,
-    productionMutated: false,
-    productionActivation: false,
-    sameChain: true,
+    productionMutated: false as const,
+    productionActivation: false as const,
+    sameChain: true as const,
     candidates: candidates.map((candidate) => {
       const scope = healthScopeKey(candidate.venueId, chainId)
       const snap = health.snapshot(scope, candidate.venueId, nowIso)
@@ -335,6 +403,10 @@ export async function runEvmShadowCompetition(input: {
         circuitBreakerOpen: snap.signals.circuitBreakerOpen ?? null,
       }
     }),
+  }
+  const decisionEvidence: ShadowDecisionEvidence = {
+    ...baseEvidence,
+    progressiveReadiness: evaluateShadowProgressiveReadiness(baseEvidence as ShadowDecisionEvidence),
   }
 
   return {
