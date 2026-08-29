@@ -1,0 +1,30 @@
+{
+  "schema": "melega.smartswap.m7.unsigned-approve.v1",
+  "signed": false,
+  "broadcast": false,
+  "chainId": 56,
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "to": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "value": "0",
+  "nonce": 3206,
+  "nonceHex": "0xc86",
+  "gas": 80000,
+  "gasPriceWei": "50000000",
+  "function": "approve(address,uint256)",
+  "data": "0x095ea7b3000000000000000000000000296015b106f4b2fb94249cf398cbf05d4cce0391000000000000000000000000000000000000000000000000002386f26fc10000",
+  "args": {
+    "spender": "0x296015b106F4b2FB94249cf398cbF05d4CcE0391",
+    "amount": "10000000000000000"
+  },
+  "unlimited": false,
+  "funding": {
+    "requiredWbnbWei": "10000000000000000",
+    "observedWbnbWei": "5000000000000000",
+    "shortfallWbnbWei": "5000000000000000",
+    "founderOnly": true
+  },
+  "doNotBroadcastIfNonceChanged": true,
+  "doNotBroadcastIfUnfunded": true,
+  "agentCannotSign": true,
+  "note": "Minimum WBNB approval for the single M7 canary only. Not unlimited. Founder signs only after funding WBNB >= 10000000000000000. Stop if pending nonce != 3206."
+}
