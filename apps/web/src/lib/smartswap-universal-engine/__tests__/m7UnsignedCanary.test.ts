@@ -106,6 +106,7 @@ describe('SmartSwap M7 unsigned canary package', () => {
     expect(exec.intentHash).not.toBe('0x114a067a72ac33c8033aec60264fc9870e7e741bbd17e8f238620dab848e5ce6')
     expect(exec.intentHash).not.toBe('0x2e712f37d552f3e39abf102f44536885b0bbdbe14d50b95054665e8d5a252c1a')
     expect(exec.intentHash).not.toBe('0x03f14cab4817e57c96f9c600261154b4b9d0c48c2e311db8f5c691142cb03af9')
+    expect(exec.intentHash).not.toBe('0xe0fe37b52ad71793570918563ae6d846e66f7df8f6ced7687895ae2bb58fb2fe')
     expect(exec.intent.deadline).not.toBe(1787984605)
     expect(exec.intent.deadline).not.toBe(1787989123)
     expect(exec.intent.deadline).not.toBe(1787991074)
@@ -113,6 +114,7 @@ describe('SmartSwap M7 unsigned canary package', () => {
     expect(exec.intent.deadline).not.toBe(1788010572)
     expect(exec.intent.deadline).not.toBe(1788012170)
     expect(exec.intent.deadline).not.toBe(1788015054)
+    expect(exec.intent.deadline).not.toBe(1788020694)
     expect(approve.nonce).not.toBe(3206)
   })
 
