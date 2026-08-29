@@ -2,23 +2,23 @@
 
 Just-in-time funded reseal. Prepared. Not signed. Not broadcast.
 
-`76907639` (deadline `1788012170`) is **STALE / DO NOT USE**. Its quote, deadline, and intentHash were not reused. Account nonces were re-read immediately before this seal: pending **3207**.
+`2331fea5` (deadline `1788015054`) is **STALE / DO NOT USE**. Its quote, deadline, and intentHash were not reused. Account nonces were re-read immediately before this seal: pending **3207**.
 
 Fail-closed quotes (venue input `9980000000000000` WBNB):
 
 | RPC | Block | ts | net USDC |
 |--|--|--|--|
-| dataseed | 118782539 | 1788013251 | `6865660233874738105` |
-| 48.club | 118782542 | 1788013252 | `6865660233874738105` |
+| dataseed | 118791071 | 1788017091 | `6885105356575535884` |
+| 48.club | 118791074 | 1788017093 | `6885105356575535884` |
 
 | | |
 |--|--|
-| failClosedNetUsdcOut | `6865660233874738105` |
+| failClosedNetUsdcOut | `6885105356575535884` |
 | slippageBps | 50 (M6/M5 canary pattern) |
-| minUserOut | `6831331932705364414` |
-| deadline | `1788015054` (seal ts + 1800s) |
-| deadline UTC | 2026-08-29T14:50:54Z |
-| deadline Europe/Rome | 2026-08-29T16:50:54+02:00 |
-| intentHash | `0x03f14cab4817e57c96f9c600261154b4b9d0c48c2e311db8f5c691142cb03af9` |
+| minUserOut | `6850679829792658204` |
+| deadline | `1788020694` (seal ts + 3600s) |
+| deadline UTC | 2026-08-29T16:24:54Z |
+| deadline Europe/Rome | 2026-08-29T18:24:54+02:00 |
+| intentHash | `0xe0fe37b52ad71793570918563ae6d846e66f7df8f6ced7687895ae2bb58fb2fe` |
 
 `executeCalldata` remains `INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN`.

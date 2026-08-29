@@ -24,11 +24,11 @@
     "founderOnly": true
   },
   "supersedesStalePackage": {
-    "commit": "76907639d3b4285bfcd78972faf91bd39483443b",
+    "commit": "2331fea56aef67330f8159ed9bac112e76b550e0",
     "staleApproveNonce": 3207,
     "staleExecuteNonce": 3208,
-    "staleDeadline": 1788012170,
-    "staleIntentHash": "0x2e712f37d552f3e39abf102f44536885b0bbdbe14d50b95054665e8d5a252c1a"
+    "staleDeadline": 1788015054,
+    "staleIntentHash": "0x03f14cab4817e57c96f9c600261154b4b9d0c48c2e311db8f5c691142cb03af9"
   },
   "doNotBroadcastIfNonceChanged": true,
   "doNotBroadcastIfUnfunded": true,
