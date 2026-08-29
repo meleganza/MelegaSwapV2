@@ -5,7 +5,15 @@ import { assertRouteExecutable, isActivationRoute, isRouteExecutable } from '../
 import { sourceSucceeded, bridgeRecoveryMessage } from '../lifecycle'
 import { RETIRED_ROBINHOOD_CHAIN_ID, ROBINHOOD_CHAIN_ID } from '../robinhoodChain'
 import { simulateMarcoBridgeBuild } from '../simulate'
-import { SOLANA_OFT_UNPAUSER, solanaUnpauseOperatorMessage } from '../solanaUnpause'
+import {
+  SOLANA_OFT_ADMIN,
+  SOLANA_OFT_FALSE_AUTHORITIES,
+  SOLANA_OFT_PROGRAM_ID,
+  SOLANA_OFT_UNPAUSER,
+  assertSolanaUnpauseSigner,
+  parseOftStoreAccount,
+  solanaUnpauseOperatorMessage,
+} from '../solanaUnpause'
 import {
   OFT_SEND_IFACE,
   buildMarcoBridgeTransactions,
@@ -255,6 +263,23 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     expect(isRouteExecutable('bnb', 'solana', authority({ solanaPaused: true }))).toBe(false)
     expect(solanaUnpauseOperatorMessage()).toContain(SOLANA_OFT_UNPAUSER)
     expect(solanaUnpauseOperatorMessage()).toContain('set_pause')
+    expect(solanaUnpauseOperatorMessage()).not.toContain(SOLANA_OFT_FALSE_AUTHORITIES[1])
+  })
+
+  it('parses the live OFT store Option layout and refuses misaligned signer windows', () => {
+    const raw = Buffer.from(
+      'c3d76886b9c3f07200e80300000000000050d3851adc069482df20b05faf8841e614a9729223b552c3f265abe4170f4ffe02fa19808ef6991a81ed7786c4baa549d0687c48b0b684834cc3a23a0cffd7325aad76da514b6e1dcf11037e904dac3d375f525c9fbafcb19507b78907d8c18bff00000000000000009ae83ccef8e3f380108a1f8dc09c6a84161a477546b981040034b5a5c5d55128000001011c76a1a06e16b6ebdd781b7ca9161a4da765249c68ab9a16d60c317f9189d094011c76a1a06e16b6ebdd781b7ca9161a4da765249c68ab9a16d60c317f9189d094',
+      'hex',
+    )
+    const store = parseOftStoreAccount(raw, SOLANA_OFT_PROGRAM_ID)
+    expect(store.paused).toBe(true)
+    expect(store.admin).toBe(SOLANA_OFT_ADMIN)
+    expect(store.pauser).toBe(SOLANA_OFT_UNPAUSER)
+    expect(store.unpauser).toBe(SOLANA_OFT_UNPAUSER)
+    expect(store.mint).toBe(MARCO_WAVE1_NETWORKS.solana.marcoIdentity)
+    expect(store.ld2sdRate).toBe(1000)
+    expect(assertSolanaUnpauseSigner(store)).toBe(SOLANA_OFT_UNPAUSER)
+    expect(SOLANA_OFT_FALSE_AUTHORITIES).not.toContain(store.unpauser)
   })
 
   it('keeps source-confirmed delivery pending on the same GUID', () => {
