@@ -10,6 +10,8 @@ import {
 import { capabilityMap } from '../capabilities'
 import { PANCAKE_SWAP_VENUE, UNISWAP_VENUE, VENUE_SUPPORT } from '../certifiedVenues'
 import { EXECUTION_DOMAIN, evmNetwork, solanaNetwork } from '../domain'
+import { Interface } from '@ethersproject/abi'
+import { runAuthorizedEvmShadowCompetition } from '../authorizedShadowRun'
 import { encodeGetAmountsOut } from '../evmV2Quote'
 import { buildEvmShadowVenueRegistry } from '../evmShadowRegistry'
 import {
@@ -59,7 +61,7 @@ import { SMARTSWAP_UX_FREEZE_FILES } from '../uxFreezeFiles'
 import { FEE_ENFORCEMENT_POSSIBILITY, VENUE_FEE_ENFORCEMENT_FUTURE } from '../venueFeeEnforcementFuture'
 import { VENUE_FEE_SEMANTICS, VENUE_FEE_SEMANTICS_BY_ID } from '../venueFeeSemantics'
 import { assertNoExternalVenueEnabled, buildVenueRegistry } from '../venueRegistry'
-import { engineMustNotOwnUx, hostMustNotOwnRouting } from '../widget'
+import { bindAuthorizedHostSession, engineMustNotOwnUx, hostMustNotOwnRouting } from '../widget'
 import { solanaMint } from '../assetIdentity'
 
 const WEB = path.resolve(__dirname, '../../../..')
@@ -122,6 +124,25 @@ function uniswapQuotes(amountOutRaw: string) {
   return createSyntheticQuoteSource({
     [`1:${WETH}>${USDC_ETH}`]: { amountOutRaw },
   })
+}
+
+const V2_AMOUNTS_OUT = new Interface([
+  'function getAmountsOut(uint256 amountIn, address[] path) view returns (uint256[] amounts)',
+])
+
+function encodeAmountsOutResult(amounts: string[]): string {
+  return V2_AMOUNTS_OUT.encodeFunctionResult('getAmountsOut', [amounts])
+}
+
+function authorizedHost() {
+  return {
+    walletConnected: false,
+    walletAddress: null,
+    network: null,
+    requestedInput: null,
+    requestedOutput: null,
+    runtimeEnvironment: 'melega-dex' as const,
+  }
 }
 
 describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
@@ -972,6 +993,106 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(evaluateShadowProgressiveReadiness(preview).ready).toBe(false)
     expect(evaluateShadowProgressiveReadiness(breaker).ready).toBe(false)
     expect(evaluateShadowProgressiveReadiness(preview).productionActivation).toBe(false)
+    expect(isProductionCutoverAllowed()).toBe(false)
+  })
+
+  it('runs authorized shadow competition through an engine-owned registry', async () => {
+    const session = bindAuthorizedHostSession(authorizedHost())
+    expect(session).not.toHaveProperty('adapters')
+    expect(session).not.toHaveProperty('venues')
+    expect(session.host).not.toHaveProperty('adapters')
+    expect(session.host).not.toHaveProperty('venues')
+    let fetches = 0
+    const fetchImpl = (async () => {
+      fetches += 1
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          jsonrpc: '2.0',
+          id: 1,
+          result: encodeAmountsOutResult(['1000000000000000000', '800000000000000000000']),
+        }),
+      } as Response
+    }) as typeof fetch
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const result = await runAuthorizedEvmShadowCompetition({
+      session,
+      request: bscRequest(),
+      productionQuote: production,
+      melegaSnapshot: LEGACY,
+      nowIso: NOW,
+      rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
+      fetchImpl,
+    })
+    expect(fetches).toBeGreaterThan(0)
+    expect(result.decisionEvidence).toBeDefined()
+    expect(result.decisionEvidence.progressiveReadiness).toBeDefined()
+    expect(result.productionMutated).toBe(false)
+    expect(result.decisionEvidence.productionMutated).toBe(false)
+    expect(result.decisionEvidence.productionActivation).toBe(false)
+    expect(result.decisionEvidence.progressiveReadiness.productionActivation).toBe(false)
+    expect(isProductionCutoverAllowed()).toBe(false)
+    expect(result.candidates.map((row) => row.venueId)).toEqual(['melega-dex', 'pancakeswap', 'uniswap'])
+    expect(result.melega?.status).toBe('ok')
+    expect(result.pancake?.status).toBe('ok')
+  })
+
+  it('rejects tampered session, venue ownership, fee override, and unauthorized runtime before fetch', async () => {
+    const session = bindAuthorizedHostSession(authorizedHost())
+    let fetches = 0
+    const fetchImpl = (async () => {
+      fetches += 1
+      throw new Error('FETCH_MUST_NOT_RUN')
+    }) as typeof fetch
+    const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
+    const base = {
+      request: bscRequest(),
+      productionQuote: production,
+      melegaSnapshot: LEGACY,
+      nowIso: NOW,
+      rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
+      fetchImpl,
+    }
+    await expect(
+      runAuthorizedEvmShadowCompetition({
+        ...base,
+        session: { ...session, engine: { layer: 'engine', mode: 'PRODUCTION' as 'SHADOW' } },
+      }),
+    ).rejects.toThrow('SMARTSWAP_SESSION_NOT_SHADOW')
+    expect(fetches).toBe(0)
+    await expect(
+      runAuthorizedEvmShadowCompetition({
+        ...base,
+        session: { ...session, widget: { layer: 'widget', surface: 'OtherForm' as 'SmartSwapForm' } },
+      }),
+    ).rejects.toThrow('SMARTSWAP_SESSION_WIDGET_MISMATCH')
+    expect(fetches).toBe(0)
+    await expect(
+      runAuthorizedEvmShadowCompetition({
+        ...base,
+        session: { ...session, host: { ...authorizedHost(), adapters: [] } as never },
+      }),
+    ).rejects.toThrow('HOST_CANNOT_OWN_VENUES')
+    expect(fetches).toBe(0)
+    await expect(
+      runAuthorizedEvmShadowCompetition({
+        ...base,
+        session: { ...session, host: { ...authorizedHost(), feeBps: 25 } as never },
+      }),
+    ).rejects.toThrow('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
+    expect(fetches).toBe(0)
+    await expect(
+      runAuthorizedEvmShadowCompetition({
+        ...base,
+        session: {
+          ...session,
+          host: { walletConnected: false, walletAddress: null, network: null, requestedInput: null, requestedOutput: null },
+        },
+      }),
+    ).rejects.toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    expect(fetches).toBe(0)
+    expect(session.engine.mode).toBe('SHADOW')
     expect(isProductionCutoverAllowed()).toBe(false)
   })
 })
