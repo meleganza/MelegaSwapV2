@@ -60,7 +60,8 @@ function healthPenalty(quote: NormalizedQuote): number {
  */
 export function compareNormalizedQuotes(quotes: NormalizedQuote[]): RouteSelectionResult {
   const scores: RouteComparisonScore[] = quotes.map((quote) => {
-    const net = asBigInt(quote.netUserOutputRaw) ?? asBigInt(quote.grossOutputRaw)
+    const netRaw = quote.netUserOutputRaw
+    const net = netRaw != null && /^\d+$/.test(netRaw) ? BigInt(netRaw) : null
     const eligible =
       quote.valid &&
       !quote.stale &&

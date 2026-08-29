@@ -152,6 +152,46 @@ describe('SmartSwap Universal Engine M1 foundation', () => {
     expect(result.orderedQuoteIds[0]).toBe('external-high')
   })
 
+  it('excludes a missing-net quote even when its gross output is larger', () => {
+    const missingNet = quote({
+      quoteId: 'gross-only',
+      venueId: 'unenabled-shadow-peer',
+      grossOutputRaw: '999999',
+      netUserOutputRaw: null,
+    })
+    const explicitNet = quote({
+      quoteId: 'explicit-net',
+      venueId: 'melega-dex',
+      grossOutputRaw: '10',
+      netUserOutputRaw: '10',
+    })
+    const result = compareNormalizedQuotes([missingNet, explicitNet])
+    expect(result.productionActivation).toBe(false)
+    expect(result.selectedQuoteId).toBe('explicit-net')
+    expect(result.orderedQuoteIds).toEqual(['explicit-net'])
+    expect(result.scores.find((row) => row.quoteId === 'gross-only')?.eligible).toBe(false)
+  })
+
+  it('returns no winner when every otherwise-eligible quote lacks usable net output', () => {
+    const a = quote({
+      quoteId: 'missing-a',
+      venueId: 'melega-dex',
+      grossOutputRaw: '500',
+      netUserOutputRaw: null,
+    })
+    const b = quote({
+      quoteId: 'missing-b',
+      venueId: 'unenabled-shadow-peer',
+      grossOutputRaw: '800',
+      netUserOutputRaw: '',
+    })
+    const result = compareNormalizedQuotes([a, b])
+    expect(result.productionActivation).toBe(false)
+    expect(result.selectedQuoteId).toBeNull()
+    expect(result.orderedQuoteIds).toEqual([])
+    expect(result.scores.every((row) => row.eligible === false)).toBe(true)
+  })
+
   it('times out a slow adapter without blocking a healthy one', async () => {
     const results = await collectBoundedParallel(
       [
