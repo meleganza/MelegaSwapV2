@@ -116,7 +116,13 @@ export function compareNormalizedQuotes(quotes: NormalizedQuote[]): RouteSelecti
  */
 export function selectBestNetRoute(
   candidates: Array<{ quoteId: string; venueId: string; netUserOutputRaw: string; confidenceOk: boolean }>,
-): { selectedQuoteId: string | null; selectedVenueId: string | null; productionActivation: false } {
+): {
+  selectedQuoteId: string | null
+  selectedVenueId: string | null
+  fallbackQuoteId: string | null
+  fallbackVenueId: string | null
+  productionActivation: false
+} {
   const usable = candidates
     .filter((row) => row.confidenceOk && /^\d+$/.test(row.netUserOutputRaw) && row.netUserOutputRaw !== '0')
     .sort((a, b) => {
@@ -126,9 +132,12 @@ export function selectBestNetRoute(
       return a.quoteId.localeCompare(b.quoteId)
     })
   const best = usable[0] ?? null
+  const fallback = usable[1] ?? null
   return {
     selectedQuoteId: best?.quoteId ?? null,
     selectedVenueId: best?.venueId ?? null,
+    fallbackQuoteId: fallback?.quoteId ?? null,
+    fallbackVenueId: fallback?.venueId ?? null,
     productionActivation: false,
   }
 }
