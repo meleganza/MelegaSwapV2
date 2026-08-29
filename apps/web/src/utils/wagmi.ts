@@ -189,6 +189,18 @@ export const base: Chain = {
   },
 }
 
+export const robinhood: Chain = {
+  id: 4663,
+  name: 'Robinhood Chain',
+  network: 'robinhood',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: { default: { http: ['https://rpc.mainnet.chain.robinhood.com'] } },
+  blockExplorers: {
+    etherscan: { name: 'Robinhood Blockscout', url: 'https://robinhoodchain.blockscout.com' },
+    default: { name: 'Robinhood Blockscout', url: 'https://robinhoodchain.blockscout.com' },
+  },
+}
+
 const bscTestnet: Chain = {
   id: 97,
   name: 'BNB Testnet',
@@ -232,7 +244,7 @@ const avalanche1: Chain = {
 }
 
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum, arbitrum1, avalanche1]
+const CHAINS = [bsc1, bscTestnet, base, robinhood, polygon1, ethereum, arbitrum1, avalanche1]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

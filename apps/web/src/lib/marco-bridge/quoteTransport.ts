@@ -85,7 +85,7 @@ export async function readOnlyMarcoBridgeQuote(
     quotedAt,
     live: true,
     routePaused: canonicalRoute.paused,
-    publiclyActive: false,
-    executionEnabled: false,
+    publiclyActive: canonicalRoute.publicly_active,
+    executionEnabled: authority.global_execution_enabled && canonicalRoute.execution_enabled,
   }
 }

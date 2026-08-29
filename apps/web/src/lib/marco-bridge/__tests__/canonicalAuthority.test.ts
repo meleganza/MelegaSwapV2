@@ -106,13 +106,25 @@ describe('canonical MMN route authority binding', () => {
     expect(() => assertCanonicalRouteAuthority(wrongToken)).toThrow('binding mismatch')
   })
 
-  it('fails closed if public execution opens or Solana loses its pause', () => {
+  it('accepts a consistent explicitly active route and rejects partial activation', () => {
     const publicRoute = canonicalEnvelope()
+    publicRoute.data.global_execution_enabled = true
     publicRoute.data.routes[0].publicly_active = true
-    expect(() => assertCanonicalRouteAuthority(publicRoute)).toThrow('must remain disabled')
+    publicRoute.data.routes[0].execution_enabled = true
+    expect(assertCanonicalRouteAuthority(publicRoute).routes[0].execution_enabled).toBe(true)
 
+    const partialRoute = canonicalEnvelope()
+    partialRoute.data.routes[0].execution_enabled = true
+    expect(() => assertCanonicalRouteAuthority(partialRoute)).toThrow('unsafe execution state')
+  })
+
+  it('requires Solana network and route pause states to agree', () => {
     const unpausedSolana = canonicalEnvelope()
     unpausedSolana.data.networks[2].paused = false
-    expect(() => assertCanonicalRouteAuthority(unpausedSolana)).toThrow('pause')
+    expect(() => assertCanonicalRouteAuthority(unpausedSolana)).toThrow('disagree')
+
+    unpausedSolana.data.routes[2].paused = false
+    unpausedSolana.data.routes[3].paused = false
+    expect(assertCanonicalRouteAuthority(unpausedSolana).networks[2].paused).toBe(false)
   })
 })

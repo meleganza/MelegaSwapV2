@@ -14,7 +14,7 @@ export type MarcoBridgeQuoteRequest = {
 export interface MarcoBridgeService {
   quote(request: MarcoBridgeQuoteRequest): Promise<MarcoBridgeQuote>
   submit(request: MarcoBridgeQuoteRequest, quote: MarcoBridgeQuote): Promise<MarcoBridgeTracking>
-  track(guid: string): Promise<MarcoBridgeTracking>
+  track(sourceTx: string): Promise<MarcoBridgeTracking>
 }
 
 type QuoteFetch = (
@@ -65,8 +65,14 @@ export const marcoBridgeService: MarcoBridgeService = {
   async submit() {
     throw new MarcoBridgeError('PUBLIC_ACTIVATION_REQUIRED', 'Public bridge submission is disabled.')
   },
-  async track(guid) {
-    if (!guid) throw new MarcoBridgeError('QUOTE_FAILED', 'A LayerZero transfer identifier is required.')
-    return { status: 'action-required', guid, message: 'Tracking transport is awaiting public activation.' }
+  async track(sourceTx) {
+    if (!sourceTx) throw new MarcoBridgeError('QUOTE_FAILED', 'A source transaction is required for tracking.')
+    const response = await fetch(`/api/marco-bridge/track?sourceTx=${encodeURIComponent(sourceTx)}`, {
+      method: 'GET',
+      cache: 'no-store',
+    })
+    const payload = (await response.json()) as MarcoBridgeTracking & { message?: string }
+    if (!response.ok) throw new MarcoBridgeError('QUOTE_FAILED', payload.message || 'LayerZero tracking failed.')
+    return payload
   },
 }

@@ -62,7 +62,7 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     tokenDecimals: 18,
     sharedDecimals: 6,
     nativeFeeSymbol: 'ETH',
-    explorerUrl: null,
+    explorerUrl: 'https://robinhoodchain.blockscout.com',
   },
 }
 

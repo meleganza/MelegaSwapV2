@@ -1,20 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { Connection, VersionedTransaction } from 'solana-web3-latest'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { typography } from 'design-system/melega'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
+import { executeEvmMarcoBridge } from 'lib/marco-bridge/evmExecution'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
-import {
-  MARCO_WAVE1_NETWORKS,
-  MARCO_WAVE1_PUBLIC_ACTIVATION,
-  wave1ActivationBlockers,
-} from 'lib/marco-bridge/wave1Registry'
+import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
 import { isValidMarcoDestination, requiresExplicitDestination, validateBridgeAmount } from 'lib/marco-bridge/validation'
 
 declare global {
@@ -22,6 +20,8 @@ declare global {
     solana?: {
       connect: () => Promise<{ publicKey?: { toString: () => string } }>
       publicKey?: { toString: () => string }
+      signAndSendTransaction?: (transaction: VersionedTransaction) => Promise<{ signature: string }>
+      signTransaction?: (transaction: VersionedTransaction) => Promise<VersionedTransaction>
     }
   }
 }
@@ -397,6 +397,7 @@ const short = (value?: string) => (value ? `${value.slice(0, 7)}…${value.slice
 
 export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { address, isConnected } = useAccount()
+  const { data: signer } = useSigner()
   const { chain } = useNetwork()
   const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
   const [from, setFrom] = useState<MarcoBridgeNetworkId>('bnb')
@@ -421,6 +422,14 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const validAmount = validateBridgeAmount(amount, fromNetwork.tokenDecimals)
   const sourceNetworkCorrect = fromNetwork.walletFamily === 'solana' || chain?.id === fromNetwork.chainId
   const canReview = Boolean(sourceWallet && validDestination && validAmount && route.kind === 'direct')
+  const canonicalRoute = routeAuthority?.routes.find((candidate) => candidate.from === from && candidate.to === to)
+  const routeExecutable = Boolean(
+    routeAuthority?.global_execution_enabled &&
+      canonicalRoute?.certified &&
+      canonicalRoute.publicly_active &&
+      canonicalRoute.execution_enabled &&
+      !canonicalRoute.paused,
+  )
   const routeText =
     route.kind === 'direct'
       ? `${fromNetwork.shortLabel} → ${toNetwork.shortLabel}`
@@ -443,6 +452,25 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    if (!tracking.sourceTx || tracking.status === 'delivered' || tracking.status === 'source-failed') return undefined
+    let cancelled = false
+    const refresh = async () => {
+      try {
+        const next = await marcoBridgeService.track(tracking.sourceTx as string)
+        if (!cancelled) setTracking(next)
+      } catch {
+        // A temporary Scan outage must not encourage a duplicate transfer.
+      }
+    }
+    void refresh()
+    const timer = window.setInterval(refresh, 10_000)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [tracking.sourceTx, tracking.status])
 
   const resetQuote = () => {
     setQuote(null)
@@ -492,6 +520,54 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     }
   }
 
+  const confirmBridge = async () => {
+    if (!quote || !routeAuthority || !routeExecutable) return
+    setError('')
+    setTracking({ status: 'confirming' })
+    const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
+    try {
+      const authorityResponse = await fetch('/api/marco-bridge/route-state', { cache: 'no-store' })
+      const freshAuthority = (await authorityResponse.json()) as CanonicalMmnRouteState & { message?: string }
+      if (!authorityResponse.ok) throw new Error(freshAuthority.message || 'Canonical route authority is unavailable.')
+      const freshQuote = await marcoBridgeService.quote(request)
+      setQuote(freshQuote)
+      let nextTracking: MarcoBridgeTracking
+      if (fromNetwork.walletFamily === 'evm') {
+        if (!signer) throw new Error('Connect the source wallet before signing.')
+        nextTracking = await executeEvmMarcoBridge({ request, quote: freshQuote, authority: freshAuthority, signer })
+      } else {
+        const buildResponse = await fetch('/api/marco-bridge/solana-build', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(request),
+        })
+        const build = (await buildResponse.json()) as { versionedTxBase64?: string; message?: string }
+        if (!buildResponse.ok || !build.versionedTxBase64) throw new Error(build.message || 'Solana build failed.')
+        const bytes = Uint8Array.from(window.atob(build.versionedTxBase64), (character) => character.charCodeAt(0))
+        const transaction = VersionedTransaction.deserialize(bytes)
+        let signature = ''
+        if (window.solana?.signAndSendTransaction) {
+          signature = (await window.solana.signAndSendTransaction(transaction)).signature
+        } else if (window.solana?.signTransaction) {
+          const signed = await window.solana.signTransaction(transaction)
+          const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+            'confirmed',
+          )
+          signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false })
+        } else {
+          throw new Error('The connected Solana wallet cannot sign versioned transactions.')
+        }
+        nextTracking = { status: 'submitted', sourceTx: signature }
+      }
+      setTracking(nextTracking)
+      setReview(false)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'The bridge transaction was not submitted.')
+      setTracking({ status: 'action-required', message: 'No new transfer should be sent until the error is resolved.' })
+    }
+  }
+
   const cta = !sourceWallet
     ? fromNetwork.walletFamily === 'solana'
       ? 'CONNECT SOLANA WALLET'
@@ -515,10 +591,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       $embedded={embedded}
       data-testid="marco-wave1-bridge"
       data-embedded={embedded ? 'true' : 'false'}
-      data-public-activation={MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}
+      data-public-activation={routeAuthority?.global_execution_enabled ? 'enabled' : 'disabled'}
       data-route-authority={routeAuthority ? 'canonical-live' : routeAuthorityError ? 'unavailable' : 'loading'}
       data-live-quote={quote?.live ? 'available' : 'unavailable'}
-      data-solana-paused={MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'true' : 'false'}
+      data-solana-paused={
+        routeAuthority?.networks.find((network) => network.id === 'solana')?.paused ? 'true' : 'false'
+      }
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -656,6 +734,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 second transfer from BNB.
               </Notice>
             ) : null}
+            <Notice>
+              MARCO uses LayerZero OFT mint/burn accounting. No DEX liquidity pool is required for bridging.
+            </Notice>
             {error ? (
               <Notice $danger role="alert">
                 {error}
@@ -718,11 +799,21 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 </ReviewRow>
                 <Notice>
                   {quote?.routePaused
-                    ? 'Live quote obtained. This route is operationally paused and submission remains disabled.'
-                    : 'Live quote obtained. Bridge submission remains disabled until explicit public activation.'}
+                    ? 'Live quote obtained. This route remains operationally paused.'
+                    : routeExecutable
+                    ? 'Production route open. Your wallet will show the exact MARCO transfer and LayerZero fee.'
+                    : 'Live quote obtained. The canonical production authority has not opened this route.'}
                 </Notice>
-                <Primary type="button" disabled>
-                  SUBMISSION DISABLED
+                <Primary
+                  type="button"
+                  disabled={!quote?.live || !routeExecutable || tracking.status === 'confirming'}
+                  onClick={confirmBridge}
+                >
+                  {tracking.status === 'confirming'
+                    ? 'AWAITING WALLET'
+                    : routeExecutable
+                    ? 'CONFIRM BRIDGE'
+                    : 'ROUTE NOT ACTIVE'}
                 </Primary>
               </Review>
             ) : (
@@ -768,9 +859,15 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   Global execution:{' '}
                   {routeAuthority ? (routeAuthority.global_execution_enabled ? 'enabled' : 'disabled') : 'unavailable'}
                 </li>
-                <li>Public activation: {MARCO_WAVE1_PUBLIC_ACTIVATION.enabled ? 'enabled' : 'disabled'}</li>
-                <li>Solana: {MARCO_WAVE1_NETWORKS.solana.protectivePaused ? 'paused' : 'active'}</li>
-                <li>Activation blockers: {wave1ActivationBlockers().join(' · ')}</li>
+                <li>Public activation: {routeAuthority?.global_execution_enabled ? 'enabled' : 'disabled'}</li>
+                <li>
+                  Solana:{' '}
+                  {routeAuthority?.networks.find((network) => network.id === 'solana')?.paused ? 'paused' : 'active'}
+                </li>
+                <li>
+                  Selected route:{' '}
+                  {canonicalRoute?.execution_enabled && canonicalRoute?.publicly_active ? 'active' : 'gated'}
+                </li>
               </ul>
             </Advanced>
             {!embedded ? (

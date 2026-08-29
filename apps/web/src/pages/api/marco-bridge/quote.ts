@@ -5,6 +5,7 @@ import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
 import { MarcoBridgeError, type MarcoBridgeNetworkId } from 'lib/marco-bridge/types'
 import { isValidMarcoDestination } from 'lib/marco-bridge/validation'
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
+import { buildSolanaMarcoSend } from 'lib/marco-bridge/solanaExecution.server'
 
 const OFT_QUOTE_ABI = [
   'function quoteSend((uint32 dstEid,bytes32 to,uint256 amountLD,uint256 minAmountLD,bytes extraOptions,bytes composeMsg,bytes oftCmd) sendParam,bool payInLzToken) view returns ((uint256 nativeFee,uint256 lzTokenFee) msgFee)',
@@ -21,7 +22,9 @@ function resolveRpcUrl(source: MarcoBridgeNetworkId): string {
   if (source === 'base') {
     return process.env.BASE_RPC_URL || process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://base-rpc.publicnode.com'
   }
-  if (source === 'robinhood' && process.env.ROBINHOOD_RPC_URL) return process.env.ROBINHOOD_RPC_URL
+  if (source === 'robinhood') {
+    return process.env.ROBINHOOD_RPC_URL || 'https://rpc.mainnet.chain.robinhood.com'
+  }
   throw new MarcoBridgeError('QUOTE_FAILED', `No read-only RPC is configured for ${source} source quotes.`)
 }
 
@@ -65,11 +68,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const authority = await fetchCanonicalRouteAuthority()
-    const quote = await readOnlyMarcoBridgeQuote(
-      { from, to, amount, destinationWallet },
-      authority,
-      createEthersQuoteReader(from),
-    )
+    const quote =
+      from === 'solana'
+        ? (await buildSolanaMarcoSend({ from, to, amount, sourceWallet, destinationWallet }, authority)).quote
+        : await readOnlyMarcoBridgeQuote(
+            { from, to, amount, destinationWallet },
+            authority,
+            createEthersQuoteReader(from),
+          )
     res.setHeader('Cache-Control', 'no-store')
     return res.status(200).json(quote)
   } catch (cause) {

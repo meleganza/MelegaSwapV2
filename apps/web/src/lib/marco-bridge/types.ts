@@ -33,8 +33,8 @@ export type MarcoBridgeQuote = {
   quotedAt: string
   live: true
   routePaused: boolean
-  publiclyActive: false
-  executionEnabled: false
+  publiclyActive: boolean
+  executionEnabled: boolean
 }
 
 export type MarcoBridgeProgress =
@@ -66,6 +66,8 @@ export type MarcoBridgeFailureCode =
   | 'INSUFFICIENT_MARCO'
   | 'INSUFFICIENT_GAS'
   | 'QUOTE_FAILED'
+  | 'STALE_QUOTE'
+  | 'WALLET_REJECTED'
   | 'SOURCE_FAILED'
 
 export class MarcoBridgeError extends Error {
