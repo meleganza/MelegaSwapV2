@@ -39,6 +39,8 @@ import {
   SMARTSWAP_AUTHORIZED_RUNTIME,
   assertAuthorizedHostContext,
   assertAuthorizedRuntimeEnvironment,
+  assertHostDoesNotOwnVenues,
+  bindAuthorizedHostSession,
   createFrozenWidgetPort,
   createShadowEnginePort,
   engineMustNotOwnUx,
@@ -326,6 +328,81 @@ describe('SmartSwap Universal Engine M1 foundation', () => {
         feeBps: 25,
       } as never),
     ).toThrow('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
+    expect(() => assertHostDoesNotOwnVenues({})).not.toThrow()
+    expect(() =>
+      assertHostDoesNotOwnVenues({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+        runtimeEnvironment: 'melega-dex',
+      }),
+    ).not.toThrow()
+    for (const key of ['adapters', 'venues', 'pancakeSource', 'uniswapSource', 'selectBestNetRoute'] as const) {
+      expect(() => assertHostDoesNotOwnVenues({ [key]: true })).toThrow('HOST_CANNOT_OWN_VENUES')
+    }
+    expect(() => assertHostDoesNotOwnVenues(Object.create({ adapters: [] }))).toThrow('HOST_CANNOT_OWN_VENUES')
+    for (const runtimeEnvironment of ['melega-dex', 'melega-space', 'authorized-embed'] as const) {
+      const host = {
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+        runtimeEnvironment,
+      }
+      const session = bindAuthorizedHostSession(host)
+      expect(session.host).toBe(host)
+      expect(session.runtime).toBe(runtimeEnvironment)
+      expect(session.engine).toEqual({ layer: 'engine', mode: 'SHADOW' })
+      expect(session.widget).toEqual({ layer: 'widget', surface: 'SmartSwapForm' })
+    }
+    expect(() =>
+      bindAuthorizedHostSession({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+      }),
+    ).toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    expect(() =>
+      bindAuthorizedHostSession({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+        runtimeEnvironment: 'other' as never,
+      }),
+    ).toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    expect(() =>
+      bindAuthorizedHostSession({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+        runtimeEnvironment: 'melega-dex',
+        feeBps: 25,
+      } as never),
+    ).toThrow('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
+    for (const key of ['adapters', 'venues', 'pancakeSource', 'uniswapSource', 'selectBestNetRoute'] as const) {
+      expect(() =>
+        bindAuthorizedHostSession({
+          walletConnected: false,
+          walletAddress: null,
+          network: null,
+          requestedInput: null,
+          requestedOutput: null,
+          runtimeEnvironment: 'melega-dex',
+          [key]: true,
+        } as never),
+      ).toThrow('HOST_CANNOT_OWN_VENUES')
+    }
+    expect(isProductionCutoverAllowed()).toBe(false)
+    expect(isLegacyProductionAuthoritative()).toBe(true)
     const form = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/index.tsx'), 'utf8')
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
     const callback = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/hooks/useSwapCallback.ts'), 'utf8')
