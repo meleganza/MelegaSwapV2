@@ -20,10 +20,10 @@
   ],
   "pair": "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b",
   "intentNonce": 2,
-  "intentHash": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe",
+  "intentHash": "0xe9a8ef50d382ff30e9270c76ddf737de8b4621ddab637168560c6f862b26b4c2",
   "signatureRequired": true,
   "signatureScheme": "personal_sign of the 32-byte intentHash; contract recovers ECDSA over keccak256(abi.encodePacked(hex'19457468657265756d205369676e6564204d6573736167653a0a3332', intentHash)) == intentSigner",
-  "founderMustPersonalSign": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe",
+  "founderMustPersonalSign": "0xe9a8ef50d382ff30e9270c76ddf737de8b4621ddab637168560c6f862b26b4c2",
   "signature": null,
   "executeCalldata": "INCOMPLETE_UNTIL_INTENTSIGNER_PERSONAL_SIGN",
   "intent": {
@@ -37,7 +37,7 @@
     "inputAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     "outputAsset": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
     "inputAmount": "10000000000000000",
-    "minUserOut": "6797523595135297013",
+    "minUserOut": "6813557550622109563",
     "venueId": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
     "venueIdPreimage": "pancakeswap",
     "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
@@ -47,11 +47,11 @@
     "feeAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
     "structuralRouteCostBps": 25,
-    "deadline": 1787991074,
+    "deadline": 1787993618,
     "nonce": 2,
     "nativeIn": false,
     "nativeOut": false,
-    "engineSeal": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe"
+    "engineSeal": "0xe9a8ef50d382ff30e9270c76ddf737de8b4621ddab637168560c6f862b26b4c2"
   },
   "economics": {
     "feeBand": "BAND_11_25",
@@ -64,22 +64,22 @@
     "quotes": [
       {
         "rpc": "dataseed",
-        "block": 118729273,
-        "blockHash": "0x442e3b8f527eead6f97c05ec8743bc47cb9addf9dfa8f917de03efcb9a1162e4",
-        "ts": 1787989274,
-        "netUsdcOut": "6831682005161102526"
+        "block": 118734924,
+        "blockHash": "0x50c9fee386fd573561cdd062ea6bb169541d90e59aeea8ef3e02ca9a259c96c5",
+        "ts": 1787991818,
+        "netUsdcOut": "6847796533288552325"
       },
       {
         "rpc": "48club",
-        "block": 118729278,
-        "blockHash": "0x394d76fd57d23fb1b5aa22c5e7fe7598dba1fb5b00517b3252f0290314ae47ed",
-        "ts": 1787989276,
-        "netUsdcOut": "6831682005161102526"
+        "block": 118734929,
+        "blockHash": "0x7a3c32aa290504e20992abf09855425a8915e4e77aef125f6bc9373a6dbd2db5",
+        "ts": 1787991820,
+        "netUsdcOut": "6847796533288552325"
       }
     ],
-    "failClosedNetUsdcOut": "6831682005161102526",
+    "failClosedNetUsdcOut": "6847796533288552325",
     "slippageBps": 50,
-    "minUserOut": "6797523595135297013",
+    "minUserOut": "6813557550622109563",
     "treasuryReceivesWbnbNotUsdc": true,
     "externalDexDoesNotSeeProtocolFee": true,
     "expectedTreasuryDeltaWbnbWei": "20000000000000"
@@ -105,12 +105,12 @@
     "usedNonce1": true
   },
   "supersedesStalePackage": {
-    "commit": "a6af056ea6026213badce17a2f59281446ab14ec",
-    "staleDeadline": 1787989123,
-    "staleIntentHash": "0xb6b0e026141454d3c7a1590fa5117b5a61c9de926fafcdfc459eacf31d5395ef",
+    "commit": "6f4eb29ed2c71ce41ee0aaf228b1dc6d3d017208",
+    "staleDeadline": 1787991074,
+    "staleIntentHash": "0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe",
     "staleApproveNonce": 3207,
     "staleExecuteNonce": 3208,
-    "reason": "DEADLINE_ELAPSED_FINAL_RESEAL_FOR_FOUNDER_HELPER"
+    "reason": "DEADLINE_ELAPSED_JIT_RESEAL"
   },
   "doNotBroadcastIfNonceChanged": true,
   "doNotBroadcastIfDeadlineElapsed": true,
@@ -120,5 +120,5 @@
   "agentCannotSign": true,
   "ACTIVE_V2_ROLLOUT": "LEGACY_PRODUCTION",
   "UNAUTHORIZED_UI_CHANGE": 0,
-  "note": "a6af056e is STALE if used after 1787989123. Founder uses the helper to send exact approve at nonce 3207 then personal_sign intentHash and execute at nonce 3208. Stop if pending != 3207 before approve, if deadline elapsed, or if fresh getAmountsOut(9980000000000000) breaches minUserOut. Amount stays 10000000000000000. No second canary."
+  "note": "6f4eb29e is STALE after 1787991074. Founder helper embeds only this seal. Approve nonce 3207, execute nonce 3208. Stop if pending != 3207 before approve, if deadline elapsed, or if fresh getAmountsOut(9980000000000000) breaches minUserOut. Amount stays 10000000000000000. No second canary."
 }

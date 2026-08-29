@@ -26,7 +26,7 @@ Open `http://127.0.0.1:8765/m7-founder-helper.html` in a browser with Founder Me
 2. Connect Founder MetaMask. Account must be `0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0` on BNB Chain (56).
 3. Run fail-closed preflight. Helper reads two public BSC RPCs and STOPs on any listed mismatch.
 4. Send the exact finite WBNB approve at nonce **3207**. Not unlimited.
-5. `personal_sign` `0xd7da493199519e7987504e73b995fc2aa0532600012ed2805417f320b757eefe`.
-6. Send execute once at nonce **3208** before `1787991074` (2026-08-29 10:11:14 Europe/Rome). Stop. No retry.
+5. `personal_sign` `0xe9a8ef50d382ff30e9270c76ddf737de8b4621ddab637168560c6f862b26b4c2`.
+6. Send execute once at nonce **3208** before `1787993618` (2026-08-29 10:53:38 Europe/Rome). Stop. No retry.
 
 Do not use a stale package after its deadline. Do not merge, activate V2, or change UX.
