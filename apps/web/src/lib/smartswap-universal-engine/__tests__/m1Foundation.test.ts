@@ -35,7 +35,15 @@ import { runMelegaShadowComparison, shadowMustNotAffectUserTransaction } from '.
 import { SMARTSWAP_UX_FREEZE_FILES } from '../uxFreezeFiles'
 import { createMelegaDexAdapter, normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
 import { EXTERNAL_VENUE_IDS, assertNoExternalVenueEnabled, buildVenueRegistry } from '../venueRegistry'
-import { engineMustNotOwnUx, hostMustNotOwnRouting } from '../widget'
+import {
+  SMARTSWAP_AUTHORIZED_RUNTIME,
+  assertAuthorizedHostContext,
+  assertAuthorizedRuntimeEnvironment,
+  createFrozenWidgetPort,
+  createShadowEnginePort,
+  engineMustNotOwnUx,
+  hostMustNotOwnRouting,
+} from '../widget'
 import type { NormalizedQuote } from '../quote'
 
 const WEB = path.resolve(__dirname, '../../../..')
@@ -272,6 +280,52 @@ describe('SmartSwap Universal Engine M1 foundation', () => {
   it('keeps the widget/engine/host layers independent', () => {
     expect(hostMustNotOwnRouting()).toBe(true)
     expect(engineMustNotOwnUx()).toBe(true)
+    expect(SMARTSWAP_AUTHORIZED_RUNTIME).toEqual({
+      MELEGA_DEX: 'melega-dex',
+      MELEGA_SPACE: 'melega-space',
+      AUTHORIZED_EMBED: 'authorized-embed',
+    })
+    expect(createShadowEnginePort()).toEqual({ layer: 'engine', mode: 'SHADOW' })
+    expect(isProductionCutoverAllowed()).toBe(false)
+    expect(isLegacyProductionAuthoritative()).toBe(true)
+    expect(createFrozenWidgetPort()).toEqual({ layer: 'widget', surface: 'SmartSwapForm' })
+    expect(() => assertAuthorizedRuntimeEnvironment('melega-dex')).not.toThrow()
+    expect(() => assertAuthorizedRuntimeEnvironment('melega-space')).not.toThrow()
+    expect(() => assertAuthorizedRuntimeEnvironment('authorized-embed')).not.toThrow()
+    expect(() => assertAuthorizedRuntimeEnvironment(undefined)).toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    expect(() => assertAuthorizedRuntimeEnvironment('other')).toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    expect(() =>
+      assertAuthorizedHostContext({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+      }),
+    ).toThrow('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+    for (const runtimeEnvironment of ['melega-dex', 'melega-space', 'authorized-embed'] as const) {
+      expect(() =>
+        assertAuthorizedHostContext({
+          walletConnected: false,
+          walletAddress: null,
+          network: null,
+          requestedInput: null,
+          requestedOutput: null,
+          runtimeEnvironment,
+        }),
+      ).not.toThrow()
+    }
+    expect(() =>
+      assertAuthorizedHostContext({
+        walletConnected: false,
+        walletAddress: null,
+        network: null,
+        requestedInput: null,
+        requestedOutput: null,
+        runtimeEnvironment: 'melega-dex',
+        feeBps: 25,
+      } as never),
+    ).toThrow('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
     const form = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/index.tsx'), 'utf8')
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
     const callback = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/hooks/useSwapCallback.ts'), 'utf8')

@@ -50,3 +50,35 @@ export function assertHostDoesNotSupplyFee(host: SmartSwapHostContext): void {
     throw new Error('HOST_CANNOT_OVERRIDE_REVENUE_POLICY')
   }
 }
+
+export const SMARTSWAP_AUTHORIZED_RUNTIME = {
+  MELEGA_DEX: 'melega-dex',
+  MELEGA_SPACE: 'melega-space',
+  AUTHORIZED_EMBED: 'authorized-embed',
+} as const
+
+export type SmartSwapAuthorizedRuntime =
+  (typeof SMARTSWAP_AUTHORIZED_RUNTIME)[keyof typeof SMARTSWAP_AUTHORIZED_RUNTIME]
+
+export function assertAuthorizedRuntimeEnvironment(value: unknown): asserts value is SmartSwapAuthorizedRuntime {
+  if (
+    value !== SMARTSWAP_AUTHORIZED_RUNTIME.MELEGA_DEX &&
+    value !== SMARTSWAP_AUTHORIZED_RUNTIME.MELEGA_SPACE &&
+    value !== SMARTSWAP_AUTHORIZED_RUNTIME.AUTHORIZED_EMBED
+  ) {
+    throw new Error('SMARTSWAP_UNAUTHORIZED_RUNTIME')
+  }
+}
+
+export function createShadowEnginePort(): SmartSwapEnginePort {
+  return { layer: SMARTSWAP_ENGINE_LAYER, mode: 'SHADOW' }
+}
+
+export function createFrozenWidgetPort(): SmartSwapWidgetPort {
+  return { layer: SMARTSWAP_WIDGET_LAYER, surface: 'SmartSwapForm' }
+}
+
+export function assertAuthorizedHostContext(host: SmartSwapHostContext): void {
+  assertAuthorizedRuntimeEnvironment(host.runtimeEnvironment)
+  assertHostDoesNotSupplyFee(host)
+}
