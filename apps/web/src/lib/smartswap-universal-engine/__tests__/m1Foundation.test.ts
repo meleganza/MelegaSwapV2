@@ -1,7 +1,14 @@
+import { Interface } from '@ethersproject/abi'
 import { createHash } from 'crypto'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
+import {
+  SMARTSWAP_AUTHORIZED_RUNTIME,
+  bindAuthorizedHostSession,
+  evmNetwork,
+  runAuthorizedEvmShadowCompetition,
+} from '..'
 import {
   CANONICAL_EXAMPLE_ASSETS,
   assetIdentityKey,
@@ -36,11 +43,9 @@ import { SMARTSWAP_UX_FREEZE_FILES } from '../uxFreezeFiles'
 import { createMelegaDexAdapter, normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
 import { EXTERNAL_VENUE_IDS, assertNoExternalVenueEnabled, buildVenueRegistry } from '../venueRegistry'
 import {
-  SMARTSWAP_AUTHORIZED_RUNTIME,
   assertAuthorizedHostContext,
   assertAuthorizedRuntimeEnvironment,
   assertHostDoesNotOwnVenues,
-  bindAuthorizedHostSession,
   createFrozenWidgetPort,
   createShadowEnginePort,
   engineMustNotOwnUx,
@@ -424,5 +429,81 @@ describe('SmartSwap Universal Engine M1 foundation', () => {
       current[rel] = createHash('sha256').update(readFileSync(abs)).digest('hex')
     }
     expect(current).toEqual(manifest.files)
+  })
+
+  it('exposes authorized shadow run on the public barrel without host-owned venues', async () => {
+    const src = readFileSync(path.join(__dirname, 'm1Foundation.test.ts'), 'utf8')
+    const fromPaths = [...src.matchAll(/from ['"]([^'"]+)['"]/g)].map((match) => match[1])
+    expect(fromPaths).toContain('..')
+    expect(fromPaths.some((spec) => /authorizedShadowRun|evmShadowRegistry|pancakeSwapAdapter|uniswapAdapter/.test(spec))).toBe(
+      false,
+    )
+    expect(src.includes('create' + 'FactualV2QuoteSource')).toBe(false)
+    const nowIso = LEGACY.freshness
+    const session = bindAuthorizedHostSession({
+      walletConnected: false,
+      walletAddress: null,
+      network: null,
+      requestedInput: null,
+      requestedOutput: null,
+      runtimeEnvironment: SMARTSWAP_AUTHORIZED_RUNTIME.MELEGA_DEX,
+    })
+    const amountsOut = new Interface([
+      'function getAmountsOut(uint256 amountIn, address[] path) view returns (uint256[] amounts)',
+    ])
+    const fetchImpl = (async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          jsonrpc: '2.0',
+          id: 1,
+          result: amountsOut.encodeFunctionResult('getAmountsOut', [
+            ['1000000000000000000', '800000000000000000000'],
+          ]),
+        }),
+      }) as Response) as typeof fetch
+    const input = {
+      session,
+      request: {
+        requestId: 'm9-a4-barrel',
+        network: evmNetwork(56),
+        inputAsset: CANONICAL_EXAMPLE_ASSETS.wbnb,
+        outputAsset: CANONICAL_EXAMPLE_ASSETS.usdcBnb,
+        inputAmountRaw: LEGACY.inputAmountRaw,
+        exactOut: false,
+        slippageBps: 50,
+      },
+      productionQuote: normalizeMelegaLegacyQuote(LEGACY, nowIso),
+      melegaSnapshot: LEGACY,
+      nowIso,
+      rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
+      fetchImpl,
+    }
+    for (const key of [
+      'adapters',
+      'venues',
+      'selectBestNetRoute',
+      'feeBps',
+      'revenuePolicy',
+      'readinessProbe',
+      'health',
+      'budget',
+      'now',
+    ] as const) {
+      expect(input).not.toHaveProperty(key)
+      expect(session).not.toHaveProperty(key)
+      expect(session.host).not.toHaveProperty(key)
+    }
+    const result = await runAuthorizedEvmShadowCompetition(input)
+    expect(result.decisionEvidence.progressiveReadiness).toBeDefined()
+    expect(result.productionMutated).toBe(false)
+    expect(result.decisionEvidence.productionMutated).toBe(false)
+    expect(result.decisionEvidence.productionActivation).toBe(false)
+    expect(result.decisionEvidence.progressiveReadiness.productionActivation).toBe(false)
+    expect(isProductionCutoverAllowed()).toBe(false)
+    expect(result.candidates.map((row) => row.venueId)).toEqual(['melega-dex', 'pancakeswap', 'uniswap'])
+    expect(result.melega?.status).toBe('ok')
+    expect(result.pancake?.status).toBe('ok')
   })
 })
