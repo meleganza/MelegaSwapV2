@@ -20,7 +20,7 @@
     "src/views/SmartSwapStudio/modules/SmartSwapHistory/SmartSwapHistoryPanel.tsx": "6d12f597a14ec784d2cbf7e67536565aef087a761004bad8a189393f7a86c9ef",
     "src/views/SmartSwapStudio/modules/SmartSwapAIAssistance/SmartSwapAIAssistancePanel.tsx": "aed0783d42682abeea2ab15e8edf38766225daf7f452dbcd1e322206fb682ce4",
     "src/views/Trade/TradeCockpit.tsx": "fd0ba8c537658d7c6691d3b596a3ddb2eabb3d734aae18708e1ccd8bd00a02ef",
-    "src/views/Trade/TradeTerminalScreen.tsx": "13a297c27bccdd6cfe6ca3db148e5516156702990f4e3b2be27b9441882c98c0",
+    "src/views/Trade/TradeTerminalScreen.tsx": "674fa43ba39256d3cbb02a0a210727b9e0060e96b1eda65776d8ce22845e5c31",
     "src/views/HomeTrade/HomeSwapPanel.tsx": "efbcc28672750761580be0bd78d52e873c38c6ccd493d593be20dc034500d45f",
     "src/views/HomeTrade/HomeSwapPanelShell.tsx": "dabf33aa19dcb554212cc828abd4aa7d32251abf60f412491cf56947266fd331",
     "src/components/DexPricing/DexSwapFeeDisclosure.tsx": "d062f566342ee13aa66603c0e165b8d3f3aca4a11bdd31d1b59b69496e25f467"
