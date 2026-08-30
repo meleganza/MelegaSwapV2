@@ -21,7 +21,16 @@ function resolveRpcUrl(source: MarcoBridgeNetworkId): string {
   if (source === 'base') {
     return process.env.BASE_RPC_URL || process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://base-rpc.publicnode.com'
   }
-  if (source === 'robinhood' && process.env.ROBINHOOD_RPC_URL) return process.env.ROBINHOOD_RPC_URL
+  if (source === 'robinhood') {
+    return (
+      process.env.ROBINHOOD_RPC_URL ||
+      process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL ||
+      'https://rpc.mainnet.chain.robinhood.com'
+    )
+  }
+  if (source === 'solana') {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'Solana source quotes use the Solana OFT store, not an EVM RPC.')
+  }
   throw new MarcoBridgeError('QUOTE_FAILED', `No read-only RPC is configured for ${source} source quotes.`)
 }
 
@@ -65,6 +74,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const authority = await fetchCanonicalRouteAuthority()
+    if (from === 'solana') {
+      const solana = authority.networks.find((network) => network.id === 'solana')
+      const route = authority.routes.find((item) => item.from === from && item.to === to)
+      if (solana?.paused || route?.paused) {
+        throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT store is paused. Unpause is required before Solana source quotes.')
+      }
+      throw new MarcoBridgeError(
+        'QUOTE_FAILED',
+        'Solana source quoteSend is available only after the certified store is unpaused.',
+      )
+    }
     const quote = await readOnlyMarcoBridgeQuote(
       { from, to, amount, destinationWallet },
       authority,

@@ -1,5 +1,6 @@
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
+import { isRouteExecutable } from './executableRoutes'
 import { planMarcoBridgeRoute } from './routePolicy'
 import type { CanonicalMmnRouteState } from './routeAuthority'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
@@ -80,12 +81,13 @@ export async function readOnlyMarcoBridgeQuote(
     amount: amount.normalized,
     expectedReceive: formatBridgeAmount(received, source.tokenDecimals),
     nativeFee: formatUnits(nativeFee, 18),
+    nativeFeeWei: nativeFee.toString(),
     nativeFeeSymbol: source.nativeFeeSymbol,
     routeLabel: `${source.shortLabel} → ${destination.shortLabel}`,
     quotedAt,
     live: true,
     routePaused: canonicalRoute.paused,
-    publiclyActive: false,
-    executionEnabled: false,
+    publiclyActive: isRouteExecutable(input.from, input.to, authority),
+    executionEnabled: isRouteExecutable(input.from, input.to, authority),
   }
 }

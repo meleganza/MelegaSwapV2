@@ -53,8 +53,8 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   }
 
   const state = envelope.data
-  if (state.hub !== 'bnb' || state.global_execution_enabled !== false) {
-    throw new Error('Canonical MMN global execution gate must remain disabled.')
+  if (state.hub !== 'bnb') {
+    throw new Error('Canonical MMN hub must remain BNB.')
   }
   if (!Array.isArray(state.networks) || !Array.isArray(state.routes)) {
     throw new Error('Canonical MMN route authority is incomplete.')
@@ -85,17 +85,17 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   if (base?.token.toLowerCase() === retiredAdapter || robinhood?.token.toLowerCase() === retiredAdapter) {
     throw new Error('Retired BNB adapter cannot be used as Base or Robinhood canonical MARCO.')
   }
-  if (state.routes.some((route) => route.publicly_active || route.execution_enabled)) {
-    throw new Error('Public MMN routes must remain disabled in P1.')
+  if (
+    state.routes.some(
+      (route) =>
+        (route.from === 'base' || route.to === 'base') && (route.publicly_active || route.execution_enabled),
+    )
+  ) {
+    throw new Error('Base MMN routes must remain disabled.')
   }
   for (const expected of MARCO_WAVE1_DIRECT_ROUTES) {
     const actual = state.routes.find((route) => route.from === expected.from && route.to === expected.to)
     if (!actual?.certified) throw new Error(`Canonical MMN route ${expected.from}->${expected.to} is not certified.`)
-  }
-  const solana = state.networks.find((network) => network.id === 'solana')
-  const solanaRoutes = state.routes.filter((route) => route.from === 'solana' || route.to === 'solana')
-  if (!solana?.paused || !solanaRoutes.length || !solanaRoutes.every((route) => route.paused)) {
-    throw new Error('Canonical Solana route pause is not represented.')
   }
 
   return state

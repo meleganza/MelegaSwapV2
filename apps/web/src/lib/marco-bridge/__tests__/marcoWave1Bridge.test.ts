@@ -108,10 +108,10 @@ describe('MARCO Wave-1 bridge product', () => {
     expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).toContain('delivered')
   })
 
-  it('keeps public submission locked until canonical activation', async () => {
-    expect(MARCO_WAVE1_PUBLIC_ACTIVATION.enabled).toBe(false)
+  it('keeps Base locked and requires a wallet for activated routes', async () => {
+    expect(MARCO_WAVE1_PUBLIC_ACTIVATION.enabled).toBe(true)
     expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(true)
-    expect(wave1ActivationBlockers().length).toBeGreaterThan(1)
+    expect(wave1ActivationBlockers().some((blocker) => /Solana/i.test(blocker))).toBe(true)
     await expect(
       marcoBridgeService.submit(
         { from: 'bnb', to: 'base', amount: '1', sourceWallet: evm, destinationWallet: evm },
@@ -119,6 +119,7 @@ describe('MARCO Wave-1 bridge product', () => {
           amount: '1',
           expectedReceive: '1',
           nativeFee: '0.001',
+          nativeFeeWei: '1000000000000000',
           nativeFeeSymbol: 'BNB',
           routeLabel: 'BNB → Base',
           quotedAt: '2026-08-26T00:00:00.000Z',
@@ -128,6 +129,24 @@ describe('MARCO Wave-1 bridge product', () => {
           executionEnabled: false,
         },
       ),
-    ).rejects.toThrow('submission is disabled')
+    ).rejects.toThrow('Base routes are not activated')
+    await expect(
+      marcoBridgeService.submit(
+        { from: 'bnb', to: 'robinhood', amount: '1', sourceWallet: evm, destinationWallet: evm },
+        {
+          amount: '1',
+          expectedReceive: '1',
+          nativeFee: '0.001',
+          nativeFeeWei: '1000000000000000',
+          nativeFeeSymbol: 'BNB',
+          routeLabel: 'BNB → Robinhood',
+          quotedAt: '2026-08-26T00:00:00.000Z',
+          live: true,
+          routePaused: false,
+          publiclyActive: true,
+          executionEnabled: true,
+        },
+      ),
+    ).rejects.toThrow('connected wallet')
   })
 })

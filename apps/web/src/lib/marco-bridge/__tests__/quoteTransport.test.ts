@@ -67,10 +67,11 @@ describe('read-only LayerZero quote transport', () => {
       live: true,
       expectedReceive: '0.000001',
       nativeFee: '0.000072607980676756',
+      nativeFeeWei: '72607980676756',
       nativeFeeSymbol: 'BNB',
       routePaused: paused,
-      publiclyActive: false,
-      executionEnabled: false,
+      publiclyActive: to === 'robinhood',
+      executionEnabled: to === 'robinhood',
     })
   })
 
@@ -79,6 +80,7 @@ describe('read-only LayerZero quote transport', () => {
       amount: '0.000001',
       expectedReceive: '0.000001',
       nativeFee: '0.0001',
+      nativeFeeWei: '100000000000000',
       nativeFeeSymbol: 'BNB',
       routeLabel: 'BNB → Base',
       quotedAt: '2026-08-26T00:00:00.000Z',
