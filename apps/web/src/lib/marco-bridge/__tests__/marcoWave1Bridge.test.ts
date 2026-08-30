@@ -93,7 +93,7 @@ describe('MARCO Wave-1 bridge product', () => {
 
   it('keeps source-confirmed delivery pending on the same GUID', () => {
     const message = bridgeRecoveryMessage({ status: 'verifying', sourceTx: '0xabc', guid: 'guid-1' })
-    expect(message).toContain('do not resend')
+    expect(message).toMatch(/do not resend/i)
     expect(MARCO_BRIDGE_PROGRESS.map((step) => step.status)).toEqual([
       'submitted',
       'source-confirmed',

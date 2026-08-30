@@ -1,12 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
+import { CheckmarkCircleIcon } from '@pancakeswap/uikit'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import CircleLoader from 'components/Loader/CircleLoader'
 import { typography } from 'design-system/melega'
 import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
-import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
+import {
+  BRIDGE_COMPLETE_HEADLINE,
+  BRIDGE_IN_PROGRESS_HEADLINE,
+  bridgeRecoveryMessage,
+  deliveryStepPhases,
+  isTrackedBridgeTransfer,
+  mergeBridgeTracking,
+  resolveLiveQuoteCtaLabel,
+  showConfirmBridgeControls,
+} from 'lib/marco-bridge/lifecycle'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
@@ -190,6 +201,9 @@ const CardHead = styled.div`
     font-size: 19px;
   }
   span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     color: #f4c430;
     font-size: 11px;
     font-weight: 800;
@@ -374,6 +388,12 @@ const Steps = styled.ol`
     color: rgba(255, 255, 255, 0.52);
     font-size: 12px;
   }
+  li[data-step-phase='complete'] {
+    color: rgba(255, 255, 255, 0.88);
+  }
+  li[data-step-phase='current'] {
+    color: rgba(255, 255, 255, 0.86);
+  }
   i {
     width: 20px;
     height: 20px;
@@ -384,6 +404,14 @@ const Steps = styled.ol`
     color: #f4c430;
     font-style: normal;
     font-size: 10px;
+  }
+  li[data-step-phase='complete'] i {
+    background: rgba(244, 196, 48, 0.18);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.4);
+  }
+  li[data-step-phase='current'] i {
+    background: rgba(244, 196, 48, 0.12);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.35);
   }
 `
 const Advanced = styled.details`
@@ -464,6 +492,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     setQuote(null)
     setQuoteLoading(false)
     setReview(false)
+    setTracking({ status: 'idle' })
   }
 
   useEffect(() => {
@@ -485,8 +514,13 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     }
   }
 
+  const transferLocked = isTrackedBridgeTransfer(tracking)
+  const showReview = showConfirmBridgeControls(review, tracking)
+  const stepVisuals = deliveryStepPhases(tracking.status)
+
   const openReview = async () => {
     setError('')
+    if (isTrackedBridgeTransfer(tracking)) return
     if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch) {
       void switchNetworkAsync(fromNetwork.chainId)
       return
@@ -510,7 +544,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   const confirmSubmit = async () => {
     setError('')
-    if (!routeAuthority || !canReview) return
+    if (transferLocked || !routeAuthority || !canReview) return
     if (fromNetwork.chainId === 4663 && window.ethereum) {
       try {
         await ensureRobinhoodWalletNetwork(window.ethereum)
@@ -538,11 +572,16 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         signer,
         ethereum: window.ethereum,
       })
-      setTracking(nextTracking)
-      setReview(true)
+      setTracking((prev) => mergeBridgeTracking(prev, nextTracking))
       if (nextTracking.sourceTx) {
+        setReview(false)
         const tracked = await fetch(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`, { cache: 'no-store' })
-        if (tracked.ok) setTracking((await tracked.json()) as MarcoBridgeTracking)
+        if (tracked.ok) {
+          const nextTracked = (await tracked.json()) as MarcoBridgeTracking
+          setTracking((prev) => mergeBridgeTracking(prev, nextTracked))
+        }
+      } else {
+        setReview(true)
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Bridge submission failed.')
@@ -566,9 +605,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     ? 'BRIDGE TO BNB FIRST'
     : route.kind === 'same-network'
     ? 'CHOOSE ANOTHER NETWORK'
-    : quoteLoading
-    ? 'FETCHING LIVE QUOTE'
-    : 'GET LIVE QUOTE'
+    : resolveLiveQuoteCtaLabel(Boolean(quote?.live), quoteLoading)
 
   return (
     <Page
@@ -580,6 +617,20 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-live-quote={quote?.live ? 'available' : 'unavailable'}
       data-solana-paused={solanaPaused ? 'true' : 'false'}
       data-route-executable={executable ? 'true' : 'false'}
+      data-quote-cta={cta}
+      data-bridge-transfer-locked={transferLocked ? 'true' : 'false'}
+      data-confirm-visible={showReview ? 'true' : 'false'}
+      data-bridge-ux={
+        tracking.status === 'delivered'
+          ? 'complete'
+          : tracking.status === 'source-failed'
+          ? 'failed'
+          : transferLocked
+          ? 'in-progress'
+          : showReview
+          ? 'review'
+          : 'idle'
+      }
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -729,7 +780,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             ) : (
               <Primary
                 type="button"
-                disabled={quoteLoading || (!canReview && sourceNetworkCorrect)}
+                disabled={transferLocked || quoteLoading || (!canReview && sourceNetworkCorrect)}
                 onClick={fromNetwork.walletFamily === 'solana' && !sourceWallet ? connectSolana : openReview}
               >
                 {cta}
@@ -738,10 +789,21 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
           </Card>
           <Card $embedded={embedded}>
             <CardHead>
-              <strong>{review ? 'Review bridge' : 'Delivery status'}</strong>
-              <span>{tracking.status === 'delivered' ? 'DELIVERED' : 'TRACKED'}</span>
+              <strong>{showReview ? 'Review bridge' : 'Delivery status'}</strong>
+              <span data-testid="marco-bridge-ux-headline">
+                {tracking.status === 'delivered' ? (
+                  <>
+                    <CheckmarkCircleIcon width="14px" color="#22C55E" />
+                    {BRIDGE_COMPLETE_HEADLINE}
+                  </>
+                ) : transferLocked ? (
+                  BRIDGE_IN_PROGRESS_HEADLINE
+                ) : (
+                  'TRACKED'
+                )}
+              </span>
             </CardHead>
-            {review ? (
+            {showReview ? (
               <Review>
                 <ReviewRow>
                   <span>You bridge</span>
@@ -784,21 +846,33 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                     ? `Live quote obtained. ${solanaUnpauseOperatorMessage()}`
                     : executionBlockers[0] || 'This route is not publicly executable.'}
                 </Notice>
-                <Primary type="button" disabled={!executable || submitting || quoteLoading} onClick={confirmSubmit}>
+                <Primary
+                  type="button"
+                  disabled={transferLocked || !executable || submitting || quoteLoading}
+                  onClick={confirmSubmit}
+                >
                   {submitting ? 'CONFIRM IN WALLET' : executable ? 'CONFIRM BRIDGE' : 'SUBMISSION DISABLED'}
                 </Primary>
               </Review>
             ) : (
               <>
-                <Steps>
-                  {MARCO_BRIDGE_PROGRESS.map((step, index) => (
-                    <li key={step.status}>
-                      <i>{index + 1}</i>
+                <Steps data-testid="marco-bridge-delivery-steps">
+                  {stepVisuals.map((step, index) => (
+                    <li key={step.status} data-step-status={step.status} data-step-phase={step.phase}>
+                      <i>
+                        {step.phase === 'complete' ? (
+                          <CheckmarkCircleIcon width="12px" color="#F4C430" />
+                        ) : step.phase === 'current' ? (
+                          <CircleLoader size="12px" stroke="#F4C430" />
+                        ) : (
+                          index + 1
+                        )}
+                      </i>
                       {step.label}
                     </li>
                   ))}
                 </Steps>
-                <Notice>{bridgeRecoveryMessage(tracking)}</Notice>
+                <Notice data-testid="marco-bridge-ux-copy">{bridgeRecoveryMessage(tracking)}</Notice>
               </>
             )}
             <Advanced>
