@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MARCO Solana unpause — operator</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0f0f0f;
+        color: #f5f5f5;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      section {
+        background: linear-gradient(145deg, #1a1a00 0%, #0d0d00 100%);
+        border: 3px solid #f4c430;
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 0 40px rgba(244, 196, 48, 0.25);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        color: #f4c430;
+      }
+      p,
+      li,
+      dt,
+      dd {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      dl {
+        margin: 16px 0 0;
+      }
+      dt {
+        color: rgba(255, 255, 255, 0.55);
+        margin-top: 10px;
+      }
+      dd {
+        margin: 2px 0 0;
+        word-break: break-all;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+      .note {
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px solid rgba(244, 196, 48, 0.35);
+        border-radius: 8px;
+        color: #f4c430;
+      }
+      .status {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #111;
+        border: 1px solid #555;
+        min-height: 3em;
+      }
+      .pass {
+        color: #7dffa3;
+      }
+      .fail {
+        color: #ff8a8a;
+      }
+      button {
+        margin-top: 16px;
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+      button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      #connect {
+        background: #222;
+        color: #f5f5f5;
+        border: 1px solid #f4c430;
+      }
+      #sign {
+        background: #f4c430;
+        color: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>MARCO Solana unpause</h1>
+        <p>One admin instruction only. Wallet signs. This page never holds a key.</p>
+        <dl id="facts">
+          <dt>Network</dt>
+          <dd>Solana Mainnet</dd>
+          <dt>Signer / fee payer</dt>
+          <dd>BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd</dd>
+          <dt>Program</dt>
+          <dd>Gti4f873FUw5jpMa4wnRVcZDjr5YwonZ1FcY8vXu2Wnm</dd>
+          <dt>OFT store</dt>
+          <dd>7L8x99W1yVVgtsu3wWy9DgD9ysnnfF4XXhdKhUrQxEuW</dd>
+          <dt>Instruction</dt>
+          <dd>set_oft_config / SetOftConfig</dd>
+          <dt>Config</dt>
+          <dd>Paused(false)</dd>
+          <dt>Current paused</dt>
+          <dd id="current-paused">loading…</dd>
+          <dt>Target paused</dt>
+          <dd>false</dd>
+        </dl>
+        <p class="note">
+          Peers, ULN, DVNs, enforced options, mint authority, and token identity are untouched. This
+          helper cannot send a bridge transfer or update MMN route-state.
+        </p>
+        <div id="status" class="status">Connect the admin wallet to simulate.</div>
+        <button id="connect" type="button">CONNECT ADMIN WALLET</button>
+        <button id="sign" type="button" hidden disabled>SIGN &amp; UNPAUSE SOLANA</button>
+      </section>
+    </main>
+    <script src="/vendor/solana-web3.js"></script>
+    <script>
+      const ADMIN = 'BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd'
+      const statusEl = document.getElementById('status')
+      const pausedEl = document.getElementById('current-paused')
+      const connectBtn = document.getElementById('connect')
+      const signBtn = document.getElementById('sign')
+      let connected = ''
+      let simPass = false
+
+      function setStatus(text, kind) {
+        statusEl.textContent = text
+        statusEl.className = 'status' + (kind ? ' ' + kind : '')
+      }
+
+      function provider() {
+        if (window.solana?.isPhantom || window.phantom?.solana) return window.solana || window.phantom.solana
+        if (window.solflare) return window.solflare
+        if (window.solana) return window.solana
+        return null
+      }
+
+      async function loadPreview() {
+        const response = await fetch('/preview', { cache: 'no-store' })
+        const payload = await response.json()
+        pausedEl.textContent = String(payload.paused)
+        if (payload.paused !== true) {
+          setStatus('FAIL — store is not paused=true. This helper will not sign.', 'fail')
+          connectBtn.hidden = true
+        }
+      }
+
+      async function simulate(publicKey) {
+        const response = await fetch('/simulate', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ connectedPublicKey: publicKey }),
+        })
+        const payload = await response.json()
+        simPass = payload.ok === true
+        setStatus(
+          (simPass ? 'PASS' : 'FAIL') + ' — simulation ' + (payload.message || ''),
+          simPass ? 'pass' : 'fail',
+        )
+        signBtn.hidden = !simPass
+        signBtn.disabled = !simPass
+      }
+
+      connectBtn.addEventListener('click', async () => {
+        try {
+          const wallet = provider()
+          if (!wallet) throw new Error('Phantom or Solflare was not detected in this browser.')
+          const result = await wallet.connect()
+          connected = result?.publicKey?.toString?.() || wallet.publicKey?.toString?.() || ''
+          if (connected !== ADMIN) {
+            simPass = false
+            signBtn.hidden = true
+            signBtn.disabled = true
+            throw new Error('FAIL CLOSED — connected wallet is not BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd.')
+          }
+          await simulate(connected)
+        } catch (error) {
+          simPass = false
+          signBtn.hidden = true
+          signBtn.disabled = true
+          setStatus(error instanceof Error ? error.message : 'Wallet connect failed.', 'fail')
+        }
+      })
+
+      signBtn.addEventListener('click', async () => {
+        try {
+          if (!simPass || connected !== ADMIN) throw new Error('FAIL CLOSED — simulate with the admin wallet first.')
+          signBtn.disabled = true
+          const built = await fetch('/unsigned-tx', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ connectedPublicKey: connected }),
+          })
+          const payload = await built.json()
+          if (!payload.ok || !payload.tx) throw new Error(payload.message || 'Fresh unsigned transaction was refused.')
+          const confirmed = await fetch('/simulate', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ connectedPublicKey: connected, tx: payload.tx }),
+          })
+          const confirmation = await confirmed.json()
+          if (confirmation.ok !== true) throw new Error('FAIL — exact signing transaction simulation failed.')
+          const wallet = provider()
+          const bytes = Uint8Array.from(atob(payload.tx), (c) => c.charCodeAt(0))
+          const tx = solanaWeb3.Transaction.from(bytes)
+          const sent = await wallet.signAndSendTransaction(tx)
+          const signature = sent?.signature || sent
+          setStatus('SIGNED — Solana signature ' + signature, 'pass')
+          signBtn.hidden = true
+        } catch (error) {
+          signBtn.disabled = false
+          setStatus(error instanceof Error ? error.message : 'Sign failed.', 'fail')
+        }
+      })
+
+      loadPreview().catch((error) => {
+        setStatus(error instanceof Error ? error.message : 'Preview failed.', 'fail')
+      })
+    </script>
+  </body>
+</html>

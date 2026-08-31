@@ -259,10 +259,13 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     ).toThrow('BNB↔Robinhood and BNB↔Solana')
   })
 
-  it('fails closed while Solana is paused and names the unpauser', () => {
+  it('fails closed while Solana is paused and names the admin set_oft_config path', () => {
     expect(isRouteExecutable('bnb', 'solana', authority({ solanaPaused: true }))).toBe(false)
+    expect(solanaUnpauseOperatorMessage()).toContain(SOLANA_OFT_ADMIN)
+    expect(solanaUnpauseOperatorMessage()).toContain('set_oft_config')
+    expect(solanaUnpauseOperatorMessage()).toContain('Paused(false)')
     expect(solanaUnpauseOperatorMessage()).toContain(SOLANA_OFT_UNPAUSER)
-    expect(solanaUnpauseOperatorMessage()).toContain('set_pause')
+    expect(solanaUnpauseOperatorMessage()).toMatch(/off-curve PDA/)
     expect(solanaUnpauseOperatorMessage()).not.toContain(SOLANA_OFT_FALSE_AUTHORITIES[1])
   })
 
@@ -278,7 +281,7 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     expect(store.unpauser).toBe(SOLANA_OFT_UNPAUSER)
     expect(store.mint).toBe(MARCO_WAVE1_NETWORKS.solana.marcoIdentity)
     expect(store.ld2sdRate).toBe(1000)
-    expect(assertSolanaUnpauseSigner(store)).toBe(SOLANA_OFT_UNPAUSER)
+    expect(assertSolanaUnpauseSigner(store)).toBe(SOLANA_OFT_ADMIN)
     expect(SOLANA_OFT_FALSE_AUTHORITIES).not.toContain(store.unpauser)
   })
 

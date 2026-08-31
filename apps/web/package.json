@@ -13,6 +13,7 @@
     "prebuild": "yarn lb:manifest:check && node scripts/pools-current-participants-snapshot.mjs",
     "build": "next build",
     "start": "next start",
+    "solana-unpause-operator": "node scripts/solana-unpause-operator/server.mjs",
     "performance:baseline": "node scripts/lightspeed-baseline.mjs",
     "performance:check": "node scripts/lightspeed-baseline.mjs --check",
     "test": "LC_ALL=\"en_US.UTF-8\" vitest --run",

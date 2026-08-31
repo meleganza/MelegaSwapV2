@@ -4,16 +4,18 @@ import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 /** Certified Solana OFT program that owns the Wave-1 store. */
 export const SOLANA_OFT_PROGRAM_ID = 'Gti4f873FUw5jpMa4wnRVcZDjr5YwonZ1FcY8vXu2Wnm'
 export const SOLANA_LZ_ENDPOINT_PROGRAM_ID = '76y77prsiCMvXMjuoZ5VRrhG5qYBrUMYTE5WgHqgjEn6'
-/** Store admin. System-owned funded wallet. May administer the OFT; not the dedicated unpause role. */
+/** Store admin. On-curve system wallet. Proven signer for set_oft_config Paused(false). */
 export const SOLANA_OFT_ADMIN = 'BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd'
 /**
- * Dedicated pauser and unpauser on the live store (Option<Pubkey> = Some).
- * System-owned funded account (0.001 SOL, datalen 0) — a keypair can exist.
- * Not a program-owned PDA.
+ * Dedicated pauser/unpauser field on the live store (Option<Pubkey> = Some).
+ * Off-curve PDA — not a human signer. Do not ask anyone to sign as this address.
  */
 export const SOLANA_OFT_UNPAUSER = '2v7LMbWU2E9gB4So24jpWsjU9hR2CHHL9ggegRiWHZ8F'
 export const SOLANA_OFT_PAUSER = SOLANA_OFT_UNPAUSER
 export const SOLANA_OFT_ESCROW = 'Cd1H2o5kcb2ZcpxcEJfiypPQvDKc2jA164bhmm51iS5'
+
+/** Anchor `global:set_oft_config` + enum variant 3 Paused + false. */
+export const SET_OFT_CONFIG_PAUSED_FALSE_DATA = '377e57d99f4218c20300'
 
 /** Misaligned 32-byte windows from a packed Option<Pubkey> parse. Do not ask anyone to sign as these. */
 export const SOLANA_OFT_FALSE_AUTHORITIES = [
@@ -81,39 +83,49 @@ export function parseOftStoreAccount(raw: Uint8Array, ownerProgram: string): Par
 
 export function assertSolanaUnpauseSigner(store: ParsedOftStore): string {
   if (!store.paused) throw new Error('Solana OFT store is already unpaused.')
-  if (!store.unpauser) throw new Error('Solana OFT store has no unpauser.')
-  if (SOLANA_OFT_FALSE_AUTHORITIES.includes(store.unpauser as (typeof SOLANA_OFT_FALSE_AUTHORITIES)[number])) {
+  if (store.admin !== SOLANA_OFT_ADMIN) throw new Error('Live OFT admin does not match the certified signer.')
+  if (store.unpauser && SOLANA_OFT_FALSE_AUTHORITIES.includes(store.unpauser as (typeof SOLANA_OFT_FALSE_AUTHORITIES)[number])) {
     throw new Error('Refusing a misaligned OFT authority window that cannot sign.')
   }
-  return store.unpauser
+  return SOLANA_OFT_ADMIN
+}
+
+export function assertConnectedSolanaUnpauseWallet(connectedPublicKey: string): string {
+  if (connectedPublicKey !== SOLANA_OFT_ADMIN) {
+    throw new Error(`Connected wallet is not the certified OFT admin ${SOLANA_OFT_ADMIN}.`)
+  }
+  return SOLANA_OFT_ADMIN
 }
 
 export const SOLANA_UNPAUSE_ACTION = {
-  network: 'solana',
+  network: 'solana-mainnet',
   purpose: 'Unpause the certified MARCO OFT store so BNB↔Solana delivery can execute.',
   programId: SOLANA_OFT_PROGRAM_ID,
   store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
   mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-  signer: SOLANA_OFT_UNPAUSER,
-  signerRole: 'unpauser',
+  signer: SOLANA_OFT_ADMIN,
+  signerRole: 'admin',
   admin: SOLANA_OFT_ADMIN,
-  instruction: 'set_pause',
+  instruction: 'set_oft_config',
+  anchorLog: 'SetOftConfig',
+  config: 'Paused(false)',
+  dataHex: SET_OFT_CONFIG_PAUSED_FALSE_DATA,
   paused: false,
   doNot: [
     'Do not redeploy the Solana OFT.',
     'Do not change peers.',
     'Do not change ULN/DVN/enforced options.',
     'Do not alter mint or freeze authority.',
-    'Do not ask a PDA or a misaligned pubkey window to sign.',
+    'Do not ask the off-curve unpauser PDA to sign.',
   ],
 } as const
 
 export function solanaUnpauseOperatorMessage(): string {
   return [
-    `Sign set_pause(paused=false) on Solana OFT program ${SOLANA_OFT_PROGRAM_ID}`,
+    `Sign set_oft_config Paused(false) on Solana OFT program ${SOLANA_OFT_PROGRAM_ID}`,
     `store ${SOLANA_UNPAUSE_ACTION.store}`,
-    `using the store unpauser wallet ${SOLANA_OFT_UNPAUSER}.`,
-    `Admin ${SOLANA_OFT_ADMIN} is a different system wallet and is not the unpause role.`,
-    'Do not change peers, ULN/DVN, enforced options, mint, or freeze authority.',
+    `using the store admin wallet ${SOLANA_OFT_ADMIN}.`,
+    `Do not sign as ${SOLANA_OFT_UNPAUSER} — that unpauser field is an off-curve PDA.`,
+    'Peers, ULN, DVN, enforced options, mint, and freeze authority are untouched.',
   ].join(' ')
 }
