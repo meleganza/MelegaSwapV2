@@ -34,7 +34,6 @@
         color: #f4c430;
       }
       p,
-      li,
       dt,
       dd {
         font-size: 14px;
@@ -103,8 +102,8 @@
     <main>
       <section>
         <h1>MARCO Solana unpause</h1>
-        <p>One admin instruction only. Wallet signs. This page never holds a key.</p>
-        <dl id="facts">
+        <p>Run this file from your Mac. Wallet signs. This page never holds a key.</p>
+        <dl>
           <dt>Network</dt>
           <dd>Solana Mainnet</dd>
           <dt>Signer / fee payer</dt>
@@ -124,22 +123,27 @@
         </dl>
         <p class="note">
           Peers, ULN, DVNs, enforced options, mint authority, and token identity are untouched. This
-          helper cannot send a bridge transfer or update MMN route-state.
+          helper cannot send a bridge transfer or update MMN route-state. Do not sign as 2v7LMb… .
         </p>
         <div id="status" class="status">Connect the admin wallet to simulate.</div>
         <button id="connect" type="button">CONNECT ADMIN WALLET</button>
         <button id="sign" type="button" hidden disabled>SIGN &amp; UNPAUSE SOLANA</button>
       </section>
     </main>
-    <script src="/vendor/solana-web3.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
     <script>
       const ADMIN = 'BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd'
+      const PROGRAM = 'Gti4f873FUw5jpMa4wnRVcZDjr5YwonZ1FcY8vXu2Wnm'
+      const STORE = '7L8x99W1yVVgtsu3wWy9DgD9ysnnfF4XXhdKhUrQxEuW'
+      const DATA_HEX = '377e57d99f4218c20300'
+      const RPCS = ['https://api.mainnet-beta.solana.com', 'https://solana-rpc.publicnode.com']
       const statusEl = document.getElementById('status')
       const pausedEl = document.getElementById('current-paused')
       const connectBtn = document.getElementById('connect')
       const signBtn = document.getElementById('sign')
       let connected = ''
       let simPass = false
+      let connection = null
 
       function setStatus(text, kind) {
         statusEl.textContent = text
@@ -153,30 +157,84 @@
         return null
       }
 
+      function hexToBytes(hex) {
+        const out = new Uint8Array(hex.length / 2)
+        for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
+        return out
+      }
+
+      function assertAdmin(publicKey) {
+        if (publicKey !== ADMIN) {
+          throw new Error('FAIL CLOSED — connected wallet is not BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd.')
+        }
+      }
+
+      function buildTx(recentBlockhash) {
+        const tx = new solanaWeb3.Transaction({
+          feePayer: new solanaWeb3.PublicKey(ADMIN),
+          recentBlockhash,
+        })
+        tx.add(
+          new solanaWeb3.TransactionInstruction({
+            programId: new solanaWeb3.PublicKey(PROGRAM),
+            keys: [
+              { pubkey: new solanaWeb3.PublicKey(ADMIN), isSigner: true, isWritable: false },
+              { pubkey: new solanaWeb3.PublicKey(STORE), isSigner: false, isWritable: true },
+            ],
+            data: hexToBytes(DATA_HEX),
+          }),
+        )
+        if (tx.instructions.length !== 1) throw new Error('Unpause transaction must contain exactly one instruction.')
+        if (tx.instructions[0].programId.toBase58() !== PROGRAM) throw new Error('Program mismatch.')
+        const dataHex = Array.from(tx.instructions[0].data)
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('')
+        if (dataHex !== DATA_HEX) throw new Error('Data is not Paused(false).')
+        return tx
+      }
+
+      async function connectRpc() {
+        let lastError
+        for (const url of RPCS) {
+          try {
+            const next = new solanaWeb3.Connection(url, 'confirmed')
+            await next.getLatestBlockhash('confirmed')
+            connection = next
+            return next
+          } catch (error) {
+            lastError = error
+          }
+        }
+        throw lastError || new Error('Solana mainnet RPC is unavailable.')
+      }
+
       async function loadPreview() {
-        const response = await fetch('/preview', { cache: 'no-store' })
-        const payload = await response.json()
-        pausedEl.textContent = String(payload.paused)
-        if (payload.paused !== true) {
+        if (!window.solanaWeb3) throw new Error('solana-web3 failed to load. Check network access to unpkg.com.')
+        const rpc = await connectRpc()
+        const acc = await rpc.getAccountInfo(new solanaWeb3.PublicKey(STORE))
+        if (!acc) throw new Error('OFT store account was not found.')
+        const paused = acc.data[156] === 1
+        pausedEl.textContent = String(paused)
+        if (!paused) {
           setStatus('FAIL — store is not paused=true. This helper will not sign.', 'fail')
           connectBtn.hidden = true
         }
       }
 
-      async function simulate(publicKey) {
-        const response = await fetch('/simulate', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ connectedPublicKey: publicKey }),
-        })
-        const payload = await response.json()
-        simPass = payload.ok === true
-        setStatus(
-          (simPass ? 'PASS' : 'FAIL') + ' — simulation ' + (payload.message || ''),
-          simPass ? 'pass' : 'fail',
-        )
-        signBtn.hidden = !simPass
-        signBtn.disabled = !simPass
+      async function simulateWithFreshTx() {
+        assertAdmin(connected)
+        const rpc = connection || (await connectRpc())
+        const { blockhash } = await rpc.getLatestBlockhash('confirmed')
+        const tx = buildTx(blockhash)
+        const sim = await rpc.simulateTransaction(tx)
+        const ok = sim.value.err == null
+        return {
+          ok,
+          tx,
+          message: ok
+            ? 'SetOftConfig Paused(false) simulated successfully. Peers/ULN/DVN/mint untouched.'
+            : JSON.stringify(sim.value.err),
+        }
       }
 
       connectBtn.addEventListener('click', async () => {
@@ -185,13 +243,12 @@
           if (!wallet) throw new Error('Phantom or Solflare was not detected in this browser.')
           const result = await wallet.connect()
           connected = result?.publicKey?.toString?.() || wallet.publicKey?.toString?.() || ''
-          if (connected !== ADMIN) {
-            simPass = false
-            signBtn.hidden = true
-            signBtn.disabled = true
-            throw new Error('FAIL CLOSED — connected wallet is not BRhBJ8iX2wcMPKe4SqiPK2K3ZbegmVDEiWtiSFLJ1aRd.')
-          }
-          await simulate(connected)
+          assertAdmin(connected)
+          const resultSim = await simulateWithFreshTx()
+          simPass = resultSim.ok
+          setStatus((simPass ? 'PASS' : 'FAIL') + ' — simulation ' + resultSim.message, simPass ? 'pass' : 'fail')
+          signBtn.hidden = !simPass
+          signBtn.disabled = !simPass
         } catch (error) {
           simPass = false
           signBtn.hidden = true
@@ -202,26 +259,13 @@
 
       signBtn.addEventListener('click', async () => {
         try {
-          if (!simPass || connected !== ADMIN) throw new Error('FAIL CLOSED — simulate with the admin wallet first.')
+          if (!simPass) throw new Error('FAIL CLOSED — simulate with the admin wallet first.')
+          assertAdmin(connected)
           signBtn.disabled = true
-          const built = await fetch('/unsigned-tx', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ connectedPublicKey: connected }),
-          })
-          const payload = await built.json()
-          if (!payload.ok || !payload.tx) throw new Error(payload.message || 'Fresh unsigned transaction was refused.')
-          const confirmed = await fetch('/simulate', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ connectedPublicKey: connected, tx: payload.tx }),
-          })
-          const confirmation = await confirmed.json()
-          if (confirmation.ok !== true) throw new Error('FAIL — exact signing transaction simulation failed.')
+          const exact = await simulateWithFreshTx()
+          if (!exact.ok) throw new Error('FAIL — exact signing transaction simulation failed. ' + exact.message)
           const wallet = provider()
-          const bytes = Uint8Array.from(atob(payload.tx), (c) => c.charCodeAt(0))
-          const tx = solanaWeb3.Transaction.from(bytes)
-          const sent = await wallet.signAndSendTransaction(tx)
+          const sent = await wallet.signAndSendTransaction(exact.tx)
           const signature = sent?.signature || sent
           setStatus('SIGNED — Solana signature ' + signature, 'pass')
           signBtn.hidden = true
