@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { applyCanonicalBnbSolanaApplicationGate, CANONICAL_BNB_SOLANA_GATE } from '../canonicalBnbSolanaGate'
 import { isRouteExecutable, localRouteActivationEnabled } from '../executableRoutes'
 import { readOnlySolanaMarcoBridgeQuote } from '../solanaQuote'
+import { buildMarcoBridgePayload } from '../../../pages/api/marco-bridge/build'
 import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
   SOLANA_OFT_PROGRAM,
@@ -33,7 +34,8 @@ import { MARCO_WAVE1_NETWORKS, MARCO_WAVE1_ROUTE_ACTIVATION } from '../wave1Regi
 const evm = '0x1111111111111111111111111111111111111111'
 const solanaOwner = '2LxBuA9o3AwNyFnXsqbZnKFzyuw9WarYydknQXQieRzb'
 const tokenAccount = 'Ga2zsrDSs9TaCtUo1LVT3CoAmJQHpEVpSDk1E1C4mGSK'
-const optionsHex = '0x0003'
+const optionsHex = '0x'
+const enforcedOptionsHex = '0x0003'
 const nativeFeeLamports = '123456'
 const solanaSignature = '5VERv8NMvzbJMEkV8xnrLkEaWRtSz9CosKDYjCJjBRnbJLgp8uirBgmQpjz3BUj9u4Nq3fY6K3nQz6k4nY6k4nY6'
 const serializedTx = (() => {
@@ -146,6 +148,7 @@ function bindingFor(overrides: Partial<NonNullable<MarcoBridgeQuote['binding']>>
     escrow: SOLANA_OFT_ESCROW,
     tokenAccount,
     optionsHex,
+    enforcedOptionsHex,
     nativeFeeWei: nativeFeeLamports,
     lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
   }
@@ -197,6 +200,7 @@ function mockProtocol(overrides: Partial<SolanaOftProtocol> = {}): SolanaOftProt
     escrow: input.tokenEscrow,
     lookupTable: input.lookupTable,
   }))
+  const { quote: quoteOverride, buildSend: buildSendOverride, ...otherOverrides } = overrides
   return {
     fetchStore: async () => ({
       store: SOLANA_OFT_STORE,
@@ -212,10 +216,10 @@ function mockProtocol(overrides: Partial<SolanaOftProtocol> = {}): SolanaOftProt
       tokenBalanceLd: '1000000',
       solLamports: requiredSolLamportsForBridge(nativeFeeLamports),
     }),
-    getEnforcedOptions: async () => ({ sendHex: optionsHex }),
-    quote,
-    buildSend,
-    ...overrides,
+    getEnforcedOptions: async () => ({ sendHex: enforcedOptionsHex }),
+    ...otherOverrides,
+    quote: quoteOverride ? vi.fn(quoteOverride) : quote,
+    buildSend: buildSendOverride ? vi.fn(buildSendOverride) : buildSend,
   }
 }
 
@@ -259,13 +263,15 @@ describe('Solana → BNB official OFT path', () => {
     })
     expect(quote.binding?.dstEid).toBe(30102)
     expect(quote.binding?.toBytes32).toBe(destinationToBytes32(evm, 'evm'))
+    expect(quote.binding?.optionsHex).toBe('0x')
+    expect(quote.binding?.enforcedOptionsHex).toBe(enforcedOptionsHex)
     expect(quote.binding?.identity).toBe(solanaQuoteIdentity(quote.binding!))
     expect(protocol.quote).toHaveBeenCalledWith(
       expect.objectContaining({
         payer: solanaOwner,
         tokenMint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
         tokenEscrow: SOLANA_OFT_ESCROW,
-        sendParam: createSolanaOftSendParam({ amountLD: '1000', destinationWallet: evm, optionsHex }),
+        sendParam: createSolanaOftSendParam({ amountLD: '1000', destinationWallet: evm, optionsHex: '0x' }),
         lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
       }),
     )
@@ -282,7 +288,7 @@ describe('Solana → BNB official OFT path', () => {
 
     await expect(
       readOnlySolanaMarcoBridgeQuote(
-        { from: 'solana', to: 'base', amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
+        { from: 'solana', to: 'base' as never, amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
         liveAuthority(),
         protocol,
       ),
@@ -337,6 +343,128 @@ describe('Solana → BNB official OFT path', () => {
     ).rejects.toThrow('valid BNB Smart Chain destination')
   })
 
+  it('does not duplicate configured enforced options into caller extra options', async () => {
+    const protocol = mockProtocol()
+    const quote = await readOnlySolanaMarcoBridgeQuote(
+      { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
+      liveAuthority(),
+      protocol,
+      '2026-09-01T12:00:00.000Z',
+    )
+    expect(quote.binding).toMatchObject({
+      optionsHex: '0x',
+      enforcedOptionsHex,
+    })
+    expect(protocol.quote).toHaveBeenCalledWith(
+      expect.objectContaining({ sendParam: expect.objectContaining({ optionsHex: '0x' }) }),
+    )
+  })
+
+  it('server build revalidates a fresh canonical quote and rejects forged or stale bindings', async () => {
+    const now = new Date('2026-09-01T12:00:00.000Z')
+    const canonicalProtocol = mockProtocol()
+    const canonicalQuote = await readOnlySolanaMarcoBridgeQuote(
+      { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
+      liveAuthority(),
+      canonicalProtocol,
+      now.toISOString(),
+    )
+    const body = {
+      from: 'solana',
+      to: 'bnb',
+      amount: '0.000001',
+      sourceWallet: solanaOwner,
+      destinationWallet: evm,
+      quote: canonicalQuote,
+    }
+    const successProtocol = mockProtocol()
+    const built = await buildMarcoBridgePayload(body, {
+      fetchAuthority: async () => liveAuthority(),
+      createSolanaProtocol: () => successProtocol,
+      now: () => now,
+    })
+    expect(built.transactions[0]).toMatchObject({
+      family: 'solana',
+      serializedTransaction: serializedTx,
+      quoteIdentity: canonicalQuote.binding?.identity,
+    })
+    expect(successProtocol.buildSend).toHaveBeenCalledTimes(1)
+
+    const forgedCases: Array<{ name: string; mutate: (quote: MarcoBridgeQuote) => void }> = [
+      {
+        name: 'program',
+        mutate: (quote) => {
+          quote.binding!.programId = '11111111111111111111111111111111'
+        },
+      },
+      {
+        name: 'escrow',
+        mutate: (quote) => {
+          quote.binding!.escrow = '11111111111111111111111111111111'
+        },
+      },
+      {
+        name: 'ATA',
+        mutate: (quote) => {
+          quote.binding!.tokenAccount = '11111111111111111111111111111111'
+        },
+      },
+      {
+        name: 'dstEid',
+        mutate: (quote) => {
+          quote.binding!.dstEid = 30184
+        },
+      },
+      {
+        name: 'enforced config',
+        mutate: (quote) => {
+          quote.binding!.enforcedOptionsHex = '0x9999'
+        },
+      },
+      {
+        name: 'native fee',
+        mutate: (quote) => {
+          quote.nativeFeeWei = '1'
+          quote.binding!.nativeFeeWei = '1'
+        },
+      },
+    ]
+    for (const testCase of forgedCases) {
+      const forged = JSON.parse(JSON.stringify(canonicalQuote)) as MarcoBridgeQuote
+      testCase.mutate(forged)
+      forged.binding!.identity = solanaQuoteIdentity(forged.binding!)
+      const protocol = mockProtocol()
+      await expect(
+        buildMarcoBridgePayload(
+          { ...body, quote: forged },
+          {
+            fetchAuthority: async () => liveAuthority(),
+            createSolanaProtocol: () => protocol,
+            now: () => now,
+          },
+        ),
+        testCase.name,
+      ).rejects.toThrow('no longer matches live canonical configuration')
+      expect(protocol.buildSend, testCase.name).not.toHaveBeenCalled()
+    }
+
+    const stale = JSON.parse(JSON.stringify(canonicalQuote)) as MarcoBridgeQuote
+    stale.expiresAt = '2026-09-01T11:59:59.000Z'
+    stale.binding!.expiresAt = stale.expiresAt
+    const staleProtocol = mockProtocol()
+    await expect(
+      buildMarcoBridgePayload(
+        { ...body, quote: stale },
+        {
+          fetchAuthority: async () => liveAuthority(),
+          createSolanaProtocol: () => staleProtocol,
+          now: () => now,
+        },
+      ),
+    ).rejects.toThrow('live quote expired')
+    expect(staleProtocol.buildSend).not.toHaveBeenCalled()
+  })
+
   it('d) uses the exact quote send parameters and accounts for construction', async () => {
     const protocol = mockProtocol()
     const quote = liveSolanaQuote()
@@ -367,7 +495,7 @@ describe('Solana → BNB official OFT path', () => {
         toBytes32: quote.binding?.toBytes32,
         amountLd: '1000',
         minAmountLd: '1000',
-        optionsHex,
+        optionsHex: '0x',
         payInLzToken: false,
       },
       programId: SOLANA_OFT_PROGRAM,
@@ -383,7 +511,10 @@ describe('Solana → BNB official OFT path', () => {
     expect(solanaWalletConnectionLabel(solanaOwner)).toBe('Connected')
     expect(readConnectedSolanaAddress({ publicKey: { toString: () => solanaOwner } })).toBe(solanaOwner)
     expect(readConnectedSolanaAddress({})).toBe('')
-    const workspace = readFileSync(join(dirname(new URL(import.meta.url).pathname), '../../../views/MarcoBridge/MarcoBridgeWorkspace.tsx'), 'utf8')
+    const workspace = readFileSync(
+      join(dirname(new URL(import.meta.url).pathname), '../../../views/MarcoBridge/MarcoBridgeWorkspace.tsx'),
+      'utf8',
+    )
     expect(workspace).toContain('solanaWalletConnectionLabel')
     expect(workspace).toContain('data-testid="solana-wallet-connected"')
     expect(workspace).toMatch(/sourceWallet \? \([\s\S]*solanaWalletConnectionLabel\(sourceWallet\)/)

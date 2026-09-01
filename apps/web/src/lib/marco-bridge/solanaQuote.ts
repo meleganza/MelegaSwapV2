@@ -25,6 +25,40 @@ export type SolanaQuoteInput = {
   destinationWallet: string
 }
 
+export function assertFreshCanonicalSolanaQuote(
+  clientQuote: MarcoBridgeQuote,
+  canonicalQuote: MarcoBridgeQuote,
+  nowMs = Date.now(),
+): void {
+  const clientBinding = clientQuote.binding
+  const canonicalBinding = canonicalQuote.binding
+  if (!clientBinding || !canonicalBinding) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The Solana quote is missing its canonical binding.')
+  }
+  const expiryText = clientQuote.expiresAt ?? clientBinding.expiresAt
+  const expiry = Date.parse(expiryText)
+  if (
+    !Number.isFinite(expiry) ||
+    nowMs > expiry ||
+    clientBinding.expiresAt !== expiryText ||
+    clientQuote.expiresAt !== expiryText
+  ) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The live quote expired. Request a new quote before signing.')
+  }
+  if (clientBinding.identity !== solanaQuoteIdentity(clientBinding)) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The supplied Solana quote binding is invalid.')
+  }
+  if (
+    clientBinding.identity !== canonicalBinding.identity ||
+    clientQuote.nativeFeeWei !== canonicalQuote.nativeFeeWei ||
+    clientQuote.amount !== canonicalQuote.amount ||
+    clientQuote.expectedReceive !== canonicalQuote.expectedReceive ||
+    clientQuote.nativeFeeSymbol !== 'SOL'
+  ) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The Solana quote no longer matches live canonical configuration.')
+  }
+}
+
 export async function readOnlySolanaMarcoBridgeQuote(
   input: SolanaQuoteInput,
   authority: CanonicalMmnRouteState,
@@ -72,7 +106,9 @@ export async function readOnlySolanaMarcoBridgeQuote(
   const sendParam = createSolanaOftSendParam({
     amountLD,
     destinationWallet: input.destinationWallet,
-    optionsHex: enforced.sendHex,
+    // Enforced options are combined by the OFT program. Passing them here as
+    // caller extra options would duplicate the configured executor options.
+    optionsHex: '0x',
   })
   if (sendParam.dstEid !== 30102 || sendParam.toBytes32 !== toBytes32) {
     throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana quote destination encoding is invalid.')
@@ -103,6 +139,7 @@ export async function readOnlySolanaMarcoBridgeQuote(
     escrow: store.tokenEscrow,
     tokenAccount: owner.tokenAccount,
     optionsHex: sendParam.optionsHex,
+    enforcedOptionsHex: enforced.sendHex,
     nativeFeeWei: quoted.nativeFeeLamports,
     lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
   }

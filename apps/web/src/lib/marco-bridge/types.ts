@@ -38,7 +38,10 @@ export type MarcoBridgeQuoteBinding = {
   mint: string
   escrow: string
   tokenAccount: string
+  /** Caller-supplied extra options. Canonical MARCO sends intentionally use none. */
   optionsHex: string
+  /** Live on-chain enforced options, bound for config freshness but never re-sent as extra options. */
+  enforcedOptionsHex: string
   nativeFeeWei: string
   lookupTable: string
   expiresAt: string

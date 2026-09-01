@@ -1,11 +1,5 @@
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import {
-  createNoopSigner,
-  publicKey,
-  signerIdentity,
-  transactionBuilder,
-  type Umi,
-} from '@metaplex-foundation/umi'
+import { createNoopSigner, publicKey, signerIdentity, transactionBuilder, type Umi } from '@metaplex-foundation/umi'
 import {
   fetchAddressLookupTable,
   fetchMint,
@@ -22,6 +16,7 @@ import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
   SOLANA_OFT_PROGRAM,
   SOLANA_OFT_STORE,
+  SOLANA_SPL_TOKEN_PROGRAM,
   type SolanaOftBuiltSend,
   type SolanaOftOwnerSnapshot,
   type SolanaOftProtocol,
@@ -82,12 +77,13 @@ async function withRpcFallback<T>(run: (umi: Umi, rpcUrl: string) => Promise<T>)
 }
 
 function sendParamBytes(sendParam: SolanaOftSendParam) {
+  const options = hexToBytes(sendParam.optionsHex)
   return {
     dstEid: sendParam.dstEid,
     to: hexToBytes(sendParam.toBytes32),
     amountLd: BigInt(sendParam.amountLd),
     minAmountLd: BigInt(sendParam.minAmountLd),
-    options: hexToBytes(sendParam.optionsHex),
+    options: options.length > 0 ? options : undefined,
     payInLzToken: false as const,
   }
 }
@@ -117,14 +113,20 @@ export function createOfficialSolanaOftProtocol(): SolanaOftProtocol {
         const mint = publicKey(input.mint)
         const tokenAccount = findAssociatedTokenPda(umi, { mint, owner })
         if (!tokenAccount?.[0]) {
-          throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'No MARCO token account was found for the connected Solana wallet.')
+          throw new MarcoBridgeError(
+            'INSUFFICIENT_MARCO',
+            'No MARCO token account was found for the connected Solana wallet.',
+          )
         }
         const tokenPda = tokenAccount[0]
         let token
         try {
           token = await fetchToken(umi, tokenPda)
         } catch {
-          throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'No MARCO token account was found for the connected Solana wallet.')
+          throw new MarcoBridgeError(
+            'INSUFFICIENT_MARCO',
+            'No MARCO token account was found for the connected Solana wallet.',
+          )
         }
         const sol = await umi.rpc.getBalance(owner)
         return {
@@ -187,7 +189,7 @@ export function createOfficialSolanaOftProtocol(): SolanaOftProtocol {
             ...params,
             nativeFee: BigInt(input.nativeFeeLamports),
           },
-          { oft: publicKey(input.programId) },
+          { oft: publicKey(input.programId), token: publicKey(SOLANA_SPL_TOKEN_PROGRAM) },
         )
         const lookupTable = publicKey(input.lookupTable || LAYERZERO_SOLANA_V2_MAINNET_ALT)
         const lookupTableInput = await fetchAddressLookupTable(umi, lookupTable)

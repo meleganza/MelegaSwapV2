@@ -41,21 +41,25 @@ async function defaultBuildFetcher(
   return send
 }
 
-export function createBrowserSolanaOftProtocol(input: {
-  quote: MarcoBridgeQuote
-  request: MarcoBridgeQuoteRequest
-  build?: BuildFetcher
-  readOwner?: typeof readSolanaOwnerAccounts
-} & Partial<Pick<SolanaOftProtocol, 'fetchStore' | 'getEnforcedOptions' | 'quote'>>): SolanaOftProtocol {
+export function createBrowserSolanaOftProtocol(
+  input: {
+    quote: MarcoBridgeQuote
+    request: MarcoBridgeQuoteRequest
+    build?: BuildFetcher
+    readOwner?: typeof readSolanaOwnerAccounts
+  } & Partial<Pick<SolanaOftProtocol, 'fetchStore' | 'getEnforcedOptions'>>,
+): SolanaOftProtocol {
   const build = input.build ?? defaultBuildFetcher
   const readOwner = input.readOwner ?? readSolanaOwnerAccounts
   return {
-    fetchStore: input.fetchStore
-      ?? (async () => {
+    fetchStore:
+      input.fetchStore ??
+      (async () => {
         throw new MarcoBridgeError('QUOTE_FAILED', 'Solana OFT store reads use the live quote API.')
       }),
-    getEnforcedOptions: input.getEnforcedOptions
-      ?? (async () => {
+    getEnforcedOptions:
+      input.getEnforcedOptions ??
+      (async () => {
         throw new MarcoBridgeError('QUOTE_FAILED', 'Solana OFT option reads use the live quote API.')
       }),
     quote: input.quote

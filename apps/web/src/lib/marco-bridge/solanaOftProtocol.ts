@@ -1,7 +1,12 @@
 import { getAddress } from '@ethersproject/address'
 import { hexZeroPad } from '@ethersproject/bytes'
 import { SOLANA_OFT_ESCROW, SOLANA_OFT_PROGRAM_ID } from './solanaUnpause'
-import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote, type MarcoBridgeQuoteBinding } from './types'
+import {
+  MarcoBridgeError,
+  type MarcoBridgeNetworkId,
+  type MarcoBridgeQuote,
+  type MarcoBridgeQuoteBinding,
+} from './types'
 import { destinationToBytes32, parseBridgeAmount } from './validation'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 
@@ -13,6 +18,7 @@ export const SOLANA_OFT_STORE = MARCO_WAVE1_NETWORKS.solana.endpointContract
 export const SOLANA_OFT_MINT = MARCO_WAVE1_NETWORKS.solana.marcoIdentity
 export const CANONICAL_SOLANA_BNB_DST_EID = MARCO_WAVE1_NETWORKS.bnb.layerZeroEid
 export const SOLANA_TX_FEE_RESERVE_LAMPORTS = '500000'
+export const SOLANA_SPL_TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
 
 export type SolanaOftStoreSnapshot = {
   store: string
@@ -102,6 +108,7 @@ export function solanaQuoteIdentity(input: Omit<MarcoBridgeQuoteBinding, 'expire
     input.escrow,
     input.tokenAccount,
     input.optionsHex.toLowerCase(),
+    input.enforcedOptionsHex.toLowerCase(),
     input.nativeFeeWei,
     input.lookupTable,
   ].join('|')
@@ -137,16 +144,28 @@ export function assertCanonicalSolanaHubRequest(input: {
 
 export function assertLiveSolanaStoreSnapshot(store: SolanaOftStoreSnapshot): void {
   if (store.store !== SOLANA_OFT_STORE) {
-    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana OFT store identity does not match the certified store.')
+    throw new MarcoBridgeError(
+      'CANONICAL_CONFIG_MISSING',
+      'Solana OFT store identity does not match the certified store.',
+    )
   }
   if (store.programId !== SOLANA_OFT_PROGRAM) {
-    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana OFT program identity does not match the certified program.')
+    throw new MarcoBridgeError(
+      'CANONICAL_CONFIG_MISSING',
+      'Solana OFT program identity does not match the certified program.',
+    )
   }
   if (store.tokenMint !== SOLANA_OFT_MINT) {
-    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana OFT store tokenMint does not match the certified MARCO mint.')
+    throw new MarcoBridgeError(
+      'CANONICAL_CONFIG_MISSING',
+      'Solana OFT store tokenMint does not match the certified MARCO mint.',
+    )
   }
   if (store.tokenEscrow !== SOLANA_OFT_ESCROW) {
-    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana OFT store tokenEscrow does not match the certified escrow.')
+    throw new MarcoBridgeError(
+      'CANONICAL_CONFIG_MISSING',
+      'Solana OFT store tokenEscrow does not match the certified escrow.',
+    )
   }
   if (store.decimals !== MARCO_WAVE1_NETWORKS.solana.tokenDecimals) {
     throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana MARCO mint decimals do not match the certified OFT.')
@@ -184,7 +203,18 @@ export function assertSendMatchesQuote(input: {
     sourceWallet: string
     destinationWallet: string
   }
-  send: Pick<SolanaOftBuiltSend, 'feePayer' | 'tokenSource' | 'sendParam' | 'nativeFeeLamports' | 'store' | 'programId' | 'mint' | 'escrow' | 'lookupTable'>
+  send: Pick<
+    SolanaOftBuiltSend,
+    | 'feePayer'
+    | 'tokenSource'
+    | 'sendParam'
+    | 'nativeFeeLamports'
+    | 'store'
+    | 'programId'
+    | 'mint'
+    | 'escrow'
+    | 'lookupTable'
+  >
 }): void {
   const binding = input.quote.binding
   if (!binding?.identity) {
@@ -205,6 +235,7 @@ export function assertSendMatchesQuote(input: {
     escrow: binding.escrow,
     tokenAccount: binding.tokenAccount,
     optionsHex: binding.optionsHex,
+    enforcedOptionsHex: binding.enforcedOptionsHex,
     nativeFeeWei: input.quote.nativeFeeWei,
     lookupTable: binding.lookupTable,
   })
@@ -239,7 +270,10 @@ export function assertSendMatchesQuote(input: {
   ) {
     throw new MarcoBridgeError('QUOTE_FAILED', 'Send parameters do not match the quoted Solana OFT send.')
   }
-  if (input.send.nativeFeeLamports !== binding.nativeFeeWei || input.send.nativeFeeLamports !== input.quote.nativeFeeWei) {
+  if (
+    input.send.nativeFeeLamports !== binding.nativeFeeWei ||
+    input.send.nativeFeeLamports !== input.quote.nativeFeeWei
+  ) {
     throw new MarcoBridgeError('QUOTE_FAILED', 'Send native fee does not match the quoted SOL fee.')
   }
   if (

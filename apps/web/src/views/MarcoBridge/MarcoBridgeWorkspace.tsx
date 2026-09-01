@@ -46,17 +46,23 @@ import {
   localRouteActivationEnabled,
   wave1ActivationBlockers,
 } from 'lib/marco-bridge/wave1Registry'
-import { isValidMarcoDestination, parseBridgeAmount, requiresExplicitDestination, validateBridgeAmount } from 'lib/marco-bridge/validation'
+import {
+  isValidMarcoDestination,
+  parseBridgeAmount,
+  requiresExplicitDestination,
+  validateBridgeAmount,
+} from 'lib/marco-bridge/validation'
 
 declare global {
   interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
-    }
     solana?: SolanaInjectedWallet & {
       connect: () => Promise<{ publicKey?: { toString: () => string } }>
     }
   }
+}
+
+type BridgeEthereumProvider = {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
 }
 
 const Page = styled.section<{ $embedded?: boolean }>`
@@ -490,9 +496,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   )
   const parsedAmount = parseBridgeAmount(amount, fromNetwork.tokenDecimals)
   const approvalRequired = Boolean(
-    from === 'bnb' &&
-      parsedAmount &&
-      (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
+    from === 'bnb' && parsedAmount && (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
   )
   const sourceLocked = sourceSubmissionLocksControls(tracking)
   const completedDelivery = isCompletedDelivery(tracking)
@@ -699,7 +703,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     }
     if (fromNetwork.chainId === 4663 && window.ethereum) {
       try {
-        await ensureRobinhoodWalletNetwork(window.ethereum)
+        await ensureRobinhoodWalletNetwork(window.ethereum as unknown as BridgeEthereumProvider)
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Add Robinhood Chain 4663 in the wallet.')
         return
@@ -748,7 +752,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         request,
         authority: routeAuthority,
         signer: signer ?? undefined,
-        ethereum: window.ethereum,
+        ethereum: window.ethereum as unknown as BridgeEthereumProvider,
         allowanceLD: allowanceLD ?? '0',
         solanaWallet: fromNetwork.walletFamily === 'solana' ? window.solana : undefined,
       })
@@ -963,7 +967,13 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
           </Card>
           <Card $embedded={embedded}>
             <CardHead>
-              <strong>{sourceLocked || showCompletedDelivery ? 'Delivery status' : review ? 'Review bridge' : 'Delivery status'}</strong>
+              <strong>
+                {sourceLocked || showCompletedDelivery
+                  ? 'Delivery status'
+                  : review
+                  ? 'Review bridge'
+                  : 'Delivery status'}
+              </strong>
               <span>
                 {showCompletedDelivery
                   ? BRIDGE_COPY.bridgeComplete
@@ -1032,7 +1042,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               <>
                 <Steps>
                   {MARCO_BRIDGE_PROGRESS.map((step, index) => (
-                    <li key={step.status} data-state={stepStates[index]} data-testid={`marco-bridge-step-${step.status}`}>
+                    <li
+                      key={step.status}
+                      data-state={stepStates[index]}
+                      data-testid={`marco-bridge-step-${step.status}`}
+                    >
                       <i>{index + 1}</i>
                       {step.label}
                     </li>
@@ -1089,7 +1103,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   {solanaPaused ? 'blocked by live store pause' : 'active · live store paused=false'}
                 </li>
                 <li>Solana store: {solanaPaused ? 'paused' : 'active'}</li>
-                <li>Activation blockers: {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}</li>
+                <li>
+                  Activation blockers:{' '}
+                  {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}
+                </li>
               </ul>
             </Advanced>
             {!embedded ? (
