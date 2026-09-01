@@ -71,16 +71,17 @@ describe('double-send lock uses sourceTx evidence', () => {
     }
   })
 
-  it('locks post-hash statuses including action-required, and keeps source-failed retryable', () => {
+  it('locks post-hash in-flight statuses including action-required, and keeps source-failed retryable', () => {
     for (const status of BARE_BROADCAST_STATUSES) {
       const tracking: MarcoBridgeTracking = { status, sourceTx: '0xabc' }
       expect(hasBroadcastSourceTx(tracking)).toBe(true)
-      expect(sourceSubmissionLocksControls(tracking)).toBe(true)
       const cta = submitInput({ tracking })
       if (status === 'delivered') {
+        expect(sourceSubmissionLocksControls(tracking)).toBe(false)
         expect(cta).toMatchObject({ label: BRIDGE_COPY.bridgeComplete, disabled: true })
         expect(cta.label).not.toBe(BRIDGE_COPY.bridgeInProgress)
       } else {
+        expect(sourceSubmissionLocksControls(tracking)).toBe(true)
         expect(cta).toMatchObject({ label: BRIDGE_COPY.bridgeInProgress, disabled: true })
       }
     }

@@ -7,12 +7,15 @@ import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { typography } from 'design-system/melega'
 import {
+  applyBridgeRouteSelection,
   BRIDGE_COPY,
+  isCompletedDelivery,
   layerZeroScanTxUrl,
   liveQuoteBlockReason,
   marcoBridgeStepStates,
   resolveQuoteCta,
   resolveSubmitCta,
+  shouldShowCompletedDeliveryCard,
   sourceSubmissionLocksControls,
   type MarcoBridgeSubmissionPhase,
 } from 'lib/marco-bridge/bridgeActionState'
@@ -486,6 +489,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
   )
   const sourceLocked = sourceSubmissionLocksControls(tracking)
+  const completedDelivery = isCompletedDelivery(tracking)
+  const showCompletedDelivery = shouldShowCompletedDeliveryCard(tracking)
   const quoteCta = resolveQuoteCta({ hasLiveQuote: Boolean(quote?.live), sourceSubmitted: sourceLocked })
   const nativeBlockReason = resolveNativeFundsBlockReason({
     from,
@@ -536,6 +541,26 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     setQuote(null)
     setQuoteLoading(false)
     setReview(false)
+  }
+
+  const applyRouteChange = (nextFrom: MarcoBridgeNetworkId, nextTo: MarcoBridgeNetworkId) => {
+    const next = applyBridgeRouteSelection({ tracking, nextFrom, nextTo })
+    setFrom(next.from)
+    setTo(next.to)
+    setDestination(next.destination)
+    setQuote(next.quote)
+    setQuoteLoading(next.quoteLoading)
+    setReview(next.review)
+    if (next.resetCompletedTransfer) {
+      setAllowanceLD(next.allowanceLD)
+      setNativeBalanceWei(next.nativeBalanceWei)
+      setGasPriceWei(next.gasPriceWei)
+      setNativeReadState(next.nativeReadState)
+      setError(next.error)
+      setSubmitting(next.submitting)
+      setSubmissionPhase(next.submissionPhase)
+      setTracking(next.tracking)
+    }
   }
 
   useEffect(() => {
@@ -783,9 +808,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   value={from}
                   disabled={sourceLocked}
                   onChange={(event) => {
-                    setFrom(event.target.value as MarcoBridgeNetworkId)
-                    setDestination('')
-                    resetQuote()
+                    applyRouteChange(event.target.value as MarcoBridgeNetworkId, to)
                   }}
                 >
                   {networkEntries.map((network) => (
@@ -800,10 +823,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 aria-label="Swap networks"
                 disabled={sourceLocked}
                 onClick={() => {
-                  setFrom(to)
-                  setTo(from)
-                  setDestination('')
-                  resetQuote()
+                  applyRouteChange(to, from)
                 }}
               >
                 ⇄
@@ -814,9 +834,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   value={to}
                   disabled={sourceLocked}
                   onChange={(event) => {
-                    setTo(event.target.value as MarcoBridgeNetworkId)
-                    setDestination('')
-                    resetQuote()
+                    applyRouteChange(from, event.target.value as MarcoBridgeNetworkId)
                   }}
                 >
                   {networkEntries.map((network) => (
@@ -921,9 +939,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
           </Card>
           <Card $embedded={embedded}>
             <CardHead>
-              <strong>{sourceLocked || tracking.status === 'delivered' ? 'Delivery status' : review ? 'Review bridge' : 'Delivery status'}</strong>
+              <strong>{sourceLocked || showCompletedDelivery ? 'Delivery status' : review ? 'Review bridge' : 'Delivery status'}</strong>
               <span>
-                {tracking.status === 'delivered' && sourceLocked
+                {showCompletedDelivery
                   ? BRIDGE_COPY.bridgeComplete
                   : sourceLocked
                   ? BRIDGE_COPY.bridgeInProgress
@@ -934,7 +952,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   : 'TRACKED'}
               </span>
             </CardHead>
-            {review && !sourceLocked ? (
+            {review && !sourceLocked && !completedDelivery ? (
               <Review>
                 <ReviewRow>
                   <span>You bridge</span>
