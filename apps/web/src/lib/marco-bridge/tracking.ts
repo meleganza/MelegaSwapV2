@@ -27,7 +27,8 @@ export function trackingFromLayerZeroMessages(
     return {
       status: 'source-confirmed',
       sourceTx,
-      message: 'Source transaction is confirmed. Delivery is still progressing; do not resend this bridge transfer.',
+      message:
+        "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
     }
   }
   const name = (message.status?.name ?? '').toUpperCase()
@@ -41,10 +42,10 @@ export function trackingFromLayerZeroMessages(
     destinationTx,
     message:
       status === 'delivered'
-        ? 'MARCO has been delivered to the destination wallet.'
+        ? 'MARCO was delivered successfully to the destination wallet.'
         : status === 'source-failed'
         ? 'The source transaction failed and no cross-chain delivery started.'
-        : 'Your source transaction is confirmed. Delivery is still progressing; do not resend this bridge transfer.',
+        : "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
   }
   if (sourceSucceeded(tracking) && tracking.status !== 'delivered' && tracking.status !== 'source-failed') {
     tracking.status = tracking.status === 'source-confirmed' ? 'source-confirmed' : tracking.status
@@ -64,7 +65,8 @@ export async function fetchLayerZeroTracking(
     return {
       status: 'source-confirmed',
       sourceTx,
-      message: 'Source transaction is confirmed. Delivery is still progressing; do not resend this bridge transfer.',
+      message:
+        "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
     }
   }
   const payload = (await response.json()) as { data?: LayerZeroMessage[] } | LayerZeroMessage[]

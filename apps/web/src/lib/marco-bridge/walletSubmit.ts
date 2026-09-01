@@ -29,6 +29,36 @@ export async function readErc20Allowance(input: {
   return BigNumber.from(result === '0x' ? '0' : result).toString()
 }
 
+export async function submitMarcoApprovalFromWallet(input: {
+  request: MarcoBridgeQuoteRequest
+  authority: CanonicalMmnRouteState
+  signer: WalletSubmitSigner
+  allowanceLD?: string
+}): Promise<string> {
+  assertRouteExecutable(input.request.from, input.request.to, input.authority)
+  const quote = await requestMarcoBridgeQuote(input.request)
+  const build = buildMarcoBridgeTransactions(
+    { ...input.request, allowanceLD: input.allowanceLD },
+    quote,
+    input.authority,
+  )
+  const approval = build.transactions.find((tx) => tx.family === 'evm' && tx.purpose === 'approve')
+  if (!approval || approval.family !== 'evm') {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'MARCO approval is not required for this allowance.')
+  }
+  const signerAddress = getAddress(await input.signer.getAddress())
+  if (signerAddress !== getAddress(input.request.sourceWallet)) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connected wallet does not match the source wallet.')
+  }
+  const sent = await input.signer.sendTransaction({
+    to: approval.to,
+    data: approval.data,
+    value: approval.value,
+    chainId: approval.chainId,
+  })
+  return sent.hash
+}
+
 export async function submitMarcoBridgeFromWallet(input: {
   request: MarcoBridgeQuoteRequest
   authority: CanonicalMmnRouteState
@@ -41,7 +71,7 @@ export async function submitMarcoBridgeFromWallet(input: {
   if (source.walletFamily === 'solana') {
     throw new MarcoBridgeError(
       'WALLET_REQUIRED',
-      'Connect a Solana wallet and unpause the certified OFT store, then sign the Solana OFT send plan.',
+      'Solana source submission is not publicly activated. Use BNB Smart Chain as the source.',
     )
   }
   if (source.chainId === 4663 && input.ethereum) {
@@ -70,7 +100,7 @@ export async function submitMarcoBridgeFromWallet(input: {
   let sourceTx = ''
   for (const tx of build.transactions) {
     if (tx.family !== 'evm') {
-      throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT send requires the store to be unpaused.')
+      throw new MarcoBridgeError('WALLET_REQUIRED', 'Solana source submission is not publicly activated.')
     }
     const evmTx = tx as UnsignedEvmBridgeTx
     const sent = await input.signer.sendTransaction({
@@ -85,6 +115,7 @@ export async function submitMarcoBridgeFromWallet(input: {
   return {
     status: 'submitted',
     sourceTx,
-    message: 'Transaction submitted. Track this same LayerZero GUID until delivered; do not resend.',
+    message:
+      "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
   }
 }

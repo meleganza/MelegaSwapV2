@@ -1,3 +1,7 @@
+import {
+  applyCanonicalBnbSolanaApplicationGate,
+  CANONICAL_SOLANA_OFT_STORE_PAUSED,
+} from './canonicalBnbSolanaGate'
 import { MARCO_WAVE1_DIRECT_ROUTES, MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import type { MarcoBridgeNetworkId } from './types'
 
@@ -108,5 +112,7 @@ export async function fetchCanonicalRouteAuthority(fetcher: typeof fetch = fetch
     cache: 'no-store',
   })
   if (!response.ok) throw new Error(`Canonical MMN route authority failed with HTTP ${response.status}.`)
-  return assertCanonicalRouteAuthority(await response.json())
+  return applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(await response.json()), {
+    solanaStorePaused: CANONICAL_SOLANA_OFT_STORE_PAUSED,
+  })
 }

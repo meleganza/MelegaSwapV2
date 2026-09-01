@@ -16,10 +16,13 @@ export function sourceSucceeded(tracking: MarcoBridgeTracking): boolean {
 
 /** A delayed destination is the same transfer. Never advise a second send after source success. */
 export function bridgeRecoveryMessage(tracking: MarcoBridgeTracking): string {
-  if (sourceSucceeded(tracking) && tracking.status !== 'delivered') {
-    return 'Your source transaction is confirmed. Delivery is still progressing; do not resend this bridge transfer.'
+  if (tracking.status === 'submitted' || (sourceSucceeded(tracking) && tracking.status !== 'delivered')) {
+    return (
+      tracking.message ??
+      "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer."
+    )
   }
   if (tracking.status === 'source-failed') return 'The source transaction failed and no cross-chain delivery started.'
-  if (tracking.status === 'delivered') return 'MARCO has been delivered to the destination wallet.'
+  if (tracking.status === 'delivered') return 'MARCO was delivered successfully to the destination wallet.'
   return tracking.message ?? 'Your bridge transfer will appear here after submission.'
 }

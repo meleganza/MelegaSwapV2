@@ -182,21 +182,16 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     expect(simulation.blockers.join(' ')).toMatch(/paused/i)
   })
 
-  it('quotes/builds/sims Solana -> BNB after unpause representation', () => {
+  it('keeps Solana -> BNB application-gated after store unpause', () => {
     const live = authority({ solanaPaused: false })
     const built = buildMarcoBridgeTransactions(
       { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solana, destinationWallet: evm },
       quote('Solana → BNB', false, '5000'),
       live,
     )
-    expect(isRouteExecutable('solana', 'bnb', live)).toBe(true)
-    expect(built.executable).toBe(true)
-    expect(built.transactions[0]).toMatchObject({
-      family: 'solana',
-      dstEid: 30102,
-      mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-      store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
-    })
+    expect(isRouteExecutable('solana', 'bnb', live)).toBe(false)
+    expect(built.executable).toBe(false)
+    expect(built.transactions).toEqual([])
   })
 
   it('requires approval on BNB consumer -> adapter when allowance is below amountLD', () => {
