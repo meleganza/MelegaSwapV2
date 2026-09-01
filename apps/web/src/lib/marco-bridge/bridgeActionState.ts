@@ -5,7 +5,7 @@ import {
   MARCO_BRIDGE_PROGRESS,
   MARCO_BRIDGE_SUBMITTED_COPY,
 } from './lifecycle'
-import { INSUFFICIENT_BNB_REASON } from './nativeFunds'
+import { INSUFFICIENT_BNB_REASON, type NativeFundsReadState } from './nativeFunds'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from './types'
 
 export const LIVE_QUOTE_TTL_MS = 60_000
@@ -35,9 +35,89 @@ export type ProgressStepState = 'completed' | 'current' | 'pending'
 
 export { hasBroadcastSourceTx }
 
+export function isCompletedDelivery(tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>): boolean {
+  return tracking.status === 'delivered' && hasBroadcastSourceTx(tracking)
+}
+
+export function shouldShowCompletedDeliveryCard(tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>): boolean {
+  return isCompletedDelivery(tracking)
+}
+
+/** Fail-closed lock for an unresolved broadcast source tx. Delivered and source-failed do not lock. */
 export function sourceSubmissionLocksControls(tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>): boolean {
   if (tracking.status === 'source-failed') return false
+  if (isCompletedDelivery(tracking)) return false
   return hasBroadcastSourceTx(tracking)
+}
+
+export type NewBridgeTransferState = {
+  from: MarcoBridgeNetworkId
+  to: MarcoBridgeNetworkId
+  destination: ''
+  quote: null
+  quoteLoading: false
+  review: false
+  allowanceLD: null
+  nativeBalanceWei: null
+  gasPriceWei: null
+  nativeReadState: NativeFundsReadState
+  error: ''
+  submitting: false
+  submissionPhase: MarcoBridgeSubmissionPhase
+  tracking: { status: 'idle' }
+}
+
+export function beginNewBridgeTransfer(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): NewBridgeTransferState {
+  return {
+    from,
+    to,
+    destination: '',
+    quote: null,
+    quoteLoading: false,
+    review: false,
+    allowanceLD: null,
+    nativeBalanceWei: null,
+    gasPriceWei: null,
+    nativeReadState: 'idle',
+    error: '',
+    submitting: false,
+    submissionPhase: 'idle',
+    tracking: { status: 'idle' },
+  }
+}
+
+export type BridgeRouteSelection =
+  | (NewBridgeTransferState & { resetCompletedTransfer: true })
+  | {
+      from: MarcoBridgeNetworkId
+      to: MarcoBridgeNetworkId
+      destination: ''
+      quote: null
+      quoteLoading: false
+      review: false
+      resetCompletedTransfer: false
+      tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>
+    }
+
+export function applyBridgeRouteSelection(input: {
+  tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>
+  nextFrom: MarcoBridgeNetworkId
+  nextTo: MarcoBridgeNetworkId
+}): BridgeRouteSelection {
+  const next = beginNewBridgeTransfer(input.nextFrom, input.nextTo)
+  if (isCompletedDelivery(input.tracking)) {
+    return { ...next, resetCompletedTransfer: true }
+  }
+  return {
+    from: next.from,
+    to: next.to,
+    destination: next.destination,
+    quote: next.quote,
+    quoteLoading: next.quoteLoading,
+    review: next.review,
+    resetCompletedTransfer: false,
+    tracking: input.tracking,
+  }
 }
 
 function resolveSubmissionPhase(input: {

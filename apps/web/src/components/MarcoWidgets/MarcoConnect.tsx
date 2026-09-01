@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
+import {
+  MARCO_CONNECT_FALLBACK_LABEL,
+  onMarcoPassportDisconnect,
+  resolveMarcoConnectNavbarState,
+} from './marcoConnectSession'
 
 const MARCO_CONNECT_SRC = 'https://marco.melega.ai/widgets/marco-connect.v2.1.js'
 const DEFAULT_APPLICATION = process.env.NEXT_PUBLIC_MARCO_CONNECT_APPLICATION?.trim() || 'Melega DEX'
@@ -181,19 +186,13 @@ export const MarcoConnect: React.FC<{
   activation?: MarcoConnectActivation
 }> = ({ size = 'navbar', className, activation = 'always' }) => {
   const { address } = useAccount()
-  const { disconnect } = useDisconnect()
   const hostRef = useRef<HTMLDivElement | null>(null)
   const sdkRef = useRef<MarcoConnectSdk | null>(null)
-  const disconnectRef = useRef(disconnect)
   const passportIntentRef = useRef(false)
   const passportOpenRef = useRef<Promise<boolean> | null>(null)
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [isActive, setIsActive] = useState(activation === 'always')
-
-  useEffect(() => {
-    disconnectRef.current = disconnect
-  }, [disconnect])
 
   useEffect(() => {
     if (activation === 'always') {
@@ -247,7 +246,7 @@ export const MarcoConnect: React.FC<{
         sdkRef.current = sdk
         unsubscribeDisconnect = sdk.on('disconnect', () => {
           passportIntentRef.current = false
-          disconnectRef.current()
+          onMarcoPassportDisconnect()
         })
         setReady(true)
       })
@@ -268,8 +267,9 @@ export const MarcoConnect: React.FC<{
     }
   }, [isActive, size])
 
+  const navbar = resolveMarcoConnectNavbarState(address)
   const displayedAddress = address || null
-  const shortAddress = displayedAddress ? `${displayedAddress.slice(0, 6)}…${displayedAddress.slice(-4)}` : null
+  const shortAddress = navbar.connected ? navbar.label : null
   const requestPassportOpen = () => {
     const sdk = sdkRef.current
     if (!ready || failed || !sdk || passportOpenRef.current) return
@@ -318,7 +318,7 @@ export const MarcoConnect: React.FC<{
           }}
         >
           <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />
-          {size === 'icon' ? null : 'MARCO CONNECT'}
+          {size === 'icon' ? null : MARCO_CONNECT_FALLBACK_LABEL}
         </ConnectWalletButton>
       </Fallback>
     </Root>

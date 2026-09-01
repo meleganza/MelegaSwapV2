@@ -1,6 +1,7 @@
 import { useClient, useConnect } from 'wagmi'
 import { useEffect } from 'react'
 import { loadExtendedWalletConnectors, requiresExtendedWalletSession } from 'utils/wagmi'
+import { restoreEagerWalletSession } from './restoreEagerWalletSession'
 
 const SAFE_ID = 'safe'
 let eagerConnectPromise: Promise<unknown> | null = null
@@ -11,7 +12,13 @@ const useEagerConnect = () => {
   useEffect(() => {
     if (eagerConnectPromise || typeof window === 'undefined') return
     const restoreSession = async () => {
-      if (requiresExtendedWalletSession()) await loadExtendedWalletConnectors()
+      if (requiresExtendedWalletSession()) {
+        try {
+          await loadExtendedWalletConnectors()
+        } catch {
+          // Core injected/MetaMask restore must still proceed without WalletConnect/Safe SDKs.
+        }
+      }
       const connectorInstance = client.connectors.find((c) => c.id === SAFE_ID && c.ready)
       if (
         connectorInstance &&
@@ -26,14 +33,12 @@ const useEagerConnect = () => {
           // wagmi's persisted connector without treating the wallet as lost.
         }
       }
-      await client.autoConnect()
+      await restoreEagerWalletSession({
+        autoConnect: () => client.autoConnect(),
+      })
     }
 
-    eagerConnectPromise = restoreSession().catch(() => {
-      // A provider can be temporarily unavailable while a mobile wallet or
-      // browser extension wakes up. Allow a later remount to retry cleanly.
-      eagerConnectPromise = null
-    })
+    eagerConnectPromise = restoreSession().catch(() => undefined)
   }, [client, connectAsync])
 }
 
