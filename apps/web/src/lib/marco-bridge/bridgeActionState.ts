@@ -1,14 +1,18 @@
 import { CANONICAL_BNB_SOLANA_GATE } from './canonicalBnbSolanaGate'
-import { MARCO_BRIDGE_PROGRESS } from './lifecycle'
+import { hasBroadcastSourceTx, MARCO_BRIDGE_PROGRESS } from './lifecycle'
 import { INSUFFICIENT_BNB_REASON } from './nativeFunds'
 import type { MarcoBridgeNetworkId, MarcoBridgeProgress, MarcoBridgeQuote, MarcoBridgeTracking } from './types'
 
 export const LIVE_QUOTE_TTL_MS = 60_000
 
+export type MarcoBridgeSubmissionPhase = 'idle' | 'approving' | 'confirming-wallet'
+
 export const BRIDGE_COPY = {
   getLiveQuote: 'GET LIVE QUOTE',
   refreshLiveQuote: 'REFRESH LIVE QUOTE',
   approveMarco: 'APPROVE MARCO',
+  approvingMarco: 'APPROVING MARCO',
+  confirmBridgeInWallet: 'CONFIRM BRIDGE IN WALLET',
   bridgeMarco: 'BRIDGE MARCO',
   bridgeInProgress: 'BRIDGE IN PROGRESS',
   bridgeComplete: 'BRIDGE COMPLETE',
@@ -33,8 +37,22 @@ const LOCKED_SOURCE_STATUSES: MarcoBridgeProgress[] = [
   'delivered',
 ]
 
-export function sourceSubmissionLocksControls(status: MarcoBridgeProgress): boolean {
-  return LOCKED_SOURCE_STATUSES.includes(status)
+export { hasBroadcastSourceTx }
+
+export function sourceSubmissionLocksControls(tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>): boolean {
+  if (tracking.status === 'source-failed') return false
+  if (hasBroadcastSourceTx(tracking)) return true
+  return LOCKED_SOURCE_STATUSES.includes(tracking.status)
+}
+
+function resolveSubmissionPhase(input: {
+  submissionPhase?: MarcoBridgeSubmissionPhase
+  submitting?: boolean
+  approvalRequired: boolean
+}): MarcoBridgeSubmissionPhase {
+  if (input.submissionPhase && input.submissionPhase !== 'idle') return input.submissionPhase
+  if (input.submitting) return input.approvalRequired ? 'approving' : 'confirming-wallet'
+  return input.submissionPhase ?? 'idle'
 }
 
 export function isLiveQuoteFresh(quote: MarcoBridgeQuote | null, nowMs = Date.now()): boolean {
@@ -70,6 +88,7 @@ export function resolveSubmitCta(input: {
   executable: boolean
   approvalRequired: boolean
   submitting: boolean
+  submissionPhase?: MarcoBridgeSubmissionPhase
   quote: MarcoBridgeQuote | null
   tracking: MarcoBridgeTracking
   nowMs?: number
@@ -78,8 +97,15 @@ export function resolveSubmitCta(input: {
   if (input.tracking.status === 'delivered') {
     return { label: BRIDGE_COPY.bridgeComplete, disabled: true, reason: null }
   }
-  if (sourceSubmissionLocksControls(input.tracking.status) || input.submitting) {
+  if (sourceSubmissionLocksControls(input.tracking)) {
     return { label: BRIDGE_COPY.bridgeInProgress, disabled: true, reason: null }
+  }
+  const phase = resolveSubmissionPhase(input)
+  if (phase === 'approving') {
+    return { label: BRIDGE_COPY.approvingMarco, disabled: true, reason: null }
+  }
+  if (phase === 'confirming-wallet') {
+    return { label: BRIDGE_COPY.confirmBridgeInWallet, disabled: true, reason: null }
   }
   if (input.from === 'bnb' && input.connectedChainId !== CANONICAL_BNB_SOLANA_GATE.srcChainId) {
     return { label: BRIDGE_COPY.switchToBnb, disabled: false, reason: 'Switch your wallet to BNB Smart Chain.' }
@@ -116,5 +142,5 @@ export function marcoBridgeStepStates(tracking: MarcoBridgeTracking): ProgressSt
 }
 
 export function operationalCopyMustNotRequireUnpause(text: string): boolean {
-  return !/set_pause|recovery required|unpause the certified/i.test(text)
+  return !/set_pause|\bunpause\b|recovery[- ]required/i.test(text)
 }

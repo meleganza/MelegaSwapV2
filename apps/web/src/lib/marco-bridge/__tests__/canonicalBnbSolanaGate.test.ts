@@ -331,8 +331,8 @@ describe('canonical BNB→Solana application gate', () => {
       nowMs: Date.parse(liveQuote().quotedAt),
     })
     expect(submitted).toMatchObject({ label: BRIDGE_COPY.bridgeInProgress, disabled: true })
-    expect(sourceSubmissionLocksControls('submitted')).toBe(true)
-    expect(sourceSubmissionLocksControls('verifying')).toBe(true)
+    expect(sourceSubmissionLocksControls({ status: 'submitted', sourceTx: '0xabc' })).toBe(true)
+    expect(sourceSubmissionLocksControls({ status: 'verifying', sourceTx: '0xabc' })).toBe(true)
     expect(bridgeRecoveryMessage({ status: 'submitted', sourceTx: '0xabc' })).toBe(BRIDGE_COPY.submitted)
     expect(layerZeroScanTxUrl('0xabc')).toBe('https://layerzeroscan.com/tx/0xabc')
 

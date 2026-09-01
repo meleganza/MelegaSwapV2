@@ -60,7 +60,7 @@ async function rpcGetAccountInfo(
         jsonrpc: '2.0',
         id: 1,
         method: 'getAccountInfo',
-        params: [store, { encoding: 'base64', commitment: 'confirmed' }],
+        params: [store, { encoding: 'base64', commitment: 'finalized' }],
       }),
       signal: controller.signal,
     })

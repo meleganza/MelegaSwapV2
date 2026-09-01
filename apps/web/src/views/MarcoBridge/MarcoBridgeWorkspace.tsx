@@ -14,11 +14,16 @@ import {
   resolveQuoteCta,
   resolveSubmitCta,
   sourceSubmissionLocksControls,
+  type MarcoBridgeSubmissionPhase,
 } from 'lib/marco-bridge/bridgeActionState'
 import { CANONICAL_BNB_SOLANA_GATE } from 'lib/marco-bridge/canonicalBnbSolanaGate'
 import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
-import { evaluateNativeFunds, isNativeFundsBlocked } from 'lib/marco-bridge/nativeFunds'
+import {
+  BNB_GAS_PRICE_FALLBACK_WEI,
+  resolveNativeFundsBlockReason,
+  type NativeFundsReadState,
+} from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
@@ -443,6 +448,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [from, setFrom] = useState<MarcoBridgeNetworkId>('bnb')
   const [to, setTo] = useState<MarcoBridgeNetworkId>('robinhood')
   const [submitting, setSubmitting] = useState(false)
+  const [submissionPhase, setSubmissionPhase] = useState<MarcoBridgeSubmissionPhase>('idle')
   const [amount, setAmount] = useState('')
   const [destination, setDestination] = useState('')
   const [solanaWallet, setSolanaWallet] = useState('')
@@ -456,6 +462,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [allowanceLD, setAllowanceLD] = useState<string | null>(null)
   const [nativeBalanceWei, setNativeBalanceWei] = useState<string | null>(null)
   const [gasPriceWei, setGasPriceWei] = useState<string | null>(null)
+  const [nativeReadState, setNativeReadState] = useState<NativeFundsReadState>('idle')
   const fromNetwork = MARCO_WAVE1_NETWORKS[from]
   const toNetwork = MARCO_WAVE1_NETWORKS[to]
   const sourceWallet = fromNetwork.walletFamily === 'evm' ? address ?? '' : solanaWallet
@@ -478,21 +485,17 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       parsedAmount &&
       (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
   )
-  const sourceLocked = sourceSubmissionLocksControls(tracking.status)
+  const sourceLocked = sourceSubmissionLocksControls(tracking)
   const quoteCta = resolveQuoteCta({ hasLiveQuote: Boolean(quote?.live), sourceSubmitted: sourceLocked })
-  const nativeBlockReason =
-    from === 'bnb' && quote?.live && nativeBalanceWei && gasPriceWei
-      ? (() => {
-          const verdict = evaluateNativeFunds({
-            from,
-            balanceWei: nativeBalanceWei,
-            nativeFeeWei: quote.nativeFeeWei,
-            gasPriceWei,
-            approvalRequired,
-          })
-          return isNativeFundsBlocked(verdict) ? verdict.reason : null
-        })()
-      : null
+  const nativeBlockReason = resolveNativeFundsBlockReason({
+    from,
+    quoteLive: Boolean(quote?.live),
+    nativeFeeWei: quote?.nativeFeeWei,
+    readState: nativeReadState,
+    balanceWei: nativeBalanceWei,
+    gasPriceWei,
+    approvalRequired,
+  })
   const submitCta = resolveSubmitCta({
     from,
     to,
@@ -500,6 +503,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     executable,
     approvalRequired,
     submitting,
+    submissionPhase,
     quote,
     tracking,
     nativeBlockReason,
@@ -545,20 +549,27 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     if (!signer?.provider || from !== 'bnb' || !sourceWallet) {
       setNativeBalanceWei(null)
       setGasPriceWei(null)
+      setNativeReadState(from === 'bnb' && sourceWallet ? 'unavailable' : 'idle')
       return
     }
     let cancelled = false
-    void Promise.all([signer.provider.getBalance(sourceWallet), signer.provider.getGasPrice()])
+    setNativeReadState('loading')
+    void Promise.all([
+      signer.provider.getBalance(sourceWallet),
+      signer.provider.getGasPrice().catch(() => BNB_GAS_PRICE_FALLBACK_WEI),
+    ])
       .then(([balance, gasPrice]) => {
         if (!cancelled) {
           setNativeBalanceWei(BigNumber.from(balance).toString())
           setGasPriceWei(BigNumber.from(gasPrice).toString())
+          setNativeReadState('ready')
         }
       })
       .catch(() => {
         if (!cancelled) {
           setNativeBalanceWei(null)
           setGasPriceWei(null)
+          setNativeReadState('unavailable')
         }
       })
     return () => {
@@ -667,6 +678,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       return
     }
     setSubmitting(true)
+    setSubmissionPhase(approvalRequired ? 'approving' : 'confirming-wallet')
     try {
       const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
       const nextQuote = await marcoBridgeService.quote(request)
@@ -703,9 +715,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Bridge submission failed.')
-      setTracking((current) => (sourceSubmissionLocksControls(current.status) ? current : { status: 'action-required' }))
+      setTracking((current) => (sourceSubmissionLocksControls(current) ? current : { status: 'action-required' }))
     } finally {
       setSubmitting(false)
+      setSubmissionPhase('idle')
     }
   }
 
@@ -744,6 +757,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-submit-cta={submitCta.label}
       data-source-locked={sourceLocked ? 'true' : 'false'}
       data-native-block={nativeBlockReason ?? ''}
+      data-native-read={nativeReadState}
+      data-submission-phase={submissionPhase}
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -912,6 +927,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   ? BRIDGE_COPY.bridgeComplete
                   : sourceLocked
                   ? BRIDGE_COPY.bridgeInProgress
+                  : submissionPhase === 'approving'
+                  ? BRIDGE_COPY.approvingMarco
+                  : submissionPhase === 'confirming-wallet'
+                  ? BRIDGE_COPY.confirmBridgeInWallet
                   : 'TRACKED'}
               </span>
             </CardHead>

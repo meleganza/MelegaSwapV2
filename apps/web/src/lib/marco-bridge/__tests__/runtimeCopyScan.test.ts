@@ -17,6 +17,8 @@ const RUNTIME_FILES = [
   'src/lib/marco-bridge/service.ts',
   'src/lib/marco-bridge/preflight.ts',
   'src/lib/marco-bridge/nativeFunds.ts',
+  'src/lib/marco-bridge/simulate.ts',
+  'src/lib/marco-bridge/solanaStoreRead.ts',
   'src/pages/api/marco-bridge/quote.ts',
   'src/pages/api/marco-bridge/route-state.ts',
   'src/pages/api/marco-bridge/track.ts',
@@ -24,15 +26,19 @@ const RUNTIME_FILES = [
   'src/pages/api/marco-bridge/simulate.ts',
 ]
 
-const FORBIDDEN = /solanaUnpauseOperatorMessage|set_pause|recovery[- ]required|unpause the certified/i
+/** Any runtime instruction to set_pause / unpause / recover. Historical unpauseTx audit fields are stripped first. */
+const FORBIDDEN = /solanaUnpauseOperatorMessage|set_pause|\bunpause\b|recovery[- ]required/i
+
+function runtimeSource(relative: string): string {
+  return readFileSync(join(WEB_ROOT, relative), 'utf8')
+    .replace(/export function operationalCopyMustNotRequireUnpause[\s\S]*?\n\}/, '')
+    .replace(/unpauseTx:\s*'[^']+',?/g, '')
+}
 
 describe('runtime bridge copy', () => {
   it('does not import or show set_pause / unpause / recovery-required copy', () => {
     for (const relative of RUNTIME_FILES) {
-      const source = readFileSync(join(WEB_ROOT, relative), 'utf8').replace(
-        /export function operationalCopyMustNotRequireUnpause[\s\S]*?\n\}/,
-        '',
-      )
+      const source = runtimeSource(relative)
       expect(FORBIDDEN.test(source), `${relative} still contains obsolete pause-recovery copy`).toBe(false)
       expect(operationalCopyMustNotRequireUnpause(source)).toBe(true)
     }

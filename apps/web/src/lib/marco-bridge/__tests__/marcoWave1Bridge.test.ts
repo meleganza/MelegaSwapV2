@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from '../lifecycle'
+import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage, sourceSucceeded } from '../lifecycle'
 import { assertMarcoBridgePreflight } from '../preflight'
 import { planMarcoBridgeRoute } from '../routePolicy'
 import { marcoBridgeService } from '../service'
@@ -106,6 +106,8 @@ describe('MARCO Wave-1 bridge product', () => {
   it('distinguishes source failure from delivered state', () => {
     expect(bridgeRecoveryMessage({ status: 'source-failed' })).toContain('no cross-chain delivery started')
     expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).toContain('delivered')
+    expect(sourceSucceeded({ status: 'action-required' })).toBe(false)
+    expect(sourceSucceeded({ status: 'action-required', sourceTx: '0xabc' })).toBe(true)
   })
 
   it('keeps Base locked and requires a wallet for activated routes', async () => {
