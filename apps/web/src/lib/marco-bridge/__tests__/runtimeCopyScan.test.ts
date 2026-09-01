@@ -98,4 +98,13 @@ describe('runtime bridge copy', () => {
     expect(workspace).not.toContain('QUOTE UNAVAILABLE')
     expect(workspace.match(/: '—'/g)?.length).toBeGreaterThanOrEqual(5)
   })
+
+  it('keeps the full LayerZero transaction out of the visible delivery card', () => {
+    const workspace = runtimeSource('src/views/MarcoBridge/MarcoBridgeWorkspace.tsx')
+    expect(workspace).toContain('data-testid="layerzero-transaction-link"')
+    expect(workspace).toContain('<strong>{short(tracking.sourceTx)}</strong>')
+    expect(workspace).toContain('View on LayerZero Scan ↗')
+    expect(workspace).not.toContain('Source tx {tracking.sourceTx}')
+    expect(workspace).toContain('overflow-wrap: anywhere')
+  })
 })
