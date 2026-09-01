@@ -598,7 +598,7 @@ describe('live Solana pause truth', () => {
       mint: CANONICAL_BNB_SOLANA_GATE.mint,
     }))
     expect(isRouteExecutable('bnb', 'solana', enabled)).toBe(true)
-    expect(isRouteExecutable('solana', 'bnb', enabled)).toBe(false)
+    expect(isRouteExecutable('solana', 'bnb', enabled)).toBe(true)
   })
 })
 
@@ -640,12 +640,12 @@ describe('quote freshness and topology', () => {
     expect(isRouteExecutable('bnb', 'robinhood', live)).toBe(true)
     expect(isRouteExecutable('robinhood', 'bnb', live)).toBe(true)
     expect(isRouteExecutable('bnb', 'solana', live)).toBe(true)
-    expect(isRouteExecutable('solana', 'bnb', live)).toBe(false)
+    expect(isRouteExecutable('solana', 'bnb', live)).toBe(true)
     expect(isRouteExecutable('base', 'solana', live)).toBe(false)
     expect(isRouteExecutable('solana', 'base', live)).toBe(false)
     expect(isRouteExecutable('robinhood', 'solana', live)).toBe(false)
     expect(isRouteExecutable('solana', 'robinhood', live)).toBe(false)
-    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(false)
+    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(true)
     expect(live.global_execution_enabled).toBe(false)
   })
 })

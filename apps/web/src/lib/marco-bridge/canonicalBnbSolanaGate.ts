@@ -4,12 +4,12 @@ import type { MarcoBridgeNetworkId } from './types'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 
 /**
- * Certified application binding for the single public MARCO OFT Adapter route:
- * BNB Smart Chain (chainId 56 / EID 30102) → Solana (EID 30168).
+ * Certified application binding for the BNB-hub MARCO OFT pair:
+ * BNB Smart Chain (chainId 56 / EID 30102) ↔ Solana (EID 30168).
  *
  * On-chain store pause is the infrastructure truth. This binding does not flip
- * global_execution_enabled and does not open Solana source, Base, or Robinhood
- * direct Solana routes.
+ * global_execution_enabled and does not open Solana↔Base, Solana↔Robinhood, or
+ * any other direct Solana route.
  */
 export const CANONICAL_BNB_SOLANA_GATE = {
   from: 'bnb',
@@ -35,9 +35,18 @@ export const CANONICAL_BNB_SOLANA_GATE = {
 export const CANONICAL_SOLANA_OFT_STORE_PAUSED = false
 
 export const CANONICAL_BNB_SOLANA_GATE_REASON = 'Canonical BNB→Solana application gate is active.'
+export const CANONICAL_SOLANA_BNB_GATE_REASON = 'Canonical Solana→BNB application gate is active.'
 
 export function isCanonicalBnbSolanaRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
   return from === CANONICAL_BNB_SOLANA_GATE.from && to === CANONICAL_BNB_SOLANA_GATE.to
+}
+
+export function isCanonicalSolanaBnbRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
+  return from === 'solana' && to === 'bnb'
+}
+
+export function isCanonicalBnbSolanaHubRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
+  return isCanonicalBnbSolanaRoute(from, to) || isCanonicalSolanaBnbRoute(from, to)
 }
 
 export function applyCanonicalBnbSolanaApplicationGate(
@@ -51,13 +60,17 @@ export function applyCanonicalBnbSolanaApplicationGate(
       network.id === 'solana' ? { ...network, paused: solanaStorePaused } : network,
     ),
     routes: authority.routes.map((route) => {
-      if (isCanonicalBnbSolanaRoute(route.from, route.to)) {
+      if (isCanonicalBnbSolanaHubRoute(route.from, route.to)) {
         return {
           ...route,
           paused: solanaStorePaused,
           publicly_active: !solanaStorePaused,
           execution_enabled: !solanaStorePaused,
-          reason: solanaStorePaused ? 'Solana OFT store is paused.' : CANONICAL_BNB_SOLANA_GATE_REASON,
+          reason: solanaStorePaused
+            ? 'Solana OFT store is paused.'
+            : isCanonicalSolanaBnbRoute(route.from, route.to)
+            ? CANONICAL_SOLANA_BNB_GATE_REASON
+            : CANONICAL_BNB_SOLANA_GATE_REASON,
         }
       }
       if (route.from === 'solana' || route.to === 'solana') {
@@ -65,7 +78,7 @@ export function applyCanonicalBnbSolanaApplicationGate(
           ...route,
           publicly_active: false,
           execution_enabled: false,
-          reason: 'Only the canonical BNB→Solana route is publicly activated.',
+          reason: 'Only the certified BNB↔Solana hub pair is publicly activated.',
         }
       }
       return route

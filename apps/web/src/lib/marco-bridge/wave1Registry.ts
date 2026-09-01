@@ -92,7 +92,7 @@ export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${Mar
   'bnb:robinhood': true,
   'robinhood:bnb': true,
   'bnb:solana': true,
-  'solana:bnb': false,
+  'solana:bnb': true,
   'bnb:base': false,
   'base:bnb': false,
   'base:solana': false,
@@ -116,8 +116,8 @@ export function wave1ActivationBlockers(): string[] {
   if (!localRouteActivationEnabled('bnb', 'robinhood') || !localRouteActivationEnabled('robinhood', 'bnb')) {
     blockers.push('BNB↔Robinhood public activation is off')
   }
-  if (!localRouteActivationEnabled('bnb', 'solana')) {
-    blockers.push('Canonical BNB→Solana public activation is off')
+  if (!localRouteActivationEnabled('bnb', 'solana') || !localRouteActivationEnabled('solana', 'bnb')) {
+    blockers.push('Canonical BNB↔Solana public activation is off')
   }
   if (MARCO_WAVE1_NETWORKS.solana.protectivePaused) blockers.push('Solana infrastructure pause')
   return blockers

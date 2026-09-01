@@ -56,6 +56,9 @@
   "volta": {
     "node": "16.18.0"
   },
+  "resolutions": {
+    "@solana/web3.js": "1.95.8"
+  },
   "dependencies": {
     "@webassemblyjs/ieee754": "1.11.1",
     "react-alice-carousel": "^2.9.1",

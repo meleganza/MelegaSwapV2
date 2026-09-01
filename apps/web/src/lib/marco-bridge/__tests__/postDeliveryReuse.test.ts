@@ -201,8 +201,8 @@ describe('post-delivery route reuse', () => {
     expect(next.tracking).not.toHaveProperty('sourceTx')
     expect(shouldShowCompletedDeliveryCard(next.tracking)).toBe(false)
     expect(planMarcoBridgeRoute(next.from, next.to)).toMatchObject({ kind: 'direct', legs: ['solana', 'bnb'] })
-    expect(localRouteActivationEnabled(next.from, next.to)).toBe(false)
-    expect(isRouteExecutable(next.from, next.to, liveAuthority())).toBe(false)
+    expect(localRouteActivationEnabled(next.from, next.to)).toBe(true)
+    expect(isRouteExecutable(next.from, next.to, liveAuthority())).toBe(true)
   })
 
   it('applies the same new-transfer reset when From or To changes after delivery', () => {
@@ -227,12 +227,12 @@ describe('post-delivery route reuse', () => {
   it('does not expand executable routes when the reversed Solana source is displayed', () => {
     const authority = liveAuthority()
     expect(isRouteExecutable('bnb', 'solana', authority)).toBe(true)
-    expect(isRouteExecutable('solana', 'bnb', authority)).toBe(false)
+    expect(isRouteExecutable('solana', 'bnb', authority)).toBe(true)
     expect(isRouteExecutable('solana', 'base', authority)).toBe(false)
     expect(isRouteExecutable('solana', 'robinhood', authority)).toBe(false)
     expect(isRouteExecutable('base', 'solana', authority)).toBe(false)
     expect(isRouteExecutable('robinhood', 'solana', authority)).toBe(false)
-    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(false)
+    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(true)
     expect(localRouteActivationEnabled('solana', 'base')).toBe(false)
     expect(localRouteActivationEnabled('solana', 'robinhood')).toBe(false)
     expect(beginNewBridgeTransfer('solana', 'base').tracking).toEqual({ status: 'idle' })

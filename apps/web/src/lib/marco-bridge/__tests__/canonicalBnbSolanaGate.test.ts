@@ -127,22 +127,25 @@ const liveQuote = (quotedAt = '2026-09-01T12:00:00.000Z'): MarcoBridgeQuote => (
 const idleTracking = (): MarcoBridgeTracking => ({ status: 'review' })
 
 describe('canonical BNB→Solana application gate', () => {
-  it('1) paused=false makes only the canonical BNB→Solana route operational', () => {
+  it('1) paused=false makes only the certified BNB↔Solana hub pair operational', () => {
     expect(CANONICAL_SOLANA_OFT_STORE_PAUSED).toBe(false)
     const paused = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: true })
     const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
 
     expect(isRouteExecutable('bnb', 'solana', paused)).toBe(false)
+    expect(isRouteExecutable('solana', 'bnb', paused)).toBe(false)
     expect(isRouteExecutable('bnb', 'solana', live)).toBe(true)
+    expect(isRouteExecutable('solana', 'bnb', live)).toBe(true)
     expect(live.global_execution_enabled).toBe(false)
-    expect(isRouteExecutable('solana', 'bnb', live)).toBe(false)
+    expect(live.networks.find((network) => network.id === 'solana')?.paused).toBe(false)
+    expect(live.routes.find((route) => route.from === 'solana' && route.to === 'bnb')?.paused).toBe(false)
     expect(isRouteExecutable('bnb', 'base', live)).toBe(false)
     expect(isRouteExecutable('base', 'solana', live)).toBe(false)
     expect(isRouteExecutable('solana', 'base', live)).toBe(false)
     expect(isRouteExecutable('solana', 'robinhood', live)).toBe(false)
     expect(isRouteExecutable('robinhood', 'solana', live)).toBe(false)
     expect(localRouteActivationEnabled('bnb', 'solana')).toBe(true)
-    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(false)
+    expect(localRouteActivationEnabled('solana', 'bnb')).toBe(true)
   })
 
   it('2) a valid live quote enables the BNB→Solana send flow', () => {

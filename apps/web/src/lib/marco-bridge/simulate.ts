@@ -59,9 +59,9 @@ export async function simulateMarcoBridgeBuild(
       steps.push({
         purpose: tx.purpose,
         family: 'solana',
-        ok: false,
+        ok: true,
         reverted: false,
-        reason: 'Solana source submission is not publicly activated. Use BNB Smart Chain as the source.',
+        reason: 'Solana OFT send is constructed for wallet signature. No broadcast is performed.',
       })
       continue
     }

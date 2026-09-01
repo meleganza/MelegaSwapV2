@@ -3,6 +3,7 @@ import { getAddress } from '@ethersproject/address'
 import { BigNumber } from '@ethersproject/bignumber'
 import { isActivationRoute, routeExecutionBlockers } from './executableRoutes'
 import type { CanonicalMmnRouteState } from './routeAuthority'
+import { LAYERZERO_SOLANA_V2_MAINNET_ALT } from './solanaOftProtocol'
 import { SOLANA_OFT_ESCROW, SOLANA_OFT_PROGRAM_ID, SOLANA_LZ_ENDPOINT_PROGRAM_ID } from './solanaUnpause'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote } from './types'
 import { MarcoBridgeError } from './types'
@@ -45,6 +46,11 @@ export type UnsignedSolanaBridgeTx = {
   nativeFeeLamports: string
   dstEid: number
   toBytes32: string
+  tokenAccount?: string
+  optionsHex?: string
+  lookupTable?: string
+  quoteIdentity?: string
+  serializedTransaction?: string
 }
 
 export type MarcoBridgeBuiltTx = UnsignedEvmBridgeTx | UnsignedSolanaBridgeTx
@@ -172,13 +178,17 @@ export function buildMarcoBridgeTransactions(
       programId: SOLANA_OFT_PROGRAM_ID,
       store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
       mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-      escrow: SOLANA_OFT_ESCROW,
+      escrow: quote.binding?.escrow ?? SOLANA_OFT_ESCROW,
       endpointProgram: SOLANA_LZ_ENDPOINT_PROGRAM_ID,
       destinationWallet: request.destinationWallet,
       amountLD: sendParam.amountLD,
       nativeFeeLamports: nativeFeeWei,
       dstEid: sendParam.dstEid,
       toBytes32: sendParam.to,
+      tokenAccount: quote.binding?.tokenAccount,
+      optionsHex: quote.binding?.optionsHex,
+      lookupTable: quote.binding?.lookupTable ?? LAYERZERO_SOLANA_V2_MAINNET_ALT,
+      quoteIdentity: quote.binding?.identity,
     })
   }
 

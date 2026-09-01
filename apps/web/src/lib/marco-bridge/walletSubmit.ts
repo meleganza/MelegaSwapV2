@@ -2,6 +2,8 @@ import { Interface } from '@ethersproject/abi'
 import { getAddress } from '@ethersproject/address'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
+import { VersionedTransaction } from '@solana/web3.js'
+import { LIVE_QUOTE_TTL_MS } from './bridgeActionState'
 import { assertRouteExecutable } from './executableRoutes'
 import {
   evaluateNativeFunds,
@@ -17,8 +19,17 @@ import { assertMarcoBridgePreflight } from './preflight'
 import type { CanonicalMmnRouteState } from './routeAuthority'
 import { ensureRobinhoodWalletNetwork } from './robinhoodChain'
 import { requestMarcoBridgeQuote, type MarcoBridgeQuoteRequest } from './service'
+import { createBrowserSolanaOftProtocol } from './solanaBrowserProtocol'
+import {
+  LAYERZERO_SOLANA_V2_MAINNET_ALT,
+  SOLANA_OFT_PROGRAM,
+  assertSendMatchesQuote,
+  requiredSolLamportsForBridge,
+  type SolanaOftProtocol,
+} from './solanaOftProtocol'
 import { ERC20_APPROVE_IFACE, assertBuildReady, buildMarcoBridgeTransactions, type UnsignedEvmBridgeTx } from './transactionBuilder'
 import { MarcoBridgeError, type MarcoBridgeQuote, type MarcoBridgeTracking } from './types'
+import { isValidMarcoDestination } from './validation'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 
 const ERC20_BALANCE_IFACE = new Interface(['function balanceOf(address owner) view returns (uint256)'])
@@ -41,6 +52,146 @@ export type WalletSubmitSigner = {
 
 type EthereumProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+}
+
+export type SolanaInjectedWallet = {
+  publicKey?: { toString(): string; toBase58?: () => string }
+  signAndSendTransaction?: (transaction: VersionedTransaction) => Promise<{ signature?: string } | string>
+  signTransaction?: (transaction: VersionedTransaction) => Promise<{
+    serialize: () => Uint8Array | Buffer | number[]
+  }>
+}
+
+export type SolanaBroadcastTransport = {
+  sendRawTransaction(raw: Uint8Array): Promise<string>
+}
+
+export function readConnectedSolanaAddress(wallet: SolanaInjectedWallet | null | undefined): string {
+  return wallet?.publicKey?.toString() ?? ''
+}
+
+export function solanaWalletConnectionLabel(address: string): 'Connected' | 'Connect' {
+  return address ? 'Connected' : 'Connect'
+}
+
+function assertFreshQuote(quote: MarcoBridgeQuote): void {
+  const expiry = quote.expiresAt ? Date.parse(quote.expiresAt) : Date.parse(quote.quotedAt) + LIVE_QUOTE_TTL_MS
+  if (!Number.isFinite(expiry) || Date.now() > expiry) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The live quote expired. Request a new quote before signing.')
+  }
+}
+
+function deserializeSolanaTransaction(serialized: string): VersionedTransaction {
+  return VersionedTransaction.deserialize(Buffer.from(serialized, 'base64'))
+}
+
+async function signAndBroadcastSolanaSend(input: {
+  wallet: SolanaInjectedWallet
+  serializedTransaction: string
+  transport?: SolanaBroadcastTransport
+}): Promise<string> {
+  const transaction = deserializeSolanaTransaction(input.serializedTransaction)
+  if (typeof input.wallet.signAndSendTransaction === 'function') {
+    const sent = await input.wallet.signAndSendTransaction(transaction)
+    const signature = typeof sent === 'string' ? sent : sent?.signature
+    if (!signature) throw new MarcoBridgeError('SOURCE_FAILED', 'The Solana wallet did not return a source signature.')
+    return signature
+  }
+  if (typeof input.wallet.signTransaction === 'function' && input.transport?.sendRawTransaction) {
+    const signed = await input.wallet.signTransaction(transaction)
+    const raw = signed.serialize()
+    const bytes = raw instanceof Uint8Array ? raw : Uint8Array.from(raw)
+    const signature = await input.transport.sendRawTransaction(bytes)
+    if (!signature) throw new MarcoBridgeError('SOURCE_FAILED', 'The Solana send was not broadcast.')
+    return signature
+  }
+  throw new MarcoBridgeError(
+    'WALLET_REQUIRED',
+    'The connected Solana wallet must support signAndSendTransaction or signTransaction.',
+  )
+}
+
+export async function submitSolanaMarcoBridgeFromWallet(input: {
+  request: MarcoBridgeQuoteRequest
+  authority: CanonicalMmnRouteState
+  wallet: SolanaInjectedWallet
+  protocol: SolanaOftProtocol
+  transport?: SolanaBroadcastTransport
+  requestQuote?: typeof requestMarcoBridgeQuote
+}): Promise<MarcoBridgeTracking> {
+  assertRouteExecutable(input.request.from, input.request.to, input.authority)
+  if (input.request.from !== 'solana' || input.request.to !== 'bnb') {
+    throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'Only the certified Solana → BNB route is publicly activated.')
+  }
+  const connected = readConnectedSolanaAddress(input.wallet)
+  if (!connected) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the Solana wallet to sign the bridge send.')
+  }
+  if (connected !== input.request.sourceWallet) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connected wallet does not match the quoted Solana source wallet.')
+  }
+  if (!isValidMarcoDestination(input.request.destinationWallet, 'evm')) {
+    throw new MarcoBridgeError('INVALID_DESTINATION', 'Enter a valid BNB Smart Chain destination wallet.')
+  }
+
+  const requestQuote = input.requestQuote ?? requestMarcoBridgeQuote
+  const quote = await requestQuote(input.request)
+  assertFreshQuote(quote)
+  if (!quote.binding) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'The Solana quote is missing a bound send identity.')
+  }
+  if (quote.binding.sourceWallet !== connected) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connected wallet does not match the quoted Solana source wallet.')
+  }
+  const protocol = input.protocol
+
+  const owner = await protocol.fetchOwnerAccounts({
+    owner: connected,
+    mint: quote.binding.mint,
+  })
+  if (BigInt(owner.tokenBalanceLd) < BigInt(quote.binding.amountLD)) {
+    throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'Insufficient MARCO balance.')
+  }
+  const requiredLamports = requiredSolLamportsForBridge(quote.nativeFeeWei)
+  if (BigInt(owner.solLamports) < BigInt(requiredLamports)) {
+    throw new MarcoBridgeError(
+      'INSUFFICIENT_GAS',
+      'Insufficient SOL to cover the LayerZero native fee and transaction fees.',
+    )
+  }
+
+  const send = await input.protocol.buildSend({
+    payer: connected,
+    tokenMint: quote.binding.mint,
+    tokenEscrow: quote.binding.escrow,
+    tokenSource: quote.binding.tokenAccount,
+    sendParam: {
+      dstEid: quote.binding.dstEid,
+      toBytes32: quote.binding.toBytes32,
+      amountLd: quote.binding.amountLD,
+      minAmountLd: quote.binding.amountLD,
+      optionsHex: quote.binding.optionsHex,
+      payInLzToken: false,
+    },
+    programId: quote.binding.programId || SOLANA_OFT_PROGRAM,
+    lookupTable: quote.binding.lookupTable || LAYERZERO_SOLANA_V2_MAINNET_ALT,
+    nativeFeeLamports: quote.nativeFeeWei,
+  })
+  assertSendMatchesQuote({ quote, request: input.request, send })
+  if (!send.serializedTransaction) {
+    throw new MarcoBridgeError('SOURCE_FAILED', 'The official Solana OFT SDK did not produce a signable transaction.')
+  }
+
+  const sourceTx = await signAndBroadcastSolanaSend({
+    wallet: input.wallet,
+    serializedTransaction: send.serializedTransaction,
+    transport: input.transport,
+  })
+  return {
+    status: 'submitted',
+    sourceTx,
+    message: MARCO_BRIDGE_SUBMITTED_COPY,
+  }
 }
 
 export async function readErc20Allowance(input: {
@@ -201,19 +352,35 @@ export async function submitMarcoApprovalFromWallet(input: {
 export async function submitMarcoBridgeFromWallet(input: {
   request: MarcoBridgeQuoteRequest
   authority: CanonicalMmnRouteState
-  signer: WalletSubmitSigner
+  signer?: WalletSubmitSigner
   ethereum?: EthereumProvider | null
   allowanceLD?: string
   requestQuote?: typeof requestMarcoBridgeQuote
+  solanaWallet?: SolanaInjectedWallet
+  solanaProtocol?: SolanaOftProtocol
+  solanaTransport?: SolanaBroadcastTransport
 }): Promise<MarcoBridgeTracking> {
   assertRouteExecutable(input.request.from, input.request.to, input.authority)
   const source = MARCO_WAVE1_NETWORKS[input.request.from]
   if (source.walletFamily === 'solana') {
-    throw new MarcoBridgeError(
-      'WALLET_REQUIRED',
-      'Solana source submission is not publicly activated. Use BNB Smart Chain as the source.',
-    )
+    if (!input.solanaWallet) {
+      throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the Solana wallet to sign the bridge send.')
+    }
+    const requestQuote = input.requestQuote ?? requestMarcoBridgeQuote
+    const quote = await requestQuote(input.request)
+    return submitSolanaMarcoBridgeFromWallet({
+      request: input.request,
+      authority: input.authority,
+      wallet: input.solanaWallet,
+      protocol: input.solanaProtocol ?? createBrowserSolanaOftProtocol({ request: input.request, quote }),
+      transport: input.solanaTransport,
+      requestQuote: async () => quote,
+    })
   }
+  if (!input.signer) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the source wallet to sign the unsigned bridge transactions.')
+  }
+  const signer = input.signer
   if (source.chainId === 4663 && input.ethereum) {
     await ensureRobinhoodWalletNetwork(input.ethereum)
   }
@@ -227,14 +394,14 @@ export async function submitMarcoBridgeFromWallet(input: {
     }
   }
 
-  const signerAddress = getAddress(await input.signer.getAddress())
+  const signerAddress = getAddress(await signer.getAddress())
   if (signerAddress !== getAddress(input.request.sourceWallet)) {
     throw new MarcoBridgeError('WALLET_REQUIRED', 'Connected wallet does not match the source wallet.')
   }
   await assertWalletNativePreflight({
     request: input.request,
     quote,
-    signer: input.signer,
+    signer,
     signerAddress,
     approvalRequired: false,
   })
@@ -249,13 +416,13 @@ export async function submitMarcoBridgeFromWallet(input: {
   let sourceTx = ''
   for (const tx of build.transactions) {
     if (tx.family !== 'evm') {
-      throw new MarcoBridgeError('WALLET_REQUIRED', 'Solana source submission is not publicly activated.')
+      throw new MarcoBridgeError('WALLET_REQUIRED', 'Unexpected Solana transaction on an EVM source route.')
     }
     if (tx.purpose === 'approve') {
       throw new MarcoBridgeError('WALLET_REQUIRED', 'MARCO approval must be confirmed before the bridge send.')
     }
     const evmTx = tx as UnsignedEvmBridgeTx
-    const sent = await input.signer.sendTransaction({
+    const sent = await signer.sendTransaction({
       to: evmTx.to,
       data: evmTx.data,
       value: evmTx.value,

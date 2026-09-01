@@ -24,6 +24,27 @@ export type MarcoBridgeRoute = {
   enabled: boolean
 }
 
+export type MarcoBridgeQuoteBinding = {
+  from: MarcoBridgeNetworkId
+  to: MarcoBridgeNetworkId
+  sourceWallet: string
+  destinationWallet: string
+  amount: string
+  amountLD: string
+  dstEid: number
+  toBytes32: string
+  store: string
+  programId: string
+  mint: string
+  escrow: string
+  tokenAccount: string
+  optionsHex: string
+  nativeFeeWei: string
+  lookupTable: string
+  expiresAt: string
+  identity: string
+}
+
 export type MarcoBridgeQuote = {
   amount: string
   expectedReceive: string
@@ -32,10 +53,12 @@ export type MarcoBridgeQuote = {
   nativeFeeSymbol: string
   routeLabel: string
   quotedAt: string
+  expiresAt?: string
   live: true
   routePaused: boolean
   publiclyActive: boolean
   executionEnabled: boolean
+  binding?: MarcoBridgeQuoteBinding
 }
 
 export type MarcoBridgeProgress =

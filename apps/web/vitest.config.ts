@@ -1,8 +1,12 @@
+import { TextDecoder, TextEncoder } from 'node:util'
 import { defineConfig } from 'vitest/config'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { resolve } from 'path'
+
+Object.defineProperty(globalThis, 'TextEncoder', { configurable: true, writable: true, value: TextEncoder })
+Object.defineProperty(globalThis, 'TextDecoder', { configurable: true, writable: true, value: TextDecoder })
 
 const r = (p: string) => resolve(__dirname, p)
 
@@ -31,12 +35,12 @@ export default defineConfig({
     },
   },
   test: {
-    setupFiles: ['./vitest.setup.js'],
+    setupFiles: ['./vitest.polyfill.js', './vitest.setup.js'],
     environment: 'jsdom',
     globals: true,
     exclude: ['src/config/__tests__'],
     deps: {
-      inline: ['@testing-library/react', 'react-dom'],
+      inline: ['@testing-library/react', 'react-dom', '@solana/web3.js', '@noble/hashes', '@noble/curves'],
     },
   },
 })

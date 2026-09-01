@@ -32,7 +32,14 @@ import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
-import { readErc20Allowance, submitMarcoApprovalFromWallet, submitMarcoBridgeFromWallet } from 'lib/marco-bridge/walletSubmit'
+import {
+  readConnectedSolanaAddress,
+  readErc20Allowance,
+  solanaWalletConnectionLabel,
+  submitMarcoApprovalFromWallet,
+  submitMarcoBridgeFromWallet,
+  type SolanaInjectedWallet,
+} from 'lib/marco-bridge/walletSubmit'
 import {
   MARCO_WAVE1_NETWORKS,
   MARCO_WAVE1_PUBLIC_ACTIVATION,
@@ -46,9 +53,8 @@ declare global {
     ethereum?: {
       request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
     }
-    solana?: {
+    solana?: SolanaInjectedWallet & {
       connect: () => Promise<{ publicKey?: { toString: () => string } }>
-      publicKey?: { toString: () => string }
     }
   }
 }
@@ -522,6 +528,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       : 'Select two different networks'
 
   useEffect(() => {
+    const existing = typeof window !== 'undefined' ? readConnectedSolanaAddress(window.solana) : ''
+    if (existing) setSolanaWallet(existing)
+  }, [])
+
+  useEffect(() => {
     let cancelled = false
     void fetch('/api/marco-bridge/route-state', { cache: 'no-store' })
       .then(async (response) => {
@@ -698,9 +709,16 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       void switchNetworkAsync(fromNetwork.chainId)
       return
     }
-    if (!signer) {
+    if (fromNetwork.walletFamily !== 'solana' && !signer) {
       setError('Connect the source wallet to sign the unsigned bridge transactions.')
       return
+    }
+    if (fromNetwork.walletFamily === 'solana') {
+      const connected = readConnectedSolanaAddress(window.solana) || solanaWallet
+      if (!connected) {
+        setError('Connect the Solana wallet to sign the bridge send.')
+        return
+      }
     }
     setSubmitting(true)
     setSubmissionPhase(approvalRequired ? 'approving' : 'confirming-wallet')
@@ -709,6 +727,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const nextQuote = await marcoBridgeService.quote(request)
       setQuote(nextQuote)
       if (approvalRequired) {
+        if (!signer) throw new Error('Connect the source wallet to sign the unsigned bridge transactions.')
         await submitMarcoApprovalFromWallet({
           request,
           authority: routeAuthority,
@@ -728,9 +747,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const nextTracking = await submitMarcoBridgeFromWallet({
         request,
         authority: routeAuthority,
-        signer,
+        signer: signer ?? undefined,
         ethereum: window.ethereum,
         allowanceLD: allowanceLD ?? '0',
+        solanaWallet: fromNetwork.walletFamily === 'solana' ? window.solana : undefined,
       })
       setTracking(nextTracking)
       setReview(true)
@@ -849,9 +869,13 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               <span>Source wallet</span>
               <strong>{short(sourceWallet)}</strong>
               {fromNetwork.walletFamily === 'solana' ? (
-                <ConnectSolana type="button" onClick={connectSolana}>
-                  Connect
-                </ConnectSolana>
+                sourceWallet ? (
+                  <span data-testid="solana-wallet-connected">{solanaWalletConnectionLabel(sourceWallet)}</span>
+                ) : (
+                  <ConnectSolana type="button" onClick={connectSolana} data-testid="solana-wallet-connect">
+                    {solanaWalletConnectionLabel(sourceWallet)}
+                  </ConnectSolana>
+                )
               ) : null}
             </WalletLine>
             <Field style={{ marginTop: 12 }}>

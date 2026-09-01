@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
-import { MarcoBridgeError, type MarcoBridgeNetworkId } from './types'
+import { requiredSolLamportsForBridge } from './solanaOftProtocol'
+import { type MarcoBridgeNetworkId } from './types'
 
 /**
  * BSC ERC20 approve is typically ~46k gas. 65_000 is a conservative ceiling for
@@ -71,7 +72,10 @@ export function evaluateNativeFunds(input: {
   gasPriceWei: string
   approvalRequired: boolean
 }): NativeFundsVerdict {
-  const requiredWei = requiredNativeWeiForBridge(input)
+  const requiredWei =
+    input.from === 'solana'
+      ? BigNumber.from(requiredSolLamportsForBridge(input.nativeFeeWei))
+      : requiredNativeWeiForBridge(input)
   const balanceWei = BigNumber.from(input.balanceWei)
   if (balanceWei.gte(requiredWei)) {
     return { ok: true, requiredWei: requiredWei.toString(), balanceWei: balanceWei.toString() }

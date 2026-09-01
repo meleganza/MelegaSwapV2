@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
+import { createOfficialSolanaOftProtocol } from 'lib/marco-bridge/solanaOftSdk'
+import { LAYERZERO_SOLANA_V2_MAINNET_ALT, SOLANA_OFT_PROGRAM } from 'lib/marco-bridge/solanaOftProtocol'
 import { buildMarcoBridgeTransactions } from 'lib/marco-bridge/transactionBuilder'
 import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote } from 'lib/marco-bridge/types'
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
@@ -21,11 +23,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new MarcoBridgeError('QUOTE_FAILED', 'A fresh live quote is required before building transactions.')
     }
     const authority = await fetchCanonicalRouteAuthority()
+    const liveQuote = quote as MarcoBridgeQuote
     const built = buildMarcoBridgeTransactions(
       { from, to, amount, sourceWallet, destinationWallet, allowanceLD },
-      quote as MarcoBridgeQuote,
+      liveQuote,
       authority,
     )
+    if (from === 'solana' && built.executable && liveQuote.binding) {
+      const send = await createOfficialSolanaOftProtocol().buildSend({
+        payer: sourceWallet,
+        tokenMint: liveQuote.binding.mint,
+        tokenEscrow: liveQuote.binding.escrow,
+        tokenSource: liveQuote.binding.tokenAccount,
+        sendParam: {
+          dstEid: liveQuote.binding.dstEid,
+          toBytes32: liveQuote.binding.toBytes32,
+          amountLd: liveQuote.binding.amountLD,
+          minAmountLd: liveQuote.binding.amountLD,
+          optionsHex: liveQuote.binding.optionsHex,
+          payInLzToken: false,
+        },
+        programId: liveQuote.binding.programId || SOLANA_OFT_PROGRAM,
+        lookupTable: liveQuote.binding.lookupTable || LAYERZERO_SOLANA_V2_MAINNET_ALT,
+        nativeFeeLamports: liveQuote.nativeFeeWei,
+      })
+      const solanaTx = built.transactions.find((tx) => tx.family === 'solana')
+      if (solanaTx && solanaTx.family === 'solana') {
+        solanaTx.serializedTransaction = send.serializedTransaction
+        solanaTx.tokenAccount = send.tokenSource
+        solanaTx.quoteIdentity = liveQuote.binding.identity
+      }
+    }
     res.setHeader('Cache-Control', 'no-store')
     return res.status(200).json(built)
   } catch (cause) {
