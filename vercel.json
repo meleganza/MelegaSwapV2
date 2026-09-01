@@ -29,6 +29,9 @@
     }
   ],
   "functions": {
+    "apps/web/src/pages/api/marco-bridge/build.ts": {
+      "maxDuration": 30
+    },
     "apps/web/src/pages/api/indexer/run.ts": {
       "maxDuration": 300
     },
