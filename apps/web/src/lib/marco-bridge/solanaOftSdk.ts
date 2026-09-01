@@ -11,6 +11,7 @@ import {
 } from '@metaplex-foundation/mpl-toolbox'
 import { toWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters'
 import { oft } from '@layerzerolabs/oft-v2-solana-sdk'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { SOLANA_STORE_RPC_FALLBACK, SOLANA_STORE_RPC_PRIMARY } from './solanaStoreRead'
 import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
@@ -28,7 +29,7 @@ import {
 } from './solanaOftProtocol'
 import { MarcoBridgeError } from './types'
 
-const SEND_COMPUTE_UNITS = 253_000
+export const SOLANA_SEND_COMPUTE_UNITS = 350_000
 const SEND_COMPUTE_UNIT_PRICE = 50_000
 
 function hexToBytes(hex: string): Uint8Array {
@@ -198,7 +199,7 @@ export function createOfficialSolanaOftProtocol(): SolanaOftProtocol {
         }
         const built = await transactionBuilder()
           .add(setComputeUnitPrice(umi, { microLamports: SEND_COMPUTE_UNIT_PRICE }))
-          .add(setComputeUnitLimit(umi, { units: SEND_COMPUTE_UNITS }))
+          .add(setComputeUnitLimit(umi, { units: SOLANA_SEND_COMPUTE_UNITS }))
           .setAddressLookupTables([lookupTableInput])
           .add(ix)
           .buildWithLatestBlockhash(umi)
@@ -218,4 +219,36 @@ export function createOfficialSolanaOftProtocol(): SolanaOftProtocol {
       })
     },
   }
+}
+
+export async function simulateOfficialSolanaSend(serializedTransaction: string): Promise<void> {
+  const endpoints = [SOLANA_STORE_RPC_PRIMARY, SOLANA_STORE_RPC_FALLBACK]
+  const transaction = VersionedTransaction.deserialize(Buffer.from(serializedTransaction, 'base64'))
+  let lastError: unknown
+
+  for (const rpcUrl of endpoints) {
+    try {
+      const connection = new Connection(rpcUrl, 'confirmed')
+      const simulation = await connection.simulateTransaction(transaction, {
+        commitment: 'confirmed',
+        replaceRecentBlockhash: true,
+        sigVerify: false,
+      })
+      if (simulation.value.err) {
+        throw new MarcoBridgeError(
+          'SOURCE_FAILED',
+          `Solana simulation failed before wallet confirmation: ${JSON.stringify(simulation.value.err)}.`,
+        )
+      }
+      return
+    } catch (cause) {
+      if (cause instanceof MarcoBridgeError) throw cause
+      lastError = cause
+    }
+  }
+
+  throw new MarcoBridgeError(
+    'QUOTE_FAILED',
+    lastError instanceof Error ? lastError.message : 'Solana simulation RPC is unavailable.',
+  )
 }

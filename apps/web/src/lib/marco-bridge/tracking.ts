@@ -1,4 +1,5 @@
 import { BRIDGE_COPY } from './bridgeActionState'
+import { isSolanaSourceSignature, readSolanaSourceStatus, type SolanaSourceStatus } from './solanaSourceStatus'
 import type { MarcoBridgeProgress, MarcoBridgeTracking } from './types'
 
 type LayerZeroMessage = {
@@ -36,10 +37,15 @@ export function submittedTracking(sourceTx: string): MarcoBridgeTracking {
   }
 }
 
-export function trackingFromLayerZeroMessages(
-  sourceTx: string,
-  messages: LayerZeroMessage[],
-): MarcoBridgeTracking {
+export function missingSolanaSourceTracking(sourceTx: string): MarcoBridgeTracking {
+  return {
+    status: 'source-failed',
+    sourceTx,
+    message: 'Phantom returned a signature, but no Solana transaction was found. No LayerZero transfer started.',
+  }
+}
+
+export function trackingFromLayerZeroMessages(sourceTx: string, messages: LayerZeroMessage[]): MarcoBridgeTracking {
   const message = messages[0]
   if (!message) return submittedTracking(sourceTx)
   const name = (message.status?.name ?? '').toUpperCase()
@@ -62,15 +68,28 @@ export function trackingFromLayerZeroMessages(
 export async function fetchLayerZeroTracking(
   sourceTx: string,
   fetcher: typeof fetch = fetch,
+  readSourceStatus: (signature: string) => Promise<SolanaSourceStatus> = readSolanaSourceStatus,
 ): Promise<MarcoBridgeTracking> {
   try {
     const response = await fetcher(`https://scan.layerzero-api.com/v1/messages/tx/${sourceTx}`, {
       headers: { accept: 'application/json' },
       cache: 'no-store',
     })
-    if (!response.ok) return submittedTracking(sourceTx)
+    if (!response.ok) {
+      if (isSolanaSourceSignature(sourceTx) && (await readSourceStatus(sourceTx)) === 'not-found') {
+        return missingSolanaSourceTracking(sourceTx)
+      }
+      return submittedTracking(sourceTx)
+    }
     const payload = (await response.json()) as { data?: LayerZeroMessage[] } | LayerZeroMessage[]
     const messages = Array.isArray(payload) ? payload : payload.data ?? []
+    if (
+      messages.length === 0 &&
+      isSolanaSourceSignature(sourceTx) &&
+      (await readSourceStatus(sourceTx)) === 'not-found'
+    ) {
+      return missingSolanaSourceTracking(sourceTx)
+    }
     return trackingFromLayerZeroMessages(sourceTx, messages)
   } catch {
     return submittedTracking(sourceTx)

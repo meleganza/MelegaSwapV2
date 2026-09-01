@@ -22,6 +22,11 @@ type QuoteFetch = (
   init: { method: 'POST'; headers: { 'content-type': 'application/json' }; body: string },
 ) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>
 
+export type PreparedSolanaBridge = {
+  quote: MarcoBridgeQuote
+  serializedTransaction: string
+}
+
 function assertQuoteReady(request: MarcoBridgeQuoteRequest) {
   const route = planMarcoBridgeRoute(request.from, request.to)
   if (route.kind !== 'direct') {
@@ -58,6 +63,34 @@ export async function requestMarcoBridgeQuote(
     )
   }
   return payload as MarcoBridgeQuote
+}
+
+export async function prepareSolanaMarcoBridge(
+  request: MarcoBridgeQuoteRequest,
+  fetcher: QuoteFetch = fetch as QuoteFetch,
+): Promise<PreparedSolanaBridge> {
+  assertQuoteReady(request)
+  if (request.from !== 'solana' || request.to !== 'bnb') {
+    throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'Only Solana → BNB uses prepared wallet transactions.')
+  }
+  const response = await fetcher('/api/marco-bridge/build', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ...request, prepare: true }),
+  })
+  const payload = (await response.json()) as {
+    quote?: MarcoBridgeQuote
+    message?: string
+    transactions?: Array<{ family?: string; serializedTransaction?: string }>
+  }
+  const transaction = payload.transactions?.find((item) => item.family === 'solana')
+  if (!response.ok || payload.quote?.live !== true || !transaction?.serializedTransaction) {
+    throw new MarcoBridgeError(
+      'QUOTE_FAILED',
+      payload.message || `Solana wallet preparation failed with HTTP ${response.status}.`,
+    )
+  }
+  return { quote: payload.quote, serializedTransaction: transaction.serializedTransaction }
 }
 
 export const marcoBridgeService: MarcoBridgeService = {

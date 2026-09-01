@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
-import { createOfficialSolanaOftProtocol } from 'lib/marco-bridge/solanaOftSdk'
+import { createOfficialSolanaOftProtocol, simulateOfficialSolanaSend } from 'lib/marco-bridge/solanaOftSdk'
 import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
   SOLANA_OFT_PROGRAM,
@@ -18,12 +18,14 @@ const isNetworkId = (value: unknown): value is MarcoBridgeNetworkId =>
 export type BuildDependencies = {
   fetchAuthority: typeof fetchCanonicalRouteAuthority
   createSolanaProtocol: () => SolanaOftProtocol
+  simulateSolanaSend?: typeof simulateOfficialSolanaSend
   now: () => Date
 }
 
 const defaultDependencies: BuildDependencies = {
   fetchAuthority: fetchCanonicalRouteAuthority,
   createSolanaProtocol: createOfficialSolanaOftProtocol,
+  simulateSolanaSend: simulateOfficialSolanaSend,
   now: () => new Date(),
 }
 
@@ -31,7 +33,7 @@ export async function buildMarcoBridgePayload(
   body: Record<string, unknown> | null | undefined,
   dependencies: BuildDependencies = defaultDependencies,
 ) {
-  const { from, to, amount, sourceWallet, destinationWallet, quote, allowanceLD } = body ?? {}
+  const { from, to, amount, sourceWallet, destinationWallet, quote, allowanceLD, prepare } = body ?? {}
   if (
     !isNetworkId(from) ||
     !isNetworkId(to) ||
@@ -41,18 +43,20 @@ export async function buildMarcoBridgePayload(
   ) {
     throw new MarcoBridgeError('QUOTE_FAILED', 'Invalid bridge build request.')
   }
+  const preparingSolana = prepare === true && from === 'solana' && to === 'bnb'
   if (
-    !quote ||
-    typeof quote !== 'object' ||
-    (quote as MarcoBridgeQuote).live !== true ||
-    typeof (quote as MarcoBridgeQuote).nativeFeeWei !== 'string'
+    (!preparingSolana && !quote) ||
+    (!preparingSolana &&
+      (typeof quote !== 'object' ||
+        (quote as MarcoBridgeQuote).live !== true ||
+        typeof (quote as MarcoBridgeQuote).nativeFeeWei !== 'string'))
   ) {
     throw new MarcoBridgeError('QUOTE_FAILED', 'A fresh live quote is required before building transactions.')
   }
 
   const authority = await dependencies.fetchAuthority()
-  const suppliedQuote = quote as MarcoBridgeQuote
-  let authoritativeQuote = suppliedQuote
+  const suppliedQuote = preparingSolana ? null : (quote as MarcoBridgeQuote)
+  let authoritativeQuote = suppliedQuote as MarcoBridgeQuote
   let solanaProtocol: SolanaOftProtocol | null = null
   const now = dependencies.now()
 
@@ -67,7 +71,7 @@ export async function buildMarcoBridgePayload(
       solanaProtocol,
       now.toISOString(),
     )
-    assertFreshCanonicalSolanaQuote(suppliedQuote, authoritativeQuote, now.getTime())
+    if (suppliedQuote) assertFreshCanonicalSolanaQuote(suppliedQuote, authoritativeQuote, now.getTime())
   }
 
   const built = buildMarcoBridgeTransactions(
@@ -111,12 +115,13 @@ export async function buildMarcoBridgePayload(
     if (!solanaTx || solanaTx.family !== 'solana' || !send.serializedTransaction) {
       throw new MarcoBridgeError('SOURCE_FAILED', 'The official Solana OFT SDK did not produce a signable transaction.')
     }
+    await (dependencies.simulateSolanaSend ?? simulateOfficialSolanaSend)(send.serializedTransaction)
     solanaTx.serializedTransaction = send.serializedTransaction
     solanaTx.tokenAccount = send.tokenSource
     solanaTx.quoteIdentity = binding.identity
   }
 
-  return built
+  return preparingSolana ? { ...built, quote: authoritativeQuote } : built
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

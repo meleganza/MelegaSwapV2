@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { describe, expect, it, vi } from 'vitest'
 import { readOnlyMarcoBridgeQuote } from '../quoteTransport'
 import type { CanonicalMmnRouteState } from '../routeAuthority'
-import { requestMarcoBridgeQuote } from '../service'
+import { prepareSolanaMarcoBridge, requestMarcoBridgeQuote } from '../service'
 import { MARCO_WAVE1_NETWORKS } from '../wave1Registry'
 
 const evm = '0x1111111111111111111111111111111111111111'
@@ -108,5 +108,45 @@ describe('read-only LayerZero quote transport', () => {
         unavailable,
       ),
     ).rejects.toThrow('LayerZero quote failed')
+  })
+
+  it('prepares and simulates the Solana wallet transaction before review', async () => {
+    const quote = {
+      amount: '0.25',
+      expectedReceive: '0.25',
+      nativeFee: '0.00067557',
+      nativeFeeWei: '675570',
+      nativeFeeSymbol: 'SOL',
+      routeLabel: 'Solana → BNB',
+      quotedAt: new Date().toISOString(),
+      live: true as const,
+      routePaused: false,
+      publiclyActive: true,
+      executionEnabled: true,
+    }
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        quote,
+        transactions: [{ family: 'solana', serializedTransaction: 'prepared-base64' }],
+      }),
+    })
+    await expect(
+      prepareSolanaMarcoBridge(
+        {
+          from: 'solana',
+          to: 'bnb',
+          amount: '0.25',
+          sourceWallet: solana,
+          destinationWallet: evm,
+        },
+        fetcher,
+      ),
+    ).resolves.toEqual({ quote, serializedTransaction: 'prepared-base64' })
+    expect(fetcher).toHaveBeenCalledWith(
+      '/api/marco-bridge/build',
+      expect.objectContaining({ body: expect.stringContaining('"prepare":true') }),
+    )
   })
 })

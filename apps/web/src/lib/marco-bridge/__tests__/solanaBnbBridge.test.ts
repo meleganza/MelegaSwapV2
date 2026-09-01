@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { applyCanonicalBnbSolanaApplicationGate, CANONICAL_BNB_SOLANA_GATE } from '../canonicalBnbSolanaGate'
 import { isRouteExecutable, localRouteActivationEnabled } from '../executableRoutes'
 import { readOnlySolanaMarcoBridgeQuote } from '../solanaQuote'
+import { SOLANA_SEND_COMPUTE_UNITS } from '../solanaOftSdk'
 import { buildMarcoBridgePayload } from '../../../pages/api/marco-bridge/build'
 import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
@@ -24,6 +25,7 @@ import { assertCanonicalRouteAuthority } from '../routeAuthority'
 import type { MarcoBridgeQuote } from '../types'
 import { destinationToBytes32 } from '../validation'
 import {
+  confirmSolanaSourceBroadcast,
   readConnectedSolanaAddress,
   solanaWalletConnectionLabel,
   submitMarcoBridgeFromWallet,
@@ -393,9 +395,11 @@ describe('Solana → BNB official OFT path', () => {
       quote: canonicalQuote,
     }
     const successProtocol = mockProtocol()
+    const simulateSolanaSend = vi.fn().mockResolvedValue(undefined)
     const built = await buildMarcoBridgePayload(body, {
       fetchAuthority: async () => liveAuthority(),
       createSolanaProtocol: () => successProtocol,
+      simulateSolanaSend,
       now: () => now,
     })
     expect(built.transactions[0]).toMatchObject({
@@ -404,6 +408,23 @@ describe('Solana → BNB official OFT path', () => {
       quoteIdentity: canonicalQuote.binding?.identity,
     })
     expect(successProtocol.buildSend).toHaveBeenCalledTimes(1)
+    expect(simulateSolanaSend).toHaveBeenCalledWith(serializedTx)
+
+    const preparedProtocol = mockProtocol()
+    const prepared = await buildMarcoBridgePayload(
+      { ...body, quote: undefined, prepare: true },
+      {
+        fetchAuthority: async () => liveAuthority(),
+        createSolanaProtocol: () => preparedProtocol,
+        simulateSolanaSend,
+        now: () => now,
+      },
+    )
+    expect(prepared).toMatchObject({
+      executable: true,
+      quote: expect.objectContaining({ live: true, routeLabel: 'Solana → BNB' }),
+      transactions: [expect.objectContaining({ family: 'solana', serializedTransaction: serializedTx })],
+    })
 
     const forgedCases: Array<{ name: string; mutate: (quote: MarcoBridgeQuote) => void }> = [
       {
@@ -498,6 +519,7 @@ describe('Solana → BNB official OFT path', () => {
         signAndSendTransaction: async () => solanaSignature,
       },
       protocol,
+      confirmSource: async () => undefined,
       requestQuote: async () => quote,
     })
     expect(protocol.buildSend).toHaveBeenCalledWith({
@@ -550,6 +572,7 @@ describe('Solana → BNB official OFT path', () => {
         signAndSendTransaction: async () => ({ signature: solanaSignature }),
       },
       protocol: mockProtocol(),
+      confirmSource: async () => undefined,
       requestQuote: async () => liveSolanaQuote(),
     })
     expect(tracking.sourceTx).toBe(solanaSignature)
@@ -629,6 +652,7 @@ describe('Solana → BNB official OFT path', () => {
       },
       solanaProtocol: mockProtocol(),
       solanaTransport: transport,
+      confirmSolanaSource: async () => undefined,
       requestQuote: async () => liveSolanaQuote(),
     })
     expect(transport.sendRawTransaction).not.toHaveBeenCalled()
@@ -646,6 +670,7 @@ describe('Solana → BNB official OFT path', () => {
         authority: liveAuthority(),
         wallet: { publicKey: { toString: () => 'DifferentWallet111111111111111111111111111' } },
         protocol: mockProtocol(),
+        confirmSource: async () => undefined,
         requestQuote: async () => liveSolanaQuote(),
       }),
     ).rejects.toThrow('does not match the quoted Solana source wallet')
@@ -668,8 +693,32 @@ describe('Solana → BNB official OFT path', () => {
         signAndSendTransaction: async () => solanaSignature,
       },
       protocol: browserProtocol,
+      confirmSource: async () => undefined,
       requestQuote: async () => liveSolanaQuote(),
     })
     expect(browserOnlyRpcRead).not.toHaveBeenCalled()
+  })
+
+  it('uses enough compute headroom for the canonical OFT send', () => {
+    expect(SOLANA_SEND_COMPUTE_UNITS).toBeGreaterThan(253_000)
+    expect(SOLANA_SEND_COMPUTE_UNITS).toBeLessThanOrEqual(1_400_000)
+  })
+
+  it('does not report submitted until Solana observes the wallet signature', async () => {
+    const confirmed = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: 'confirmed' }),
+    })
+    await expect(confirmSolanaSourceBroadcast(solanaSignature, confirmed as unknown as typeof fetch, 1)).resolves.toBe(
+      undefined,
+    )
+
+    const missing = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: 'not-found' }),
+    })
+    await expect(confirmSolanaSourceBroadcast(solanaSignature, missing as unknown as typeof fetch, 1)).rejects.toThrow(
+      'Solana did not observe the broadcast',
+    )
   })
 })
