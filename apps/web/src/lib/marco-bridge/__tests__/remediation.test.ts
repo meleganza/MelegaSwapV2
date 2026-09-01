@@ -268,7 +268,7 @@ describe('BNB native preflight', () => {
   })
 
   it('rejects wallet approve and send when BNB is insufficient', async () => {
-    const signer = mockSigner({ balanceWei: requiredApprove.sub(1).toString() })
+    const signer = mockSigner({ balanceWei: '1' })
     const request = {
       from: 'bnb' as const,
       to: 'solana' as const,

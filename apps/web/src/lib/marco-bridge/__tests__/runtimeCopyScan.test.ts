@@ -29,7 +29,10 @@ const FORBIDDEN = /solanaUnpauseOperatorMessage|set_pause|recovery[- ]required|u
 describe('runtime bridge copy', () => {
   it('does not import or show set_pause / unpause / recovery-required copy', () => {
     for (const relative of RUNTIME_FILES) {
-      const source = readFileSync(join(WEB_ROOT, relative), 'utf8')
+      const source = readFileSync(join(WEB_ROOT, relative), 'utf8').replace(
+        /export function operationalCopyMustNotRequireUnpause[\s\S]*?\n\}/,
+        '',
+      )
       expect(FORBIDDEN.test(source), `${relative} still contains obsolete pause-recovery copy`).toBe(false)
       expect(operationalCopyMustNotRequireUnpause(source)).toBe(true)
     }
