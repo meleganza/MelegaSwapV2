@@ -1,6 +1,6 @@
-import { CANONICAL_BNB_SOLANA_GATE, isCanonicalBnbSolanaRoute } from './canonicalBnbSolanaGate'
+import { CANONICAL_BNB_SOLANA_GATE } from './canonicalBnbSolanaGate'
 import { MARCO_BRIDGE_PROGRESS } from './lifecycle'
-import type { CanonicalMmnRouteState } from './routeAuthority'
+import { INSUFFICIENT_BNB_REASON } from './nativeFunds'
 import type { MarcoBridgeNetworkId, MarcoBridgeProgress, MarcoBridgeQuote, MarcoBridgeTracking } from './types'
 
 export const LIVE_QUOTE_TTL_MS = 60_000
@@ -18,6 +18,7 @@ export const BRIDGE_COPY = {
   delivered: 'MARCO was delivered successfully to the destination wallet.',
   quoteExpired: 'The live quote expired. Refresh the quote before sending.',
   quoteFailed: 'The live quote failed. Refresh the quote before sending.',
+  insufficientBnb: INSUFFICIENT_BNB_REASON,
 } as const
 
 export const layerZeroScanTxUrl = (sourceTx: string) => `https://layerzeroscan.com/tx/${sourceTx}`
@@ -72,6 +73,7 @@ export function resolveSubmitCta(input: {
   quote: MarcoBridgeQuote | null
   tracking: MarcoBridgeTracking
   nowMs?: number
+  nativeBlockReason?: string | null
 }): { label: string; disabled: boolean; reason: string | null } {
   if (input.tracking.status === 'delivered') {
     return { label: BRIDGE_COPY.bridgeComplete, disabled: true, reason: null }
@@ -88,6 +90,13 @@ export function resolveSubmitCta(input: {
   }
   if (!input.executable) {
     return { label: 'SUBMISSION DISABLED', disabled: true, reason: 'This route is not publicly executable.' }
+  }
+  if (input.nativeBlockReason) {
+    return {
+      label: input.approvalRequired ? BRIDGE_COPY.approveMarco : BRIDGE_COPY.bridgeMarco,
+      disabled: true,
+      reason: input.nativeBlockReason,
+    }
   }
   if (input.approvalRequired) {
     return { label: BRIDGE_COPY.approveMarco, disabled: false, reason: null }
@@ -108,14 +117,4 @@ export function marcoBridgeStepStates(tracking: MarcoBridgeTracking): ProgressSt
 
 export function operationalCopyMustNotRequireUnpause(text: string): boolean {
   return !/set_pause|recovery required|unpause the certified/i.test(text)
-}
-
-export function gatedRouteStillDisabled(
-  from: MarcoBridgeNetworkId,
-  to: MarcoBridgeNetworkId,
-  authority: CanonicalMmnRouteState,
-  isExecutable: (from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId, authority: CanonicalMmnRouteState) => boolean,
-): boolean {
-  if (isCanonicalBnbSolanaRoute(from, to)) return !isExecutable(from, to, authority)
-  return !isExecutable(from, to, authority)
 }

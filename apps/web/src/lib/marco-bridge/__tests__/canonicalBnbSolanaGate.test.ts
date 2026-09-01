@@ -146,7 +146,7 @@ describe('canonical BNB→Solana application gate', () => {
   })
 
   it('2) a valid live quote enables the BNB→Solana send flow', () => {
-    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority())
+    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
     const amount = parseBridgeAmount('0.000001', 18)
     const built = buildMarcoBridgeTransactions(
       {
@@ -182,7 +182,7 @@ describe('canonical BNB→Solana application gate', () => {
   })
 
   it('3) allowance 0 shows APPROVE MARCO', () => {
-    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority())
+    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
     const built = buildMarcoBridgeTransactions(
       {
         from: 'bnb',
@@ -213,7 +213,7 @@ describe('canonical BNB→Solana application gate', () => {
   })
 
   it('4) sufficient allowance shows BRIDGE MARCO', () => {
-    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority())
+    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
     const amount = parseBridgeAmount('0.000001', 18)
     const built = buildMarcoBridgeTransactions(
       {
@@ -291,7 +291,7 @@ describe('canonical BNB→Solana application gate', () => {
   })
 
   it('7) direct Base and Robinhood Solana routes stay disabled', () => {
-    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority())
+    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
     expect(localRouteActivationEnabled('base', 'solana')).toBe(false)
     expect(localRouteActivationEnabled('solana', 'base')).toBe(false)
     expect(localRouteActivationEnabled('robinhood', 'solana')).toBe(false)
@@ -304,7 +304,7 @@ describe('canonical BNB→Solana application gate', () => {
   })
 
   it('8) operational copy no longer requires the completed unpause', () => {
-    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority())
+    const live = applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: false })
     const route = live.routes.find((item) => item.from === 'bnb' && item.to === 'solana')
     expect(route?.reason).not.toMatch(/set_pause|unpause/i)
     expect(wave1ActivationBlockers().join(' ')).not.toMatch(/set_pause|infrastructure pause/i)

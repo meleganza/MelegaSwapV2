@@ -18,10 +18,10 @@ import {
 import { CANONICAL_BNB_SOLANA_GATE } from 'lib/marco-bridge/canonicalBnbSolanaGate'
 import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
+import { evaluateNativeFunds } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
-import { solanaUnpauseOperatorMessage } from 'lib/marco-bridge/solanaUnpause'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
 import { readErc20Allowance, submitMarcoApprovalFromWallet, submitMarcoBridgeFromWallet } from 'lib/marco-bridge/walletSubmit'
@@ -454,6 +454,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [tracking, setTracking] = useState<MarcoBridgeTracking>({ status: 'idle' })
   const [error, setError] = useState('')
   const [allowanceLD, setAllowanceLD] = useState<string | null>(null)
+  const [nativeBalanceWei, setNativeBalanceWei] = useState<string | null>(null)
+  const [gasPriceWei, setGasPriceWei] = useState<string | null>(null)
   const fromNetwork = MARCO_WAVE1_NETWORKS[from]
   const toNetwork = MARCO_WAVE1_NETWORKS[to]
   const sourceWallet = fromNetwork.walletFamily === 'evm' ? address ?? '' : solanaWallet
@@ -478,6 +480,19 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   )
   const sourceLocked = sourceSubmissionLocksControls(tracking.status)
   const quoteCta = resolveQuoteCta({ hasLiveQuote: Boolean(quote?.live), sourceSubmitted: sourceLocked })
+  const nativeBlockReason =
+    from === 'bnb' && quote?.live && nativeBalanceWei && gasPriceWei
+      ? (() => {
+          const verdict = evaluateNativeFunds({
+            from,
+            balanceWei: nativeBalanceWei,
+            nativeFeeWei: quote.nativeFeeWei,
+            gasPriceWei,
+            approvalRequired,
+          })
+          return verdict.ok ? null : verdict.reason
+        })()
+      : null
   const submitCta = resolveSubmitCta({
     from,
     to,
@@ -487,6 +502,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     submitting,
     quote,
     tracking,
+    nativeBlockReason,
   })
   const stepStates = marcoBridgeStepStates(tracking)
   const routeText =
@@ -524,6 +540,31 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     setReview(false)
     setAllowanceLD(null)
   }, [sourceWallet])
+
+  useEffect(() => {
+    if (!signer?.provider || from !== 'bnb' || !sourceWallet) {
+      setNativeBalanceWei(null)
+      setGasPriceWei(null)
+      return
+    }
+    let cancelled = false
+    void Promise.all([signer.provider.getBalance(sourceWallet), signer.provider.getGasPrice()])
+      .then(([balance, gasPrice]) => {
+        if (!cancelled) {
+          setNativeBalanceWei(BigNumber.from(balance).toString())
+          setGasPriceWei(BigNumber.from(gasPrice).toString())
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setNativeBalanceWei(null)
+          setGasPriceWei(null)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [signer, from, sourceWallet, quote?.quotedAt, quote?.nativeFeeWei])
 
   useEffect(() => {
     if (!signer || from !== 'bnb' || !sourceWallet || !quote?.live) {
@@ -702,6 +743,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-quote-cta={quoteCta.label}
       data-submit-cta={submitCta.label}
       data-source-locked={sourceLocked ? 'true' : 'false'}
+      data-native-block={nativeBlockReason ?? ''}
     >
       <Shell>
         <Hero $embedded={embedded}>
@@ -909,13 +951,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                     {quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : 'UNAVAILABLE'}
                   </strong>
                 </ReviewRow>
-                <Notice>
+                <Notice $danger={Boolean(submitCta.reason && /INSUFFICIENT BNB/i.test(submitCta.reason))}>
                   {submitCta.reason
                     ? submitCta.reason
                     : executable
                     ? 'Live quote refreshed at review. Confirm the unsigned LayerZero send in your wallet.'
-                    : quote?.routePaused || solanaPaused
-                    ? `Live quote obtained. ${solanaUnpauseOperatorMessage()}`
                     : executionBlockers[0] || 'This route is not publicly executable.'}
                 </Notice>
                 <Primary
@@ -985,9 +1025,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 </li>
                 <li>
                   Canonical BNB→Solana gate:{' '}
-                  {solanaPaused
-                    ? 'blocked by store pause'
-                    : `active · store live · ${CANONICAL_BNB_SOLANA_GATE.unpauseTx}`}
+                  {solanaPaused ? 'blocked by live store pause' : 'active · live store paused=false'}
                 </li>
                 <li>Solana store: {solanaPaused ? 'paused' : 'active'}</li>
                 <li>Activation blockers: {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}</li>

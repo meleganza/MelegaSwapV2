@@ -88,7 +88,7 @@ describe('MARCO Wave-1 bridge product', () => {
         connectedEvmChainId: 56,
         destinationWallet: evm,
       }),
-    ).toThrow('Insufficient native gas')
+    ).toThrow('INSUFFICIENT BNB')
   })
 
   it('keeps source-confirmed delivery pending on the same GUID', () => {

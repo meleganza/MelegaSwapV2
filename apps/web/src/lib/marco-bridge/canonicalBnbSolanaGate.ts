@@ -28,7 +28,10 @@ export const CANONICAL_BNB_SOLANA_GATE = {
   unpauseTx: '4CDyThR9JDebAqQPHW4bAZ7VkHJcrnn6MATFbAQMrBS7cFk6dyVPQ7LXUzK8Yw6YGJC3gwGsXC9iyjCYFhivuxQ3',
 } as const
 
-/** Certified read-only store state after the finalized SetPause(paused=false) transaction. */
+/**
+ * Certified snapshot after the historical SetPause(paused=false) transaction.
+ * Audit metadata only — never used as runtime pause truth.
+ */
 export const CANONICAL_SOLANA_OFT_STORE_PAUSED = false
 
 export const CANONICAL_BNB_SOLANA_GATE_REASON = 'Canonical BNB→Solana application gate is active.'
@@ -39,7 +42,7 @@ export function isCanonicalBnbSolanaRoute(from: MarcoBridgeNetworkId, to: MarcoB
 
 export function applyCanonicalBnbSolanaApplicationGate(
   authority: CanonicalMmnRouteState,
-  input: { solanaStorePaused: boolean } = { solanaStorePaused: CANONICAL_SOLANA_OFT_STORE_PAUSED },
+  input: { solanaStorePaused: boolean },
 ): CanonicalMmnRouteState {
   const solanaStorePaused = input.solanaStorePaused
   return {
