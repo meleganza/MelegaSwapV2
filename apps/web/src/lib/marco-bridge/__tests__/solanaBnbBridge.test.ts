@@ -700,7 +700,7 @@ describe('Solana → BNB official OFT path', () => {
   })
 
   it('uses enough compute headroom for the canonical OFT send', () => {
-    expect(SOLANA_SEND_COMPUTE_UNITS).toBeGreaterThan(253_000)
+    expect(SOLANA_SEND_COMPUTE_UNITS).toBe(400_000)
     expect(SOLANA_SEND_COMPUTE_UNITS).toBeLessThanOrEqual(1_400_000)
   })
 

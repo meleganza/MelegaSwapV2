@@ -29,7 +29,7 @@ import {
 } from './solanaOftProtocol'
 import { MarcoBridgeError } from './types'
 
-export const SOLANA_SEND_COMPUTE_UNITS = 350_000
+export const SOLANA_SEND_COMPUTE_UNITS = 400_000
 const SEND_COMPUTE_UNIT_PRICE = 50_000
 
 function hexToBytes(hex: string): Uint8Array {
