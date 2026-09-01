@@ -110,8 +110,8 @@ describe('MARCO Wave-1 bridge product', () => {
 
   it('keeps Base locked and requires a wallet for activated routes', async () => {
     expect(MARCO_WAVE1_PUBLIC_ACTIVATION.enabled).toBe(true)
-    expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(true)
-    expect(wave1ActivationBlockers().some((blocker) => /Solana/i.test(blocker))).toBe(true)
+    expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(false)
+    expect(wave1ActivationBlockers()).toEqual([])
     await expect(
       marcoBridgeService.submit(
         { from: 'bnb', to: 'base', amount: '1', sourceWallet: evm, destinationWallet: evm },

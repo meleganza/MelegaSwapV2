@@ -10,6 +10,7 @@ import {
   SOLANA_OFT_FALSE_AUTHORITIES,
   SOLANA_OFT_PROGRAM_ID,
   SOLANA_OFT_UNPAUSER,
+  applyLiveSolanaPauseOverlay,
   assertSolanaUnpauseSigner,
   parseOftStoreAccount,
   solanaUnpauseOperatorMessage,
@@ -180,6 +181,26 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     const simulation = await simulateMarcoBridgeBuild(built, {})
     expect(simulation.ok).toBe(false)
     expect(simulation.blockers.join(' ')).toMatch(/paused/i)
+  })
+
+  it('executes public BNB↔Solana and BNB↔Robinhood when the live store is unpaused', () => {
+    const live = authority({ solanaPaused: false })
+    expect(isRouteExecutable('bnb', 'solana', live)).toBe(true)
+    expect(isRouteExecutable('solana', 'bnb', live)).toBe(true)
+    expect(isRouteExecutable('bnb', 'robinhood', live)).toBe(true)
+    expect(isRouteExecutable('robinhood', 'bnb', live)).toBe(true)
+    expect(isRouteExecutable('bnb', 'base', live)).toBe(false)
+    const overlaid = applyLiveSolanaPauseOverlay(authority({ solanaPaused: true }), false)
+    expect(overlaid.networks.find((network) => network.id === 'solana')?.paused).toBe(false)
+    expect(isRouteExecutable('bnb', 'solana', overlaid)).toBe(true)
+    expect(parseBridgeAmount('1234567.123456', 18)?.amountLD.toString()).toBe('1234567123456000000000000')
+    expect(parseBridgeAmount('1234567.123456', 9)?.amountLD.toString()).toBe('1234567123456000')
+    const failClosed = applyLiveSolanaPauseOverlay(authority({ solanaPaused: false }), true)
+    expect(failClosed.networks.find((network) => network.id === 'solana')?.paused).toBe(true)
+    expect(isRouteExecutable('bnb', 'solana', failClosed)).toBe(false)
+    expect(isRouteExecutable('solana', 'bnb', failClosed)).toBe(false)
+    expect(isRouteExecutable('bnb', 'robinhood', failClosed)).toBe(true)
+    expect(isRouteExecutable('robinhood', 'bnb', failClosed)).toBe(true)
   })
 
   it('quotes/builds/sims Solana -> BNB after unpause representation', () => {

@@ -80,10 +80,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (solana?.paused || route?.paused) {
         throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT store is paused. Unpause is required before Solana source quotes.')
       }
-      throw new MarcoBridgeError(
-        'QUOTE_FAILED',
-        'Solana source quoteSend is available only after the certified store is unpaused.',
-      )
     }
     const quote = await readOnlyMarcoBridgeQuote(
       { from, to, amount, destinationWallet },

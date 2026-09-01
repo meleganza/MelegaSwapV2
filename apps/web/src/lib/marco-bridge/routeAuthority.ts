@@ -1,3 +1,4 @@
+import { applyLiveSolanaPauseOverlay, readLiveSolanaOftPaused } from './solanaUnpause'
 import { MARCO_WAVE1_DIRECT_ROUTES, MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import type { MarcoBridgeNetworkId } from './types'
 
@@ -108,5 +109,10 @@ export async function fetchCanonicalRouteAuthority(fetcher: typeof fetch = fetch
     cache: 'no-store',
   })
   if (!response.ok) throw new Error(`Canonical MMN route authority failed with HTTP ${response.status}.`)
-  return assertCanonicalRouteAuthority(await response.json())
+  const state = assertCanonicalRouteAuthority(await response.json())
+  try {
+    return applyLiveSolanaPauseOverlay(state, await readLiveSolanaOftPaused())
+  } catch {
+    return applyLiveSolanaPauseOverlay(state, true)
+  }
 }

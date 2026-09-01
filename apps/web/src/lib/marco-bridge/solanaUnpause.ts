@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js'
+import { Connection, PublicKey } from '@solana/web3.js'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 
 /** Certified Solana OFT program that owns the Wave-1 store. */
@@ -119,6 +119,45 @@ export const SOLANA_UNPAUSE_ACTION = {
     'Do not ask the off-curve unpauser PDA to sign.',
   ],
 } as const
+
+export function applyLiveSolanaPauseOverlay<
+  T extends {
+    networks: Array<{ id: string; paused: boolean }>
+    routes: Array<{ from: string; to: string; paused: boolean; reason: string }>
+  },
+>(state: T, livePaused: boolean): T {
+  return {
+    ...state,
+    networks: state.networks.map((network) => (network.id === 'solana' ? { ...network, paused: livePaused } : network)),
+    routes: state.routes.map((route) =>
+      route.from === 'solana' || route.to === 'solana'
+        ? {
+            ...route,
+            paused: livePaused,
+            reason: livePaused ? 'Solana OFT store is paused.' : 'certified',
+          }
+        : route,
+    ),
+  }
+}
+
+export async function readLiveSolanaOftPaused(
+  connection: Pick<Connection, 'getAccountInfo'> = new Connection(
+    process.env.SOLANA_RPC_URL || process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+    'confirmed',
+  ),
+): Promise<boolean> {
+  const info = await connection.getAccountInfo(new PublicKey(MARCO_WAVE1_NETWORKS.solana.endpointContract))
+  if (!info) throw new Error('Canonical Solana OFT store account is missing.')
+  const store = parseOftStoreAccount(info.data, info.owner.toBase58())
+  if (store.mint !== MARCO_WAVE1_NETWORKS.solana.marcoIdentity) {
+    throw new Error('Live Solana OFT store mint does not match the canonical MARCO mint.')
+  }
+  if (store.programId !== SOLANA_OFT_PROGRAM_ID) {
+    throw new Error('Live Solana OFT store owner does not match the certified program.')
+  }
+  return store.paused
+}
 
 export function solanaUnpauseOperatorMessage(): string {
   return [

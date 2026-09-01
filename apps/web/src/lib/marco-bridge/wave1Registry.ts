@@ -48,7 +48,7 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     sharedDecimals: 6,
     nativeFeeSymbol: 'SOL',
     explorerUrl: 'https://solscan.io',
-    protectivePaused: true,
+    protectivePaused: false,
   },
   robinhood: {
     id: 'robinhood',
@@ -85,7 +85,7 @@ export const MARCO_WAVE1_DIRECT_ROUTES: MarcoBridgeRoute[] = [
 export const MARCO_WAVE1_PUBLIC_ACTIVATION = {
   enabled: true,
   certification: 'bnb-robinhood-solana',
-  solanaProtectivePauseRequired: true,
+  solanaProtectivePauseRequired: false,
 } as const
 
 export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${MarcoBridgeNetworkId}`, boolean> = {
@@ -115,6 +115,9 @@ export function wave1ActivationBlockers(): string[] {
   const blockers: string[] = []
   if (!localRouteActivationEnabled('bnb', 'robinhood') || !localRouteActivationEnabled('robinhood', 'bnb')) {
     blockers.push('BNB↔Robinhood public activation is off')
+  }
+  if (!localRouteActivationEnabled('bnb', 'solana') || !localRouteActivationEnabled('solana', 'bnb')) {
+    blockers.push('BNB↔Solana public activation is off')
   }
   if (MARCO_WAVE1_NETWORKS.solana.protectivePaused) blockers.push('Solana infrastructure pause')
   return blockers

@@ -40,6 +40,12 @@ describe('shared-decimal safety', () => {
     expect(parseBridgeAmount(amount, 9)?.amountLD.toString()).toBe(solanaAmountLD)
   })
 
+  it('does not impose an artificial MARCO amount cap above shared-decimal dust', () => {
+    expect(parseBridgeAmount('1', 18)?.amountLD.toString()).toBe('1000000000000000000')
+    expect(parseBridgeAmount('1000000000', 18)?.amountLD.toString()).toBe('1000000000000000000000000000')
+    expect(parseBridgeAmount('1000000000', 9)?.amountLD.toString()).toBe('1000000000000000000')
+  })
+
   it('normalizes insignificant zeros and rejects sub-shared-decimal amounts', () => {
     expect(normalizeBridgeAmount('0.0000010')).toBe('0.000001')
     expect(parseBridgeAmount('0.0000001', 18)).toBeNull()
