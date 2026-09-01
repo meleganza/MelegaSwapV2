@@ -12,7 +12,6 @@ import {
   SOLANA_OFT_UNPAUSER,
   assertSolanaUnpauseSigner,
   parseOftStoreAccount,
-  solanaUnpauseOperatorMessage,
 } from '../solanaUnpause'
 import {
   OFT_SEND_IFACE,
@@ -182,21 +181,16 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     expect(simulation.blockers.join(' ')).toMatch(/paused/i)
   })
 
-  it('quotes/builds/sims Solana -> BNB after unpause representation', () => {
+  it('keeps Solana -> BNB application-gated after store unpause', () => {
     const live = authority({ solanaPaused: false })
     const built = buildMarcoBridgeTransactions(
       { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solana, destinationWallet: evm },
       quote('Solana → BNB', false, '5000'),
       live,
     )
-    expect(isRouteExecutable('solana', 'bnb', live)).toBe(true)
-    expect(built.executable).toBe(true)
-    expect(built.transactions[0]).toMatchObject({
-      family: 'solana',
-      dstEid: 30102,
-      mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-      store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
-    })
+    expect(isRouteExecutable('solana', 'bnb', live)).toBe(false)
+    expect(built.executable).toBe(false)
+    expect(built.transactions).toEqual([])
   })
 
   it('requires approval on BNB consumer -> adapter when allowance is below amountLD', () => {
@@ -259,11 +253,8 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     ).toThrow('BNB↔Robinhood and BNB↔Solana')
   })
 
-  it('fails closed while Solana is paused and names the unpauser', () => {
+  it('fails closed while Solana is paused', () => {
     expect(isRouteExecutable('bnb', 'solana', authority({ solanaPaused: true }))).toBe(false)
-    expect(solanaUnpauseOperatorMessage()).toContain(SOLANA_OFT_UNPAUSER)
-    expect(solanaUnpauseOperatorMessage()).toContain('set_pause')
-    expect(solanaUnpauseOperatorMessage()).not.toContain(SOLANA_OFT_FALSE_AUTHORITIES[1])
   })
 
   it('parses the live OFT store Option layout and refuses misaligned signer windows', () => {
@@ -288,8 +279,8 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     ])
     expect(tracking.guid).toBe('guid-1')
     expect(sourceSucceeded(tracking)).toBe(true)
-    expect(bridgeRecoveryMessage(tracking)).toContain('do not resend')
-    expect(trackingFromLayerZeroMessages('0xdef', [{ status: { name: 'FAILED' } }]).status).toBe('source-failed')
+    expect(bridgeRecoveryMessage(tracking)).toContain('Do not resend')
+    expect(trackingFromLayerZeroMessages('0xdef', [{ status: { name: 'FAILED' } }]).status).toBe('action-required')
   })
 
   it('has no active 62831 and no old Robinhood canonical token', () => {

@@ -1,5 +1,4 @@
 import { PublicKey } from '@solana/web3.js'
-import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 
 /** Certified Solana OFT program that owns the Wave-1 store. */
 export const SOLANA_OFT_PROGRAM_ID = 'Gti4f873FUw5jpMa4wnRVcZDjr5YwonZ1FcY8vXu2Wnm'
@@ -86,34 +85,4 @@ export function assertSolanaUnpauseSigner(store: ParsedOftStore): string {
     throw new Error('Refusing a misaligned OFT authority window that cannot sign.')
   }
   return store.unpauser
-}
-
-export const SOLANA_UNPAUSE_ACTION = {
-  network: 'solana',
-  purpose: 'Unpause the certified MARCO OFT store so BNB↔Solana delivery can execute.',
-  programId: SOLANA_OFT_PROGRAM_ID,
-  store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
-  mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-  signer: SOLANA_OFT_UNPAUSER,
-  signerRole: 'unpauser',
-  admin: SOLANA_OFT_ADMIN,
-  instruction: 'set_pause',
-  paused: false,
-  doNot: [
-    'Do not redeploy the Solana OFT.',
-    'Do not change peers.',
-    'Do not change ULN/DVN/enforced options.',
-    'Do not alter mint or freeze authority.',
-    'Do not ask a PDA or a misaligned pubkey window to sign.',
-  ],
-} as const
-
-export function solanaUnpauseOperatorMessage(): string {
-  return [
-    `Sign set_pause(paused=false) on Solana OFT program ${SOLANA_OFT_PROGRAM_ID}`,
-    `store ${SOLANA_UNPAUSE_ACTION.store}`,
-    `using the store unpauser wallet ${SOLANA_OFT_UNPAUSER}.`,
-    `Admin ${SOLANA_OFT_ADMIN} is a different system wallet and is not the unpause role.`,
-    'Do not change peers, ULN/DVN, enforced options, mint, or freeze authority.',
-  ].join(' ')
 }

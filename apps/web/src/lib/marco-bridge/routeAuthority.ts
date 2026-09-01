@@ -1,3 +1,5 @@
+import { applyCanonicalBnbSolanaApplicationGate } from './canonicalBnbSolanaGate'
+import { readCanonicalSolanaStorePause, solanaStoreBlocksCanonicalRoute, type SolanaStorePauseRead } from './solanaStoreRead'
 import { MARCO_WAVE1_DIRECT_ROUTES, MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import type { MarcoBridgeNetworkId } from './types'
 
@@ -101,12 +103,18 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   return state
 }
 
-export async function fetchCanonicalRouteAuthority(fetcher: typeof fetch = fetch): Promise<CanonicalMmnRouteState> {
+export async function fetchCanonicalRouteAuthority(
+  fetcher: typeof fetch = fetch,
+  readStore: (input: { fetcher?: typeof fetch }) => Promise<SolanaStorePauseRead> = readCanonicalSolanaStorePause,
+): Promise<CanonicalMmnRouteState> {
   const response = await fetcher(CANONICAL_MMN_ROUTE_STATE_URL, {
     method: 'GET',
     headers: { accept: 'application/json' },
     cache: 'no-store',
   })
   if (!response.ok) throw new Error(`Canonical MMN route authority failed with HTTP ${response.status}.`)
-  return assertCanonicalRouteAuthority(await response.json())
+  const liveStore = await readStore({ fetcher })
+  return applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(await response.json()), {
+    solanaStorePaused: solanaStoreBlocksCanonicalRoute(liveStore),
+  })
 }

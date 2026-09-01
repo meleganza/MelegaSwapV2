@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from '../lifecycle'
+import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage, sourceSucceeded } from '../lifecycle'
 import { assertMarcoBridgePreflight } from '../preflight'
 import { planMarcoBridgeRoute } from '../routePolicy'
 import { marcoBridgeService } from '../service'
@@ -88,12 +88,12 @@ describe('MARCO Wave-1 bridge product', () => {
         connectedEvmChainId: 56,
         destinationWallet: evm,
       }),
-    ).toThrow('Insufficient native gas')
+    ).toThrow('INSUFFICIENT BNB')
   })
 
   it('keeps source-confirmed delivery pending on the same GUID', () => {
     const message = bridgeRecoveryMessage({ status: 'verifying', sourceTx: '0xabc', guid: 'guid-1' })
-    expect(message).toContain('do not resend')
+    expect(message).toContain('Do not resend')
     expect(MARCO_BRIDGE_PROGRESS.map((step) => step.status)).toEqual([
       'submitted',
       'source-confirmed',
@@ -105,13 +105,20 @@ describe('MARCO Wave-1 bridge product', () => {
 
   it('distinguishes source failure from delivered state', () => {
     expect(bridgeRecoveryMessage({ status: 'source-failed' })).toContain('no cross-chain delivery started')
-    expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).toContain('delivered')
+    expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).not.toContain(
+      'delivered successfully',
+    )
+    expect(
+      bridgeRecoveryMessage({ status: 'delivered', sourceTx: '0xabc', destinationTx: '0xdef' }),
+    ).toBe('MARCO was delivered successfully to the destination wallet.')
+    expect(sourceSucceeded({ status: 'action-required' })).toBe(false)
+    expect(sourceSucceeded({ status: 'action-required', sourceTx: '0xabc' })).toBe(true)
   })
 
   it('keeps Base locked and requires a wallet for activated routes', async () => {
     expect(MARCO_WAVE1_PUBLIC_ACTIVATION.enabled).toBe(true)
-    expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(true)
-    expect(wave1ActivationBlockers().some((blocker) => /Solana/i.test(blocker))).toBe(true)
+    expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(false)
+    expect(wave1ActivationBlockers().some((blocker) => /Solana infrastructure pause/i.test(blocker))).toBe(false)
     await expect(
       marcoBridgeService.submit(
         { from: 'bnb', to: 'base', amount: '1', sourceWallet: evm, destinationWallet: evm },

@@ -78,11 +78,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const solana = authority.networks.find((network) => network.id === 'solana')
       const route = authority.routes.find((item) => item.from === from && item.to === to)
       if (solana?.paused || route?.paused) {
-        throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT store is paused. Unpause is required before Solana source quotes.')
+        throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT store is paused.')
       }
       throw new MarcoBridgeError(
         'QUOTE_FAILED',
-        'Solana source quoteSend is available only after the certified store is unpaused.',
+        'Solana source quotes are not publicly activated. Use BNB Smart Chain as the source.',
       )
     }
     const quote = await readOnlyMarcoBridgeQuote(

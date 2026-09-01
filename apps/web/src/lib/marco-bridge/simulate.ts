@@ -61,7 +61,7 @@ export async function simulateMarcoBridgeBuild(
         family: 'solana',
         ok: false,
         reverted: false,
-        reason: 'Solana OFT store is paused or source quote/send remaining accounts require the unpause operator first.',
+        reason: 'Solana source submission is not publicly activated. Use BNB Smart Chain as the source.',
       })
       continue
     }
