@@ -1,7 +1,12 @@
 import { CANONICAL_BNB_SOLANA_GATE } from './canonicalBnbSolanaGate'
-import { hasBroadcastSourceTx, MARCO_BRIDGE_PROGRESS } from './lifecycle'
+import {
+  hasBroadcastSourceTx,
+  MARCO_BRIDGE_DELIVERED_COPY,
+  MARCO_BRIDGE_PROGRESS,
+  MARCO_BRIDGE_SUBMITTED_COPY,
+} from './lifecycle'
 import { INSUFFICIENT_BNB_REASON } from './nativeFunds'
-import type { MarcoBridgeNetworkId, MarcoBridgeProgress, MarcoBridgeQuote, MarcoBridgeTracking } from './types'
+import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from './types'
 
 export const LIVE_QUOTE_TTL_MS = 60_000
 
@@ -17,9 +22,8 @@ export const BRIDGE_COPY = {
   bridgeInProgress: 'BRIDGE IN PROGRESS',
   bridgeComplete: 'BRIDGE COMPLETE',
   switchToBnb: 'SWITCH TO BNB',
-  submitted:
-    "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
-  delivered: 'MARCO was delivered successfully to the destination wallet.',
+  submitted: MARCO_BRIDGE_SUBMITTED_COPY,
+  delivered: MARCO_BRIDGE_DELIVERED_COPY,
   quoteExpired: 'The live quote expired. Refresh the quote before sending.',
   quoteFailed: 'The live quote failed. Refresh the quote before sending.',
   insufficientBnb: INSUFFICIENT_BNB_REASON,
@@ -29,20 +33,11 @@ export const layerZeroScanTxUrl = (sourceTx: string) => `https://layerzeroscan.c
 
 export type ProgressStepState = 'completed' | 'current' | 'pending'
 
-const LOCKED_SOURCE_STATUSES: MarcoBridgeProgress[] = [
-  'submitted',
-  'source-confirmed',
-  'verifying',
-  'destination-executing',
-  'delivered',
-]
-
 export { hasBroadcastSourceTx }
 
 export function sourceSubmissionLocksControls(tracking: Pick<MarcoBridgeTracking, 'status' | 'sourceTx'>): boolean {
   if (tracking.status === 'source-failed') return false
-  if (hasBroadcastSourceTx(tracking)) return true
-  return LOCKED_SOURCE_STATUSES.includes(tracking.status)
+  return hasBroadcastSourceTx(tracking)
 }
 
 function resolveSubmissionPhase(input: {
@@ -94,7 +89,7 @@ export function resolveSubmitCta(input: {
   nowMs?: number
   nativeBlockReason?: string | null
 }): { label: string; disabled: boolean; reason: string | null } {
-  if (input.tracking.status === 'delivered') {
+  if (input.tracking.status === 'delivered' && hasBroadcastSourceTx(input.tracking)) {
     return { label: BRIDGE_COPY.bridgeComplete, disabled: true, reason: null }
   }
   if (sourceSubmissionLocksControls(input.tracking)) {
@@ -132,6 +127,7 @@ export function resolveSubmitCta(input: {
 
 export function marcoBridgeStepStates(tracking: MarcoBridgeTracking): ProgressStepState[] {
   if (tracking.status === 'delivered') {
+    if (!hasBroadcastSourceTx(tracking)) return MARCO_BRIDGE_PROGRESS.map(() => 'pending')
     return MARCO_BRIDGE_PROGRESS.map(() => 'completed')
   }
   const currentIndex = MARCO_BRIDGE_PROGRESS.findIndex((step) => step.status === tracking.status)

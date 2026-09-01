@@ -923,7 +923,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             <CardHead>
               <strong>{sourceLocked || tracking.status === 'delivered' ? 'Delivery status' : review ? 'Review bridge' : 'Delivery status'}</strong>
               <span>
-                {tracking.status === 'delivered'
+                {tracking.status === 'delivered' && sourceLocked
                   ? BRIDGE_COPY.bridgeComplete
                   : sourceLocked
                   ? BRIDGE_COPY.bridgeInProgress

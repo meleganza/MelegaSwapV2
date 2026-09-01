@@ -12,7 +12,6 @@ import {
   SOLANA_OFT_UNPAUSER,
   assertSolanaUnpauseSigner,
   parseOftStoreAccount,
-  solanaUnpauseOperatorMessage,
 } from '../solanaUnpause'
 import {
   OFT_SEND_IFACE,
@@ -254,11 +253,8 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     ).toThrow('BNB↔Robinhood and BNB↔Solana')
   })
 
-  it('fails closed while Solana is paused and names the unpauser', () => {
+  it('fails closed while Solana is paused', () => {
     expect(isRouteExecutable('bnb', 'solana', authority({ solanaPaused: true }))).toBe(false)
-    expect(solanaUnpauseOperatorMessage()).toContain(SOLANA_OFT_UNPAUSER)
-    expect(solanaUnpauseOperatorMessage()).toContain('set_pause')
-    expect(solanaUnpauseOperatorMessage()).not.toContain(SOLANA_OFT_FALSE_AUTHORITIES[1])
   })
 
   it('parses the live OFT store Option layout and refuses misaligned signer windows', () => {

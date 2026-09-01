@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { describe, expect, it, vi } from 'vitest'
 import {
   BRIDGE_COPY,
+  marcoBridgeStepStates,
   resolveSubmitCta,
   sourceSubmissionLocksControls,
 } from '../bridgeActionState'
@@ -49,7 +50,59 @@ const submitInput = (overrides: Partial<Parameters<typeof resolveSubmitCta>[0]> 
     ...overrides,
   })
 
+const BARE_BROADCAST_STATUSES = [
+  'submitted',
+  'source-confirmed',
+  'verifying',
+  'destination-executing',
+  'delivered',
+  'action-required',
+] as const
+
 describe('double-send lock uses sourceTx evidence', () => {
+  it('never locks or claims BRIDGE IN PROGRESS on a bare status without sourceTx', () => {
+    for (const status of BARE_BROADCAST_STATUSES) {
+      const tracking: MarcoBridgeTracking = { status }
+      expect(hasBroadcastSourceTx(tracking)).toBe(false)
+      expect(sourceSubmissionLocksControls(tracking)).toBe(false)
+      const cta = submitInput({ tracking })
+      expect(cta.label).not.toBe(BRIDGE_COPY.bridgeInProgress)
+      expect(cta.label).not.toBe(BRIDGE_COPY.bridgeComplete)
+    }
+  })
+
+  it('locks post-hash statuses including action-required, and keeps source-failed retryable', () => {
+    for (const status of BARE_BROADCAST_STATUSES) {
+      const tracking: MarcoBridgeTracking = { status, sourceTx: '0xabc' }
+      expect(hasBroadcastSourceTx(tracking)).toBe(true)
+      expect(sourceSubmissionLocksControls(tracking)).toBe(true)
+      const cta = submitInput({ tracking })
+      if (status === 'delivered') {
+        expect(cta).toMatchObject({ label: BRIDGE_COPY.bridgeComplete, disabled: true })
+        expect(cta.label).not.toBe(BRIDGE_COPY.bridgeInProgress)
+      } else {
+        expect(cta).toMatchObject({ label: BRIDGE_COPY.bridgeInProgress, disabled: true })
+      }
+    }
+
+    const failedWithHash: MarcoBridgeTracking = { status: 'source-failed', sourceTx: '0xdead' }
+    expect(sourceSubmissionLocksControls(failedWithHash)).toBe(false)
+    expect(submitInput({ tracking: failedWithHash })).toMatchObject({
+      label: BRIDGE_COPY.bridgeMarco,
+      disabled: false,
+    })
+    expect(sourceSubmissionLocksControls({ status: 'source-failed' })).toBe(false)
+    expect(submitInput({ tracking: { status: 'source-failed' } }).label).not.toBe(BRIDGE_COPY.bridgeInProgress)
+  })
+
+  it('does not treat delivered without sourceTx as a successful transfer in CTA, steps, or copy', () => {
+    const tracking: MarcoBridgeTracking = { status: 'delivered' }
+    expect(submitInput({ tracking }).label).not.toBe(BRIDGE_COPY.bridgeComplete)
+    expect(marcoBridgeStepStates(tracking)).toEqual(['pending', 'pending', 'pending', 'pending', 'pending'])
+    expect(bridgeRecoveryMessage(tracking)).not.toBe(BRIDGE_COPY.delivered)
+    expect(sourceSucceeded(tracking)).toBe(false)
+  })
+
   it('locks action-required when a source tx hash exists', () => {
     const tracking: MarcoBridgeTracking = { status: 'action-required', sourceTx: '0xabc' }
     expect(hasBroadcastSourceTx(tracking)).toBe(true)

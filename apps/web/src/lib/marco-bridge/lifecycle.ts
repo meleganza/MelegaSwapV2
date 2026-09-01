@@ -17,6 +17,10 @@ const SOURCE_SUCCESS_STATUSES: MarcoBridgeProgress[] = [
   'action-required',
 ]
 
+export const MARCO_BRIDGE_SUBMITTED_COPY =
+  'Your transaction was submitted successfully. We\u2019re tracking delivery across chains. Do not resend this transfer.'
+export const MARCO_BRIDGE_DELIVERED_COPY = 'MARCO was delivered successfully to the destination wallet.'
+
 export function hasBroadcastSourceTx(tracking: Pick<MarcoBridgeTracking, 'sourceTx'>): boolean {
   return typeof tracking.sourceTx === 'string' && tracking.sourceTx.length > 0
 }
@@ -29,12 +33,9 @@ export function sourceSucceeded(tracking: MarcoBridgeTracking): boolean {
 /** A delayed destination is the same transfer. Never advise a second send after source success. */
 export function bridgeRecoveryMessage(tracking: MarcoBridgeTracking): string {
   if (hasBroadcastSourceTx(tracking) && tracking.status !== 'delivered' && tracking.status !== 'source-failed') {
-    return (
-      tracking.message ??
-      "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer."
-    )
+    return tracking.message ?? MARCO_BRIDGE_SUBMITTED_COPY
   }
   if (tracking.status === 'source-failed') return 'The source transaction failed and no cross-chain delivery started.'
-  if (tracking.status === 'delivered') return 'MARCO was delivered successfully to the destination wallet.'
+  if (tracking.status === 'delivered' && hasBroadcastSourceTx(tracking)) return MARCO_BRIDGE_DELIVERED_COPY
   return tracking.message ?? 'Your bridge transfer will appear here after submission.'
 }

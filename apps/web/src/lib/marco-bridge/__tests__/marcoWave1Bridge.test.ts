@@ -105,7 +105,12 @@ describe('MARCO Wave-1 bridge product', () => {
 
   it('distinguishes source failure from delivered state', () => {
     expect(bridgeRecoveryMessage({ status: 'source-failed' })).toContain('no cross-chain delivery started')
-    expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).toContain('delivered')
+    expect(bridgeRecoveryMessage({ status: 'delivered', destinationTx: '0xdef' })).not.toContain(
+      'delivered successfully',
+    )
+    expect(
+      bridgeRecoveryMessage({ status: 'delivered', sourceTx: '0xabc', destinationTx: '0xdef' }),
+    ).toBe('MARCO was delivered successfully to the destination wallet.')
     expect(sourceSucceeded({ status: 'action-required' })).toBe(false)
     expect(sourceSucceeded({ status: 'action-required', sourceTx: '0xabc' })).toBe(true)
   })

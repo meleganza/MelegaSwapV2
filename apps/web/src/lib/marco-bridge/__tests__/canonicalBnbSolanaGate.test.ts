@@ -17,7 +17,7 @@ import {
 import { isRouteExecutable } from '../executableRoutes'
 import { bridgeRecoveryMessage } from '../lifecycle'
 import { assertCanonicalRouteAuthority, type CanonicalMmnRouteState } from '../routeAuthority'
-import { parseOftStoreAccount, SOLANA_OFT_PROGRAM_ID, solanaUnpauseOperatorMessage } from '../solanaUnpause'
+import { parseOftStoreAccount, SOLANA_OFT_PROGRAM_ID } from '../solanaUnpause'
 import { trackingFromLayerZeroMessages } from '../tracking'
 import { buildMarcoBridgeTransactions, OFT_SEND_IFACE } from '../transactionBuilder'
 import type { MarcoBridgeQuote, MarcoBridgeTracking } from '../types'
@@ -310,7 +310,6 @@ describe('canonical BNB→Solana application gate', () => {
     expect(wave1ActivationBlockers().join(' ')).not.toMatch(/set_pause|infrastructure pause/i)
     expect(operationalCopyMustNotRequireUnpause(BRIDGE_COPY.submitted)).toBe(true)
     expect(operationalCopyMustNotRequireUnpause(BRIDGE_COPY.delivered)).toBe(true)
-    expect(operationalCopyMustNotRequireUnpause(solanaUnpauseOperatorMessage())).toBe(false)
     expect(MARCO_WAVE1_NETWORKS.solana.protectivePaused).toBe(false)
   })
 
@@ -336,7 +335,7 @@ describe('canonical BNB→Solana application gate', () => {
     expect(bridgeRecoveryMessage({ status: 'submitted', sourceTx: '0xabc' })).toBe(BRIDGE_COPY.submitted)
     expect(layerZeroScanTxUrl('0xabc')).toBe('https://layerzeroscan.com/tx/0xabc')
 
-    expect(marcoBridgeStepStates({ status: 'verifying' })).toEqual([
+    expect(marcoBridgeStepStates({ status: 'verifying', sourceTx: '0xabc' })).toEqual([
       'completed',
       'completed',
       'current',

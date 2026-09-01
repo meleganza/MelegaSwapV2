@@ -12,6 +12,7 @@ import {
   requiredNativeWeiForBridge,
   type NativeFundsProvider,
 } from './nativeFunds'
+import { MARCO_BRIDGE_SUBMITTED_COPY } from './lifecycle'
 import { assertMarcoBridgePreflight } from './preflight'
 import type { CanonicalMmnRouteState } from './routeAuthority'
 import { ensureRobinhoodWalletNetwork } from './robinhoodChain'
@@ -266,7 +267,6 @@ export async function submitMarcoBridgeFromWallet(input: {
   return {
     status: 'submitted',
     sourceTx,
-    message:
-      "Your transaction was submitted successfully. We're tracking delivery across chains. Do not resend this transfer.",
+    message: MARCO_BRIDGE_SUBMITTED_COPY,
   }
 }
