@@ -10,6 +10,7 @@ import {
   createSolanaOftSendParam,
   isEmptySolanaOptions,
   quoteExpiresAt,
+  requiredSolLamportsForBridge,
   solanaQuoteIdentity,
   type SolanaOftProtocol,
 } from './solanaOftProtocol'
@@ -122,6 +123,12 @@ export async function readOnlySolanaMarcoBridgeQuote(
     programId: SOLANA_OFT_PROGRAM,
     lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
   })
+  if (BigInt(owner.solLamports) < BigInt(requiredSolLamportsForBridge(quoted.nativeFeeLamports))) {
+    throw new MarcoBridgeError(
+      'INSUFFICIENT_GAS',
+      'Insufficient SOL to cover the LayerZero native fee and transaction fees.',
+    )
+  }
 
   const expiresAt = quoteExpiresAt(quotedAt)
   const bindingBase = {

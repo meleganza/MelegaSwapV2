@@ -90,4 +90,10 @@ describe('runtime bridge copy', () => {
       )
     }
   })
+
+  it('keeps unrequested quote fields neutral before the user enters bridge data', () => {
+    const workspace = runtimeSource('src/views/MarcoBridge/MarcoBridgeWorkspace.tsx')
+    expect(workspace).not.toContain('QUOTE UNAVAILABLE')
+    expect(workspace.match(/: '—'/g)?.length).toBeGreaterThanOrEqual(5)
+  })
 })

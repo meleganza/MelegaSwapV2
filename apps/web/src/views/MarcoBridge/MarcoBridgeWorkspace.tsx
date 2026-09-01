@@ -917,7 +917,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             <Summary>
               <SummaryCell>
                 <span>You receive</span>
-                <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : 'QUOTE UNAVAILABLE'}</strong>
+                <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : '—'}</strong>
               </SummaryCell>
               <SummaryCell>
                 <span>Fees</span>
@@ -926,14 +926,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                     ? `${quote.nativeFee} ${quote.nativeFeeSymbol}`
                     : quoteLoading
                     ? 'FETCHING LIVE QUOTE'
-                    : 'QUOTE UNAVAILABLE'}
+                    : '—'}
                 </strong>
               </SummaryCell>
               <SummaryCell>
                 <span>Quote state</span>
-                <strong>
-                  {quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : 'QUOTE UNAVAILABLE'}
-                </strong>
+                <strong>{quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : '—'}</strong>
               </SummaryCell>
               <SummaryCell>
                 <span>Route</span>
@@ -1010,17 +1008,15 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 </ReviewRow>
                 <ReviewRow>
                   <span>Expected receive</span>
-                  <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : 'QUOTE UNAVAILABLE'}</strong>
+                  <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : '—'}</strong>
                 </ReviewRow>
                 <ReviewRow>
                   <span>LayerZero fee</span>
-                  <strong>{quote?.live ? `${quote.nativeFee} ${quote.nativeFeeSymbol}` : 'QUOTE UNAVAILABLE'}</strong>
+                  <strong>{quote?.live ? `${quote.nativeFee} ${quote.nativeFeeSymbol}` : '—'}</strong>
                 </ReviewRow>
                 <ReviewRow>
                   <span>Quote state</span>
-                  <strong>
-                    {quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : 'UNAVAILABLE'}
-                  </strong>
+                  <strong>{quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : '—'}</strong>
                 </ReviewRow>
                 <Notice $danger={Boolean(submitCta.reason && /INSUFFICIENT BNB/i.test(submitCta.reason))}>
                   {submitCta.reason
