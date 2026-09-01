@@ -2,11 +2,7 @@ import { hexZeroPad } from '@ethersproject/bytes'
 import { BigNumber } from '@ethersproject/bignumber'
 import { parseUnits } from '@ethersproject/units'
 import { describe, expect, it, vi } from 'vitest'
-import {
-  BRIDGE_COPY,
-  resolveSubmitCta,
-  sourceSubmissionLocksControls,
-} from '../bridgeActionState'
+import { BRIDGE_COPY, resolveSubmitCta, sourceSubmissionLocksControls } from '../bridgeActionState'
 import { bridgeRecoveryMessage, sourceSucceeded } from '../lifecycle'
 import {
   applyCanonicalBnbSolanaApplicationGate,
@@ -21,7 +17,11 @@ import {
   requiredNativeWeiForBridge,
 } from '../nativeFunds'
 import { assertMarcoBridgePreflight } from '../preflight'
-import { assertCanonicalRouteAuthority, fetchCanonicalRouteAuthority, type CanonicalMmnRouteState } from '../routeAuthority'
+import {
+  assertCanonicalRouteAuthority,
+  fetchCanonicalRouteAuthority,
+  type CanonicalMmnRouteState,
+} from '../routeAuthority'
 import { readCanonicalSolanaStorePause, solanaStoreBlocksCanonicalRoute } from '../solanaStoreRead'
 import {
   fetchLayerZeroTracking,
@@ -416,6 +416,21 @@ describe('approval confirmation', () => {
 })
 
 describe('tracker truth', () => {
+  it('marks a Phantom-only signature as not broadcast when Solana cannot find it', async () => {
+    const signature = '5bbJiLYf5eGq5yoMMVTw8zGwifm5csdRLQsMyomrKSMa5GbWqkGBCPFdvBfohXFp3SkBepiUofRHbD9B6rfXJnMW'
+    const tracking = await fetchLayerZeroTracking(
+      signature,
+      (async () => ({ ok: false, status: 404, json: async () => ({}) })) as unknown as typeof fetch,
+      async () => 'not-found',
+    )
+    expect(tracking).toMatchObject({
+      status: 'source-failed',
+      sourceTx: signature,
+    })
+    expect(tracking.message).toMatch(/No LayerZero transfer started/)
+    expect(sourceSubmissionLocksControls(tracking)).toBe(false)
+  })
+
   it('keeps empty and unknown tracker payloads at submitted with do-not-resend', () => {
     expect(trackingFromLayerZeroMessages('0xabc', [])).toMatchObject({
       status: 'submitted',
@@ -429,7 +444,11 @@ describe('tracker truth', () => {
 
   it('keeps HTTP errors and thrown scans at submitted', async () => {
     await expect(
-      fetchLayerZeroTracking('0xabc', (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch),
+      fetchLayerZeroTracking('0xabc', (async () => ({
+        ok: false,
+        status: 503,
+        json: async () => ({}),
+      })) as unknown as typeof fetch),
     ).resolves.toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
     await expect(
       fetchLayerZeroTracking('0xabc', (async () => {
@@ -512,10 +531,11 @@ describe('tracker truth', () => {
     expect(sourceSubmissionLocksControls(unknown)).toBe(true)
     expect(sourceSubmissionLocksControls(empty)).toBe(true)
 
-    const nonOk = await fetchLayerZeroTracking(
-      '0xabc',
-      (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch,
-    )
+    const nonOk = await fetchLayerZeroTracking('0xabc', (async () => ({
+      ok: false,
+      status: 503,
+      json: async () => ({}),
+    })) as unknown as typeof fetch)
     expect(nonOk).toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
     expect(sourceSucceeded(nonOk)).toBe(true)
     expect(sourceSubmissionLocksControls(nonOk)).toBe(true)
@@ -549,13 +569,20 @@ describe('live Solana pause truth', () => {
 
   it('blocks BNB→Solana when the live store is paused, RPC fails, or identities mismatch', async () => {
     const paused = await readCanonicalSolanaStorePause({
-      fetcher: (async () => ({ ok: true, json: async () => accountPayload(PAUSED_STORE_HEX) })) as unknown as typeof fetch,
+      fetcher: (async () => ({
+        ok: true,
+        json: async () => accountPayload(PAUSED_STORE_HEX),
+      })) as unknown as typeof fetch,
       timeoutMs: 50,
     })
     expect(paused).toMatchObject({ ok: true, paused: true })
-    expect(isRouteExecutable('bnb', 'solana', applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: true }))).toBe(
-      false,
-    )
+    expect(
+      isRouteExecutable(
+        'bnb',
+        'solana',
+        applyCanonicalBnbSolanaApplicationGate(staleAuthority(), { solanaStorePaused: true }),
+      ),
+    ).toBe(false)
 
     const rpcError = await readCanonicalSolanaStorePause({
       fetcher: (async () => {

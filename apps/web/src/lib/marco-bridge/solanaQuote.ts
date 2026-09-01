@@ -91,19 +91,6 @@ export async function readOnlySolanaMarcoBridgeQuote(
 
   const store = await protocol.fetchStore({ store: SOLANA_OFT_STORE, programId: SOLANA_OFT_PROGRAM })
   assertLiveSolanaStoreSnapshot(store)
-  const owner = await protocol.fetchOwnerAccounts({ owner: input.sourceWallet, mint: store.tokenMint })
-  if (BigInt(owner.tokenBalanceLd) < BigInt(amountLD)) {
-    throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'Insufficient MARCO balance.')
-  }
-  const enforced = await protocol.getEnforcedOptions({
-    store: SOLANA_OFT_STORE,
-    dstEid: 30102,
-    programId: SOLANA_OFT_PROGRAM,
-  })
-  if (isEmptySolanaOptions(enforced.sendHex)) {
-    throw new MarcoBridgeError('QUOTE_FAILED', 'Solana OFT enforced options for BNB are missing.')
-  }
-
   const sendParam = createSolanaOftSendParam({
     amountLD,
     destinationWallet: input.destinationWallet,
@@ -115,14 +102,28 @@ export async function readOnlySolanaMarcoBridgeQuote(
     throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Solana quote destination encoding is invalid.')
   }
 
-  const quoted = await protocol.quote({
-    payer: input.sourceWallet,
-    tokenMint: store.tokenMint,
-    tokenEscrow: store.tokenEscrow,
-    sendParam,
-    programId: SOLANA_OFT_PROGRAM,
-    lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
-  })
+  const [owner, enforced, quoted] = await Promise.all([
+    protocol.fetchOwnerAccounts({ owner: input.sourceWallet, mint: store.tokenMint }),
+    protocol.getEnforcedOptions({
+      store: SOLANA_OFT_STORE,
+      dstEid: 30102,
+      programId: SOLANA_OFT_PROGRAM,
+    }),
+    protocol.quote({
+      payer: input.sourceWallet,
+      tokenMint: store.tokenMint,
+      tokenEscrow: store.tokenEscrow,
+      sendParam,
+      programId: SOLANA_OFT_PROGRAM,
+      lookupTable: LAYERZERO_SOLANA_V2_MAINNET_ALT,
+    }),
+  ])
+  if (BigInt(owner.tokenBalanceLd) < BigInt(amountLD)) {
+    throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'Insufficient MARCO balance.')
+  }
+  if (isEmptySolanaOptions(enforced.sendHex)) {
+    throw new MarcoBridgeError('QUOTE_FAILED', 'Solana OFT enforced options for BNB are missing.')
+  }
   if (BigInt(owner.solLamports) < BigInt(requiredSolLamportsForBridge(quoted.nativeFeeLamports))) {
     throw new MarcoBridgeError(
       'INSUFFICIENT_GAS',

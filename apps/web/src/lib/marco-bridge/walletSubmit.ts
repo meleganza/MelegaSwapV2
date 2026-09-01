@@ -70,6 +70,37 @@ export type SolanaBroadcastTransport = {
   sendRawTransaction(raw: Uint8Array): Promise<string>
 }
 
+export type SolanaSourceConfirmation = (signature: string) => Promise<void>
+
+export async function confirmSolanaSourceBroadcast(
+  signature: string,
+  fetcher: typeof fetch = fetch,
+  attempts = 12,
+): Promise<void> {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const response = await fetcher(`/api/marco-bridge/source-status/?sourceTx=${encodeURIComponent(signature)}`, {
+        cache: 'no-store',
+      })
+      if (response.ok) {
+        const payload = (await response.json()) as { status?: string }
+        if (payload.status === 'failed') {
+          throw new MarcoBridgeError('SOURCE_FAILED', 'The Solana source transaction failed on-chain.')
+        }
+        if (payload.status && payload.status !== 'not-found') return
+      }
+    } catch (cause) {
+      if (cause instanceof MarcoBridgeError) throw cause
+    }
+    if (attempt + 1 < attempts) await new Promise((resolve) => setTimeout(resolve, 1_000))
+  }
+
+  throw new MarcoBridgeError(
+    'SOURCE_FAILED',
+    `Phantom returned signature ${signature}, but Solana did not observe the broadcast. No LayerZero transfer started.`,
+  )
+}
+
 export function readConnectedSolanaAddress(wallet: SolanaInjectedWallet | null | undefined): string {
   return wallet?.publicKey?.toString() ?? ''
 }
@@ -93,12 +124,14 @@ async function signAndBroadcastSolanaSend(input: {
   wallet: SolanaInjectedWallet
   serializedTransaction: string
   transport?: SolanaBroadcastTransport
+  confirmSource: SolanaSourceConfirmation
 }): Promise<string> {
   const transaction = deserializeSolanaTransaction(input.serializedTransaction)
   if (typeof input.wallet.signAndSendTransaction === 'function') {
     const sent = await input.wallet.signAndSendTransaction(transaction)
     const signature = typeof sent === 'string' ? sent : sent?.signature
     if (!signature) throw new MarcoBridgeError('SOURCE_FAILED', 'The Solana wallet did not return a source signature.')
+    await input.confirmSource(signature)
     return signature
   }
   if (typeof input.wallet.signTransaction === 'function' && input.transport?.sendRawTransaction) {
@@ -107,6 +140,7 @@ async function signAndBroadcastSolanaSend(input: {
     const bytes = raw instanceof Uint8Array ? raw : Uint8Array.from(raw)
     const signature = await input.transport.sendRawTransaction(bytes)
     if (!signature) throw new MarcoBridgeError('SOURCE_FAILED', 'The Solana send was not broadcast.')
+    await input.confirmSource(signature)
     return signature
   }
   throw new MarcoBridgeError(
@@ -121,6 +155,7 @@ export async function submitSolanaMarcoBridgeFromWallet(input: {
   wallet: SolanaInjectedWallet
   protocol: SolanaOftProtocol
   transport?: SolanaBroadcastTransport
+  confirmSource: SolanaSourceConfirmation
   requestQuote?: typeof requestMarcoBridgeQuote
 }): Promise<MarcoBridgeTracking> {
   assertRouteExecutable(input.request.from, input.request.to, input.authority)
@@ -173,6 +208,7 @@ export async function submitSolanaMarcoBridgeFromWallet(input: {
     wallet: input.wallet,
     serializedTransaction: send.serializedTransaction,
     transport: input.transport,
+    confirmSource: input.confirmSource,
   })
   return {
     status: 'submitted',
@@ -346,6 +382,8 @@ export async function submitMarcoBridgeFromWallet(input: {
   solanaWallet?: SolanaInjectedWallet
   solanaProtocol?: SolanaOftProtocol
   solanaTransport?: SolanaBroadcastTransport
+  confirmSolanaSource?: SolanaSourceConfirmation
+  preparedSolanaTransaction?: string
 }): Promise<MarcoBridgeTracking> {
   assertRouteExecutable(input.request.from, input.request.to, input.authority)
   const source = MARCO_WAVE1_NETWORKS[input.request.from]
@@ -355,12 +393,27 @@ export async function submitMarcoBridgeFromWallet(input: {
     }
     const requestQuote = input.requestQuote ?? requestMarcoBridgeQuote
     const quote = await requestQuote(input.request)
+    const preparedBuild = input.preparedSolanaTransaction
     return submitSolanaMarcoBridgeFromWallet({
       request: input.request,
       authority: input.authority,
       wallet: input.solanaWallet,
-      protocol: input.solanaProtocol ?? createBrowserSolanaOftProtocol({ request: input.request, quote }),
+      protocol:
+        input.solanaProtocol ??
+        createBrowserSolanaOftProtocol({
+          request: input.request,
+          quote,
+          ...(preparedBuild
+            ? {
+                build: async () => ({
+                  serializedTransaction: preparedBuild,
+                  tokenAccount: quote.binding?.tokenAccount,
+                }),
+              }
+            : {}),
+        }),
       transport: input.solanaTransport,
+      confirmSource: input.confirmSolanaSource ?? confirmSolanaSourceBroadcast,
       requestQuote: async () => quote,
     })
   }

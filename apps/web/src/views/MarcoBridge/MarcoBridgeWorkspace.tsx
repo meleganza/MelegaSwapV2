@@ -29,7 +29,7 @@ import {
 } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
-import { marcoBridgeService } from 'lib/marco-bridge/service'
+import { marcoBridgeService, prepareSolanaMarcoBridge } from 'lib/marco-bridge/service'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
 import {
@@ -469,6 +469,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [solanaWallet, setSolanaWallet] = useState('')
   const [review, setReview] = useState(false)
   const [quote, setQuote] = useState<MarcoBridgeQuote | null>(null)
+  const [preparedSolanaTransaction, setPreparedSolanaTransaction] = useState('')
   const [quoteLoading, setQuoteLoading] = useState(false)
   const [routeAuthority, setRouteAuthority] = useState<CanonicalMmnRouteState | null>(null)
   const [routeAuthorityError, setRouteAuthorityError] = useState('')
@@ -554,6 +555,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   const resetQuote = () => {
     setQuote(null)
+    setPreparedSolanaTransaction('')
     setQuoteLoading(false)
     setReview(false)
   }
@@ -564,6 +566,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     setTo(next.to)
     setDestination(next.destination)
     setQuote(next.quote)
+    setPreparedSolanaTransaction('')
     setQuoteLoading(next.quoteLoading)
     setReview(next.review)
     if (next.resetCompletedTransfer) {
@@ -580,6 +583,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   useEffect(() => {
     setQuote(null)
+    setPreparedSolanaTransaction('')
     setQuoteLoading(false)
     setReview(false)
     setAllowanceLD(null)
@@ -681,7 +685,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     setQuote(null)
     try {
       const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
-      const nextQuote = await marcoBridgeService.quote(request)
+      const prepared = fromNetwork.walletFamily === 'solana' ? await prepareSolanaMarcoBridge(request) : null
+      const nextQuote = prepared?.quote ?? (await marcoBridgeService.quote(request))
+      setPreparedSolanaTransaction(prepared?.serializedTransaction ?? '')
       setQuote(nextQuote)
       setReview(true)
       setTracking({ status: 'review' })
@@ -723,12 +729,17 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         setError('Connect the Solana wallet to sign the bridge send.')
         return
       }
+      if (!preparedSolanaTransaction) {
+        setError('Refresh the live quote to prepare and simulate the Solana transaction before signing.')
+        return
+      }
     }
     setSubmitting(true)
     setSubmissionPhase(approvalRequired ? 'approving' : 'confirming-wallet')
     try {
       const request = { from, to, amount, sourceWallet, destinationWallet: resolvedDestination }
-      const nextQuote = await marcoBridgeService.quote(request)
+      const nextQuote =
+        fromNetwork.walletFamily === 'solana' && quote?.live ? quote : await marcoBridgeService.quote(request)
       setQuote(nextQuote)
       if (approvalRequired) {
         if (!signer) throw new Error('Connect the source wallet to sign the unsigned bridge transactions.')
@@ -755,6 +766,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         ethereum: window.ethereum as unknown as BridgeEthereumProvider,
         allowanceLD: allowanceLD ?? '0',
         solanaWallet: fromNetwork.walletFamily === 'solana' ? window.solana : undefined,
+        preparedSolanaTransaction: fromNetwork.walletFamily === 'solana' ? preparedSolanaTransaction : undefined,
+        requestQuote: async () => nextQuote,
       })
       setTracking(nextTracking)
       setReview(true)

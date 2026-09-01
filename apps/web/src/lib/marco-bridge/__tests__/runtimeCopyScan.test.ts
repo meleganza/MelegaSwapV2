@@ -20,6 +20,7 @@ const RUNTIME_FILES = [
   'src/lib/marco-bridge/nativeFunds.ts',
   'src/lib/marco-bridge/simulate.ts',
   'src/lib/marco-bridge/solanaStoreRead.ts',
+  'src/lib/marco-bridge/solanaSourceStatus.ts',
   'src/lib/marco-bridge/solanaOftProtocol.ts',
   'src/lib/marco-bridge/solanaQuote.ts',
   'src/lib/marco-bridge/solanaBrowserProtocol.ts',
@@ -29,6 +30,7 @@ const RUNTIME_FILES = [
   'src/pages/api/marco-bridge/track.ts',
   'src/pages/api/marco-bridge/build.ts',
   'src/pages/api/marco-bridge/simulate.ts',
+  'src/pages/api/marco-bridge/source-status.ts',
 ]
 
 /** Any runtime instruction to set_pause / unpause / recover. Historical unpauseTx audit fields are stripped first. */
