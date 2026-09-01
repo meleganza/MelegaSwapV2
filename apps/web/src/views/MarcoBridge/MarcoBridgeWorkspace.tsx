@@ -987,7 +987,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   Canonical BNB→Solana gate:{' '}
                   {solanaPaused
                     ? 'blocked by store pause'
-                    : `active · store unpaused · ${CANONICAL_BNB_SOLANA_GATE.unpauseTx}`}
+                    : `active · store live · ${CANONICAL_BNB_SOLANA_GATE.unpauseTx}`}
                 </li>
                 <li>Solana store: {solanaPaused ? 'paused' : 'active'}</li>
                 <li>Activation blockers: {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}</li>

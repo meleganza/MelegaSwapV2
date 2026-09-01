@@ -31,8 +31,7 @@ export const CANONICAL_BNB_SOLANA_GATE = {
 /** Certified read-only store state after the finalized SetPause(paused=false) transaction. */
 export const CANONICAL_SOLANA_OFT_STORE_PAUSED = false
 
-export const CANONICAL_BNB_SOLANA_GATE_REASON =
-  'Canonical BNB→Solana application gate is active after the certified OFT store unpause.'
+export const CANONICAL_BNB_SOLANA_GATE_REASON = 'Canonical BNB→Solana application gate is active.'
 
 export function isCanonicalBnbSolanaRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
   return from === CANONICAL_BNB_SOLANA_GATE.from && to === CANONICAL_BNB_SOLANA_GATE.to

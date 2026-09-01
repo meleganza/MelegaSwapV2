@@ -283,7 +283,7 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
     ])
     expect(tracking.guid).toBe('guid-1')
     expect(sourceSucceeded(tracking)).toBe(true)
-    expect(bridgeRecoveryMessage(tracking)).toContain('do not resend')
+    expect(bridgeRecoveryMessage(tracking)).toContain('Do not resend')
     expect(trackingFromLayerZeroMessages('0xdef', [{ status: { name: 'FAILED' } }]).status).toBe('source-failed')
   })
 
