@@ -24,10 +24,14 @@ import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
   SOLANA_OFT_PROGRAM,
   assertSendMatchesQuote,
-  requiredSolLamportsForBridge,
   type SolanaOftProtocol,
 } from './solanaOftProtocol'
-import { ERC20_APPROVE_IFACE, assertBuildReady, buildMarcoBridgeTransactions, type UnsignedEvmBridgeTx } from './transactionBuilder'
+import {
+  ERC20_APPROVE_IFACE,
+  assertBuildReady,
+  buildMarcoBridgeTransactions,
+  type UnsignedEvmBridgeTx,
+} from './transactionBuilder'
 import { MarcoBridgeError, type MarcoBridgeQuote, type MarcoBridgeTracking } from './types'
 import { isValidMarcoDestination } from './validation'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
@@ -143,23 +147,6 @@ export async function submitSolanaMarcoBridgeFromWallet(input: {
   if (quote.binding.sourceWallet !== connected) {
     throw new MarcoBridgeError('WALLET_REQUIRED', 'Connected wallet does not match the quoted Solana source wallet.')
   }
-  const protocol = input.protocol
-
-  const owner = await protocol.fetchOwnerAccounts({
-    owner: connected,
-    mint: quote.binding.mint,
-  })
-  if (BigInt(owner.tokenBalanceLd) < BigInt(quote.binding.amountLD)) {
-    throw new MarcoBridgeError('INSUFFICIENT_MARCO', 'Insufficient MARCO balance.')
-  }
-  const requiredLamports = requiredSolLamportsForBridge(quote.nativeFeeWei)
-  if (BigInt(owner.solLamports) < BigInt(requiredLamports)) {
-    throw new MarcoBridgeError(
-      'INSUFFICIENT_GAS',
-      'Insufficient SOL to cover the LayerZero native fee and transaction fees.',
-    )
-  }
-
   const send = await input.protocol.buildSend({
     payer: connected,
     tokenMint: quote.binding.mint,

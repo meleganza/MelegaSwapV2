@@ -330,6 +330,21 @@ describe('Solana → BNB official OFT path', () => {
       readOnlySolanaMarcoBridgeQuote(
         { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
         liveAuthority(),
+        mockProtocol({
+          fetchOwnerAccounts: async () => ({
+            owner: solanaOwner,
+            tokenAccount,
+            tokenBalanceLd: '1000000',
+            solLamports: '1',
+          }),
+        }),
+      ),
+    ).rejects.toThrow('Insufficient SOL')
+
+    await expect(
+      readOnlySolanaMarcoBridgeQuote(
+        { from: 'solana', to: 'bnb', amount: '0.000001', sourceWallet: solanaOwner, destinationWallet: evm },
+        liveAuthority(),
         mockProtocol({ getEnforcedOptions: async () => ({ sendHex: '0x' }) }),
       ),
     ).rejects.toThrow('enforced options')
@@ -635,30 +650,26 @@ describe('Solana → BNB official OFT path', () => {
       }),
     ).rejects.toThrow('does not match the quoted Solana source wallet')
 
-    await expect(
-      submitSolanaMarcoBridgeFromWallet({
-        request: {
-          from: 'solana',
-          to: 'bnb',
-          amount: '0.000001',
-          sourceWallet: solanaOwner,
-          destinationWallet: evm,
-        },
-        authority: liveAuthority(),
-        wallet: {
-          publicKey: { toString: () => solanaOwner },
-          signAndSendTransaction: async () => solanaSignature,
-        },
-        protocol: mockProtocol({
-          fetchOwnerAccounts: async () => ({
-            owner: solanaOwner,
-            tokenAccount,
-            tokenBalanceLd: '1000000',
-            solLamports: '1',
-          }),
-        }),
-        requestQuote: async () => liveSolanaQuote(),
-      }),
-    ).rejects.toThrow('Insufficient SOL')
+    const browserOnlyRpcRead = vi.fn(async () => {
+      throw new Error('Browser RPC must not be used for the submission preflight.')
+    })
+    const browserProtocol = mockProtocol({ fetchOwnerAccounts: browserOnlyRpcRead })
+    await submitSolanaMarcoBridgeFromWallet({
+      request: {
+        from: 'solana',
+        to: 'bnb',
+        amount: '0.000001',
+        sourceWallet: solanaOwner,
+        destinationWallet: evm,
+      },
+      authority: liveAuthority(),
+      wallet: {
+        publicKey: { toString: () => solanaOwner },
+        signAndSendTransaction: async () => solanaSignature,
+      },
+      protocol: browserProtocol,
+      requestQuote: async () => liveSolanaQuote(),
+    })
+    expect(browserOnlyRpcRead).not.toHaveBeenCalled()
   })
 })
