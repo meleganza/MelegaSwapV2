@@ -10,6 +10,9 @@
     }
   ],
   "functions": {
+    "src/pages/api/marco-bridge/build.ts": {
+      "maxDuration": 30
+    },
     "src/pages/api/indexer/run.ts": {
       "maxDuration": 300
     },
