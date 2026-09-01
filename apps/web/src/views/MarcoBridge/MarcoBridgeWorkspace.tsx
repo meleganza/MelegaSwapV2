@@ -360,6 +360,58 @@ const Notice = styled.div<{ $danger?: boolean }>`
     color: #f4c430;
   }
 `
+const TransactionLink = styled.a`
+  min-width: 0;
+  margin-top: 12px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 196, 48, 0.22);
+  border-radius: 10px;
+  background: rgba(244, 196, 48, 0.055);
+  text-decoration: none;
+  transition: border-color 140ms ease, background 140ms ease;
+
+  > span {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  small {
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 10px;
+    font-weight: 760;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  strong {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  b {
+    flex: 0 0 auto;
+    color: #f4c430;
+    font-size: 11px;
+    font-weight: 780;
+  }
+  &:hover {
+    border-color: rgba(244, 196, 48, 0.45);
+    background: rgba(244, 196, 48, 0.09);
+  }
+
+  @media (max-width: 520px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+`
 const Primary = styled.button`
   width: 100%;
   min-height: 50px;
@@ -449,6 +501,9 @@ const Advanced = styled.details`
   ul {
     padding-left: 18px;
     line-height: 1.6;
+  }
+  li {
+    overflow-wrap: anywhere;
   }
 `
 
@@ -1063,13 +1118,20 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 </Steps>
                 <Notice>{bridgeRecoveryMessage(tracking)}</Notice>
                 {tracking.sourceTx ? (
-                  <Notice>
-                    Source tx {tracking.sourceTx}. Track on{' '}
-                    <a href={layerZeroScanTxUrl(tracking.sourceTx)} target="_blank" rel="noreferrer">
-                      LayerZero Scan
-                    </a>
-                    .
-                  </Notice>
+                  <TransactionLink
+                    href={layerZeroScanTxUrl(tracking.sourceTx)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={tracking.sourceTx}
+                    aria-label={`View transaction ${tracking.sourceTx} on LayerZero Scan`}
+                    data-testid="layerzero-transaction-link"
+                  >
+                    <span>
+                      <small>LayerZero transaction</small>
+                      <strong>{short(tracking.sourceTx)}</strong>
+                    </span>
+                    <b>View on LayerZero Scan ↗</b>
+                  </TransactionLink>
                 ) : null}
               </>
             )}
