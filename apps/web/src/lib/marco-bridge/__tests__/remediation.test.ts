@@ -5,7 +5,9 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   BRIDGE_COPY,
   resolveSubmitCta,
+  sourceSubmissionLocksControls,
 } from '../bridgeActionState'
+import { bridgeRecoveryMessage, sourceSucceeded } from '../lifecycle'
 import {
   applyCanonicalBnbSolanaApplicationGate,
   CANONICAL_BNB_SOLANA_GATE,
@@ -21,7 +23,11 @@ import {
 import { assertMarcoBridgePreflight } from '../preflight'
 import { assertCanonicalRouteAuthority, fetchCanonicalRouteAuthority, type CanonicalMmnRouteState } from '../routeAuthority'
 import { readCanonicalSolanaStorePause, solanaStoreBlocksCanonicalRoute } from '../solanaStoreRead'
-import { fetchLayerZeroTracking, trackingFromLayerZeroMessages } from '../tracking'
+import {
+  fetchLayerZeroTracking,
+  LAYERZERO_DESTINATION_ATTENTION_COPY,
+  trackingFromLayerZeroMessages,
+} from '../tracking'
 import { buildMarcoBridgeTransactions } from '../transactionBuilder'
 import type { MarcoBridgeQuote, MarcoBridgeTracking } from '../types'
 import { parseBridgeAmount } from '../validation'
@@ -439,7 +445,80 @@ describe('tracker truth', () => {
       'destination-executing',
     )
     expect(trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'DELIVERED' } }]).status).toBe('delivered')
-    expect(trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'FAILED' } }]).status).toBe('source-failed')
+    expect(trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'FAILED' } }]).status).toBe('action-required')
+  })
+
+  it('maps FAILED + sourceTx to action-required with same-transfer do-not-resend semantics', () => {
+    const tracking = trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'FAILED' } }])
+    expect(tracking).toMatchObject({
+      status: 'action-required',
+      sourceTx: '0xabc',
+      message: LAYERZERO_DESTINATION_ATTENTION_COPY,
+    })
+    expect(tracking.status).not.toBe('source-failed')
+    expect(sourceSucceeded(tracking)).toBe(true)
+    expect(sourceSubmissionLocksControls(tracking)).toBe(true)
+    expect(bridgeRecoveryMessage(tracking)).toBe(LAYERZERO_DESTINATION_ATTENTION_COPY)
+    expect(bridgeRecoveryMessage(tracking)).toMatch(/do not resend/i)
+    expect(bridgeRecoveryMessage(tracking)).not.toMatch(/source transaction failed/i)
+    expect(tracking.message).not.toMatch(/source transaction failed/i)
+  })
+
+  it('maps BLOCKED + sourceTx to action-required with same-transfer do-not-resend semantics', () => {
+    const tracking = trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'BLOCKED' } }])
+    expect(tracking).toMatchObject({
+      status: 'action-required',
+      sourceTx: '0xabc',
+      message: LAYERZERO_DESTINATION_ATTENTION_COPY,
+    })
+    expect(tracking.status).not.toBe('source-failed')
+    expect(sourceSucceeded(tracking)).toBe(true)
+    expect(sourceSubmissionLocksControls(tracking)).toBe(true)
+    expect(bridgeRecoveryMessage(tracking)).toBe(LAYERZERO_DESTINATION_ATTENTION_COPY)
+    expect(bridgeRecoveryMessage(tracking)).toMatch(/do not resend/i)
+    expect(bridgeRecoveryMessage(tracking)).not.toMatch(/source transaction failed/i)
+    expect(tracking.message).not.toMatch(/source transaction failed/i)
+  })
+
+  it('never synthesizes source-failed from any LayerZero message API status', () => {
+    const names = [
+      'INFLIGHT',
+      'CONFIRMING',
+      'PENDING',
+      'DELIVERED',
+      'FAILED',
+      'BLOCKED',
+      'PAYLOAD_STORED',
+      'UNKNOWN',
+      'OK',
+      '',
+      'SUCCESS',
+      'REVERTED',
+      'FAILED_DESTINATION',
+    ]
+    for (const name of names) {
+      expect(trackingFromLayerZeroMessages('0xabc', [{ status: { name } }]).status).not.toBe('source-failed')
+    }
+    expect(trackingFromLayerZeroMessages('0xabc', []).status).not.toBe('source-failed')
+  })
+
+  it('keeps unknown, empty, and non-OK tracker results submitted and locked once sourceTx exists', async () => {
+    const unknown = trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'UNKNOWN' } }])
+    const empty = trackingFromLayerZeroMessages('0xabc', [])
+    expect(unknown).toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
+    expect(empty).toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
+    expect(sourceSucceeded(unknown)).toBe(true)
+    expect(sourceSucceeded(empty)).toBe(true)
+    expect(sourceSubmissionLocksControls(unknown)).toBe(true)
+    expect(sourceSubmissionLocksControls(empty)).toBe(true)
+
+    const nonOk = await fetchLayerZeroTracking(
+      '0xabc',
+      (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch,
+    )
+    expect(nonOk).toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
+    expect(sourceSucceeded(nonOk)).toBe(true)
+    expect(sourceSubmissionLocksControls(nonOk)).toBe(true)
   })
 })
 

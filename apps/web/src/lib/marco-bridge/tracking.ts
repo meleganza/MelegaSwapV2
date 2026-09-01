@@ -8,12 +8,22 @@ type LayerZeroMessage = {
   destination?: { tx?: { txHash?: string } }
 }
 
+export const LAYERZERO_DESTINATION_ATTENTION_COPY =
+  'Destination execution needs attention. Keep tracking this transfer and do not resend from BNB.'
+
+const DESTINATION_ATTENTION_STATUSES = new Set(['FAILED', 'BLOCKED'])
+
+// LayerZero V2 Scan: top-level FAILED means the message reached destination but
+// destination execution failed and is retryable there. It is not a BNB source
+// revert and must never invite a new source send. BLOCKED likewise needs
+// intervention on the already-broadcast transfer. source-failed is reserved for
+// independently proven source-transaction reversion, never synthesized from this API.
 const STATUS_MAP: Record<string, MarcoBridgeProgress> = {
   INFLIGHT: 'verifying',
   CONFIRMING: 'source-confirmed',
   PENDING: 'verifying',
   DELIVERED: 'delivered',
-  FAILED: 'source-failed',
+  FAILED: 'action-required',
   BLOCKED: 'action-required',
   PAYLOAD_STORED: 'destination-executing',
 }
@@ -43,8 +53,8 @@ export function trackingFromLayerZeroMessages(
     message:
       mapped === 'delivered'
         ? BRIDGE_COPY.delivered
-        : mapped === 'source-failed'
-        ? 'The source transaction failed and no cross-chain delivery started.'
+        : DESTINATION_ATTENTION_STATUSES.has(name)
+        ? LAYERZERO_DESTINATION_ATTENTION_COPY
         : BRIDGE_COPY.submitted,
   }
 }

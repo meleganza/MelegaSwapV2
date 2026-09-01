@@ -18,7 +18,7 @@ import {
 } from '../nativeFunds'
 import { simulateMarcoBridgeBuild } from '../simulate'
 import { readCanonicalSolanaStorePause } from '../solanaStoreRead'
-import { trackingFromLayerZeroMessages } from '../tracking'
+import { LAYERZERO_DESTINATION_ATTENTION_COPY, trackingFromLayerZeroMessages } from '../tracking'
 import type { MarcoBridgeQuote, MarcoBridgeTracking } from '../types'
 import type { MarcoBridgeBuild } from '../transactionBuilder'
 
@@ -131,6 +131,18 @@ describe('double-send lock uses sourceTx evidence', () => {
       true,
     )
     expect(sourceSubmissionLocksControls(trackingFromLayerZeroMessages('0xabc', []))).toBe(true)
+  })
+
+  it('treats LayerZero FAILED as destination action-required, never source-failed', () => {
+    const tracking = trackingFromLayerZeroMessages('0xabc', [{ status: { name: 'FAILED' } }])
+    expect(tracking.status).toBe('action-required')
+    expect(tracking.sourceTx).toBe('0xabc')
+    expect(sourceSucceeded(tracking)).toBe(true)
+    expect(sourceSubmissionLocksControls(tracking)).toBe(true)
+    expect(submitInput({ tracking })).toMatchObject({ label: BRIDGE_COPY.bridgeInProgress, disabled: true })
+    expect(bridgeRecoveryMessage(tracking)).toBe(LAYERZERO_DESTINATION_ATTENTION_COPY)
+    expect(bridgeRecoveryMessage(tracking)).toMatch(/do not resend/i)
+    expect(bridgeRecoveryMessage(tracking)).not.toMatch(/source transaction failed/i)
   })
 })
 
