@@ -1,5 +1,5 @@
 import { formatUnits } from '@ethersproject/units'
-import { evaluateNativeFunds } from './nativeFunds'
+import { evaluateNativeFunds, isNativeFundsBlocked } from './nativeFunds'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import { planMarcoBridgeRoute } from './routePolicy'
 import { MarcoBridgeError, type MarcoBridgeNetworkId } from './types'
@@ -46,7 +46,7 @@ export function assertMarcoBridgePreflight(input: MarcoBridgePreflight): true {
       gasPriceWei: input.gasPriceWei,
       approvalRequired: Boolean(input.approvalRequired),
     })
-    if (!verdict.ok) {
+    if (isNativeFundsBlocked(verdict)) {
       throw new MarcoBridgeError(verdict.code, verdict.reason)
     }
     return true

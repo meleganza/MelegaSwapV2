@@ -5,6 +5,7 @@ import { formatUnits } from '@ethersproject/units'
 import { assertRouteExecutable } from './executableRoutes'
 import {
   evaluateNativeFunds,
+  isNativeFundsBlocked,
   readGasPriceWei,
   readNativeBalanceWei,
   requiredNativeGasDecimal,
@@ -138,7 +139,7 @@ async function assertWalletNativePreflight(input: {
     gasPriceWei,
     approvalRequired: input.approvalRequired,
   })
-  if (!verdict.ok) {
+  if (isNativeFundsBlocked(verdict)) {
     throw new MarcoBridgeError(verdict.code, verdict.reason)
   }
 }

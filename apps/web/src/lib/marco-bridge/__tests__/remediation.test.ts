@@ -15,6 +15,7 @@ import { isRouteExecutable } from '../executableRoutes'
 import {
   evaluateNativeFunds,
   INSUFFICIENT_BNB_REASON,
+  isNativeFundsBlocked,
   requiredNativeWeiForBridge,
 } from '../nativeFunds'
 import { assertMarcoBridgePreflight } from '../preflight'
@@ -189,8 +190,8 @@ describe('BNB native preflight', () => {
       gasPriceWei,
       approvalRequired: true,
     })
-    expect(verdict.ok).toBe(false)
-    if (verdict.ok) throw new Error('expected insufficient')
+    expect(isNativeFundsBlocked(verdict)).toBe(true)
+    if (!isNativeFundsBlocked(verdict)) throw new Error('expected insufficient')
     expect(verdict.reason).toBe(INSUFFICIENT_BNB_REASON)
     expect(
       resolveSubmitCta({
@@ -422,12 +423,12 @@ describe('tracker truth', () => {
 
   it('keeps HTTP errors and thrown scans at submitted', async () => {
     await expect(
-      fetchLayerZeroTracking('0xabc', (async () => ({ ok: false, status: 503, json: async () => ({}) })) as typeof fetch),
+      fetchLayerZeroTracking('0xabc', (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch),
     ).resolves.toMatchObject({ status: 'submitted', sourceTx: '0xabc', message: BRIDGE_COPY.submitted })
     await expect(
       fetchLayerZeroTracking('0xabc', (async () => {
         throw new Error('network down')
-      }) as typeof fetch),
+      }) as unknown as typeof fetch),
     ).resolves.toMatchObject({ status: 'submitted', sourceTx: '0xabc' })
   })
 
@@ -443,7 +444,7 @@ describe('tracker truth', () => {
 })
 
 describe('live Solana pause truth', () => {
-  const accountPayload = (hex: string, owner = CANONICAL_BNB_SOLANA_GATE.programId) => ({
+  const accountPayload = (hex: string, owner: string = CANONICAL_BNB_SOLANA_GATE.programId) => ({
     jsonrpc: '2.0',
     result: {
       value: {

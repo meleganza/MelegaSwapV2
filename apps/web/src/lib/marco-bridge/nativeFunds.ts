@@ -51,6 +51,12 @@ export function requiredNativeWeiForBridge(input: {
   return BigNumber.from(input.nativeFeeWei).add(gasCost)
 }
 
+export function isNativeFundsBlocked(
+  verdict: NativeFundsVerdict,
+): verdict is Extract<NativeFundsVerdict, { ok: false }> {
+  return verdict.ok === false
+}
+
 export function evaluateNativeFunds(input: {
   from: MarcoBridgeNetworkId
   balanceWei: string

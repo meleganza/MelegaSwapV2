@@ -18,7 +18,7 @@ import {
 import { CANONICAL_BNB_SOLANA_GATE } from 'lib/marco-bridge/canonicalBnbSolanaGate'
 import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
-import { evaluateNativeFunds } from 'lib/marco-bridge/nativeFunds'
+import { evaluateNativeFunds, isNativeFundsBlocked } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
@@ -490,7 +490,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             gasPriceWei,
             approvalRequired,
           })
-          return verdict.ok ? null : verdict.reason
+          return isNativeFundsBlocked(verdict) ? verdict.reason : null
         })()
       : null
   const submitCta = resolveSubmitCta({
