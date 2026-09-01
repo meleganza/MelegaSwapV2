@@ -63,6 +63,15 @@ const config = {
       'wagmi',
       '@ledgerhq',
       '@gnosis.pm/safe-apps-wagmi',
+      '@layerzerolabs/oft-v2-solana-sdk',
+      '@layerzerolabs/lz-v2-utilities',
+      '@layerzerolabs/lz-definitions',
+      '@layerzerolabs/lz-solana-sdk-v2',
+      '@layerzerolabs/lz-foundation',
+      '@metaplex-foundation/umi',
+      '@metaplex-foundation/umi-bundle-defaults',
+      '@metaplex-foundation/umi-web3js-adapters',
+      '@metaplex-foundation/mpl-toolbox',
     ],
   },
   staticPageGenerationTimeout: 1000,
@@ -294,6 +303,13 @@ const config = {
       '@pancakeswap/tokens': localTokensPackage,
       '@pancakeswap/ui-wallets': localUiWalletsPackage,
       '@pancakeswap/uikit': localUikitPackage,
+    }
+    webpackConfig.resolve.fallback = {
+      ...webpackConfig.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      path: false,
     }
     return webpackConfig
   },

@@ -291,9 +291,9 @@ describe('Solana source simulation copy', () => {
     } as unknown as MarcoBridgeBuild
     const simulation = await simulateMarcoBridgeBuild(build, {})
     expect(simulation.steps[0].reason).toBe(
-      'Solana source submission is not publicly activated. Use BNB Smart Chain as the source.',
+      'Solana OFT send is constructed for wallet signature. No broadcast is performed.',
     )
     expect(simulation.steps[0].reason).not.toMatch(/set_pause|\bunpause\b|recovery[- ]required/i)
-    expect(simulation.ok).toBe(false)
+    expect(simulation.ok).toBe(true)
   })
 })

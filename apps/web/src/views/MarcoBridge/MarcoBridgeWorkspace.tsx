@@ -32,25 +32,37 @@ import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeService } from 'lib/marco-bridge/service'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
-import { readErc20Allowance, submitMarcoApprovalFromWallet, submitMarcoBridgeFromWallet } from 'lib/marco-bridge/walletSubmit'
+import {
+  readConnectedSolanaAddress,
+  readErc20Allowance,
+  solanaWalletConnectionLabel,
+  submitMarcoApprovalFromWallet,
+  submitMarcoBridgeFromWallet,
+  type SolanaInjectedWallet,
+} from 'lib/marco-bridge/walletSubmit'
 import {
   MARCO_WAVE1_NETWORKS,
   MARCO_WAVE1_PUBLIC_ACTIVATION,
   localRouteActivationEnabled,
   wave1ActivationBlockers,
 } from 'lib/marco-bridge/wave1Registry'
-import { isValidMarcoDestination, parseBridgeAmount, requiresExplicitDestination, validateBridgeAmount } from 'lib/marco-bridge/validation'
+import {
+  isValidMarcoDestination,
+  parseBridgeAmount,
+  requiresExplicitDestination,
+  validateBridgeAmount,
+} from 'lib/marco-bridge/validation'
 
 declare global {
   interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
-    }
-    solana?: {
+    solana?: SolanaInjectedWallet & {
       connect: () => Promise<{ publicKey?: { toString: () => string } }>
-      publicKey?: { toString: () => string }
     }
   }
+}
+
+type BridgeEthereumProvider = {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
 }
 
 const Page = styled.section<{ $embedded?: boolean }>`
@@ -484,9 +496,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   )
   const parsedAmount = parseBridgeAmount(amount, fromNetwork.tokenDecimals)
   const approvalRequired = Boolean(
-    from === 'bnb' &&
-      parsedAmount &&
-      (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
+    from === 'bnb' && parsedAmount && (allowanceLD == null || BigNumber.from(allowanceLD).lt(parsedAmount.amountLD)),
   )
   const sourceLocked = sourceSubmissionLocksControls(tracking)
   const completedDelivery = isCompletedDelivery(tracking)
@@ -520,6 +530,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       : route.kind === 'via-bnb'
       ? `${fromNetwork.shortLabel} → BNB → ${toNetwork.shortLabel}`
       : 'Select two different networks'
+
+  useEffect(() => {
+    const existing = typeof window !== 'undefined' ? readConnectedSolanaAddress(window.solana) : ''
+    if (existing) setSolanaWallet(existing)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -688,7 +703,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     }
     if (fromNetwork.chainId === 4663 && window.ethereum) {
       try {
-        await ensureRobinhoodWalletNetwork(window.ethereum)
+        await ensureRobinhoodWalletNetwork(window.ethereum as unknown as BridgeEthereumProvider)
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Add Robinhood Chain 4663 in the wallet.')
         return
@@ -698,9 +713,16 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       void switchNetworkAsync(fromNetwork.chainId)
       return
     }
-    if (!signer) {
+    if (fromNetwork.walletFamily !== 'solana' && !signer) {
       setError('Connect the source wallet to sign the unsigned bridge transactions.')
       return
+    }
+    if (fromNetwork.walletFamily === 'solana') {
+      const connected = readConnectedSolanaAddress(window.solana) || solanaWallet
+      if (!connected) {
+        setError('Connect the Solana wallet to sign the bridge send.')
+        return
+      }
     }
     setSubmitting(true)
     setSubmissionPhase(approvalRequired ? 'approving' : 'confirming-wallet')
@@ -709,6 +731,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const nextQuote = await marcoBridgeService.quote(request)
       setQuote(nextQuote)
       if (approvalRequired) {
+        if (!signer) throw new Error('Connect the source wallet to sign the unsigned bridge transactions.')
         await submitMarcoApprovalFromWallet({
           request,
           authority: routeAuthority,
@@ -728,9 +751,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const nextTracking = await submitMarcoBridgeFromWallet({
         request,
         authority: routeAuthority,
-        signer,
-        ethereum: window.ethereum,
+        signer: signer ?? undefined,
+        ethereum: window.ethereum as unknown as BridgeEthereumProvider,
         allowanceLD: allowanceLD ?? '0',
+        solanaWallet: fromNetwork.walletFamily === 'solana' ? window.solana : undefined,
       })
       setTracking(nextTracking)
       setReview(true)
@@ -849,9 +873,13 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               <span>Source wallet</span>
               <strong>{short(sourceWallet)}</strong>
               {fromNetwork.walletFamily === 'solana' ? (
-                <ConnectSolana type="button" onClick={connectSolana}>
-                  Connect
-                </ConnectSolana>
+                sourceWallet ? (
+                  <span data-testid="solana-wallet-connected">{solanaWalletConnectionLabel(sourceWallet)}</span>
+                ) : (
+                  <ConnectSolana type="button" onClick={connectSolana} data-testid="solana-wallet-connect">
+                    {solanaWalletConnectionLabel(sourceWallet)}
+                  </ConnectSolana>
+                )
               ) : null}
             </WalletLine>
             <Field style={{ marginTop: 12 }}>
@@ -939,7 +967,13 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
           </Card>
           <Card $embedded={embedded}>
             <CardHead>
-              <strong>{sourceLocked || showCompletedDelivery ? 'Delivery status' : review ? 'Review bridge' : 'Delivery status'}</strong>
+              <strong>
+                {sourceLocked || showCompletedDelivery
+                  ? 'Delivery status'
+                  : review
+                  ? 'Review bridge'
+                  : 'Delivery status'}
+              </strong>
               <span>
                 {showCompletedDelivery
                   ? BRIDGE_COPY.bridgeComplete
@@ -1008,7 +1042,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               <>
                 <Steps>
                   {MARCO_BRIDGE_PROGRESS.map((step, index) => (
-                    <li key={step.status} data-state={stepStates[index]} data-testid={`marco-bridge-step-${step.status}`}>
+                    <li
+                      key={step.status}
+                      data-state={stepStates[index]}
+                      data-testid={`marco-bridge-step-${step.status}`}
+                    >
                       <i>{index + 1}</i>
                       {step.label}
                     </li>
@@ -1065,7 +1103,10 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   {solanaPaused ? 'blocked by live store pause' : 'active · live store paused=false'}
                 </li>
                 <li>Solana store: {solanaPaused ? 'paused' : 'active'}</li>
-                <li>Activation blockers: {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}</li>
+                <li>
+                  Activation blockers:{' '}
+                  {(executionBlockers.length ? executionBlockers : wave1ActivationBlockers()).join(' · ') || 'None'}
+                </li>
               </ul>
             </Advanced>
             {!embedded ? (

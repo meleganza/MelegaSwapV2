@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { ethers } from 'ethers'
 import { readOnlyMarcoBridgeQuote, type MarcoBridgeQuoteReader } from 'lib/marco-bridge/quoteTransport'
 import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
+import { createOfficialSolanaOftProtocol } from 'lib/marco-bridge/solanaOftSdk'
+import { readOnlySolanaMarcoBridgeQuote } from 'lib/marco-bridge/solanaQuote'
 import { MarcoBridgeError, type MarcoBridgeNetworkId } from 'lib/marco-bridge/types'
 import { isValidMarcoDestination } from 'lib/marco-bridge/validation'
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
@@ -76,14 +78,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const authority = await fetchCanonicalRouteAuthority()
     if (from === 'solana') {
       const solana = authority.networks.find((network) => network.id === 'solana')
-      const route = authority.routes.find((item) => item.from === from && item.to === to)
-      if (solana?.paused || route?.paused) {
+      if (solana?.paused) {
         throw new MarcoBridgeError('SOLANA_PAUSED', 'Solana OFT store is paused.')
       }
-      throw new MarcoBridgeError(
-        'QUOTE_FAILED',
-        'Solana source quotes are not publicly activated. Use BNB Smart Chain as the source.',
+      if (to !== 'bnb') {
+        throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'Only the certified Solana → BNB route is publicly activated.')
+      }
+      const quote = await readOnlySolanaMarcoBridgeQuote(
+        { from: 'solana', to: 'bnb', amount, sourceWallet, destinationWallet },
+        authority,
+        createOfficialSolanaOftProtocol(),
       )
+      res.setHeader('Cache-Control', 'no-store')
+      return res.status(200).json(quote)
     }
     const quote = await readOnlyMarcoBridgeQuote(
       { from, to, amount, destinationWallet },
