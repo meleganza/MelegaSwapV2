@@ -28,6 +28,7 @@ import { AutoRow } from 'components/Layout/Row'
 import { CommonBasesType } from 'components/SearchModal/types'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
+import { shouldClearApprovalSubmitted } from '../resolveSwapActionCta'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { useAtomValue } from 'jotai'
 import { Field } from 'state/swap/actions'
@@ -165,17 +166,26 @@ export const SmartSwapForm: React.FC<{
 
   const amountToApprove = tradeInfo?.slippageAdjustedAmounts[Field.INPUT]
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallback(amountToApprove, tradeInfo?.routerAddress)
+  const [approval, approveCallback] = useApproveCallback(amountToApprove, tradeInfo?.routerAddress, {
+    unknownAllowanceTimeoutMs: 5_000,
+    pendingAllowancePollMs: 2_500,
+    pendingApprovalTimeoutMs: 30_000,
+  })
 
-  // check if user has gone through approval process, used to show two step buttons, reset on token change
+  // session flag only; CTA no longer stays in a two-button approve row after confirmation
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  // mark when a user has submitted an approval, reset onTokenSelection for input field
+  useEffect(() => {
+    setApprovalSubmitted(false)
+  }, [account, chainId])
+
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
+    } else if (shouldClearApprovalSubmitted(approval)) {
+      setApprovalSubmitted(false)
     }
-  }, [approval, approvalSubmitted])
+  }, [approval])
 
   const maxAmountInput: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
 
