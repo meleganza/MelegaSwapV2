@@ -4,7 +4,7 @@ import path from 'path'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { resolveSwapActionCta, shouldClearApprovalSubmitted } from '../resolveSwapActionCta'
 
-const WEB = path.resolve(__dirname, '../../..')
+const WEB = path.resolve(__dirname, '../../../..')
 
 function load(rel: string) {
   return readFileSync(path.join(WEB, rel), 'utf8')
