@@ -23,6 +23,31 @@ export enum ApprovalState {
   APPROVED,
 }
 
+type AllowanceComparable = {
+  lessThan: (other: CurrencyAmount<Currency>) => boolean
+}
+
+/** Pure approval-state reducer. Kept in-file so the hook stays the only runtime owner. */
+export function resolveApprovalState(input: {
+  amountToApprove?: CurrencyAmount<Currency>
+  spender?: string
+  currentAllowance?: AllowanceComparable | null
+  effectivePendingApproval: boolean
+  unknownAllowanceTimedOut: boolean
+}): ApprovalState {
+  if (!input.amountToApprove || !input.spender) return ApprovalState.UNKNOWN
+  if (input.amountToApprove.currency?.isNative) return ApprovalState.APPROVED
+  if (!input.currentAllowance) {
+    if (!input.unknownAllowanceTimedOut) return ApprovalState.UNKNOWN
+    return input.effectivePendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED
+  }
+  return input.currentAllowance.lessThan(input.amountToApprove)
+    ? input.effectivePendingApproval
+      ? ApprovalState.PENDING
+      : ApprovalState.NOT_APPROVED
+    : ApprovalState.APPROVED
+}
+
 export type ApproveCallbackOptions = {
   /**
    * Bounded escape hatch for safety-critical actions. If every allowance read
@@ -91,22 +116,17 @@ export function useApproveCallback(
   ])
 
   // check the current approval status
-  const approvalState: ApprovalState = useMemo(() => {
-    if (!amountToApprove || !spender) return ApprovalState.UNKNOWN
-    if (amountToApprove.currency?.isNative) return ApprovalState.APPROVED
-    // we might not have enough data to know whether or not we need to approve
-    if (!currentAllowance) {
-      if (!unknownAllowanceTimedOut) return ApprovalState.UNKNOWN
-      return effectivePendingApproval ? ApprovalState.PENDING : ApprovalState.NOT_APPROVED
-    }
-
-    // amountToApprove will be defined if currentAllowance is
-    return currentAllowance.lessThan(amountToApprove)
-      ? effectivePendingApproval
-        ? ApprovalState.PENDING
-        : ApprovalState.NOT_APPROVED
-      : ApprovalState.APPROVED
-  }, [amountToApprove, currentAllowance, effectivePendingApproval, spender, unknownAllowanceTimedOut])
+  const approvalState: ApprovalState = useMemo(
+    () =>
+      resolveApprovalState({
+        amountToApprove,
+        spender,
+        currentAllowance,
+        effectivePendingApproval,
+        unknownAllowanceTimedOut,
+      }),
+    [amountToApprove, currentAllowance, effectivePendingApproval, spender, unknownAllowanceTimedOut],
+  )
 
   const tokenContract = useTokenContract(token?.address)
   const addTransaction = useTransactionAdder()

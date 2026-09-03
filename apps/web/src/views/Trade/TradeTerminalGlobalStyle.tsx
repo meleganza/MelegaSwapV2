@@ -479,8 +479,8 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap [data-swap-approval-actions] {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;

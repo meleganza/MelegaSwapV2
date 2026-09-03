@@ -38,15 +38,19 @@ describe('Smart Swap wallet controls layout', () => {
     expect(center).toContain('gap: ${tradeLayout.verticalRhythm}')
   })
 
-  it('keeps approval and swap actions inside the cockpit', () => {
+  it('keeps a single full-width approval/swap CTA inside the cockpit', () => {
     const tradeStyle = readFileSync(path.join(WEB, 'views/Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
     const smartCommit = readFileSync(
       path.join(WEB, 'views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx'),
       'utf8',
     )
 
-    expect(smartCommit).toContain('<RowBetween data-swap-approval-actions>')
+    expect(smartCommit).toContain('data-swap-approval-actions')
+    expect(smartCommit).toContain('data-swap-action-cta')
+    expect(smartCommit).not.toContain('<RowBetween data-swap-approval-actions>')
+    expect(smartCommit).not.toContain('width="48%"')
     expect(tradeStyle).toContain('.trade-terminal-swap [data-swap-approval-actions]')
-    expect(tradeStyle).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
+    expect(tradeStyle).toContain('grid-template-columns: minmax(0, 1fr)')
+    expect(tradeStyle).not.toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
   })
 })

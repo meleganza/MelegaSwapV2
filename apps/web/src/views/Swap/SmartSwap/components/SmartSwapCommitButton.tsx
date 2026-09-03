@@ -6,8 +6,7 @@ import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { GreyCard } from 'components/Card'
 import { CommitButton } from 'components/CommitButton'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import Column from 'components/Layout/Column'
-import { AutoRow, RowBetween } from 'components/Layout/Row'
+import { AutoRow } from 'components/Layout/Row'
 import CircleLoader from 'components/Loader/CircleLoader'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
@@ -27,7 +26,7 @@ import { useSmartSwapExecution } from 'lib/execution-layer'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { warningSeverity } from 'utils/exchange'
-import ProgressSteps from '../../components/ProgressSteps'
+import { resolveSwapActionCta } from '../../resolveSwapActionCta'
 import { SwapCallbackError } from '../../components/styleds'
 import { computeTradePriceBreakdown } from '../utils/exchange'
 import ConfirmSwapModal from './ConfirmSwapModal'
@@ -70,7 +69,7 @@ export default function SwapCommitButton({
   wrapType,
   approval,
   approveCallback,
-  approvalSubmitted,
+  approvalSubmitted: _approvalSubmitted,
   currencies,
   isExpertMode,
   trade,
@@ -264,14 +263,13 @@ export default function SwapCommitButton({
     )
   }
 
-  // show approve flow when: no error on inputs, not approved or pending, or approved in current session
-  // never show if price impact is above threshold in non expert mode
-  const showApproveFlow =
-    !swapInputError &&
-    (approval === ApprovalState.NOT_APPROVED ||
-      approval === ApprovalState.PENDING ||
-      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
-    !(priceImpactSeverity > 3 && !isExpertMode)
+  const actionCta = resolveSwapActionCta({
+    approval,
+    swapInputError,
+    priceImpactSeverity,
+    isExpertMode,
+  })
+  const showApproveFlow = actionCta.showApproveFlow
 
   const isValid = !swapInputError
   const approved = approval === ApprovalState.APPROVED
@@ -279,42 +277,23 @@ export default function SwapCommitButton({
   if (showApproveFlow) {
     return (
       <>
-        <RowBetween data-swap-approval-actions>
+        <div data-swap-approval-actions data-swap-action-count={actionCta.buttonCount}>
           <CommitButton
-            variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
+            variant="primary"
             onClick={approveCallback}
-            disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
-            width="48%"
+            disabled={actionCta.enableDisabled}
+            width="100%"
+            data-swap-action-cta
           >
-            {approval === ApprovalState.PENDING ? (
+            {actionCta.kind === 'enabling' ? (
               <AutoRow gap="6px" justify="center">
                 {t('Enabling')} <CircleLoader stroke="white" />
               </AutoRow>
-            ) : approvalSubmitted && approved ? (
-              t('Enabled')
             ) : (
               t('Enable %asset%', { asset: currencies[Field.INPUT]?.symbol ?? '' })
             )}
           </CommitButton>
-          <CommitButton
-            variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
-            onClick={() => {
-              onSwapHandler()
-            }}
-            width="48%"
-            id="swap-button"
-            disabled={!isValid || !approved || (priceImpactSeverity > 3 && !isExpertMode)}
-          >
-            {priceImpactSeverity > 3 && !isExpertMode
-              ? t('Price Impact High')
-              : priceImpactSeverity > 2
-              ? t('Swap Anyway')
-              : t('Swap')}
-          </CommitButton>
-        </RowBetween>
-        <Column style={{ marginTop: '1rem' }}>
-          <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />
-        </Column>
+        </div>
         {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
       </>
     )
@@ -329,6 +308,7 @@ export default function SwapCommitButton({
         }}
         id="swap-button"
         width="100%"
+        data-swap-action-cta
         disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError || !approved}
       >
         {swapInputError ||
