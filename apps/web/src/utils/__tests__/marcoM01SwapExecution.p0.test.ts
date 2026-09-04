@@ -87,8 +87,8 @@ describe('P0 MARCO→M01 quote → minOut → execution', () => {
   })
 
   it('C: stale quote / reserve move that fails both estimates is fail-closed with Price moved copy', () => {
-    const staleMinOut = minOutSdk + 1n
-    const liveOut = amountOut - 10n
+    const staleMinOut = minOutSdk
+    const liveOut = minOutSdk - 1n
     expect(liveOut < staleMinOut).toBe(true)
     const estimated = [
       { error: 'DEXRouter: INSUFFICIENT_OUTPUT_AMOUNT' },
@@ -106,10 +106,15 @@ describe('P0 MARCO→M01 quote → minOut → execution', () => {
     const dismissed = nextSwapStateAfterErrorDismiss(PRICE_MOVED_USER_MESSAGE)
     expect(dismissed.swapErrorMessage).toBeUndefined()
     expect(dismissed.shouldRefreshQuote).toBe(true)
-    const freshOut = getAmountOut(SNAPSHOT.amountInWei, SNAPSHOT.reserveMarco - 1n, SNAPSHOT.reserveM01 + 1n)
+    const freshOut = getAmountOut(
+      SNAPSHOT.amountInWei,
+      SNAPSHOT.reserveMarco + SNAPSHOT.amountInWei * 100n,
+      SNAPSHOT.reserveM01 - SNAPSHOT.routerAmountsOut,
+    )
     const freshMin = sdkMinimumAmountOut(freshOut, SNAPSHOT.slippageBips)
     expect(freshMin).not.toBe(minOutSdk)
     expect(freshMin).toBeGreaterThan(0n)
+    expect(dismissed.autoRetry).toBe(false)
   })
 
   it('E: no automatic retry and no silent slippage increase', () => {
