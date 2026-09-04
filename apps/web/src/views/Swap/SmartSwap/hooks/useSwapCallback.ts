@@ -15,6 +15,7 @@ import { useGasPrice } from 'state/user/hooks'
 import { calculateGasMargin, isAddress } from 'utils'
 import { basisPointsToPercent } from 'utils/exchange'
 import { logSwap, logTx } from 'utils/log'
+import { lastSwapEstimateError, selectSuccessfulSwapEstimate } from 'utils/selectSuccessfulSwapEstimate'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
@@ -105,15 +106,11 @@ export function useSwapCallback(
           }),
         )
 
-        // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-        const successfulEstimation = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
-        )
+        const successfulEstimation = selectSuccessfulSwapEstimate(estimatedCalls) as SuccessfulCall | undefined
 
         if (!successfulEstimation) {
-          const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
-          if (errorCalls.length > 0) throw new Error(errorCalls[errorCalls.length - 1].error)
+          const lastError = lastSwapEstimateError(estimatedCalls as FailedCall[])
+          if (lastError) throw new Error(lastError)
           throw new Error(t('Unexpected error. Could not estimate gas for the swap.'))
         }
 

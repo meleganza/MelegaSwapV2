@@ -23,6 +23,8 @@ import {
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
 } from 'config/constants/exchange'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
+import { nextSwapStateAfterErrorDismiss, sanitizeSwapUserError } from 'utils/swapExecutionUserError'
+import useRefreshBlockNumber from '../hooks/useRefreshBlockNumber'
 
 import ConfirmSwapModal from './ConfirmSwapModal'
 import { SwapCallbackError } from './styleds'
@@ -78,6 +80,7 @@ export default function SwapCommitButton({
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
   const [singleHopOnly] = useUserSingleHopOnly()
+  const { refreshBlockNumber } = useRefreshBlockNumber()
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const executionInstruction = useMemo(
@@ -123,7 +126,7 @@ export default function SwapCommitButton({
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: sanitizeSwapUserError(error.message),
           txHash: undefined,
         })
       })
@@ -134,12 +137,21 @@ export default function SwapCommitButton({
   }, [attemptingTxn, swapErrorMessage, trade, txHash, setSwapState])
 
   const handleConfirmDismiss = useCallback(() => {
-    setSwapState({ tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
+    const dismissed = nextSwapStateAfterErrorDismiss(swapErrorMessage)
+    if (dismissed.shouldRefreshQuote) {
+      refreshBlockNumber()
+    }
+    setSwapState({
+      tradeToConfirm,
+      attemptingTxn,
+      swapErrorMessage: dismissed.swapErrorMessage,
+      txHash,
+    })
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.INPUT, '')
     }
-  }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash, setSwapState])
+  }, [attemptingTxn, onUserInput, refreshBlockNumber, swapErrorMessage, tradeToConfirm, txHash, setSwapState])
 
   // End Handlers
 
