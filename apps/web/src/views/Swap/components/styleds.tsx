@@ -1,4 +1,5 @@
 import { ErrorIcon, Flex, Text } from '@pancakeswap/uikit'
+import { sanitizeSwapUserError } from 'utils/swapExecutionUserError'
 import { AutoColumn } from 'components/Layout/Column'
 import styled, { css } from 'styled-components'
 import { melegaOperational as tokens } from 'ui/tokens'
@@ -101,7 +102,7 @@ export function SwapCallbackError({ error }: { error: string }) {
       <SwapCallbackErrorInnerAlertTriangle>
         <ErrorIcon width="24px" />
       </SwapCallbackErrorInnerAlertTriangle>
-      <p>{error}</p>
+      <p>{sanitizeSwapUserError(error)}</p>
     </SwapCallbackErrorInner>
   )
 }

@@ -4,6 +4,7 @@
  */
 
 import type { SmartSwapHandoffFailure } from './types'
+import { sanitizeSwapUserError } from 'utils/swapExecutionUserError'
 
 const FAILURE_MESSAGES: Record<SmartSwapHandoffFailure, string> = {
   WALLET_NOT_CONNECTED: 'Wallet connection required.',
@@ -30,6 +31,8 @@ export function userFacingHandoffReadyMessage(): string {
 /** Remap known technical gate strings for end users. */
 export function toUserFacingExecutionError(message: string | undefined | null): string {
   if (!message) return 'Execution preparation unavailable. Refresh quote.'
+  const sanitized = sanitizeSwapUserError(message)
+  if (sanitized !== message) return sanitized
   const lower = message.toLowerCase()
   if (lower.includes('certified handoff')) {
     return 'Execution preparation unavailable. Refresh quote.'
