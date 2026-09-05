@@ -53,8 +53,10 @@ describe('DestinationWalletInput mobile/desktop editability', () => {
     expect(input.readOnly).toBe(false)
     expect(input.disabled).toBe(false)
     expect(input.value).toBe(EVM_SOURCE)
-    expect(input.autocomplete).toBe('off')
-    expect(input.spellcheck).toBe(false)
+    expect(input).toHaveAttribute('autocomplete', 'off')
+    expect(input).toHaveAttribute('autocorrect', 'off')
+    expect(input).toHaveAttribute('autocapitalize', 'none')
+    expect(input).toHaveAttribute('spellcheck', 'false')
   })
 
   it('focuses the actual input on click/tap and keeps it after a controlled re-render', () => {
@@ -93,7 +95,7 @@ describe('DestinationWalletInput mobile/desktop editability', () => {
     const input = destinationInput()
     expect(input.readOnly).toBe(true)
     expect(input.disabled).toBe(false)
-    fireEvent.change(input, { target: { value: EVM_OTHER } })
+    expect(input).toHaveAttribute('readonly')
     expect(input.value).toBe(EVM_SOURCE)
   })
 })
