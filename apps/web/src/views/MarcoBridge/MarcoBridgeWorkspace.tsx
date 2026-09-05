@@ -47,11 +47,14 @@ import {
   wave1ActivationBlockers,
 } from 'lib/marco-bridge/wave1Registry'
 import {
+  destinationWalletInputReadOnly,
   isValidMarcoDestination,
   parseBridgeAmount,
   requiresExplicitDestination,
+  resolveDisplayedMarcoDestination,
   validateBridgeAmount,
 } from 'lib/marco-bridge/validation'
+import { DestinationWalletInput } from './DestinationWalletInput'
 
 declare global {
   interface Window {
@@ -538,7 +541,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const toNetwork = MARCO_WAVE1_NETWORKS[to]
   const sourceWallet = fromNetwork.walletFamily === 'evm' ? address ?? '' : solanaWallet
   const sameFamily = !requiresExplicitDestination(fromNetwork.walletFamily, toNetwork.walletFamily)
-  const resolvedDestination = destination || (sameFamily ? sourceWallet : '')
+  const resolvedDestination = resolveDisplayedMarcoDestination(destination, sameFamily, sourceWallet)
   const route = useMemo(() => planMarcoBridgeRoute(from, to), [from, to])
   const validDestination = isValidMarcoDestination(resolvedDestination, toNetwork.walletFamily)
   const validAmount = validateBridgeAmount(amount, fromNetwork.tokenDecimals)
@@ -952,13 +955,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
             </WalletLine>
             <Field style={{ marginTop: 12 }}>
               <span>Destination wallet</span>
-              <input
-                aria-label="Destination wallet"
+              <DestinationWalletInput
                 value={resolvedDestination}
-                readOnly={sourceLocked || (sameFamily && Boolean(sourceWallet) && !destination)}
+                readOnly={destinationWalletInputReadOnly(sourceLocked)}
                 placeholder={toNetwork.walletFamily === 'evm' ? '0x…' : 'Solana address'}
-                onChange={(event) => {
-                  setDestination(event.target.value)
+                onChange={(next) => {
+                  setDestination(next)
                   resetQuote()
                 }}
               />

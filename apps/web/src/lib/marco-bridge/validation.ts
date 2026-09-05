@@ -82,6 +82,33 @@ export function requiresExplicitDestination(source: MarcoWalletFamily, destinati
   return source !== destination
 }
 
+/** Same-family routes may autofill the connected source wallet when the user has not typed a recipient. */
+export function resolveDisplayedMarcoDestination(
+  destination: string,
+  sameFamily: boolean,
+  sourceWallet: string,
+): string {
+  return destination || (sameFamily ? sourceWallet : '')
+}
+
+/**
+ * Destination is editable whenever the source transfer is not in-flight.
+ * Same-family autofill must not lock the field — that blocked the mobile keyboard.
+ */
+export function destinationWalletInputReadOnly(sourceLocked: boolean): boolean {
+  return sourceLocked
+}
+
+/** Text-capable, address-safe attributes. Do not use numeric inputMode. */
+export const DESTINATION_WALLET_TEXT_INPUT_ATTRS = {
+  type: 'text',
+  inputMode: 'text',
+  autoComplete: 'off',
+  autoCorrect: 'off',
+  autoCapitalize: 'none',
+  spellCheck: false,
+} as const
+
 export function validateBridgeAmount(amount: string, tokenDecimals: 9 | 18 = 18): boolean {
   return Boolean(parseBridgeAmount(amount, tokenDecimals))
 }
