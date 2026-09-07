@@ -5,6 +5,7 @@ import { planMarcoBridgeRoute } from './routePolicy'
 import type { CanonicalMmnRouteState } from './routeAuthority'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote } from './types'
+import { resolveSolanaFirstReceive, type SolanaFirstReceivePlan } from './solanaFirstReceive'
 import { destinationToBytes32, formatBridgeAmount, isValidMarcoDestination, parseBridgeAmount } from './validation'
 
 export type MarcoBridgeSendParam = {
@@ -12,7 +13,7 @@ export type MarcoBridgeSendParam = {
   to: string
   amountLD: string
   minAmountLD: string
-  extraOptions: '0x'
+  extraOptions: string
   composeMsg: '0x'
   oftCmd: '0x'
 }
@@ -27,6 +28,8 @@ export type ReadOnlyQuoteInput = {
   to: MarcoBridgeNetworkId
   amount: string
   destinationWallet: string
+  firstReceive?: SolanaFirstReceivePlan
+  readDestinationAta?: (ata: string) => Promise<boolean>
 }
 
 export async function readOnlyMarcoBridgeQuote(
@@ -60,12 +63,21 @@ export async function readOnlyMarcoBridgeQuote(
   const canonicalSource = authority.networks.find((network) => network.id === input.from)
   if (!canonicalSource) throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Canonical source binding is missing.')
 
+  const firstReceive =
+    destination.id === 'solana'
+      ? input.firstReceive ??
+        (await resolveSolanaFirstReceive({
+          destinationWallet: input.destinationWallet,
+          readAta: input.readDestinationAta,
+        }))
+      : undefined
+
   const sendParam: MarcoBridgeSendParam = {
     dstEid: destination.layerZeroEid,
     to: destinationToBytes32(input.destinationWallet, destination.walletFamily),
     amountLD: amount.amountLD.toString(),
     minAmountLD: amount.amountLD.toString(),
-    extraOptions: '0x',
+    extraOptions: firstReceive?.extraOptions ?? '0x',
     composeMsg: '0x',
     oftCmd: '0x',
   }
@@ -89,5 +101,9 @@ export async function readOnlyMarcoBridgeQuote(
     routePaused: canonicalRoute.paused,
     publiclyActive: isRouteExecutable(input.from, input.to, authority),
     executionEnabled: isRouteExecutable(input.from, input.to, authority),
+    extraOptions: sendParam.extraOptions,
+    destinationAta: firstReceive?.ata,
+    destinationAtaExists: firstReceive?.ataExists,
+    ataRentLamports: firstReceive ? String(firstReceive.ataRentLamports) : undefined,
   }
 }

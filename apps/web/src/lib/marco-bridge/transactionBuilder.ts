@@ -83,6 +83,7 @@ export function buildMarcoSendParam(
   to: MarcoBridgeNetworkId,
   amount: string,
   destinationWallet: string,
+  extraOptions = '0x',
 ): { sendParam: MarcoBridgeSendParam; amountLD: BigNumber } {
   const source = MARCO_WAVE1_NETWORKS[from]
   const destination = MARCO_WAVE1_NETWORKS[to]
@@ -97,7 +98,7 @@ export function buildMarcoSendParam(
       to: destinationToBytes32(destinationWallet, destination.walletFamily),
       amountLD: parsed.amountLD.toString(),
       minAmountLD: parsed.amountLD.toString(),
-      extraOptions: '0x',
+      extraOptions,
       composeMsg: '0x',
       oftCmd: '0x',
     },
@@ -121,6 +122,7 @@ export function buildMarcoBridgeTransactions(
     request.to,
     request.amount,
     request.destinationWallet,
+    request.to === 'solana' ? quote.extraOptions ?? '0x' : '0x',
   )
   if (sendParam.dstEid !== MARCO_WAVE1_NETWORKS[request.to].layerZeroEid) {
     throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Destination EID mismatch.')

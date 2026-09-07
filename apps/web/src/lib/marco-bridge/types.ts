@@ -61,6 +61,10 @@ export type MarcoBridgeQuote = {
   routePaused: boolean
   publiclyActive: boolean
   executionEnabled: boolean
+  extraOptions?: string
+  destinationAta?: string
+  destinationAtaExists?: boolean
+  ataRentLamports?: string
   binding?: MarcoBridgeQuoteBinding
 }
 
