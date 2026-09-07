@@ -53,7 +53,13 @@ describe('read-only LayerZero quote transport', () => {
     const quoteSend = vi.fn().mockResolvedValue({ nativeFee: BigNumber.from('72607980676756') })
     const quoteOft = vi.fn().mockResolvedValue({ amountReceivedLD: BigNumber.from('1000000000000') })
     const quote = await readOnlyMarcoBridgeQuote(
-      { from: 'bnb', to, amount: '0.000001', destinationWallet: destination },
+      {
+        from: 'bnb',
+        to,
+        amount: '0.000001',
+        destinationWallet: destination,
+        readDestinationAta: async () => true,
+      },
       authority,
       { quoteSend, quoteOft },
       '2026-08-26T00:00:00.000Z',
