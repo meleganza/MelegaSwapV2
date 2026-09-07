@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MARCO 20M recovery — create dest ATA only</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0f0f0f;
+        color: #f5f5f5;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      section {
+        background: linear-gradient(145deg, #1a1a00 0%, #0d0d00 100%);
+        border: 3px solid #f4c430;
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 0 40px rgba(244, 196, 48, 0.25);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        color: #f4c430;
+      }
+      p,
+      dt,
+      dd,
+      ol {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      dl {
+        margin: 16px 0 0;
+      }
+      dt {
+        color: rgba(255, 255, 255, 0.55);
+        margin-top: 10px;
+      }
+      dd {
+        margin: 2px 0 0;
+        word-break: break-all;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+      .note,
+      .next {
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px solid rgba(244, 196, 48, 0.35);
+        border-radius: 8px;
+        color: #f4c430;
+      }
+      .next {
+        display: none;
+        color: #7dffa3;
+        border-color: rgba(125, 255, 163, 0.4);
+      }
+      .next a {
+        color: #7dffa3;
+      }
+      .status {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #111;
+        border: 1px solid #555;
+        min-height: 3em;
+        white-space: pre-wrap;
+      }
+      .pass {
+        color: #7dffa3;
+      }
+      .fail {
+        color: #ff8a8a;
+      }
+      button {
+        margin-top: 12px;
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+      button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      #connect {
+        background: #222;
+        color: #f5f5f5;
+        border: 1px solid #f4c430;
+      }
+      #create {
+        background: #f4c430;
+        color: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Create missing MARCO ATA — then Execute the same LZ message</h1>
+        <p>
+          This page never holds a key. Connect Phantom or Solflare as fee payer. Recipient
+          <code>bBpa…</code> does not sign. This helper cannot send a bridge transfer, cannot change
+          peers/ULN/DVN/mint/store, and will not resend the 20M.
+        </p>
+        <dl>
+          <dt>Source tx / GUID</dt>
+          <dd id="source-tx">0xc7fe6e70ebe2554ec67c9145d73d5281e23c27f2ed03953c0c85d09db251b842</dd>
+          <dd>0x74157354ec7a936fadbb5fe2fd600ed79d32cd336d1a3a47c575ac8ff508625d</dd>
+          <dt>Recipient owner</dt>
+          <dd>bBpaFvmGvGmYGwuvXRb6ZXNHYzra4ed6tt7qRp3WK7Y</dd>
+          <dt>Canonical mint</dt>
+          <dd>6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF</dd>
+          <dt>Expected ATA</dt>
+          <dd>65VwbdJcJw7Ln4xEFDtmB1K7YfutmMf7iFcPcP6JDTV5</dd>
+          <dt>Preferred fee payer</dt>
+          <dd>2LxBuA9o3AwNyFnXsqbZnKFzyuw9WarYydknQXQieRzb (Treasury — optional)</dd>
+          <dt>Derived ATA</dt>
+          <dd id="derived-ata">loading…</dd>
+          <dt>ATA on-chain</dt>
+          <dd id="ata-state">loading…</dd>
+        </dl>
+        <p class="note">
+          Fail-closed if derived ATA ≠ expected ATA, or mint/owner mismatch. Standard ATA create uses
+          a third-party payer. Do not click Skip / Nilify / Burn on LayerZero Scan.
+        </p>
+        <div id="status" class="status">Loading Solana web3 and checking the ATA…</div>
+        <button id="connect" type="button">CONNECT SOLANA FEE PAYER</button>
+        <button id="create" type="button" hidden disabled>SIMULATE &amp; CREATE ATA ONLY</button>
+        <div id="next" class="next">
+          <strong>ATA exists. Do not resend BNB.</strong>
+          <ol>
+            <li>
+              Open
+              <a
+                id="scan-link"
+                href="https://layerzeroscan.com/tx/0xc7fe6e70ebe2554ec67c9145d73d5281e23c27f2ed03953c0c85d09db251b842"
+                target="_blank"
+                rel="noreferrer"
+                >LayerZero Scan for the SAME source tx</a
+              >.
+            </li>
+            <li>On that message (GUID 0x74157354…8625d, nonce 3) click <strong>Execute</strong> or <strong>Retry</strong>.</li>
+            <li>If Execute is hidden, wait for the executor to retry the same GUID. Do not send a new bridge.</li>
+            <li>Verify Scan status <strong>DELIVERED</strong>.</li>
+            <li>Verify ATA 65VwbdJc… balance is exactly <strong>20,000,000 MARCO</strong> (20,000,000,000,000,000 raw, 9 decimals).</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+    <script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
+    <script>
+      const OWNER = 'bBpaFvmGvGmYGwuvXRb6ZXNHYzra4ed6tt7qRp3WK7Y'
+      const MINT = '6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF'
+      const EXPECTED_ATA = '65VwbdJcJw7Ln4xEFDtmB1K7YfutmMf7iFcPcP6JDTV5'
+      const TREASURY = '2LxBuA9o3AwNyFnXsqbZnKFzyuw9WarYydknQXQieRzb'
+      const TOKEN = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      const ATA_PROGRAM = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+      const SYSTEM = '11111111111111111111111111111111'
+      const RPCS = ['https://api.mainnet-beta.solana.com', 'https://solana-rpc.publicnode.com']
+      const MIN_PAYER_LAMPORTS = 3_000_000
+
+      const statusEl = document.getElementById('status')
+      const derivedEl = document.getElementById('derived-ata')
+      const ataStateEl = document.getElementById('ata-state')
+      const connectBtn = document.getElementById('connect')
+      const createBtn = document.getElementById('create')
+      const nextEl = document.getElementById('next')
+      let connection = null
+      let connected = ''
+      let derivedAta = ''
+      let ataExists = false
+      let simPass = false
+
+      function setStatus(text, kind) {
+        statusEl.textContent = text
+        statusEl.className = 'status' + (kind ? ' ' + kind : '')
+      }
+
+      function provider() {
+        if (window.solana?.isPhantom || window.phantom?.solana) return window.solana || window.phantom.solana
+        if (window.solflare) return window.solflare
+        if (window.solana) return window.solana
+        return null
+      }
+
+      function deriveAta() {
+        if (!window.solanaWeb3) throw new Error('solana-web3 failed to load. Check access to unpkg.com.')
+        const owner = new solanaWeb3.PublicKey(OWNER)
+        const mint = new solanaWeb3.PublicKey(MINT)
+        const token = new solanaWeb3.PublicKey(TOKEN)
+        const ataProgram = new solanaWeb3.PublicKey(ATA_PROGRAM)
+        if (owner.toBase58() !== OWNER) throw new Error('FAIL CLOSED — owner mismatch.')
+        if (mint.toBase58() !== MINT) throw new Error('FAIL CLOSED — mint mismatch.')
+        const [ata] = solanaWeb3.PublicKey.findProgramAddressSync(
+          [owner.toBuffer(), token.toBuffer(), mint.toBuffer()],
+          ataProgram,
+        )
+        if (ata.toBase58() !== EXPECTED_ATA) {
+          throw new Error('FAIL CLOSED — derived ATA ' + ata.toBase58() + ' != expected ' + EXPECTED_ATA + '.')
+        }
+        derivedAta = ata.toBase58()
+        derivedEl.textContent = derivedAta
+        return ata
+      }
+
+      function buildCreateIx(payer) {
+        const ata = deriveAta()
+        return new solanaWeb3.TransactionInstruction({
+          programId: new solanaWeb3.PublicKey(ATA_PROGRAM),
+          keys: [
+            { pubkey: new solanaWeb3.PublicKey(payer), isSigner: true, isWritable: true },
+            { pubkey: ata, isSigner: false, isWritable: true },
+            { pubkey: new solanaWeb3.PublicKey(OWNER), isSigner: false, isWritable: false },
+            { pubkey: new solanaWeb3.PublicKey(MINT), isSigner: false, isWritable: false },
+            { pubkey: new solanaWeb3.PublicKey(SYSTEM), isSigner: false, isWritable: false },
+            { pubkey: new solanaWeb3.PublicKey(TOKEN), isSigner: false, isWritable: false },
+          ],
+          data: new Uint8Array([1]),
+        })
+      }
+
+      function buildTx(payer, recentBlockhash) {
+        if (payer !== connected) throw new Error('FAIL CLOSED — fee payer is not the connected wallet.')
+        const tx = new solanaWeb3.Transaction({
+          feePayer: new solanaWeb3.PublicKey(payer),
+          recentBlockhash,
+        })
+        tx.add(buildCreateIx(payer))
+        if (tx.instructions.length !== 1) throw new Error('FAIL CLOSED — only CreateIdempotent is allowed.')
+        if (tx.instructions[0].programId.toBase58() !== ATA_PROGRAM) throw new Error('FAIL CLOSED — not the ATA program.')
+        if (tx.instructions[0].data.length !== 1 || tx.instructions[0].data[0] !== 1) {
+          throw new Error('FAIL CLOSED — instruction is not CreateIdempotent.')
+        }
+        const keys = tx.instructions[0].keys
+        if (keys[1].pubkey.toBase58() !== EXPECTED_ATA) throw new Error('FAIL CLOSED — ATA account mismatch.')
+        if (keys[2].pubkey.toBase58() !== OWNER) throw new Error('FAIL CLOSED — owner account mismatch.')
+        if (keys[3].pubkey.toBase58() !== MINT) throw new Error('FAIL CLOSED — mint account mismatch.')
+        return tx
+      }
+
+      async function connectRpc() {
+        let lastError
+        for (const url of RPCS) {
+          try {
+            const next = new solanaWeb3.Connection(url, 'confirmed')
+            await next.getLatestBlockhash('confirmed')
+            connection = next
+            return next
+          } catch (error) {
+            lastError = error
+          }
+        }
+        throw lastError || new Error('Solana mainnet RPC is unavailable.')
+      }
+
+      async function refreshAtaState() {
+        const rpc = connection || (await connectRpc())
+        const mintInfo = await rpc.getAccountInfo(new solanaWeb3.PublicKey(MINT))
+        if (!mintInfo) throw new Error('FAIL CLOSED — canonical mint account is missing.')
+        if (mintInfo.owner.toBase58() !== TOKEN) throw new Error('FAIL CLOSED — mint owner is not Tokenkeg.')
+        deriveAta()
+        const ataInfo = await rpc.getAccountInfo(new solanaWeb3.PublicKey(EXPECTED_ATA))
+        ataExists = Boolean(ataInfo)
+        ataStateEl.textContent = ataExists ? 'EXISTS — skip create, Execute the same LZ message' : 'MISSING — create this ATA'
+        nextEl.style.display = ataExists ? 'block' : 'none'
+        return ataExists
+      }
+
+      async function simulateCreate() {
+        if (!connected) throw new Error('Connect a Solana fee payer first.')
+        if (ataExists) throw new Error('ATA already exists. Do not create again. Execute the same LZ message.')
+        const rpc = connection || (await connectRpc())
+        const balance = await rpc.getBalance(new solanaWeb3.PublicKey(connected))
+        if (balance < MIN_PAYER_LAMPORTS) {
+          throw new Error('FAIL CLOSED — fee payer needs at least 0.003 SOL for rent + fee. Balance: ' + balance + ' lamports.')
+        }
+        const { blockhash } = await rpc.getLatestBlockhash('confirmed')
+        const tx = buildTx(connected, blockhash)
+        const sim = await rpc.simulateTransaction(tx)
+        const ok = sim.value.err == null
+        return {
+          ok,
+          tx,
+          message: ok
+            ? 'CreateIdempotent simulated. Recipient is not a signer. No bridge instruction is present.'
+            : JSON.stringify(sim.value.err),
+        }
+      }
+
+      connectBtn.addEventListener('click', async () => {
+        try {
+          const wallet = provider()
+          if (!wallet) throw new Error('Phantom or Solflare was not detected in this browser.')
+          const result = await wallet.connect()
+          connected = result?.publicKey?.toString?.() || wallet.publicKey?.toString?.() || ''
+          if (!connected) throw new Error('Wallet did not return a public key.')
+          const exists = await refreshAtaState()
+          if (exists) {
+            simPass = false
+            createBtn.hidden = true
+            setStatus(
+              'ATA already exists. Do not resend. Open LayerZero Scan and click Execute/Retry on the SAME source tx.',
+              'pass',
+            )
+            return
+          }
+          const note =
+            connected === TREASURY
+              ? 'Preferred Treasury fee payer connected. '
+              : 'Fee payer is not Treasury 2LxBu… — allowed if it can pay rent. '
+          const resultSim = await simulateCreate()
+          simPass = resultSim.ok
+          setStatus((simPass ? 'PASS — ' : 'FAIL — ') + note + resultSim.message, simPass ? 'pass' : 'fail')
+          createBtn.hidden = !simPass
+          createBtn.disabled = !simPass
+        } catch (error) {
+          simPass = false
+          createBtn.hidden = true
+          createBtn.disabled = true
+          setStatus(error instanceof Error ? error.message : 'Wallet connect failed.', 'fail')
+        }
+      })
+
+      createBtn.addEventListener('click', async () => {
+        try {
+          if (!simPass) throw new Error('FAIL CLOSED — simulate first.')
+          createBtn.disabled = true
+          const exact = await simulateCreate()
+          if (!exact.ok) throw new Error('FAIL — simulation failed. ' + exact.message)
+          const wallet = provider()
+          const sent = await wallet.signAndSendTransaction(exact.tx)
+          const signature = sent?.signature || sent
+          setStatus('SIGNED ATA CREATE ONLY — Solana signature ' + signature + '\nConfirming ATA…', 'pass')
+          const rpc = connection || (await connectRpc())
+          await rpc.confirmTransaction(String(signature), 'confirmed')
+          const exists = await refreshAtaState()
+          if (!exists) throw new Error('ATA create sent but account is still missing. Do not resend the bridge.')
+          createBtn.hidden = true
+          setStatus(
+            'ATA created. Do not resend BNB. Click Execute/Retry on the SAME LayerZero Scan transaction.',
+            'pass',
+          )
+        } catch (error) {
+          createBtn.disabled = false
+          setStatus(error instanceof Error ? error.message : 'Create failed.', 'fail')
+        }
+      })
+
+      refreshAtaState()
+        .then((exists) => {
+          setStatus(
+            exists
+              ? 'ATA already exists. Connect is optional. Open LayerZero Scan and Execute the SAME message.'
+              : 'ATA is missing. Connect a fee payer (prefer Treasury 2LxBu…) to simulate CreateIdempotent.',
+            exists ? 'pass' : '',
+          )
+        })
+        .catch((error) => setStatus(error instanceof Error ? error.message : 'Preview failed.', 'fail'))
+    </script>
+  </body>
+</html>

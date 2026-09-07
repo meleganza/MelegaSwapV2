@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { Keypair } from '@solana/web3.js'
 import { BigNumber } from '@ethersproject/bignumber'
 import { describe, expect, it } from 'vitest'
@@ -156,5 +158,20 @@ describe('BNB→Solana first-receive ATA', () => {
     expect(recovery.broadcast).toBe(false)
     expect(recovery.doNot).toEqual(['resend', 'skip', 'nilify', 'burn'])
     expect(recovery.afterAtaExists).toMatch(/SAME LayerZero message/)
+  })
+
+  it('pins the Mac operator helper to the same 20M ATA identity', () => {
+    const html = readFileSync(
+      resolve(__dirname, '../../../../scripts/recover-20m-ata-operator/index.html'),
+      'utf8',
+    )
+    expect(html).toContain(EXISTING_20M_RECOVERY.sourceTx)
+    expect(html).toContain(EXISTING_20M_RECOVERY.guid)
+    expect(html).toContain(EXISTING_20M_RECOVERY.destinationWallet)
+    expect(html).toContain(EXISTING_20M_RECOVERY.mint)
+    expect(html).toContain('65VwbdJcJw7Ln4xEFDtmB1K7YfutmMf7iFcPcP6JDTV5')
+    expect(html).toContain('CreateIdempotent')
+    expect(html).toContain('Do not resend')
+    expect(html).not.toMatch(/oft_send|quoteSend|setPeer|set_oft_config/)
   })
 })
