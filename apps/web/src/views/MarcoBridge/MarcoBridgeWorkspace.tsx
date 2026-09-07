@@ -991,7 +991,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 <span>Fees</span>
                 <strong>
                   {quote?.live
-                    ? `${quote.nativeFee} ${quote.nativeFeeSymbol}`
+                    ? `${quote.nativeFee} ${quote.nativeFeeSymbol}${
+                        quote.destinationAtaExists === false ? ' · first-receive ATA rent included' : ''
+                      }`
                     : quoteLoading
                     ? 'FETCHING LIVE QUOTE'
                     : '—'}
@@ -1082,6 +1084,12 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                   <span>LayerZero fee</span>
                   <strong>{quote?.live ? `${quote.nativeFee} ${quote.nativeFeeSymbol}` : '—'}</strong>
                 </ReviewRow>
+                {quote?.live && quote.destinationAtaExists === false ? (
+                  <ReviewRow>
+                    <span>First-receive ATA rent</span>
+                    <strong>0.00203928 SOL (included in LayerZero fee)</strong>
+                  </ReviewRow>
+                ) : null}
                 <ReviewRow>
                   <span>Quote state</span>
                   <strong>{quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : '—'}</strong>
