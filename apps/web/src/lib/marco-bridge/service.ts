@@ -1,3 +1,4 @@
+import { marcoBridgeApiPath } from './marcoBridgeApiPath'
 import { planMarcoBridgeRoute } from './routePolicy'
 import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote, type MarcoBridgeTracking } from './types'
 import { MARCO_WAVE1_NETWORKS } from './wave1Registry'
@@ -50,7 +51,7 @@ export async function requestMarcoBridgeQuote(
   fetcher: QuoteFetch = fetch as QuoteFetch,
 ): Promise<MarcoBridgeQuote> {
   assertQuoteReady(request)
-  const response = await fetcher('/api/marco-bridge/quote', {
+  const response = await fetcher(marcoBridgeApiPath('/api/marco-bridge/quote'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(request),
@@ -73,7 +74,7 @@ export async function prepareSolanaMarcoBridge(
   if (request.from !== 'solana' || request.to !== 'bnb') {
     throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'Only Solana → BNB uses prepared wallet transactions.')
   }
-  const response = await fetcher('/api/marco-bridge/build', {
+  const response = await fetcher(marcoBridgeApiPath('/api/marco-bridge/build'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ ...request, prepare: true }),

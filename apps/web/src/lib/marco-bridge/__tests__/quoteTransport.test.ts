@@ -96,6 +96,7 @@ describe('read-only LayerZero quote transport', () => {
         fetcher,
       ),
     ).resolves.toEqual(response)
+    expect(fetcher).toHaveBeenCalledWith('/api/marco-bridge/quote/', expect.objectContaining({ method: 'POST' }))
 
     const unavailable = vi.fn().mockResolvedValue({
       ok: true,
@@ -145,7 +146,7 @@ describe('read-only LayerZero quote transport', () => {
       ),
     ).resolves.toEqual({ quote, serializedTransaction: 'prepared-base64' })
     expect(fetcher).toHaveBeenCalledWith(
-      '/api/marco-bridge/build',
+      '/api/marco-bridge/build/',
       expect.objectContaining({ body: expect.stringContaining('"prepare":true') }),
     )
   })
