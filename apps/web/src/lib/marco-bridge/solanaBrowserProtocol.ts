@@ -1,3 +1,4 @@
+import { marcoBridgeApiPath } from './marcoBridgeApiPath'
 import type { MarcoBridgeQuoteRequest } from './service'
 import {
   LAYERZERO_SOLANA_V2_MAINNET_ALT,
@@ -18,7 +19,7 @@ async function defaultBuildFetcher(
   request: MarcoBridgeQuoteRequest,
   quote: MarcoBridgeQuote,
 ): Promise<{ serializedTransaction?: string; tokenAccount?: string }> {
-  const response = await fetch('/api/marco-bridge/build', {
+  const response = await fetch(marcoBridgeApiPath('/api/marco-bridge/build'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ ...request, quote }),

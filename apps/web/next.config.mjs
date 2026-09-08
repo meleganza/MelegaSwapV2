@@ -138,17 +138,11 @@ const config = {
   },
   async redirects() {
     return [
-      // Preserve Next 13's slash canonicalization except numeric-only CMC URLs.
-      {
-        source: '/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/',
-        destination: '/:file',
-        permanent: true,
-      },
-      {
-        source: '/:notfile((?!v1/supply/(?:total|circulating)$|\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+)',
-        destination: '/:notfile/',
-        permanent: true,
-      },
+      // Do not re-add a catch-all trailing-slash redirect. Combined with
+      // `trailingSlash: true` it 308-loops `/api/*` and `/bridge/` on Vercel.
+      // Firefox then shows `NetworkError when attempting to fetch resource`
+      // on GET LIVE QUOTE. CMC numeric URLs stay slash-free via skipTrailingSlashRedirect
+      // + the /v1/supply rewrites above.
       // Performance cleanup: retire obsolete consumer surfaces instead of
       // mounting the legacy React Router compatibility runtime in every app.
       {

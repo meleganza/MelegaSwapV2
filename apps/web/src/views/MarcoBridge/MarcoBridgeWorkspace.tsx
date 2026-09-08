@@ -29,6 +29,7 @@ import {
 } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
+import { marcoBridgeApiPath } from 'lib/marco-bridge/marcoBridgeApiPath'
 import { marcoBridgeService, prepareSolanaMarcoBridge } from 'lib/marco-bridge/service'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
 import type { MarcoBridgeNetworkId, MarcoBridgeQuote, MarcoBridgeTracking } from 'lib/marco-bridge/types'
@@ -594,7 +595,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   useEffect(() => {
     let cancelled = false
-    void fetch('/api/marco-bridge/route-state', { cache: 'no-store' })
+    void fetch(marcoBridgeApiPath('/api/marco-bridge/route-state'), { cache: 'no-store' })
       .then(async (response) => {
         const payload = (await response.json()) as CanonicalMmnRouteState & { message?: string }
         if (!response.ok) throw new Error(payload.message || 'Canonical route authority is unavailable.')
@@ -706,7 +707,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   useEffect(() => {
     if (!tracking.sourceTx || tracking.status === 'delivered' || tracking.status === 'source-failed') return
     const timer = window.setInterval(() => {
-      void fetch(`/api/marco-bridge/track?sourceTx=${tracking.sourceTx}`, { cache: 'no-store' })
+      void fetch(marcoBridgeApiPath(`/api/marco-bridge/track?sourceTx=${tracking.sourceTx}`), { cache: 'no-store' })
         .then(async (response) => {
           if (response.ok) setTracking((await response.json()) as MarcoBridgeTracking)
         })
@@ -827,7 +828,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       setTracking(nextTracking)
       setReview(true)
       if (nextTracking.sourceTx) {
-        const tracked = await fetch(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`, { cache: 'no-store' })
+        const tracked = await fetch(marcoBridgeApiPath(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`), { cache: 'no-store' })
         if (tracked.ok) setTracking((await tracked.json()) as MarcoBridgeTracking)
       }
     } catch (cause) {
