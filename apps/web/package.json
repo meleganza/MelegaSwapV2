@@ -14,6 +14,7 @@
     "build": "next build",
     "start": "next start",
     "recover-20m-ata-operator": "node scripts/recover-20m-ata-operator/server.mjs",
+    "recover-20m-lzreceive-operator": "node scripts/recover-20m-lzreceive-operator/server.mjs",
     "performance:baseline": "node scripts/lightspeed-baseline.mjs",
     "performance:check": "node scripts/lightspeed-baseline.mjs --check",
     "test": "LC_ALL=\"en_US.UTF-8\" vitest --run",

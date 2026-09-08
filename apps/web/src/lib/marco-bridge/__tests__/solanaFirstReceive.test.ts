@@ -174,4 +174,18 @@ describe('BNB→Solana first-receive ATA', () => {
     expect(html).toContain('Do not resend')
     expect(html).not.toMatch(/oft_send|quoteSend|setPeer|set_oft_config/)
   })
+
+  it('pins the lzReceive operator helper to this one GUID', () => {
+    const dir = resolve(__dirname, '../../../../scripts/recover-20m-lzreceive-operator')
+    const html = readFileSync(resolve(dir, 'index.html'), 'utf8')
+    const server = readFileSync(resolve(dir, 'server.mjs'), 'utf8')
+    expect(html).toContain(EXISTING_20M_RECOVERY.guid)
+    expect(server).toContain(EXISTING_20M_RECOVERY.guid)
+    expect(server).toContain("nonce: 3")
+    expect(server.match(/0x74157354ec7a936fadbb5fe2fd600ed79d32cd336d1a3a47c575ac8ff508625d/g)?.length).toBeGreaterThan(1)
+    expect(server).not.toMatch(/skip\(|nilify|burn\(/i)
+    expect(html).toMatch(/cannot Skip\/Nilify\/Burn/)
+    expect(server).toContain('65VwbdJcJw7Ln4xEFDtmB1K7YfutmMf7iFcPcP6JDTV5')
+    expect(server).toContain('lzReceive')
+  })
 })

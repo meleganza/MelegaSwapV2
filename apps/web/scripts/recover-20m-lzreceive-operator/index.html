@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MARCO 20M recovery — execute SAME lzReceive</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0f0f0f;
+        color: #f5f5f5;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      section {
+        background: linear-gradient(145deg, #1a1a00 0%, #0d0d00 100%);
+        border: 3px solid #f4c430;
+        border-radius: 12px;
+        padding: 24px 20px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        color: #f4c430;
+      }
+      p,
+      dt,
+      dd {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      dl {
+        margin: 16px 0 0;
+      }
+      dt {
+        color: rgba(255, 255, 255, 0.55);
+        margin-top: 10px;
+      }
+      dd {
+        margin: 2px 0 0;
+        word-break: break-all;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+      .note {
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px solid rgba(244, 196, 48, 0.35);
+        border-radius: 8px;
+        color: #f4c430;
+      }
+      .status {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #111;
+        border: 1px solid #555;
+        min-height: 3em;
+        white-space: pre-wrap;
+      }
+      .pass {
+        color: #7dffa3;
+      }
+      .fail {
+        color: #ff8a8a;
+      }
+      button {
+        margin-top: 12px;
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      #connect {
+        background: #222;
+        color: #f5f5f5;
+        border: 1px solid #f4c430;
+      }
+      #execute {
+        background: #f4c430;
+        color: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>SIGN &amp; EXECUTE SAME MESSAGE</h1>
+        <p>
+          Local permissionless Solana <code>lzReceive</code> for one committed LayerZero message.
+          This page never holds a key. It cannot send BNB, cannot Skip/Nilify/Burn, and cannot change
+          peers/ULN/DVN/mint/store.
+        </p>
+        <dl>
+          <dt>GUID / nonce</dt>
+          <dd>0x74157354ec7a936fadbb5fe2fd600ed79d32cd336d1a3a47c575ac8ff508625d</dd>
+          <dd>3</dd>
+          <dt>Source tx</dt>
+          <dd>0xc7fe6e70ebe2554ec67c9145d73d5281e23c27f2ed03953c0c85d09db251b842</dd>
+          <dt>ATA (must already exist)</dt>
+          <dd>65VwbdJcJw7Ln4xEFDtmB1K7YfutmMf7iFcPcP6JDTV5</dd>
+          <dt>Preferred fee payer</dt>
+          <dd>2LxBuA9o3AwNyFnXsqbZnKFzyuw9WarYydknQXQieRzb</dd>
+          <dt>On-chain status</dt>
+          <dd id="chain-state">loading…</dd>
+        </dl>
+        <p class="note">
+          After success, ATA 65VwbdJc… must show exactly 20,000,000 MARCO and LayerZero Scan must show
+          DELIVERED for this GUID. Do not resend.
+        </p>
+        <div id="status" class="status">Checking ATA / store / peer…</div>
+        <button id="connect" type="button">CONNECT SOLANA FEE PAYER</button>
+        <button id="execute" type="button" hidden disabled>SIGN &amp; EXECUTE SAME MESSAGE</button>
+      </section>
+    </main>
+    <script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
+    <script>
+      const GUID = '0x74157354ec7a936fadbb5fe2fd600ed79d32cd336d1a3a47c575ac8ff508625d'
+      const TREASURY = '2LxBuA9o3AwNyFnXsqbZnKFzyuw9WarYydknQXQieRzb'
+      const statusEl = document.getElementById('status')
+      const chainEl = document.getElementById('chain-state')
+      const connectBtn = document.getElementById('connect')
+      const executeBtn = document.getElementById('execute')
+      let connected = ''
+      let prepared = null
+
+      function setStatus(text, kind) {
+        statusEl.textContent = text
+        statusEl.className = 'status' + (kind ? ' ' + kind : '')
+      }
+
+      function provider() {
+        if (window.solana?.isPhantom || window.phantom?.solana) return window.solana || window.phantom.solana
+        if (window.solflare) return window.solflare
+        if (window.solana) return window.solana
+        return null
+      }
+
+      function fromB64(value) {
+        const bin = atob(value)
+        const out = new Uint8Array(bin.length)
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+        return out
+      }
+
+      async function loadStatus() {
+        const response = await fetch('/status', { cache: 'no-store' })
+        const body = await response.json()
+        if (!response.ok) throw new Error(body.error || 'Status failed.')
+        if (body.guid !== GUID) throw new Error('FAIL CLOSED — helper GUID mismatch.')
+        chainEl.textContent =
+          'ATA ' + body.ata + ' balance ' + body.ataBalance + ' · mint supply ' + body.mintSupply
+        return body
+      }
+
+      async function prepareTx() {
+        const response = await fetch('/prepare', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ payer: connected }),
+        })
+        const body = await response.json()
+        if (body.guid && body.guid !== GUID) throw new Error('FAIL CLOSED — prepared GUID mismatch.')
+        if (!body.ok) {
+          throw new Error('FAIL — simulation reverted. ' + JSON.stringify(body.simulationError || body.error))
+        }
+        return body
+      }
+
+      connectBtn.addEventListener('click', async () => {
+        try {
+          const wallet = provider()
+          if (!wallet) throw new Error('Phantom or Solflare was not detected.')
+          const result = await wallet.connect()
+          connected = result?.publicKey?.toString?.() || wallet.publicKey?.toString?.() || ''
+          if (!connected) throw new Error('Wallet did not return a public key.')
+          await loadStatus()
+          prepared = await prepareTx()
+          const note = connected === TREASURY ? 'Treasury fee payer. ' : 'Non-Treasury fee payer allowed. '
+          setStatus('PASS — ' + note + 'lzReceive for this GUID simulated. Ready to sign.', 'pass')
+          executeBtn.hidden = false
+          executeBtn.disabled = false
+        } catch (error) {
+          prepared = null
+          executeBtn.hidden = true
+          executeBtn.disabled = true
+          setStatus(error instanceof Error ? error.message : 'Connect failed.', 'fail')
+        }
+      })
+
+      executeBtn.addEventListener('click', async () => {
+        try {
+          if (!prepared?.txBase64) throw new Error('FAIL CLOSED — simulate first.')
+          executeBtn.disabled = true
+          const exact = await prepareTx()
+          if (exact.guid !== GUID) throw new Error('FAIL CLOSED — GUID changed.')
+          const tx = solanaWeb3.Transaction.from(fromB64(exact.txBase64))
+          if (tx.instructions.length !== 3) throw new Error('FAIL CLOSED — unexpected instruction count.')
+          const wallet = provider()
+          const sent = await wallet.signAndSendTransaction(tx)
+          const signature = sent?.signature || sent
+          setStatus(
+            'SIGNED SAME MESSAGE — Solana signature ' +
+              signature +
+              '\nVerify ATA 65VwbdJc… = 20,000,000 MARCO and Scan DELIVERED for GUID 0x74157354…8625d.',
+            'pass',
+          )
+        } catch (error) {
+          executeBtn.disabled = false
+          setStatus(error instanceof Error ? error.message : 'Execute failed.', 'fail')
+        }
+      })
+
+      loadStatus()
+        .then(() => setStatus('ATA/store/peer look canonical. Connect a fee payer to simulate this GUID.'))
+        .catch((error) => setStatus(error instanceof Error ? error.message : 'Status failed.', 'fail'))
+    </script>
+  </body>
+</html>
