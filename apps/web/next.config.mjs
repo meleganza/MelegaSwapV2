@@ -43,6 +43,7 @@ const config = {
     styledComponents: true,
   },
   experimental: {
+    skipTrailingSlashRedirect: true,
     scrollRestoration: true,
     // The lockfile pins Next 13.0.7, where workspace transpilation still lives
     // under `experimental`. Keeping it here also makes Vercel transpile the
@@ -100,6 +101,8 @@ const config = {
   },
   async rewrites() {
     return [
+      { source: '/v1/supply/:metric(total|circulating)', destination: '/api/v1/supply/:metric' },
+      { source: '/v1/supply/:metric(total|circulating)/', destination: '/api/v1/supply/:metric' },
       // PP001: canonical public Project Page `/@{slug}` → internal page route
       {
         source: '/@:slug',
@@ -135,6 +138,17 @@ const config = {
   },
   async redirects() {
     return [
+      // Preserve Next 13's slash canonicalization except numeric-only CMC URLs.
+      {
+        source: '/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/',
+        destination: '/:file',
+        permanent: true,
+      },
+      {
+        source: '/:notfile((?!v1/supply/(?:total|circulating)$|\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+)',
+        destination: '/:notfile/',
+        permanent: true,
+      },
       // Performance cleanup: retire obsolete consumer surfaces instead of
       // mounting the legacy React Router compatibility runtime in every app.
       {
