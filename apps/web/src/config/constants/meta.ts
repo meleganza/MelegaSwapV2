@@ -22,7 +22,6 @@ const getPathList = (t: ContextApi['t']): PathList => {
       '/swap': { basePath: true, title: t('Swap'), image: `${ASSET_CDN}/web/og/swap.jpg` },
       '/trade': { basePath: true, title: t('Trade'), image: `${ASSET_CDN}/web/og/swap.jpg` },
       '/trending': { title: t('Trending') },
-      '/radar': { title: t('Radar') },
       '/portfolio': { title: t('Portfolio') },
       // '/limit-orders': { basePath: true, title: t('Limit Orders'), image: `${ASSET_CDN}/web/og/limit.jpg` },
       '/add': { basePath: true, title: t('Add Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },

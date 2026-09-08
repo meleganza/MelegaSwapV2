@@ -43,4 +43,14 @@ describe('global search', () => {
     const projectResults = searchGlobal(index, 'melega')
     expect(projectResults.some((r) => r.category === 'project')).toBe(true)
   })
+
+  it('contains no retired Radar public page or contract fallback', () => {
+    expect(index.some((entry) => entry.href === '/radar' || entry.href.startsWith('/radar?'))).toBe(false)
+
+    const radarResults = searchGlobal(index, 'DEX Intelligence')
+    expect(radarResults.some((r) => r.href === '/radar' || r.href.startsWith('/radar?'))).toBe(false)
+
+    const unknownContract = searchGlobal(index, '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    expect(unknownContract.some((r) => r.href.includes('/radar'))).toBe(false)
+  })
 })
