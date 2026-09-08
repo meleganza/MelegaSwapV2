@@ -1,5 +1,5 @@
 import type { CanonicalMmnRouteState } from './routeAuthority'
-import { MarcoBridgeError, type MarcoBridgeNetworkId } from './types'
+import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote } from './types'
 import { localRouteActivationEnabled } from './wave1Registry'
 
 export const MARCO_BRIDGE_ACTIVATION_ROUTES = [
@@ -52,6 +52,32 @@ export function isRouteExecutable(
   authority: CanonicalMmnRouteState,
 ): boolean {
   return routeExecutionBlockers(from, to, authority).length === 0
+}
+
+export type RouteExecutionDecision = {
+  executable: boolean
+  blockers: string[]
+}
+
+/**
+ * Single public-execution decision for quote, review, and submit.
+ * Live overlay / local activation wins over stale MMN publicly_active flags.
+ * Real pause, identity, and uncertified-route blockers stay fail-closed.
+ */
+export function resolveRouteExecution(
+  from: MarcoBridgeNetworkId,
+  to: MarcoBridgeNetworkId,
+  authority: CanonicalMmnRouteState | null,
+  quote?: Pick<MarcoBridgeQuote, 'live' | 'executionEnabled' | 'routePaused'> | null,
+): RouteExecutionDecision {
+  if (authority) {
+    const blockers = routeExecutionBlockers(from, to, authority)
+    return { executable: blockers.length === 0, blockers }
+  }
+  if (quote?.live && quote.executionEnabled && !quote.routePaused) {
+    return { executable: true, blockers: [] }
+  }
+  return { executable: false, blockers: ['Canonical route authority is unavailable.'] }
 }
 
 export function assertRouteExecutable(
