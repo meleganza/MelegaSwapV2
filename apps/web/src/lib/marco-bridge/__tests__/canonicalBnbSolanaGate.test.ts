@@ -304,6 +304,8 @@ describe('canonical BNB→Solana application gate', () => {
     expect(isRouteExecutable('robinhood', 'solana', live)).toBe(false)
     expect(isRouteExecutable('solana', 'robinhood', live)).toBe(false)
     expect(isRouteExecutable('bnb', 'robinhood', live)).toBe(true)
+    expect(live.routes.find((route) => route.from === 'bnb' && route.to === 'robinhood')?.publicly_active).toBe(true)
+    expect(live.routes.find((route) => route.from === 'bnb' && route.to === 'robinhood')?.execution_enabled).toBe(true)
   })
 
   it('8) operational copy no longer requires the completed unpause', () => {

@@ -20,7 +20,7 @@ import {
   type MarcoBridgeSubmissionPhase,
 } from 'lib/marco-bridge/bridgeActionState'
 import { CANONICAL_BNB_SOLANA_GATE } from 'lib/marco-bridge/canonicalBnbSolanaGate'
-import { isRouteExecutable, routeExecutionBlockers } from 'lib/marco-bridge/executableRoutes'
+import { resolveRouteExecution } from 'lib/marco-bridge/executableRoutes'
 import { MARCO_BRIDGE_PROGRESS, bridgeRecoveryMessage } from 'lib/marco-bridge/lifecycle'
 import {
   BNB_GAS_PRICE_FALLBACK_WEI,
@@ -545,8 +545,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const validAmount = validateBridgeAmount(amount, fromNetwork.tokenDecimals)
   const sourceNetworkCorrect = fromNetwork.walletFamily === 'solana' || chain?.id === fromNetwork.chainId
   const canReview = Boolean(sourceWallet && validDestination && validAmount && route.kind === 'direct')
-  const executable = Boolean(routeAuthority && isRouteExecutable(from, to, routeAuthority))
-  const executionBlockers = routeAuthority ? routeExecutionBlockers(from, to, routeAuthority) : []
+  const routeExecution = resolveRouteExecution(from, to, routeAuthority, quote)
+  const executable = routeExecution.executable
+  const executionBlockers = routeExecution.blockers
   const solanaPaused = Boolean(
     routeAuthority?.networks.find((network) => network.id === 'solana')?.paused ??
       MARCO_WAVE1_NETWORKS.solana.protectivePaused,
@@ -757,7 +758,29 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   const confirmSubmit = async () => {
     setError('')
-    if (!routeAuthority || !canReview || sourceLocked) return
+    if (!canReview || sourceLocked) return
+    let authority = routeAuthority
+    if (!authority) {
+      try {
+        const response = await fetch(marcoBridgeApiPath('/api/marco-bridge/route-state'), { cache: 'no-store' })
+        const payload = (await response.json()) as CanonicalMmnRouteState & { message?: string }
+        if (!response.ok) throw new Error(payload.message || 'Canonical route authority is unavailable.')
+        authority = payload
+        setRouteAuthority(payload)
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : 'Canonical route authority is unavailable.')
+        return
+      }
+    }
+    if (!authority) {
+      setError('Canonical route authority is unavailable.')
+      return
+    }
+    const submitExecution = resolveRouteExecution(from, to, authority, quote)
+    if (!submitExecution.executable) {
+      setError(submitExecution.blockers[0] || 'This route is not publicly executable.')
+      return
+    }
     const quoteReason = liveQuoteBlockReason(quote)
     if (quoteReason && submitCta.label !== BRIDGE_COPY.switchToBnb) {
       setError(quoteReason)
@@ -801,7 +824,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         if (!signer) throw new Error('Connect the source wallet to sign the unsigned bridge transactions.')
         await submitMarcoApprovalFromWallet({
           request,
-          authority: routeAuthority,
+          authority,
           signer,
           allowanceLD: allowanceLD ?? '0',
         })
@@ -817,7 +840,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       }
       const nextTracking = await submitMarcoBridgeFromWallet({
         request,
-        authority: routeAuthority,
+        authority,
         signer: signer ?? undefined,
         ethereum: window.ethereum as unknown as BridgeEthereumProvider,
         allowanceLD: allowanceLD ?? '0',
