@@ -2,9 +2,9 @@
   "schema": "melega.smartswap.ux-freeze.v1",
   "mission": "SMARTSWAP_UNIVERSAL_ENGINE_M1_FOUNDATION",
   "files": {
-    "src/views/Swap/SmartSwap/index.tsx": "347fc4a09638cf44d60bc147b977ff9dcf9d074f85b0ca833be803715a08ae99",
+    "src/views/Swap/SmartSwap/index.tsx": "99ac1d54b8609832b732fd5aacbfb6b09875927ce0693a93ca227fb8cdac3add",
     "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx": "f50b8371643276b46c265fbf87167fc50cf9fd34e05086cabbcd74855ce2b64c",
-    "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "3142af2ec927369f7cf3831d556998c4dfbd9b8c1c8c70d1737d63354bd5c9e4",
+    "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "2615820164ad62733f0e7fb93cb770ff89d8243eb1f2879133ee307a234d11e6",
     "src/views/Swap/SmartSwap/components/SwapModalFooter.tsx": "9a4c7fcd12928403d4c5b06b35cdae42661e44b0c4183115de4c71c80480f4f4",
     "src/views/Swap/SmartSwap/components/TransactionConfirmSwapContent.tsx": "ae3a55d0a80eaf85742d57a5d095bcdbfe5c17085f61249339a3af263cb7b7a3",
     "src/views/SmartSwapStudio/SmartSwapProductActions.tsx": "f3e97ced632372ae332cfb9b02ae2e47fdeb1a3b812e44abb40bb1ee99b75759",
@@ -20,7 +20,7 @@
     "src/views/SmartSwapStudio/modules/SmartSwapHistory/SmartSwapHistoryPanel.tsx": "6d12f597a14ec784d2cbf7e67536565aef087a761004bad8a189393f7a86c9ef",
     "src/views/SmartSwapStudio/modules/SmartSwapAIAssistance/SmartSwapAIAssistancePanel.tsx": "aed0783d42682abeea2ab15e8edf38766225daf7f452dbcd1e322206fb682ce4",
     "src/views/Trade/TradeCockpit.tsx": "fd0ba8c537658d7c6691d3b596a3ddb2eabb3d734aae18708e1ccd8bd00a02ef",
-    "src/views/Trade/TradeTerminalScreen.tsx": "674fa43ba39256d3cbb02a0a210727b9e0060e96b1eda65776d8ce22845e5c31",
+    "src/views/Trade/TradeTerminalScreen.tsx": "a7c7e29a97cf2cd90ecb4436e4ef7c16d94baac5a065af9231db251d65d909bb",
     "src/views/HomeTrade/HomeSwapPanel.tsx": "efbcc28672750761580be0bd78d52e873c38c6ccd493d593be20dc034500d45f",
     "src/views/HomeTrade/HomeSwapPanelShell.tsx": "dabf33aa19dcb554212cc828abd4aa7d32251abf60f412491cf56947266fd331",
     "src/components/DexPricing/DexSwapFeeDisclosure.tsx": "d062f566342ee13aa66603c0e165b8d3f3aca4a11bdd31d1b59b69496e25f467"
