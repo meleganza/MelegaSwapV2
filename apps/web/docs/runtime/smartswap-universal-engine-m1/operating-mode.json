@@ -1,0 +1,10 @@
+{
+  "schema": "melega.smartswap.universal-engine.m1.operating-mode",
+  "productionExecution": "LEGACY_PRODUCTION",
+  "universalEngine": "SHADOW",
+  "canary": false,
+  "productionCutoverAllowed": false,
+  "v2MaySignOrBroadcast": false,
+  "externalVenuesEnabled": false,
+  "solanaExecutionEnabled": false
+}

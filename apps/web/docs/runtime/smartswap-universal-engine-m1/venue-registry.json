@@ -1,0 +1,7 @@
+{
+  "schema": "melega.smartswap.universal-engine.m1.venue-registry",
+  "productionEnabled": [],
+  "shadowQuoteEnabled": ["melega-dex"],
+  "disabled": ["pancakeswap", "uniswap", "jupiter", "raydium", "orca", "robinhood"],
+  "robinhood": "FEASIBILITY_REQUIRED"
+}
