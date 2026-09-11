@@ -47,7 +47,7 @@ import {
 
 const WEB = path.resolve(__dirname, '../../../..')
 const FREEZE_MANIFEST = path.join(WEB, 'docs/runtime/smartswap-universal-engine-m1/ux-freeze.manifest.json')
-const NOW = '2026-09-11T15:00:00.000Z'
+const NOW = '2026-08-20T00:00:05.000Z'
 const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const USDC_ETH = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
