@@ -14,20 +14,35 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import TransactionConfirmSwapContent from './TransactionConfirmSwapContent'
 import ConfirmSwapModalContainer from './ConfirmSwapModalContainer'
 import { StableTrade } from '../StableSwap/hooks/useStableTradeExactIn'
+import {
+  isPriceMovedBeforeConfirmationMessage,
+  sanitizeSwapUserError,
+} from 'utils/swapExecutionUserError'
 
 const PancakeRouterSlippageErrorMsg =
   'This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.'
 
 const SwapTransactionErrorContent = ({ onDismiss, message, openSettingModal }) => {
-  const isSlippagedErrorMsg = message?.includes(PancakeRouterSlippageErrorMsg)
+  const userMessage = typeof message === 'string' ? sanitizeSwapUserError(message) : message
+  const isPriceMoved = typeof userMessage === 'string' && isPriceMovedBeforeConfirmationMessage(userMessage)
+  const isSlippagedErrorMsg = !isPriceMoved && (typeof userMessage === 'string' ? userMessage : message)?.includes?.(
+    PancakeRouterSlippageErrorMsg,
+  )
 
   const handleErrorDismiss = useCallback(() => {
     onDismiss?.()
+    if (isPriceMoved) {
+      return
+    }
     if (isSlippagedErrorMsg && openSettingModal) {
       openSettingModal()
     }
-  }, [isSlippagedErrorMsg, onDismiss, openSettingModal])
+  }, [isPriceMoved, isSlippagedErrorMsg, onDismiss, openSettingModal])
   const { t } = useTranslation()
+
+  if (isPriceMoved) {
+    return <TransactionErrorContent message={userMessage} onDismiss={handleErrorDismiss} />
+  }
 
   return isSlippagedErrorMsg ? (
     <TransactionErrorContent
@@ -51,7 +66,7 @@ const SwapTransactionErrorContent = ({ onDismiss, message, openSettingModal }) =
       }
     />
   ) : (
-    <TransactionErrorContent message={message} onDismiss={onDismiss} />
+    <TransactionErrorContent message={userMessage} onDismiss={onDismiss} />
   )
 }
 
@@ -102,7 +117,7 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
       swapErrorMessage ? (
         <SwapTransactionErrorContent
           openSettingModal={openSettingModal}
-          onDismiss={onDismiss}
+          onDismiss={handleDismiss}
           message={swapErrorMessage}
         />
       ) : (
@@ -126,7 +141,7 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
       onConfirm,
       recipient,
       swapErrorMessage,
-      onDismiss,
+      handleDismiss,
       openSettingModal,
       currencyBalances,
     ],

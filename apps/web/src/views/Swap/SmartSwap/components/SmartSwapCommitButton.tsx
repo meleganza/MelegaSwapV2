@@ -26,6 +26,8 @@ import { useSmartSwapExecution } from 'lib/execution-layer'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { warningSeverity } from 'utils/exchange'
+import { nextSwapStateAfterErrorDismiss, sanitizeSwapUserError } from 'utils/swapExecutionUserError'
+import useRefreshBlockNumber from '../../hooks/useRefreshBlockNumber'
 import { resolveSwapActionCta } from '../../resolveSwapActionCta'
 import { SwapCallbackError } from '../../components/styleds'
 import { computeTradePriceBreakdown } from '../utils/exchange'
@@ -81,6 +83,7 @@ export default function SwapCommitButton({
   onUserInput,
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
+  const { refreshBlockNumber } = useRefreshBlockNumber()
   const { chainId } = useActiveChainId()
   const { address: wagmiAddress } = useAccount()
   /** Single connected truth across web3-react prop + wagmi (header SSOT). */
@@ -144,7 +147,7 @@ export default function SwapCommitButton({
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: sanitizeSwapUserError(error.message),
           txHash: undefined,
         })
       })
@@ -155,12 +158,21 @@ export default function SwapCommitButton({
   }, [attemptingTxn, swapErrorMessage, trade, txHash, setSwapState])
 
   const handleConfirmDismiss = useCallback(() => {
-    setSwapState({ tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
+    const dismissed = nextSwapStateAfterErrorDismiss(swapErrorMessage)
+    if (dismissed.shouldRefreshQuote) {
+      refreshBlockNumber()
+    }
+    setSwapState({
+      tradeToConfirm,
+      attemptingTxn,
+      swapErrorMessage: dismissed.swapErrorMessage,
+      txHash,
+    })
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.INPUT, '')
     }
-  }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash, setSwapState])
+  }, [attemptingTxn, onUserInput, refreshBlockNumber, swapErrorMessage, tradeToConfirm, txHash, setSwapState])
 
   // End Handlers
 
