@@ -1,0 +1,51 @@
+{
+  "schema": "melega.smartswap.uniswap-ethereum-canary-prep.v1",
+  "id": "SMARTSWAP_UNISWAP_ETHEREUM_CANARY_PREP",
+  "verdict": "UNISWAP_ETHEREUM_CANARY_PREP_BLOCKED",
+  "blocker": "FOUNDER_ARCHITECT_DECISION_REQUIRED_UNISWAP_ETHEREUM_CANARY_PAIR_AND_MAXIMUM_NOTIONAL",
+  "subsequentMissingFacts": ["ETHEREUM_CANONICAL_DEPLOYER_UNDEFINED"],
+  "signed": false,
+  "broadcast": false,
+  "autoRetry": false,
+  "staleOnNonceDrift": true,
+  "reuse": {
+    "sourceChangeRequired": false,
+    "newContractDesignRequired": false,
+    "reusableWithoutSourceChange": true,
+    "sourceGitBlob": "7869980ca19ce62bebc99e17670c99cc7e637172",
+    "sourceSha256": "5ecdeb832ad0990a1ed7a6a024b8a60bbf1b683afc2738adceadefa5150b8cee",
+    "creationBytecodeKeccak": "0xaa68423fc2a7e4fb80b54516bed42dccda8978ff4a5dd1d24180c5add2ad0791",
+    "deployedTemplateKeccak": "0x22b936d04dda69aa1fc31e031793ce922a18013fa9c2f0587043a627e75da0e1"
+  },
+  "venue": {
+    "venueId": "uniswap",
+    "chainId": 1,
+    "support": "QUOTE_ONLY",
+    "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "productionEnabled": false,
+    "executionEnabled": false,
+    "canary": false
+  },
+  "fee": {
+    "policyId": "SMARTSWAP_REVENUE_POLICY_V1",
+    "structuralRouteCostBps": 30,
+    "derivedSmartSwapFeeBps": 15,
+    "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "hardcodedSmartSwapFee": false
+  },
+  "production": {
+    "productionExecutionMode": "LEGACY_PRODUCTION",
+    "universalEngineMode": "SHADOW",
+    "productionCutoverAllowed": false,
+    "solanaExecutionEnabled": false,
+    "robinhoodReason": "FEASIBILITY_REQUIRED"
+  },
+  "pair": null,
+  "inputAmountRaw": null,
+  "minUserOut": null,
+  "predictedAddress": null,
+  "deployer": null,
+  "nonce": null,
+  "deadline": null
+}

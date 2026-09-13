@@ -1,0 +1,29 @@
+{
+  "schema": "melega.smartswap.uniswap-ethereum.unsigned-canary-intent.v1",
+  "signed": false,
+  "broadcast": false,
+  "autoRetry": false,
+  "staleOnNonceDrift": true,
+  "chainId": 1,
+  "status": "UNSIGNED_PACKAGE_BLOCKED",
+  "blocker": "FOUNDER_ARCHITECT_DECISION_REQUIRED_UNISWAP_ETHEREUM_CANARY_PAIR_AND_MAXIMUM_NOTIONAL",
+  "venueId": "uniswap",
+  "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "pair": null,
+  "inputAmountRaw": null,
+  "minUserOut": null,
+  "quote": null,
+  "deadline": null,
+  "nonce": null,
+  "structuralRouteCostBps": 30,
+  "derivedSmartSwapFeeBps": 15,
+  "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "exactInOnly": true,
+  "shadowQuoteExampleMustNotBeUsedAsCanary": {
+    "input": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "output": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "amountRaw": "1000000000000000000"
+  },
+  "note": "Do not invent pair or notional. Shadow-quote WETH→USDC / 1 ether is not a canary spec."
+}
