@@ -1,0 +1,19 @@
+{
+  "bytecodeHash": "none",
+  "cborMetadata": false,
+  "compilerInputSha256": "d714e86a97098d0978ee06038bc51c6c47b4a3c9276235e6b3f98cc5453ef003",
+  "creationBytecodeKeccak": "0xaa68423fc2a7e4fb80b54516bed42dccda8978ff4a5dd1d24180c5add2ad0791",
+  "deployedBytecodeKeccak": "0x22b936d04dda69aa1fc31e031793ce922a18013fa9c2f0587043a627e75da0e1",
+  "evmVersion": "shanghai",
+  "forgeCommit": "4072e48705af9d93e3c0f6e29e93b5e9a40caed8",
+  "forgeVersion": "1.7.1",
+  "optimizer": true,
+  "optimizerRuns": 200,
+  "profile": "smartswap_executor_release",
+  "solcCommit": "a1b79de6",
+  "solcLongVersion": "0.8.20+commit.a1b79de6",
+  "solcVersion": "0.8.20",
+  "sourceGitBlob": "7869980ca19ce62bebc99e17670c99cc7e637172",
+  "sourceSha256": "5ecdeb832ad0990a1ed7a6a024b8a60bbf1b683afc2738adceadefa5150b8cee",
+  "viaIR": true
+}

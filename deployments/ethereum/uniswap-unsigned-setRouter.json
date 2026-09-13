@@ -1,0 +1,19 @@
+{
+  "schema": "melega.smartswap.uniswap-ethereum.unsigned-setRouter.v1",
+  "signed": false,
+  "broadcast": false,
+  "autoRetry": false,
+  "staleOnNonceDrift": true,
+  "chainId": 1,
+  "status": "UNSIGNED_PACKAGE_BLOCKED",
+  "blocker": "ETHEREUM_EXECUTOR_ADDRESS_UNDEFINED",
+  "function": "setRouter(address,bytes32,bool)",
+  "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "venueId": "uniswap",
+  "venueIdHash": "keccak256('uniswap')",
+  "allowed": true,
+  "to": null,
+  "nonce": null,
+  "execute": false,
+  "note": "setRouter cannot be nonce-bound until CREATE is mined at a predicted address. Stale on nonce drift. No auto-retry."
+}

@@ -25,6 +25,7 @@
     "e2e:ci": "turbo run build --filter=web...[HEAD^1] && turbo run integration-test --filter=e2e...[HEAD^1]",
     "updateLPsAPR": "yarn turbo run build --filter=@pancakeswap/sdk --filter=@pancakeswap/farm --filter=@pancakeswap/token-lists && NODE_PATH=./apps/web/src ts-node --project ./apps/web/tsconfig.json --compiler-options '{\"module\":\"commonjs\"}' scripts/updateLPsAPR.ts",
     "postinstall": "turbo run --filter=web postinstall",
+    "smartswap:executor:verify-artifact": "python3 scripts/smartswap/certify-executor-v1-artifact.py --verify",
     "clean": "turbo run clean && rm -rf node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
