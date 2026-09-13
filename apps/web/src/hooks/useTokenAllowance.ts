@@ -9,6 +9,24 @@ type TokenAllowanceOptions = {
   pollIntervalMs?: number
 }
 
+type DirectAllowanceSnapshot = { key: string; raw: string }
+
+/**
+ * Resolve ERC-20 allowance raw units from multicall, then the keyed direct read.
+ * A missing request key (disconnected wallet / no spender) must not compare
+ * `undefined === undefined` and then read `.raw` on an absent snapshot.
+ */
+export function resolveAllowanceRaw(
+  allowance?: { toString(): string } | null,
+  directAllowance?: DirectAllowanceSnapshot,
+  allowanceRequestKey?: string,
+): string | undefined {
+  const fromMulticall = allowance?.toString()
+  if (fromMulticall != null) return fromMulticall
+  if (!allowanceRequestKey || !directAllowance) return undefined
+  return directAllowance.key === allowanceRequestKey ? directAllowance.raw : undefined
+}
+
 function useTokenAllowance(
   token?: Token,
   owner?: string,
@@ -26,7 +44,7 @@ function useTokenAllowance(
   // from the chain in parallel and use it as a persistent fallback.
   const allowanceRequestKey =
     token && owner && spender ? `${token.chainId}:${token.address}:${owner}:${spender}` : undefined
-  const [directAllowance, setDirectAllowance] = useState<{ key: string; raw: string } | undefined>(undefined)
+  const [directAllowance, setDirectAllowance] = useState<DirectAllowanceSnapshot | undefined>(undefined)
 
   useEffect(() => {
     let cancelled = false
@@ -57,8 +75,7 @@ function useTokenAllowance(
 
   return useMemo(() => {
     if (!token) return undefined
-    const raw =
-      allowance?.toString() ?? (directAllowance?.key === allowanceRequestKey ? directAllowance.raw : undefined)
+    const raw = resolveAllowanceRaw(allowance, directAllowance, allowanceRequestKey)
     return raw != null ? CurrencyAmount.fromRawAmount(token, raw) : undefined
   }, [token, allowance, directAllowance, allowanceRequestKey])
 }
