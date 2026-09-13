@@ -164,7 +164,7 @@ export const SmartSwapForm: React.FC<{
       : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
   }
 
-  const amountToApprove = tradeInfo?.slippageAdjustedAmounts[Field.INPUT]
+  const amountToApprove = tradeInfo?.slippageAdjustedAmounts?.[Field.INPUT]
   // check whether the user has approved the router on the input token
   const [approval, approveCallback] = useApproveCallback(amountToApprove, tradeInfo?.routerAddress, {
     unknownAllowanceTimeoutMs: 5_000,

@@ -51,6 +51,7 @@ export function useTradeInfo({
   kerlWrapperAddress,
 }: Options): Info | null {
   return useMemo(() => {
+    try {
     const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
     if (kerlEnforced && trade && kerlWrapperAddress) {
       const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
@@ -109,6 +110,9 @@ export function useTradeInfo({
       priceImpactWithoutFee,
       realizedLPFee,
       inputError: stableSwapInputError,
+    }
+    } catch {
+      return null
     }
   }, [useSmartRouter, trade, v2Trade, allowedSlippage, chainId, stableSwapInputError, swapInputError, kerlWrapperAddress])
 }

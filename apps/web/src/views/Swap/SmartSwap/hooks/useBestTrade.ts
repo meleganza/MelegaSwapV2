@@ -132,14 +132,10 @@ export function useBestTrade(
   options?: UseTradeOptions,
 ) {
   const chainId = amount?.currency?.chainId ?? currency?.chainId
+  // Always call the quote hook — KERL enforcement must not change hook order.
+  const bestTradeFromChain = useBestTradeFromChain(amount, currency, tradeType, options)
   if (isKerlRoutingAuthorityEnforced(chainId)) {
     return null
   }
-
-  const bestTradeFromChain = useBestTradeFromChain(amount, currency, tradeType, options)
-  // Remove source from api for now until api is optimized
-  // const bestTradeFromApi = useBestTradeFromApi(amount, currency, tradeType)
-
-  // return bestTradeFromApi || bestTradeFromChain
   return bestTradeFromChain
 }

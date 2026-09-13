@@ -1,14 +1,12 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { ChainId, Currency, CurrencyAmount, NativeCurrency, Trade, TradeType } from '@pancakeswap/sdk'
-import { CAKE, USDC, USDT } from '@pancakeswap/tokens'
+import { Currency, CurrencyAmount, Trade, TradeType } from '@pancakeswap/sdk'
+import { CAKE, USDT } from '@pancakeswap/tokens'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import IPancakePairABI from 'config/abi/IPancakePair.json'
-import { DEFAULT_INPUT_CURRENCY, DEFAULT_OUTPUT_CURRENCY } from 'config/constants/exchange'
 import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useRouter } from 'next/router'
-import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { isAddress } from 'utils'
@@ -30,9 +28,11 @@ import {
   normalizeDerivedPairDataByActiveToken,
   normalizePairDataByActiveToken,
 } from './normalizers'
-import { SwapState } from './reducer'
 import { derivedPairByDataIdSelector, pairByDataIdSelector } from './selectors'
 import { PairDataTimeWindowEnum } from './types'
+import { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
+
+export { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap)
@@ -170,79 +170,6 @@ export function useDerivedSwapInfo(
   }
 }
 
-function parseTokenAmountURLParameter(urlParam: any): string {
-  return typeof urlParam === 'string' && !Number.isNaN(parseFloat(urlParam)) ? urlParam : ''
-}
-
-function parseIndependentFieldURLParameter(urlParam: any): Field {
-  return typeof urlParam === 'string' && urlParam.toLowerCase() === 'output' ? Field.OUTPUT : Field.INPUT
-}
-
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
-function validatedRecipient(recipient: any): string | null {
-  if (typeof recipient !== 'string') return null
-  const address = isAddress(recipient)
-  if (address) return address
-  if (ADDRESS_REGEX.test(recipient)) return recipient
-  return null
-}
-
-export function queryParametersToSwapState(
-  parsedQs: ParsedUrlQuery,
-  nativeSymbol?: string,
-  defaultOutputCurrency?: string,
-): SwapState {
-  let inputCurrency = isAddress(parsedQs.inputCurrency) || (nativeSymbol ?? DEFAULT_INPUT_CURRENCY)
-  let outputCurrency =
-    typeof parsedQs.outputCurrency === 'string'
-      ? isAddress(parsedQs.outputCurrency) || nativeSymbol
-      : defaultOutputCurrency ?? DEFAULT_OUTPUT_CURRENCY
-  if (inputCurrency === outputCurrency) {
-    if (typeof parsedQs.outputCurrency === 'string') {
-      inputCurrency = ''
-    } else {
-      outputCurrency = ''
-    }
-  }
-
-  const recipient = validatedRecipient(parsedQs.recipient)
-
-  return {
-    [Field.INPUT]: {
-      currencyId: inputCurrency,
-    },
-    [Field.OUTPUT]: {
-      currencyId: outputCurrency,
-    },
-    typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
-    independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
-    recipient,
-    pairDataById: {},
-    derivedPairDataById: {},
-  }
-}
-
-export function queryParametersToBridgeState(
-  parsedQs: ParsedUrlQuery,
-  nativeSymbol?: string,
-): SwapState {
-  // let inputCurrency = isAddress(parsedQs.inputCurrency) || (nativeSymbol ?? DEFAULT_INPUT_CURRENCY)
-
-  return {
-    [Field.INPUT]: {
-      currencyId: parsedQs.token ? parsedQs.token.toString() : nativeSymbol,
-    },
-    [Field.OUTPUT]: {
-      currencyId: undefined,
-    },
-    typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
-    independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
-    recipient: undefined,
-    pairDataById: {},
-    derivedPairDataById: {},
-  }
-}
-
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch():
   | { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined }
@@ -258,7 +185,7 @@ export function useDefaultsFromURLSearch():
   useEffect(() => {
     if (!chainId || !native) return
     if (!CAKE[chainId] && !USDT[chainId]) return
-    const parsed = queryParametersToSwapState(query, NativeCurrency[chainId], CAKE[chainId]?.address ?? USDT[chainId]?.address)
+    const parsed = queryParametersToSwapState(query, native.symbol, CAKE[chainId]?.address ?? USDT[chainId]?.address)
 
     dispatch(
       replaceSwapState({

@@ -174,7 +174,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     stableSwapInputError,
   })
 
-  const amountToApprove = tradeInfo?.slippageAdjustedAmounts[Field.INPUT]
+  const amountToApprove = tradeInfo?.slippageAdjustedAmounts?.[Field.INPUT]
   const [approval] = useApproveCallback(amountToApprove, tradeInfo?.routerAddress)
 
   const hasAmount = Boolean(parsedAmount?.greaterThan(0) || typedValue)
