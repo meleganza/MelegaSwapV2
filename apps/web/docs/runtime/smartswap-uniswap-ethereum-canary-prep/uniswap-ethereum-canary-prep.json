@@ -1,9 +1,9 @@
 {
   "schema": "melega.smartswap.uniswap-ethereum-canary-prep.v1",
   "id": "SMARTSWAP_UNISWAP_ETHEREUM_CANARY_PREP",
-  "verdict": "UNISWAP_ETHEREUM_CANARY_PREP_BLOCKED",
-  "blocker": "FOUNDER_ARCHITECT_DECISION_REQUIRED_UNISWAP_ETHEREUM_CANARY_PAIR_AND_MAXIMUM_NOTIONAL",
-  "subsequentMissingFacts": ["ETHEREUM_CANONICAL_DEPLOYER_UNDEFINED"],
+  "verdict": "UNISWAP_ETHEREUM_CANARY_FOUNDER_ACTION_READY",
+  "remainingFounderInput": "FOUNDER_ETHEREUM_DEPLOYER_SELECTION_REQUIRED",
+  "pairNotionalDecision": "ARCHITECT_CERTIFIED",
   "signed": false,
   "broadcast": false,
   "autoRetry": false,
@@ -41,8 +41,17 @@
     "solanaExecutionEnabled": false,
     "robinhoodReason": "FEASIBILITY_REQUIRED"
   },
-  "pair": null,
-  "inputAmountRaw": null,
+  "pair": {
+    "input": { "kind": "contract", "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+    "output": { "kind": "contract", "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
+    "path": [
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    ]
+  },
+  "inputAmountRaw": "2000000000000000",
+  "feeAmountRaw": "3000000000000",
+  "venueInputRaw": "1997000000000000",
   "minUserOut": null,
   "predictedAddress": null,
   "deployer": null,

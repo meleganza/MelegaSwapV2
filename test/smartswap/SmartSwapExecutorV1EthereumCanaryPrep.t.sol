@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
+import {stdJson} from "forge-std/StdJson.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SmartSwapExecutorV1} from "../../contracts/smartswap/SmartSwapExecutorV1.sol";
 import {MockSmartSwapV2Router} from "../../contracts/smartswap/mocks/MockSmartSwapV2Router.sol";
@@ -25,17 +26,22 @@ interface IUniswapV2Factory {
     function getPair(address tokenA, address tokenB) external view returns (address pair);
 }
 
-/// @notice Ethereum constructor/config reuse + optional mainnet-fork mechanics probe.
-/// @dev Fork path uses certified shadow-quote example assets only. Not a sealed canary pair/notional.
+/// @notice Ethereum constructor/config reuse + optional mainnet-fork certified canary.
+/// @dev Fork path is the architect-certified exact-in 0.002 WETH→USDC canary. No broadcast.
 contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
+    using stdJson for string;
     address internal constant TREASURY = 0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b;
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address internal constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address internal constant UNISWAP = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     address internal constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
     uint256 internal constant STRUCTURAL_UNISWAP_V2_BPS = 30;
-    uint256 internal constant FORK_PROBE_NOT_CANARY = 0.001 ether;
+    uint256 internal constant CANARY_AMOUNT = 0.002 ether;
     bytes32 internal constant VENUE = keccak256("uniswap");
+    bytes32 internal constant EXPECTED_CREATION_KECCAK =
+        0xaa68423fc2a7e4fb80b54516bed42dccda8978ff4a5dd1d24180c5add2ad0791;
+    bytes32 internal constant EXPECTED_DEPLOYED_KECCAK =
+        0x22b936d04dda69aa1fc31e031793ce922a18013fa9c2f0587043a627e75da0e1;
 
     uint256 internal signerPk = 0xA11CE;
     address internal signer;
@@ -45,6 +51,8 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
     MockSmartSwapV2Router internal mockRouter;
     MockERC20 internal mockUsdc;
     MockWBNB internal mockWeth;
+    bytes internal creationBytecode;
+    bytes internal deployedTemplate;
     bool internal forked;
 
     function setUp() public {
@@ -53,6 +61,12 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
         mockRouter = new MockSmartSwapV2Router();
         mockUsdc = new MockERC20("USDC", "USDC");
         mockWeth = new MockWBNB();
+        string memory json = vm.readFile("deployments/smartswap-executor-v1/smart-swap-executor-v1-artifact.json");
+        creationBytecode = json.readBytes(".creationBytecode");
+        deployedTemplate = json.readBytes(".deployedBytecode");
+        require(keccak256(creationBytecode) == EXPECTED_CREATION_KECCAK, "creation keccak");
+        require(keccak256(deployedTemplate) == EXPECTED_DEPLOYED_KECCAK, "deployed keccak");
+
         localExecutor = new SmartSwapExecutorV1(TREASURY, signer, WETH, address(this));
         localExecutor.setRouter(address(mockRouter), VENUE, true);
         mockWeth.mint(user, 10_000_000);
@@ -69,13 +83,13 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
             console2.log("SKIP_ETH_FORK: Ethereum mainnet RPC unavailable");
             return;
         }
-        forkExecutor = new SmartSwapExecutorV1(TREASURY, signer, WETH, address(this));
+        forkExecutor = SmartSwapExecutorV1(payable(_deployArtifact(TREASURY, signer, WETH, address(this))));
         forkExecutor.setRouter(UNISWAP, VENUE, true);
         vm.deal(user, 1 ether);
         vm.prank(user);
-        IWBNB(WETH).deposit{value: FORK_PROBE_NOT_CANARY}();
+        IWBNB(WETH).deposit{value: CANARY_AMOUNT}();
         vm.prank(user);
-        IERC20(WETH).approve(address(forkExecutor), FORK_PROBE_NOT_CANARY);
+        IERC20(WETH).approve(address(forkExecutor), CANARY_AMOUNT);
     }
 
     function tryFork() external returns (bool) {
@@ -87,6 +101,13 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
     modifier forkOnly() {
         if (!forked) return;
         _;
+    }
+
+    function testCertifiedArtifactHashes() public view {
+        assertEq(creationBytecode.length, 8584);
+        assertEq(deployedTemplate.length, 8062);
+        assertEq(keccak256(creationBytecode), EXPECTED_CREATION_KECCAK);
+        assertEq(keccak256(deployedTemplate), EXPECTED_DEPLOYED_KECCAK);
     }
 
     function testEthereumConstructorConfigReusesCertifiedSource() public view {
@@ -150,7 +171,7 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
         assertEq(mockWeth.balanceOf(address(localExecutor)), 0);
     }
 
-    function testForkMechanicsProbeNotCanary() public forkOnly {
+    function testForkCertifiedCanary002WethToUsdc() public forkOnly {
         assertEq(block.chainid, 1);
         assertEq(forkExecutor.wrappedNative(), WETH);
         assertEq(forkExecutor.treasury(), TREASURY);
@@ -161,8 +182,8 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
 
         address[] memory path = _forkPath();
         uint16 feeBps = forkExecutor.authorizedFeeBps(STRUCTURAL_UNISWAP_V2_BPS);
-        uint256 fee = (FORK_PROBE_NOT_CANARY * feeBps) / 10_000;
-        uint256 net = FORK_PROBE_NOT_CANARY - fee;
+        uint256 fee = (CANARY_AMOUNT * feeBps) / 10_000;
+        uint256 net = CANARY_AMOUNT - fee;
         uint256 expectedOut = IUniswapV2Router(UNISWAP).getAmountsOut(net, path)[1];
         SmartSwapExecutorV1.ExecutionIntent memory intent = _forkIntent(path, expectedOut, 1);
         bytes memory sig = _sign(forkExecutor, intent);
@@ -175,13 +196,19 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
         uint256 out = forkExecutor.execute(intent, path, sig);
 
         assertEq(IERC20(WETH).balanceOf(TREASURY) - treasuryBefore, fee);
-        assertEq(userWethBefore - IERC20(WETH).balanceOf(user), FORK_PROBE_NOT_CANARY);
+        assertEq(userWethBefore - IERC20(WETH).balanceOf(user), CANARY_AMOUNT);
+        assertEq(fee, 3_000_000_000_000);
+        assertEq(net, 1_997_000_000_000_000);
         assertEq(IERC20(USDC).balanceOf(user) - userUsdcBefore, out);
         assertGe(out, expectedOut);
         assertEq(IERC20(WETH).balanceOf(address(forkExecutor)), 0);
         assertEq(IERC20(USDC).balanceOf(address(forkExecutor)), 0);
         assertEq(address(forkExecutor).balance, 0);
         assertTrue(forkExecutor.usedNonce(user, 1));
+        console2.log("ETH_FORK_CANARY_002_WETH_OK");
+        console2.log("userOutput", out);
+        console2.log("treasuryFee", fee);
+        console2.log("venueInput", net);
 
         vm.prank(user);
         vm.expectRevert(SmartSwapExecutorV1.Replay.selector);
@@ -202,6 +229,17 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
         assertEq(IERC20(WETH).balanceOf(address(forkExecutor)), 0);
         assertEq(IERC20(USDC).balanceOf(address(forkExecutor)), 0);
         assertEq(address(forkExecutor).balance, 0);
+    }
+
+    function _deployArtifact(address treasury, address intentSigner, address wrappedNative, address owner)
+        internal
+        returns (address addr)
+    {
+        bytes memory payload = bytes.concat(creationBytecode, abi.encode(treasury, intentSigner, wrappedNative, owner));
+        assembly {
+            addr := create(0, add(payload, 0x20), mload(payload))
+        }
+        require(addr != address(0), "create failed");
     }
 
     function _forkPath() internal pure returns (address[] memory path) {
@@ -257,13 +295,13 @@ contract SmartSwapExecutorV1EthereumCanaryPrepTest is Test {
             user: user,
             inputAsset: WETH,
             outputAsset: USDC,
-            inputAmount: FORK_PROBE_NOT_CANARY,
+            inputAmount: CANARY_AMOUNT,
             minUserOut: minUserOut,
             venueId: VENUE,
             router: UNISWAP,
             routeHash: forkExecutor.routeHashOf(path, false, false),
             feeBps: feeBps,
-            feeAmount: (FORK_PROBE_NOT_CANARY * feeBps) / 10_000,
+            feeAmount: (CANARY_AMOUNT * feeBps) / 10_000,
             feeAsset: WETH,
             beneficiary: TREASURY,
             structuralRouteCostBps: STRUCTURAL_UNISWAP_V2_BPS,

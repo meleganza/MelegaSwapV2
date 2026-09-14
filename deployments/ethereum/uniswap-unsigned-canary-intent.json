@@ -5,25 +5,54 @@
   "autoRetry": false,
   "staleOnNonceDrift": true,
   "chainId": 1,
-  "status": "UNSIGNED_PACKAGE_BLOCKED",
-  "blocker": "FOUNDER_ARCHITECT_DECISION_REQUIRED_UNISWAP_ETHEREUM_CANARY_PAIR_AND_MAXIMUM_NOTIONAL",
+  "status": "UNSIGNED_PACKAGE_PREPARED_UNBOUND",
+  "remainingFounderInput": "FOUNDER_ETHEREUM_DEPLOYER_SELECTION_REQUIRED",
   "venueId": "uniswap",
   "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "pair": null,
-  "inputAmountRaw": null,
+  "pair": {
+    "input": { "kind": "contract", "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+    "output": { "kind": "contract", "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
+    "path": [
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    ]
+  },
+  "inputAmountRaw": "2000000000000000",
+  "feeAmountRaw": "3000000000000",
+  "venueInputRaw": "1997000000000000",
   "minUserOut": null,
   "quote": null,
+  "minOutMethodology": {
+    "quoteMethod": "v2-getAmountsOut",
+    "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+    "path": [
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    ],
+    "quoteInput": "venueInputRaw after SmartSwap input-asset fee",
+    "venueInputRaw": "1997000000000000",
+    "liveSlippageBps": 50,
+    "liveMinOut": "computeMinimumReceived(getAmountsOut(venueInputRaw)[-1], liveSlippageBps)",
+    "forkSimulationMinOut": "exact getAmountsOut(venueInputRaw) at the fork block; no extra haircut",
+    "staleOnDelay": true,
+    "mustRefreshAtSign": true,
+    "unsignedPackageDoesNotBindMinOut": true
+  },
   "deadline": null,
   "nonce": null,
+  "user": null,
+  "executor": null,
   "structuralRouteCostBps": 30,
   "derivedSmartSwapFeeBps": 15,
   "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "exactInOnly": true,
+  "oneCanary": true,
   "shadowQuoteExampleMustNotBeUsedAsCanary": {
-    "input": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    "output": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "input": { "kind": "contract", "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+    "output": { "kind": "contract", "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
     "amountRaw": "1000000000000000000"
   },
-  "note": "Do not invent pair or notional. Shadow-quote WETH→USDC / 1 ether is not a canary spec."
+  "note": "Pair/notional are architect-certified. minUserOut, deadline, nonce, user, and executor stay unbound until Founder selects the Ethereum deployer, CREATE is mined, and a fresh getAmountsOut is taken at sign time. No auto-retry."
 }

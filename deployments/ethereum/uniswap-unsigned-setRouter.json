@@ -10,7 +10,7 @@
   "function": "setRouter(address,bytes32,bool)",
   "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "venueId": "uniswap",
-  "venueIdHash": "keccak256('uniswap')",
+  "venueIdHash": "0xa2a03459171c76bff45817330c10ef9f8af07011a33005b73b50189bbc7e7132",
   "allowed": true,
   "to": null,
   "nonce": null,

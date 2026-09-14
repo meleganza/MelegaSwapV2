@@ -6,7 +6,8 @@
   "staleOnNonceDrift": true,
   "chainId": 1,
   "status": "UNSIGNED_PACKAGE_BLOCKED",
-  "blocker": "ETHEREUM_CANONICAL_DEPLOYER_UNDEFINED",
+  "blocker": "FOUNDER_ETHEREUM_DEPLOYER_SELECTION_REQUIRED",
+  "architectureBlockerAlias": "ETHEREUM_CANONICAL_DEPLOYER_UNDEFINED",
   "to": null,
   "value": "0",
   "deployer": null,
@@ -23,6 +24,7 @@
     "setAtAuthorizedDeploy": ["intentSigner", "owner"],
     "encoding": null
   },
+  "candidateFounderEoaReconnaissanceOnly": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "bscDeployerMustNotBeAssumedOnEthereum": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
-  "note": "CREATE data cannot be nonce-bound until a canonical Ethereum deployer is defined. Do not reuse the BSC deployer or nonce. If nonce later drifts, STOP and rebuild. No auto-retry."
+  "note": "CREATE data cannot be nonce-bound until a canonical Ethereum deployer is selected. Do not reuse the BSC deployer or nonce. Reconnaissance of 0xB6eEb3… is not authorization. If nonce later drifts, STOP and rebuild. No auto-retry."
 }
