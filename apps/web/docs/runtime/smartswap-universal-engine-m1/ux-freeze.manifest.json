@@ -2,7 +2,7 @@
   "schema": "melega.smartswap.ux-freeze.v1",
   "mission": "SMARTSWAP_UNIVERSAL_ENGINE_M1_FOUNDATION",
   "files": {
-    "src/views/Swap/SmartSwap/index.tsx": "99ac1d54b8609832b732fd5aacbfb6b09875927ce0693a93ca227fb8cdac3add",
+    "src/views/Swap/SmartSwap/index.tsx": "5e4fbdec64c1e15832cef893759c648b43dfbbf164fa47e83ba095a36728a3d9",
     "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx": "f50b8371643276b46c265fbf87167fc50cf9fd34e05086cabbcd74855ce2b64c",
     "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "2615820164ad62733f0e7fb93cb770ff89d8243eb1f2879133ee307a234d11e6",
     "src/views/Swap/SmartSwap/components/SwapModalFooter.tsx": "9a4c7fcd12928403d4c5b06b35cdae42661e44b0c4183115de4c71c80480f4f4",

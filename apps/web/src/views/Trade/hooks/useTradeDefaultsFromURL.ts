@@ -6,7 +6,6 @@ import { useAppDispatch } from 'state'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import { NativeCurrency } from '@pancakeswap/sdk'
 
 /** Trade page defaults — canonical MARCO/BNB when URL params are absent. */
 export function useTradeDefaultsFromURL():
@@ -22,8 +21,7 @@ export function useTradeDefaultsFromURL():
 
   useEffect(() => {
     if (!chainId || !native) return
-    const nativeSymbol = NativeCurrency[chainId]
-    const parsed = queryParametersToSwapState(query, nativeSymbol, MARCO_BSC_ADDRESS)
+    const parsed = queryParametersToSwapState(query, native.symbol, MARCO_BSC_ADDRESS)
 
     dispatch(
       replaceSwapState({

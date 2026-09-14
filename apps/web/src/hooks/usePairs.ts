@@ -58,15 +58,19 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
       if (loading) return [PairState.LOADING, null]
       if (!tokenA || !tokenB || tokenA.equals(tokenB)) return [PairState.INVALID, null]
       if (!reserves) return [PairState.NOT_EXISTS, null]
-      const { reserve0, reserve1 } = reserves
-      const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
-      return [
-        PairState.EXISTS,
-        new Pair(
-          CurrencyAmount.fromRawAmount(token0, reserve0.toString()),
-          CurrencyAmount.fromRawAmount(token1, reserve1.toString()),
-        ),
-      ]
+      try {
+        const { reserve0, reserve1 } = reserves
+        const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
+        return [
+          PairState.EXISTS,
+          new Pair(
+            CurrencyAmount.fromRawAmount(token0, reserve0.toString()),
+            CurrencyAmount.fromRawAmount(token1, reserve1.toString()),
+          ),
+        ]
+      } catch {
+        return [PairState.INVALID, null]
+      }
     })
   }, [results, tokens])
 }

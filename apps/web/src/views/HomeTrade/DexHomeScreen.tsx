@@ -584,7 +584,7 @@ const DexHomeScreenContent: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <DataSurfaceErrorBoundary surface="Homepage" userReason="Homepage market modules are temporarily unavailable.">
+        <DataSurfaceErrorBoundary surface="Homepage Hero">
           <Hero data-home-section="hero">
             <HeroLeft>
               <Badge>AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS</Badge>
@@ -618,11 +618,15 @@ const DexHomeScreenContent: React.FC = () => {
             </HeroLeft>
             <HeroRight ref={swapRef} id="swap" data-home-section="swap">
               <SwapWrap data-testid="dex-home-instant-swap">
-                <HomeSwapPanel />
+                <DataSurfaceErrorBoundary surface="Homepage Swap">
+                  <HomeSwapPanel />
+                </DataSurfaceErrorBoundary>
               </SwapWrap>
             </HeroRight>
           </Hero>
+        </DataSurfaceErrorBoundary>
 
+        <DataSurfaceErrorBoundary surface="Homepage" userReason="Homepage market modules are temporarily unavailable.">
           <FeaturedProjectsRail />
 
           <KpiRail data-testid="dex-home-kpi-rail" data-home-section="kpi">

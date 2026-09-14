@@ -52,7 +52,12 @@ export function useDirectMelegaPair(tokenA?: Token, tokenB?: Token): Pair | null
         to: pairAddress!,
         data: encoded,
       })
-      return buildCanonicalMarcoPair(tokenA!, tokenB!, result)
+      if (!result || result === '0x' || result.length < 194) return null
+      try {
+        return buildCanonicalMarcoPair(tokenA!, tokenB!, result)
+      } catch {
+        return null
+      }
     },
     {
       dedupingInterval: 12_000,
@@ -82,7 +87,12 @@ export function useCanonicalMarcoPair(tokenA?: Token, tokenB?: Token): Pair | nu
         to: MARCO_WBNB_PAIR_BSC,
         data: encoded,
       })
-      return buildCanonicalMarcoPair(tokenA!, tokenB!, result)
+      if (!result || result === '0x' || result.length < 194) return null
+      try {
+        return buildCanonicalMarcoPair(tokenA!, tokenB!, result)
+      } catch {
+        return null
+      }
     },
     {
       dedupingInterval: 12_000,

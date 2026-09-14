@@ -40,6 +40,7 @@ export function computeTradePriceBreakdown(trade?: TradeWithStableSwap<Currency,
   priceImpactWithoutFee: Percent | undefined
   realizedLPFee: CurrencyAmount<Currency> | undefined | null
 } {
+  try {
   // for each hop in our trade, take away the x*y=k price impact from 0.3% fees
   // e.g. for 3 tokens/2 hops: 1 - ((1 - .03) * (1-.03))
   const realizedLPFee = !trade?.route
@@ -73,6 +74,9 @@ export function computeTradePriceBreakdown(trade?: TradeWithStableSwap<Currency,
     )
 
   return { priceImpactWithoutFee: priceImpactWithoutFeePercent, realizedLPFee: realizedLPFeeAmount }
+  } catch {
+    return { priceImpactWithoutFee: undefined, realizedLPFee: undefined }
+  }
 }
 
 // computes the minimum amount out and maximum amount in for a trade given a user specified allowed slippage in bips
