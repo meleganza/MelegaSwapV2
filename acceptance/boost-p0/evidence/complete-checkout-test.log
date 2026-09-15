@@ -1,0 +1,9 @@
+
+ RUN  v0.27.2 /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-boost-p0/apps/web
+
+ ✓ src/views/shared/monetization/__tests__/boostP0Funnel.test.tsx  (4 tests) 6017ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  15:35:02
+   Duration  56.44s (transform 25.56s, setup 3.71s, collect 29.53s, tests 6.02s)

@@ -1,3 +1,4 @@
+import { isMarcoPayIsolationActive } from 'lib/marco-pay/approval'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
@@ -245,6 +246,7 @@ export const MarcoConnect: React.FC<{
         activeMarcoHost = hostRef.current
         sdkRef.current = sdk
         unsubscribeDisconnect = sdk.on('disconnect', () => {
+          if (isMarcoPayIsolationActive()) return
           passportIntentRef.current = false
           onMarcoPassportDisconnect()
         })
@@ -271,6 +273,7 @@ export const MarcoConnect: React.FC<{
   const displayedAddress = address || null
   const shortAddress = navbar.connected ? navbar.label : null
   const requestPassportOpen = () => {
+    if (isMarcoPayIsolationActive()) return
     const sdk = sdkRef.current
     if (!ready || failed || !sdk || passportOpenRef.current) return
     passportIntentRef.current = false

@@ -78,7 +78,11 @@ export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
 
     // 3. Indexed metadata / CDN (chain-scoped helpers)
     pushUnique(sources, seen, getTokenLogoURLByAddress(normalized, input.chainId))
-    pushUnique(sources, seen, `https://melega.finance/images/tokens/${normalized}.png`)
+    // The historical unscoped Melega token directory contains BSC assets.
+    // Never reuse an equal address from that directory on another chain.
+    if (input.chainId === 56) {
+      pushUnique(sources, seen, `https://melega.finance/images/tokens/${normalized}.png`)
+    }
 
     const cacheKey = identityKey(input.chainId, input.address)
     resolvedByIdentity.set(cacheKey, [...sources])

@@ -1,0 +1,18 @@
+info  - Loaded env from /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-boost-p0/apps/web/.env.production
+info  - Loaded env from /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-boost-p0/apps/web/.env
+warn  - You have enabled experimental features (skipTrailingSlashRedirect, scrollRestoration, transpilePackages) in next.config.mjs.
+warn  - Experimental features are not covered by semver, and may cause unexpected or broken application behavior. Use at your own risk.
+
+(node:13654) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+info  - Skipping validation of types
+info  - Linting...
+error - ESLint: Failed to load config "next/babel" to extend from. Referenced from: /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-boost-p0/apps/web/.eslintrc
+info  - Creating an optimized production build...
+warn  - You are using an experimental edge runtime, the API might change.
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
