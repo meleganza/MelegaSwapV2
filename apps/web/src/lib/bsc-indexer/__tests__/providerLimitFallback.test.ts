@@ -4,6 +4,18 @@ import { SWAP_TOPIC } from '../constants'
 
 const fetchMock = vi.fn()
 
+if (typeof AbortSignal.timeout !== 'function') {
+  Object.defineProperty(AbortSignal, 'timeout', {
+    configurable: true,
+    writable: true,
+    value: (ms: number) => {
+      const controller = new AbortController()
+      setTimeout(() => controller.abort(), ms)
+      return controller.signal
+    },
+  })
+}
+
 beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock)
   fetchMock.mockReset()
