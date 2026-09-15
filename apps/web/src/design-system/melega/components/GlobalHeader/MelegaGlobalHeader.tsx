@@ -398,6 +398,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                 <NavItemWrap key={item.id}>
                   <NavLink
                     href={item.href}
+                    prefetch={false}
                     $active={active}
                     data-compact-hide={item.compactHide ? 'true' : undefined}
                     aria-current={active ? 'page' : undefined}

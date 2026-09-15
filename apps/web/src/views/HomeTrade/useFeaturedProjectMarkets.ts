@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import useSWR from 'swr'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
 import { formatUsdCompact, formatUsdPrice } from 'lib/bsc-indexer/usdValuation'
 import { useCanonicalMarketSnapshot } from 'lib/market-data'
@@ -42,48 +43,39 @@ export function useFeaturedProjectMarkets(): {
   loading: boolean
 } {
   const marketSnapshot = useCanonicalMarketSnapshot()
-  const [fallbackRows, setFallbackRows] = useState<Record<string, FeaturedMarketRow>>({})
-  const [loading, setLoading] = useState(true)
   const lastGood = useRef<Record<string, FeaturedMarketRow>>({})
+  const { data: fallback, isLoading: fallbackLoading } = useSWR<FeaturedMarketsResponse>(
+    marketSnapshot.featured.length ? null : '/api/indexer/featured-markets/',
+    async (url: string) => {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`Featured markets unavailable (${res.status})`)
+      return res.json()
+    },
+    {
+      refreshInterval: 60_000,
+      dedupingInterval: 55_000,
+      revalidateOnFocus: false,
+      refreshWhenHidden: false,
+      refreshWhenOffline: false,
+      keepPreviousData: true,
+    },
+  )
+  const fallbackRows = useMemo(() => {
+    const next = { ...lastGood.current }
+    for (const row of fallback?.rows ?? []) {
+      if (row.status === 'UNAVAILABLE' && lastGood.current[row.slug]) continue
+      next[row.slug] = row
+    }
+    return next
+  }, [fallback])
 
   useEffect(() => {
-    if (marketSnapshot.featured.length > 0) {
-      setLoading(false)
-      return
-    }
-    let cancelled = false
-    const load = async () => {
-      try {
-        const res = await fetch('/api/indexer/featured-markets/')
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const body = (await res.json()) as FeaturedMarketsResponse
-        if (cancelled) return
-        const next: Record<string, FeaturedMarketRow> = { ...lastGood.current }
-        for (const row of body.rows ?? []) {
-          if (row.status === 'UNAVAILABLE' && lastGood.current[row.slug]) {
-            continue
-          }
-          next[row.slug] = row
-          if (row.status === 'LIVE' || row.status === 'STALE' || row.status === 'NO_RECENT_TRADES') {
-            lastGood.current[row.slug] = row
-          }
-        }
-        setFallbackRows(next)
-      } catch {
-        if (!cancelled && Object.keys(lastGood.current).length) {
-          setFallbackRows({ ...lastGood.current })
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
+    for (const row of fallback?.rows ?? []) {
+      if (row.status === 'LIVE' || row.status === 'STALE' || row.status === 'NO_RECENT_TRADES') {
+        lastGood.current[row.slug] = row
       }
     }
-    void load()
-    const id = window.setInterval(load, 60_000)
-    return () => {
-      cancelled = true
-      window.clearInterval(id)
-    }
-  }, [marketSnapshot.featured.length])
+  }, [fallback])
 
   const rowsBySlug = useMemo(() => {
     if (marketSnapshot.featured.length > 0) {
@@ -98,7 +90,7 @@ export function useFeaturedProjectMarkets(): {
     return fallbackRows
   }, [marketSnapshot.featured, fallbackRows])
 
-  return { rowsBySlug, loading: loading && marketSnapshot.isLoading }
+  return { rowsBySlug, loading: Boolean(fallbackLoading && marketSnapshot.isLoading) }
 }
 
 /** Human decimal string — never scientific notation. */

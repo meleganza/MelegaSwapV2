@@ -2,7 +2,8 @@
  * Home Featured Projects — four compact equal premium cards on ONE desktop row.
  * Soft ambient gold glow only (no yellow border). Human-formatted prices.
  */
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
+import useSWR from 'swr'
 import Link from 'next/link'
 import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -351,33 +352,25 @@ const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) 
   return <AnimatedSparkline points={points} width={64} height={16} />
 }
 
+const EMPTY_ROTATION_CANDIDATES: RotationCandidate[] = []
+
 export const FeaturedProjectsRail: React.FC = () => {
   const fallbackCards = useMemo(() => resolveFounderFeaturedProjects(), [])
-  const [paidCandidates, setPaidCandidates] = useState<RotationCandidate[]>([])
-  const [rotationNow, setRotationNow] = useState(0)
-
-  useEffect(() => {
-    let cancelled = false
-    const load = async () => {
-      try {
-        const response = await fetch('/api/featured/rotation-candidates')
-        if (!response.ok) return
-        const body = (await response.json()) as RotationResponse
-        if (!cancelled) {
-          setPaidCandidates(body.candidates ?? [])
-          setRotationNow(Date.now())
-        }
-      } catch {
-        // Founder fallback remains visible when the paid placement feed is unavailable.
-      }
-    }
-    void load()
-    const id = window.setInterval(load, 60_000)
-    return () => {
-      cancelled = true
-      window.clearInterval(id)
-    }
-  }, [])
+  const { data: rotation } = useSWR('/api/featured/rotation-candidates', async (url: string) => {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`Featured rotation unavailable (${response.status})`)
+    const body = (await response.json()) as RotationResponse
+    return { candidates: body.candidates ?? [], observedAt: Date.now() }
+  }, {
+    refreshInterval: 60_000,
+    dedupingInterval: 55_000,
+    revalidateOnFocus: false,
+    refreshWhenHidden: false,
+    refreshWhenOffline: false,
+    keepPreviousData: true,
+  })
+  const paidCandidates = rotation?.candidates ?? EMPTY_ROTATION_CANDIDATES
+  const rotationNow = rotation?.observedAt ?? 0
 
   const cards = useMemo(
     () => selectFeaturedCardRotation(paidCandidates, fallbackCards, rotationNow || 0),

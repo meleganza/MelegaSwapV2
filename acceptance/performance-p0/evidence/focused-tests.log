@@ -1,0 +1,32 @@
+
+ RUN  v0.27.2 /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-p0/apps/web
+
+ ✓ src/lib/marco-pay/__tests__/orders.test.ts  (11 tests) 120ms
+ ✓ src/lib/marco-pay/__tests__/gateway.test.ts  (12 tests) 12ms
+ ✓ src/lib/marco-pay/__tests__/connectionGrant.test.ts  (9 tests) 15ms
+ ✓ src/views/shared/monetization/__tests__/growthHubCommercialCheckout.test.ts  (10 tests) 4ms
+ ✓ src/views/shared/monetization/__tests__/boostP0Funnel.test.tsx  (4 tests) 679ms
+ ✓ src/lib/mcredits/__tests__/separation.test.ts  (3 tests) 7ms
+ ✓ src/lib/marco-pay/__tests__/reconciliation.test.ts  (1 test) 12ms
+ ✓ src/lib/marco-pay/__tests__/contract.test.ts  (5 tests) 4ms
+ ✓ src/lib/marco-pay/__tests__/approval.test.ts  (5 tests) 2ms
+ ✓ src/views/shared/monetization/__tests__/marcoPayProcessingUx.test.ts  (5 tests) 1ms
+ ✓ src/lib/marco-pay/__tests__/productionUx.test.ts  (4 tests) 4ms
+ ✓ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx  (4 tests) 96ms
+ ✓ src/views/shared/monetization/__tests__/marcoPayTerminalSuccessUx.test.ts  (5 tests) 1ms
+ ✓ src/views/HomeTrade/__tests__/featuredMarketPolling.test.tsx  (1 test) 19ms
+ ✓ src/lib/token-logo/__tests__/resolveTokenLogoSources.test.ts  (8 tests) 8ms
+ ✓ src/views/HomeTrade/__tests__/founderAmendmentP02FeaturedTradeRouting.test.ts  (3 tests) 2ms
+ ✓ src/lib/marco-pay/__tests__/settlement.test.ts  (3 tests) 2ms
+ ✓ src/lib/marco-pay/__tests__/walletTransfer.test.ts  (2 tests) 1ms
+ ✓ src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx  (1 test) 24ms
+ ✓ src/lib/marco-pay/__tests__/merchantKeyIsolation.test.ts  (1 test) 483ms
+ ✓ src/contexts/__tests__/refreshVisibility.test.tsx  (1 test) 3ms
+ ✓ src/views/shared/monetization/__tests__/listedTokenIdentity.test.ts  (1 test)
+ ✓ src/app-runtime/__tests__/runtimeProfile.test.ts  (3 tests) 2ms
+ ✓ src/views/HomeTrade/__tests__/featuredPaidRotation.test.ts  (2 tests) 2ms
+
+ Test Files  24 passed (24)
+      Tests  104 passed (104)
+   Start at  16:05:14
+   Duration  4.74s (transform 1.43s, setup 256ms, collect 1.84s, tests 1.50s)
