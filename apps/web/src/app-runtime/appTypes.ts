@@ -10,5 +10,7 @@ export type NextPageWithLayout = NextPage & {
   mp?: boolean
   chains?: number[]
   isShowScrollToTopButton?: true
+  /** Home live data must not invalidate a dehydrated page Suspense boundary. */
+  disablePageSuspense?: true
   Meta?: React.FC<any>
 }

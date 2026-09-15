@@ -1,5 +1,5 @@
 import React from 'react'
-import { MelegaTicker } from 'design-system/melega'
+import { MelegaTicker } from 'design-system/melega/components/Ticker'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 
 interface State {

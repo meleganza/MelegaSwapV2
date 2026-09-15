@@ -35,22 +35,21 @@ function resolveDexListing(contract: string, chainId: number) {
       candidate.surfaces.trade,
   )
   const packageToken =
-    chainId === 56
-      ? Object.values(bscTokens).find((token) => token?.address?.toLowerCase() === normalized)
-      : undefined
+    chainId === 56 ? Object.values(bscTokens).find((token) => token?.address?.toLowerCase() === normalized) : undefined
   const legacyProjectLink =
-    typeof packageToken?.name === 'string' && /^https?:\/\//i.test(packageToken.name)
-      ? packageToken.name
-      : null
+    typeof packageToken?.name === 'string' && /^https?:\/\//i.test(packageToken.name) ? packageToken.name : null
 
   if (!asset) {
     return {
       listed: false,
       projectClaimed: false,
       registrySlug: null,
-      name: null,
-      symbol: null,
-      logo: null,
+      // A token-list identity is useful metadata even when the token does not
+      // have a live Melega DEX trade surface yet. Keep `listed` honest while
+      // still returning the chain-scoped logo used by the onboarding funnel.
+      name: tokenListEntry?.name ?? null,
+      symbol: tokenListEntry?.symbol ?? null,
+      logo: tokenListEntry?.logoURI ?? null,
       website: null,
       surfaces: null,
     }
@@ -84,7 +83,7 @@ const handler: NextApiHandler = async (req, res) => {
   const contract = typeof body.contract === 'string' ? body.contract.trim() : ''
   const chainId = Number(body.chainId ?? body.chain ?? 56)
 
-  if (!contract || !contract.startsWith('0x')) {
+  if (!/^0x[a-fA-F0-9]{40}$/.test(contract) || !Number.isInteger(chainId)) {
     return res.status(400).json({
       ok: false,
       machine_code: 'INVALID_CONTRACT',
@@ -116,6 +115,19 @@ const handler: NextApiHandler = async (req, res) => {
     name: publishedClaim?.metadata.name ?? detectedDex.name,
     symbol: publishedClaim?.metadata.symbol ?? detectedDex.symbol,
     logo: publishedClaim?.metadata.logo ?? detectedDex.logo,
+  }
+
+  if (!onChainIdentity.verifiedDeployment || !onChain.name?.trim() || !onChain.symbol?.trim()) {
+    return res.status(422).json({
+      ok: false,
+      machine_code: 'TOKEN_IDENTITY_UNVERIFIED',
+      reason:
+        onChainIdentity.reasonUnavailable ??
+        'The selected chain did not return verifiable ERC-20 name and symbol metadata for this contract.',
+      onChain: onChainIdentity,
+      dex,
+      claim: publicClaim,
+    })
   }
 
   const lookup = resolveProjectRegistryLookup(contract, chainId, onChain)

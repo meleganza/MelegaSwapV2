@@ -1,0 +1,25 @@
+
+ RUN  v0.27.2 /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-boost-p0/apps/web
+
+ ✓ src/lib/marco-pay/__tests__/orders.test.ts  (11 tests) 1207ms
+ ✓ src/lib/marco-pay/__tests__/gateway.test.ts  (12 tests) 164ms
+ ✓ src/lib/marco-pay/__tests__/connectionGrant.test.ts  (9 tests) 70ms
+ ✓ src/views/shared/monetization/__tests__/growthHubCommercialCheckout.test.ts  (10 tests) 23ms
+ ✓ src/views/shared/monetization/__tests__/boostP0Funnel.test.tsx  (4 tests) 3859ms
+ ✓ src/lib/mcredits/__tests__/separation.test.ts  (3 tests) 458ms
+ ✓ src/lib/marco-pay/__tests__/reconciliation.test.ts  (1 test) 84ms
+ ✓ src/lib/marco-pay/__tests__/contract.test.ts  (5 tests) 7ms
+ ✓ src/lib/marco-pay/__tests__/approval.test.ts  (5 tests) 15ms
+ ✓ src/views/shared/monetization/__tests__/marcoPayProcessingUx.test.ts  (5 tests) 8ms
+ ✓ src/lib/marco-pay/__tests__/productionUx.test.ts  (4 tests) 75ms
+ ✓ src/views/shared/monetization/__tests__/marcoPayTerminalSuccessUx.test.ts  (5 tests) 26ms
+ ✓ src/lib/token-logo/__tests__/resolveTokenLogoSources.test.ts  (8 tests) 61ms
+ ✓ src/lib/marco-pay/__tests__/settlement.test.ts  (3 tests) 58ms
+ ✓ src/lib/marco-pay/__tests__/walletTransfer.test.ts  (2 tests) 82ms
+ ✓ src/lib/marco-pay/__tests__/merchantKeyIsolation.test.ts  (1 test) 5721ms
+ ✓ src/views/shared/monetization/__tests__/listedTokenIdentity.test.ts  (1 test) 67ms
+
+ Test Files  17 passed (17)
+      Tests  89 passed (89)
+   Start at  15:49:45
+   Duration  37.27s (transform 9.31s, setup 3.96s, collect 12.14s, tests 11.98s)

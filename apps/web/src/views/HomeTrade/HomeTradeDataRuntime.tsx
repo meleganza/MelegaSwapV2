@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { memo, startTransition, useEffect, useMemo } from 'react'
 import useHomeTradeData from './useHomeTradeData'
 import type { HomeCriticalData } from './HomeTradeDataContext'
 
@@ -33,10 +33,10 @@ export const HomeTradeDataRuntime: React.FC<HomeTradeDataRuntimeProps> = ({ onDa
   )
 
   useEffect(() => {
-    onData(criticalData)
+    startTransition(() => onData(criticalData))
   }, [criticalData, onData])
 
   return null
 }
 
-export default HomeTradeDataRuntime
+export default memo(HomeTradeDataRuntime)

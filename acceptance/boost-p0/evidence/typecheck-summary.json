@@ -1,0 +1,8 @@
+{
+  "diagnostics": 820,
+  "changedSourceDiagnostics": [
+    "src/lib/monetization/trendBoostOrders.ts(7,10): crypto.randomUUID missing from installed types; import unchanged from main"
+  ],
+  "introducedDiagnosticsFixed": 12,
+  "fullTypecheckPassed": false
+}

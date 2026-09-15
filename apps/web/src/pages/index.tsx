@@ -6,5 +6,6 @@ function IndexPage() {
 }
 
 IndexPage.chains = CHAIN_IDS
+IndexPage.disablePageSuspense = true
 
 export default IndexPage

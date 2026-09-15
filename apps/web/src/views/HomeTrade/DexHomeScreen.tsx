@@ -370,7 +370,7 @@ const DiscTitle = styled.h2`
   gap: 8px;
 `
 
-const ViewAll = styled(Link)`
+const ViewAll = styled(Link).attrs({ prefetch: false })`
   font-size: 12px;
   font-weight: 650;
   color: ${uxRebuildColors.gold};
@@ -384,7 +384,7 @@ const ViewAll = styled(Link)`
   }
 `
 
-const DiscRow = styled(Link)`
+const DiscRow = styled(Link).attrs({ prefetch: false })`
   min-height: 52px;
   padding: 10px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.05);

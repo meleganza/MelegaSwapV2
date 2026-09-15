@@ -1,0 +1,7 @@
+{
+  "exitCode": 2,
+  "diagnostics": 819,
+  "performanceChangedFileDiagnostics": [],
+  "globalTypecheckPassed": false,
+  "note": "Existing repository/dependency errors remain; Vercel ignoreBuildErrors is pre-existing."
+}

@@ -9,11 +9,18 @@ export type CommercialServiceId =
   | 'create-pool'
   | 'claim-project'
 
-export type CommercialCheckoutStep = 'project' | 'service' | 'package' | 'chain' | 'payment' | 'review' | 'checkout'
+export type CommercialCheckoutStep = 'project' | 'service' | 'package' | 'chain' | 'payment' | 'review'
 
 export type CommercialPaymentAsset = 'BNB' | 'USDT' | 'USDC' | 'MARCO' | 'MARCO_PAY' | 'M_CREDITS'
 
-export type MarketingHistoryKind = 'featured' | 'trend-boost' | 'claim' | 'farm' | 'pool' | 'liquidity'
+export type MarketingHistoryKind =
+  | 'featured'
+  | 'trend-boost'
+  | 'sponsored-research'
+  | 'claim'
+  | 'farm'
+  | 'pool'
+  | 'liquidity'
 
 export type MarketingHistoryStatus = 'Completed' | 'Running' | 'Expired'
 

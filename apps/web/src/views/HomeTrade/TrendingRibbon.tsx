@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { MelegaTicker } from 'design-system/melega'
+import { MelegaTicker } from 'design-system/melega/components/Ticker'
 import { extractAddressFromHref } from 'lib/trending/topMoversSharedSnapshot'
 import useDexTrendingTicker from './useDexTrendingTicker'
 import { useTrendingDisplayLimit } from './useTrendingDisplayLimit'
@@ -49,12 +49,11 @@ export const TrendingRibbon: React.FC = () => {
   )
 
   return (
-    <div data-top-movers-snapshot-id={snapshot.snapshotId} data-top-movers-surface="ticker">
+    <div style={{ width: '100%', minWidth: 0 }} data-top-movers-snapshot-id={snapshot.snapshotId} data-top-movers-surface="ticker">
       <MelegaTicker
         label="TOP MOVERS"
         items={enrichedItems}
         marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
-        showLiveDot={!trendingEmpty && enrichedItems.length > 0}
         emptyPrimary={
           isLoading
             ? 'Indexing market activity…'

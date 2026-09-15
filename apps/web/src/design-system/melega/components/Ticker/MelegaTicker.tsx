@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors, typography } from '../../tokens'
 import type { MelegaLayoutProps } from '../../primitives'
@@ -25,8 +25,8 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
 }
 
 const melegaTicker = keyframes`
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 `
 
 const Strip = styled.div<{
@@ -83,8 +83,12 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   display: flex;
   align-items: center;
   width: max-content;
+  flex: 0 0 auto;
   white-space: nowrap;
   will-change: transform;
+  contain: paint;
+  backface-visibility: hidden;
+  transform-style: flat;
   animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 52s linear infinite;
   animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
 
@@ -209,7 +213,7 @@ const EmptyMessage = styled.span`
   white-space: nowrap;
 `
 
-export const MelegaTicker: React.FC<MelegaTickerProps> = ({
+const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
   label = 'Trending',
   items,
   paused: pausedProp,
@@ -224,8 +228,12 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   const [dragPaused, setDragPaused] = useState(false)
   const dragRef = useRef(false)
 
-  const safeItems = Array.isArray(items) ? items : []
+  const safeItems = useMemo(() => (Array.isArray(items) ? items : []), [items])
   const marqueeEnabled = safeItems.length >= marqueeMinItems
+  const scrollItems = useMemo(
+    () => marqueeEnabled ? [...safeItems, ...safeItems] : safeItems,
+    [marqueeEnabled, safeItems],
+  )
 
   if (disabled) return null
 
@@ -244,8 +252,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     )
   }
 
-  const scrollItems = marqueeEnabled ? [...safeItems, ...safeItems] : safeItems
-  const paused = pausedProp ?? hoverPaused ?? dragPaused
+  const paused = pausedProp ?? (hoverPaused || dragPaused)
 
   const handlePointerDown = () => {
     dragRef.current = true
@@ -285,7 +292,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
       >
         <Track $paused={paused} $static={!marqueeEnabled} data-ticker-track>
           {scrollItems.map((item, i) => (
-            <React.Fragment key={`${item.id}-${i}`}>
+            <React.Fragment key={`${item.id}-${i >= safeItems.length ? 1 : 0}`}>
               {item.href ? (
                 <ItemLink href={item.href}>
                   {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
@@ -316,5 +323,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     </Strip>
   )
 }
+
+export const MelegaTicker = React.memo(MelegaTickerComponent)
 
 export default MelegaTicker

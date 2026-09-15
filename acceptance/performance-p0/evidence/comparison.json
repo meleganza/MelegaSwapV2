@@ -1,0 +1,18 @@
+{
+  "beforeCommit": "e9b0f185",
+  "afterCommit": "87e60d0c",
+  "initialHtmlScriptBytes": {
+    "productionDecoded": 3464863,
+    "pr55Decoded": 3529655,
+    "pr56Decoded": 3368061
+  },
+  "observedLoadedScripts": {
+    "before": 100,
+    "after": 81,
+    "beforeDecodedBytes": 5347014,
+    "afterDecodedBytes": 4045490,
+    "decodedReductionPct": 24.3,
+    "gzipReductionPct": 23.7
+  },
+  "limitation": "One browser session per revision; script bytes are static asset sizes, not LCP/INP/FPS or elapsed-time speedup. After snapshot taken before opening Boost or navigating."
+}

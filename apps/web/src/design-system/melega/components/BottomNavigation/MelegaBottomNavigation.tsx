@@ -115,7 +115,7 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
           href={disabled ? '#' : item.href}
           $active={active}
           aria-current={active ? 'page' : undefined}
-          prefetch
+          prefetch={false}
           onClick={(event) => {
             if (disabled) {
               event.preventDefault()

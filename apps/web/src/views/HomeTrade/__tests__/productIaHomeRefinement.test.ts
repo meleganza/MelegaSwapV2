@@ -66,7 +66,8 @@ describe('Product IA refinement — Home', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
     const destinations = load('ecosystemDestinations.ts')
     expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
-    for (const name of ['PASSPORT', 'SMARTDROP', 'BLACK', 'SPACE', 'MAIORA']) {
+    for (const name of ['BLACK', 'SPACE', 'MAIORA']) expect(destinations).not.toContain(`title: '${name}'`)
+    for (const name of ['PASSPORT', 'SMARTDROP']) {
       expect(destinations).toContain(name)
     }
   })
