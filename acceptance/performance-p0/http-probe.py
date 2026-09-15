@@ -9,6 +9,8 @@ def get(path):
  except Exception as e:return {'path':path,'error':str(e),'totalMs':round((time.monotonic()-t)*1000)},b''
 h,body=get('/');scripts=list(dict.fromkeys(re.findall(r'<script[^>]*src="([^"]+)"',body.decode())))
 paths=['/api/market-data/top-movers','/api/market-data/snapshot','/api/indexer/featured-markets/']
+if len(sys.argv)>2:
+ scripts=json.load(open(sys.argv[2]))['dom']['scripts']; paths=[]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:apis=list(pool.map(get,paths))
 with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:assets=list(pool.map(get,[s for s in scripts if s.startswith('/_next/')]))
 result={'base':base,'home':h,'apis':[a[0] for a in apis],'scripts':[a[0] for a in assets],'initialJsWireBytes':sum(a[0].get('wireBytes',0) for a in assets),'initialJsDecodedBytes':sum(a[0].get('decodedBytes',0) for a in assets)}

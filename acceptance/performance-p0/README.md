@@ -25,3 +25,15 @@ Focused behavioural tests and Boost regression suites are recorded in evidence w
 Full TypeScript is not globally green in the installed dependency environment (earlier baseline 820+ diagnostics). Vercel configuration already ignores TypeScript build errors; a successful build must not be described as a clean typecheck. Final changed-file diagnostics and remote build/preview results will be reported explicitly.
 
 Chrome DevTools MCP is unavailable. No invented FPS, Lighthouse score, LCP or INP improvement. Browser acceptance, HTTP payload comparisons and focused tests are the available evidence. Compare performance preview with production and with PR55 to separate recovery from incremental savings.
+
+## Final acceptance (runtime commit 87e60d0c)
+
+- Vercel Preview **Ready**, build 3m: https://melega-swap-v2-gatum1see-melegazas-projects.vercel.app/ .
+- **104 tests / 24 files passed**. Seven new behavioural checks on isolated production main reproduce **5 failures / 2 passes**; all seven pass after the patch. Baseline failure log included.
+- Full TypeScript completed with **819 diagnostics**, **zero in performance-changed files**. Global typecheck is NOT passed. This remains a release limitation; no unrelated typing cleanup bundled.
+- First-load production browser: React 421. First-load preview browser: no errors/warnings captured. Route navigation Home → Farms → Pools → Liquidity → Bridge → Home: no errors/warnings captured. Liquidity briefly exceeded the browser tool's 3-second inspection timeout during loading, then rendered correctly; no latency SLA claimed.
+- Desktop and 390x844 mobile Home verified; no document horizontal overflow (mobile client/scroll widths both 382px). Ticker has 48 desktop/28 mobile entries, same two copies and limits. Its scrolling viewport is now 904px desktop/182px mobile rather than the entire 7.46kpx track.
+- Combined Boost preview: first on-demand open, real MM72 detection/logo, service, 6h package, BNB chain, USDT, $29 Review/Connect Wallet gate, close/reopen reset. No order submission or wallet connection. Active footer remains PASSPORT/SMARTDROP from PR55.
+- Observed post-startup Next scripts: **100 → 81**. Decoded payload **5,347,014 → 4,045,490 bytes (-24.3%)**; gzip **1,501,429 → 1,145,077 bytes (-23.7%)**. Initial HTML-referenced JS alone: **3,464,863 → 3,368,061 decoded bytes (-2.8%)**, compared with PR55's 3,529,655 bytes (-4.6%). These are static asset totals for observed script sets, not FPS/Core Web Vitals or an elapsed-time speedup.
+
+PR56 is stacked on PR55 and remains draft. Founder production release approval is still required.

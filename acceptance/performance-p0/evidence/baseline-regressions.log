@@ -1,0 +1,179 @@
+
+ RUN  v0.27.2 /Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web
+
+ ❯ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx  (4 tests | 2 failed) 266ms
+   ❯ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx > ticker interaction and identity continuity > pauses for touch/drag independently of hover and resumes on cancel
+     → expected 'running' to be 'paused' // Object.is equality
+   ❯ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx > ticker interaction and identity continuity > does not remount token logos or the animation track when ranks change
+     → expected "spy" to be called 6 times
+ ❯ src/views/HomeTrade/__tests__/featuredMarketPolling.test.tsx  (1 test | 1 failed) 13ms
+   ❯ src/views/HomeTrade/__tests__/featuredMarketPolling.test.tsx > shared featured market polling > shares requests and retains last-good price on unavailable rows and failed refresh
+     → expected "spy" to be called 1 times
+ ❯ src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx  (1 test | 1 failed) 26ms
+   ❯ src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx > Home data producer feedback isolation > publishes once for unstable array references, while still receiving live context updates
+     → Producer publication feedback loop
+stderr | src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx > Home data producer feedback isolation > publishes once for unstable array references, while still receiving live context updates
+Error: Uncaught [Error: Producer publication feedback loop]
+    at reportException (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+    at performUnitOfWork (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:26560:12) Error: Producer publication feedback loop
+    at Proxy.useHomeTradeData (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx:8:13)
+    at HomeTradeDataRuntime (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/HomeTradeDataRuntime.tsx:11:16)
+    at renderWithHooks (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
+    at updateFunctionComponent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:19588:20)
+    at beginWork (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:21601:16)
+    at HTMLUnknownElement.callCallback (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [Error: Producer publication feedback loop]
+    at reportException (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+    at performUnitOfWork (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:26560:12) Error: Producer publication feedback loop
+    at Proxy.useHomeTradeData (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx:8:13)
+    at HomeTradeDataRuntime (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/HomeTradeDataRuntime.tsx:11:16)
+    at renderWithHooks (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
+    at updateFunctionComponent (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:19588:20)
+    at beginWork (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:21601:16)
+    at HTMLUnknownElement.callCallback (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/marcomelega/Projects/MelegaSwapV2/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+The above error occurred in the <HomeTradeDataRuntime> component:
+
+    at HomeTradeDataRuntime (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/HomeTradeDataRuntime.tsx:6:3)
+    at Host (/Users/marcomelega/.codex/.chatgpt-projects/g-p-6a063e169ef0819190dc9dad53409805/melega-performance-baseline/apps/web/src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx:39:55)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ ❯ src/contexts/__tests__/refreshVisibility.test.tsx  (1 test | 1 failed) 25ms
+   ❯ src/contexts/__tests__/refreshVisibility.test.tsx > background refresh visibility > starts hidden without polling, resumes visible and stops again on document-only events
+     → Unable to find an element with the text: 0/0. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <output>
+      2
+      /
+      1
+    </output>
+  </div>
+</body>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx > ticker interaction and identity continuity > pauses for touch/drag independently of hover and resumes on cancel
+AssertionError: expected 'running' to be 'paused' // Object.is equality
+ ❯ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx:17:30
+     15|     expect(state(container)).toBe('running')
+     16|     fireEvent.touchStart(strip)
+     17|     expect(state(container)).toBe('paused')
+       |                              ^
+     18|     fireEvent.touchCancel(strip)
+     19|     expect(state(container)).toBe('running')
+
+  - Expected   "paused"
+  + Received   "running"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx > ticker interaction and identity continuity > does not remount token logos or the animation track when ranks change
+AssertionError: expected "spy" to be called 6 times
+ ❯ src/design-system/melega/components/Ticker/__tests__/tickerContinuity.test.tsx:50:21
+     48|     rerender(<MelegaTicker items={[...withIcons].reverse()} marqueeMin…
+     49|     expect(container.querySelector('[data-ticker-track]')).toBe(track)
+     50|     expect(mounted).toHaveBeenCalledTimes(6)
+       |                     ^
+     51|     expect([...container.querySelectorAll('a')].map(a => a.getAttribut…
+     52|       ['C', 'B', 'A', 'C', 'B', 'A'].map(id => `/swap?outputCurrency=$…
+
+  - Expected   "6"
+  + Received   "10"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/views/HomeTrade/__tests__/featuredMarketPolling.test.tsx > shared featured market polling > shares requests and retains last-good price on unavailable rows and failed refresh
+AssertionError: expected "spy" to be called 1 times
+ ❯ src/views/HomeTrade/__tests__/featuredMarketPolling.test.tsx:31:23
+     29|     await waitFor(() => expect(screen.getByTestId('first').textContent…
+     30|     expect(screen.getByTestId('second').textContent).toBe('0.25')
+     31|     expect(fetchMock).toHaveBeenCalledTimes(1)
+       |                       ^
+     32|     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ rows:…
+     33|     await act(async () => { fireEvent.click(screen.getByText('Refresh'…
+
+  - Expected   "1"
+  + Received   "2"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx > Home data producer feedback isolation > publishes once for unstable array references, while still receiving live context updates
+Error: Producer publication feedback loop
+ ❯ Proxy.useHomeTradeData src/views/HomeTrade/__tests__/homeRuntimeFeedback.test.tsx:8:13
+      6| 
+      7| const Feed = createContext('initial')
+      8| let renders = 0
+       |             ^
+      9| vi.mock('../useHomeTradeData', () => ({ default: () => {
+     10|   const id = useContext(Feed)
+ ❯ HomeTradeDataRuntime src/views/HomeTrade/HomeTradeDataRuntime.tsx:11:16
+ ❯ renderWithHooks ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:16305:18
+ ❯ updateFunctionComponent ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:19588:20
+ ❯ beginWork ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:21601:16
+ ❯ beginWork$1 ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:27426:14
+ ❯ performUnitOfWork ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:26560:12
+ ❯ workLoopSync ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:26466:5
+ ❯ renderRootSync ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:26434:7
+ ❯ recoverFromConcurrentError ../../../../../../Projects/MelegaSwapV2/node_modules/react-dom/cjs/react-dom.development.js:25850:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/contexts/__tests__/refreshVisibility.test.tsx > background refresh visibility > starts hidden without polling, resumes visible and stops again on document-only events
+TestingLibraryElementError: Unable to find an element with the text: 0/0. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <output>
+      2
+      /
+      1
+    </output>
+  </div>
+</body>
+ ❯ Object.getElementError ../../../../../../Projects/MelegaSwapV2/node_modules/@testing-library/dom/dist/config.js:40:19
+ ❯ ../../../../../../Projects/MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:90:38
+ ❯ ../../../../../../Projects/MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:62:17
+ ❯ getByText ../../../../../../Projects/MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:111:19
+ ❯ src/contexts/__tests__/refreshVisibility.test.tsx:17:19
+     15|     render(<RefreshContextProvider><Counters /></RefreshContextProvide…
+     16|     act(() => { vi.advanceTimersByTime(98_000) })
+     17|     expect(screen.getByText('0/0')).toBeTruthy()
+       |                   ^
+     18|     act(() => { hidden = false; document.dispatchEvent(new Event('visi…
+     19|     expect(screen.getByText('2/1')).toBeTruthy()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+ Test Files  4 failed (4)
+      Tests  5 failed | 2 passed (7)
+   Start at  16:08:04
+   Duration  12.18s (transform 4.84s, setup 398ms, collect 2.47s, tests 330ms)
