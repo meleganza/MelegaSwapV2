@@ -51,6 +51,7 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
       >
         <img
           src={src}
+          decoding="async"
           alt={alt}
           width={size}
           height={size}

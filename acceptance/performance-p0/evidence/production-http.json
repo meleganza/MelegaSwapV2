@@ -1,0 +1,719 @@
+{
+  "base": "https://www.melega.finance",
+  "home": {
+    "path": "/",
+    "status": 200,
+    "ttfbMs": 206,
+    "totalMs": 208,
+    "wireBytes": 34887,
+    "decodedBytes": 200178,
+    "cache": "HIT",
+    "cacheControl": "public, max-age=0, must-revalidate"
+  },
+  "apis": [
+    {
+      "path": "/api/market-data/top-movers",
+      "status": 200,
+      "ttfbMs": 218,
+      "totalMs": 226,
+      "wireBytes": 4543,
+      "decodedBytes": 25853,
+      "cache": "HIT",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/api/market-data/snapshot",
+      "status": 200,
+      "ttfbMs": 181,
+      "totalMs": 190,
+      "wireBytes": 2624,
+      "decodedBytes": 10893,
+      "cache": "HIT",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/api/indexer/featured-markets/",
+      "status": 200,
+      "ttfbMs": 729,
+      "totalMs": 731,
+      "wireBytes": 888,
+      "decodedBytes": 2206,
+      "cache": "MISS",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    }
+  ],
+  "scripts": [
+    {
+      "path": "/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js",
+      "status": 200,
+      "ttfbMs": 389,
+      "totalMs": 641,
+      "wireBytes": 31365,
+      "decodedBytes": 91460,
+      "cache": "MISS",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3828.550740fe2d1eb640.js",
+      "status": 200,
+      "ttfbMs": 349,
+      "totalMs": 350,
+      "wireBytes": 5740,
+      "decodedBytes": 17626,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1998-4a6db8bcf8a19982.js",
+      "status": 200,
+      "ttfbMs": 601,
+      "totalMs": 602,
+      "wireBytes": 3111,
+      "decodedBytes": 13199,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3329-7fa8d555af00d106.js",
+      "status": 200,
+      "ttfbMs": 241,
+      "totalMs": 316,
+      "wireBytes": 36262,
+      "decodedBytes": 162322,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/849-3c436e5044b456f9.js",
+      "status": 200,
+      "ttfbMs": 336,
+      "totalMs": 355,
+      "wireBytes": 15385,
+      "decodedBytes": 53976,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2383.2cf31af137b87d6b.js",
+      "status": 200,
+      "ttfbMs": 433,
+      "totalMs": 442,
+      "wireBytes": 30379,
+      "decodedBytes": 104774,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/webpack-bfc821b120c4849a.js",
+      "status": 200,
+      "ttfbMs": 320,
+      "totalMs": 327,
+      "wireBytes": 5302,
+      "decodedBytes": 12225,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/framework-c41ea8a791274584.js",
+      "status": 200,
+      "ttfbMs": 337,
+      "totalMs": 347,
+      "wireBytes": 45974,
+      "decodedBytes": 141074,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/main-56397ec92b4198e8.js",
+      "status": 200,
+      "ttfbMs": 324,
+      "totalMs": 327,
+      "wireBytes": 37775,
+      "decodedBytes": 128876,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/pages/_app-3026fe838b35ab4a.js",
+      "status": 200,
+      "ttfbMs": 257,
+      "totalMs": 260,
+      "wireBytes": 2503,
+      "decodedBytes": 6807,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/f193ecb3-c83cdf4f8c076e0c.js",
+      "status": 200,
+      "ttfbMs": 138,
+      "totalMs": 145,
+      "wireBytes": 9368,
+      "decodedBytes": 34741,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/7754-009d1b9a58fa2c1d.js",
+      "status": 200,
+      "ttfbMs": 114,
+      "totalMs": 117,
+      "wireBytes": 13967,
+      "decodedBytes": 36832,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6450-fb02116b8f7d94b7.js",
+      "status": 200,
+      "ttfbMs": 113,
+      "totalMs": 114,
+      "wireBytes": 3259,
+      "decodedBytes": 10072,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9097-6bf5cc0f43395c15.js",
+      "status": 200,
+      "ttfbMs": 257,
+      "totalMs": 258,
+      "wireBytes": 2140,
+      "decodedBytes": 5470,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1257-d91dd06c27e629c7.js",
+      "status": 200,
+      "ttfbMs": 217,
+      "totalMs": 219,
+      "wireBytes": 21572,
+      "decodedBytes": 76838,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2235-2e2d1c4e262fb933.js",
+      "status": 200,
+      "ttfbMs": 321,
+      "totalMs": 402,
+      "wireBytes": 2975,
+      "decodedBytes": 7638,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9114-bf71c886f9b690c4.js",
+      "status": 200,
+      "ttfbMs": 336,
+      "totalMs": 384,
+      "wireBytes": 47880,
+      "decodedBytes": 175267,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/4973-ede364512115de26.js",
+      "status": 200,
+      "ttfbMs": 349,
+      "totalMs": 450,
+      "wireBytes": 9376,
+      "decodedBytes": 32351,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/8342-7396774a7a20288a.js",
+      "status": 200,
+      "ttfbMs": 440,
+      "totalMs": 443,
+      "wireBytes": 3142,
+      "decodedBytes": 9448,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6245-66d9086b780e8984.js",
+      "status": 200,
+      "ttfbMs": 147,
+      "totalMs": 163,
+      "wireBytes": 11232,
+      "decodedBytes": 35201,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/4882-75889bf5d13a018d.js",
+      "status": 200,
+      "ttfbMs": 126,
+      "totalMs": 227,
+      "wireBytes": 7658,
+      "decodedBytes": 24494,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3555-f1bbdd092e821329.js",
+      "status": 200,
+      "ttfbMs": 289,
+      "totalMs": 292,
+      "wireBytes": 4168,
+      "decodedBytes": 11744,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1880-7af07943ab54b9ab.js",
+      "status": 200,
+      "ttfbMs": 206,
+      "totalMs": 254,
+      "wireBytes": 38566,
+      "decodedBytes": 139879,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/8091-c3e5ebda07c35bf4.js",
+      "status": 200,
+      "ttfbMs": 194,
+      "totalMs": 254,
+      "wireBytes": 68916,
+      "decodedBytes": 223410,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5351-59604bd5ccfea3a0.js",
+      "status": 200,
+      "ttfbMs": 181,
+      "totalMs": 191,
+      "wireBytes": 2851,
+      "decodedBytes": 12047,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3255-24775c918e35de29.js",
+      "status": 200,
+      "ttfbMs": 139,
+      "totalMs": 140,
+      "wireBytes": 4144,
+      "decodedBytes": 9045,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2483-4542dc2948e15825.js",
+      "status": 200,
+      "ttfbMs": 141,
+      "totalMs": 142,
+      "wireBytes": 6631,
+      "decodedBytes": 20715,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3589-1150c524f70b904f.js",
+      "status": 200,
+      "ttfbMs": 113,
+      "totalMs": 115,
+      "wireBytes": 18013,
+      "decodedBytes": 50965,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2247-118db6b228e5f9eb.js",
+      "status": 200,
+      "ttfbMs": 109,
+      "totalMs": 110,
+      "wireBytes": 7877,
+      "decodedBytes": 21782,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1883-a4c14ecaeb76dd01.js",
+      "status": 200,
+      "ttfbMs": 106,
+      "totalMs": 108,
+      "wireBytes": 3590,
+      "decodedBytes": 8374,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/4431-e57cac63f372d87d.js",
+      "status": 200,
+      "ttfbMs": 96,
+      "totalMs": 101,
+      "wireBytes": 8237,
+      "decodedBytes": 18792,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1330-a5861bc5c2c8d4a7.js",
+      "status": 200,
+      "ttfbMs": 204,
+      "totalMs": 214,
+      "wireBytes": 1532,
+      "decodedBytes": 4242,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9582-dc515650ecfde7c9.js",
+      "status": 200,
+      "ttfbMs": 105,
+      "totalMs": 106,
+      "wireBytes": 2761,
+      "decodedBytes": 7011,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9158-b6ed5603fef718f8.js",
+      "status": 200,
+      "ttfbMs": 376,
+      "totalMs": 380,
+      "wireBytes": 18822,
+      "decodedBytes": 70233,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1365-3ce2302d9bd3edb3.js",
+      "status": 200,
+      "ttfbMs": 514,
+      "totalMs": 694,
+      "wireBytes": 8802,
+      "decodedBytes": 28730,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2558-a2d6a926776717db.js",
+      "status": 200,
+      "ttfbMs": 418,
+      "totalMs": 502,
+      "wireBytes": 8252,
+      "decodedBytes": 18798,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3002-3cd3e778579d5174.js",
+      "status": 200,
+      "ttfbMs": 399,
+      "totalMs": 582,
+      "wireBytes": 16161,
+      "decodedBytes": 60440,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6248-29e1ed3752c4c6e9.js",
+      "status": 200,
+      "ttfbMs": 550,
+      "totalMs": 557,
+      "wireBytes": 9302,
+      "decodedBytes": 26368,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6582-3d112b5c5a479fba.js",
+      "status": 200,
+      "ttfbMs": 453,
+      "totalMs": 467,
+      "wireBytes": 7481,
+      "decodedBytes": 17454,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/7572-8292714debd464fe.js",
+      "status": 200,
+      "ttfbMs": 295,
+      "totalMs": 310,
+      "wireBytes": 6097,
+      "decodedBytes": 18474,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1058-276bb7abc35b48de.js",
+      "status": 200,
+      "ttfbMs": 271,
+      "totalMs": 274,
+      "wireBytes": 8370,
+      "decodedBytes": 30775,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/3921-5a9c7167a49e41d7.js",
+      "status": 200,
+      "ttfbMs": 119,
+      "totalMs": 121,
+      "wireBytes": 3417,
+      "decodedBytes": 8976,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/4534-468739bb1a1ed21e.js",
+      "status": 200,
+      "ttfbMs": 206,
+      "totalMs": 218,
+      "wireBytes": 4585,
+      "decodedBytes": 15330,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1371-d86b85a70fd1818d.js",
+      "status": 200,
+      "ttfbMs": 200,
+      "totalMs": 247,
+      "wireBytes": 46851,
+      "decodedBytes": 121531,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9803-7de6bf1b3fb0571d.js",
+      "status": 200,
+      "ttfbMs": 184,
+      "totalMs": 225,
+      "wireBytes": 19237,
+      "decodedBytes": 60588,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1233-8ac7e0bdec6b327c.js",
+      "status": 200,
+      "ttfbMs": 300,
+      "totalMs": 303,
+      "wireBytes": 7774,
+      "decodedBytes": 23322,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6699-4afc79787519724f.js",
+      "status": 200,
+      "ttfbMs": 841,
+      "totalMs": 958,
+      "wireBytes": 16446,
+      "decodedBytes": 77063,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/8468-e203641880b1d5a8.js",
+      "status": 200,
+      "ttfbMs": 819,
+      "totalMs": 1125,
+      "wireBytes": 7948,
+      "decodedBytes": 22039,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/7301-4e646cc1848df1fa.js",
+      "status": 200,
+      "ttfbMs": 217,
+      "totalMs": 220,
+      "wireBytes": 24719,
+      "decodedBytes": 163401,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2473-98fa6a8e02cb7f26.js",
+      "status": 200,
+      "ttfbMs": 949,
+      "totalMs": 958,
+      "wireBytes": 7463,
+      "decodedBytes": 25118,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/8497-f3c2746ebcf725d3.js",
+      "status": 200,
+      "ttfbMs": 1097,
+      "totalMs": 1119,
+      "wireBytes": 6004,
+      "decodedBytes": 19455,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5061-7321972acc441b23.js",
+      "status": 200,
+      "ttfbMs": 355,
+      "totalMs": 379,
+      "wireBytes": 25325,
+      "decodedBytes": 171986,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5560-9c54d3a3902fd7a1.js",
+      "status": 200,
+      "ttfbMs": 247,
+      "totalMs": 251,
+      "wireBytes": 15552,
+      "decodedBytes": 50278,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/922-e1e7609b19cc0dda.js",
+      "status": 200,
+      "ttfbMs": 300,
+      "totalMs": 303,
+      "wireBytes": 8556,
+      "decodedBytes": 34893,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/7531-9c40f65d605ea07c.js",
+      "status": 200,
+      "ttfbMs": 202,
+      "totalMs": 208,
+      "wireBytes": 8264,
+      "decodedBytes": 26309,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5258-923831151488ace4.js",
+      "status": 200,
+      "ttfbMs": 202,
+      "totalMs": 206,
+      "wireBytes": 12524,
+      "decodedBytes": 54356,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2395-a4fd51fba69e37a2.js",
+      "status": 200,
+      "ttfbMs": 210,
+      "totalMs": 242,
+      "wireBytes": 11206,
+      "decodedBytes": 35097,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/9952-023fc24a3d07e63b.js",
+      "status": 200,
+      "ttfbMs": 269,
+      "totalMs": 278,
+      "wireBytes": 43229,
+      "decodedBytes": 124633,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1608-a47853315678c997.js",
+      "status": 200,
+      "ttfbMs": 201,
+      "totalMs": 203,
+      "wireBytes": 6485,
+      "decodedBytes": 18627,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5963-c096aaab96d490f3.js",
+      "status": 200,
+      "ttfbMs": 388,
+      "totalMs": 400,
+      "wireBytes": 5410,
+      "decodedBytes": 18320,
+      "cache": "MISS",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/6467-d98e14eea6cec2b6.js",
+      "status": 200,
+      "ttfbMs": 172,
+      "totalMs": 173,
+      "wireBytes": 9848,
+      "decodedBytes": 26433,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/2530-deff683d12f0c517.js",
+      "status": 200,
+      "ttfbMs": 153,
+      "totalMs": 156,
+      "wireBytes": 9943,
+      "decodedBytes": 31075,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/5393-a7258e8436608353.js",
+      "status": 200,
+      "ttfbMs": 162,
+      "totalMs": 167,
+      "wireBytes": 52696,
+      "decodedBytes": 194750,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/1697-4b47e2bffad91e9a.js",
+      "status": 200,
+      "ttfbMs": 164,
+      "totalMs": 192,
+      "wireBytes": 19309,
+      "decodedBytes": 58982,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/chunks/pages/index-39cb60aa66216cf3.js",
+      "status": 200,
+      "ttfbMs": 167,
+      "totalMs": 169,
+      "wireBytes": 21023,
+      "decodedBytes": 87216,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/oJufARJ5rc8Q5lbZ4sx-5/_buildManifest.js",
+      "status": 200,
+      "ttfbMs": 179,
+      "totalMs": 183,
+      "wireBytes": 4562,
+      "decodedBytes": 14719,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    },
+    {
+      "path": "/_next/static/oJufARJ5rc8Q5lbZ4sx-5/_ssgManifest.js",
+      "status": 200,
+      "ttfbMs": 135,
+      "totalMs": 138,
+      "wireBytes": 397,
+      "decodedBytes": 397,
+      "cache": "HIT",
+      "cacheControl": "public,max-age=31536000,immutable"
+    }
+  ],
+  "initialJsWireBytes": 995711,
+  "initialJsDecodedBytes": 3464863
+}

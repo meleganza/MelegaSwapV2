@@ -2,7 +2,7 @@
  * Single lightweight Top Movers consumer for ticker, Home and Projects.
  * Expensive indexer aggregation runs server-side once per cache window.
  */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, startTransition, useContext, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
@@ -81,21 +81,33 @@ function durableRankedAssets(entries: TopMoverEntry[]): TierRankedAsset[] {
 }
 
 export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const [clientReady, setClientReady] = useState(false)
   const [durableItems, setDurableItems] = useState<MelegaTickerItem[]>([])
   const [durableUpdatedAt, setDurableUpdatedAt] = useState<number>()
-  const { data, error } = useSWR<TopMoversApiPayload>('/api/market-data/top-movers', fetchTopMoversSnapshot, {
-    revalidateOnFocus: false,
-    refreshWhenHidden: false,
-    refreshInterval: 60_000,
-    dedupingInterval: 55_000,
-    keepPreviousData: true,
-  })
+  const { data, error } = useSWR<TopMoversApiPayload>(
+    clientReady ? '/api/market-data/top-movers' : null,
+    fetchTopMoversSnapshot,
+    {
+      revalidateOnFocus: false,
+      refreshWhenHidden: false,
+      refreshInterval: 60_000,
+      dedupingInterval: 55_000,
+      keepPreviousData: true,
+    },
+  )
 
   useEffect(() => {
     const durable = readDurableTrendingSnapshot()
-    if (!durable?.items?.length) return
-    setDurableItems(durable.items)
-    setDurableUpdatedAt(durable.updatedAt)
+    // Hydrate the last-known ticker and enable its revalidation in one
+    // transition. This avoids two consecutive shell commits at startup while
+    // preserving the exact same visible data and refresh policy.
+    startTransition(() => {
+      if (durable?.items?.length) {
+        setDurableItems(durable.items)
+        setDurableUpdatedAt(durable.updatedAt)
+      }
+      setClientReady(true)
+    })
   }, [])
 
   const liveItems = useMemo(() => (data?.snapshot ? entriesToTickerItems(data.snapshot.entries) : []), [data?.snapshot])
@@ -111,15 +123,22 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
     if (!liveItems.length || resolved.fromDurable || resolved.rejectedPartial) return
     if (itemsSignature(liveItems) === itemsSignature(durableItems)) return
     writeDurableTrendingSnapshot(liveItems)
-    setDurableItems(liveItems)
-    setDurableUpdatedAt(Date.now())
+    startTransition(() => {
+      setDurableItems(liveItems)
+      setDurableUpdatedAt(Date.now())
+    })
   }, [liveItems, durableItems, resolved.fromDurable, resolved.rejectedPartial])
 
   const value = useMemo((): TopMoversSnapshotContextValue => {
     const snapshot = buildTopMoversSharedSnapshot({
       items: resolved.items,
       fromDurable: resolved.fromDurable,
-      generatedAt: data?.snapshot.generatedAt,
+      // Keep the empty pre-fetch snapshot identical on SSR and first client
+      // render. A fresh timestamp here caused a hydration mismatch that could
+      // crash query-opened client modals such as Claim Project.
+      generatedAt:
+        data?.snapshot.generatedAt ??
+        (durableUpdatedAt ? new Date(durableUpdatedAt).toISOString() : '1970-01-01T00:00:00.000Z'),
       sourceBlock: data?.snapshot.sourceBlock,
     })
     snapshot.entries = snapshot.entries.map((entry) => ({ ...entry, chainId: entry.chainId ?? 56 }))
@@ -151,7 +170,7 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
       indexerScopeNote: resolved.fromDurable ? 'Last-known movers · refreshing…' : data?.indexerScopeNote,
       prefixResult: assertIdenticalPrefix(snapshot.entries, homeEntries),
     }
-  }, [data, durableItems.length, error, resolved])
+  }, [data, durableItems.length, durableUpdatedAt, error, resolved])
 
   return <TopMoversSnapshotContext.Provider value={value}>{children}</TopMoversSnapshotContext.Provider>
 }

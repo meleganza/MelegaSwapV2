@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import styled, { keyframes } from 'styled-components'
-import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
+
+const CommercialCheckoutModal = dynamic(
+  () => import('views/shared/monetization/CommercialCheckoutModal').then((module) => module.CommercialCheckoutModal),
+  { ssr: false },
+)
 
 const breathe = keyframes`
   0%, 100% { box-shadow: 0 0 0 rgba(244, 196, 48, 0); }
@@ -47,23 +52,31 @@ const Trigger = styled.button`
 
 export const BoostProjectLauncher: React.FC = () => {
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [checkoutMounted, setCheckoutMounted] = useState(false)
+
+  const openCheckout = () => {
+    setCheckoutMounted(true)
+    setCheckoutOpen(true)
+  }
 
   return (
     <>
-      <Trigger type="button" onClick={() => setCheckoutOpen(true)} data-testid="boost-your-project-trigger">
+      <Trigger type="button" onClick={openCheckout} data-testid="boost-your-project-trigger">
         BOOST YOUR PROJECT
       </Trigger>
 
-      <CommercialCheckoutModal
-        open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        projectId=""
-        projectSlug=""
-        projectContract=""
-        chainId={56}
-        identityReady
-        visibilityOnly
-      />
+      {checkoutMounted ? (
+        <CommercialCheckoutModal
+          open={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          projectId=""
+          projectSlug=""
+          projectContract=""
+          chainId={56}
+          identityReady
+          visibilityOnly
+        />
+      ) : null}
     </>
   )
 }
