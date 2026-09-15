@@ -369,9 +369,9 @@ export async function consumeInboundConnectionGrant(input: {
     nowMs: input.nowMs,
     nodeEnv: input.nodeEnv,
   })
-  if (!evaluated.ok) return publicResult(evaluated.error_code)
+  if (evaluated.ok === false) return publicResult(evaluated.error_code)
   const exchanged = await exchangeConnectionGrant(evaluated.token, evaluated.presented)
-  if (!exchanged.ok) return publicResult(exchanged.error_code)
+  if (exchanged.ok === false) return publicResult(exchanged.error_code)
   try {
     await persistBoundWebhookSecret({
       schema: 'melega.marco-pay-connection-binding.v1',

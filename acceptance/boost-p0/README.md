@@ -49,3 +49,7 @@ The repository's `.cursor/rules/mission-execution-protocol.mdc` requires tests a
 From `apps/web`, run Vitest with `--config ../../acceptance/boost-p0/vitest.config.ts`. The React behavioural suite is `src/views/shared/monetization/__tests__/boostP0Funnel.test.tsx`; recovered payment suites are under `src/lib/marco-pay/__tests__` and `src/lib/mcredits/__tests__`.
 
 From the repository root, start Vite with `--config acceptance/boost-p0/vite.config.ts`, then open localhost port 4317. The fixture cannot create live orders or send transactions.
+
+## Complete PR preview acceptance
+
+Preview build for fd2d3ab is Ready: https://melega-swap-v2-dfq786dq3-melegazas-projects.vercel.app/ . Real MM72 registry resolution and logo were verified on the complete Next application, alongside desktop/mobile navigation through Review and wallet gating. See `pr55-*` screenshots and `validation.md` for exact final checks and limitations. No live checkout submission was performed.

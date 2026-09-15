@@ -29,7 +29,7 @@ export function marcoMinorToTokenRaw(marcoAmountMinor: string, tokenDecimals = 1
     throw new Error('MARCO_AMOUNT_INVALID')
   }
   if (tokenDecimals < MARCO_AMOUNT_DECIMALS) throw new Error('MARCO_DECIMALS_INVALID')
-  const scale = 10n ** BigInt(tokenDecimals - MARCO_AMOUNT_DECIMALS)
+  const scale = BigInt('1' + '0'.repeat(tokenDecimals - MARCO_AMOUNT_DECIMALS))
   return (BigInt(marcoAmountMinor) * scale).toString()
 }
 

@@ -121,8 +121,8 @@ describe('MARCO Pay connection grant consumer', () => {
         expectedApplicationRef: applicationRef,
         nowMs: Date.now(),
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('GRANT_EXPIRED')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'GRANT_EXPIRED' })
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
@@ -132,8 +132,8 @@ describe('MARCO Pay connection grant consumer', () => {
         payload: inbound({ application_ref: 'app_otherreference01' }),
         expectedApplicationRef: applicationRef,
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('WRONG_APPLICATION')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'WRONG_APPLICATION' })
   })
 
   it('rejects the wrong callback', () => {
@@ -142,8 +142,8 @@ describe('MARCO Pay connection grant consumer', () => {
         payload: inbound({ callback_url: 'https://example.com/hook' }),
         expectedApplicationRef: applicationRef,
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('WRONG_CALLBACK')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'WRONG_CALLBACK' })
   })
 
   it('rejects the wrong environment', () => {
@@ -152,8 +152,8 @@ describe('MARCO Pay connection grant consumer', () => {
         payload: inbound({ environment: 'sandbox' }),
         expectedApplicationRef: applicationRef,
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('WRONG_ENVIRONMENT')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'WRONG_ENVIRONMENT' })
   })
 
   it('never fetches an untrusted exchange URL', async () => {
@@ -177,15 +177,15 @@ describe('MARCO Pay connection grant consumer', () => {
         payload: parseConnectionGrantPayload(grantBody({ connection_grant: '' }), '')!,
         expectedApplicationRef: applicationRef,
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('MISSING_GRANT')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'MISSING_GRANT' })
     expect(
       evaluateInboundConnectionGrant({
         payload: inbound({ connection_grant: 'mcg_zzzz' }),
         expectedApplicationRef: applicationRef,
         nodeEnv: 'production',
-      }).error_code,
-    ).toBe('INVALID_GRANT')
+      }),
+    ).toMatchObject({ ok: false, error_code: 'INVALID_GRANT' })
   })
 
   it('keeps the raw signing secret and grant token out of frontend payloads', () => {

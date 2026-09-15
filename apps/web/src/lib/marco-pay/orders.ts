@@ -86,7 +86,7 @@ function orderKey(orderId: string): string {
   return `${BLOB_PREFIX}orders/${orderId}.json`
 }
 
-function claimKey(kind: 'event' | 'payment', reference: string): string {
+function claimKey(kind: 'event' | 'payment' | 'fulfilment', reference: string): string {
   return `${BLOB_PREFIX}claims/${kind}/${encodeURIComponent(reference)}.json`
 }
 
@@ -466,7 +466,7 @@ export async function recoverPaidUnfulfilledMarcoPayOrders(): Promise<{
     if (!order.paymentRef && order.state === 'CREATED') continue
     try {
       const next = await reconcileMarcoPayOrder(order.orderId)
-      if (next?.state === 'ACTIVE' && order.state !== 'ACTIVE') {
+      if (next?.state === 'ACTIVE') {
         recovered.push({
           orderId: next.orderId,
           paymentRef: next.paymentRef,
