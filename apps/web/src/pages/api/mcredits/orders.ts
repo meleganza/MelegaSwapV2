@@ -1,6 +1,6 @@
-import { VISIBILITY_RUNTIME } from 'lib/monetization/visibilityRuntime'
+import { canAcceptMCreditsPayment, VISIBILITY_RUNTIME } from 'lib/monetization/visibilityRuntime'
 import type { NextApiHandler } from 'next'
-import { MCreditsGatewayError, spendMCreditsForBoost } from 'lib/mcredits/checkout'
+import { getMCreditsOrder, MCreditsGatewayError, spendMCreditsForBoost } from 'lib/mcredits/checkout'
 import type { MarcoPayOrder } from 'lib/marco-pay/orders'
 
 const SERVICES = new Set<MarcoPayOrder['serviceId']>([
@@ -13,8 +13,24 @@ const SERVICES = new Set<MarcoPayOrder['serviceId']>([
 
 const handler: NextApiHandler = async (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store')
+  if (req.method === 'GET') {
+    const orderId = String(req.query.orderId || '').trim()
+    if (!orderId) return res.status(400).json({ error: 'ORDER_ID_REQUIRED' })
+    const order = getMCreditsOrder(orderId)
+    if (!order) return res.status(404).json({ error: 'ORDER_NOT_FOUND' })
+    return res.status(200).json({
+      order: {
+        orderId: order.orderId,
+        state: order.state,
+        serviceId: order.serviceId,
+        packageId: order.packageId,
+      },
+      payment_id: null,
+      approval_url: null,
+    })
+  }
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST')
+    res.setHeader('Allow', 'GET, POST')
     return res.status(405).json({ error: 'Method not allowed' })
   }
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
@@ -26,7 +42,9 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(400).json({ error: 'PROJECT_AND_WALLET_REQUIRED' })
   }
   if (!SERVICES.has(serviceId)) return res.status(400).json({ error: 'SERVICE_UNSUPPORTED' })
-  if (!VISIBILITY_RUNTIME[serviceId]?.live) return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
+  if (!VISIBILITY_RUNTIME[serviceId]?.live || !canAcceptMCreditsPayment(serviceId)) {
+    return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
+  }
   const identityHeader = req.headers['x-marco-passport-session']
   const identityToken = Array.isArray(identityHeader) ? identityHeader[0] : identityHeader
   try {
@@ -38,9 +56,9 @@ const handler: NextApiHandler = async (req, res) => {
       serviceId,
       packageId: body.packageId ? String(body.packageId) : null,
       targetId: body.targetId ? String(body.targetId) : null,
-      identityToken: identityToken || null,
+      identityToken: identityToken || body.identityToken || null,
     })
-    return res.status(201).json({
+    return res.status(order.state === 'FULFILLED' ? 201 : 409).json({
       order: {
         orderId: order.orderId,
         state: order.state,
@@ -52,7 +70,8 @@ const handler: NextApiHandler = async (req, res) => {
     })
   } catch (cause) {
     const code = cause instanceof MCreditsGatewayError ? cause.code : 'MCREDITS_UNAVAILABLE'
-    const status = code === 'MCREDITS_IDENTITY_REQUIRED' ? 401 : 503
+    const status =
+      code === 'MCREDITS_IDENTITY_REQUIRED' ? 401 : code === 'SERVICE_NOT_FULFILLABLE' ? 409 : 503
     return res.status(status).json({
       error: code,
       message: cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.',
