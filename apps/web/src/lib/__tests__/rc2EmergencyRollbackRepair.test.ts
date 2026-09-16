@@ -95,12 +95,16 @@ describe('RC2 emergency — ecosystem', () => {
 })
 
 describe('RC2 emergency — error UX', () => {
-  it('removes BSC-only recovery copy', () => {
+  it('removes BSC-only recovery copy and keeps a friendly Home CTA', () => {
     const src = load('components/ErrorBoundary/SentryErrorBoundary.tsx')
+    const screen = load('components/ErrorBoundary/PremiumErrorScreen.tsx')
     expect(src).not.toMatch(/switch network to BSC Network/)
-    expect(src).toMatch(/Return home/)
-    expect(src).toMatch(/Technical details/)
-    expect(src).toMatch(/Error Tracking Id/)
+    expect(src).toMatch(/PremiumErrorScreen/)
+    expect(src).not.toMatch(/Technical details/)
+    expect(src).not.toMatch(/Error Tracking Id/)
+    expect(screen).toMatch(/Return Home/)
+    expect(screen).not.toMatch(/Technical details/)
+    expect(screen).not.toMatch(/Error Tracking Id/)
   })
 })
 
