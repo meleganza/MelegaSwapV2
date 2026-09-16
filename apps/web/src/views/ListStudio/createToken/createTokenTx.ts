@@ -84,7 +84,7 @@ export type CreateTokenHandoffPayload = {
 
 const MAX_NAME = 64
 const MAX_SYMBOL = 16
-const MAX_SUPPLY_RAW = 10n ** 36n
+const MAX_SUPPLY_RAW = BigInt(`1${'0'.repeat(36)}`)
 
 export function resolveCreateTokenUiState(input: {
   factoryAddress: string | null
@@ -133,7 +133,7 @@ export function validateCreateTokenDraft(draft: CreateTokenDraft): string[] {
   }
   try {
     const raw = humanSupplyToRaw(draft.supplyHuman, draft.decimals)
-    if (raw <= 0n) errors.push('Total supply must be greater than zero')
+    if (raw <= BigInt(0)) errors.push('Total supply must be greater than zero')
     if (raw > MAX_SUPPLY_RAW) errors.push('Total supply exceeds factory maximum')
   } catch {
     errors.push('Total supply is invalid')
@@ -147,7 +147,7 @@ export function humanSupplyToRaw(supplyHuman: string, decimals: number): bigint 
   const [whole, frac = ''] = cleaned.split('.')
   if (frac.length > decimals) throw new Error('too many fractional digits')
   const padded = frac.padEnd(decimals, '0')
-  const raw = BigInt(whole || '0') * 10n ** BigInt(decimals) + BigInt(padded || '0')
+  const raw = BigInt(whole || '0') * (BigInt(10) ** BigInt(decimals)) + BigInt(padded || '0')
   return raw
 }
 

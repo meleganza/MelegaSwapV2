@@ -1,16 +1,17 @@
-import { Token, getTokenComparator } from '@pancakeswap/sdk'
+import { Token } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
+import { useAllTokenBalances } from 'state/wallet/hooks'
+import { compareTokensByWalletBalance, rankTokensByWalletBalance } from './rankTokensByWalletBalance'
 
 function useTokenComparator(inverted: boolean): (tokenA: Token, tokenB: Token) => number {
-  // Do not fetch every listed token balance just to render the picker. Visible
-  // virtualized rows resolve balances directly; the base list stays stable.
-  const comparator = useMemo(() => getTokenComparator({}), [])
+  const balances = useAllTokenBalances()
   return useMemo(() => {
-    if (inverted) {
-      return (tokenA: Token, tokenB: Token) => comparator(tokenA, tokenB) * -1
+    return (tokenA: Token, tokenB: Token) => {
+      const cmp = compareTokensByWalletBalance(tokenA, tokenB, balances)
+      return inverted ? cmp * -1 : cmp
     }
-    return comparator
-  }, [inverted, comparator])
+  }, [inverted, balances])
 }
 
+export { rankTokensByWalletBalance }
 export default useTokenComparator

@@ -198,15 +198,17 @@ describe('Farms final product consistency', () => {
     expect(spark).toMatch(/baseline|never invents oscillation/i)
   })
 
-  it('FARM-19/22: Create Farm first-open stable; selector portal z-index', () => {
+  it('FARM-19/22: Create Farm first-open stable; pair search stays in-container', () => {
     const screen = load('FarmsStudioScreen.tsx')
     expect(screen).toContain('data-create-farm-first-open-stable="true"')
     expect(screen).toContain('createOpenRef')
     expect(screen).toContain('if (createOpenRef.current) return')
     const workspace = load('modules/PublicFarmFactoryWorkspace.tsx')
-    expect(workspace).toContain('createPortal')
+    expect(workspace).not.toContain('createPortal')
     expect(workspace).toContain('create-farm-pair-dropdown')
-    expect(workspace).toContain('melegaZIndex.overlayStacked')
+    expect(workspace).toContain('max-height: 220px')
+    expect(workspace).not.toMatch(/position:\s*fixed/)
+    expect(workspace).not.toContain('melegaZIndex.overlayStacked')
     expect(workspace).not.toMatch(/z-index:\s*99999/)
   })
 

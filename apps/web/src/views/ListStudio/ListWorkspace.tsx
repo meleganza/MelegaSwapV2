@@ -39,6 +39,11 @@ import {
 import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
 import { buildCreateTokenSuccessModel, type CreateTokenSuccessModel } from './createToken/createTokenPostCreationTypes'
 import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
+import {
+  normalizeClaimChainId,
+  normalizeClaimContractInput,
+  sanitizeClaimDisplayName,
+} from './claimProjectIntent'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -920,12 +925,50 @@ function ContextEmpty({ label }: { label: string }) {
   return <Placeholder>{label}</Placeholder>
 }
 
+function CreateTokenNetworkSwitch({
+  switchRef,
+}: {
+  switchRef: React.MutableRefObject<ReturnType<typeof useMelegaSwitchNetwork>['switchNetworkAsync'] | undefined>
+}) {
+  const { switchNetworkAsync } = useMelegaSwitchNetwork()
+  switchRef.current = switchNetworkAsync
+  return null
+}
+
+class IsolatedHookBoundary extends React.Component<{ children: React.ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true }
+  }
+
+  componentDidCatch(error: Error) {
+    if (typeof console !== 'undefined') {
+      console.warn('list-workspace isolated hook recovered', error?.message)
+    }
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
+function WalletSignerBridge({
+  signerRef,
+}: {
+  signerRef: React.MutableRefObject<ReturnType<typeof useSigner>['data']>
+}) {
+  const { data: signer } = useSigner()
+  signerRef.current = signer
+  return null
+}
+
 export const ListWorkspace: React.FC = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
-  const { data: signer } = useSigner()
-  const { switchNetworkAsync } = useMelegaSwitchNetwork()
+  const signerRef = useRef<ReturnType<typeof useSigner>['data']>()
+  const switchNetworkAsyncRef = useRef<ReturnType<typeof useMelegaSwitchNetwork>['switchNetworkAsync'] | undefined>()
   const { listIntent, clearListIntent } = useListIntent()
   const [step, setStep] = useState(0)
   const [values, setValues] = useState<Record<string, string>>({})
@@ -945,6 +988,11 @@ export const ListWorkspace: React.FC = () => {
   const [claimBusy, setClaimBusy] = useState(false)
   const [claimError, setClaimError] = useState<string | null>(null)
   const [claimAuthorityType, setClaimAuthorityType] = useState<ProjectClaimRecord['authorityType'] | null>(null)
+  const [claimLookupState, setClaimLookupState] = useState<'idle' | 'loading' | 'ready' | 'unsupported' | 'error'>(
+    'idle',
+  )
+  const [claimLookupReason, setClaimLookupReason] = useState<string | null>(null)
+  const claimLookupRef = useRef<string | null>(null)
   const [liquidityConfirmed, setLiquidityConfirmed] = useState(false)
   const [visibilityCheckoutOpen, setVisibilityCheckoutOpen] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -977,6 +1025,9 @@ export const ListWorkspace: React.FC = () => {
     setClaimBusy(false)
     setClaimError(null)
     setClaimAuthorityType(null)
+    setClaimLookupState('idle')
+    setClaimLookupReason(null)
+    claimLookupRef.current = null
     setLiquidityConfirmed(queryLiquidityConfirmed)
     setVisibilityCheckoutOpen(false)
     if (!listIntent) {
@@ -1021,18 +1072,22 @@ export const ListWorkspace: React.FC = () => {
       })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
     else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
-    else if (listIntent === 'claim-project')
+    else if (listIntent === 'claim-project') {
+      const contract = normalizeClaimContractInput(queryContract)
+      const sanitized = sanitizeClaimDisplayName(queryName, querySymbol)
       setValues({
         verification: 'pending',
-        chain: queryChain || '56',
+        chain: String(normalizeClaimChainId(queryChain)),
         listed: queryListed ? '1' : '',
         ...(querySlug ? { slug: querySlug } : {}),
-        ...(queryContract ? { contract: queryContract } : {}),
-        ...(queryName ? { name: queryName } : {}),
+        ...(contract.ok ? { contract: contract.address } : queryContract ? { contract: queryContract } : {}),
+        ...(sanitized.name ? { name: sanitized.name } : {}),
         ...(querySymbol ? { symbol: querySymbol } : {}),
         ...(queryLogo ? { logo: queryLogo } : {}),
+        ...(sanitized.websiteFromName ? { website: sanitized.websiteFromName } : {}),
         ...(querySymbol ? { handle: `@${querySymbol.toLowerCase().replace(/[^a-z0-9_]/g, '')}` } : {}),
       })
+    }
     else setValues({})
   }, [
     listIntent,
@@ -1054,6 +1109,89 @@ export const ListWorkspace: React.FC = () => {
         : { ...current, wallet: address, verification: 'wallet-connected' },
     )
   }, [listIntent, isConnected, address])
+
+  useEffect(() => {
+    if (listIntent !== 'claim-project') return
+    const contract = normalizeClaimContractInput(queryContract)
+    if (!queryContract) {
+      setClaimLookupState('idle')
+      setClaimLookupReason(null)
+      return
+    }
+    if (!contract.ok) {
+      setClaimLookupState('unsupported')
+      setClaimLookupReason('This contract address is not valid. Paste a BNB token contract to continue.')
+      return
+    }
+
+    const lookupKey = `${normalizeClaimChainId(queryChain)}:${contract.address}`
+    if (claimLookupRef.current === lookupKey) return
+    claimLookupRef.current = lookupKey
+    let cancelled = false
+    setClaimLookupState('loading')
+    setClaimLookupReason(null)
+
+    void (async () => {
+      try {
+        const response = await fetch('/api/registry/projects/onboard', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            contract: contract.address,
+            chainId: normalizeClaimChainId(queryChain),
+          }),
+        })
+        const payload = await response.json().catch(() => null)
+        if (cancelled) return
+        if (!response.ok || !payload?.ok) {
+          setClaimLookupState('unsupported')
+          setClaimLookupReason(
+            payload?.reason || 'This contract is not claimable from this link. Detection stayed inside List.',
+          )
+          setValues((current) => ({
+            ...current,
+            contract: contract.address,
+            chain: String(normalizeClaimChainId(queryChain)),
+          }))
+          return
+        }
+
+        const symbol =
+          payload.dex?.symbol ||
+          payload.onChain?.symbol ||
+          payload.project?.resources?.tokens?.find((token: { chainId?: number }) => token.chainId === 56)?.symbol ||
+          ''
+        const rawName = payload.dex?.name || payload.onChain?.name || payload.project?.displayName || ''
+        const sanitized = sanitizeClaimDisplayName(rawName, symbol)
+        const handle = symbol ? `@${String(symbol).toLowerCase().replace(/[^a-z0-9_]/g, '')}` : ''
+        setValues((current) => ({
+          ...current,
+          contract: contract.address,
+          chain: String(normalizeClaimChainId(queryChain)),
+          symbol: current.symbol || symbol,
+          name: current.name && !/^https?:\/\//i.test(current.name) ? current.name : sanitized.name,
+          logo: current.logo || payload.dex?.logo || '',
+          website: current.website || sanitized.websiteFromName || payload.dex?.website || '',
+          handle: current.handle || handle,
+          listed: payload.dex?.listed || payload.dex?.projectClaimed ? '1' : current.listed,
+        }))
+        setClaimLookupState('ready')
+      } catch {
+        if (cancelled) return
+        setClaimLookupState('error')
+        setClaimLookupReason('Token detection is unavailable right now. You can still review the contract in List.')
+        setValues((current) => ({
+          ...current,
+          contract: contract.address,
+          chain: String(normalizeClaimChainId(queryChain)),
+        }))
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [listIntent, queryContract, queryChain])
 
   useEffect(() => {
     if (listIntent !== 'create-token' || !isConnected || !address) return
@@ -1205,6 +1343,7 @@ export const ListWorkspace: React.FC = () => {
 
   const publishCreateToken = async () => {
     if (!LIST_CREATE_TOKEN_AVAILABLE) return
+    const signer = signerRef.current
     if (!address || !isConnected || !signer) {
       setCreateTokenError('Connect your wallet to create the token.')
       return
@@ -1238,7 +1377,10 @@ export const ListWorkspace: React.FC = () => {
     try {
       if (chain?.id !== CREATE_TOKEN_FACTORY_CHAIN_ID) {
         setCreateTokenStage('switching')
-        await switchNetworkAsync(CREATE_TOKEN_FACTORY_CHAIN_ID)
+        const switchNetworkAsync = switchNetworkAsyncRef.current
+        if (typeof switchNetworkAsync === 'function') {
+          await switchNetworkAsync(CREATE_TOKEN_FACTORY_CHAIN_ID)
+        }
       }
       const activeChainId = await signer.getChainId()
       if (activeChainId !== CREATE_TOKEN_FACTORY_CHAIN_ID) {
@@ -1356,6 +1498,7 @@ export const ListWorkspace: React.FC = () => {
   }
 
   const publishClaim = async () => {
+    const signer = signerRef.current
     if (!address || !signer || !claimAuthorityType) {
       setClaimError('Reconnect the verified owner or deployer wallet and try again.')
       return
@@ -1800,6 +1943,14 @@ export const ListWorkspace: React.FC = () => {
               ? 'Next: Melega checks this wallet against the contract owner/original deployer, then asks for one signature.'
               : 'Connect the contract owner or original deployer wallet. Claims fail closed without verifiable authority.'}
           </Banner>
+          {claimLookupState === 'loading' ? (
+            <Banner data-testid="claim-project-detecting">Detecting token identity…</Banner>
+          ) : null}
+          {claimLookupReason ? (
+            <Banner role="status" data-testid="claim-project-inline-state">
+              {claimLookupReason}
+            </Banner>
+          ) : null}
           {claimError ? <Banner role="alert">{claimError}</Banner> : null}
         </FormStack>
       )
@@ -2108,6 +2259,14 @@ export const ListWorkspace: React.FC = () => {
 
   return (
     <>
+    <IsolatedHookBoundary>
+      <WalletSignerBridge signerRef={signerRef} />
+    </IsolatedHookBoundary>
+    {listIntent === 'create-token' ? (
+      <IsolatedHookBoundary>
+        <CreateTokenNetworkSwitch switchRef={switchNetworkAsyncRef} />
+      </IsolatedHookBoundary>
+    ) : null}
     <Shell
       data-testid="list-workspace"
       data-list-module="007"
