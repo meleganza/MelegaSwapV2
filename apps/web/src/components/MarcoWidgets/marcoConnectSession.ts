@@ -18,6 +18,7 @@ export type MarcoConnectSpendAuthorization = {
 export type MarcoConnectSpendSdk = {
   getState: () => {
     connected?: boolean
+    wallet?: { address?: string | null } | null
     mCredits?: MarcoConnectMCreditsState | null
   }
   refresh?: () => Promise<unknown> | unknown
@@ -37,6 +38,13 @@ export function registerActiveMarcoConnectSdk(sdk: MarcoConnectSpendSdk | null):
 
 export function getActiveMarcoConnectSdk(): MarcoConnectSpendSdk | null {
   return activeMarcoConnectSdk
+}
+
+export function readPassportWalletAddress(
+  state: { wallet?: { address?: string | null } | null } | null | undefined,
+): string | null {
+  const address = state?.wallet?.address?.trim() || ''
+  return /^0x[a-fA-F0-9]{40}$/.test(address) ? address : null
 }
 
 export function readMCreditsAvailable(

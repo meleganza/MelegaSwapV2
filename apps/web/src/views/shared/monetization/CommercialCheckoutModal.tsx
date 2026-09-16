@@ -42,7 +42,11 @@ import {
   readMarcoPayHandoffSession,
   runMarcoPaySingleFlight,
 } from 'lib/marco-pay/approval'
-import { getActiveMarcoConnectSdk, readMCreditsAvailable } from 'components/MarcoWidgets/marcoConnectSession'
+import {
+  getActiveMarcoConnectSdk,
+  readMCreditsAvailable,
+  readPassportWalletAddress,
+} from 'components/MarcoWidgets/marcoConnectSession'
 import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
@@ -1311,6 +1315,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const { address } = useAccount()
   const { data: signer } = useSigner()
   const buyerWallet = address ?? null
+  const mCreditsBuyerWallet =
+    (buyerWallet && /^0x[a-fA-F0-9]{40}$/.test(buyerWallet) ? buyerWallet : null) ||
+    readPassportWalletAddress(getActiveMarcoConnectSdk()?.getState())
   const [step, setStep] = useState<CommercialCheckoutStep>('project')
   const [service, setService] = useState<CommercialServiceId | null>(initialService)
   const [selectedPackageId, setSelectedPackageId] = useState<string>('')
@@ -1755,7 +1762,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     if (!open || step !== 'review' || !isMCredits || !service || !selectedPackage || !detected || status === 'confirmed') {
       return undefined
     }
-    if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) return undefined
+    if (!mCreditsBuyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(mCreditsBuyerWallet)) return undefined
     const controller = new AbortController()
     const resolvedSlug = detected.slug ?? projectSlug
     const resolvedProjectId = projectId || resolvedSlug || detected.contract || detected.symbol
@@ -1768,7 +1775,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         projectId: resolvedProjectId,
         projectSlug: resolvedSlug,
         projectContract: detected.contract,
-        buyerWallet,
+        buyerWallet: mCreditsBuyerWallet,
         serviceId: service,
         packageId: selectedPackage.id,
         orderId,
@@ -1798,7 +1805,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         if ((cause as Error)?.name === 'AbortError') return
       })
     return () => controller.abort()
-  }, [buyerWallet, detected, isMCredits, open, orderId, projectId, projectSlug, selectedPackage, service, status, step, totalUsd])
+  }, [detected, isMCredits, mCreditsBuyerWallet, open, orderId, projectId, projectSlug, selectedPackage, service, status, step, totalUsd])
 
   const goBack = () => {
     setError(null)
@@ -2163,6 +2170,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           const resolvedSlug = detected?.slug ?? projectSlug
           const resolvedProjectId = projectId || resolvedSlug || detected?.contract || detected?.symbol
           const requiredMinor = mCreditsQuote?.requiredMinor || String(Math.round((selectedPackage?.usdPrice ?? 0) * 100))
+          if (!mCreditsBuyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(mCreditsBuyerWallet)) {
+            throw new Error('M-Credits require a MARCO Passport session.')
+          }
           const sdk = getActiveMarcoConnectSdk()
           if (!sdk) throw new Error('M-Credits require a MARCO Passport session.')
           if (!sdk.getState().connected && sdk.connect) await sdk.connect()
@@ -2188,7 +2198,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   projectId: resolvedProjectId,
                   projectSlug: resolvedSlug,
                   projectContract: detected?.contract,
-                  buyerWallet,
+                  buyerWallet: mCreditsBuyerWallet,
                   serviceId: service,
                   packageId: selectedPackage?.id,
                 }),
@@ -2215,7 +2225,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               projectId: resolvedProjectId,
               projectSlug: resolvedSlug,
               projectContract: detected?.contract,
-              buyerWallet,
+              buyerWallet: mCreditsBuyerWallet,
               serviceId: service,
               packageId: selectedPackage?.id,
               mcreditsAuthorization: granted.mcreditsAuthorization,
@@ -2308,6 +2318,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     farmTarget,
     isMCredits,
     isMarcoPay,
+    mCreditsBuyerWallet,
     mCreditsQuote,
     onHistoryChange,
     orderId,
