@@ -85,7 +85,9 @@ export default function CommonBases({
             <Text>{native?.symbol}</Text>
           </BaseWrapper>
         </ButtonWrapper>  
-        {(chainId ? FIRST_LINE || [] : []).map((token: Token) => {
+        {(chainId ? FIRST_LINE || [] : [])
+          .filter((token): token is Token => Boolean(token?.address))
+          .map((token: Token) => {
           const selected = selectedCurrency?.equals(token)
           
           return (
@@ -99,7 +101,9 @@ export default function CommonBases({
         })}
       </RowWrapper>
       <RowWrapper>
-        {([8453, 369, 250, 25, 43114].includes(chainId) ? [] : SECOND_LINE_ETH || []).map((token: Token) => {
+        {([8453, 369, 250, 25, 43114].includes(chainId) ? [] : SECOND_LINE_ETH || [])
+          .filter((token): token is Token => Boolean(token?.address))
+          .map((token: Token) => {
           const selected = selectedCurrency?.equals(token)
           return (
             <ButtonWrapper key={`buttonBase#${token.address}`}>

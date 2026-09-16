@@ -31,6 +31,10 @@ import {
 import { derivedPairByDataIdSelector, pairByDataIdSelector } from './selectors'
 import { PairDataTimeWindowEnum } from './types'
 import { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
+import {
+  resolveSwapDefaultInputCurrencyId,
+  resolveSwapDefaultOutputCurrencyId,
+} from 'views/Trade/hooks/resolveSwapDefaultCurrencies'
 
 export { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
 
@@ -185,7 +189,11 @@ export function useDefaultsFromURLSearch():
   useEffect(() => {
     if (!chainId || !native) return
     if (!CAKE[chainId] && !USDT[chainId]) return
-    const parsed = queryParametersToSwapState(query, native.symbol, CAKE[chainId]?.address ?? USDT[chainId]?.address)
+    const parsed = queryParametersToSwapState(
+      query,
+      resolveSwapDefaultInputCurrencyId(chainId, native.symbol),
+      resolveSwapDefaultOutputCurrencyId(chainId) ?? CAKE[chainId]?.address ?? USDT[chainId]?.address,
+    )
 
     dispatch(
       replaceSwapState({
