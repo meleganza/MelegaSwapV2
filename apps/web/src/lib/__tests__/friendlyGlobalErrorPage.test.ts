@@ -28,6 +28,8 @@ describe('P0 friendly global error page', () => {
     expect(screen).toContain('data-testid="premium-error-screen"')
     expect(screen).toContain('Return Home')
     expect(screen).toContain('href="/"')
+    expect(screen).toContain('styled.a')
+    expect(screen).not.toContain("from 'next/link'")
     expect(screen).toContain("This page couldn't load")
     expect(screen).toContain('place-items: center')
     expect(screen).not.toContain('Error Tracking Id')

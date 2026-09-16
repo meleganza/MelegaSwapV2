@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { MELEGA_LOGO_URI } from 'design-system/melega/constants/brand'
 
@@ -101,7 +100,7 @@ const Actions = styled.div`
   margin-top: 26px;
 `
 
-const Primary = styled(Link)`
+const Primary = styled.a`
   min-height: 44px;
   padding: 0 22px;
   display: inline-flex;
