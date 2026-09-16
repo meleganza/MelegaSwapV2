@@ -78,12 +78,16 @@ const ProjectAliasPage: React.FC = () => {
   const resolution = useMemo(() => {
     if (!raw) return { kind: 'loading' as const }
     if (isEvmAddress(raw)) {
-      const byAddr = resolveProjectByContractAddress(raw)
-      if (byAddr) {
-        return {
-          kind: 'redirect' as const,
-          href: canonicalProjectPath(byAddr.slug),
+      try {
+        const byAddr = resolveProjectByContractAddress(raw)
+        if (byAddr) {
+          return {
+            kind: 'redirect' as const,
+            href: canonicalProjectPath(byAddr.slug),
+          }
         }
+      } catch {
+        // Unregistered or malformed registry rows must stay on the temporary address page.
       }
       return {
         kind: 'address' as const,
@@ -92,9 +96,13 @@ const ProjectAliasPage: React.FC = () => {
       }
     }
     const slug = normalizeProjectSlugInput(raw) ?? raw.trim().toLowerCase()
-    const bySlug = resolveProjectBySlug(slug)
-    if (bySlug.ok) {
-      return { kind: 'redirect' as const, href: canonicalProjectPath(bySlug.slug) }
+    try {
+      const bySlug = resolveProjectBySlug(slug)
+      if (bySlug.ok) {
+        return { kind: 'redirect' as const, href: canonicalProjectPath(bySlug.slug) }
+      }
+    } catch {
+      // Broken registry rows must not crash /project/[slug].
     }
     return { kind: 'missing' as const, slug }
   }, [raw])

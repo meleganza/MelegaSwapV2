@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaTicker } from 'design-system/melega/components/Ticker'
 import { extractAddressFromHref } from 'lib/trending/topMoversSharedSnapshot'
@@ -10,6 +10,7 @@ export const TrendingRibbon: React.FC = () => {
   const { items, useMarquee, trendingEmpty, isLoading } = useDexTrendingTicker()
   const { snapshot, rankedAssets } = useTopMoversSnapshot()
   const displayLimit = useTrendingDisplayLimit()
+  const iconCacheRef = useRef(new Map<string, React.ReactNode>())
 
   const avatarByAddress = useMemo(() => {
     const map = new Map<string, (typeof rankedAssets)[number]>()
@@ -17,6 +18,30 @@ export const TrendingRibbon: React.FC = () => {
       if (asset.address) map.set(asset.address.toLowerCase(), asset)
     }
     return map
+  }, [rankedAssets])
+
+  const iconByAddress = useMemo(() => {
+    const next = new Map<string, React.ReactNode>()
+    for (const asset of rankedAssets) {
+      if (!asset.address) continue
+      const key = `${asset.chainId}:${asset.address.toLowerCase()}:${asset.symbol}`
+      const cached = iconCacheRef.current.get(key)
+      next.set(
+        asset.address.toLowerCase(),
+        cached ?? (
+          <MelegaTokenAvatar
+            name={asset.displayName}
+            symbol={asset.symbol}
+            size={22}
+            address={asset.address}
+            chainId={asset.chainId}
+            radius="circle"
+          />
+        ),
+      )
+      if (!cached) iconCacheRef.current.set(key, next.get(asset.address.toLowerCase())!)
+    }
+    return next
   }, [rankedAssets])
 
   const enrichedItems = useMemo(
@@ -30,22 +55,13 @@ export const TrendingRibbon: React.FC = () => {
           secondary: undefined,
           href: item.href,
         }
-        if (!asset) return base
+        if (!asset || !address) return base
         return {
           ...base,
-          icon: (
-            <MelegaTokenAvatar
-              name={asset.displayName}
-              symbol={asset.symbol}
-              size={22}
-              address={asset.address}
-              chainId={asset.chainId}
-              radius="circle"
-            />
-          ),
+          icon: iconByAddress.get(address),
         }
       }),
-    [items, avatarByAddress, displayLimit],
+    [items, avatarByAddress, displayLimit, iconByAddress],
   )
 
   return (

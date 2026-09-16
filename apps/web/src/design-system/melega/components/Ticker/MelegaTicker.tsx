@@ -56,11 +56,11 @@ const Strip = styled.div<{
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
-const TrackWrap = styled.div`
+const TrackWrap = styled.div<{ $scrollable?: boolean }>`
   flex: 1;
   min-width: 0;
   max-width: 100%;
-  overflow-x: auto;
+  overflow-x: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
   overflow-y: hidden;
   cursor: grab;
   display: flex;
@@ -285,6 +285,8 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
       </AnchorWrap>
       <TrackWrap
         data-melega-ticker-track
+        data-ticker-overflow={marqueeEnabled && !paused ? 'hidden' : 'auto'}
+        $scrollable={!marqueeEnabled || paused}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}

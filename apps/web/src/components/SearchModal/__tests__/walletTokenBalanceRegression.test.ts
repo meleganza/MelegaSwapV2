@@ -13,7 +13,8 @@ describe('wallet token balance regression', () => {
     expect(list).toContain('account && loading')
     expect(list).toContain("t('Balance unavailable')")
     expect(list).not.toContain('account ? <CircleLoader /> : null')
-    expect(sorting).not.toContain('useAllTokenBalances')
+    expect(sorting).toContain('useAllTokenBalances')
+    expect(sorting).toContain('compareTokensByWalletBalance')
   })
 
   it('uses a direct RPC result with a legacy fallback and a terminal timeout', () => {

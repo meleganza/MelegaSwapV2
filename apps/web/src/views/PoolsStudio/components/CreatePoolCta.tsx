@@ -7,8 +7,6 @@ import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
-import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import { WBNB } from '@pancakeswap/sdk'
 import {
   TOKEN_OPTIONS,
   computeEstimatedApr,
@@ -21,15 +19,23 @@ import {
   type CreatePoolWizardState,
   type WizardStep,
 } from './createPoolWizardState'
+import { resolveCreatePoolWizardToken } from './resolveCreatePoolWizardToken'
 
 function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-const WIZARD_TOKEN_META: Record<string, { address?: string; chainId: number }> = {
-  MARCO: { address: MARCO_BSC_ADDRESS, chainId: 56 },
-  BNB: { address: WBNB[56].address, chainId: 56 },
-}
+const WIZARD_TOKEN_META: Record<string, { address?: string; chainId: number; logoURI?: string }> = Object.fromEntries(
+  TOKEN_OPTIONS.map((symbol) => {
+    const meta = resolveCreatePoolWizardToken(symbol)
+    return [
+      symbol,
+      meta
+        ? { address: meta.address, chainId: meta.chainId, logoURI: meta.logoURI }
+        : { chainId: 56 },
+    ]
+  }),
+)
 
 const Card = styled.section`
   width: 100%;
@@ -839,6 +845,7 @@ const TokenAvatar: React.FC<{ symbol: string }> = ({ symbol }) => {
       size={32}
       address={meta?.address}
       chainId={meta?.chainId ?? 56}
+      logoURI={meta?.logoURI}
       radius="circle"
     />
   )

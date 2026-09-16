@@ -6,6 +6,7 @@ import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRe
 import { listOne } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListContractFirstFunnel } from './ListContractFirstFunnel'
+import { ClaimWorkspaceBoundary } from './ClaimWorkspaceBoundary'
 
 const ListWorkspace = dynamic(() => import('./ListWorkspace').then((module) => module.ListWorkspace), { ssr: false })
 
@@ -70,7 +71,13 @@ export const ListStudioScreen: React.FC = () => {
       {listIntent ? (
         <ModalBackdrop data-testid="list-adaptive-modal" role="presentation">
           <ModalSurface role="dialog" aria-modal="true" aria-label="Melega DEX listing flow">
-            <ListWorkspace />
+            {listIntent === 'claim-project' ? (
+              <ClaimWorkspaceBoundary>
+                <ListWorkspace />
+              </ClaimWorkspaceBoundary>
+            ) : (
+              <ListWorkspace />
+            )}
           </ModalSurface>
         </ModalBackdrop>
       ) : null}
