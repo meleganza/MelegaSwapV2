@@ -278,7 +278,7 @@ export const useTradeTerminalData = (
     fetchMarcoPairLiquiditySnapshot,
     { refreshInterval: 60_000, revalidateOnFocus: false },
   )
-  const wbnbOnChainPrice = useBUSDPrice(chainId ? WBNB[chainId] : WBNB[56])
+  const wbnbOnChainPrice = useBUSDPrice(chainId === 56 ? WBNB[56] : chainId ? WNATIVE[chainId] : WBNB[56])
   const marketBaseOnChainPrice = useBUSDPrice(marketBaseCurrency)
   const effectiveBnbUsd = useMemo(() => {
     if (bnbUsdPrice != null && Number.isFinite(bnbUsdPrice) && bnbUsdPrice > 0) return bnbUsdPrice

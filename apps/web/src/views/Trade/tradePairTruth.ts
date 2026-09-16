@@ -1,6 +1,20 @@
 import type { Transaction } from 'state/info/types'
 
-const QUOTE_SYMBOLS = new Set(['BNB', 'WBNB', 'ETH', 'WETH', 'USDT', 'USDC', 'BUSD', 'DAI'])
+const QUOTE_SYMBOLS = new Set([
+  'BNB',
+  'WBNB',
+  'ETH',
+  'WETH',
+  'USDT',
+  'USDC',
+  'BUSD',
+  'DAI',
+  'POL',
+  'MATIC',
+  'WMATIC',
+  'AVAX',
+  'WAVAX',
+])
 
 export type TradeMarketOrientation = {
   baseSide: 'input' | 'output'

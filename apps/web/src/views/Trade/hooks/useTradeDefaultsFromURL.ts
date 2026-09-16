@@ -5,9 +5,12 @@ import { queryParametersToSwapState } from 'state/swap/hooks'
 import { useAppDispatch } from 'state'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useNativeCurrency from 'hooks/useNativeCurrency'
-import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import {
+  resolveSwapDefaultInputCurrencyId,
+  resolveSwapDefaultOutputCurrencyId,
+} from './resolveSwapDefaultCurrencies'
 
-/** Trade page defaults — canonical MARCO/BNB when URL params are absent. */
+/** Trade page defaults — same-chain native + MARCO when URL params are absent. */
 export function useTradeDefaultsFromURL():
   | { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined }
   | undefined {
@@ -21,7 +24,9 @@ export function useTradeDefaultsFromURL():
 
   useEffect(() => {
     if (!chainId || !native) return
-    const parsed = queryParametersToSwapState(query, native.symbol, MARCO_BSC_ADDRESS)
+    const nativeId = resolveSwapDefaultInputCurrencyId(chainId, native.symbol)
+    const defaultOutput = resolveSwapDefaultOutputCurrencyId(chainId)
+    const parsed = queryParametersToSwapState(query, nativeId, defaultOutput)
 
     dispatch(
       replaceSwapState({

@@ -3,7 +3,6 @@ import { arrayify } from '@ethersproject/bytes'
 import { parseBytes32String } from '@ethersproject/strings'
 import { Currency, ERC20Token, ChainId } from '@pancakeswap/sdk'
 import { TokenAddressMap } from '@pancakeswap/token-lists'
-import { GELATO_NATIVE } from 'config/constants'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
@@ -17,6 +16,7 @@ import useUserAddedTokens from '../state/user/hooks/useUserAddedTokens'
 import { isAddress } from '../utils'
 import useNativeCurrency from './useNativeCurrency'
 import { useActiveChainId } from './useActiveChainId'
+import { isNativeCurrencyId } from './nativeCurrencyIds'
 import multicall from '../utils/multicall'
 import erc20ABI from '../config/abi/erc20.json'
 import lpTokenABI from '../config/abi/lpToken.json'
@@ -248,8 +248,8 @@ export function useLPToken(tokenAddress?: string): [string, string, string] | un
 
 export function useCurrency(currencyId: string | undefined): Currency | ERC20Token | null | undefined {
   const native = useNativeCurrency()
-  const isNative =
-    currencyId?.toUpperCase() === native.symbol?.toUpperCase() || currencyId?.toLowerCase() === GELATO_NATIVE
+  const { chainId } = useActiveChainId()
+  const isNative = isNativeCurrencyId(currencyId, native.symbol, chainId)
   const token = useToken(isNative ? undefined : currencyId)
   return isNative ? native : token
 }
@@ -271,8 +271,8 @@ export function useTokenSymbol(symbol?: string): ERC20Token | undefined | null {
 
 export function useCurrencyBridge(currencyId: string | undefined): Currency | ERC20Token | null | undefined {
   const native = useNativeCurrency()
-  const isNative =
-    currencyId?.toUpperCase() === native.symbol?.toUpperCase() || currencyId?.toLowerCase() === GELATO_NATIVE
+  const { chainId } = useActiveChainId()
+  const isNative = isNativeCurrencyId(currencyId, native.symbol, chainId)
   const token = useTokenSymbol(isNative ? undefined : currencyId)
   return isNative ? native : token ?? native
 }

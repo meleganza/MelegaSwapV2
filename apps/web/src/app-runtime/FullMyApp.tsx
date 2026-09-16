@@ -44,7 +44,7 @@ type AppPropsWithLayout = AppProps & {
   clientRuntimeReady: boolean
 }
 
-const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? SentryErrorBoundary : Fragment
+const ProductionErrorBoundary = SentryErrorBoundary
 
 const App = ({ Component, pageProps, clientRuntimeReady }: AppPropsWithLayout) => {
   useRouteTransitionRecovery()

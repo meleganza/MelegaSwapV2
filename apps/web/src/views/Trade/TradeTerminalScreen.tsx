@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
@@ -118,6 +120,7 @@ const AreaRoutes = styled.div`
 
 export const TradeTerminalScreen: React.FC = () => {
   const [productAction, setProductAction] = React.useState<SmartSwapProductAction>('swap')
+  const { chainId } = useActiveChainId()
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -125,7 +128,9 @@ export const TradeTerminalScreen: React.FC = () => {
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
 
-  const inputSymbol = inputCurrency?.symbol ?? 'BNB'
+  const inputSymbol =
+    inputCurrency?.symbol ??
+    (chainId === 137 ? 'POL' : chainId === 8453 || chainId === 1 || chainId === 42161 ? 'ETH' : chainId === 43114 ? 'AVAX' : 'BNB')
   const outputSymbol = outputCurrency?.symbol ?? 'Select token'
 
   // Market/indexer reads are intentionally created once for the whole terminal.
@@ -140,13 +145,22 @@ export const TradeTerminalScreen: React.FC = () => {
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <Content>
-        <TradeSwapHero />
+        <DataSurfaceErrorBoundary
+          surface="Swap Hero"
+          userReason="Featured markets are temporarily unavailable."
+        >
+          <TradeSwapHero />
+        </DataSurfaceErrorBoundary>
         <TradeRuntimeProvider>
           <TopGrid>
             <AreaCockpit>
               <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
             </AreaCockpit>
             <LeftWorkspace>
+              <DataSurfaceErrorBoundary
+                surface="Swap Market"
+                userReason="Market data is temporarily unavailable."
+              >
               <TradeCenterPanel
                 data={tradeData}
                 inputSymbol={inputSymbol}
@@ -154,6 +168,7 @@ export const TradeTerminalScreen: React.FC = () => {
                 inputCurrencyId={inputCurrencyId}
                 outputCurrencyId={outputCurrencyId}
               />
+              </DataSurfaceErrorBoundary>
               {productAction === 'bridge' ? (
                 <AreaSwaps data-bridge-recent-swaps="true">
                   <TradeRecentSwaps
@@ -171,6 +186,10 @@ export const TradeTerminalScreen: React.FC = () => {
           {productAction === 'swap' ? (
             <BottomGrid>
               <AreaSwaps>
+                <DataSurfaceErrorBoundary
+                  surface="Swap Recent"
+                  userReason="Recent swaps are temporarily unavailable."
+                >
                 <TradeRecentSwaps
                   rows={recentSwaps}
                   isIndexing={isIndexing}
@@ -179,9 +198,15 @@ export const TradeTerminalScreen: React.FC = () => {
                   missingReasonDetail={missingReasonDetail}
                   swapDiagnostic={swapDiagnostic}
                 />
+                </DataSurfaceErrorBoundary>
               </AreaSwaps>
               <AreaRoutes>
+                <DataSurfaceErrorBoundary
+                  surface="Swap Routes"
+                  userReason="Route comparison is temporarily unavailable."
+                >
                 <TradeRouterPanel />
+                </DataSurfaceErrorBoundary>
               </AreaRoutes>
             </BottomGrid>
           ) : null}

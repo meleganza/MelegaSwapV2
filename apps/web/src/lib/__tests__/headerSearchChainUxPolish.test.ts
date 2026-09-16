@@ -90,10 +90,16 @@ describe('MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH', () => {
 
   it('global error boundary never tells users to switch to BSC generically', () => {
     const src = load('components/ErrorBoundary/SentryErrorBoundary.tsx')
+    const screen = load('components/ErrorBoundary/PremiumErrorScreen.tsx')
     expect(src).not.toMatch(/switch network to BSC Network/i)
-    expect(src).toContain('Retry')
-    expect(src).toContain('Technical details')
-    expect(src).toContain('do not assume BSC')
+    expect(src).toContain('PremiumErrorScreen')
+    expect(src).not.toContain('Technical details')
+    expect(src).not.toContain('Error Tracking Id')
+    expect(src).not.toMatch(/do not assume BSC/)
+    expect(screen).toContain('Return Home')
+    expect(screen).toContain('data-friendly-error-screen')
+    expect(screen).not.toContain('Error Tracking Id')
+    expect(screen).not.toContain('Technical details')
   })
 
   it('search never merges same symbol across chains', () => {
