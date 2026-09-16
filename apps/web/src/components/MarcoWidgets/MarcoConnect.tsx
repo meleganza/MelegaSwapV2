@@ -8,6 +8,7 @@ import { loadMarcoWidgetScript } from './loadMarcoWidgetScript'
 import {
   MARCO_CONNECT_FALLBACK_LABEL,
   onMarcoPassportDisconnect,
+  registerActiveMarcoConnectSdk,
   resolveMarcoConnectNavbarState,
 } from './marcoConnectSession'
 
@@ -23,7 +24,19 @@ type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
 type MarcoConnectSdk = {
   connect: () => Promise<void> | void
   disconnect: () => Promise<void> | void
-  getState: () => { connected?: boolean }
+  getState: () => { connected?: boolean; mCredits?: { available?: string | number | null; known?: boolean } | null }
+  refresh?: () => Promise<unknown> | unknown
+  authorizeMCreditsSpend?: (input: {
+    merchantOrderRef: string
+    maxAmountMinor: string
+  }) => Promise<{
+    ok: boolean
+    mcreditsAuthorization?: string
+    merchantOrderRef?: string
+    maxAmountMinor?: string
+    expiresAt?: string
+    error?: { code?: string; message?: string }
+  }>
   on: (event: 'disconnect', handler: () => void) => void | (() => void)
   open: () => void
   destroy: () => void
@@ -245,6 +258,7 @@ export const MarcoConnect: React.FC<{
         activeMarcoSdk = sdk
         activeMarcoHost = hostRef.current
         sdkRef.current = sdk
+        registerActiveMarcoConnectSdk(sdk)
         unsubscribeDisconnect = sdk.on('disconnect', () => {
           if (isMarcoPayIsolationActive()) return
           passportIntentRef.current = false
@@ -263,6 +277,7 @@ export const MarcoConnect: React.FC<{
       if (activeMarcoSdk === sdk) {
         activeMarcoSdk = null
         activeMarcoHost = null
+        registerActiveMarcoConnectSdk(null)
         sdk?.destroy()
         hostRef.current?.replaceChildren()
       }

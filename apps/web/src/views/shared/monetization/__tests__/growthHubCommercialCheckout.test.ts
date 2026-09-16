@@ -85,10 +85,13 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     expect(checkout).toContain('Review and pay')
   })
 
-  it('keeps production activation gates instead of activating recovered services', () => {
+  it('keeps non-fulfillable recovered services gated while M-Credits is live', () => {
     const runtime = load('lib/monetization/visibilityRuntime.ts')
     expect(runtime).toContain("'sponsored-research': {")
-    expect(runtime.match(/live: false/g)?.length).toBe(6)
+    expect(runtime).toContain("'featured-farm': {")
+    expect(runtime).toContain("'featured-pool': {")
+    expect(runtime.match(/live: false/g)?.length).toBe(5)
+    expect(runtime).toMatch(/M_CREDITS:\s*\{\s*live: true/)
     expect(checkout).toContain('runtimeCheckoutBlocker ??')
   })
 

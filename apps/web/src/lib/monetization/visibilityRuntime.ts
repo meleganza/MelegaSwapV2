@@ -5,6 +5,10 @@ export type VisibilityRuntimeCapability = {
   reason: string | null
 }
 
+/** Paid M-Credits may settle only where a real placement consumer already exists. */
+export const MCREDITS_FULFILLABLE_SERVICES = ['featured', 'trend-boost'] as const
+export type MCreditsFulfillableService = (typeof MCREDITS_FULFILLABLE_SERVICES)[number]
+
 export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
   featured: { live: true, reason: null },
   'trend-boost': { live: true, reason: null },
@@ -21,8 +25,8 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
     reason: 'Featured Pool settlement and hero rotation fulfillment are awaiting production activation.',
   },
   M_CREDITS: {
-    live: false,
-    reason: 'M-Credits debit through MARCO Passport is not connected to a production ledger yet.',
+    live: true,
+    reason: null,
   },
   referral: {
     live: false,
@@ -33,6 +37,10 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
     live: false,
     reason: 'Project Page ownership proof and publishing must be backed by a server-side registry before checkout.',
   },
+}
+
+export function isMCreditsFulfillableService(service: string | null | undefined): service is MCreditsFulfillableService {
+  return service === 'featured' || service === 'trend-boost'
 }
 
 export function visibilityCheckoutBlocker(args: {
@@ -46,7 +54,9 @@ export function visibilityCheckoutBlocker(args: {
   if (!args.service) return 'Choose a visibility service.'
   const service = VISIBILITY_RUNTIME[args.service]
   if (!service?.live) return service?.reason ?? 'This service is not enabled for production checkout.'
-  if (args.payment === 'M_CREDITS') return VISIBILITY_RUNTIME.M_CREDITS.reason
+  if (args.payment === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live) {
+    return VISIBILITY_RUNTIME.M_CREDITS.reason ?? 'M-Credits are not enabled for production checkout.'
+  }
   if (args.hasReferral) return VISIBILITY_RUNTIME.referral.reason
   if (args.hasFeaturedAddOns) return 'Featured Farm/Pool bundle settlement is awaiting production activation.'
   return null
