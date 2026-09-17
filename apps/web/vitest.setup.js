@@ -4,9 +4,11 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import { vi } from 'vitest'
 import '@testing-library/jest-dom/extend-expect'
+import { setImmediate as nodeSetImmediate } from 'node:timers'
 import { TextDecoder, TextEncoder } from 'node:util'
 
-global.setImmediate = vi.useRealTimers
+vi.useRealTimers()
+global.setImmediate = nodeSetImmediate
 Object.defineProperty(globalThis, 'TextDecoder', { configurable: true, writable: true, value: TextDecoder })
 Object.defineProperty(globalThis, 'TextEncoder', { configurable: true, writable: true, value: TextEncoder })
 

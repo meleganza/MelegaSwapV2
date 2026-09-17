@@ -35,9 +35,9 @@ describe('MARCO Pay intermediate processing UX', () => {
 
   it('keeps Confirm in your wallet only until the wallet transaction is submitted', () => {
     expect(checkout).toContain("setQuoteSummary('Confirm the MARCO transfer in your wallet')")
-    expect(checkout).toContain('const transaction = await signer.sendTransaction({')
+    expect(checkout).toContain('const transaction = await paymentWallet.signer.sendTransaction({')
     expect(checkout).toMatch(
-      /const transaction = await signer\.sendTransaction\(\{[\s\S]*?setStatus\('submitted'\)\s*setWalletStage\('idle'\)/,
+      /const transaction = await paymentWallet\.signer\.sendTransaction\(\{[\s\S]*?setStatus\('submitted'\)\s*setWalletStage\('idle'\)/,
     )
   })
 

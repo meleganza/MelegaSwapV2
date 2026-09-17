@@ -14,7 +14,7 @@ import {
   MelegaModalFooterMeta,
 } from 'design-system/melega/components/Modal'
 import { MelegaModal } from './BoostCheckoutShell'
-import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
+import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { MARCO_BSC_ADDRESS, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import MelegaTokenAvatar from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { RC_COPY } from 'lib/monetization/copy'
@@ -29,7 +29,11 @@ import {
   type MonetizationAsset,
   type PlacementPackage,
 } from 'lib/monetization/packages'
-import { VISIBILITY_RUNTIME, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
+import { VISIBILITY_RUNTIME, canAcceptMCreditsPayment, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
+import {
+  assessPaymentWalletChain,
+  resolvePaymentWalletForSettlement,
+} from 'lib/monetization/paymentWalletChain'
 import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import {
   assignMarcoPayHandoff,
@@ -52,6 +56,13 @@ import {
   type CommercialServiceId,
 } from './commercialCheckoutTypes'
 import { appendMarketingHistory } from './marketingHistory'
+import {
+  authorizeMCreditsSpendForOrder,
+  mCreditsCheckoutBlocker,
+  readMCreditsPassport,
+  refreshMCreditsQuote,
+} from 'lib/mcredits/passportState'
+import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
 
 type MarcoPayReadiness = {
   executable: boolean
@@ -576,6 +587,25 @@ const PaymentCard = styled.button<{ $on?: boolean }>`
     padding: 12px 7px 10px;
     gap: 6px;
   }
+`
+
+const PaymentBetaBadge = styled.span`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 16px;
+  padding: 0 6px;
+  border-radius: ${uxRebuildRadius.pill};
+  border: 1px solid rgba(244, 196, 48, 0.42);
+  background: rgba(244, 196, 48, 0.1);
+  color: ${uxRebuildColors.gold};
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  pointer-events: none;
 `
 
 const PaymentSelected = styled.span`
@@ -1307,7 +1337,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   onHistoryChange,
   visibilityOnly: _visibilityOnly = false,
 }) => {
-  const { address } = useAccount()
+  const { address, connector } = useAccount()
   const { data: signer } = useSigner()
   const buyerWallet = address ?? null
   const [step, setStep] = useState<CommercialCheckoutStep>('project')
@@ -1336,6 +1366,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
   const marcoPayOrderRef = useRef<MarcoPayOrderConfig | null>(null)
   const prepareFlightRef = useRef<Promise<MarcoPayOrderConfig | null> | null>(null)
+  const lastBuyerRef = useRef<string | null>(null)
   marcoPayOrderRef.current = marcoPayOrder
 
   const serviceMeta = VISIBILITY_SERVICES.find((item) => item.id === service) ?? null
@@ -1355,12 +1386,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   })
   const isMarcoPay = pay === 'MARCO_PAY'
   const isMCredits = pay === 'M_CREDITS'
+  const mCreditsPassport = isMCredits ? readMCreditsPassport() : null
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
     (isMarcoPay && !marcoPayReadiness?.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
       ? 'M-Credits are temporarily unavailable.'
+      : isMCredits && selectedPackage
+      ? mCreditsCheckoutBlocker({ usdPrice: selectedPackage.usdPrice, passport: mCreditsPassport ?? undefined })
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
@@ -1463,6 +1497,31 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }, [open, initialService, chainId, projectContract])
 
   useEffect(() => {
+    if (!open) {
+      lastBuyerRef.current = buyerWallet
+      return
+    }
+    const prev = lastBuyerRef.current
+    lastBuyerRef.current = buyerWallet
+    if (!prev || !buyerWallet || prev.toLowerCase() === buyerWallet.toLowerCase()) return
+    if (
+      status === 'confirmed' ||
+      status === 'submitted' ||
+      status === 'submitted_pending_receipt' ||
+      status === 'marco_pay_pending_verification'
+    ) {
+      return
+    }
+    setMarcoPayOrder(null)
+    marcoPayOrderRef.current = null
+    setOrderId(null)
+    setError(null)
+    setWalletStage('idle')
+    setStatus('idle')
+    setQuoteSummary(null)
+  }, [buyerWallet, open, status])
+
+  useEffect(() => {
     if (!open) return undefined
     const controller = new AbortController()
     void fetch('/api/marco-pay/readiness', { signal: controller.signal, cache: 'no-store' })
@@ -1480,6 +1539,36 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
     return () => controller.abort()
   }, [open])
+
+  useEffect(() => {
+    if (!open || pay !== 'M_CREDITS' || !service || !selectedPackage) return
+    const resolvedProjectId = projectId || detected?.slug || projectSlug || detected?.contract || detected?.symbol
+    if (!resolvedProjectId) return
+    const receipt = loadMCreditsReceipt({
+      projectId: resolvedProjectId,
+      serviceId: service,
+      packageId: String(selectedPackage.id),
+    })
+    if (!receipt) return
+    setOrderId(receipt.orderId)
+    setStatus('confirmed')
+    setWalletStage('success')
+    setQuoteSummary(
+      `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${serviceMeta?.title ?? service}`,
+    )
+  }, [
+    detected?.contract,
+    detected?.name,
+    detected?.slug,
+    detected?.symbol,
+    open,
+    pay,
+    projectId,
+    projectSlug,
+    selectedPackage,
+    service,
+    serviceMeta?.title,
+  ])
 
   useEffect(() => {
     if (!open) return undefined
@@ -1968,20 +2057,25 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       }
 
       setStatus('awaiting_wallet')
-      if (!signer) {
+      const preferredProvider = (await connector?.getProvider?.()) ?? null
+      const paymentWallet = await resolvePaymentWalletForSettlement({
+        preferredProvider,
+        fallbackSigner: signer ?? null,
+      })
+      const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
+      if (!chainGate.ok) {
+        setWalletStage(chainGate.stage)
+        throw new Error(chainGate.message || RC_COPY.wrongNetwork)
+      }
+      if (!paymentWallet.signer) {
         setWalletStage('error')
         throw new Error(RC_COPY.walletUnavailable)
-      }
-      const connectedChainId = await signer.getChainId()
-      if (connectedChainId !== 56) {
-        setWalletStage('switch_network')
-        throw new Error(RC_COPY.wrongNetwork)
       }
 
       let txHash: string
       let receipt: Awaited<ReturnType<Awaited<ReturnType<typeof signer.sendTransaction>>['wait']>>
       try {
-        const transaction = await signer.sendTransaction({
+        const transaction = await paymentWallet.signer.sendTransaction({
           to: prepared.to,
           value: prepared.valueHex,
           data: prepared.data,
@@ -2068,15 +2162,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
       onHistoryChange?.()
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : String(cause))
+      const message = cause instanceof Error ? cause.message : String(cause)
+      setError(message)
       setStatus('error')
-      setWalletStage('error')
+      setWalletStage(message === RC_COPY.wrongNetwork ? 'switch_network' : 'error')
     } finally {
       setBusy(false)
     }
   }, [
     buyerWallet,
     checkoutBlocker,
+    connector,
     detected,
     onHistoryChange,
     isMarcoPay,
@@ -2102,16 +2198,37 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       await runMarcoPaySingleFlight(async () => {
         setBusy(true)
         try {
+          if (!canAcceptMCreditsPayment(service)) {
+            throw new Error(runtimeCheckoutBlocker || 'This service cannot be fulfilled with M-Credits yet.')
+          }
           const resolvedSlug = detected?.slug ?? projectSlug
           const resolvedProjectId = projectId || resolvedSlug || detected?.contract || detected?.symbol
+          const mCreditsBuyerWallet =
+            (buyerWallet && /^0x[a-fA-F0-9]{40}$/.test(buyerWallet) ? buyerWallet : null) ||
+            mCreditsPassport?.walletAddress ||
+            null
+          if (!mCreditsBuyerWallet) {
+            throw new Error('Connect MARCO Passport to pay with M-Credits.')
+          }
+          const quote = refreshMCreditsQuote(selectedPackage?.usdPrice ?? 0)
+          setStatus('debiting')
+          setWalletStage('confirm')
+          setQuoteSummary('Debiting M-Credits through MARCO Passport')
+          const identityToken = await authorizeMCreditsSpendForOrder({
+            merchantOrderRef: `${resolvedProjectId}:${service}:${selectedPackage?.id ?? 'default'}`,
+            maxAmountMinor: quote.amountMinor,
+          })
           const response = await fetch('/api/mcredits/orders', {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
+            headers: {
+              'content-type': 'application/json',
+              ...(identityToken ? { 'x-marco-passport-session': identityToken } : {}),
+            },
             body: JSON.stringify({
               projectId: resolvedProjectId,
               projectSlug: resolvedSlug,
               projectContract: detected?.contract,
-              buyerWallet,
+              buyerWallet: mCreditsBuyerWallet,
               serviceId: service,
               packageId: selectedPackage?.id,
               targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
@@ -2122,12 +2239,34 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             throw new Error('M-Credits must not open MARCO Pay.')
           }
           if (!response.ok) throw new Error(payload.message || 'M-Credits are temporarily unavailable.')
+          if (payload.order?.state !== 'FULFILLED') {
+            throw new Error('M-Credits fulfilment failed.')
+          }
+          setStatus('verifying')
+          setOrderId(payload.order.orderId)
+          saveMCreditsReceipt({
+            orderId: payload.order.orderId,
+            state: 'FULFILLED',
+            serviceId: service,
+            packageId: String(selectedPackage?.id ?? payload.order.packageId),
+            projectId: String(resolvedProjectId),
+          })
+          appendMarketingHistory(resolvedSlug || projectSlug, {
+            kind: service === 'featured' ? 'featured' : 'trend-boost',
+            label: selectedPackage?.label ?? serviceMeta?.title ?? 'M-Credits',
+            status: 'Running',
+            packageId: String(selectedPackage?.id ?? ''),
+            expiresAt: selectedPackage
+              ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
+              : undefined,
+          })
+          onHistoryChange?.()
           setStatus('confirmed')
           setWalletStage('success')
           setQuoteSummary(
             `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${
               serviceMeta?.title ?? service
-            }`,
+            } · ${quote.display}`,
           )
         } catch (cause) {
           setError(cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.')
@@ -2148,14 +2287,19 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           const order = marcoPayOrderRef.current ?? (await prepareMarcoPayOrder())
           const wallet = order?.wallet
           if (!order || !wallet) throw new Error('MARCO Pay is temporarily unavailable.')
-          if (!signer) throw new Error(RC_COPY.walletUnavailable)
-          const connectedChainId = await signer.getChainId()
-          if (connectedChainId !== 56) {
-            setWalletStage('switch_network')
-            throw new Error(RC_COPY.wrongNetwork)
+          const preferredProvider = (await connector?.getProvider?.()) ?? null
+          const paymentWallet = await resolvePaymentWalletForSettlement({
+            preferredProvider,
+            fallbackSigner: signer ?? null,
+          })
+          const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
+          if (!chainGate.ok) {
+            setWalletStage(chainGate.stage)
+            throw new Error(chainGate.message || RC_COPY.wrongNetwork)
           }
+          if (!paymentWallet.signer) throw new Error(RC_COPY.walletUnavailable)
           setQuoteSummary('Confirm the MARCO transfer in your wallet')
-          const transaction = await signer.sendTransaction({
+          const transaction = await paymentWallet.signer.sendTransaction({
             to: wallet.to,
             value: wallet.value,
             data: wallet.data,
@@ -2171,6 +2315,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             setStatus('cancelled')
             setWalletStage('cancelled')
             setError(RC_COPY.paymentCancelled)
+            return
+          }
+          if (message === RC_COPY.wrongNetwork) {
+            setWalletStage('switch_network')
+            setError(message)
             return
           }
           setError(message)
@@ -2190,15 +2339,19 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }, [
     buyerWallet,
     checkoutBlocker,
+    connector,
     detected,
     farmTarget,
     isMCredits,
     isMarcoPay,
+    mCreditsPassport?.identityToken,
+    onHistoryChange,
     poolTarget,
     prepareMarcoPayOrder,
     projectId,
     projectSlug,
     runCheckout,
+    runtimeCheckoutBlocker,
     selectedPackage,
     service,
     serviceMeta?.title,
@@ -2560,6 +2713,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       data-testid={`commercial-pay-${asset}`}
                     >
                       {pay === asset ? <PaymentSelected aria-hidden="true">✓</PaymentSelected> : null}
+                      {asset === 'M_CREDITS' ? <PaymentBetaBadge data-testid="mcredits-beta-badge">BETA</PaymentBetaBadge> : null}
                       <PaymentAssetLogo asset={asset} />
                       <PaymentName>{meta.label}</PaymentName>
                       <PaymentNetwork>BNB Chain</PaymentNetwork>
@@ -2671,7 +2825,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   ) : null}
                   {!hidePaymentAction && walletStage !== 'idle' ? (
                     <div style={{ marginTop: 10 }}>
-                      <WalletFlowStatus stage={walletStage} />
+                      <WalletFlowStatus stage={walletStage} detail={error ?? undefined} />
                     </div>
                   ) : null}
                   {isPaymentProcessing && !isTerminalSuccess ? (

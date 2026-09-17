@@ -109,7 +109,7 @@ describe('M-Credits separation', () => {
     })
     await expect(
       spendMCreditsForBoost({
-        projectId: 'mm72',
+        projectId: 'mm72-fail',
         buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
         serviceId: 'trend-boost',
         identityToken: 'passport_session_test',

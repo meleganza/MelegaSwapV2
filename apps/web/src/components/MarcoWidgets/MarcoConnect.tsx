@@ -23,7 +23,18 @@ type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
 type MarcoConnectSdk = {
   connect: () => Promise<void> | void
   disconnect: () => Promise<void> | void
-  getState: () => { connected?: boolean }
+  getState: () => {
+    connected?: boolean
+    passport?: { publicPassportId?: string | null } | null
+    mCredits?: { available?: number | string | null; known?: boolean } | null
+    sessionToken?: string | null
+    handoff?: { token?: string | null } | null
+  }
+  authorizeMCreditsSpend?: (input: { merchantOrderRef: string; maxAmountMinor: string }) => Promise<{
+    ok?: boolean
+    mcreditsAuthorization?: string
+    error?: { code?: string; message?: string }
+  }>
   on: (event: 'disconnect', handler: () => void) => void | (() => void)
   open: () => void
   destroy: () => void
@@ -44,6 +55,16 @@ type MarcoConnectApi = {
 
 let activeMarcoSdk: MarcoConnectSdk | null = null
 let activeMarcoHost: HTMLElement | null = null
+
+export function getActiveMarcoConnectSdk(): MarcoConnectSdk | null {
+  return activeMarcoSdk
+}
+
+function publishActiveMarcoConnectSdk(sdk: MarcoConnectSdk | null) {
+  activeMarcoSdk = sdk
+  if (typeof window === 'undefined') return
+  ;(window as Window & { __MELEGA_MARCO_CONNECT__?: MarcoConnectSdk | null }).__MELEGA_MARCO_CONNECT__ = sdk
+}
 
 const waitForConnectedState = async (sdk: Pick<MarcoConnectSdk, 'getState'>, attempts = 12, intervalMs = 75) => {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -242,7 +263,7 @@ export const MarcoConnect: React.FC<{
           activeMarcoSdk.destroy()
           activeMarcoHost?.replaceChildren()
         }
-        activeMarcoSdk = sdk
+        publishActiveMarcoConnectSdk(sdk)
         activeMarcoHost = hostRef.current
         sdkRef.current = sdk
         unsubscribeDisconnect = sdk.on('disconnect', () => {
@@ -261,7 +282,7 @@ export const MarcoConnect: React.FC<{
       if (sdkRef.current === sdk) sdkRef.current = null
       if (typeof unsubscribeDisconnect === 'function') unsubscribeDisconnect()
       if (activeMarcoSdk === sdk) {
-        activeMarcoSdk = null
+        publishActiveMarcoConnectSdk(null)
         activeMarcoHost = null
         sdk?.destroy()
         hostRef.current?.replaceChildren()
