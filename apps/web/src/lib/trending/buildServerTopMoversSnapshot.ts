@@ -1,7 +1,9 @@
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import { getCanonicalIndexedAssets } from 'lib/canonical-token-registry'
+import { loadClassifiedAmmPairsAsync } from 'lib/bsc-indexer/pairs/registry'
 import { loadTierMetricsSnapshot } from 'lib/bsc-indexer/server/loadTierMetricsSnapshot'
 import { format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
+import { collectTradeableObservationAddresses, mergeObservationAddresses } from 'lib/trending/observationUniverse'
 import {
   isCredibleMoverChange,
   isQuoteTokenAddress,
@@ -237,17 +239,20 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
     ],
   }))
 
-  const liveUniverse = new Set<string>()
-  for (const row of tier.rows) {
-    const address = pickTrendingBaseToken(row.token0, row.token1)
-    if (address && !liveUniverse.has(address.toLowerCase())) liveUniverse.add(address.toLowerCase())
+  let factoryPairs: Awaited<ReturnType<typeof loadClassifiedAmmPairsAsync>>['pairs'] = []
+  try {
+    factoryPairs = (await loadClassifiedAmmPairsAsync()).pairs
+  } catch {
+    factoryPairs = []
   }
-  for (const asset of getCanonicalIndexedAssets()) {
-    if (asset.chainId === 56 && asset.address && !isQuoteTokenAddress(asset.address)) {
-      liveUniverse.add(asset.address.toLowerCase())
-    }
-  }
-  const externalRankedAssets = await loadLiveDexScreenerMovers([...liveUniverse])
+  const liveUniverse = mergeObservationAddresses(
+    tier.rows.map((row) => pickTrendingBaseToken(row.token0, row.token1)),
+    getCanonicalIndexedAssets()
+      .filter((asset) => asset.chainId === 56 && asset.address)
+      .map((asset) => asset.address as string),
+    collectTradeableObservationAddresses(factoryPairs),
+  )
+  const externalRankedAssets = await loadLiveDexScreenerMovers(liveUniverse)
   // A non-empty live response is authoritative. Internal index rows are an honest outage fallback only.
   const rankedAssets = (externalRankedAssets.length > 0 ? externalRankedAssets : internalRankedAssets).slice(0, limit)
 

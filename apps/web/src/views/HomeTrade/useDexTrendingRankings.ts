@@ -153,14 +153,29 @@ type PairRow = {
   lastVerified?: string
 }
 
+const TRADEABLE_PAIRS_PAGE_SIZE = 500
+const TRADEABLE_PAIRS_MAX_PAGES = 4
+
 async function fetchTradeablePairs(): Promise<PairRow[]> {
+  const rows: PairRow[] = []
   try {
-    const res = await fetch('/api/indexer/pairs?pageSize=500&classification=tradeable')
-    if (!res.ok) return []
-    const json = (await res.json()) as { rows?: PairRow[] }
-    return json.rows ?? []
+    let page = 1
+    let total = Number.POSITIVE_INFINITY
+    while (page <= TRADEABLE_PAIRS_MAX_PAGES && rows.length < total) {
+      const res = await fetch(
+        `/api/indexer/pairs?page=${page}&pageSize=${TRADEABLE_PAIRS_PAGE_SIZE}&classification=tradeable`,
+      )
+      if (!res.ok) break
+      const json = (await res.json()) as { rows?: PairRow[]; total?: number }
+      const batch = json.rows ?? []
+      rows.push(...batch)
+      total = Number.isFinite(json.total) ? Number(json.total) : rows.length
+      if (batch.length === 0) break
+      page += 1
+    }
+    return rows
   } catch {
-    return []
+    return rows
   }
 }
 
