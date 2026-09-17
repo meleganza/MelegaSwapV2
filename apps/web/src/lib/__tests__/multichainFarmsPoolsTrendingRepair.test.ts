@@ -43,6 +43,7 @@ describe('multichain farm inventory normalization', () => {
     expect(counts[56]).toBeGreaterThan(0)
     expect(counts[8453]).toBeGreaterThan(0)
     expect(counts[137]).toBeGreaterThan(0)
+    expect(counts[1]).toBe(4)
     const ids = new Set(farms.map((f) => f.identity))
     expect(ids.size).toBe(farms.length)
     expect(farmIdentity(56, '0xabc', 1)).not.toBe(farmIdentity(8453, '0xabc', 1))
