@@ -6,6 +6,7 @@ import { Currency, CurrencyAmount, Token, WNATIVE } from '@pancakeswap/sdk'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
@@ -53,6 +54,7 @@ import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 import { resolveReceiptOutcome } from 'lib/transactions/resolveReceiptOutcome'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { computeProRataAmountRaw } from './walletLpPositionMath'
+import { buildRemoveLiquidityCall } from 'lib/liquidity-runtime/removeLiquidityCall'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -223,6 +225,7 @@ export function useLiquidityMintRuntime({
   const router = useRouter()
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
+  const { switchNetworkAsync } = useSwitchNetwork()
   const native = useNativeCurrency()
   const gasPrice = useGasPrice()
   const [allowedSlippage] = useUserSlippageTolerance()
@@ -394,19 +397,6 @@ export function useLiquidityMintRuntime({
     }
   }, [burnInfo.parsedAmounts, isRemoveMode, selectedPosition, positionDetails])
 
-  const removeError = useMemo(() => {
-    if (!account) return t('Connect Wallet')
-    if (!selectedPosition) return 'Select a liquidity position'
-    if (
-      !removeParsedAmounts[BurnField.LIQUIDITY] ||
-      !removeParsedAmounts[BurnField.CURRENCY_A] ||
-      !removeParsedAmounts[BurnField.CURRENCY_B]
-    ) {
-      return t('Enter an amount')
-    }
-    return undefined
-  }, [account, selectedPosition, removeParsedAmounts, t])
-
   // Auto-select the sole direct-wallet LP and sync burn currencies from that pair.
   useEffect(() => {
     if (!isRemoveMode && !isPositionsMode) return
@@ -453,6 +443,73 @@ export function useLiquidityMintRuntime({
       pendingApprovalTimeoutMs: 30_000,
     },
   )
+
+  const removeTargetChainId = selectedPosition?.chainId ?? selectedPosition?.pair.token0.chainId ?? chainId
+  const removeLpTokenAddress =
+    selectedPosition?.pairAddress ?? selectedPosition?.lpBalance.currency.address ?? selectedPosition?.pair.liquidityToken.address
+  const removeCall = useMemo(
+    () =>
+      buildRemoveLiquidityCall({
+        chainId: removeTargetChainId,
+        walletChainId: chainId,
+        account,
+        tokenA: {
+          address: selectedPosition?.pair.token0.address,
+          isNative: currencyA?.isNative,
+        },
+        tokenB: {
+          address: selectedPosition?.pair.token1.address,
+          isNative: currencyB?.isNative,
+        },
+        lpTokenAddress: removeLpTokenAddress,
+        liquidityRaw: removeParsedAmounts[BurnField.LIQUIDITY]?.quotient.toString(),
+        amountARaw: removeParsedAmounts[BurnField.CURRENCY_A]?.quotient.toString(),
+        amountBRaw: removeParsedAmounts[BurnField.CURRENCY_B]?.quotient.toString(),
+        allowedSlippageBips: allowedSlippage,
+        deadlineUnix: deadline?.toString(),
+        recipient: account,
+        receiveNative,
+        lpAllowanceRaw:
+          liquidityApproval === ApprovalState.APPROVED
+            ? removeParsedAmounts[BurnField.LIQUIDITY]?.quotient.toString() ?? '0'
+            : liquidityApproval === ApprovalState.NOT_APPROVED
+            ? '0'
+            : null,
+      }),
+    [
+      removeTargetChainId,
+      chainId,
+      account,
+      selectedPosition,
+      currencyA?.isNative,
+      currencyB?.isNative,
+      removeLpTokenAddress,
+      removeParsedAmounts,
+      allowedSlippage,
+      deadline,
+      receiveNative,
+      liquidityApproval,
+    ],
+  )
+
+  const removeError = useMemo(() => {
+    if (!account) return t('Connect Wallet')
+    if (!selectedPosition) return 'Select a liquidity position'
+    if (removeCall.status === 'wrong_chain') {
+      return `Switch to ${removeCall.requiredChainLabel ?? 'Ethereum'}`
+    }
+    if (removeCall.status === 'missing_pair' || removeCall.status === 'unsupported_chain') {
+      return removeCall.message
+    }
+    if (
+      !removeParsedAmounts[BurnField.LIQUIDITY] ||
+      !removeParsedAmounts[BurnField.CURRENCY_A] ||
+      !removeParsedAmounts[BurnField.CURRENCY_B]
+    ) {
+      return t('Enter an amount')
+    }
+    return undefined
+  }, [account, selectedPosition, removeCall, removeParsedAmounts, t])
 
   const isRemove = mode === 'Remove Liquidity'
   const isPositions = mode === 'My Positions'
@@ -791,14 +848,43 @@ export function useLiquidityMintRuntime({
       })
       return
     }
-    const liquidityAmount = removeParsedAmounts[BurnField.LIQUIDITY]
-    const amountA = removeParsedAmounts[BurnField.CURRENCY_A]
-    const amountB = removeParsedAmounts[BurnField.CURRENCY_B]
-    if (!liquidityAmount || !amountA || !amountB || !deadline) {
+    const constructed = buildRemoveLiquidityCall({
+      chainId: removeTargetChainId,
+      walletChainId: chainId,
+      account,
+      tokenA: {
+        address: selectedPosition.pair.token0.address,
+        isNative: currencyA?.isNative,
+      },
+      tokenB: {
+        address: selectedPosition.pair.token1.address,
+        isNative: currencyB?.isNative,
+      },
+      lpTokenAddress: removeLpTokenAddress,
+      liquidityRaw: removeParsedAmounts[BurnField.LIQUIDITY]?.quotient.toString(),
+      amountARaw: removeParsedAmounts[BurnField.CURRENCY_A]?.quotient.toString(),
+      amountBRaw: removeParsedAmounts[BurnField.CURRENCY_B]?.quotient.toString(),
+      allowedSlippageBips: allowedSlippage,
+      deadlineUnix: deadline?.toString(),
+      recipient: account,
+      receiveNative,
+      lpAllowanceRaw: removeParsedAmounts[BurnField.LIQUIDITY]?.quotient.toString() ?? '0',
+      // receiveNative && (currencyAIsWrappedNative || currencyBIsWrappedNative) is encoded in the builder.
+    })
+    if (constructed.status !== 'ready' || !constructed.method || !constructed.args) {
       setRemoveTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
-        liquidityErrorMessage: 'Choose a removal percentage before confirming.',
+        liquidityErrorMessage: constructed.message,
+        txHash: undefined,
+      })
+      return
+    }
+    if (constructed.router && constructed.router.toLowerCase() !== (ROUTER_ADDRESS[chainId] ?? '').toLowerCase()) {
+      setRemoveTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: `Switch to ${constructed.requiredChainLabel ?? 'the position network'} before removing liquidity.`,
         txHash: undefined,
       })
       return
@@ -807,22 +893,10 @@ export function useLiquidityMintRuntime({
     setRemoveTxLifecycle('preparing')
     setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
     try {
-      const tokenA = currencyA?.wrapped
-      const tokenB = currencyB?.wrapped
-      const amountsMin = {
-        [BurnField.CURRENCY_A]: calculateSlippageAmount(amountA, allowedSlippage)[0],
-        [BurnField.CURRENCY_B]: calculateSlippageAmount(amountB, allowedSlippage)[0],
-      }
       let response: TransactionResponse
       setRemoveTxLifecycle('waiting_wallet')
-      const removeAsNative = receiveNative && (currencyAIsWrappedNative || currencyBIsWrappedNative)
-      if (removeAsNative) {
-        const tokenBIsNative = currencyBIsWrappedNative
-        const tokenAddress = (tokenBIsNative ? tokenA : tokenB)?.address ?? ''
-        const liquidityRaw = liquidityAmount.quotient.toString()
-        const tokenMinimum = amountsMin[tokenBIsNative ? BurnField.CURRENCY_A : BurnField.CURRENCY_B].toString()
-        const nativeMinimum = amountsMin[tokenBIsNative ? BurnField.CURRENCY_B : BurnField.CURRENCY_A].toString()
-        const deadlineHex = deadline.toHexString()
+      if (constructed.method === 'removeLiquidityETH') {
+        const [tokenAddress, liquidityRaw, tokenMinimum, nativeMinimum, recipient, deadlineRaw] = constructed.args
         let estimatedGasLimit: BigNumber
         let supportsFeeOnTransfer = false
         try {
@@ -832,8 +906,8 @@ export function useLiquidityMintRuntime({
               liquidityRaw,
               tokenMinimum,
               nativeMinimum,
-              account,
-              deadlineHex,
+              recipient,
+              deadlineRaw,
             ),
           )
         } catch {
@@ -845,8 +919,8 @@ export function useLiquidityMintRuntime({
               liquidityRaw,
               tokenMinimum,
               nativeMinimum,
-              account,
-              deadlineHex,
+              recipient,
+              deadlineRaw,
             ),
           )
         }
@@ -856,33 +930,25 @@ export function useLiquidityMintRuntime({
               liquidityRaw,
               tokenMinimum,
               nativeMinimum,
-              account,
-              deadlineHex,
-              { gasLimit: estimatedGasLimit },
+              recipient,
+              deadlineRaw,
+              { gasLimit: estimatedGasLimit, value: constructed.value ?? 0 },
             )
           : await routerContract.removeLiquidityETH(
               tokenAddress,
               liquidityRaw,
               tokenMinimum,
               nativeMinimum,
-              account,
-              deadlineHex,
-              { gasLimit: estimatedGasLimit },
+              recipient,
+              deadlineRaw,
+              { gasLimit: estimatedGasLimit, value: constructed.value ?? 0 },
             )
       } else {
         const estimate = routerContract.estimateGas.removeLiquidity
         const method = routerContract.removeLiquidity
-        const args = [
-          tokenA?.address ?? '',
-          tokenB?.address ?? '',
-          liquidityAmount.quotient.toString(),
-          amountsMin[BurnField.CURRENCY_A].toString(),
-          amountsMin[BurnField.CURRENCY_B].toString(),
-          account,
-          deadline.toHexString(),
-        ]
+        const args = constructed.args
         const estimatedGasLimit = await estimate(...args)
-        response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit) })
+        response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit), value: constructed.value ?? 0 })
       }
       setRemoveTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
@@ -918,13 +984,13 @@ export function useLiquidityMintRuntime({
     account,
     routerContract,
     selectedPosition,
+    removeTargetChainId,
+    removeLpTokenAddress,
     removeParsedAmounts,
     deadline,
     currencyA,
     currencyB,
     receiveNative,
-    currencyAIsWrappedNative,
-    currencyBIsWrappedNative,
     removeOutputSymbolA,
     removeOutputSymbolB,
     allowedSlippage,
@@ -969,6 +1035,10 @@ export function useLiquidityMintRuntime({
     if (isSimulation) return
     if (!account) return
     if (isRemove) {
+      if (removeCall.requireSwitch && removeCall.requiredChainId != null) {
+        void switchNetworkAsync(removeCall.requiredChainId)
+        return
+      }
       if (
         !removeParsedAmounts[BurnField.LIQUIDITY] ||
         !removeParsedAmounts[BurnField.CURRENCY_A] ||
@@ -1008,11 +1078,16 @@ export function useLiquidityMintRuntime({
     approveLiquidityCallback,
     openAddModal,
     openRemoveModal,
+    removeCall,
+    switchNetworkAsync,
   ])
 
   const primaryCtaLabel = useMemo(() => {
     if (isSimulation) return 'Simulation only — no execution'
     if (!account) return 'Connect Wallet'
+    if (isRemove && removeCall.requireSwitch) {
+      return `Switch to ${removeCall.requiredChainLabel ?? 'Ethereum'}`
+    }
     if (isRemove && !removeParsedAmounts[BurnField.LIQUIDITY]) return 'Calculating withdrawal…'
     if (isRemove && liquidityApproval === ApprovalState.UNKNOWN) return 'Checking LP approval…'
     if (isRemove && liquidityApproval === ApprovalState.PENDING) return 'Approving LP Token…'
@@ -1020,15 +1095,16 @@ export function useLiquidityMintRuntime({
     if (isRemove) return 'Remove Liquidity'
     if (isPositions) return 'Manage on /liquidity'
     return 'Add Liquidity'
-  }, [account, phase, isRemove, isPositions, isSimulation, removeParsedAmounts, liquidityApproval])
+  }, [account, phase, isRemove, isPositions, isSimulation, removeParsedAmounts, liquidityApproval, removeCall])
 
   const removeActionReady = Boolean(
     selectedPosition?.lpBalance?.greaterThan(0) &&
-      removeParsedAmounts[BurnField.LIQUIDITY] &&
-      removeParsedAmounts[BurnField.CURRENCY_A] &&
-      removeParsedAmounts[BurnField.CURRENCY_B] &&
-      liquidityApproval !== ApprovalState.UNKNOWN &&
-      liquidityApproval !== ApprovalState.PENDING,
+      (removeCall.requireSwitch ||
+        (removeParsedAmounts[BurnField.LIQUIDITY] &&
+          removeParsedAmounts[BurnField.CURRENCY_A] &&
+          removeParsedAmounts[BurnField.CURRENCY_B] &&
+          liquidityApproval !== ApprovalState.UNKNOWN &&
+          liquidityApproval !== ApprovalState.PENDING)),
   )
 
   const opportunityRef = useMemo(
