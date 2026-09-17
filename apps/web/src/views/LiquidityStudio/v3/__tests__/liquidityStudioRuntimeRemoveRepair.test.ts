@@ -101,6 +101,15 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
     expect(runtime).toContain('removeLiquidity')
   })
 
+  it('Ethereum remove constructs from the selected position, not useCurrency', () => {
+    expect(runtime).toContain('buildRemoveLiquidityCall')
+    expect(runtime).toContain('selectedPosition.pair.token0.address')
+    expect(runtime).toContain('selectedPosition.pair.token1.address')
+    expect(runtime).toContain('removeCall.requireSwitch')
+    expect(runtime).toContain("Switch to ${removeCall.requiredChainLabel ?? 'Ethereum'}")
+    expect(runtime).not.toContain("tokenA?.address ?? ''")
+  })
+
   it('deep-link ?view=remove waits for query parse before hydrate', () => {
     const shell = load('views/LiquidityStudio/v3/LiquidityStudioV3Shell.tsx')
     expect(shell).toContain("router.asPath.includes('view=') && view === undefined")
