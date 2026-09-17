@@ -6,7 +6,6 @@ import { format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
 import { collectTradeableObservationAddresses, mergeObservationAddresses } from 'lib/trending/observationUniverse'
 import {
   isCredibleMoverChange,
-  isQuoteTokenAddress,
   isTrendingTierStatus,
   pickTrendingBaseToken,
   trendingTickerAccent,
