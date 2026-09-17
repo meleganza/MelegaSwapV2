@@ -609,14 +609,28 @@ const ActivityBlock = styled.div`
 `
 const LiquidityBlock = styled.div`
   padding: 10px 12px 12px;
-  border-top: 1px solid ${pp.line};
+  min-width: 0;
 `
-const IntelGrid = styled.div`
+const LiquidityScoreRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  border-top: 1px solid ${pp.line};
+  overflow: hidden;
+
+  /* 768 / 1024 / 1280 / 1440: equal Liquidity + Melega Score columns. */
+  @media (min-width: 768px) {
+    grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+    > :first-child {
+      border-right: 1px solid ${pp.line};
+    }
+  }
+
+  /* 390: existing stacked convention. */
+  @media (max-width: 767px) {
+    > :last-child {
+      border-top: 1px solid ${pp.line};
+    }
   }
 `
 const IntelCard = styled.div`
@@ -1509,24 +1523,70 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   ) : null}
                 </DexCompactRow>
               ) : null}
-              <LiquidityBlock data-testid="project-v7-liquidity-distribution">
-                <BandHead>
-                  <BandTitle>Liquidity</BandTitle>
-                  <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
-                    ADD LIQUIDITY
-                  </Btn>
-                </BandHead>
-                <DistributionSummary
-                  items={(dexMarket?.pairs ?? []).map((pair) => ({
-                    id: pair.pairAddress,
-                    label: pair.label,
-                    tvlUsd: pair.liquidityUsd,
-                    sharePct: pair.liquiditySharePct,
-                  }))}
-                  total={liveLiquidity}
-                  emptyLabel="Liquidity distribution unavailable."
-                />
-              </LiquidityBlock>
+              <LiquidityScoreRow
+                data-testid="project-v7-intel"
+                data-liquidity-score-row="1"
+                data-project-section="intel"
+              >
+                <LiquidityBlock data-testid="project-v7-liquidity-distribution">
+                  <BandHead>
+                    <BandTitle>Liquidity</BandTitle>
+                    <Btn $ghost href={`/liquidity-studio?view=add&chain=${chainId}`}>
+                      ADD LIQUIDITY
+                    </Btn>
+                  </BandHead>
+                  <DistributionSummary
+                    items={(dexMarket?.pairs ?? []).map((pair) => ({
+                      id: pair.pairAddress,
+                      label: pair.label,
+                      tvlUsd: pair.liquidityUsd,
+                      sharePct: pair.liquiditySharePct,
+                    }))}
+                    total={liveLiquidity}
+                    emptyLabel="Liquidity distribution unavailable."
+                  />
+                </LiquidityBlock>
+                <IntelCard
+                  data-testid="project-v7-score"
+                  data-score-state={typeof score === 'number' ? 'available' : 'unavailable'}
+                >
+                  <BandHead>
+                    <BandTitle>Melega Score</BandTitle>
+                  </BandHead>
+                  <button
+                    type="button"
+                    onClick={() => setScoreOpen(true)}
+                    style={{ border: 0, background: 'transparent', width: '100%', cursor: 'pointer', color: 'inherit' }}
+                    data-testid="project-v7-score-open"
+                  >
+                    <ScoreGauge
+                      style={
+                        {
+                          ['--score-deg' as string]: `${Math.max(0, Math.min(100, Number(score) || 0)) * 3.6}deg`,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <ScoreValue>{typeof score === 'number' ? Math.round(score) : '—'}</ScoreValue>
+                    </ScoreGauge>
+                    {typeof score === 'number' ? (
+                      <>
+                        <div style={{ textAlign: 'center', fontWeight: 750 }}>{scoreBand}</div>
+                        <Muted style={{ textAlign: 'center', margin: '4px 0 0' }}>Measured {scoreMeasured} ago</Muted>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ textAlign: 'center', fontWeight: 750 }}>Unavailable</div>
+                        <Muted
+                          style={{ textAlign: 'center', margin: '4px 0 0' }}
+                          data-testid="project-v7-score-unavailable"
+                        >
+                          Score not yet indexed
+                        </Muted>
+                      </>
+                    )}
+                  </button>
+                </IntelCard>
+              </LiquidityScoreRow>
               <ActivityBlock data-testid="project-v7-activity">
                 <BandHead>
                   <BandTitle>Latest Activity</BandTitle>
@@ -1620,34 +1680,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                 <Muted style={{ margin: 0, fontSize: 10 }}>Holder-type distribution is not indexed.</Muted>
               </EconomyCard>
             </EconomyGrid>
-          </DenseBand>
-
-          <DenseBand data-testid="project-v7-intel" data-project-section="intel">
-            <IntelGrid style={{ gridTemplateColumns: '1fr' }}>
-              <IntelCard data-testid="project-v7-score">
-                <BandHead>
-                  <BandTitle>Melega Score</BandTitle>
-                </BandHead>
-                <button
-                  type="button"
-                  onClick={() => setScoreOpen(true)}
-                  style={{ border: 0, background: 'transparent', width: '100%', cursor: 'pointer', color: 'inherit' }}
-                  data-testid="project-v7-score-open"
-                >
-                  <ScoreGauge
-                    style={
-                      {
-                        ['--score-deg' as string]: `${Math.max(0, Math.min(100, Number(score) || 0)) * 3.6}deg`,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <ScoreValue>{typeof score === 'number' ? Math.round(score) : '—'}</ScoreValue>
-                  </ScoreGauge>
-                  <div style={{ textAlign: 'center', fontWeight: 750 }}>{scoreBand}</div>
-                  <Muted style={{ textAlign: 'center', margin: '4px 0 0' }}>Measured {scoreMeasured} ago</Muted>
-                </button>
-              </IntelCard>
-            </IntelGrid>
           </DenseBand>
 
           <DenseBand data-testid="project-v7-boost" data-project-section="boost">

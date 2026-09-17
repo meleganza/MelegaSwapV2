@@ -312,5 +312,16 @@ const blion = listedBscTokenProject({
   sectorTags: ['Community'],
 })
 
+const aaron = listedBscTokenProject({
+  slug: 'aaron',
+  displayName: 'AARON',
+  symbol: 'AARON',
+  address: '0x31B5BE085aF875B675392f5B37a1d0B8c3860222',
+  logoUrl: 'https://melega.finance/images/tokens/0x31B5BE085aF875B675392f5B37a1d0B8c3860222.png',
+  tagline: 'Listed Melega DEX project token',
+  description: 'AARON is a listed project token on Melega DEX (BNB Smart Chain).',
+  sectorTags: ['DeFi'],
+})
+
 /** Canonical projects — MARCO listed first so token lookups prefer the token project. */
-export const STATIC_PROJECTS: StaticProjectRecord[] = [marco, melegaDex, mm72, eyed, youngDegens, blion]
+export const STATIC_PROJECTS: StaticProjectRecord[] = [marco, melegaDex, mm72, eyed, youngDegens, blion, aaron]

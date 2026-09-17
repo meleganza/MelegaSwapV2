@@ -27,6 +27,14 @@ describe('projects.data', () => {
     }
   })
 
+  it('indexes AARON as a listed BSC project identity', () => {
+    const project = STATIC_PROJECTS.find((p) => p.slug === 'aaron')
+    expect(project?.displayName).toBe('AARON')
+    expect(project?.resources.tokens[0]?.address).toBe('0x31B5BE085aF875B675392f5B37a1d0B8c3860222')
+    expect(project?.resources.tokens[0]?.chainId).toBe(56)
+    expect(project?.supportedChains).toEqual([56])
+  })
+
   it('does not mark AI report as live', () => {
     const project = getProjectBySlug('melega-dex')
     expect(project?.capabilities.aiReport.status).toBe('planned')

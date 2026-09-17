@@ -12,6 +12,8 @@ import {
   writeDurableTrendingSnapshot,
 } from 'lib/trending/durableTrendingSnapshot'
 import type { TierRankedAsset } from 'lib/trending/tierTrendingModel'
+import { fetchActiveTrendBoostPlacements } from 'lib/trending/activeTrendBoostPlacements'
+import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements'
 import {
   HOME_TOP_MOVERS_LIMIT,
   assertIdenticalPrefix,
@@ -21,6 +23,8 @@ import {
   type TopMoverEntry,
   type TopMoversSharedSnapshot,
 } from 'lib/trending/topMoversSharedSnapshot'
+
+const TICKER_REFRESH_MS = 60_000
 
 type IndexedRibbonAsset = {
   slug: string
@@ -90,9 +94,21 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
     {
       revalidateOnFocus: false,
       refreshWhenHidden: false,
-      refreshInterval: 60_000,
+      refreshInterval: TICKER_REFRESH_MS,
       dedupingInterval: 55_000,
       keepPreviousData: true,
+    },
+  )
+  const { data: paidPlacements = [] } = useSWR(
+    clientReady ? '/api/trend-boost/active' : null,
+    fetchActiveTrendBoostPlacements,
+    {
+      revalidateOnFocus: false,
+      refreshWhenHidden: false,
+      refreshInterval: TICKER_REFRESH_MS,
+      dedupingInterval: 55_000,
+      keepPreviousData: true,
+      shouldRetryOnError: false,
     },
   )
 
@@ -143,6 +159,12 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
     })
     snapshot.entries = snapshot.entries.map((entry) => ({ ...entry, chainId: entry.chainId ?? 56 }))
     const homeEntries = homeTopMoversPrefix(snapshot, HOME_TOP_MOVERS_LIMIT)
+    const organicTickerItems = entriesToTickerItems(snapshot.entries)
+    const tickerItems = mergeTickerWithPaidPlacements({
+      organic: organicTickerItems,
+      boosted: paidPlacements,
+      featured: [],
+    })
     const rankedAssets =
       !resolved.fromDurable && data?.rankedAssets?.length ? data.rankedAssets : durableRankedAssets(snapshot.entries)
     const indexedRibbonAssets =
@@ -160,17 +182,17 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
 
     return {
       snapshot,
-      tickerItems: entriesToTickerItems(snapshot.entries),
+      tickerItems,
       homeEntries,
       indexedRibbonAssets,
       rankedAssets,
       isLoading: !data && !error && durableItems.length === 0,
-      trendingEmpty: snapshot.entries.length === 0,
-      useMarquee: snapshot.entries.length >= 2,
+      trendingEmpty: tickerItems.length === 0,
+      useMarquee: tickerItems.length >= 2,
       indexerScopeNote: resolved.fromDurable ? 'Last-known movers · refreshing…' : data?.indexerScopeNote,
       prefixResult: assertIdenticalPrefix(snapshot.entries, homeEntries),
     }
-  }, [data, durableItems.length, durableUpdatedAt, error, resolved])
+  }, [data, durableItems.length, durableUpdatedAt, error, paidPlacements, resolved])
 
   return <TopMoversSnapshotContext.Provider value={value}>{children}</TopMoversSnapshotContext.Provider>
 }

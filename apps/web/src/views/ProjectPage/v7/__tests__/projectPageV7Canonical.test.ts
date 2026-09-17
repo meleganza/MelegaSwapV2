@@ -39,8 +39,8 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
       'data-testid="project-v7-about"',
       'data-testid="project-v7-community-react"',
       'data-testid="project-v7-market"',
-      'data-testid="project-v7-economy"',
       'data-testid="project-v7-intel"',
+      'data-testid="project-v7-economy"',
       'data-testid="project-v7-boost"',
       'data-testid="project-v7-related"',
     ]
@@ -90,6 +90,23 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).toContain('grid-template-columns: repeat(5, minmax(140px, 1fr))')
     expect(shell).toContain('SPONSORED RESEARCH')
     expect(shell).not.toContain('ClaimProjectWizardModal')
+  })
+
+  it('keeps Liquidity and Melega Score on the same canonical row', () => {
+    const rowIdx = shell.indexOf('data-liquidity-score-row="1"')
+    const liquidityIdx = shell.indexOf('project-v7-liquidity-distribution')
+    const scoreIdx = shell.indexOf('data-testid="project-v7-score"')
+    const earnIdx = shell.indexOf('<BandTitle>Earn</BandTitle>')
+    expect(rowIdx).toBeGreaterThan(0)
+    expect(liquidityIdx).toBeGreaterThan(rowIdx)
+    expect(scoreIdx).toBeGreaterThan(liquidityIdx)
+    expect(scoreIdx).toBeLessThan(earnIdx)
+    expect(shell).toContain('grid-template-columns: minmax(0, 50%) minmax(0, 50%)')
+    expect(shell).toContain('@media (min-width: 768px)')
+    expect(shell).toContain('@media (max-width: 767px)')
+    expect(shell).toContain("data-score-state={typeof score === 'number' ? 'available' : 'unavailable'}")
+    expect(shell).toContain('project-v7-score-unavailable')
+    expect(shell).toContain('Score not yet indexed')
   })
 
   it('related projects remain compact and do not render unavailable market metrics', () => {
