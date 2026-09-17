@@ -58,8 +58,9 @@ export function useExploreFarms(): FarmsExploreFarmsViewModel & {
 
   useEffect(() => {
     // The selected/wallet chain is the default Explore scope. Cross-chain rows
-    // remain available through the explicit “All” filter, but never replace
-    // live Base/Ethereum/etc. runtime cards with metric-less config stubs.
+    // remain available through the explicit “All” filter. mergeFarmPreviewCards
+    // keeps certified Ethereum/Base/etc. inventory when runtime is still
+    // metric-less, and prefers live runtime cards once they are stakeable.
     setChainFilter(liveYieldChain(chainId))
   }, [chainId])
 

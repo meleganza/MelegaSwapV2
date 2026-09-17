@@ -48,8 +48,32 @@ export function buildGlobalFarmPreviewCards(): FarmPreviewCard[] {
 }
 
 /**
+ * Explore-visible preview: configured LP farms stay stakeable even when the
+ * active-chain runtime card is still metric-less (indexing / analyze CTA).
+ * Mirrors isActiveStakeableExploreFarm without importing the view module.
+ */
+export function isExploreStakeableFarmPreview(card: FarmPreviewCard): boolean {
+  const raw = card.rawFarm
+  if (!raw) return false
+  if (raw.isTokenOnly || raw.pid === 0) return false
+  const lp = String(raw.lpAddress ?? '').toLowerCase()
+  if (!/^0x[a-f0-9]{40}$/.test(lp)) return false
+  if (card.status === 'finished') return false
+  if (String(raw.multiplier ?? '').toUpperCase() === '0X') return false
+  if (card.emissionState === 'zero' || card.emissionState === 'no_allocation' || card.emissionState === 'paused') {
+    return false
+  }
+  if (card.cta !== 'stake') return false
+  if (card.status !== 'live' && card.status !== 'indexing') return false
+  return true
+}
+
+/**
  * Merge active-chain runtime cards (preferred for metrics) with global config cards.
- * Runtime wins on matching identity; other chains remain as configured stubs.
+ * Runtime wins on matching identity only when it remains explore-stakeable.
+ * Metric-less runtime must never hide certified inventory on the selected chain
+ * (Ethereum public pricing / emission reads are often incomplete; config stubs
+ * already carry pair, logos, and contracts).
  */
 export function mergeFarmPreviewCards(
   runtimeCards: FarmPreviewCard[],
@@ -82,6 +106,20 @@ export function mergeFarmPreviewCards(
             masterChefAddress,
           } as FarmWithStakedValue)
         : card.rawFarm,
+    }
+    const existing = byId.get(identity)
+    if (existing && isExploreStakeableFarmPreview(existing) && !isExploreStakeableFarmPreview(chainTagged)) {
+      const runtimeUser = chainTagged.rawFarm?.userData
+      byId.set(identity, {
+        ...existing,
+        userStaked: chainTagged.userStaked ?? existing.userStaked,
+        pendingReward: chainTagged.pendingReward ?? existing.pendingReward,
+        rawFarm:
+          existing.rawFarm && runtimeUser
+            ? ({ ...existing.rawFarm, userData: runtimeUser } as FarmWithStakedValue)
+            : existing.rawFarm,
+      })
+      continue
     }
     byId.set(identity, chainTagged)
   }

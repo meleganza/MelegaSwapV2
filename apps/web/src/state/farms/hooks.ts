@@ -96,7 +96,9 @@ const coreFarmPIDs = {
   137: [2, 3],
   97: [4, 10],
   5: [13, 11],
-  1: [124, 125],
+  // Melega Ethereum MasterChef — pid1 MARCO-WETH, pid2 USDC-WETH (native/stable).
+  // Not leftover PancakeSwap Ethereum pids 124/125 (those farms do not exist here).
+  1: [1, 2],
 }
 
 export const usePollCoreFarmData = () => {
