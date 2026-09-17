@@ -29,7 +29,7 @@ import {
   type MonetizationAsset,
   type PlacementPackage,
 } from 'lib/monetization/packages'
-import { VISIBILITY_RUNTIME, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
+import { VISIBILITY_RUNTIME, canAcceptMCreditsPayment, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
 import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import {
   assignMarcoPayHandoff,
@@ -52,6 +52,13 @@ import {
   type CommercialServiceId,
 } from './commercialCheckoutTypes'
 import { appendMarketingHistory } from './marketingHistory'
+import {
+  authorizeMCreditsSpendForOrder,
+  mCreditsCheckoutBlocker,
+  readMCreditsPassport,
+  refreshMCreditsQuote,
+} from 'lib/mcredits/passportState'
+import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
 
 type MarcoPayReadiness = {
   executable: boolean
@@ -1355,12 +1362,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   })
   const isMarcoPay = pay === 'MARCO_PAY'
   const isMCredits = pay === 'M_CREDITS'
+  const mCreditsPassport = isMCredits ? readMCreditsPassport() : null
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
     (isMarcoPay && !marcoPayReadiness?.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
       ? 'M-Credits are temporarily unavailable.'
+      : isMCredits && selectedPackage
+      ? mCreditsCheckoutBlocker({ usdPrice: selectedPackage.usdPrice, passport: mCreditsPassport ?? undefined })
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
@@ -1480,6 +1490,24 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       })
     return () => controller.abort()
   }, [open])
+
+  useEffect(() => {
+    if (!open || pay !== 'M_CREDITS' || !service || !selectedPackage) return
+    const resolvedProjectId = projectId || detected?.slug || projectSlug || detected?.contract || detected?.symbol
+    if (!resolvedProjectId) return
+    const receipt = loadMCreditsReceipt({
+      projectId: resolvedProjectId,
+      serviceId: service,
+      packageId: String(selectedPackage.id),
+    })
+    if (!receipt) return
+    setOrderId(receipt.orderId)
+    setStatus('confirmed')
+    setWalletStage('success')
+    setQuoteSummary(
+      `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${serviceMeta?.title ?? service}`,
+    )
+  }, [detected?.contract, detected?.name, detected?.slug, detected?.symbol, open, pay, projectId, projectSlug, selectedPackage, service, serviceMeta?.title])
 
   useEffect(() => {
     if (!open) return undefined
@@ -2102,11 +2130,22 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       await runMarcoPaySingleFlight(async () => {
         setBusy(true)
         try {
+          if (!canAcceptMCreditsPayment(service)) {
+            throw new Error(runtimeCheckoutBlocker || 'This service cannot be fulfilled with M-Credits yet.')
+          }
           const resolvedSlug = detected?.slug ?? projectSlug
           const resolvedProjectId = projectId || resolvedSlug || detected?.contract || detected?.symbol
+          const quote = refreshMCreditsQuote(selectedPackage?.usdPrice ?? 0)
+          const identityToken = await authorizeMCreditsSpendForOrder({
+            merchantOrderRef: `${resolvedProjectId}:${service}:${selectedPackage?.id ?? 'default'}`,
+            maxAmountMinor: quote.amountMinor,
+          })
           const response = await fetch('/api/mcredits/orders', {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
+            headers: {
+              'content-type': 'application/json',
+              ...(identityToken ? { 'x-marco-passport-session': identityToken } : {}),
+            },
             body: JSON.stringify({
               projectId: resolvedProjectId,
               projectSlug: resolvedSlug,
@@ -2122,12 +2161,33 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             throw new Error('M-Credits must not open MARCO Pay.')
           }
           if (!response.ok) throw new Error(payload.message || 'M-Credits are temporarily unavailable.')
+          if (payload.order?.state !== 'FULFILLED') {
+            throw new Error('M-Credits fulfilment failed.')
+          }
+          setOrderId(payload.order.orderId)
+          saveMCreditsReceipt({
+            orderId: payload.order.orderId,
+            state: 'FULFILLED',
+            serviceId: service,
+            packageId: String(selectedPackage?.id ?? payload.order.packageId),
+            projectId: String(resolvedProjectId),
+          })
+          appendMarketingHistory(resolvedSlug || projectSlug, {
+            kind: service === 'featured' ? 'featured' : 'trend-boost',
+            label: selectedPackage?.label ?? serviceMeta?.title ?? 'M-Credits',
+            status: 'Running',
+            packageId: String(selectedPackage?.id ?? ''),
+            expiresAt: selectedPackage
+              ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
+              : undefined,
+          })
+          onHistoryChange?.()
           setStatus('confirmed')
           setWalletStage('success')
           setQuoteSummary(
             `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${
               serviceMeta?.title ?? service
-            }`,
+            } · ${quote.display}`,
           )
         } catch (cause) {
           setError(cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.')
@@ -2194,11 +2254,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     farmTarget,
     isMCredits,
     isMarcoPay,
+    onHistoryChange,
     poolTarget,
     prepareMarcoPayOrder,
     projectId,
     projectSlug,
     runCheckout,
+    runtimeCheckoutBlocker,
     selectedPackage,
     service,
     serviceMeta?.title,

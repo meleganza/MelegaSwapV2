@@ -95,6 +95,8 @@ describe('M-Credits separation', () => {
     expect(JSON.stringify(fetchImpl.mock.calls.map((call) => String(call[0])))).not.toContain('/api/public/pay/session')
     expect(JSON.stringify(fetchImpl.mock.calls.map((call) => String(call[0])))).not.toContain('/pay/')
 
+    clearMCreditsOrdersForTests()
+
     const failing = vi.fn(async (url: string) => {
       if (String(url).includes('/reserve')) {
         return new Response(JSON.stringify({ ok: true, reservation_id: 'res_fail' }), { status: 200 })

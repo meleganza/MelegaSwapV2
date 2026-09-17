@@ -21,8 +21,8 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
     reason: 'Featured Pool settlement and hero rotation fulfillment are awaiting production activation.',
   },
   M_CREDITS: {
-    live: false,
-    reason: 'M-Credits debit through MARCO Passport is not connected to a production ledger yet.',
+    live: true,
+    reason: null,
   },
   referral: {
     live: false,
@@ -46,8 +46,23 @@ export function visibilityCheckoutBlocker(args: {
   if (!args.service) return 'Choose a visibility service.'
   const service = VISIBILITY_RUNTIME[args.service]
   if (!service?.live) return service?.reason ?? 'This service is not enabled for production checkout.'
-  if (args.payment === 'M_CREDITS') return VISIBILITY_RUNTIME.M_CREDITS.reason
+  if (args.payment === 'M_CREDITS' && !VISIBILITY_RUNTIME.M_CREDITS.live) {
+    return VISIBILITY_RUNTIME.M_CREDITS.reason
+  }
+  if (args.payment === 'M_CREDITS' && !canAcceptMCreditsPayment(args.service)) {
+    return service.reason ?? 'This service is not enabled for production checkout.'
+  }
   if (args.hasReferral) return VISIBILITY_RUNTIME.referral.reason
   if (args.hasFeaturedAddOns) return 'Featured Farm/Pool bundle settlement is awaiting production activation.'
   return null
+}
+
+const MCREDITS_FULFILLABLE_SERVICES = new Set(['featured', 'trend-boost'])
+
+/** M-Credits may charge only when the selected service has a real fulfillment pipeline. */
+export function canAcceptMCreditsPayment(service: string | null): boolean {
+  if (!service) return false
+  if (!VISIBILITY_RUNTIME.M_CREDITS.live) return false
+  if (!VISIBILITY_RUNTIME[service]?.live) return false
+  return MCREDITS_FULFILLABLE_SERVICES.has(service)
 }

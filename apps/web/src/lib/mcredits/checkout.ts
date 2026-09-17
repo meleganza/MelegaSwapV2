@@ -16,6 +16,7 @@ import {
   getVisibilityPackage,
   type VisibilityProductId,
 } from 'lib/monetization/packages'
+import { canAcceptMCreditsPayment } from 'lib/monetization/visibilityRuntime'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 
 export class MCreditsGatewayError extends Error {
@@ -50,6 +51,7 @@ type SpendInput = {
 }
 
 const MEMORY = new Map<string, MCreditsOrder>()
+const IDEMPOTENCY = new Map<string, string>()
 
 function marcoOrigin(): string {
   return 'https://marco.melega.ai'
@@ -85,10 +87,20 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
   if (!input.identityToken?.trim()) {
     throw new MCreditsGatewayError('MCREDITS_IDENTITY_REQUIRED', 'M-Credits require a MARCO Passport session.')
   }
+  if (!canAcceptMCreditsPayment(input.serviceId)) {
+    throw new MCreditsGatewayError('SERVICE_NOT_FULFILLABLE', 'This service cannot be fulfilled with M-Credits yet.')
+  }
   const pkg =
     input.serviceId === 'featured'
       ? getFeaturedPackage(input.packageId)
       : getVisibilityPackage(input.serviceId as VisibilityProductId, input.packageId)
+  const idempotencyKey = `${input.buyerWallet.toLowerCase()}|${input.serviceId}|${pkg.id}|${input.projectId}`
+  const existingId = IDEMPOTENCY.get(idempotencyKey)
+  const existing = existingId ? MEMORY.get(existingId) : null
+  if (existing?.state === 'FULFILLED') return existing
+  if (existing && existing.state !== 'FAILED' && existing.state !== 'RELEASED') {
+    throw new MCreditsGatewayError('MCREDITS_IN_FLIGHT', 'This purchase is already in progress.')
+  }
   const now = new Date().toISOString()
   const order: MCreditsOrder = {
     orderId: `mc_${randomBytes(12).toString('hex')}`,
@@ -102,6 +114,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
     createdAt: now,
   }
   MEMORY.set(order.orderId, order)
+  IDEMPOTENCY.set(idempotencyKey, order.orderId)
   const fetchImpl = input.fetchImpl ?? fetch
   const identity = input.identityToken.trim()
   const amountMinor = order.referenceAmountMinor
@@ -182,6 +195,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
     }
     order.state = 'FULFILLED'
     MEMORY.set(order.orderId, { ...order })
+    IDEMPOTENCY.set(idempotencyKey, order.orderId)
     return order
   } catch (cause) {
     if (reservationId) {
@@ -202,6 +216,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
 
 export function clearMCreditsOrdersForTests() {
   MEMORY.clear()
+  IDEMPOTENCY.clear()
 }
 
 export function getMCreditsOrder(orderId: string): MCreditsOrder | null {

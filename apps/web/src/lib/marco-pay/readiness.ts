@@ -171,7 +171,7 @@ export async function resolveMarcoPayReadiness() {
     machineLive,
     paymentMethods: {
       marco: executable,
-      mCredits: executable && mCreditsLive,
+      mCredits: mCreditsLive,
     },
     contractVersion: pay?.data?.webhooks?.contract_version ?? null,
     widget: {
