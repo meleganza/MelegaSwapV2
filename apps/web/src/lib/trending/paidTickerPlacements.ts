@@ -54,9 +54,48 @@ export function paidPlacementToTickerItem(placement: PaidTickerPlacement, nowMs 
   }
 }
 
+const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/
+
+function normalizePaidAddress(address: string | null | undefined): string | null {
+  if (!address || !EVM_ADDRESS_RE.test(address)) return null
+  return address.toLowerCase()
+}
+
+function tickerItemAddress(item: MelegaTickerItem): string | null {
+  if (!item.href) return null
+  try {
+    const query = item.href.includes('?') ? item.href.slice(item.href.indexOf('?') + 1) : ''
+    const output = new URLSearchParams(query).get('outputCurrency')
+    if (output && EVM_ADDRESS_RE.test(output)) return output.toLowerCase()
+    const tokenPath = /\/token\/[^/]+\/(0x[a-fA-F0-9]{40})/i.exec(item.href)
+    if (tokenPath?.[1]) return tokenPath[1].toLowerCase()
+  } catch {
+    // ignore malformed hrefs
+  }
+  return null
+}
+
+function tickerSymbolKey(primary: string): string {
+  return primary.replace(/^🚀\s+/, '').replace(/\s+·\s+(Boosted|Featured)$/i, '').trim().toUpperCase()
+}
+
+function paidIdentityKeys(placement: PaidTickerPlacement): string[] {
+  const keys = [`sym:${placement.symbol.trim().toUpperCase()}`]
+  const address = normalizePaidAddress(placement.address)
+  if (address) keys.push(`addr:${address}`)
+  return keys
+}
+
+function organicMatchesPaid(item: MelegaTickerItem, paidKeys: Set<string>): boolean {
+  const address = tickerItemAddress(item)
+  if (address && paidKeys.has(`addr:${address}`)) return true
+  const symbol = tickerSymbolKey(item.primary || '')
+  return Boolean(symbol) && paidKeys.has(`sym:${symbol}`)
+}
+
 /**
  * Ordering: paid Boosted → organic movers → paid Featured.
- * Never invent organic rows. Never pad.
+ * Never invent organic rows. Never pad. Same-token organic+paid is one disclosed row.
  */
 export function mergeTickerWithPaidPlacements(input: {
   organic: MelegaTickerItem[]
@@ -65,13 +104,17 @@ export function mergeTickerWithPaidPlacements(input: {
   nowMs?: number
 }): MelegaTickerItem[] {
   const now = input.nowMs ?? Date.now()
-  const boosted = (input.boosted ?? [])
-    .filter((p) => isPaidPlacementActive(p, now))
-    .map((p) => paidPlacementToTickerItem(p, now))
-  const featured = (input.featured ?? [])
-    .filter((p) => isPaidPlacementActive(p, now))
-    .map((p) => paidPlacementToTickerItem(p, now))
-  return [...boosted, ...input.organic, ...featured]
+  const boostedPlacements = (input.boosted ?? []).filter((placement) => isPaidPlacementActive(placement, now))
+  const featuredPlacements = (input.featured ?? []).filter((placement) => isPaidPlacementActive(placement, now))
+  const boosted = boostedPlacements.map((placement) => paidPlacementToTickerItem(placement, now))
+  const featured = featuredPlacements.map((placement) => paidPlacementToTickerItem(placement, now))
+  const paidKeys = new Set<string>()
+  for (const placement of [...boostedPlacements, ...featuredPlacements]) {
+    for (const key of paidIdentityKeys(placement)) paidKeys.add(key)
+  }
+  const organic =
+    paidKeys.size === 0 ? input.organic : input.organic.filter((item) => !organicMatchesPaid(item, paidKeys))
+  return [...boosted, ...organic, ...featured]
 }
 
 /** Eligibility gate: every ticker row must have measured move OR disclosed paid label. */
