@@ -1,4 +1,5 @@
 import type { NextApiHandler } from 'next'
+import { INDEXER_TIER_DEFINITIONS } from 'lib/data-truth/ontology'
 import { loadTierPairInventory } from 'lib/bsc-indexer/indexer/tierInventory'
 import { resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
 import { FEATURED_PAIR_SLUG, MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
@@ -68,6 +69,9 @@ const handler: NextApiHandler = async (req, res) => {
     tier1Count: inventory.tier1.length,
     tier2Count: inventory.tier2.length,
     tier3Count: inventory.tier3Count,
+    activeTierSize: inventory.activeTierSize,
+    tier2CandidatesConsidered: inventory.tier2CandidatesConsidered,
+    tier2ActiveCapacity: INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
     pairs: rows,
   })
 }

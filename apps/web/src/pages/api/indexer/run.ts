@@ -56,6 +56,13 @@ async function persistOrchestratorSummary(report: IndexerRunReport): Promise<voi
       stageTimings: report.stageTimings,
       adaptiveTelemetry: report.adaptiveTelemetry,
       featuredBootstrapComplete: report.featuredBootstrapComplete,
+      activeTierSize: report.activeTierSize,
+      tier2CandidatesConsidered: report.tier2CandidatesConsidered,
+      tier2JobsAttempted: report.tier2JobsAttempted,
+      tier2JobsCompleted: report.tier2JobsCompleted,
+      batchStoppedByDeadline: report.batchStoppedByDeadline,
+      nextRotationIndex: report.nextRotationIndex,
+      tier3Count: report.tier3Count,
     },
   })
 }

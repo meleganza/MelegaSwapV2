@@ -73,6 +73,8 @@ export interface IndexerCheckpoint {
 export interface TierSchedulerState {
   tier1RotationIndex: number
   tier2RotationIndex: number
+  /** Reserved for P1 COLD→ACTIVE sampling. Unused while cold-sample size is 0. */
+  tier3RotationIndex?: number
   lastAttemptedAt?: string
   lastSuccessfulAt?: string
   consecutiveFailures: number
@@ -130,6 +132,15 @@ export interface IndexerHealthSnapshot {
     cursorsBefore?: Record<string, number | null>
     cursorsAfter?: Record<string, number | null>
     stageTimings?: Array<{ stage: string; elapsedMs: number }>
+    featuredBootstrapComplete?: boolean
+    adaptiveTelemetry?: unknown
+    activeTierSize?: number
+    tier2CandidatesConsidered?: number
+    tier2JobsAttempted?: number
+    tier2JobsCompleted?: number
+    batchStoppedByDeadline?: boolean
+    nextRotationIndex?: number
+    tier3Count?: number
   }
 }
 
