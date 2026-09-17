@@ -4,9 +4,16 @@ import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/re
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 import { ECOSYSTEM_DESTINATIONS } from 'views/HomeTrade/ecosystemDestinations'
+import { getActiveMarcoConnectSdk } from 'components/MarcoWidgets/marcoConnectSession'
 vi.mock('wagmi', () => ({ useAccount: vi.fn(() => ({address: undefined})), useSigner: vi.fn(() => ({data: undefined})) }))
 vi.mock('components/MarcoWidgets', () => ({ MarcoPay: () => null }))
 vi.mock('components/ConnectWalletButton', () => ({default: (props: any) => <button {...props}>Connect Wallet</button>}))
+vi.mock('components/MarcoWidgets/marcoConnectSession', async () => {
+  const actual = await vi.importActual<typeof import('components/MarcoWidgets/marcoConnectSession')>(
+    'components/MarcoWidgets/marcoConnectSession',
+  )
+  return { ...actual, getActiveMarcoConnectSdk: vi.fn(() => null) }
+})
 const ADDRESS='0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e'
 const requests: string[]=[]
 const next=()=>fireEvent.click(screen.getByTestId('commercial-checkout-next'))
@@ -26,7 +33,7 @@ beforeEach(()=>{
   return {ok:true,json:async()=>data}
  }))
 })
-afterEach(()=>{cleanup();vi.unstubAllGlobals()})
+afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.mocked(getActiveMarcoConnectSdk).mockReturnValue(null)})
 async function open(service='trend-boost'){
  const close=vi.fn()
  render(<CommercialCheckoutModal open onClose={close} projectId="" projectSlug="" identityReady />)
@@ -65,6 +72,78 @@ describe('Boost P0 behaviour',()=>{
   next();next();next();next()
   expect(screen.getByTestId('commercial-step-review').textContent).toContain('awaiting production activation')
   expect(requests.some(x=>x.includes('/orders'))).toBe(false)
+ })
+ it('keeps Featured Pool pending while Featured and Trend Boost can review M-Credits',async()=>{
+  vi.mocked(useAccount).mockReturnValue({address:ADDRESS} as any)
+  const baseFetch=global.fetch
+  vi.stubGlobal('fetch',vi.fn(async(input:string,options:any)=>{
+   if(String(input).includes('/readiness')) return {ok:true,json:async()=>({executable:true,paymentMethods:{marco:true,mCredits:true}})}
+   if(String(input).includes('/mcredits/orders')) {
+    return {ok:true,json:async()=>({order:{orderId:'mc_fixture',state:'CREATED',referenceAmountMinor:'2900'},requiredAmountMinor:'2900',insufficient:false,payment_id:null,approval_url:null})}
+   }
+   return baseFetch(input,options)
+  }))
+  await open('featured-pool')
+  expect(screen.getByTestId('commercial-service-featured-pool').textContent).toContain('Activation pending')
+  expect(screen.getByTestId('commercial-service-featured-farm').textContent).toContain('Activation pending')
+  expect(screen.getByTestId('commercial-service-sponsored-research').textContent).toContain('Activation pending')
+  fireEvent.click(screen.getByTestId('commercial-service-featured'))
+  expect(screen.getByTestId('commercial-service-featured').textContent).not.toContain('Activation pending')
+ })
+ it('reviews and pays Featured with mocked M-Credits without a live ledger charge',async()=>{
+  vi.mocked(useAccount).mockReturnValue({address:ADDRESS} as any)
+  const authorize=vi.fn(async()=>({ok:true,mcreditsAuthorization:'passport_grant_test'}))
+  vi.mocked(getActiveMarcoConnectSdk).mockReturnValue({
+   getState:()=>({connected:true,mCredits:{available:40,known:true}}),
+   refresh:async()=>undefined,
+   authorizeMCreditsSpend:authorize,
+  } as any)
+  const actions:string[]=[]
+  const baseFetch=global.fetch
+  vi.stubGlobal('fetch',vi.fn(async(input:string,options:any)=>{
+   if(String(input).includes('/readiness')) return {ok:true,json:async()=>({executable:true,paymentMethods:{marco:true,mCredits:true}})}
+   if(String(input).includes('/mcredits/orders')) {
+    const body=JSON.parse(options.body||'{}')
+    actions.push(body.action||'spend')
+    if(body.action==='prepare') return {ok:true,json:async()=>({order:{orderId:'mc_featured',state:'CREATED',referenceAmountMinor:'2900'},requiredAmountMinor:'2900',insufficient:false,payment_id:null,approval_url:null})}
+    return {ok:true,status:201,json:async()=>({order:{orderId:'mc_featured',state:'FULFILLED',referenceAmountMinor:'2900'},payment_id:null,approval_url:null})}
+   }
+   return baseFetch(input,options)
+  }))
+  await open('featured')
+  next();fireEvent.click(screen.getByTestId('commercial-pkg-featured_24h'));next();next()
+  expect(screen.getByTestId('commercial-pay-M_CREDITS').hasAttribute('disabled')).toBe(false)
+  fireEvent.click(screen.getByTestId('commercial-pay-M_CREDITS'));next()
+  expect(screen.getByTestId('commercial-step-review').textContent).toContain('M-Credits')
+  expect(screen.getByTestId('commercial-step-review').textContent).not.toContain('awaiting production activation')
+  expect(screen.getByTestId('commercial-step-review').textContent).toContain('$29')
+  fireEvent.click(screen.getByTestId('commercial-checkout-pay'))
+  await waitFor(()=>expect(screen.getByTestId('commercial-checkout-success')).toBeTruthy())
+  expect(authorize).toHaveBeenCalledWith({merchantOrderRef:'mc_featured',maxAmountMinor:'2900'})
+  expect(actions).toContain('prepare')
+  expect(actions).toContain('spend')
+  expect(screen.getByTestId('commercial-checkout-success').textContent).toContain('BOOST ACTIVATED')
+ })
+ it('shows the insufficient M-Credits state for Trend Boost without charging',async()=>{
+  vi.mocked(useAccount).mockReturnValue({address:ADDRESS} as any)
+  vi.mocked(getActiveMarcoConnectSdk).mockReturnValue({
+   getState:()=>({connected:true,mCredits:{available:1,known:true}}),
+   refresh:async()=>undefined,
+   authorizeMCreditsSpend:vi.fn(),
+  } as any)
+  const baseFetch=global.fetch
+  vi.stubGlobal('fetch',vi.fn(async(input:string,options:any)=>{
+   if(String(input).includes('/readiness')) return {ok:true,json:async()=>({executable:true,paymentMethods:{marco:true,mCredits:true}})}
+   if(String(input).includes('/mcredits/orders')) {
+    expect(JSON.parse(options.body||'{}').action).toBe('prepare')
+    return {ok:true,json:async()=>({order:{orderId:'mc_trend',state:'CREATED',referenceAmountMinor:'2900'},requiredAmountMinor:'2900',insufficient:true,payment_id:null,approval_url:null})}
+   }
+   return baseFetch(input,options)
+  }))
+  await open();next();next();next()
+  fireEvent.click(screen.getByTestId('commercial-pay-M_CREDITS'));next()
+  await waitFor(()=>expect(screen.getByTestId('commercial-step-review').textContent).toContain('Insufficient M-Credits'))
+  expect(screen.getByTestId('commercial-checkout-pay').hasAttribute('disabled')).toBe(true)
  })
  it('completes a simulated checkout through receipt confirmation without a real provider',async()=>{
   const sendTransaction=vi.fn(async()=>({hash:'0x'+'1'.repeat(64),wait:async()=>({to:ADDRESS,status:1,logs:[]})}))

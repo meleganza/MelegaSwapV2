@@ -42,6 +42,11 @@ import {
   readMarcoPayHandoffSession,
   runMarcoPaySingleFlight,
 } from 'lib/marco-pay/approval'
+import {
+  getActiveMarcoConnectSdk,
+  readMCreditsAvailable,
+  readPassportWalletAddress,
+} from 'components/MarcoWidgets/marcoConnectSession'
 import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
@@ -1310,6 +1315,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const { address } = useAccount()
   const { data: signer } = useSigner()
   const buyerWallet = address ?? null
+  const mCreditsBuyerWallet =
+    (buyerWallet && /^0x[a-fA-F0-9]{40}$/.test(buyerWallet) ? buyerWallet : null) ||
+    readPassportWalletAddress(getActiveMarcoConnectSdk()?.getState())
   const [step, setStep] = useState<CommercialCheckoutStep>('project')
   const [service, setService] = useState<CommercialServiceId | null>(initialService)
   const [selectedPackageId, setSelectedPackageId] = useState<string>('')
@@ -1334,6 +1342,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [settlementMarket, setSettlementMarket] = useState<SettlementMarket>({ loading: false })
   const [marcoPayReadiness, setMarcoPayReadiness] = useState<MarcoPayReadiness | null>(null)
   const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
+  const [mCreditsQuote, setMCreditsQuote] = useState<{
+    orderId: string
+    requiredMinor: string
+    insufficient: boolean
+  } | null>(null)
   const marcoPayOrderRef = useRef<MarcoPayOrderConfig | null>(null)
   const prepareFlightRef = useRef<Promise<MarcoPayOrderConfig | null> | null>(null)
   marcoPayOrderRef.current = marcoPayOrder
@@ -1361,6 +1374,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
       ? 'M-Credits are temporarily unavailable.'
+      : isMCredits && mCreditsQuote?.insufficient
+      ? 'Insufficient M-Credits balance for this purchase.'
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
@@ -1457,6 +1472,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setSubmittedTxHash(null)
     setMarcoPayReadiness(null)
     setMarcoPayOrder(null)
+    setMCreditsQuote(null)
     setSettlementMarket({ loading: true })
     setBusy(false)
     setStep('project')
@@ -1741,6 +1757,55 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     if (!open || step !== 'review' || !isMarcoPay || marcoPayOrderRef.current || status === 'confirmed') return
     void prepareMarcoPayOrder()
   }, [isMarcoPay, open, prepareMarcoPayOrder, status, step])
+
+  useEffect(() => {
+    if (!open || step !== 'review' || !isMCredits || !service || !selectedPackage || !detected || status === 'confirmed') {
+      return undefined
+    }
+    if (!mCreditsBuyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(mCreditsBuyerWallet)) return undefined
+    const controller = new AbortController()
+    const resolvedSlug = detected.slug ?? projectSlug
+    const resolvedProjectId = projectId || resolvedSlug || detected.contract || detected.symbol
+    void fetch('/api/mcredits/orders', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        action: 'prepare',
+        projectId: resolvedProjectId,
+        projectSlug: resolvedSlug,
+        projectContract: detected.contract,
+        buyerWallet: mCreditsBuyerWallet,
+        serviceId: service,
+        packageId: selectedPackage.id,
+        orderId,
+      }),
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as {
+          order?: { orderId?: string; referenceAmountMinor?: string }
+          requiredAmountMinor?: string
+          insufficient?: boolean
+          message?: string
+        }
+        if (!response.ok || !payload.order?.orderId) return
+        setOrderId(payload.order.orderId)
+        const requiredMinor = payload.requiredAmountMinor || payload.order.referenceAmountMinor || String(Math.round(totalUsd * 100))
+        const sdk = getActiveMarcoConnectSdk()
+        if (sdk?.refresh) await sdk.refresh()
+        const available = readMCreditsAvailable(sdk?.getState() ?? null)
+        const requiredCredits = Number(requiredMinor) / 100
+        setMCreditsQuote({
+          orderId: payload.order.orderId,
+          requiredMinor,
+          insufficient: Boolean(payload.insufficient) || (available != null && available < requiredCredits),
+        })
+      })
+      .catch((cause) => {
+        if ((cause as Error)?.name === 'AbortError') return
+      })
+    return () => controller.abort()
+  }, [detected, isMCredits, mCreditsBuyerWallet, open, orderId, projectId, projectSlug, selectedPackage, service, status, step, totalUsd])
 
   const goBack = () => {
     setError(null)
@@ -2104,17 +2169,66 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         try {
           const resolvedSlug = detected?.slug ?? projectSlug
           const resolvedProjectId = projectId || resolvedSlug || detected?.contract || detected?.symbol
+          const requiredMinor = mCreditsQuote?.requiredMinor || String(Math.round((selectedPackage?.usdPrice ?? 0) * 100))
+          if (!mCreditsBuyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(mCreditsBuyerWallet)) {
+            throw new Error('M-Credits require a MARCO Passport session.')
+          }
+          const sdk = getActiveMarcoConnectSdk()
+          if (!sdk) throw new Error('M-Credits require a MARCO Passport session.')
+          if (!sdk.getState().connected && sdk.connect) await sdk.connect()
+          if (sdk.refresh) await sdk.refresh()
+          const available = readMCreditsAvailable(sdk.getState())
+          if (available != null && available < Number(requiredMinor) / 100) {
+            setMCreditsQuote((current) =>
+              current
+                ? { ...current, insufficient: true }
+                : { orderId: orderId || '', requiredMinor, insufficient: true },
+            )
+            throw new Error('Insufficient M-Credits balance for this purchase.')
+          }
+          if (!sdk.authorizeMCreditsSpend) throw new Error('M-Credits require a MARCO Passport session.')
+          const prepared =
+            mCreditsQuote?.orderId ||
+            (
+              await fetch('/api/mcredits/orders', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'prepare',
+                  projectId: resolvedProjectId,
+                  projectSlug: resolvedSlug,
+                  projectContract: detected?.contract,
+                  buyerWallet: mCreditsBuyerWallet,
+                  serviceId: service,
+                  packageId: selectedPackage?.id,
+                }),
+              }).then((response) => response.json())
+            )?.order?.orderId
+          if (!prepared) throw new Error('M-Credits are temporarily unavailable.')
+          setOrderId(prepared)
+          const granted = await sdk.authorizeMCreditsSpend({
+            merchantOrderRef: prepared,
+            maxAmountMinor: requiredMinor,
+          })
+          if (!granted?.ok || !granted.mcreditsAuthorization) {
+            throw new Error(granted?.error?.message || 'M-Credits require a MARCO Passport session.')
+          }
           const response = await fetch('/api/mcredits/orders', {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
+            headers: {
+              'content-type': 'application/json',
+              'x-marco-passport-session': granted.mcreditsAuthorization,
+            },
             body: JSON.stringify({
+              action: 'spend',
+              orderId: prepared,
               projectId: resolvedProjectId,
               projectSlug: resolvedSlug,
               projectContract: detected?.contract,
-              buyerWallet,
+              buyerWallet: mCreditsBuyerWallet,
               serviceId: service,
               packageId: selectedPackage?.id,
-              targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
+              mcreditsAuthorization: granted.mcreditsAuthorization,
             }),
           })
           const payload = await response.json()
@@ -2129,6 +2243,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               serviceMeta?.title ?? service
             }`,
           )
+          appendMarketingHistory(resolvedSlug || projectSlug, {
+            kind: service === 'featured' ? 'featured' : 'trend-boost',
+            label: selectedPackage?.label ?? 'M-Credits purchase',
+            status: 'Running',
+            packageId: String(selectedPackage?.id ?? ''),
+            expiresAt: selectedPackage
+              ? new Date(Date.now() + selectedPackage.durationMs).toISOString()
+              : null,
+          })
+          onHistoryChange?.()
         } catch (cause) {
           setError(cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.')
           setWalletStage('error')
@@ -2194,6 +2318,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     farmTarget,
     isMCredits,
     isMarcoPay,
+    mCreditsBuyerWallet,
+    mCreditsQuote,
+    onHistoryChange,
+    orderId,
     poolTarget,
     prepareMarcoPayOrder,
     projectId,
@@ -2556,6 +2684,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                         setQuoteSummary(null)
                         setOrderId(null)
                         setMarcoPayOrder(null)
+                        setMCreditsQuote(null)
                       }}
                       data-testid={`commercial-pay-${asset}`}
                     >

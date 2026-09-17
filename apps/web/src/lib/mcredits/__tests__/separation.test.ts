@@ -51,6 +51,11 @@ vi.mock('lib/monetization/trendBoostOrders', () => ({
   persistTrendBoostOrderDurably: async (order: any) => order,
 }))
 
+const SIGNING = {
+  applicationRef: 'app_sedafoqw6qlxyxb9l8ds',
+  signingSecret: 'test_signing_secret_not_live',
+}
+
 describe('M-Credits separation', () => {
   afterEach(() => {
     clearMCreditsOrdersForTests()
@@ -63,6 +68,7 @@ describe('M-Credits separation', () => {
       'utf8',
     )
     const api = readFileSync(path.join(__dirname, '../../../pages/api/mcredits/orders.ts'), 'utf8')
+    const spend = readFileSync(path.join(__dirname, '../checkout.ts'), 'utf8')
     expect(checkout).toContain("pay === 'MARCO_PAY'")
     expect(checkout).toContain("pay === 'M_CREDITS'")
     expect(checkout).not.toContain("pay === 'MARCO_PAY' || pay === 'M_CREDITS'")
@@ -71,6 +77,10 @@ describe('M-Credits separation', () => {
     expect(api).not.toContain('/pay/')
     expect(api).not.toContain('eth_sendTransaction')
     expect(api).not.toContain('buildMarcoPayWalletTransfer')
+    expect(spend).toContain('/api/public/mcredits/order/reserve')
+    expect(spend).toContain('/api/public/mcredits/order/confirm')
+    expect(spend).toContain('/api/public/mcredits/order/release')
+    expect(spend).not.toContain('/api/public/pay/session')
   })
 
   it('reserve+confirm fulfils once and failure releases the reservation', async () => {
@@ -89,9 +99,11 @@ describe('M-Credits separation', () => {
       serviceId: 'trend-boost',
       identityToken: 'passport_session_test',
       fetchImpl: fetchImpl as unknown as typeof fetch,
+      ...SIGNING,
     })
     expect(first.state).toBe('FULFILLED')
     expect(first.reservationId).toBe('res_1')
+    expect(JSON.stringify(fetchImpl.mock.calls.map((call) => String(call[0])))).toContain('/api/public/mcredits/order/reserve')
     expect(JSON.stringify(fetchImpl.mock.calls.map((call) => String(call[0])))).not.toContain('/api/public/pay/session')
     expect(JSON.stringify(fetchImpl.mock.calls.map((call) => String(call[0])))).not.toContain('/pay/')
 
@@ -109,13 +121,14 @@ describe('M-Credits separation', () => {
     })
     await expect(
       spendMCreditsForBoost({
-        projectId: 'mm72',
+        projectId: 'mm72-insufficient',
         buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
         serviceId: 'trend-boost',
         identityToken: 'passport_session_test',
         fetchImpl: failing as unknown as typeof fetch,
+        ...SIGNING,
       }),
-    ).rejects.toThrow(/M-Credits/)
+    ).rejects.toThrow(/M-Credits|Insufficient/)
     expect(failing.mock.calls.some((call) => String(call[0]).includes('/release'))).toBe(true)
   })
 
@@ -126,6 +139,7 @@ describe('M-Credits separation', () => {
         buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
         serviceId: 'trend-boost',
         identityToken: 'mpk_live_not_a_real_secret',
+        ...SIGNING,
       }),
     ).rejects.toMatchObject({ code: 'MCREDITS_SECRET_REJECTED' })
   })
