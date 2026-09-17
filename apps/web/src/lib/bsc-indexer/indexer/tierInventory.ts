@@ -69,7 +69,7 @@ async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {
     ])
     const swapCount = events.filter((e) => e.eventType === 'Swap').length
     const lag = health?.indexingLag ?? 999_999
-    const liquidity = Number(watch.liquidityScore > 0n ? watch.liquidityScore : 0n)
+    const liquidity = Number(watch.liquidityScore > BigInt(0) ? watch.liquidityScore : BigInt(0))
     return swapCount * 10_000 + liquidity / 1e18 - lag
   } catch {
     return Number(watch.liquidityScore) / 1e18
@@ -96,7 +96,7 @@ export function mergeTier2Scores(
 
 export function selectActiveTier2(
   scored: Array<{ watch: TierPairWatch; score: number }>,
-  maxPairs = INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
+  maxPairs: number = INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
 ): TierPairWatch[] {
   return [...scored]
     .sort((a, b) => {

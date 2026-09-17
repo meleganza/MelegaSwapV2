@@ -132,6 +132,8 @@ export interface IndexerHealthSnapshot {
     cursorsBefore?: Record<string, number | null>
     cursorsAfter?: Record<string, number | null>
     stageTimings?: Array<{ stage: string; elapsedMs: number }>
+    featuredBootstrapComplete?: boolean
+    adaptiveTelemetry?: unknown
     activeTierSize?: number
     tier2CandidatesConsidered?: number
     tier2JobsAttempted?: number

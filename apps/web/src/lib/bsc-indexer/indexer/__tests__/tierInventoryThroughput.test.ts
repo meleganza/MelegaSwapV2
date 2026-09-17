@@ -78,7 +78,7 @@ describe('TIER2 ACTIVE inventory throughput', () => {
   })
 
   it('fills 128 ACTIVE slots from a 256-candidate liquidity universe', () => {
-    const candidates = Array.from({ length: 256 }, (_, i) => watch(i, BigInt(256 - i) * 10n ** 18n))
+    const candidates = Array.from({ length: 256 }, (_, i) => watch(i, BigInt(256 - i) * BigInt('1000000000000000000')))
     const selected = selectActiveTier2(mergeTier2Scores(candidates, new Map()))
     expect(selected).toHaveLength(128)
     expect(new Set(selected.map((row) => row.pairAddress)).size).toBe(128)
@@ -86,12 +86,12 @@ describe('TIER2 ACTIVE inventory throughput', () => {
   })
 
   it('lets local activity scores promote inside the larger candidate set without extra provider calls', () => {
-    const candidates = Array.from({ length: 80 }, (_, i) => watch(i, BigInt(80 - i) * 10n ** 18n))
+    const candidates = Array.from({ length: 80 }, (_, i) => watch(i, BigInt(80 - i) * BigInt('1000000000000000000')))
     const boosted = candidates[40]!
     const scores = new Map<string, number>([[boosted.pairAddress, 1_000_000]])
     const selected = selectActiveTier2(mergeTier2Scores(candidates, scores), 8)
     expect(selected[0]?.pairAddress).toBe(boosted.pairAddress)
-    expect(liquidityFallbackScore(10n ** 18n)).toBe(1)
+    expect(liquidityFallbackScore(BigInt('1000000000000000000'))).toBe(1)
   })
 
   it('loads 128 ACTIVE pairs from a large tradeable registry and keeps TIER1 founder/core treatment', async () => {
