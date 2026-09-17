@@ -22,8 +22,8 @@ import {
 import { buildFarmsExploreFarmsViewModel } from 'views/FarmsStudio/modules/buildFarmsExploreFarms'
 import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
 
-const WEB = path.resolve(__dirname, '../..')
-const REPO = path.resolve(WEB, '../..')
+const WEB_SRC = path.resolve(__dirname, '../..')
+const REPO = path.resolve(WEB_SRC, '../../..')
 
 const ETH_MASTER_CHEF = MELEGA_ETH_MASTER_BUILDER.toLowerCase()
 const BSC_MASTER_CHEF = '0x41D5487836452d23f2c467070244E5842B412794'
@@ -218,7 +218,7 @@ describe('Ethereum farms remain visible when Ethereum is selected', () => {
   })
 
   it('points the Ethereum core price poll at Melega pids 1 and 2, not PancakeSwap 124/125', () => {
-    const hooks = readFileSync(path.join(WEB, 'state/farms/hooks.ts'), 'utf8')
+    const hooks = readFileSync(path.join(WEB_SRC, 'state/farms/hooks.ts'), 'utf8')
     expect(hooks).toContain('1: [1, 2]')
     expect(hooks).not.toMatch(/1:\s*\[124,\s*125\]/)
     const farmSrc = readFileSync(path.join(REPO, 'packages/farms/constants/1.ts'), 'utf8')
