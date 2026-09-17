@@ -60,7 +60,25 @@ function bscCake() {
   return '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
 }
 
-async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {
+export interface LocalPairFacts {
+  pairAddress: string
+  swapCount: number
+  liquidity: number
+  lag: number
+  hasStoredHealth: boolean
+  hasStoredEvents: boolean
+  activityScore: number
+  rankScore: number
+  hasEvidence: boolean
+}
+
+function liquidityUnits(score: bigint): number {
+  return Number(score > BigInt(0) ? score : BigInt(0)) / 1e18
+}
+
+/** Local storage only — registry liquidity + stored health/events. No extra provider calls. */
+export async function loadLocalPromotionFacts(watch: TierPairWatch): Promise<LocalPairFacts> {
+  const liquidity = liquidityUnits(watch.liquidityScore)
   try {
     const storage = resolveIndexerStorageForSlug(watch.slug)
     const [health, events] = await Promise.all([
@@ -69,11 +87,63 @@ async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {
     ])
     const swapCount = events.filter((e) => e.eventType === 'Swap').length
     const lag = health?.indexingLag ?? 999_999
-    const liquidity = Number(watch.liquidityScore > BigInt(0) ? watch.liquidityScore : BigInt(0))
-    return swapCount * 10_000 + liquidity / 1e18 - lag
+    const rankScore = swapCount * 10_000 + liquidity
+    return {
+      pairAddress: watch.pairAddress.toLowerCase(),
+      swapCount,
+      liquidity,
+      lag,
+      hasStoredHealth: Boolean(health),
+      hasStoredEvents: events.length > 0,
+      activityScore: rankScore - lag,
+      rankScore,
+      hasEvidence: swapCount > 0 || liquidity > 0 || events.length > 0,
+    }
   } catch {
-    return Number(watch.liquidityScore) / 1e18
+    return {
+      pairAddress: watch.pairAddress.toLowerCase(),
+      swapCount: 0,
+      liquidity,
+      lag: 999_999,
+      hasStoredHealth: false,
+      hasStoredEvents: false,
+      activityScore: liquidity,
+      rankScore: liquidity,
+      hasEvidence: liquidity > 0,
+    }
   }
+}
+
+async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {
+  return (await loadLocalPromotionFacts(watch)).activityScore
+}
+
+export function toTierPairWatch(pair: ClassifiedAmmPair, tier: IndexerTier): TierPairWatch {
+  return {
+    tier,
+    slug: pairSlug(pair),
+    pairAddress: pair.pairAddress.toLowerCase(),
+    token0: pair.token0!.toLowerCase(),
+    token1: pair.token1!.toLowerCase(),
+    liquidityScore: liquidityScore(pair),
+  }
+}
+
+/** Stable address order so the COLD cursor cannot starve pairs when liquidity reshuffles. */
+export function listColdInventory(
+  classified: ClassifiedAmmPair[],
+  excludedAddresses: Iterable<string>,
+): TierPairWatch[] {
+  const excluded = new Set([...excludedAddresses].map((addr) => addr.toLowerCase()))
+  return classified
+    .filter(
+      (pair) =>
+        pair.token0 &&
+        pair.token1 &&
+        !excluded.has(pair.pairAddress.toLowerCase()),
+    )
+    .map((pair) => toTierPairWatch(pair, 'TIER_3'))
+    .sort((a, b) => a.pairAddress.localeCompare(b.pairAddress))
 }
 
 export function liquidityFallbackScore(liquidityScore: bigint): number {
@@ -122,6 +192,7 @@ async function scoreTier2ActivitySample(candidates: TierPairWatch[]): Promise<Ma
 export async function loadTierPairInventory(): Promise<{
   tier1: TierPairWatch[]
   tier2: TierPairWatch[]
+  tier3: TierPairWatch[]
   tier3Count: number
   tier2CandidatesConsidered: number
   activeTierSize: number
@@ -205,12 +276,14 @@ export async function loadTierPairInventory(): Promise<{
   const tier2 = selectActiveTier2(mergeTier2Scores(tier2Candidates, activityScores))
 
   const tier2Set = new Set(tier2.map((w) => w.pairAddress))
-  const tier3Count = classified.filter((p) => !tier1Set.has(p.pairAddress.toLowerCase()) && !tier2Set.has(p.pairAddress.toLowerCase())).length
+  const excluded = new Set([...tier1Set, ...tier2Set])
+  const tier3 = listColdInventory(classified, excluded)
 
   return {
     tier1,
     tier2,
-    tier3Count,
+    tier3,
+    tier3Count: tier3.length,
     tier2CandidatesConsidered: tier2Candidates.length,
     activeTierSize: tier1.length + tier2.length,
   }

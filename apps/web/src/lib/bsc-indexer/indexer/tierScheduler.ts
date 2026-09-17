@@ -8,16 +8,17 @@ export const TIER1_JOBS_PER_INVOCATION = 6
 /** Bounded ACTIVE refresh batch per cron invocation. */
 export const TIER2_JOBS_PER_INVOCATION = 8
 /**
- * P0 contract: TIER3 is cold inventory, not forgotten.
- * Promotion sampling stays 0 until a dedicated P1 COLD→ACTIVE mission.
+ * P1 COLD→ACTIVE: tiny cursor sample per invocation. Never scan the full TIER3 set.
+ * Two sequential jobs is the target; deadline-aware batching can stop at 0–1.
  */
-export const TIER3_COLD_SAMPLE_PER_INVOCATION = 0
+export const TIER3_COLD_SAMPLE_PER_INVOCATION = 2
 
 function defaultState(): TierSchedulerState {
   return {
     tier1RotationIndex: 0,
     tier2RotationIndex: 0,
     tier3RotationIndex: 0,
+    promotedActiveAddresses: [],
     consecutiveFailures: 0,
   }
 }
@@ -116,7 +117,7 @@ export async function runBoundedRotatingBatch<T>(args: {
   }
 }
 
-/** Scheduler contract for future COLD→ACTIVE promotion. P0 keeps the sample size at 0. */
+/** Cursor window over already-known COLD inventory. Bounded by TIER3_COLD_SAMPLE_PER_INVOCATION. */
 export function selectColdInventorySample<T>(
   cold: T[],
   rotationIndex: number,

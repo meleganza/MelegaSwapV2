@@ -8,7 +8,7 @@ import {
   rankTierAssets,
   type TierRankedAsset,
 } from 'lib/trending/tierTrendingModel'
-import { TIER1_JOBS_PER_INVOCATION, TIER2_JOBS_PER_INVOCATION } from '../tierScheduler'
+import { TIER1_JOBS_PER_INVOCATION, TIER2_JOBS_PER_INVOCATION, TIER3_COLD_SAMPLE_PER_INVOCATION } from '../tierScheduler'
 
 const root = join(__dirname, '../../../..')
 
@@ -39,6 +39,12 @@ describe('observation throughput regressions', () => {
     expect(inventory).toContain('TIER2_ACTIVITY_SCORE_CONCURRENCY')
     expect(inventory).not.toMatch(/slice\(0,\s*40\)/)
     expect(inventory).not.toMatch(/slice\(0,\s*12\)/)
+    expect(TIER3_COLD_SAMPLE_PER_INVOCATION).toBe(2)
+    expect(orchestrator).toContain('TIER3_COLD_SAMPLE_PER_INVOCATION')
+    expect(orchestrator).toContain('runColdPromotionPass')
+    expect(orchestrator).not.toMatch(/Promise\.all\(\s*tier3/)
+    expect(orchestrator).not.toMatch(/Promise\.all\(\s*cold/)
+    expect(orchestrator).not.toMatch(/for\s*\(.*inventory\.tier3[\s\S]*await Promise\.all/)
   })
 
   it('leaves TrendingV2 ranking formulas, credibility, and quote exclusions untouched', () => {
@@ -76,5 +82,23 @@ describe('observation throughput regressions', () => {
     const high: TierRankedAsset = { ...low, symbol: 'B', slug: 'b', address: '0x2', tradeCount24h: 50, volume24h: 10 }
     expect(compareTierRankedAssets(high, low)).toBeLessThan(0)
     expect(rankTierAssets([low, { ...low, symbol: 'A', slug: 'a-dup', volume24h: 5 }])).toHaveLength(1)
+  })
+
+  it('reports COLD→ACTIVE telemetry without changing P0 TIER2=128 / batch=8', () => {
+    const orchestrator = read('lib/bsc-indexer/indexer/indexerOrchestrator.ts')
+    expect(INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs).toBe(128)
+    expect(TIER2_JOBS_PER_INVOCATION).toBe(8)
+    for (const field of [
+      'coldTierSize',
+      'coldSamplesAttempted',
+      'coldSamplesCompleted',
+      'promotionCandidates',
+      'promotionsApplied',
+      'evictionsApplied',
+      'coldBatchStoppedByDeadline',
+      'nextColdRotationIndex',
+    ]) {
+      expect(orchestrator).toContain(field)
+    }
   })
 })

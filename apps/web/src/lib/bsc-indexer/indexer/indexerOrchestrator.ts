@@ -1,13 +1,16 @@
+import { INDEXER_TIER_DEFINITIONS } from 'lib/data-truth/ontology'
 import { FEATURED_PAIR_SLUG, REORG_SAFETY_BLOCKS } from '../constants'
 import { resolveIndexerStorage } from '../storage'
 import { getBlockNumber } from '../rpc/chunkedLogs'
 import { IndexerDeadline, SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
 import { runFeaturedPairSync } from './featuredPairSync'
-import { loadTierPairInventory } from './tierInventory'
+import { loadLocalPromotionFacts, loadTierPairInventory } from './tierInventory'
+import { overlayAddresses, runColdPromotionPass, seatPersistedOverlay, takePersistedOverlay } from './coldPromotion'
 import { runTierPairSync } from './tierPairSync'
 import {
   TIER1_JOBS_PER_INVOCATION,
   TIER2_JOBS_PER_INVOCATION,
+  TIER3_COLD_SAMPLE_PER_INVOCATION,
   loadTierSchedulerState,
   runBoundedRotatingBatch,
   saveTierSchedulerState,
@@ -51,6 +54,14 @@ export interface IndexerRunReport {
   batchStoppedByDeadline: boolean
   nextRotationIndex: number
   tier3Count: number
+  coldTierSize: number
+  coldSamplesAttempted: number
+  coldSamplesCompleted: number
+  promotionCandidates: number
+  promotionsApplied: number
+  evictionsApplied: number
+  coldBatchStoppedByDeadline: boolean
+  nextColdRotationIndex: number
 }
 
 export async function runIndexerOrchestrator(
@@ -85,6 +96,14 @@ export async function runIndexerOrchestrator(
   let batchStoppedByDeadline = false
   let nextRotationIndex = 0
   let tier3Count = 0
+  let coldTierSize = 0
+  let coldSamplesAttempted = 0
+  let coldSamplesCompleted = 0
+  let promotionCandidates = 0
+  let promotionsApplied = 0
+  let evictionsApplied = 0
+  let coldBatchStoppedByDeadline = false
+  let nextColdRotationIndex = 0
   const cursorsBefore: Record<string, number | null> = {}
   const cursorsAfter: Record<string, number | null> = {}
 
@@ -141,11 +160,25 @@ export async function runIndexerOrchestrator(
     const inventory = await loadTierPairInventory()
     const scheduler = await loadTierSchedulerState()
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
-    const tier2Candidates = inventory.tier2
-    activeTierSize = inventory.activeTierSize
+    const overlay = takePersistedOverlay(
+      scheduler.promotedActiveAddresses,
+      inventory.tier2,
+      inventory.tier3,
+      inventory.tier1,
+    )
+    const seatedActive = seatPersistedOverlay({
+      naturalActive: inventory.tier2,
+      overlay,
+      protectedHot: inventory.tier1.map((p) => p.pairAddress),
+      maxPairs: INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
+    })
+    const tier2Candidates = seatedActive
+    activeTierSize = inventory.tier1.length + seatedActive.length
     tier2CandidatesConsidered = inventory.tier2CandidatesConsidered
     tier3Count = inventory.tier3Count
+    coldTierSize = inventory.tier3.length
     nextRotationIndex = scheduler.tier2RotationIndex
+    nextColdRotationIndex = scheduler.tier3RotationIndex ?? 0
 
     // Wave 03: sync ALL Tier-1 founder/core pairs each cron (not one rotate) so Top Movers
     // can accumulate ≥2 observations beyond MARCO. Cap by remaining deadline.
@@ -189,6 +222,37 @@ export async function runIndexerOrchestrator(
     batchStoppedByDeadline = tier2Batch.batchStoppedByDeadline
     scheduler.tier2RotationIndex = tier2Batch.nextRotationIndex
     nextRotationIndex = tier2Batch.nextRotationIndex
+
+    const coldPass = await runColdPromotionPass({
+      cold: inventory.tier3,
+      active: seatedActive,
+      protectedHot: inventory.tier1,
+      rotationIndex: scheduler.tier3RotationIndex ?? 0,
+      maxSamples: TIER3_COLD_SAMPLE_PER_INVOCATION,
+      maxActive: INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
+      shouldStop: () => deadline.shouldStop(),
+      loadFacts: loadLocalPromotionFacts,
+      evaluatePair: async (pair) => {
+        const coldDeadline = resolveStageDeadline(deadline, stageMode)
+        const job = await runTierPairSync(pair, coldDeadline)
+        addedEvents += job.addedEvents
+        pairJobsProcessed += 1
+        scheduler.lastProviderResult = job.health.providerUsed
+        cursorsAfter[pair.slug] = job.checkpoint.gapFillCursor ?? null
+        deadline.markStage('tier3-cold-sample')
+      },
+    })
+    coldTierSize = inventory.tier3.length
+    coldSamplesAttempted = coldPass.coldSamplesAttempted
+    coldSamplesCompleted = coldPass.coldSamplesCompleted
+    promotionCandidates = coldPass.promotionCandidates
+    promotionsApplied = coldPass.promotionsApplied
+    evictionsApplied = coldPass.evictionsApplied
+    coldBatchStoppedByDeadline = coldPass.coldBatchStoppedByDeadline
+    nextColdRotationIndex = coldPass.nextColdRotationIndex
+    scheduler.tier3RotationIndex = coldPass.nextColdRotationIndex
+    scheduler.promotedActiveAddresses = overlayAddresses(coldPass.nextActive, inventory.tier2)
+    activeTierSize = inventory.tier1.length + coldPass.nextActive.length
 
     scheduler.lastAttemptedAt = new Date().toISOString()
     if (addedEvents > 0 || pairJobsProcessed > 0) {
@@ -238,5 +302,13 @@ export async function runIndexerOrchestrator(
     batchStoppedByDeadline,
     nextRotationIndex,
     tier3Count,
+    coldTierSize,
+    coldSamplesAttempted,
+    coldSamplesCompleted,
+    promotionCandidates,
+    promotionsApplied,
+    evictionsApplied,
+    coldBatchStoppedByDeadline,
+    nextColdRotationIndex,
   }
 }

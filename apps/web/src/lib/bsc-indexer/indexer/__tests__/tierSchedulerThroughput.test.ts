@@ -19,7 +19,7 @@ describe('TIER2 scheduler throughput', () => {
   it('keeps TIER1 batch at 6 and raises TIER2 jobs per invocation to 8', () => {
     expect(TIER1_JOBS_PER_INVOCATION).toBe(6)
     expect(TIER2_JOBS_PER_INVOCATION).toBe(8)
-    expect(TIER3_COLD_SAMPLE_PER_INVOCATION).toBe(0)
+    expect(TIER3_COLD_SAMPLE_PER_INVOCATION).toBe(2)
   })
 
   it('plans up to 8 unique TIER2 pairs and never duplicates a slot in one batch', () => {
@@ -95,8 +95,11 @@ describe('TIER2 scheduler throughput', () => {
     expect(pickRotatingPair(pairs(3), 4)).toEqual({ pair: { slug: 'p1', pairAddress: '0x1' }, nextIndex: 2 })
   })
 
-  it('does not activate COLD sampling in this P0 and never retries a failed job', async () => {
-    expect(selectColdInventorySample(pairs(40), 0)).toEqual([])
+  it('bounds COLD sampling to 2 unique pairs and never retries a failed job', async () => {
+    const cold = selectColdInventorySample(pairs(40), 11)
+    expect(cold).toHaveLength(2)
+    expect(cold.map((row) => row.slug)).toEqual(['p11', 'p12'])
+    expect(new Set(cold.map((row) => row.pairAddress)).size).toBe(2)
     await expect(
       runBoundedRotatingBatch({
         pairs: pairs(8),

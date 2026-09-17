@@ -139,9 +139,19 @@ describe('TIER2 ACTIVE inventory throughput', () => {
     expect(inventory.tier2).toHaveLength(128)
     expect(inventory.activeTierSize).toBe(inventory.tier1.length + inventory.tier2.length)
     expect(inventory.tier3Count).toBeGreaterThan(0)
+    expect(inventory.tier3).toHaveLength(inventory.tier3Count)
+    expect(inventory.tier3.every((row) => row.tier === 'TIER_3')).toBe(true)
+    const addresses = inventory.tier3.map((row) => row.pairAddress)
+    expect(addresses).toEqual([...addresses].sort((a, b) => a.localeCompare(b)))
 
     const overlap = inventory.tier2.filter((row) => inventory.tier1.some((hot) => hot.pairAddress === row.pairAddress))
     expect(overlap).toHaveLength(0)
+    const coldOverlap = inventory.tier3.filter(
+      (row) =>
+        inventory.tier1.some((hot) => hot.pairAddress === row.pairAddress) ||
+        inventory.tier2.some((active) => active.pairAddress === row.pairAddress),
+    )
+    expect(coldOverlap).toHaveLength(0)
     expect(loadHealth).toHaveBeenCalled()
     expect(listEvents).toHaveBeenCalled()
     expect(loadHealth.mock.calls.length).toBeLessThanOrEqual(TIER2_ACTIVITY_SCORE_SAMPLE)
