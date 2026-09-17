@@ -5,7 +5,13 @@ import { IndexerDeadline, SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
 import { runFeaturedPairSync } from './featuredPairSync'
 import { loadTierPairInventory } from './tierInventory'
 import { runTierPairSync } from './tierPairSync'
-import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
+import {
+  TIER1_JOBS_PER_INVOCATION,
+  TIER2_JOBS_PER_INVOCATION,
+  loadTierSchedulerState,
+  runBoundedRotatingBatch,
+  saveTierSchedulerState,
+} from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
 import { LB_PROGRAM_SYNC_MIN_REMAINING_MS, syncLbProgramInventory } from 'lib/liquidity-builder-indexer'
 import { isBootstrapWindowComplete } from './bootstrapWindow'
@@ -38,6 +44,13 @@ export interface IndexerRunReport {
   stageTimings: Array<{ stage: string; elapsedMs: number }>
   featuredBootstrapComplete?: boolean
   adaptiveTelemetry?: import('./adaptiveGapScan').AdaptiveScanTelemetry
+  activeTierSize: number
+  tier2CandidatesConsidered: number
+  tier2JobsAttempted: number
+  tier2JobsCompleted: number
+  batchStoppedByDeadline: boolean
+  nextRotationIndex: number
+  tier3Count: number
 }
 
 export async function runIndexerOrchestrator(
@@ -64,6 +77,14 @@ export async function runIndexerOrchestrator(
   let tier1Job: IndexerRunReport['tier1Job'] = null
   let tier2Job: IndexerRunReport['tier2Job'] = null
   let protocolActivity: IndexerRunReport['protocolActivity'] = null
+  let lbPrograms: IndexerRunReport['lbPrograms'] = null
+  let activeTierSize = 0
+  let tier2CandidatesConsidered = 0
+  let tier2JobsAttempted = 0
+  let tier2JobsCompleted = 0
+  let batchStoppedByDeadline = false
+  let nextRotationIndex = 0
+  let tier3Count = 0
   const cursorsBefore: Record<string, number | null> = {}
   const cursorsAfter: Record<string, number | null> = {}
 
@@ -121,10 +142,14 @@ export async function runIndexerOrchestrator(
     const scheduler = await loadTierSchedulerState()
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
     const tier2Candidates = inventory.tier2
+    activeTierSize = inventory.activeTierSize
+    tier2CandidatesConsidered = inventory.tier2CandidatesConsidered
+    tier3Count = inventory.tier3Count
+    nextRotationIndex = scheduler.tier2RotationIndex
 
     // Wave 03: sync ALL Tier-1 founder/core pairs each cron (not one rotate) so Top Movers
     // can accumulate ≥2 observations beyond MARCO. Cap by remaining deadline.
-    const FOUNDER_TIER1_BATCH = Math.min(tier1Candidates.length, 6)
+    const FOUNDER_TIER1_BATCH = Math.min(tier1Candidates.length, TIER1_JOBS_PER_INVOCATION)
     for (let i = 0; i < FOUNDER_TIER1_BATCH && !deadline.shouldStop(); i += 1) {
       const idx = (scheduler.tier1RotationIndex + i) % Math.max(1, tier1Candidates.length)
       const pair = tier1Candidates[idx]
@@ -143,19 +168,27 @@ export async function runIndexerOrchestrator(
         (scheduler.tier1RotationIndex + FOUNDER_TIER1_BATCH) % tier1Candidates.length
     }
 
-    if (!deadline.shouldStop()) {
-      const tier2Pick = pickRotatingPair(tier2Candidates, scheduler.tier2RotationIndex)
-      if (tier2Pick.pair) {
+    const tier2Batch = await runBoundedRotatingBatch({
+      pairs: tier2Candidates,
+      rotationIndex: scheduler.tier2RotationIndex,
+      maxJobs: TIER2_JOBS_PER_INVOCATION,
+      shouldStop: () => deadline.shouldStop(),
+      runJob: async (pair) => {
         const tier2Deadline = resolveStageDeadline(deadline, stageMode)
-        tier2Job = await runTierPairSync(tier2Pick.pair, tier2Deadline)
-        addedEvents += tier2Job.addedEvents
+        const job = await runTierPairSync(pair, tier2Deadline)
+        tier2Job = job
+        addedEvents += job.addedEvents
         pairJobsProcessed += 1
-        scheduler.tier2RotationIndex = tier2Pick.nextIndex
-        scheduler.lastProviderResult = tier2Job.health.providerUsed
-        cursorsAfter[tier2Pick.pair.slug] = tier2Job.checkpoint.gapFillCursor ?? null
+        scheduler.lastProviderResult = job.health.providerUsed
+        cursorsAfter[pair.slug] = job.checkpoint.gapFillCursor ?? null
         deadline.markStage('tier2-sync')
-      }
-    }
+      },
+    })
+    tier2JobsAttempted = tier2Batch.jobsAttempted
+    tier2JobsCompleted = tier2Batch.jobsCompleted
+    batchStoppedByDeadline = tier2Batch.batchStoppedByDeadline
+    scheduler.tier2RotationIndex = tier2Batch.nextRotationIndex
+    nextRotationIndex = tier2Batch.nextRotationIndex
 
     scheduler.lastAttemptedAt = new Date().toISOString()
     if (addedEvents > 0 || pairJobsProcessed > 0) {
@@ -198,5 +231,12 @@ export async function runIndexerOrchestrator(
     stageTimings: snap.stages,
     featuredBootstrapComplete,
     adaptiveTelemetry: featured?.adaptiveTelemetry,
+    activeTierSize,
+    tier2CandidatesConsidered,
+    tier2JobsAttempted,
+    tier2JobsCompleted,
+    batchStoppedByDeadline,
+    nextRotationIndex,
+    tier3Count,
   }
 }

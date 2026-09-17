@@ -3,10 +3,21 @@ import type { TierSchedulerState } from '../types'
 
 const SCHEDULER_KEY = 'melega-indexer/v2/tier-scheduler/state.json'
 
+/** Existing TIER1 founder/core batch — do not inflate HOT just to claim breadth. */
+export const TIER1_JOBS_PER_INVOCATION = 6
+/** Bounded ACTIVE refresh batch per cron invocation. */
+export const TIER2_JOBS_PER_INVOCATION = 8
+/**
+ * P0 contract: TIER3 is cold inventory, not forgotten.
+ * Promotion sampling stays 0 until a dedicated P1 COLD→ACTIVE mission.
+ */
+export const TIER3_COLD_SAMPLE_PER_INVOCATION = 0
+
 function defaultState(): TierSchedulerState {
   return {
     tier1RotationIndex: 0,
     tier2RotationIndex: 0,
+    tier3RotationIndex: 0,
     consecutiveFailures: 0,
   }
 }
@@ -43,4 +54,74 @@ export function pickRotatingPair<T extends { slug: string }>(
   if (!pairs.length) return { pair: null, nextIndex: 0 }
   const pair = pairs[index % pairs.length] ?? null
   return { pair, nextIndex: (index + 1) % pairs.length }
+}
+
+export function advanceRotationIndex(current: number, completed: number, universeSize: number): number {
+  if (universeSize <= 0) return 0
+  return (((current + completed) % universeSize) + universeSize) % universeSize
+}
+
+/** Unique rotating window — never repeats a slot inside one batch. */
+export function pickRotatingBatch<T>(pairs: T[], index: number, maxCount: number): T[] {
+  if (!pairs.length || maxCount <= 0) return []
+  const count = Math.min(maxCount, pairs.length)
+  const start = ((index % pairs.length) + pairs.length) % pairs.length
+  const picked: T[] = []
+  const seen = new Set<number>()
+  for (let i = 0; i < count; i += 1) {
+    const slot = (start + i) % pairs.length
+    if (seen.has(slot)) break
+    seen.add(slot)
+    const item = pairs[slot]
+    if (item !== undefined) picked.push(item)
+  }
+  return picked
+}
+
+/** Sequential, deadline-aware batch. No fan-out, no retry. */
+export async function runBoundedRotatingBatch<T>(args: {
+  pairs: T[]
+  rotationIndex: number
+  maxJobs: number
+  shouldStop: () => boolean
+  runJob: (item: T) => Promise<void>
+}): Promise<{
+  processed: T[]
+  jobsAttempted: number
+  jobsCompleted: number
+  batchStoppedByDeadline: boolean
+  nextRotationIndex: number
+}> {
+  const planned = pickRotatingBatch(args.pairs, args.rotationIndex, args.maxJobs)
+  const processed: T[] = []
+  let jobsAttempted = 0
+  let batchStoppedByDeadline = false
+
+  for (const item of planned) {
+    if (args.shouldStop()) {
+      batchStoppedByDeadline = true
+      break
+    }
+    jobsAttempted += 1
+    await args.runJob(item)
+    processed.push(item)
+  }
+
+  return {
+    processed,
+    jobsAttempted,
+    jobsCompleted: processed.length,
+    batchStoppedByDeadline,
+    nextRotationIndex: advanceRotationIndex(args.rotationIndex, processed.length, args.pairs.length),
+  }
+}
+
+/** Scheduler contract for future COLD→ACTIVE promotion. P0 keeps the sample size at 0. */
+export function selectColdInventorySample<T>(
+  cold: T[],
+  rotationIndex: number,
+  limit = TIER3_COLD_SAMPLE_PER_INVOCATION,
+): T[] {
+  if (limit <= 0 || !cold.length) return []
+  return pickRotatingBatch(cold, rotationIndex, limit)
 }

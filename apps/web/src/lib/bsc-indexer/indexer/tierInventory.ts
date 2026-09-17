@@ -1,5 +1,5 @@
 import { INDEXER_TIER_DEFINITIONS } from 'lib/data-truth/ontology'
-import { MARCO_WBNB_PAIR_BSC, MELEGA_CHAIN_ID } from '../constants'
+import { MARCO_WBNB_PAIR_BSC } from '../constants'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from '../founderWbnbPairs'
 import { resolveOnchainRegistry } from '../registry/store'
 import { FEATURED_PAIR_SLUG } from '../v2/paths'
@@ -8,6 +8,15 @@ import type { ClassifiedAmmPair } from '../types'
 import { resolveIndexerStorageForSlug } from '../storage'
 
 export type IndexerTier = 'TIER_1' | 'TIER_2' | 'TIER_3'
+
+/** Previous candidate cap was 40 for a 20-pair ACTIVE set (2×). Keep that ratio. */
+export const TIER2_CANDIDATE_MULTIPLIER = 2
+export const TIER2_CANDIDATE_POOL_SIZE =
+  INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs * TIER2_CANDIDATE_MULTIPLIER
+/** Activity ranking sample — local storage only, no extra provider calls. */
+export const TIER2_ACTIVITY_SCORE_SAMPLE = 64
+/** Bound concurrent local-storage score reads. */
+export const TIER2_ACTIVITY_SCORE_CONCURRENCY = 8
 
 export interface TierPairWatch {
   tier: IndexerTier
@@ -67,11 +76,55 @@ async function tier2ActivityScore(watch: TierPairWatch): Promise<number> {
   }
 }
 
+export function liquidityFallbackScore(liquidityScore: bigint): number {
+  return Number(liquidityScore) / 1e18
+}
+
+export function takeTier2CandidatePool<T>(sortedByLiquidity: T[], poolSize = TIER2_CANDIDATE_POOL_SIZE): T[] {
+  return sortedByLiquidity.slice(0, poolSize)
+}
+
+export function mergeTier2Scores(
+  candidates: TierPairWatch[],
+  activityScores: ReadonlyMap<string, number>,
+): Array<{ watch: TierPairWatch; score: number }> {
+  return candidates.map((watch) => ({
+    watch,
+    score: activityScores.get(watch.pairAddress) ?? liquidityFallbackScore(watch.liquidityScore),
+  }))
+}
+
+export function selectActiveTier2(
+  scored: Array<{ watch: TierPairWatch; score: number }>,
+  maxPairs = INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
+): TierPairWatch[] {
+  return [...scored]
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score
+      return a.watch.pairAddress.localeCompare(b.watch.pairAddress)
+    })
+    .slice(0, maxPairs)
+    .map(({ watch }) => watch)
+}
+
+async function scoreTier2ActivitySample(candidates: TierPairWatch[]): Promise<Map<string, number>> {
+  const sample = candidates.slice(0, TIER2_ACTIVITY_SCORE_SAMPLE)
+  const scores = new Map<string, number>()
+  for (let i = 0; i < sample.length; i += TIER2_ACTIVITY_SCORE_CONCURRENCY) {
+    const chunk = sample.slice(i, i + TIER2_ACTIVITY_SCORE_CONCURRENCY)
+    const rows = await Promise.all(chunk.map(async (watch) => [watch.pairAddress, await tier2ActivityScore(watch)] as const))
+    for (const [address, score] of rows) scores.set(address, score)
+  }
+  return scores
+}
+
 /** Read-path inventory — registry only (no on-chain Factory calls). */
 export async function loadTierPairInventory(): Promise<{
   tier1: TierPairWatch[]
   tier2: TierPairWatch[]
   tier3Count: number
+  tier2CandidatesConsidered: number
+  activeTierSize: number
 }> {
   const { registry } = await resolveOnchainRegistry()
   const classified = sortPairsDefault(
@@ -137,30 +190,30 @@ export async function loadTierPairInventory(): Promise<{
     (p) => p.classification === 'tradeable' && !tier1Set.has(p.pairAddress.toLowerCase()),
   )
 
-  const tier2Candidates: TierPairWatch[] = tradeable
-    .sort((a, b) => (liquidityScore(b) > liquidityScore(a) ? 1 : -1))
-    .slice(0, 40)
-    .map((p) => ({
-      tier: 'TIER_2' as IndexerTier,
-      slug: pairSlug(p),
-      pairAddress: p.pairAddress.toLowerCase(),
-      token0: p.token0!.toLowerCase(),
-      token1: p.token1!.toLowerCase(),
-      liquidityScore: liquidityScore(p),
-    }))
+  const tier2Candidates: TierPairWatch[] = takeTier2CandidatePool(
+    tradeable.sort((a, b) => (liquidityScore(b) > liquidityScore(a) ? 1 : -1)),
+  ).map((p) => ({
+    tier: 'TIER_2' as IndexerTier,
+    slug: pairSlug(p),
+    pairAddress: p.pairAddress.toLowerCase(),
+    token0: p.token0!.toLowerCase(),
+    token1: p.token1!.toLowerCase(),
+    liquidityScore: liquidityScore(p),
+  }))
 
-  const scored = await Promise.all(
-    tier2Candidates.slice(0, 12).map(async (w) => ({ w, score: await tier2ActivityScore(w) })),
-  )
-  const tier2 = scored
-    .sort((a, b) => b.score - a.score)
-    .slice(0, INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs)
-    .map(({ w }) => w)
+  const activityScores = await scoreTier2ActivitySample(tier2Candidates)
+  const tier2 = selectActiveTier2(mergeTier2Scores(tier2Candidates, activityScores))
 
   const tier2Set = new Set(tier2.map((w) => w.pairAddress))
   const tier3Count = classified.filter((p) => !tier1Set.has(p.pairAddress.toLowerCase()) && !tier2Set.has(p.pairAddress.toLowerCase())).length
 
-  return { tier1, tier2, tier3Count }
+  return {
+    tier1,
+    tier2,
+    tier3Count,
+    tier2CandidatesConsidered: tier2Candidates.length,
+    activeTierSize: tier1.length + tier2.length,
+  }
 }
 
 export function selectTier2PairForSync(tier2: TierPairWatch[], cursor: number): TierPairWatch | undefined {

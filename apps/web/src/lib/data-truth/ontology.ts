@@ -39,21 +39,23 @@ export const INDEXER_TIER_DEFINITIONS = {
   TIER_1: {
     id: 'TIER_1',
     label: 'Core pairs',
-    definition: 'MARCO/WBNB and Factory-proven core pairs — continuous forward + 7d bootstrap',
+    definition: 'HOT — MARCO/WBNB and Factory-proven founder/core pairs — continuous forward + 7d bootstrap',
     maxPairs: 8,
     bootstrapDays: 7,
   },
   TIER_2: {
     id: 'TIER_2',
     label: 'Active pairs',
-    definition: 'Up to 20 tradeable pairs ranked by reserves + indexed swap activity',
-    maxPairs: 20,
+    definition:
+      'ACTIVE — up to 128 tradeable pairs ranked by reserves + indexed swap activity from a bounded candidate pool; not the full discovered universe',
+    maxPairs: 128,
     bootstrapDays: 7,
   },
   TIER_3: {
     id: 'TIER_3',
     label: 'Inventory only',
-    definition: 'Inactive or zero-liquidity pairs — factory enumeration only, no event indexing',
+    definition:
+      'COLD inventory — discovered/inactive/zero-liquidity pairs remain known for future COLD→ACTIVE promotion; factory enumeration only, no high-frequency event indexing',
   },
 } as const
 
