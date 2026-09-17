@@ -52,6 +52,10 @@ export interface ColdPromotionPassResult {
   coldTierSize: number
 }
 
+function addressKey(value: string | { pairAddress: string }): string {
+  return (typeof value === 'string' ? value : value.pairAddress).toLowerCase()
+}
+
 export function promotionMargin(weakestRankScore: number): number {
   return Math.max(COLD_PROMOTION_ABS_MARGIN, Math.abs(weakestRankScore) * COLD_PROMOTION_REL_MARGIN)
 }
@@ -94,9 +98,9 @@ export function uniqueWatches(watches: TierPairWatch[]): TierPairWatch[] {
 
 export function listColdUniverse(
   cold: TierPairWatch[],
-  excluded: Iterable<string>,
+  excluded: Iterable<string | { pairAddress: string }>,
 ): TierPairWatch[] {
-  const skip = new Set([...excluded].map((addr) => addr.toLowerCase()))
+  const skip = new Set([...excluded].map((addr) => addressKey(addr)))
   return uniqueWatches(cold)
     .filter((watch) => !skip.has(watch.pairAddress))
     .sort((a, b) => a.pairAddress.localeCompare(b.pairAddress))
@@ -132,11 +136,11 @@ export function takePersistedOverlay(
 export function seatPersistedOverlay(args: {
   naturalActive: TierPairWatch[]
   overlay: TierPairWatch[]
-  protectedHot?: Iterable<string>
+  protectedHot?: Iterable<string | { pairAddress: string }>
   maxPairs?: number
 }): TierPairWatch[] {
   const maxPairs = args.maxPairs ?? INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs
-  const hotSet = new Set([...(args.protectedHot ?? [])].map((addr) => addr.toLowerCase()))
+  const hotSet = new Set([...(args.protectedHot ?? [])].map((addr) => addressKey(addr)))
   const overlay = uniqueWatches(args.overlay)
     .filter((watch) => !hotSet.has(watch.pairAddress))
     .slice(0, maxPairs)
@@ -158,9 +162,9 @@ export function overlayAddresses(active: TierPairWatch[], naturalActive: TierPai
 
 export function weakestEligibleActive(
   active: ScoredActiveWatch[],
-  protectedAddresses: Iterable<string>,
+  protectedAddresses: Iterable<string | { pairAddress: string }>,
 ): ScoredActiveWatch | undefined {
-  const hotSet = new Set([...protectedAddresses].map((addr) => addr.toLowerCase()))
+  const hotSet = new Set([...protectedAddresses].map((addr) => addressKey(addr)))
   for (let i = active.length - 1; i >= 0; i -= 1) {
     const row = active[i]
     if (row && !hotSet.has(row.watch.pairAddress.toLowerCase())) return row
@@ -172,11 +176,11 @@ export function applyColdChallenges(args: {
   active: TierPairWatch[]
   activeFacts: ReadonlyMap<string, LocalPromotionFacts>
   challengers: ColdChallenger[]
-  protectedHot: Iterable<string>
+  protectedHot: Iterable<string | { pairAddress: string }>
   maxPairs?: number
 }): ColdPromotionDecision {
   const maxPairs = args.maxPairs ?? INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs
-  const hotSet = new Set([...args.protectedHot].map((addr) => addr.toLowerCase()))
+  const hotSet = new Set([...args.protectedHot].map((addr) => addressKey(addr)))
   const nextActive = uniqueWatches(args.active)
     .filter((watch) => !hotSet.has(watch.pairAddress))
     .slice(0, maxPairs)

@@ -32,7 +32,6 @@ function watch(n: number, liquidity: bigint, tier: TierPairWatch['tier'] = 'TIER
 
 function facts(watchRow: TierPairWatch, overrides: Partial<LocalPromotionFacts> = {}): LocalPromotionFacts {
   const base = factsFromLiquidityOnly(watchRow)
-  const rankScore = overrides.rankScore ?? overrides.swapCount ?? base.rankScore
   const swapCount = overrides.swapCount ?? 0
   const liquidity = overrides.liquidity ?? base.liquidity
   const computedRank = overrides.rankScore ?? swapCount * 10_000 + liquidity
@@ -45,7 +44,7 @@ function facts(watchRow: TierPairWatch, overrides: Partial<LocalPromotionFacts> 
     lag,
     rankScore: computedRank,
     activityScore: overrides.activityScore ?? computedRank - lag,
-    hasEvidence: overrides.hasEvidence ?? swapCount > 0 || liquidity > 0 || Boolean(overrides.hasStoredEvents),
+    hasEvidence: overrides.hasEvidence ?? (swapCount > 0 || liquidity > 0 || Boolean(overrides.hasStoredEvents)),
   }
 }
 
