@@ -5,6 +5,21 @@ import { classifyAmmPair, filterDiscoverablePairs, paginatePairs, searchPairs, s
 import type { ClassifiedAmmPair } from '../types'
 import { loadRegistryFromDisk, resolveOnchainRegistry } from '../registry/store'
 
+/** Default page for explorer-style pair lists. */
+export const DEFAULT_AMM_PAIRS_PAGE_SIZE = 50
+/**
+ * Observation consumers request the Factory tradeable universe in one page.
+ * The on-chain registry is ~516 pairs / ~505 tradeable — a 100-row cap silently
+ * dropped ~80% of that universe from trending pair-index membership.
+ */
+export const MAX_AMM_PAIRS_PAGE_SIZE = 600
+
+export function resolveAmmPairsPageSize(pageSize?: number): number {
+  const requested = Number(pageSize)
+  if (!Number.isFinite(requested) || requested <= 0) return DEFAULT_AMM_PAIRS_PAGE_SIZE
+  return Math.min(MAX_AMM_PAIRS_PAGE_SIZE, Math.floor(requested))
+}
+
 const REGISTRY_PATH = path.join(process.cwd(), 'public', 'registry', 'onchain', 'bsc-mainnet.json')
 
 let cachedPairs: ClassifiedAmmPair[] | null = null
@@ -61,7 +76,7 @@ export function queryAmmPairs(params: {
   if (params.classification) rows = rows.filter((p) => p.classification === params.classification)
   if (params.q) rows = searchPairs(rows, params.q)
   rows = sortPairsDefault(rows)
-  return paginatePairs(rows, params.page ?? 1, Math.min(100, params.pageSize ?? 50))
+  return paginatePairs(rows, params.page ?? 1, resolveAmmPairsPageSize(params.pageSize))
 }
 
 export async function queryAmmPairsAsync(params: {
@@ -75,7 +90,7 @@ export async function queryAmmPairsAsync(params: {
   if (params.classification) rows = rows.filter((p) => p.classification === params.classification)
   if (params.q) rows = searchPairs(rows, params.q)
   rows = sortPairsDefault(rows)
-  return { ...paginatePairs(rows, params.page ?? 1, Math.min(100, params.pageSize ?? 50)), source }
+  return { ...paginatePairs(rows, params.page ?? 1, resolveAmmPairsPageSize(params.pageSize)), source }
 }
 
 export function selectTopAmmPair(): ClassifiedAmmPair | undefined {
