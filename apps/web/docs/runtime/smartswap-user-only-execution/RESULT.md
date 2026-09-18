@@ -3,9 +3,9 @@ AGENT_ID: bc-593e5f04-ca57-552a-b9a0-a9170ccf18d9
 RUN_ID: bc-593e5f04-ca57-552a-b9a0-a9170ccf18d9
 BASE_MAIN_SHA: 669b5e7c42edb56ba6c50a966aaed3ab064c75e8
 BRANCH: fix/smartswap-user-only-01
-FINAL_HEAD: PENDING_COMMIT
+FINAL_HEAD: 5d7117afbf9efe656f631ac67e6e97e0574c8ba6
 FILES_CHANGED: contracts/smartswap/SmartSwapExecutorV2.sol, test/smartswap/SmartSwapExecutorV2.t.sol, apps/web/docs/runtime/smartswap-user-only-execution/RESULT.md
-DIFF_STAT: 3 files, +~1060 / -0 (V2.sol +229, V2.t.sol +757, RESULT.md +~75)
+DIFF_STAT: 3 files changed, 1033 insertions(+)
 
 PLATFORM_SIGNATURE_REQUIRED: no
 EXTRA_USER_MESSAGE_SIGNATURE_REQUIRED: no
