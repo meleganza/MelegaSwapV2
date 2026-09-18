@@ -63,21 +63,28 @@ describe('paid Trend Boost ticker merge', () => {
 
   it('2. active paid placement is merged ahead of organic movers', () => {
     const merged = mergeTickerWithPaidPlacements({ organic: [organic[0]], boosted: [aaronActive], nowMs: NOW })
-    expect(merged[0].primary).toBe('🚀 AARON')
+    expect(merged[0].primary).toBe('AARON')
     expect(merged[0].secondary).toBe('Boosted')
+    expect(merged[0].tokenAddress).toBe(AARON_ADDRESS)
+    expect(merged[0].chainId).toBe(56)
+    expect(merged[0].href).toBe('/@aaron/')
     expect(merged[1].primary).toBe('FLOKI')
+    expect(merged[1].tokenAddress).toBeUndefined()
   })
 
   it('3. active MM72 placement is merged', () => {
     const merged = mergeTickerWithPaidPlacements({ organic: [organic[0]], boosted: [mm72Active], nowMs: NOW })
     expect(merged.some((item) => item.id.includes('trend_0d06939b9fc34ff39224e07e'))).toBe(true)
-    expect(merged[0].primary).toBe('🚀 MM72')
+    expect(merged[0].primary).toBe('MM72')
+    expect(merged[0].tokenAddress).toBe(MM72_ADDRESS)
+    expect(merged[0].chainId).toBe(56)
+    expect(merged[0].href).toBe('/@mm72/')
   })
 
   it('4. active AARON placement is merged', () => {
     const merged = mergeTickerWithPaidPlacements({ organic: [organic[0]], boosted: [aaronActive], nowMs: NOW })
     expect(merged.some((item) => item.id.includes('trend_21cc5a9c1ca645d291723766'))).toBe(true)
-    expect(merged[0].primary).toBe('🚀 AARON')
+    expect(merged[0].primary).toBe('AARON')
   })
 
   it('5. two active placements are both visible in paid-first order', () => {
@@ -86,14 +93,14 @@ describe('paid Trend Boost ticker merge', () => {
       boosted: [mm72Active, aaronActive],
       nowMs: NOW,
     })
-    expect(merged.map((item) => item.primary)).toEqual(['🚀 MM72', '🚀 AARON', 'FLOKI'])
+    expect(merged.map((item) => item.primary)).toEqual(['MM72', 'AARON', 'FLOKI'])
   })
 
   it('6. paid + organic same token is deduplicated', () => {
     const merged = mergeTickerWithPaidPlacements({ organic, boosted: [mm72Active], nowMs: NOW })
     expect(merged.filter((item) => /MM72/i.test(item.primary))).toHaveLength(1)
-    expect(merged[0].primary).toBe('🚀 MM72')
-    expect(merged.some((item) => item.primary === 'MM72')).toBe(false)
+    expect(merged[0].primary).toBe('MM72')
+    expect(merged.filter((item) => item.primary === 'MM72')).toHaveLength(1)
   })
 
   it('7. expired placement is excluded', () => {
@@ -129,7 +136,32 @@ describe('paid Trend Boost ticker merge', () => {
       featured: [featured],
       nowMs: NOW,
     })
-    expect(merged.map((item) => item.primary)).toEqual(['🚀 MM72', 'FLOKI', 'AARON · Featured'])
+    expect(merged.map((item) => item.primary)).toEqual(['MM72', 'FLOKI', 'AARON · Featured'])
+    expect(merged[0].tokenAddress).toBe(MM72_ADDRESS)
+    expect(merged[0].chainId).toBe(56)
+    expect(merged[2].tokenAddress).toBeUndefined()
+    expect(merged[2].chainId).toBeUndefined()
+    expect(merged[2].href).toBe('/@aaron/')
+  })
+
+  it('carries boosted placement identity without rewriting canonical hrefs', () => {
+    const merged = mergeTickerWithPaidPlacements({
+      organic: [organic[0]],
+      boosted: [mm72Active, aaronActive],
+      nowMs: NOW,
+    })
+    expect(merged[0]).toMatchObject({
+      primary: 'MM72',
+      tokenAddress: MM72_ADDRESS,
+      chainId: 56,
+      href: '/@mm72/',
+    })
+    expect(merged[1]).toMatchObject({
+      primary: 'AARON',
+      tokenAddress: AARON_ADDRESS,
+      chainId: 56,
+      href: '/@aaron/',
+    })
   })
 
   it('maps certified MM72 and AARON active API rows without fabricating identity', () => {

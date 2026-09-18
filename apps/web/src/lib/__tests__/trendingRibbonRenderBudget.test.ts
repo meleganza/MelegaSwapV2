@@ -24,7 +24,44 @@ describe('Top Movers ticker render budget', () => {
     expect(ribbon).toContain('iconCacheRef')
     expect(ribbon).toContain('iconByAddress.get(address)')
     expect(limit).toContain('setLimit((prev) => (prev === next ? prev : next))')
-    expect(context).toContain('refreshInterval: 60_000')
+    expect(context).toContain('const TICKER_REFRESH_MS = 60_000')
+    expect(context).toContain('refreshInterval: TICKER_REFRESH_MS')
     expect(context).toContain('dedupingInterval: 55_000')
+  })
+
+  it('restores paid Trend Boost pill chrome without dropping the token logo', () => {
+    const ticker = readFileSync(
+      path.join(WEB, 'design-system/melega/components/Ticker/MelegaTicker.tsx'),
+      'utf8',
+    )
+    const ribbon = readFileSync(path.join(WEB, 'views/HomeTrade/TrendingRibbon.tsx'), 'utf8')
+    const placements = readFileSync(path.join(WEB, 'lib/trending/paidTickerPlacements.ts'), 'utf8')
+
+    expect(ticker).toContain('paidItemStyles')
+    expect(ticker).toContain('rgba(244, 196, 48, 0.82)')
+    expect(ticker).toContain('border-radius: 999px')
+    expect(ticker).toContain('RocketMark')
+    expect(ticker).toContain('item.icon')
+    expect(ticker).toContain('{item.icon && <ItemIcon>{item.icon}</ItemIcon>}')
+    expect(ticker).toContain('<RocketMark />')
+    expect(ticker).not.toContain('const icon = boosted ? <RocketMark /> : item.icon')
+    expect(ticker.indexOf('{item.icon && <ItemIcon>{item.icon}</ItemIcon>}')).toBeLessThan(
+      ticker.indexOf('<RocketMark />'),
+    )
+
+    expect(ribbon).toContain("item.id.startsWith('paid-boosted-')")
+    expect(ribbon).toContain('MelegaTokenAvatar')
+    expect(ribbon).toContain('item.tokenAddress')
+    expect(ribbon).toContain('item.chainId')
+    expect(ribbon).toContain('paid-boosted:${chainId}:${address.toLowerCase()}')
+    expect(ribbon).not.toContain('rankedIcon')
+    expect(ribbon).toContain('extractAddressFromHref(item.href)')
+
+    expect(ticker).toContain('tokenAddress?: string | null')
+    expect(ticker).toContain('chainId?: number')
+
+    expect(placements).not.toContain('`🚀 ${placement.symbol}`')
+    expect(placements).toContain('tokenAddress: placement.address')
+    expect(placements).toContain('chainId: placement.chainId')
   })
 })
