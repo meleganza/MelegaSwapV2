@@ -106,7 +106,10 @@ describe('Arc→BNB invalid mixed-case checksum P0', () => {
     expect(PRODUCTION_INVALID_ARC).toBe('0x30eB6f2878f60ba0Ed6418bfe7CaDcd0f475a265')
     expect(PRODUCTION_INVALID_ARC.toLowerCase()).toBe(CANONICAL_ARC)
     expect(() => getAddress(PRODUCTION_INVALID_ARC)).toThrow(/bad address checksum/)
-    expect(() => new ethers.Contract(PRODUCTION_INVALID_ARC, OFT_QUOTE_ABI)).toThrow(/bad address checksum/)
+    const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:9')
+    const unresolved = new ethers.Contract(PRODUCTION_INVALID_ARC, OFT_QUOTE_ABI, provider)
+    expect(unresolved.address).toBe(PRODUCTION_INVALID_ARC)
+    expect(() => getAddress(unresolved.address)).toThrow(/bad address checksum/)
   })
 
   it('keeps case-insensitive identity validation and does not rewrite the MMN payload', () => {
@@ -126,7 +129,9 @@ describe('Arc→BNB invalid mixed-case checksum P0', () => {
   it('normalizes the exact mixed-case Arc address for quote reader and ethers.Contract', async () => {
     const checksummed = normalizeCanonicalEvmAddress(PRODUCTION_INVALID_ARC)
     expect(checksummed).toBe(getAddress(CANONICAL_ARC))
-    expect(() => new ethers.Contract(checksummed, OFT_QUOTE_ABI)).not.toThrow()
+    expect(checksummed).toBe('0x30Eb6f2878f60Ba0eD6418BFE7CAdCd0F475A265')
+    const readerContract = new ethers.Contract(checksummed, OFT_QUOTE_ABI)
+    expect(readerContract.address).toBe(checksummed)
 
     const quoteSend = vi.fn().mockResolvedValue({ nativeFee: BigNumber.from('72607980676756') })
     const quoteOft = vi.fn().mockResolvedValue({ amountReceivedLD: BigNumber.from('1000000000000') })
