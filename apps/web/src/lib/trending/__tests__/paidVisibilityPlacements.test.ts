@@ -39,7 +39,7 @@ describe('paid visibility ticker placements', () => {
       ],
     })
     expect(items).toHaveLength(1)
-    expect(items[0]).toMatchObject({ primary: '🚀 MARCO', secondary: 'Boosted', accent: '58m' })
+    expect(items[0]).toMatchObject({ primary: 'MARCO', secondary: 'Boosted', accent: '58m' })
     expect(tickerItemIsEligible(items[0])).toBe(true)
   })
 })

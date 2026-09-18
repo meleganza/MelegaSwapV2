@@ -55,6 +55,27 @@ export const TrendingRibbon: React.FC = () => {
           secondary: undefined,
           href: item.href,
         }
+        if (item.id.startsWith('paid-boosted-')) {
+          const chainMatch = /^paid-boosted-(\d+)-/.exec(item.id)
+          const chainId = chainMatch ? Number(chainMatch[1]) : undefined
+          const rankedIcon = address ? iconByAddress.get(address) : undefined
+          if (rankedIcon) return { ...base, icon: rankedIcon }
+          const cacheKey = `paid-boosted:${chainId ?? ''}:${address || item.primary}`
+          const cached = iconCacheRef.current.get(cacheKey)
+          const icon =
+            cached ?? (
+              <MelegaTokenAvatar
+                name={item.primary}
+                symbol={item.primary}
+                size={22}
+                address={address}
+                chainId={chainId}
+                radius="circle"
+              />
+            )
+          if (!cached) iconCacheRef.current.set(cacheKey, icon)
+          return { ...base, icon }
+        }
         if (!asset || !address) return base
         return {
           ...base,

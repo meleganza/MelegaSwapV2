@@ -43,7 +43,7 @@ export function paidPlacementToTickerItem(placement: PaidTickerPlacement, nowMs 
   const remaining = formatPaidPlacementRemaining(placement.endsAt, nowMs)
   return {
     id: `paid-${placement.kind}-${placement.chainId}-${placement.id}`,
-    primary: placement.kind === 'boosted' ? `🚀 ${placement.symbol}` : `${placement.symbol} · ${label}`,
+    primary: placement.kind === 'boosted' ? placement.symbol : `${placement.symbol} · ${label}`,
     secondary: label,
     href:
       placement.href ||
