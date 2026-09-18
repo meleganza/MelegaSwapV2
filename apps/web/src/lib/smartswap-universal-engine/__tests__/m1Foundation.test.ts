@@ -40,6 +40,7 @@ import {
 import { compareNormalizedQuotes } from '../routeSelection'
 import { runMelegaShadowComparison, shadowMustNotAffectUserTransaction } from '../shadow'
 import { SMARTSWAP_UX_FREEZE_FILES } from '../uxFreezeFiles'
+import { computeNetVenueInput } from '../evaluateRevenuePolicy'
 import { createMelegaDexAdapter, normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
 import { EXTERNAL_VENUE_IDS, assertNoExternalVenueEnabled, buildVenueRegistry } from '../venueRegistry'
 import {
@@ -475,7 +476,10 @@ describe('SmartSwap Universal Engine M1 foundation', () => {
         slippageBps: 50,
       },
       productionQuote: normalizeMelegaLegacyQuote(LEGACY, nowIso),
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: {
+        ...LEGACY,
+        inputAmountRaw: computeNetVenueInput(LEGACY.inputAmountRaw, 20).netVenueInputRaw,
+      },
       nowIso,
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,

@@ -21,6 +21,7 @@ import { refuseV2Execution, type SmartSwapVenueAdapter, type VenueIdentity } fro
 import { computeMinimumReceived, type NormalizedQuote } from './quote'
 
 export const MELEGA_DEX_VENUE_ID = 'melega-dex' as const
+export const MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE = 'MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE' as const
 
 export interface LegacyMelegaQuoteSnapshot {
   chainId: number
@@ -154,7 +155,14 @@ export function createMelegaDexAdapter(snapshot: LegacyMelegaQuoteSnapshot | nul
       if (request.network.domain !== EXECUTION_DOMAIN.EVM) {
         throw new Error('MELEGA_DEX_EVM_ONLY')
       }
-      return normalizeMelegaLegacyQuote(snapshot)
+      if (snapshot.inputAmountRaw !== request.inputAmountRaw) {
+        throw new Error(MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE)
+      }
+      const normalized = normalizeMelegaLegacyQuote(snapshot)
+      return {
+        ...normalized,
+        minimumReceivedRaw: computeMinimumReceived(normalized.grossOutputRaw, request.slippageBps),
+      }
     },
     async simulate() {
       return { ok: false, reason: 'SIMULATE_UNSUPPORTED' }

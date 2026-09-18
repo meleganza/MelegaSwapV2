@@ -102,3 +102,16 @@ export function computeFeeAmountRaw(baseAmountRaw: string, feeBps: number): stri
   if (feeBps < 0 || feeBps > 10_000) throw new Error('INVALID_FEE_BPS')
   return ((BigInt(baseAmountRaw) * BigInt(feeBps)) / 10_000n).toString()
 }
+
+export const NET_VENUE_INPUT_NONPOSITIVE = 'NET_VENUE_INPUT_NONPOSITIVE' as const
+
+/** ExecutorV2 input-side fee: floor(input * feeBps / 10000), router receives the remainder. */
+export function computeNetVenueInput(inputAmountRaw: string, feeBps: number): {
+  feeAmountRaw: string
+  netVenueInputRaw: string
+} {
+  const feeAmountRaw = computeFeeAmountRaw(inputAmountRaw, feeBps)
+  const net = BigInt(inputAmountRaw) - BigInt(feeAmountRaw)
+  if (net <= 0n) throw new Error(NET_VENUE_INPUT_NONPOSITIVE)
+  return { feeAmountRaw, netVenueInputRaw: net.toString() }
+}

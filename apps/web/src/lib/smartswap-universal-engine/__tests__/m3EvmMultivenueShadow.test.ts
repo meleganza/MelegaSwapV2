@@ -23,6 +23,7 @@ import { normalizeSameChainGas } from '../gasNormalization'
 import { VENUE_HEALTH_STATE, healthSnapshot } from '../health'
 import { DEFAULT_LATENCY_BUDGET } from '../latency'
 import { INSUFFICIENT_SAMPLE, latencyPercentiles } from '../latencyStats'
+import { computeNetVenueInput } from '../evaluateRevenuePolicy'
 import { normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
 import {
   SMARTSWAP_UNIVERSAL_ENGINE_M3_ID,
@@ -90,6 +91,13 @@ const LEGACY: LegacyMelegaQuoteSnapshot = {
   slippageBps: 50,
 }
 
+function melegaExactNetSnapshot(snapshot: LegacyMelegaQuoteSnapshot, feeBps = 20): LegacyMelegaQuoteSnapshot {
+  return {
+    ...snapshot,
+    inputAmountRaw: computeNetVenueInput(snapshot.inputAmountRaw, feeBps).netVenueInputRaw,
+  }
+}
+
 function bscRequest(): SmartSwapRequest {
   return {
     requestId: 'm3-bsc',
@@ -152,7 +160,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     expect(m1.adapters).toHaveLength(1)
     expect(() => assertNoExternalVenueEnabled(m1.catalog)).not.toThrow()
     const shadow = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -223,7 +231,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -254,7 +262,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -272,7 +280,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('does not mark a venue unhealthy because one pair is unsupported', async () => {
     const health = new ScopedVenueHealth({ failureThreshold: 3, cooldownMs: 10_000 })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -296,7 +304,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -327,7 +335,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     }
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource,
       uniswapSource: uniswapQuotes('1'),
     })
@@ -364,7 +372,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     }
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource,
       uniswapSource: uniswapQuotes('1'),
     })
@@ -413,7 +421,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
 
   it('allows quote when readiness is HEALTHY or DEGRADED', async () => {
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('610000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -485,7 +493,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('applies M2 revenue policy and prevents LP fee double-counting [SYNTHETIC]', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('610000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -507,7 +515,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('lets an external venue win on superior net output [SYNTHETIC]', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -525,7 +533,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('lets Melega win when genuinely superior [SYNTHETIC]', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('100000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -557,16 +565,18 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     })
     expect(result.pancake?.smartSwapFeeBps).toBe(20)
     expect(result.uniswap?.smartSwapFeeBps).toBe(15)
-    expect(result.shadowWinner?.venueId).toBe('uniswap')
+    expect(result.shadowWinner?.venueId).toBe('pancakeswap')
     expect(BigInt(result.pancake!.quote!.grossOutputRaw)).toBeGreaterThan(BigInt(result.uniswap!.quote!.grossOutputRaw))
-    expect(BigInt(result.uniswap!.net!.netUserOutputRaw)).toBeGreaterThan(BigInt(result.pancake!.net!.netUserOutputRaw))
+    expect(result.pancake!.net!.subtractedSmartSwapFeeRaw).toBe('0')
+    expect(result.uniswap!.net!.subtractedSmartSwapFeeRaw).toBe('0')
+    expect(BigInt(result.pancake!.net!.netUserOutputRaw)).toBeGreaterThan(BigInt(result.uniswap!.net!.netUserOutputRaw))
   })
 
   it('isolates the shadow winner from production execution and fee collection', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const before = JSON.stringify(production)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('900000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -678,7 +688,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('serializes decisionEvidence through JSON without transforms', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -700,7 +710,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('binds decisionEvidence selected identity to shadowWinner and keeps production inert', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -721,7 +731,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('copies A5 fallback identity when two or more usable rows exist and nulls it otherwise', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY, NOW)
     const twoUsable = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -775,7 +785,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const timed = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -819,7 +829,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -853,7 +863,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       },
     })
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -882,7 +892,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
   it('preserves readiness-blocked candidate evidence without changing the winner', async () => {
     const health = new ScopedVenueHealth()
     const { adapters } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       pancakeSource: pancakeQuotes('610000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -1020,7 +1030,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
       session,
       request: bscRequest(),
       productionQuote: production,
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       nowIso: NOW,
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,
@@ -1049,7 +1059,7 @@ describe('SmartSwap Universal Engine M3 EVM multi-venue shadow', () => {
     const base = {
       request: bscRequest(),
       productionQuote: production,
-      melegaSnapshot: LEGACY,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY),
       nowIso: NOW,
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,
