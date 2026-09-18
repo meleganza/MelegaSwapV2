@@ -26,18 +26,11 @@ queryChainIdAtom.onMount = (set) => {
   } else {
     chainId = getChainId(c)
   }
-  const parsed = +chainId
-  if (isChainSupported(parsed)) {
-    set(parsed)
-    return undefined
+  if (isChainSupported(+chainId)) {
+    set(+chainId)
+  } else {
+    set(0)
   }
-  // Defer bridge-only query IDs so /bridge?chainId=4663|5042 does not update during hydrate.
-  if (isWalletRecognizedChain(parsed)) {
-    const timer = window.setTimeout(() => set(parsed), 0)
-    return () => window.clearTimeout(timer)
-  }
-  set(0)
-  return undefined
 }
 
 export function useLocalNetworkChain() {
@@ -78,6 +71,16 @@ export const useActiveChainId = () => {
       setSessionChainId(walletTruth)
     }
   }, [walletTruth, localChainId, setSessionChainId])
+
+  // Apply bridge-only ?chainId= after mount so hydrate is not interrupted.
+  useEffect(() => {
+    if (typeof window === 'undefined' || walletTruth != null) return
+    const parsed = Number(new URLSearchParams(window.location.search).get('chainId'))
+    if (!Number.isFinite(parsed) || !isMelegaRecognizedWalletChain(parsed)) return
+    if (localChainId !== parsed) {
+      setSessionChainId(parsed)
+    }
+  }, [localChainId, setSessionChainId, walletTruth])
 
   const isNotMatched = useDeferredValue(
     Boolean(isConnected && walletTruth != null && localChainId != null && walletTruth !== localChainId),
