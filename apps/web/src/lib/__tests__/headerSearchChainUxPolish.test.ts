@@ -33,13 +33,17 @@ describe('MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH', () => {
     expect(header).toContain('max-width: 78px')
   })
 
-  it('network switch modal is compact with LIVE + PREPARING', () => {
+  it('network switch modal is compact with TRADING + BRIDGE + PREPARING', () => {
     const modal = load('components/Menu/UserMenu/NetworkSwitchModal.tsx')
     expect(modal).toContain('MelegaModal')
     expect(modal).toContain('size="sm"')
     expect(modal).toContain('network-switch-live')
+    expect(modal).toContain('network-switch-bridge')
     expect(modal).toContain('network-switch-preparing')
     expect(modal).toContain('headerChainLabel')
+    expect(modal).toContain('TRADING')
+    expect(modal).toContain('Trading ready')
+    expect(modal).toContain('MARCO transfer available')
     expect(modal).not.toContain('BNB Smart Chain')
   })
 

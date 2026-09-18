@@ -77,17 +77,20 @@ describe('wallet chain detection', () => {
 })
 
 describe('Switch Network modal redesign', () => {
-  it('has LIVE and PREPARING sections with active highlight and Avalanche switchable', () => {
+  it('has TRADING, BRIDGE, and PREPARING sections with active highlight', () => {
     const src = readFileSync(MODAL, 'utf8')
     expect(src).toContain('network-switch-live')
+    expect(src).toContain('network-switch-bridge')
     expect(src).toContain('network-switch-preparing')
-    expect(src).toContain('LIVE')
+    expect(src).toContain('TRADING')
+    expect(src).toContain('BRIDGE LIVE')
     expect(src).toContain('PREPARING')
     expect(src).toContain('size="sm"')
     expect(src).toContain('MelegaModal')
     expect(src).toContain('data-active')
     expect(src).toContain('ChainCard')
     expect(src).toContain('safePick')
+    expect(src).toContain('openMarcoBridge')
     expect(src).not.toMatch(/grid-template-columns:\s*auto auto auto auto auto/)
     expect(src).not.toContain('BNB Smart Chain')
   })

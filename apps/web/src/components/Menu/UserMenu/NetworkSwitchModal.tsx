@@ -5,9 +5,15 @@ import styled from 'styled-components'
 // Direct import avoids the design-system barrel loading GlobalHeader again
 // while GlobalHeader is still evaluating the wallet/network menu.
 import { MelegaModal } from 'design-system/melega/components/Modal'
+import { useRouter } from 'next/router'
 import { chains } from 'utils/wagmi'
-import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
+import {
+  filterMelegaPublicPreparingChains,
+  filterMelegaPublicTradingSwitcherChains,
+  getMelegaPublicBridgeSwitcherRows,
+  MARCO_BRIDGE_PUBLIC_PATH,
+} from 'config/publicNetworkSwitchCapabilities'
 import { ChainLogo } from 'components/Logo/ChainLogo'
 import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 
@@ -103,7 +109,7 @@ const ChainName = styled(Text)<{ $active: boolean }>`
   text-overflow: ellipsis;
 `
 
-const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
+const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' | 'bridge' }>`
   display: inline-flex;
   align-items: center;
   width: fit-content;
@@ -113,13 +119,23 @@ const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${({ $tone }) => ($tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : '#8a6a1a')};
+  color: ${({ $tone }) =>
+    $tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : $tone === 'bridge' ? '#1a5f8a' : '#8a6a1a'};
   background: ${({ $tone }) =>
     $tone === 'live'
       ? 'rgba(34, 160, 80, 0.14)'
       : $tone === 'active'
       ? 'rgba(221, 185, 47, 0.16)'
+      : $tone === 'bridge'
+      ? 'rgba(40, 140, 200, 0.16)'
       : 'rgba(200, 150, 40, 0.16)'};
+`
+
+const BridgeCapabilityCopy = styled(Text)`
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: ${({ theme }) => theme.colors.textSubtle};
 `
 
 const SwitchError = styled.div`
@@ -142,8 +158,10 @@ type NetworkSwitchModalProps = {
 
 export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }: NetworkSwitchModalProps) {
   const { t } = useTranslation()
-  const liveChains = filterMelegaVisibleSwitcherChains(chains)
-  const preparing = getMelegaPreparingChains()
+  const router = useRouter()
+  const liveChains = filterMelegaPublicTradingSwitcherChains(chains)
+  const preparing = filterMelegaPublicPreparingChains(getMelegaPreparingChains())
+  const bridgeRows = getMelegaPublicBridgeSwitcherRows()
   const [error, setError] = useState<string | null>(null)
 
   const safePick = (next: number) => {
@@ -158,20 +176,26 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
     }
   }
 
+  const openMarcoBridge = () => {
+    setError(null)
+    onDismiss?.()
+    void router.push(MARCO_BRIDGE_PUBLIC_PATH)
+  }
+
   return (
     <MelegaModal
       open={isOpen}
       onClose={() => onDismiss?.()}
       title={t('Switch Network')}
-      subtitle={t('Choose a supported network. No redirect.')}
+      subtitle={t('Trading switches in place. Bridge cards open MARCO transfer.')}
       size="sm"
       testId="network-switch-modal"
       ariaLabel={t('Switch Network')}
     >
       <Body>
-        <Section data-testid="network-switch-live">
+        <Section data-testid="network-switch-live" data-network-switch-trading>
           <SectionLabel>
-            <SectionTitle>{t('LIVE')}</SectionTitle>
+            <SectionTitle>{t('TRADING')}</SectionTitle>
             <SectionHint>{t('Trading ready')}</SectionHint>
           </SectionLabel>
           <CardGrid>
@@ -183,6 +207,7 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
                   type="button"
                   $active={active}
                   data-testid={`network-card-${chain.id}`}
+                  data-capability="trading"
                   data-active={active ? 'true' : 'false'}
                   title={headerChainTitle(chain.id)}
                   onClick={() => safePick(chain.id)}
@@ -196,6 +221,40 @@ export function NetworkSwitchModal({ isOpen, onDismiss, switchNetwork, chainId }
               )
             })}
           </CardGrid>
+        </Section>
+
+        <Section data-testid="network-switch-bridge" data-network-switch-bridge>
+          <SectionLabel>
+            <SectionTitle>{t('BRIDGE')}</SectionTitle>
+            <SectionHint>{t('MARCO transfer available')}</SectionHint>
+          </SectionLabel>
+          <CardGrid>
+            {bridgeRows.map((row) => {
+              const chainIdValue = row.chainId as number
+              return (
+                <ChainCard
+                  key={`bridge-${chainIdValue}`}
+                  type="button"
+                  $active={false}
+                  data-testid={`network-card-${chainIdValue}`}
+                  data-capability="bridge"
+                  data-active="false"
+                  data-status="BRIDGE_LIVE"
+                  title={row.label}
+                  onClick={openMarcoBridge}
+                >
+                  <ChainLogo chainId={chainIdValue} width={22} height={22} />
+                  <ChainMeta>
+                    <ChainName $active={false}>{row.shortLabel}</ChainName>
+                    <StatusPill $tone="bridge">{t('BRIDGE LIVE')}</StatusPill>
+                  </ChainMeta>
+                </ChainCard>
+              )
+            })}
+          </CardGrid>
+          <BridgeCapabilityCopy data-testid="network-switch-bridge-copy">
+            {t('MARCO transfer available · DEX trading not yet enabled')}
+          </BridgeCapabilityCopy>
         </Section>
 
         {preparing.length > 0 ? (
