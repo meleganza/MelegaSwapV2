@@ -34,7 +34,7 @@ import { SMARTSWAP_UX_FREEZE_FILES } from '../uxFreezeFiles'
 
 const WEB = path.resolve(__dirname, '../../../..')
 const ENGINE = path.join(WEB, 'src/lib/smartswap-universal-engine')
-const NOW = '2026-09-18T16:00:00.000Z'
+const NOW = '2026-08-20T00:00:05.000Z'
 const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 const USDC_BSC = '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
 const GROSS_INPUT = '1000000'
