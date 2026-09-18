@@ -10,17 +10,18 @@ import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
 import { assetsEqual } from './assetIdentity'
 import {
+  MELEGA_DEX_VENUE,
   PANCAKE_SWAP_VENUE,
   PANCAKESWAP_VENUE_ID,
   UNISWAP_VENUE,
   UNISWAP_VENUE_ID,
   type CertifiedEvmVenue,
 } from './certifiedVenues'
+import { MELEGA_DEX_VENUE_ID } from './melegaDexAdapter'
 import { isEvmNetwork } from './domain'
 import { computeNetVenueInput, evaluateRevenuePolicy } from './evaluateRevenuePolicy'
 import { PROTOCOL_FEE_STATE } from './fee'
 import { CANONICAL_SMARTSWAP_FEE_BENEFICIARY } from './feeEnforcement'
-import { MELEGA_DEX_VENUE_ID } from './melegaDexAdapter'
 import {
   PRODUCTION_EXECUTION_MODE,
   SMARTSWAP_OPERATING_MODE,
@@ -129,6 +130,7 @@ export function v2RouteHashOf(path: string[], nativeIn: boolean, nativeOut: bool
 export function certifiedVenueForExecutorV2(venueId: string): CertifiedEvmVenue | null {
   if (venueId === PANCAKESWAP_VENUE_ID) return PANCAKE_SWAP_VENUE
   if (venueId === UNISWAP_VENUE_ID) return UNISWAP_VENUE
+  if (venueId === MELEGA_DEX_VENUE_ID) return MELEGA_DEX_VENUE
   return null
 }
 
@@ -195,7 +197,11 @@ export function buildV2ExecutionBinding(input: BuildV2ExecutionBindingInput): V2
     if (message === SPLIT_ROUTE_FORBIDDEN) fail(V2_BINDING_SPLIT_ROUTE)
     throw error
   }
-  if (quote.hops.length !== 1) fail(V2_BINDING_MULTI_HOP_FORBIDDEN)
+  if (quote.hops.length < 1) fail(V2_BINDING_MULTI_HOP_FORBIDDEN)
+  if (!assetsEqual(quote.hops[0].tokenIn, request.inputAsset)) fail(V2_BINDING_CHAIN_MISMATCH, 'hop-in')
+  if (!assetsEqual(quote.hops[quote.hops.length - 1].tokenOut, request.outputAsset)) {
+    fail(V2_BINDING_CHAIN_MISMATCH, 'hop-out')
+  }
 
   if (!isEvmNetwork(request.network) || !isEvmNetwork(quote.network)) {
     fail(V2_BINDING_CHAIN_MISMATCH, 'non-evm')
@@ -213,20 +219,19 @@ export function buildV2ExecutionBinding(input: BuildV2ExecutionBindingInput): V2
   }
 
   const venueId = winner.venueId
-  if (venueId === MELEGA_DEX_VENUE_ID) {
-    fail(
-      MELEGA_V2_EXECUTION_BINDING_UNAVAILABLE,
-      'certified EVM venue catalog has no Melega router/wrappedNative; snapshot is not executable ExecutorV2 metadata',
-    )
-  }
-  if (venueId !== PANCAKESWAP_VENUE_ID && venueId !== UNISWAP_VENUE_ID) {
+  if (venueId !== PANCAKESWAP_VENUE_ID && venueId !== UNISWAP_VENUE_ID && venueId !== MELEGA_DEX_VENUE_ID) {
     fail(V2_BINDING_UNSUPPORTED_VENUE, venueId)
   }
 
   const spec = certifiedVenueForExecutorV2(venueId)
   const routerRaw = spec?.routers[chainId]
   const wrappedNative = spec?.wrappedNative[chainId]
-  if (!spec || !routerRaw) fail(V2_BINDING_ROUTER_MISSING, `${venueId}:${chainId}`)
+  if (!spec || !routerRaw || !wrappedNative) {
+    if (venueId === MELEGA_DEX_VENUE_ID) {
+      fail(MELEGA_V2_EXECUTION_BINDING_UNAVAILABLE, `${venueId}:${chainId}`)
+    }
+    fail(V2_BINDING_ROUTER_MISSING, `${venueId}:${chainId}`)
+  }
   const router = checksumAddress(routerRaw, V2_BINDING_ROUTER_MISSING)
 
   if (
@@ -265,8 +270,11 @@ export function buildV2ExecutionBinding(input: BuildV2ExecutionBindingInput): V2
 
   const nativeIn = request.inputAsset.location.kind === 'native'
   const nativeOut = request.outputAsset.location.kind === 'native'
-  const path = [pathEndpoint(request.inputAsset, wrappedNative), pathEndpoint(request.outputAsset, wrappedNative)]
-  if (path[0] === path[1]) fail(V2_BINDING_CHAIN_MISMATCH, 'identical-path-ends')
+  const path = [
+    pathEndpoint(quote.hops[0].tokenIn, wrappedNative),
+    ...quote.hops.map((hop) => pathEndpoint(hop.tokenOut, wrappedNative)),
+  ]
+  if (path.length < 2 || path[0] === path[path.length - 1]) fail(V2_BINDING_CHAIN_MISMATCH, 'identical-path-ends')
 
   const user = checksumAddress(input.user, V2_BINDING_USER_INVALID)
   if (user === '0x0000000000000000000000000000000000000000') fail(V2_BINDING_USER_INVALID, 'zero')

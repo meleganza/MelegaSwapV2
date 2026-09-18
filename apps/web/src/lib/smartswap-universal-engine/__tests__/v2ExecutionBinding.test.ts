@@ -393,13 +393,16 @@ describe('SmartSwap V2 local winner execution binding', () => {
     expect(() => buildV2ExecutionBinding(bindArgs(request, minOut))).toThrow(V2_BINDING_MIN_OUT_MISSING)
   })
 
-  it('Melega winner fails closed: no certified executable router/path', async () => {
+  it('Melega BSC exact-quote winner binds to certified V2 router/path', async () => {
     const request = bscErc20Request()
-    const adapter = createMelegaDexAdapter({
-      ...LEGACY,
-      inputAmountRaw: '998000',
-      expectedOutputRaw: '580000',
-    })
+    const adapter = createMelegaDexAdapter(
+      { ...LEGACY, inputAmountRaw: GROSS_INPUT },
+      {
+        quoteSource: createSyntheticQuoteSource({
+          [`56:${WBNB}>${USDC_BSC}`]: { amountOutRaw: '580000' },
+        }),
+      },
+    )
     const result = await runEvmShadowCompetition({
       request,
       productionQuote: null,
@@ -407,7 +410,39 @@ describe('SmartSwap V2 local winner execution binding', () => {
       nowIso: NOW,
     })
     expect(result.shadowWinner?.venueId).toBe('melega-dex')
-    expect(() => buildV2ExecutionBinding(bindArgs(request, result.shadowWinner))).toThrow(
+    expect(result.shadowWinner?.quote?.inputAmountRaw).toBe('998000')
+    const binding = buildV2ExecutionBinding(bindArgs(request, result.shadowWinner))
+    expect(binding.intent.version).toBe(2)
+    expect(binding.intent.venueId).toBe(v2VenueIdHash('melega-dex'))
+    expect(binding.intent.router).toBe('0xc25033218D181b27D4a2944Fbb04FC055da4EAB3')
+    expect(binding.path).toEqual([WBNB_CHECKSUM, USDC_BSC_CHECKSUM])
+    expect(binding.intent.inputAmount).toBe(GROSS_INPUT)
+    expect(binding.intent.feeBps).toBe(20)
+    expect(binding.intent.feeAmount).toBe('2000')
+    expect(binding.intent.minUserOut).toBe(computeMinimumReceived('580000', 50))
+    expect(binding.intent.beneficiary).toBe(CANONICAL_SMARTSWAP_FEE_BENEFICIARY)
+    expect('engineSeal' in binding.intent).toBe(false)
+    expect('intentSigner' in binding.intent).toBe(false)
+  })
+
+  it('Melega without certified router metadata fails closed', async () => {
+    const request = ethErc20Request()
+    const { winner } = await uniswapEthWinner()
+    const melegaOnEth = {
+      ...winner,
+      venueId: 'melega-dex',
+      quote: winner.quote
+        ? { ...winner.quote, venueId: 'melega-dex', hops: winner.quote.hops.map((hop) => ({ ...hop, venueId: 'melega-dex' })) }
+        : null,
+      structuralRouteCostBps: 25,
+      smartSwapFeeBps: 20,
+      sealedFee: winner.sealedFee
+        ? { ...winner.sealedFee, feeBps: 20, feeAmountRaw: computeFeeAmountRaw(GROSS_INPUT, 20) }
+        : null,
+      netVenueInputRaw: computeNetVenueInput(GROSS_INPUT, 20).netVenueInputRaw,
+    }
+    if (melegaOnEth.quote) melegaOnEth.quote.inputAmountRaw = melegaOnEth.netVenueInputRaw
+    expect(() => buildV2ExecutionBinding(bindArgs(request, melegaOnEth))).toThrow(
       MELEGA_V2_EXECUTION_BINDING_UNAVAILABLE,
     )
   })

@@ -20,7 +20,7 @@ export const PANCAKESWAP_VENUE_ID = 'pancakeswap' as const
 export const UNISWAP_VENUE_ID = 'uniswap' as const
 
 export interface CertifiedEvmVenue {
-  venueId: typeof PANCAKESWAP_VENUE_ID | typeof UNISWAP_VENUE_ID
+  venueId: typeof PANCAKESWAP_VENUE_ID | typeof UNISWAP_VENUE_ID | 'melega-dex'
   label: string
   /** Published V2 LP fee in bps. Embedded in getAmountsOut output. */
   v2LpFeeBps: number
@@ -69,6 +69,32 @@ export const UNISWAP_VENUE: CertifiedEvmVenue = {
     [EVM_CHAIN_IDS.POLYGON]: VENUE_SUPPORT.NOT_VERIFIED,
     [EVM_CHAIN_IDS.ARBITRUM]: VENUE_SUPPORT.NOT_VERIFIED,
     [EVM_CHAIN_IDS.AVAX]: VENUE_SUPPORT.NOT_VERIFIED,
+  },
+}
+
+/**
+ * Certified Melega V2 AMM on BSC only.
+ * Router matches production ROUTER_ADDRESS[BSC], MELEGA_BNB_ROUTER, and MELEGA_ROUTER_BSC.
+ * This is the UniswapV2-compatible AMM router (getAmountsOut), not the inherited Smart Router wrapper.
+ */
+export const MELEGA_DEX_VENUE: CertifiedEvmVenue = {
+  venueId: 'melega-dex',
+  label: 'Melega DEX',
+  v2LpFeeBps: 25,
+  quoteMethod: 'v2-getAmountsOut',
+  routers: {
+    [EVM_CHAIN_IDS.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3',
+  },
+  wrappedNative: {
+    [EVM_CHAIN_IDS.BSC]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  },
+  support: {
+    [EVM_CHAIN_IDS.BSC]: VENUE_SUPPORT.SUPPORTED,
+    [EVM_CHAIN_IDS.ETHEREUM]: VENUE_SUPPORT.QUOTE_ONLY,
+    [EVM_CHAIN_IDS.BASE]: VENUE_SUPPORT.QUOTE_ONLY,
+    [EVM_CHAIN_IDS.POLYGON]: VENUE_SUPPORT.QUOTE_ONLY,
+    [EVM_CHAIN_IDS.ARBITRUM]: VENUE_SUPPORT.QUOTE_ONLY,
+    [EVM_CHAIN_IDS.AVAX]: VENUE_SUPPORT.QUOTE_ONLY,
   },
 }
 
