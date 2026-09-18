@@ -1,3 +1,4 @@
+import { getAddress } from '@ethersproject/address'
 import { readdirSync, readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { describe, expect, it } from 'vitest'
@@ -18,8 +19,8 @@ import {
   CANONICAL_BNB_ARC_GATE_REASON,
 } from '../canonicalBnbSolanaGate'
 import { isRouteExecutable, routeExecutionBlockers } from '../executableRoutes'
-import { evaluateNativeFunds } from '../nativeFunds'
-import { assertCanonicalRouteAuthority, type CanonicalMmnRouteState } from '../routeAuthority'
+import { evaluateNativeFunds, isNativeFundsBlocked } from '../nativeFunds'
+import { assertCanonicalRouteAuthority, type CanonicalMmnNetwork, type CanonicalMmnRouteState } from '../routeAuthority'
 import { planMarcoBridgeRoute } from '../routePolicy'
 import { buildMarcoBridgeTransactions, OFT_SEND_IFACE } from '../transactionBuilder'
 import type { MarcoBridgeQuote } from '../types'
@@ -89,7 +90,7 @@ const mmnWithoutArc = () => ({
         requires_approval: false,
         paused: false,
       },
-    ],
+    ] as CanonicalMmnNetwork[],
     routes: [
       ['bnb', 'base'],
       ['base', 'bnb'],
@@ -249,7 +250,7 @@ describe('Arc Mainnet public launch', () => {
     expect(reverse.transactions[0]).toMatchObject({
       purpose: 'oft_send',
       chainId: 5042,
-      to: MARCO_WAVE1_NETWORKS.arc.endpointContract,
+      to: getAddress(MARCO_WAVE1_NETWORKS.arc.endpointContract),
       nativeFeeSymbol: 'USDC',
     })
     const decodedReverse = OFT_SEND_IFACE.decodeFunctionData('send', (reverse.transactions[0] as { data: string }).data)
@@ -264,8 +265,8 @@ describe('Arc Mainnet public launch', () => {
       gasPriceWei: '1000000000',
       approvalRequired: false,
     })
-    expect(shortfall.ok).toBe(false)
-    if (!shortfall.ok) {
+    expect(isNativeFundsBlocked(shortfall)).toBe(true)
+    if (isNativeFundsBlocked(shortfall)) {
       expect(shortfall.code).toBe('INSUFFICIENT_GAS')
       expect(shortfall.reason).toBe('Insufficient native USDC gas on Arc.')
       expect(shortfall.reason).not.toMatch(/ETH/)
