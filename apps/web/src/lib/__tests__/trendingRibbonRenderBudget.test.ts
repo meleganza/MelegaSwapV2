@@ -51,10 +51,17 @@ describe('Top Movers ticker render budget', () => {
 
     expect(ribbon).toContain("item.id.startsWith('paid-boosted-')")
     expect(ribbon).toContain('MelegaTokenAvatar')
+    expect(ribbon).toContain('item.tokenAddress')
+    expect(ribbon).toContain('item.chainId')
+    expect(ribbon).toContain('paid-boosted:${chainId}:${address.toLowerCase()}')
+    expect(ribbon).not.toContain('rankedIcon')
     expect(ribbon).toContain('extractAddressFromHref(item.href)')
-    expect(ribbon).toContain('address={address}')
-    expect(ribbon).toContain('chainId={chainId}')
+
+    expect(ticker).toContain('tokenAddress?: string | null')
+    expect(ticker).toContain('chainId?: number')
 
     expect(placements).not.toContain('`🚀 ${placement.symbol}`')
+    expect(placements).toContain('tokenAddress: placement.address')
+    expect(placements).toContain('chainId: placement.chainId')
   })
 })

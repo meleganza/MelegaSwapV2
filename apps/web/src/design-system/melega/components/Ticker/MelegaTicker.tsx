@@ -13,6 +13,8 @@ export interface MelegaTickerItem {
   icon?: React.ReactNode
   accentPositive?: boolean
   accentUnavailable?: boolean
+  tokenAddress?: string | null
+  chainId?: number
 }
 
 export interface MelegaTickerProps extends MelegaLayoutProps {

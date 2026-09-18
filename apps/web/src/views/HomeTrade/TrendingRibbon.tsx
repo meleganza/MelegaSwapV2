@@ -56,11 +56,17 @@ export const TrendingRibbon: React.FC = () => {
           href: item.href,
         }
         if (item.id.startsWith('paid-boosted-')) {
-          const chainMatch = /^paid-boosted-(\d+)-/.exec(item.id)
-          const chainId = chainMatch ? Number(chainMatch[1]) : undefined
-          const rankedIcon = address ? iconByAddress.get(address) : undefined
-          if (rankedIcon) return { ...base, icon: rankedIcon }
-          const cacheKey = `paid-boosted:${chainId ?? ''}:${address || item.primary}`
+          const rawAddress = item.tokenAddress
+          const address =
+            typeof rawAddress === 'string' && /^0x[a-fA-F0-9]{40}$/.test(rawAddress) ? rawAddress : null
+          const chainId =
+            typeof item.chainId === 'number' && Number.isInteger(item.chainId) && item.chainId > 0
+              ? item.chainId
+              : undefined
+          const cacheKey =
+            address && chainId != null
+              ? `paid-boosted:${chainId}:${address.toLowerCase()}`
+              : `paid-boosted:missing:${item.id}`
           const cached = iconCacheRef.current.get(cacheKey)
           const icon =
             cached ?? (
