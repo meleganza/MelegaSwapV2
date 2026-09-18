@@ -3,7 +3,7 @@ AGENT_ID: bc-593e5f04-ca57-552a-b9a0-a9170ccf18d9
 RUN_ID: bc-593e5f04-ca57-552a-b9a0-a9170ccf18d9
 BASE_MAIN_SHA: 669b5e7c42edb56ba6c50a966aaed3ab064c75e8
 BRANCH: fix/smartswap-user-only-01
-FINAL_HEAD: 5d7117afbf9efe656f631ac67e6e97e0574c8ba6
+FINAL_HEAD: 11f21fdf4f2a137e08f49f0079072b7bc4f519cd
 FILES_CHANGED: contracts/smartswap/SmartSwapExecutorV2.sol, test/smartswap/SmartSwapExecutorV2.t.sol, apps/web/docs/runtime/smartswap-user-only-execution/RESULT.md
 DIFF_STAT: 3 files changed, 1033 insertions(+)
 
@@ -34,7 +34,7 @@ BROADCAST: no
 REAL_PAYMENTS: no
 MERGED: no
 
-PR_OR_PATCH: PENDING_PUSH
+PR_OR_PATCH: https://github.com/meleganza/MelegaSwapV2/pull/69 (draft, review only, no merge)
 BLOCKERS: none
 VERDICT: USER_ONLY_EXECUTOR_CANDIDATE_LOCAL_TESTS_PASS
 
