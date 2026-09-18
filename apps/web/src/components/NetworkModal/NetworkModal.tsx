@@ -7,6 +7,10 @@ import { useNetwork } from 'wagmi'
 import { atom, useAtom } from 'jotai'
 import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
 import { getMelegaChain } from 'config/melegaChainRegistry'
+import {
+  isBridgeOnlyWalletOnBridgePage,
+  shouldOpenUnsupportedNetworkModal,
+} from 'config/publicNetworkSwitchCapabilities'
 import { UnsupportedNetworkModal } from './UnsupportedNetworkModal'
 import { WrongNetworkModal } from './WrongNetworkModal'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -36,23 +40,33 @@ export const NetworkModal = ({ pageSupportedChains = SUPPORT_MULTI_CHAINS }: { p
     return supported?.length === 1 && supported[0] === ChainId.BSC
   }, [supported])
 
+  const allowBridgeOnlyOnBridge = isBridgeOnlyWalletOnBridgePage(pathname, chainId)
+
   const isPageNotSupported = useMemo(() => {
     if (!supported.length || typeof chainId !== 'number') return false
     if (allowPreparingOnDeployment) return false
     if (isPreparingMelega && isDeploymentRuntimePath(pathname)) return false
+    if (allowBridgeOnlyOnBridge) return false
     // PREPARING Melega chains are wallet-switchable without forcing UnsupportedNetworkModal globally
     // when the page's chain list includes them (CHAIN_IDS after Avalanche wagmi registration).
     if (supported.includes(chainId)) return false
     if (isPreparingMelega && supported.includes(chainId)) return false
     return !supported.includes(chainId)
-  }, [allowPreparingOnDeployment, chainId, isPreparingMelega, pathname, supported])
+  }, [allowBridgeOnlyOnBridge, allowPreparingOnDeployment, chainId, isPreparingMelega, pathname, supported])
 
   if (['/', '/about', '/bitcoin-funds', 'venture-funds', '/venture-funds', '/exchange'].includes(pathname)) return null
 
   // Never auto-force BSC. Unsupported pages surface an actionable chain picker.
   if (isBNBOnlyPage && !isPageNotSupported) return null
 
-  if ((chain?.unsupported ?? false) || isPageNotSupported) {
+  if (
+    shouldOpenUnsupportedNetworkModal({
+      pathname,
+      chainId,
+      wagmiUnsupported: chain?.unsupported ?? false,
+      isPageNotSupported,
+    })
+  ) {
     // Never hard-block Founder Avalanche Router prep behind UnsupportedNetworkModal
     if (allowPreparingOnDeployment || (isPreparingMelega && isDeploymentRuntimePath(pathname))) {
       return null
@@ -63,6 +77,9 @@ export const NetworkModal = ({ pageSupportedChains = SUPPORT_MULTI_CHAINS }: { p
       </ModalV2>
     )
   }
+
+  // Bridge-only wallets on /bridge are valid — do not ask for BSC/Base/POL/ETH/ARB/AVAX.
+  if (allowBridgeOnlyOnBridge) return null
 
   if (isWrongNetwork && !dismissWrongNetwork) {
     const currentChain = chains.find((c) => c.id === chainId)
