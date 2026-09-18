@@ -144,6 +144,28 @@ function createMockEip1193(initialChainId: number) {
         sent.push({ ...tx, chainId })
         return `0x${'ab'.repeat(32)}`
       }
+      if (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt') {
+        return {
+          hash: params?.[0] ?? `0x${'ab'.repeat(32)}`,
+          nonce: '0x1',
+          blockHash: `0x${'11'.repeat(32)}`,
+          blockNumber: '0x1',
+          transactionIndex: '0x0',
+          from: evm,
+          to: sent[0]?.to ?? evm,
+          value: sent[0]?.value ?? '0x0',
+          gas: '0x30d40',
+          gasPrice: BigNumber.from(gasPriceWei).toHexString(),
+          input: sent[0]?.data ?? '0x',
+          status: '0x1',
+          logs: [],
+          logsBloom: `0x${'00'.repeat(256)}`,
+          transactionHash: params?.[0] ?? `0x${'ab'.repeat(32)}`,
+          cumulativeGasUsed: '0x30d40',
+          gasUsed: '0x30d40',
+          effectiveGasPrice: BigNumber.from(gasPriceWei).toHexString(),
+        }
+      }
       throw new Error(`unhandled EIP-1193 method ${method}`)
     },
   }
@@ -172,6 +194,7 @@ describe('Arc→BNB stale signer / NETWORK_CHANGED P0', () => {
     expect((await staleProvider.getNetwork()).chainId).toBe(56)
 
     await ensureArcWalletNetwork(ethereum)
+    await new Promise((resolve) => setTimeout(resolve, 0))
     expect(ethereum.chainId).toBe(ARC_CHAIN_ID)
     expect(ARC_CHAIN_ID_HEX).toBe('0x13b2')
 
@@ -196,6 +219,7 @@ describe('Arc→BNB stale signer / NETWORK_CHANGED P0', () => {
     const staleProvider = new Web3Provider(ethereum, 56)
     await staleProvider.getNetwork()
     await ensureArcWalletNetwork(ethereum)
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     const fresh = await bindInjectedSignerAfterNetworkSwitch(ethereum, ARC_CHAIN_ID)
     const network = await fresh.provider!.getNetwork()
@@ -219,6 +243,7 @@ describe('Arc→BNB stale signer / NETWORK_CHANGED P0', () => {
     }
 
     await ensureArcWalletNetwork(ethereum)
+    await new Promise((resolve) => setTimeout(resolve, 0))
     await expect(
       submitMarcoBridgeFromWallet({
         request: { from: 'arc', to: 'bnb', amount: '0.000001', sourceWallet: evm, destinationWallet: evm },

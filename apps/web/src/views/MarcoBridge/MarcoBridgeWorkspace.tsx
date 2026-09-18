@@ -42,6 +42,7 @@ import {
   submitMarcoApprovalFromWallet,
   submitMarcoBridgeFromWallet,
   type SolanaInjectedWallet,
+  type WalletSubmitSigner,
 } from 'lib/marco-bridge/walletSubmit'
 import {
   MARCO_WAVE1_NETWORKS,
@@ -789,7 +790,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       return
     }
     const ethereum = window.ethereum as unknown as BridgeEthereumProvider | undefined
-    let submitSigner = signer ?? undefined
+    let submitSigner: WalletSubmitSigner | undefined = signer ?? undefined
     if (fromNetwork.chainId === ROBINHOOD_CHAIN_ID && ethereum) {
       try {
         await ensureRobinhoodWalletNetwork(ethereum)
