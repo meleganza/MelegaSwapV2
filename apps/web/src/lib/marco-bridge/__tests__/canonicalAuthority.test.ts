@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { assertCanonicalRouteAuthority } from '../routeAuthority'
-import { MARCO_WAVE1_NETWORKS } from '../wave1Registry'
+import {
+  applyCanonicalBnbSolanaApplicationGate,
+  CANONICAL_ARC_BNB_GATE_REASON,
+  CANONICAL_BNB_ARC_GATE_REASON,
+} from '../canonicalBnbSolanaGate'
+import { isActivationRoute, isRouteExecutable, MARCO_BRIDGE_ACTIVATION_ROUTES, resolveRouteExecution } from '../executableRoutes'
+import {
+  assertCanonicalRouteAuthority,
+  fetchCanonicalRouteAuthority,
+} from '../routeAuthority'
+import { MARCO_WAVE1_NETWORKS, localRouteActivationEnabled } from '../wave1Registry'
 
 const canonicalEnvelope = () => ({
   schema_version: '1',
@@ -106,11 +115,80 @@ describe('canonical MMN route authority binding', () => {
     expect(() => assertCanonicalRouteAuthority(wrongToken)).toThrow('binding mismatch')
   })
 
-  it('fails closed if Base public execution opens, and allows BNB↔Robinhood plus Solana unpause', () => {
+  it('accepts canonical BNB↔Base publicly_active/execution_enabled without opening Melega local Base execution', async () => {
     const publicBase = canonicalEnvelope()
     publicBase.data.routes[0].publicly_active = true
-    expect(() => assertCanonicalRouteAuthority(publicBase)).toThrow('Base MMN routes must remain disabled')
+    publicBase.data.routes[0].execution_enabled = true
+    publicBase.data.routes[1].publicly_active = true
+    publicBase.data.routes[1].execution_enabled = true
 
+    const accepted = assertCanonicalRouteAuthority(publicBase)
+    expect(accepted.routes[0]).toMatchObject({ from: 'bnb', to: 'base', publicly_active: true, execution_enabled: true })
+    expect(accepted.routes[1]).toMatchObject({ from: 'base', to: 'bnb', publicly_active: true, execution_enabled: true })
+
+    expect(MARCO_BRIDGE_ACTIVATION_ROUTES).toEqual([
+      ['bnb', 'robinhood'],
+      ['robinhood', 'bnb'],
+      ['bnb', 'solana'],
+      ['solana', 'bnb'],
+      ['bnb', 'arc'],
+      ['arc', 'bnb'],
+    ])
+    expect(isActivationRoute('bnb', 'base')).toBe(false)
+    expect(isActivationRoute('base', 'bnb')).toBe(false)
+    expect(localRouteActivationEnabled('bnb', 'base')).toBe(false)
+    expect(localRouteActivationEnabled('base', 'bnb')).toBe(false)
+    expect(isRouteExecutable('bnb', 'base', accepted)).toBe(false)
+    expect(isRouteExecutable('base', 'bnb', accepted)).toBe(false)
+    expect(resolveRouteExecution('bnb', 'base', accepted).executable).toBe(false)
+    expect(resolveRouteExecution('bnb', 'base', accepted).blockers.join(' ')).not.toMatch(/unavailable|503/i)
+
+    const fetcher = (async () => ({
+      ok: true,
+      status: 200,
+      json: async () => publicBase,
+    })) as typeof fetch
+    const ingested = await fetchCanonicalRouteAuthority(fetcher, async () => ({
+      ok: true,
+      paused: true,
+      store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
+      owner: 'owner',
+      mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
+    }))
+    expect(ingested.routes.some((route) => route.from === 'bnb' && route.to === 'base' && route.publicly_active)).toBe(true)
+    expect(isRouteExecutable('bnb', 'base', ingested)).toBe(false)
+  })
+
+  it('keeps BNB↔Arc application overlay available when canonical BNB↔Base is active', () => {
+    const publicBase = canonicalEnvelope()
+    publicBase.data.routes[0].publicly_active = true
+    publicBase.data.routes[0].execution_enabled = true
+    publicBase.data.routes[1].publicly_active = true
+    publicBase.data.routes[1].execution_enabled = true
+
+    const live = applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(publicBase), {
+      solanaStorePaused: false,
+    })
+    const forward = live.routes.find((route) => route.from === 'bnb' && route.to === 'arc')
+    const reverse = live.routes.find((route) => route.from === 'arc' && route.to === 'bnb')
+    expect(forward).toMatchObject({
+      certified: true,
+      publicly_active: true,
+      execution_enabled: true,
+      reason: CANONICAL_BNB_ARC_GATE_REASON,
+    })
+    expect(reverse).toMatchObject({
+      certified: true,
+      publicly_active: true,
+      execution_enabled: true,
+      reason: CANONICAL_ARC_BNB_GATE_REASON,
+    })
+    expect(isRouteExecutable('bnb', 'arc', live)).toBe(true)
+    expect(isRouteExecutable('arc', 'bnb', live)).toBe(true)
+    expect(isRouteExecutable('bnb', 'base', live)).toBe(false)
+  })
+
+  it('still allows BNB↔Robinhood plus Solana unpause', () => {
     const publicRobinhood = canonicalEnvelope()
     publicRobinhood.data.routes[4].publicly_active = true
     publicRobinhood.data.routes[4].execution_enabled = true
@@ -121,5 +199,39 @@ describe('canonical MMN route authority binding', () => {
     unpausedSolana.data.routes[2].paused = false
     unpausedSolana.data.routes[3].paused = false
     expect(assertCanonicalRouteAuthority(unpausedSolana).networks[2].paused).toBe(false)
+  })
+
+  it('fails closed on forbidden Arc testnet and retired-address leakage', () => {
+    const testnet = canonicalEnvelope()
+    testnet.data.networks.push({
+      id: 'arc',
+      name: 'Arc',
+      family: 'evm',
+      chain_id: 5042002,
+      eid: 40434,
+      model: 'evm_oft',
+      token: MARCO_WAVE1_NETWORKS.arc.marcoIdentity,
+      token_decimals: 18,
+      endpoint_contract: MARCO_WAVE1_NETWORKS.arc.endpointContract,
+      requires_approval: false,
+      paused: false,
+    })
+    expect(() => assertCanonicalRouteAuthority(testnet)).toThrow(/5042002|40434/)
+
+    const retiredArc = canonicalEnvelope()
+    retiredArc.data.networks.push({
+      id: 'arc',
+      name: 'Arc',
+      family: 'evm',
+      chain_id: 5042,
+      eid: 30417,
+      model: 'evm_oft',
+      token: MARCO_WAVE1_NETWORKS.bnb.endpointContract,
+      token_decimals: 18,
+      endpoint_contract: MARCO_WAVE1_NETWORKS.bnb.endpointContract,
+      requires_approval: false,
+      paused: false,
+    })
+    expect(() => assertCanonicalRouteAuthority(retiredArc)).toThrow(/mismatch|Retired BNB adapter/)
   })
 })

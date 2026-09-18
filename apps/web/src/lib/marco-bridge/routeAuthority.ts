@@ -97,14 +97,9 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   if (arc?.token.toLowerCase() === retiredAdapter) {
     throw new Error('Retired BNB adapter cannot be used as Arc canonical MARCO.')
   }
-  if (
-    state.routes.some(
-      (route) =>
-        (route.from === 'base' || route.to === 'base') && (route.publicly_active || route.execution_enabled),
-    )
-  ) {
-    throw new Error('Base MMN routes must remain disabled.')
-  }
+  // Canonical MMN may publish BNB↔Base as publicly_active / execution_enabled.
+  // That is legitimate authority state. Melega local execution still excludes Base
+  // via MARCO_BRIDGE_ACTIVATION_ROUTES and localRouteActivationEnabled.
   for (const expected of MARCO_WAVE1_DIRECT_ROUTES) {
     const actual = state.routes.find((route) => route.from === expected.from && route.to === expected.to)
     if (!actual?.certified) {
