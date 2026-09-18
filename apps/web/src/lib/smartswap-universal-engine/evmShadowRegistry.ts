@@ -16,13 +16,16 @@ export const V2_M3_SHADOW_QUOTE_ONLY = 'V2_M3_SHADOW_QUOTE_ONLY' as const
 
 export function buildEvmShadowVenueRegistry(input: {
   melegaSnapshot: LegacyMelegaQuoteSnapshot | null
+  melegaSource?: ShadowQuoteSource
   pancakeSource: ShadowQuoteSource
   uniswapSource: ShadowQuoteSource
 }): {
   adapters: SmartSwapVenueAdapter[]
   catalog: VenueRegistryEntry[]
 } {
-  const melega = createMelegaDexAdapter(input.melegaSnapshot)
+  const melega = createMelegaDexAdapter(input.melegaSnapshot, {
+    quoteSource: input.melegaSource,
+  })
   const pancake = createPancakeSwapVenueAdapter(input.pancakeSource)
   const uniswap = createUniswapVenueAdapter(input.uniswapSource)
   const catalog: VenueRegistryEntry[] = [
