@@ -5,7 +5,13 @@ import { getBlockNumber } from '../rpc/chunkedLogs'
 import { IndexerDeadline, SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
 import { runFeaturedPairSync } from './featuredPairSync'
 import { loadLocalPromotionFacts, loadTierPairInventory } from './tierInventory'
-import { overlayAddresses, runColdPromotionPass, seatPersistedOverlay, takePersistedOverlay } from './coldPromotion'
+import {
+  listColdUniverse,
+  overlayAddresses,
+  runColdPromotionPass,
+  seatPersistedOverlay,
+  takePersistedOverlay,
+} from './coldPromotion'
 import { runTierPairSync } from './tierPairSync'
 import {
   TIER1_JOBS_PER_INVOCATION,
@@ -172,11 +178,15 @@ export async function runIndexerOrchestrator(
       protectedHot: inventory.tier1.map((p) => p.pairAddress),
       maxPairs: INDEXER_TIER_DEFINITIONS.TIER_2.maxPairs,
     })
+    const coldCandidates = listColdUniverse(
+      [...inventory.tier2, ...inventory.tier3],
+      [...inventory.tier1, ...seatedActive],
+    )
     const tier2Candidates = seatedActive
     activeTierSize = inventory.tier1.length + seatedActive.length
     tier2CandidatesConsidered = inventory.tier2CandidatesConsidered
     tier3Count = inventory.tier3Count
-    coldTierSize = inventory.tier3.length
+    coldTierSize = coldCandidates.length
     nextRotationIndex = scheduler.tier2RotationIndex
     nextColdRotationIndex = scheduler.tier3RotationIndex ?? 0
 
@@ -224,7 +234,7 @@ export async function runIndexerOrchestrator(
     nextRotationIndex = tier2Batch.nextRotationIndex
 
     const coldPass = await runColdPromotionPass({
-      cold: inventory.tier3,
+      cold: coldCandidates,
       active: seatedActive,
       protectedHot: inventory.tier1,
       rotationIndex: scheduler.tier3RotationIndex ?? 0,
@@ -242,7 +252,7 @@ export async function runIndexerOrchestrator(
         deadline.markStage('tier3-cold-sample')
       },
     })
-    coldTierSize = inventory.tier3.length
+    coldTierSize = coldPass.coldTierSize
     coldSamplesAttempted = coldPass.coldSamplesAttempted
     coldSamplesCompleted = coldPass.coldSamplesCompleted
     promotionCandidates = coldPass.promotionCandidates

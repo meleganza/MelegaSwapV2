@@ -10,6 +10,7 @@ import {
   runColdPromotionPass,
   seatPersistedOverlay,
   takePersistedOverlay,
+  weakestEligibleActive,
   type LocalPromotionFacts,
 } from '../coldPromotion'
 import { TIER2_JOBS_PER_INVOCATION, TIER3_COLD_SAMPLE_PER_INVOCATION } from '../tierScheduler'
@@ -126,6 +127,92 @@ describe('P1 COLD→ACTIVE promotion policy', () => {
     expect(resumed.sampled[0]?.pairAddress).toBe(cold[5]?.pairAddress)
   })
 
+  it('selects the unprotected MINIMUM score from an unsorted ACTIVE list, not the last row', () => {
+    const last = watch(30, 80n * 10n ** 18n)
+    const minMid = watch(20, 3n * 10n ** 18n)
+    const first = watch(10, 90n * 10n ** 18n)
+    const scored = [
+      { watch: first, score: 90 },
+      { watch: minMid, score: 3 },
+      { watch: last, score: 80 },
+    ]
+    expect(weakestEligibleActive(scored, []).watch.pairAddress).toBe(minMid.pairAddress)
+
+    const challenger = watch(500, 50n * 10n ** 18n, 'TIER_3')
+    const decision = applyColdChallenges({
+      active: [first, minMid, last],
+      activeFacts: new Map([
+        [first.pairAddress, facts(first, { rankScore: 90, activityScore: 90, liquidity: 90 })],
+        [minMid.pairAddress, facts(minMid, { rankScore: 3, activityScore: 3, liquidity: 3 })],
+        [last.pairAddress, facts(last, { rankScore: 80, activityScore: 80, liquidity: 80 })],
+      ]),
+      challengers: [{ watch: challenger, facts: facts(challenger, { swapCount: 3, liquidity: 50 }) }],
+      protectedHot: [],
+      maxPairs: 3,
+    })
+    expect(decision.nextActive).toHaveLength(3)
+    expect(decision.nextActive.some((row) => row.pairAddress === minMid.pairAddress)).toBe(false)
+    expect(decision.nextActive.some((row) => row.pairAddress === last.pairAddress)).toBe(true)
+    expect(decision.nextActive.some((row) => row.pairAddress === challenger.pairAddress)).toBe(true)
+  })
+
+  it('lets a second consecutive challenger face the updated minimum after the first promotion', () => {
+    const strong = watch(10, 90n * 10n ** 18n)
+    const firstMin = watch(20, 4n * 10n ** 18n)
+    const secondMin = watch(30, 12n * 10n ** 18n)
+    const firstChallenger = watch(500, 40n * 10n ** 18n, 'TIER_3')
+    const secondChallenger = watch(501, 30n * 10n ** 18n, 'TIER_3')
+    const decision = applyColdChallenges({
+      active: [strong, firstMin, secondMin],
+      activeFacts: new Map([
+        [strong.pairAddress, facts(strong, { rankScore: 90, activityScore: 90, liquidity: 90 })],
+        [firstMin.pairAddress, facts(firstMin, { rankScore: 4, activityScore: 4, liquidity: 4 })],
+        [secondMin.pairAddress, facts(secondMin, { rankScore: 12, activityScore: 12, liquidity: 12 })],
+      ]),
+      challengers: [
+        { watch: firstChallenger, facts: facts(firstChallenger, { swapCount: 3, liquidity: 40 }) },
+        { watch: secondChallenger, facts: facts(secondChallenger, { swapCount: 2, liquidity: 30 }) },
+      ],
+      protectedHot: [],
+      maxPairs: 3,
+    })
+    expect(decision.promotionsApplied).toBe(2)
+    expect(decision.evictionsApplied).toBe(2)
+    expect(decision.nextActive.some((row) => row.pairAddress === firstMin.pairAddress)).toBe(false)
+    expect(decision.nextActive.some((row) => row.pairAddress === secondMin.pairAddress)).toBe(false)
+    expect(decision.nextActive.some((row) => row.pairAddress === firstChallenger.pairAddress)).toBe(true)
+    expect(decision.nextActive.some((row) => row.pairAddress === secondChallenger.pairAddress)).toBe(true)
+    expect(decision.nextActive.some((row) => row.pairAddress === strong.pairAddress)).toBe(true)
+  })
+
+  it('breaks an equal score by choosing the lexicographically greater normalized address', () => {
+    const lowerAddr = watch(5, 10n * 10n ** 18n)
+    const greaterAddr = watch(9, 10n * 10n ** 18n)
+    const strong = watch(1, 40n * 10n ** 18n)
+    const scored = [
+      { watch: greaterAddr, score: 10 },
+      { watch: strong, score: 40 },
+      { watch: lowerAddr, score: 10 },
+    ]
+    expect(weakestEligibleActive(scored, []).watch.pairAddress).toBe(greaterAddr.pairAddress)
+    expect(hexAddr(9).localeCompare(hexAddr(5))).toBeGreaterThan(0)
+
+    const challenger = watch(500, 20n * 10n ** 18n, 'TIER_3')
+    const decision = applyColdChallenges({
+      active: [greaterAddr, strong, lowerAddr],
+      activeFacts: new Map([
+        [greaterAddr.pairAddress, facts(greaterAddr, { rankScore: 10, activityScore: 10, liquidity: 10 })],
+        [strong.pairAddress, facts(strong, { rankScore: 40, activityScore: 40, liquidity: 40 })],
+        [lowerAddr.pairAddress, facts(lowerAddr, { rankScore: 10, activityScore: 10, liquidity: 10 })],
+      ]),
+      challengers: [{ watch: challenger, facts: facts(challenger, { swapCount: 2, liquidity: 20 }) }],
+      protectedHot: [],
+      maxPairs: 3,
+    })
+    expect(decision.nextActive.some((row) => row.pairAddress === greaterAddr.pairAddress)).toBe(false)
+    expect(decision.nextActive.some((row) => row.pairAddress === lowerAddr.pairAddress)).toBe(true)
+  })
+
   it('promotes a stronger challenger and evicts the deterministic weakest ACTIVE pair', () => {
     const active = Array.from({ length: 128 }, (_, i) => watch(i + 1, BigInt(128 - i) * 10n ** 18n))
     const weakest = active[127]!
@@ -146,9 +233,16 @@ describe('P1 COLD→ACTIVE promotion policy', () => {
     expect(new Set(decision.nextActive.map((row) => row.pairAddress)).size).toBe(128)
   })
 
-  it('never evicts protected TIER1 / HOT pairs', () => {
+  it('never evicts protected TIER1 / HOT pairs even when they have the minimum score', () => {
     const hot = watch(1, 1n, 'TIER_1')
     const active = [watch(2, 5n * 10n ** 18n), watch(3, 4n * 10n ** 18n)]
+    const scored = [
+      { watch: hot, score: 0 },
+      { watch: active[0]!, score: 5 },
+      { watch: active[1]!, score: 4 },
+    ]
+    expect(weakestEligibleActive(scored, [hot]).watch.pairAddress).toBe(active[1]!.pairAddress)
+
     const challenger = watch(9, 100n * 10n ** 18n, 'TIER_3')
     const decision = applyColdChallenges({
       active: [hot, ...active],
@@ -210,6 +304,60 @@ describe('P1 COLD→ACTIVE promotion policy', () => {
     expect(seated.some((row) => row.pairAddress === hexAddr(900))).toBe(true)
     expect(seated.some((row) => row.pairAddress === natural[127]!.pairAddress)).toBe(false)
     expect(overlayAddresses(seated, natural)).toEqual([hexAddr(900)])
+
+    const replaced = natural[127]!
+    const hot = watch(0, 1n, 'TIER_1')
+    const tier3 = [watch(900, 3n * 10n ** 18n, 'TIER_3'), watch(901, 4n * 10n ** 18n, 'TIER_3')]
+    const effectiveCold = listColdUniverse([...natural, ...tier3], [hot, ...seated])
+    expect(effectiveCold.some((row) => row.pairAddress === replaced.pairAddress)).toBe(true)
+    expect(new Set(effectiveCold.map((row) => row.pairAddress)).size).toBe(effectiveCold.length)
+    expect(effectiveCold.some((row) => seated.some((active) => active.pairAddress === row.pairAddress))).toBe(false)
+    expect(effectiveCold.some((row) => row.pairAddress === hot.pairAddress)).toBe(false)
+
+    const persisted = overlayAddresses(seated, natural)
+    const overlayNext = takePersistedOverlay(persisted, natural, tier3, [hot])
+    const seatedNext = seatPersistedOverlay({
+      naturalActive: natural,
+      overlay: overlayNext,
+      protectedHot: [hot],
+      maxPairs: 128,
+    })
+    const reconstructedCold = listColdUniverse([...natural, ...tier3], [hot, ...seatedNext])
+    expect(reconstructedCold.some((row) => row.pairAddress === replaced.pairAddress)).toBe(true)
+    expect(reconstructedCold.some((row) => seatedNext.some((active) => active.pairAddress === row.pairAddress))).toBe(
+      false,
+    )
+    expect(reconstructedCold).toHaveLength(effectiveCold.length)
+  })
+
+  it('samples an overlay-replaced natural pair from the union COLD set and reports that set size', async () => {
+    const natural = Array.from({ length: 4 }, (_, i) => watch(i + 1, BigInt(40 - i) * 10n ** 18n))
+    const overlayPair = watch(900, 3n * 10n ** 18n, 'TIER_3')
+    const seated = seatPersistedOverlay({
+      naturalActive: natural,
+      overlay: [overlayPair],
+      maxPairs: 4,
+    })
+    const replaced = natural[3]!
+    const unionCold = listColdUniverse([...natural, overlayPair], seated)
+    expect(unionCold.some((row) => row.pairAddress === replaced.pairAddress)).toBe(true)
+    const rotationIndex = unionCold.findIndex((row) => row.pairAddress === replaced.pairAddress)
+    const pass = await runColdPromotionPass({
+      cold: [...natural, overlayPair],
+      active: seated,
+      protectedHot: [],
+      rotationIndex,
+      maxSamples: 2,
+      maxActive: 4,
+      shouldStop: () => false,
+      loadFacts: async (row) => facts(row),
+    })
+    expect(pass.sampled[0]?.pairAddress).toBe(replaced.pairAddress)
+    expect(pass.coldTierSize).toBe(unionCold.length)
+    expect(listColdUniverse([overlayPair], seated)).toHaveLength(0)
+    expect(pass.coldTierSize).toBeGreaterThan(0)
+    expect(new Set(pass.sampled.map((row) => row.pairAddress)).size).toBe(pass.sampled.length)
+    expect(seated.some((row) => unionCold.some((cold) => cold.pairAddress === row.pairAddress))).toBe(false)
   })
 
   it('builds a stable COLD universe without HOT/ACTIVE duplicates', () => {

@@ -165,11 +165,22 @@ export function weakestEligibleActive(
   protectedAddresses: Iterable<string | { pairAddress: string }>,
 ): ScoredActiveWatch | undefined {
   const hotSet = new Set([...protectedAddresses].map((addr) => addressKey(addr)))
-  for (let i = active.length - 1; i >= 0; i -= 1) {
-    const row = active[i]
-    if (row && !hotSet.has(row.watch.pairAddress.toLowerCase())) return row
+  let weakest: ScoredActiveWatch | undefined
+  for (const row of active) {
+    if (!row || hotSet.has(addressKey(row.watch))) continue
+    if (!weakest) {
+      weakest = row
+      continue
+    }
+    if (row.score < weakest.score) {
+      weakest = row
+      continue
+    }
+    if (row.score === weakest.score && addressKey(row.watch) > addressKey(weakest.watch)) {
+      weakest = row
+    }
   }
-  return undefined
+  return weakest
 }
 
 export function applyColdChallenges(args: {
