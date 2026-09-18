@@ -140,6 +140,7 @@ describe('MELEGA-DEX-P0-BRIDGE-NETWORK-RECOGNITION', () => {
     expect(src).toContain('isWalletRecognizedChain')
     expect(src).toContain('walletTruth')
     expect(src).toMatch(/isChainSupported\(walletChainId\) \|\| isMelegaRecognizedWalletChain\(walletChainId\)|isWalletRecognizedChain\(walletChainId\)/)
+    expect(src).toContain('isWalletRecognizedChain(+chainId)')
   })
 
   it('public selector lists stay TRADING 56/8453/137/1 and BRIDGE 4663/5042; ARB/AVAX hidden', () => {

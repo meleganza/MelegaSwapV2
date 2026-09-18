@@ -26,7 +26,7 @@ queryChainIdAtom.onMount = (set) => {
   } else {
     chainId = getChainId(c)
   }
-  if (isChainSupported(+chainId)) {
+  if (isWalletRecognizedChain(+chainId)) {
     set(+chainId)
   } else {
     set(0)
