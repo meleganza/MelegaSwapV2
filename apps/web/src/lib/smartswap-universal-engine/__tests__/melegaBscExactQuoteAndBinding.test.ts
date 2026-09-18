@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { CANONICAL_EXAMPLE_ASSETS } from '../assetIdentity'
-import { MELEGA_DEX_VENUE } from '../certifiedVenues'
-import { evmNetwork } from '../domain'
+import { MELEGA_DEX_VENUE, VENUE_SUPPORT, isQuoteCapable } from '../certifiedVenues'
+import { EVM_CHAIN_IDS, evmNetwork } from '../domain'
 import { computeFeeAmountRaw, computeNetVenueInput } from '../evaluateRevenuePolicy'
 import { CANONICAL_SMARTSWAP_FEE_BENEFICIARY } from '../feeEnforcement'
 import {
@@ -236,6 +236,25 @@ describe('Melega BSC exact-amount quote and V2 binding', () => {
     expect(binding.intent.chainId).toBe(1)
     expect(binding.intent.feeBps).toBe(15)
     expect(binding.intent.feeAmount).toBe('1500')
+  })
+
+  it('certified Melega support is BSC-only; other EVM chains are NOT_VERIFIED', () => {
+    expect(MELEGA_DEX_VENUE.support[EVM_CHAIN_IDS.BSC]).toBe(VENUE_SUPPORT.SUPPORTED)
+    expect(isQuoteCapable(MELEGA_DEX_VENUE.support[EVM_CHAIN_IDS.BSC])).toBe(true)
+    expect(MELEGA_DEX_VENUE.routers[EVM_CHAIN_IDS.BSC]).toBe(MELEGA_ROUTER)
+    expect(MELEGA_DEX_VENUE.wrappedNative[EVM_CHAIN_IDS.BSC]).toBeDefined()
+    for (const chainId of [
+      EVM_CHAIN_IDS.ETHEREUM,
+      EVM_CHAIN_IDS.BASE,
+      EVM_CHAIN_IDS.POLYGON,
+      EVM_CHAIN_IDS.ARBITRUM,
+      EVM_CHAIN_IDS.AVAX,
+    ]) {
+      expect(MELEGA_DEX_VENUE.support[chainId], `chain ${chainId}`).toBe(VENUE_SUPPORT.NOT_VERIFIED)
+      expect(isQuoteCapable(MELEGA_DEX_VENUE.support[chainId] ?? VENUE_SUPPORT.NOT_VERIFIED)).toBe(false)
+      expect(MELEGA_DEX_VENUE.routers[chainId]).toBeUndefined()
+      expect(MELEGA_DEX_VENUE.wrappedNative[chainId]).toBeUndefined()
+    }
   })
 
   it('J: missing Melega router metadata fails closed', async () => {
