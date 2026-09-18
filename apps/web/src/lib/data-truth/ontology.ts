@@ -55,7 +55,7 @@ export const INDEXER_TIER_DEFINITIONS = {
     id: 'TIER_3',
     label: 'Inventory only',
     definition:
-      'COLD inventory — discovered/inactive/zero-liquidity pairs remain known for future COLD→ACTIVE promotion; factory enumeration only, no high-frequency event indexing',
+      'COLD inventory — discovered/inactive/zero-liquidity pairs remain known; bounded cursor sampling (≤2/invocation) can challenge ACTIVE; factory enumeration only, no high-frequency event indexing of the full cold set',
   },
 } as const
 

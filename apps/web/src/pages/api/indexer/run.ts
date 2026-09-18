@@ -63,6 +63,14 @@ async function persistOrchestratorSummary(report: IndexerRunReport): Promise<voi
       batchStoppedByDeadline: report.batchStoppedByDeadline,
       nextRotationIndex: report.nextRotationIndex,
       tier3Count: report.tier3Count,
+      coldTierSize: report.coldTierSize,
+      coldSamplesAttempted: report.coldSamplesAttempted,
+      coldSamplesCompleted: report.coldSamplesCompleted,
+      promotionCandidates: report.promotionCandidates,
+      promotionsApplied: report.promotionsApplied,
+      evictionsApplied: report.evictionsApplied,
+      coldBatchStoppedByDeadline: report.coldBatchStoppedByDeadline,
+      nextColdRotationIndex: report.nextColdRotationIndex,
     },
   })
 }

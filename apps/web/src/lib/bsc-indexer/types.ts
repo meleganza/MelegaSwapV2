@@ -73,8 +73,10 @@ export interface IndexerCheckpoint {
 export interface TierSchedulerState {
   tier1RotationIndex: number
   tier2RotationIndex: number
-  /** Reserved for P1 COLD→ACTIVE sampling. Unused while cold-sample size is 0. */
+  /** COLD cursor — advances over known TIER3 inventory so sampling does not restart at 0. */
   tier3RotationIndex?: number
+  /** COLD winners currently occupying ACTIVE seats (not in the natural TIER2 128). Max 128. */
+  promotedActiveAddresses?: string[]
   lastAttemptedAt?: string
   lastSuccessfulAt?: string
   consecutiveFailures: number
@@ -141,6 +143,14 @@ export interface IndexerHealthSnapshot {
     batchStoppedByDeadline?: boolean
     nextRotationIndex?: number
     tier3Count?: number
+    coldTierSize?: number
+    coldSamplesAttempted?: number
+    coldSamplesCompleted?: number
+    promotionCandidates?: number
+    promotionsApplied?: number
+    evictionsApplied?: number
+    coldBatchStoppedByDeadline?: boolean
+    nextColdRotationIndex?: number
   }
 }
 
