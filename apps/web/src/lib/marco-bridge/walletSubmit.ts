@@ -17,8 +17,9 @@ import {
 import { MARCO_BRIDGE_SUBMITTED_COPY } from './lifecycle'
 import { assertMarcoBridgePreflight } from './preflight'
 import type { CanonicalMmnRouteState } from './routeAuthority'
-import { ensureArcWalletNetwork } from './arcChain'
-import { ensureRobinhoodWalletNetwork } from './robinhoodChain'
+import { ARC_CHAIN_ID, ensureArcWalletNetwork } from './arcChain'
+import { bindInjectedSignerAfterNetworkSwitch } from './injectedSigner'
+import { ROBINHOOD_CHAIN_ID, ensureRobinhoodWalletNetwork } from './robinhoodChain'
 import { requestMarcoBridgeQuote, type MarcoBridgeQuoteRequest } from './service'
 import { createBrowserSolanaOftProtocol } from './solanaBrowserProtocol'
 import {
@@ -422,15 +423,17 @@ export async function submitMarcoBridgeFromWallet(input: {
       requestQuote: async () => quote,
     })
   }
-  if (!input.signer) {
-    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the source wallet to sign the unsigned bridge transactions.')
-  }
-  const signer = input.signer
-  if (source.chainId === 4663 && input.ethereum) {
+  let signer = input.signer
+  if (source.chainId === ROBINHOOD_CHAIN_ID && input.ethereum) {
     await ensureRobinhoodWalletNetwork(input.ethereum)
+    signer = await bindInjectedSignerAfterNetworkSwitch(input.ethereum, ROBINHOOD_CHAIN_ID)
   }
-  if (source.chainId === 5042 && input.ethereum) {
+  if (source.chainId === ARC_CHAIN_ID && input.ethereum) {
     await ensureArcWalletNetwork(input.ethereum)
+    signer = await bindInjectedSignerAfterNetworkSwitch(input.ethereum, ARC_CHAIN_ID)
+  }
+  if (!signer) {
+    throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the source wallet to sign the unsigned bridge transactions.')
   }
 
   const requestQuote = input.requestQuote ?? requestMarcoBridgeQuote

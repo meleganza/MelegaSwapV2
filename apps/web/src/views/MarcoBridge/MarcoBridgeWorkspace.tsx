@@ -28,8 +28,9 @@ import {
   type NativeFundsReadState,
 } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
-import { ensureArcWalletNetwork } from 'lib/marco-bridge/arcChain'
-import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
+import { ARC_CHAIN_ID, ensureArcWalletNetwork } from 'lib/marco-bridge/arcChain'
+import { bindInjectedSignerAfterNetworkSwitch } from 'lib/marco-bridge/injectedSigner'
+import { ROBINHOOD_CHAIN_ID, ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeApiPath } from 'lib/marco-bridge/marcoBridgeApiPath'
 import { marcoBridgeService, prepareSolanaMarcoBridge } from 'lib/marco-bridge/service'
 import type { CanonicalMmnRouteState } from 'lib/marco-bridge/routeAuthority'
@@ -787,27 +788,34 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       setError(quoteReason)
       return
     }
-    if (fromNetwork.chainId === 4663 && window.ethereum) {
+    const ethereum = window.ethereum as unknown as BridgeEthereumProvider | undefined
+    let submitSigner = signer ?? undefined
+    if (fromNetwork.chainId === ROBINHOOD_CHAIN_ID && ethereum) {
       try {
-        await ensureRobinhoodWalletNetwork(window.ethereum as unknown as BridgeEthereumProvider)
+        await ensureRobinhoodWalletNetwork(ethereum)
+        submitSigner = await bindInjectedSignerAfterNetworkSwitch(ethereum, ROBINHOOD_CHAIN_ID)
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Add Robinhood Chain 4663 in the wallet.')
         return
       }
     }
-    if (fromNetwork.chainId === 5042 && window.ethereum) {
+    if (fromNetwork.chainId === ARC_CHAIN_ID && ethereum) {
       try {
-        await ensureArcWalletNetwork(window.ethereum as unknown as BridgeEthereumProvider)
+        await ensureArcWalletNetwork(ethereum)
+        submitSigner = await bindInjectedSignerAfterNetworkSwitch(ethereum, ARC_CHAIN_ID)
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Add Arc Mainnet (chain 5042, native USDC) in the wallet.')
         return
       }
     }
-    if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch) {
+    const reboundAfterSourceSwitch =
+      Boolean(ethereum && submitSigner) &&
+      (fromNetwork.chainId === ARC_CHAIN_ID || fromNetwork.chainId === ROBINHOOD_CHAIN_ID)
+    if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch && !reboundAfterSourceSwitch) {
       void switchNetworkAsync(fromNetwork.chainId)
       return
     }
-    if (fromNetwork.walletFamily !== 'solana' && !signer) {
+    if (fromNetwork.walletFamily !== 'solana' && !submitSigner) {
       setError('Connect the source wallet to sign the unsigned bridge transactions.')
       return
     }
@@ -850,8 +858,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       const nextTracking = await submitMarcoBridgeFromWallet({
         request,
         authority,
-        signer: signer ?? undefined,
-        ethereum: window.ethereum as unknown as BridgeEthereumProvider,
+        signer: submitSigner,
+        ethereum,
         allowanceLD: allowanceLD ?? '0',
         solanaWallet: fromNetwork.walletFamily === 'solana' ? window.solana : undefined,
         preparedSolanaTransaction: fromNetwork.walletFamily === 'solana' ? preparedSolanaTransaction : undefined,
