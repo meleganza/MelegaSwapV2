@@ -24,7 +24,8 @@ describe('Top Movers ticker render budget', () => {
     expect(ribbon).toContain('iconCacheRef')
     expect(ribbon).toContain('iconByAddress.get(address)')
     expect(limit).toContain('setLimit((prev) => (prev === next ? prev : next))')
-    expect(context).toContain('refreshInterval: 60_000')
+    expect(context).toContain('const TICKER_REFRESH_MS = 60_000')
+    expect(context).toContain('refreshInterval: TICKER_REFRESH_MS')
     expect(context).toContain('dedupingInterval: 55_000')
   })
 
