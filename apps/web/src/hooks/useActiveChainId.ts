@@ -5,8 +5,13 @@ import { useDeferredValue, useEffect } from 'react'
 import { isChainSupported } from 'utils/wagmi'
 import { useAccount, useNetwork } from 'wagmi'
 import { getChainId } from 'config/chains'
+import { isMelegaRecognizedWalletChain } from 'config/publicNetworkSwitchCapabilities'
 import { useSessionChainId } from './useSessionChainId'
 import { useWalletChainId } from './useWalletChainId'
+
+function isWalletRecognizedChain(chainId: number): boolean {
+  return isChainSupported(chainId) || isMelegaRecognizedWalletChain(chainId)
+}
 
 const queryChainIdAtom = atom(-1) // -1 unload, 0 no chainId on query
 
@@ -37,7 +42,7 @@ export function useLocalNetworkChain() {
 
   const chainId = +(sessionChainId || getChainId(query.chain as string) || queryChainId)
 
-  if (isChainSupported(chainId)) {
+  if (isWalletRecognizedChain(chainId)) {
     return chainId
   }
 
@@ -55,7 +60,7 @@ export const useActiveChainId = () => {
 
   // Connected wallet chain is source of truth (fixes stale session / wagmi useChainId = provider default).
   const walletTruth =
-    isConnected && walletChainId != null && isChainSupported(walletChainId) ? walletChainId : null
+    isConnected && walletChainId != null && isWalletRecognizedChain(walletChainId) ? walletChainId : null
 
   const chainId =
     walletTruth ?? localChainId ?? chain?.id ?? (queryChainId >= 0 ? ChainId.BSC : undefined)

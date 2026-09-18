@@ -28,6 +28,8 @@ import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChain
 import {
   filterMelegaPublicPreparingChains,
   filterMelegaPublicTradingSwitcherChains,
+  getMelegaPublicBridgeNetwork,
+  isMelegaRecognizedWalletChain,
 } from 'config/publicNetworkSwitchCapabilities'
 import { getMelegaChain, getMelegaPreparingChains } from 'config/melegaChainRegistry'
 import { MELEGA_CHAIN_A11Y_LABELS } from 'components/Logo/MelegaExploreChainBadge'
@@ -41,14 +43,32 @@ export const HEADER_CHAIN_COMPACT: Record<number, string> = {
   1: 'ETH',
   42161: 'ARB',
   43114: 'AVAX',
+  4663: 'Robinhood',
+  5042: 'Arc',
 }
 
 export function headerChainLabel(chainId: number): string {
-  return HEADER_CHAIN_COMPACT[chainId] ?? getMelegaChain(chainId)?.shortLabel ?? String(chainId)
+  return (
+    HEADER_CHAIN_COMPACT[chainId] ??
+    getMelegaChain(chainId)?.shortLabel ??
+    getMelegaPublicBridgeNetwork(chainId)?.shortLabel ??
+    String(chainId)
+  )
 }
 
 export function headerChainTitle(chainId: number): string {
-  return MELEGA_CHAIN_A11Y_LABELS[chainId] ?? getMelegaChain(chainId)?.name ?? `Chain ${chainId}`
+  return (
+    MELEGA_CHAIN_A11Y_LABELS[chainId] ??
+    getMelegaChain(chainId)?.name ??
+    getMelegaPublicBridgeNetwork(chainId)?.label ??
+    `Chain ${chainId}`
+  )
+}
+
+export function isHeaderNetworkDanger(chainId: number | undefined, isWrongNetwork: boolean): boolean {
+  if (!isWrongNetwork) return false
+  if (typeof chainId === 'number' && isMelegaRecognizedWalletChain(chainId)) return false
+  return true
 }
 
 import { ChainLogo } from './Logo/ChainLogo'
@@ -168,10 +188,11 @@ export const NetworkSwitcher = () => {
 
   useNetworkConnectorUpdater()
 
-  const foundChain = useMemo(
-    () => chains.find((c) => c.id === (isLoading ? pendingChainId || chainId : chainId)),
-    [isLoading, pendingChainId, chainId],
-  )
+  const displayChainId = isLoading ? pendingChainId || chainId : chainId
+  const foundChain = useMemo(() => chains.find((c) => c.id === displayChainId), [displayChainId])
+  const headerRecognized =
+    Boolean(foundChain) || (typeof displayChainId === 'number' && isMelegaRecognizedWalletChain(displayChainId))
+  const headerDanger = isHeaderNetworkDanger(chainId, isWrongNetwork)
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
     t('Unable to switch network. Please try it on your wallet'),
     { placement: 'bottom' },
@@ -227,22 +248,30 @@ export const NetworkSwitcher = () => {
   }
 
   return (
-    <Box ref={cannotChangeNetwork ? targetRef : null} height="100%" data-testid="network-switcher-root">
+    <Box
+      ref={cannotChangeNetwork ? targetRef : null}
+      height="100%"
+      data-testid="network-switcher-root"
+      data-header-chain-id={displayChainId}
+      data-header-danger={headerDanger ? 'true' : 'false'}
+    >
       {cannotChangeNetwork && tooltipVisible && tooltip}
       <UserMenu
         placement="bottom"
-        variant={isLoading ? 'pending' : isWrongNetwork ? 'danger' : 'default'}
-        avatarSrc={`/images/chains/${[8453, 42161, 10, 324].includes(chainId) ? `${chainId}-1` : chainId}.png`}
+        variant={isLoading ? 'pending' : headerDanger ? 'danger' : 'default'}
+        avatarSrc={`/images/chains/${[8453, 42161, 10, 324].includes(displayChainId) ? `${displayChainId}-1` : displayChainId}.png`}
         avatarClassName="melega-chain-avatar"
         disabled={cannotChangeNetwork}
         text={
           !isMobile &&
           (isLoading ? (
             t('Requesting')
-          ) : isWrongNetwork ? (
+          ) : headerDanger ? (
             t('Network')
-          ) : foundChain ? (
-            <Box title={headerChainTitle(foundChain.id)}>{headerChainLabel(foundChain.id)}</Box>
+          ) : headerRecognized && displayChainId != null ? (
+            <Box data-testid="header-chain-label" title={headerChainTitle(displayChainId)}>
+              {headerChainLabel(displayChainId)}
+            </Box>
           ) : (
             t('Select a Network')
           ))
