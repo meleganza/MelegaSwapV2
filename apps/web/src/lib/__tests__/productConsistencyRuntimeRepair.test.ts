@@ -31,6 +31,8 @@ describe('MELEGASWAP_V2_PRODUCT_CONSISTENCY_AND_RUNTIME_REPAIR', () => {
     const confirm = load('components/ChainSwitchConfirmDialog.tsx')
     expect(network).toContain('MelegaModal')
     expect(network).toContain('safePick')
+    expect(network).toContain('Trading switches in place. Bridge cards open MARCO transfer.')
+    expect(network).not.toContain('Choose a supported network. No redirect.')
     expect(confirm).toContain('This product is available on')
     expect(confirm).not.toMatch(/\{productLabel\} is on/)
   })

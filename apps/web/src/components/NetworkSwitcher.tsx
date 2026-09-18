@@ -25,6 +25,10 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
+import {
+  filterMelegaPublicPreparingChains,
+  filterMelegaPublicTradingSwitcherChains,
+} from 'config/publicNetworkSwitchCapabilities'
 import { getMelegaChain, getMelegaPreparingChains } from 'config/melegaChainRegistry'
 import { MELEGA_CHAIN_A11Y_LABELS } from 'components/Logo/MelegaExploreChainBadge'
 
@@ -51,8 +55,8 @@ import { ChainLogo } from './Logo/ChainLogo'
 import { NetworkSwitchModal } from './Menu/UserMenu/NetworkSwitchModal'
 
 const NetworkSelect = ({ switchNetwork, chainId }) => {
-  const visibleChains = filterMelegaVisibleSwitcherChains(chains)
-  const preparing = getMelegaPreparingChains()
+  const visibleChains = filterMelegaPublicTradingSwitcherChains(chains)
+  const preparing = filterMelegaPublicPreparingChains(getMelegaPreparingChains())
   return (
     <>
       {visibleChains.map((chain) => (
