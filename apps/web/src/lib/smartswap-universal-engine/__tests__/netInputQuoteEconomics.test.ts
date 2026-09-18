@@ -228,8 +228,8 @@ describe('SmartSwap SHADOW net-input quote economics', () => {
       nowIso: NOW,
     })
 
-    const oldA = 100000n - (100000n * 20n) / 10000n
-    const oldB = 99950n - (99950n * 15n) / 10000n
+    const oldA = BigInt(100000) - (BigInt(100000) * BigInt(20)) / BigInt(10000)
+    const oldB = BigInt(99950) - (BigInt(99950) * BigInt(15)) / BigInt(10000)
     expect(oldB).toBeGreaterThan(oldA)
     expect(result.pancake?.net?.netUserOutputRaw).toBe('100000')
     expect(result.uniswap?.net?.netUserOutputRaw).toBe('99950')

@@ -112,6 +112,6 @@ export function computeNetVenueInput(inputAmountRaw: string, feeBps: number): {
 } {
   const feeAmountRaw = computeFeeAmountRaw(inputAmountRaw, feeBps)
   const net = BigInt(inputAmountRaw) - BigInt(feeAmountRaw)
-  if (net <= 0n) throw new Error(NET_VENUE_INPUT_NONPOSITIVE)
+  if (net <= BigInt(0)) throw new Error(NET_VENUE_INPUT_NONPOSITIVE)
   return { feeAmountRaw, netVenueInputRaw: net.toString() }
 }
