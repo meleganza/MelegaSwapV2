@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { ethers } from 'ethers'
+import { normalizeCanonicalEvmAddress } from 'lib/marco-bridge/canonicalEvmAddress'
 import { readOnlyMarcoBridgeQuote, type MarcoBridgeQuoteReader } from 'lib/marco-bridge/quoteTransport'
 import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
 import { createOfficialSolanaOftProtocol } from 'lib/marco-bridge/solanaOftSdk'
@@ -45,7 +46,8 @@ function createEthersQuoteReader(source: MarcoBridgeNetworkId): MarcoBridgeQuote
     throw new MarcoBridgeError('QUOTE_FAILED', 'The source network is not EVM-compatible.')
   }
   const provider = new ethers.providers.StaticJsonRpcProvider(resolveRpcUrl(source), sourceNetwork.chainId)
-  const contractFor = (endpointContract: string) => new ethers.Contract(endpointContract, OFT_QUOTE_ABI, provider)
+  const contractFor = (endpointContract: string) =>
+    new ethers.Contract(normalizeCanonicalEvmAddress(endpointContract), OFT_QUOTE_ABI, provider)
   return {
     async quoteSend(endpointContract, sendParam) {
       const fee = await contractFor(endpointContract).quoteSend(sendParam, false)
