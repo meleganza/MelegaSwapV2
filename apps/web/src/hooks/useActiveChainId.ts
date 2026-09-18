@@ -26,11 +26,18 @@ queryChainIdAtom.onMount = (set) => {
   } else {
     chainId = getChainId(c)
   }
-  if (isWalletRecognizedChain(+chainId)) {
-    set(+chainId)
-  } else {
-    set(0)
+  const parsed = +chainId
+  if (isChainSupported(parsed)) {
+    set(parsed)
+    return undefined
   }
+  // Defer bridge-only query IDs so /bridge?chainId=4663|5042 does not update during hydrate.
+  if (isWalletRecognizedChain(parsed)) {
+    const timer = window.setTimeout(() => set(parsed), 0)
+    return () => window.clearTimeout(timer)
+  }
+  set(0)
+  return undefined
 }
 
 export function useLocalNetworkChain() {
