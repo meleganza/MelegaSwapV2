@@ -92,7 +92,8 @@ export function evaluateNativeFunds(input: {
   return {
     ok: false,
     code: 'INSUFFICIENT_GAS',
-    reason: `Insufficient native gas on ${input.from}.`,
+    reason:
+      input.from === 'arc' ? 'Insufficient native USDC gas on Arc.' : `Insufficient native gas on ${input.from}.`,
     requiredWei: requiredWei.toString(),
     balanceWei: balanceWei.toString(),
   }

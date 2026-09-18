@@ -55,7 +55,11 @@ export function assertMarcoBridgePreflight(input: MarcoBridgePreflight): true {
   if (!decimalAmountGte(input.nativeGasBalance, input.minimumNativeGas, nativeDecimals)) {
     throw new MarcoBridgeError(
       input.from === 'bnb' ? 'INSUFFICIENT_BNB' : 'INSUFFICIENT_GAS',
-      input.from === 'bnb' ? 'INSUFFICIENT BNB' : `Insufficient native gas on ${source.label}.`,
+      input.from === 'bnb'
+        ? 'INSUFFICIENT BNB'
+        : input.from === 'arc'
+        ? 'Insufficient native USDC gas on Arc.'
+        : `Insufficient native gas on ${source.label}.`,
     )
   }
   return true

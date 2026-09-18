@@ -33,6 +33,8 @@ const authority = {
     ['solana', 'bnb', true],
     ['bnb', 'robinhood', false],
     ['robinhood', 'bnb', false],
+    ['bnb', 'arc', false],
+    ['arc', 'bnb', false],
   ].map(([from, to, paused]) => ({
     from,
     to,
@@ -48,6 +50,7 @@ describe('read-only LayerZero quote transport', () => {
   it.each([
     ['base', evm, 30184, false],
     ['robinhood', evm, 30416, false],
+    ['arc', evm, 30417, false],
     ['solana', solana, 30168, true],
   ] as const)('quotes BNB to %s with canonical parameters', async (to, destination, eid, paused) => {
     const quoteSend = vi.fn().mockResolvedValue({ nativeFee: BigNumber.from('72607980676756') })
@@ -70,8 +73,8 @@ describe('read-only LayerZero quote transport', () => {
       nativeFeeWei: '72607980676756',
       nativeFeeSymbol: 'BNB',
       routePaused: paused,
-      publiclyActive: to === 'robinhood',
-      executionEnabled: to === 'robinhood',
+      publiclyActive: to === 'robinhood' || to === 'arc',
+      executionEnabled: to === 'robinhood' || to === 'arc',
     })
   })
 

@@ -7,6 +7,8 @@ export const MARCO_BRIDGE_ACTIVATION_ROUTES = [
   ['robinhood', 'bnb'],
   ['bnb', 'solana'],
   ['solana', 'bnb'],
+  ['bnb', 'arc'],
+  ['arc', 'bnb'],
 ] as const
 
 export type MarcoBridgeActivationRoute = (typeof MARCO_BRIDGE_ACTIVATION_ROUTES)[number]
@@ -29,7 +31,7 @@ export function routeExecutionBlockers(
   authority: CanonicalMmnRouteState,
 ): string[] {
   const blockers: string[] = []
-  if (!isActivationRoute(from, to)) blockers.push('Route is outside BNB↔Robinhood and BNB↔Solana activation.')
+  if (!isActivationRoute(from, to)) blockers.push('Route is outside BNB↔Robinhood, BNB↔Solana, and BNB↔Arc activation.')
   if (!localRouteActivationEnabled(from, to)) blockers.push('Local public activation is off for this route.')
   const route = findCanonicalRoute(authority, from, to)
   if (!route?.certified) blockers.push('Canonical MMN has not certified this route.')

@@ -1,4 +1,4 @@
-import type { CanonicalMmnRouteState } from './routeAuthority'
+import type { CanonicalMmnNetwork, CanonicalMmnRoute, CanonicalMmnRouteState } from './routeAuthority'
 import { SOLANA_OFT_PROGRAM_ID } from './solanaUnpause'
 import type { MarcoBridgeNetworkId } from './types'
 import { localRouteActivationEnabled, MARCO_WAVE1_NETWORKS } from './wave1Registry'
@@ -38,6 +38,8 @@ export const CANONICAL_BNB_SOLANA_GATE_REASON = 'Canonical BNB→Solana applicat
 export const CANONICAL_SOLANA_BNB_GATE_REASON = 'Canonical Solana→BNB application gate is active.'
 export const CANONICAL_BNB_ROBINHOOD_GATE_REASON = 'Canonical BNB→Robinhood application gate is active.'
 export const CANONICAL_ROBINHOOD_BNB_GATE_REASON = 'Canonical Robinhood→BNB application gate is active.'
+export const CANONICAL_BNB_ARC_GATE_REASON = 'Canonical BNB→Arc application gate is active.'
+export const CANONICAL_ARC_BNB_GATE_REASON = 'Canonical Arc→BNB application gate is active.'
 
 export function isCanonicalBnbSolanaRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
   return from === CANONICAL_BNB_SOLANA_GATE.from && to === CANONICAL_BNB_SOLANA_GATE.to
@@ -55,17 +57,66 @@ export function isCanonicalBnbRobinhoodHubRoute(from: MarcoBridgeNetworkId, to: 
   return (from === 'bnb' && to === 'robinhood') || (from === 'robinhood' && to === 'bnb')
 }
 
+export function isCanonicalBnbArcHubRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
+  return (from === 'bnb' && to === 'arc') || (from === 'arc' && to === 'bnb')
+}
+
+export function canonicalArcNetworkBinding(): CanonicalMmnNetwork {
+  const arc = MARCO_WAVE1_NETWORKS.arc
+  return {
+    id: 'arc',
+    name: arc.label,
+    family: 'evm',
+    chain_id: arc.chainId,
+    eid: arc.layerZeroEid,
+    model: 'evm_oft',
+    token: arc.marcoIdentity,
+    token_decimals: arc.tokenDecimals,
+    endpoint_contract: arc.endpointContract,
+    requires_approval: false,
+    paused: false,
+  }
+}
+
+function certifiedArcHubRoute(from: 'bnb' | 'arc', to: 'bnb' | 'arc'): CanonicalMmnRoute {
+  return {
+    from,
+    to,
+    certified: true,
+    publicly_active: false,
+    execution_enabled: false,
+    paused: false,
+    reason: 'Certified BNB↔Arc LayerZero route.',
+  }
+}
+
+/** Bind certified Arc Mainnet when live MMN has not published the network yet. */
+export function withCertifiedArcBinding(authority: CanonicalMmnRouteState): CanonicalMmnRouteState {
+  const networks = authority.networks.some((network) => network.id === 'arc')
+    ? authority.networks
+    : [...authority.networks, canonicalArcNetworkBinding()]
+  const routes = [...authority.routes]
+  if (!routes.some((route) => route.from === 'bnb' && route.to === 'arc')) {
+    routes.push(certifiedArcHubRoute('bnb', 'arc'))
+  }
+  if (!routes.some((route) => route.from === 'arc' && route.to === 'bnb')) {
+    routes.push(certifiedArcHubRoute('arc', 'bnb'))
+  }
+  return { ...authority, networks, routes }
+}
+
 export function applyCanonicalBnbSolanaApplicationGate(
   authority: CanonicalMmnRouteState,
   input: { solanaStorePaused: boolean },
 ): CanonicalMmnRouteState {
+  const bound = withCertifiedArcBinding(authority)
   const solanaStorePaused = input.solanaStorePaused
   return {
-    ...authority,
-    networks: authority.networks.map((network) =>
+    ...bound,
+    networks: bound.networks.map((network) =>
       network.id === 'solana' ? { ...network, paused: solanaStorePaused } : network,
     ),
-    routes: authority.routes.map((route) => {
+    routes: bound.routes.map((route) => {
       if (isCanonicalBnbSolanaHubRoute(route.from, route.to)) {
         return {
           ...route,
@@ -88,8 +139,8 @@ export function applyCanonicalBnbSolanaApplicationGate(
         }
       }
       if (isCanonicalBnbRobinhoodHubRoute(route.from, route.to)) {
-        const source = authority.networks.find((network) => network.id === route.from)
-        const destination = authority.networks.find((network) => network.id === route.to)
+        const source = bound.networks.find((network) => network.id === route.from)
+        const destination = bound.networks.find((network) => network.id === route.to)
         const paused = Boolean(route.paused || source?.paused || destination?.paused)
         const active =
           !paused &&
@@ -104,6 +155,26 @@ export function applyCanonicalBnbSolanaApplicationGate(
             ? route.from === 'robinhood'
               ? CANONICAL_ROBINHOOD_BNB_GATE_REASON
               : CANONICAL_BNB_ROBINHOOD_GATE_REASON
+            : route.reason,
+        }
+      }
+      if (isCanonicalBnbArcHubRoute(route.from, route.to)) {
+        const source = bound.networks.find((network) => network.id === route.from)
+        const destination = bound.networks.find((network) => network.id === route.to)
+        const paused = Boolean(route.paused || source?.paused || destination?.paused)
+        const active =
+          !paused &&
+          route.certified === true &&
+          localRouteActivationEnabled(route.from, route.to) &&
+          Boolean(source && destination)
+        return {
+          ...route,
+          publicly_active: active,
+          execution_enabled: active,
+          reason: active
+            ? route.from === 'arc'
+              ? CANONICAL_ARC_BNB_GATE_REASON
+              : CANONICAL_BNB_ARC_GATE_REASON
             : route.reason,
         }
       }

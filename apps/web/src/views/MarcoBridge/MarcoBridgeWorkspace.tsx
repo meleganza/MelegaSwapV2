@@ -28,6 +28,7 @@ import {
   type NativeFundsReadState,
 } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
+import { ensureArcWalletNetwork } from 'lib/marco-bridge/arcChain'
 import { ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
 import { marcoBridgeApiPath } from 'lib/marco-bridge/marcoBridgeApiPath'
 import { marcoBridgeService, prepareSolanaMarcoBridge } from 'lib/marco-bridge/service'
@@ -794,6 +795,14 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         return
       }
     }
+    if (fromNetwork.chainId === 5042 && window.ethereum) {
+      try {
+        await ensureArcWalletNetwork(window.ethereum as unknown as BridgeEthereumProvider)
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : 'Add Arc Mainnet (chain 5042, native USDC) in the wallet.')
+        return
+      }
+    }
     if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch) {
       void switchNetworkAsync(fromNetwork.chainId)
       return
@@ -1174,12 +1183,16 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 <li>
                   LayerZero EIDs: BNB {MARCO_WAVE1_NETWORKS.bnb.layerZeroEid} · Base{' '}
                   {MARCO_WAVE1_NETWORKS.base.layerZeroEid} · Solana {MARCO_WAVE1_NETWORKS.solana.layerZeroEid} ·
-                  Robinhood {MARCO_WAVE1_NETWORKS.robinhood.layerZeroEid}
+                  Robinhood {MARCO_WAVE1_NETWORKS.robinhood.layerZeroEid} · Arc {MARCO_WAVE1_NETWORKS.arc.layerZeroEid}
                 </li>
                 <li>Robinhood chain ID: {MARCO_WAVE1_NETWORKS.robinhood.chainId}</li>
                 <li>
+                  Arc chain ID: {MARCO_WAVE1_NETWORKS.arc.chainId} · native gas {MARCO_WAVE1_NETWORKS.arc.nativeFeeSymbol}
+                </li>
+                <li>
                   Canonical MARCO: BNB {MARCO_WAVE1_NETWORKS.bnb.marcoIdentity} · Base{' '}
-                  {MARCO_WAVE1_NETWORKS.base.marcoIdentity} · Robinhood {MARCO_WAVE1_NETWORKS.robinhood.marcoIdentity}
+                  {MARCO_WAVE1_NETWORKS.base.marcoIdentity} · Robinhood {MARCO_WAVE1_NETWORKS.robinhood.marcoIdentity} ·
+                  Arc {MARCO_WAVE1_NETWORKS.arc.marcoIdentity}
                 </li>
                 <li>
                   Solana mint/store: {MARCO_WAVE1_NETWORKS.solana.marcoIdentity} ·{' '}

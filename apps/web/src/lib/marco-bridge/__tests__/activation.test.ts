@@ -256,7 +256,7 @@ describe('BNB↔Robinhood and BNB↔Solana activation', () => {
         quote('BNB → Base'),
         authority(),
       ),
-    ).toThrow('BNB↔Robinhood and BNB↔Solana')
+    ).toThrow('BNB↔Robinhood, BNB↔Solana, and BNB↔Arc')
   })
 
   it('fails closed while Solana is paused', () => {

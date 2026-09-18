@@ -17,6 +17,7 @@ import {
 import { MARCO_BRIDGE_SUBMITTED_COPY } from './lifecycle'
 import { assertMarcoBridgePreflight } from './preflight'
 import type { CanonicalMmnRouteState } from './routeAuthority'
+import { ensureArcWalletNetwork } from './arcChain'
 import { ensureRobinhoodWalletNetwork } from './robinhoodChain'
 import { requestMarcoBridgeQuote, type MarcoBridgeQuoteRequest } from './service'
 import { createBrowserSolanaOftProtocol } from './solanaBrowserProtocol'
@@ -270,7 +271,11 @@ async function assertWalletNativePreflight(input: {
   if (!provider?.getBalance) {
     throw new MarcoBridgeError(
       input.request.from === 'bnb' ? 'INSUFFICIENT_BNB' : 'INSUFFICIENT_GAS',
-      input.request.from === 'bnb' ? 'INSUFFICIENT BNB' : `Insufficient native gas on ${source.label}.`,
+      input.request.from === 'bnb'
+        ? 'INSUFFICIENT BNB'
+        : input.request.from === 'arc'
+        ? 'Insufficient native USDC gas on Arc.'
+        : `Insufficient native gas on ${source.label}.`,
     )
   }
   const [nativeBalanceWei, gasPriceWei] = await Promise.all([
@@ -423,6 +428,9 @@ export async function submitMarcoBridgeFromWallet(input: {
   const signer = input.signer
   if (source.chainId === 4663 && input.ethereum) {
     await ensureRobinhoodWalletNetwork(input.ethereum)
+  }
+  if (source.chainId === 5042 && input.ethereum) {
+    await ensureArcWalletNetwork(input.ethereum)
   }
 
   const requestQuote = input.requestQuote ?? requestMarcoBridgeQuote
