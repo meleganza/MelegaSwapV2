@@ -14,6 +14,9 @@ function resolveRpcUrl(chainId: number): string {
   if (chainId === 4663) {
     return process.env.ROBINHOOD_RPC_URL || process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL || 'https://rpc.mainnet.chain.robinhood.com'
   }
+  if (chainId === 5042) {
+    return process.env.ARC_RPC_URL || process.env.NEXT_PUBLIC_ARC_RPC_URL || 'https://rpc.mainnet.arc.io'
+  }
   throw new MarcoBridgeError('QUOTE_FAILED', `No simulation RPC is configured for chain ${chainId}.`)
 }
 

@@ -64,11 +64,17 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   if (state.networks.some((network) => network.chain_id === 62831)) {
     throw new Error('Retired Robinhood chain ID 62831 is forbidden.')
   }
+  if (state.networks.some((network) => network.chain_id === 5042002 || network.eid === 40434)) {
+    throw new Error('Arc testnet 5042002 / EID 40434 is forbidden in production.')
+  }
 
   for (const id of Object.keys(MARCO_WAVE1_NETWORKS) as MarcoBridgeNetworkId[]) {
     const expected = MARCO_WAVE1_NETWORKS[id]
     const actual = state.networks.find((network) => network.id === id)
-    if (!actual) throw new Error(`Canonical MMN network ${id} is missing.`)
+    if (!actual) {
+      if (id === 'arc') continue
+      throw new Error(`Canonical MMN network ${id} is missing.`)
+    }
     if (
       actual.family !== expected.walletFamily ||
       actual.chain_id !== expected.chainId ||
@@ -83,9 +89,13 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
 
   const base = state.networks.find((network) => network.id === 'base')
   const robinhood = state.networks.find((network) => network.id === 'robinhood')
+  const arc = state.networks.find((network) => network.id === 'arc')
   const retiredAdapter = MARCO_WAVE1_NETWORKS.bnb.endpointContract.toLowerCase()
   if (base?.token.toLowerCase() === retiredAdapter || robinhood?.token.toLowerCase() === retiredAdapter) {
     throw new Error('Retired BNB adapter cannot be used as Base or Robinhood canonical MARCO.')
+  }
+  if (arc?.token.toLowerCase() === retiredAdapter) {
+    throw new Error('Retired BNB adapter cannot be used as Arc canonical MARCO.')
   }
   if (
     state.routes.some(
@@ -97,7 +107,12 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
   }
   for (const expected of MARCO_WAVE1_DIRECT_ROUTES) {
     const actual = state.routes.find((route) => route.from === expected.from && route.to === expected.to)
-    if (!actual?.certified) throw new Error(`Canonical MMN route ${expected.from}->${expected.to} is not certified.`)
+    if (!actual?.certified) {
+      const locallyBoundArc =
+        (expected.from === 'bnb' && expected.to === 'arc') || (expected.from === 'arc' && expected.to === 'bnb')
+      if (locallyBoundArc) continue
+      throw new Error(`Canonical MMN route ${expected.from}->${expected.to} is not certified.`)
+    }
   }
 
   return state

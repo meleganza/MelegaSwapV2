@@ -40,6 +40,8 @@ const staleEnvelope = () => ({
       ['solana', 'bnb'],
       ['bnb', 'robinhood'],
       ['robinhood', 'bnb'],
+      ['bnb', 'arc'],
+      ['arc', 'bnb'],
     ].map(([from, to]) => ({
       from,
       to,

@@ -64,6 +64,20 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     nativeFeeSymbol: 'ETH',
     explorerUrl: 'https://robinhoodchain.blockscout.com',
   },
+  arc: {
+    id: 'arc',
+    label: 'Arc',
+    shortLabel: 'Arc',
+    walletFamily: 'evm',
+    chainId: 5042,
+    layerZeroEid: 30417,
+    marcoIdentity: '0x30eb6f2878f60ba0ed6418bfe7cadcd0f475a265',
+    endpointContract: '0x30eb6f2878f60ba0ed6418bfe7cadcd0f475a265',
+    tokenDecimals: 18,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'USDC',
+    explorerUrl: 'https://explorer.arc.io',
+  },
 }
 
 const direct = (from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): MarcoBridgeRoute => ({
@@ -80,11 +94,13 @@ export const MARCO_WAVE1_DIRECT_ROUTES: MarcoBridgeRoute[] = [
   direct('solana', 'bnb'),
   direct('bnb', 'robinhood'),
   direct('robinhood', 'bnb'),
+  direct('bnb', 'arc'),
+  direct('arc', 'bnb'),
 ]
 
 export const MARCO_WAVE1_PUBLIC_ACTIVATION = {
   enabled: true,
-  certification: 'bnb-robinhood-solana',
+  certification: 'bnb-robinhood-solana-arc',
   solanaProtectivePauseRequired: false,
 } as const
 
@@ -93,6 +109,8 @@ export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${Mar
   'robinhood:bnb': true,
   'bnb:solana': true,
   'solana:bnb': true,
+  'bnb:arc': true,
+  'arc:bnb': true,
   'bnb:base': false,
   'base:bnb': false,
   'base:solana': false,
@@ -101,10 +119,17 @@ export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${Mar
   'robinhood:base': false,
   'solana:robinhood': false,
   'robinhood:solana': false,
+  'base:arc': false,
+  'arc:base': false,
+  'solana:arc': false,
+  'arc:solana': false,
+  'robinhood:arc': false,
+  'arc:robinhood': false,
   'bnb:bnb': false,
   'base:base': false,
   'solana:solana': false,
   'robinhood:robinhood': false,
+  'arc:arc': false,
 }
 
 export function localRouteActivationEnabled(from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId): boolean {
@@ -118,6 +143,9 @@ export function wave1ActivationBlockers(): string[] {
   }
   if (!localRouteActivationEnabled('bnb', 'solana') || !localRouteActivationEnabled('solana', 'bnb')) {
     blockers.push('Canonical BNB↔Solana public activation is off')
+  }
+  if (!localRouteActivationEnabled('bnb', 'arc') || !localRouteActivationEnabled('arc', 'bnb')) {
+    blockers.push('BNB↔Arc public activation is off')
   }
   if (MARCO_WAVE1_NETWORKS.solana.protectivePaused) blockers.push('Solana infrastructure pause')
   return blockers

@@ -30,6 +30,9 @@ function resolveRpcUrl(source: MarcoBridgeNetworkId): string {
       'https://rpc.mainnet.chain.robinhood.com'
     )
   }
+  if (source === 'arc') {
+    return process.env.ARC_RPC_URL || process.env.NEXT_PUBLIC_ARC_RPC_URL || 'https://rpc.mainnet.arc.io'
+  }
   if (source === 'solana') {
     throw new MarcoBridgeError('QUOTE_FAILED', 'Solana source quotes use the Solana OFT store, not an EVM RPC.')
   }

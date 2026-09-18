@@ -29,7 +29,7 @@ export type UnsignedEvmBridgeTx = {
   to: string
   data: string
   value: string
-  nativeFeeSymbol: 'BNB' | 'ETH'
+  nativeFeeSymbol: 'BNB' | 'ETH' | 'USDC'
 }
 
 export type UnsignedSolanaBridgeTx = {
@@ -110,7 +110,7 @@ export function buildMarcoBridgeTransactions(
   authority: CanonicalMmnRouteState,
 ): MarcoBridgeBuild {
   if (!isActivationRoute(request.from, request.to)) {
-    throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'This builder only encodes BNB↔Robinhood and BNB↔Solana.')
+    throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'This builder only encodes BNB↔Robinhood, BNB↔Solana, and BNB↔Arc.')
   }
   const source = MARCO_WAVE1_NETWORKS[request.from]
   const canonicalSource = authority.networks.find((network) => network.id === request.from)
@@ -145,7 +145,7 @@ export function buildMarcoBridgeTransactions(
         to: getAddress(canonicalSource.token),
         data: ERC20_APPROVE_IFACE.encodeFunctionData('approve', [canonicalSource.endpoint_contract, amountLD]),
         value: '0x0',
-        nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : 'ETH',
+        nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : source.nativeFeeSymbol === 'USDC' ? 'USDC' : 'ETH',
       })
     }
     transactions.push({
@@ -168,7 +168,7 @@ export function buildMarcoBridgeTransactions(
         from,
       ]),
       value: BigNumber.from(nativeFeeWei).toHexString(),
-      nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : 'ETH',
+      nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : source.nativeFeeSymbol === 'USDC' ? 'USDC' : 'ETH',
     })
   } else {
     transactions.push({
