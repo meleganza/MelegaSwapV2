@@ -1,6 +1,7 @@
 import { Interface } from '@ethersproject/abi'
 import { getAddress } from '@ethersproject/address'
 import { BigNumber } from '@ethersproject/bignumber'
+import { normalizeCanonicalEvmAddress } from './canonicalEvmAddress'
 import { isActivationRoute, routeExecutionBlockers } from './executableRoutes'
 import type { CanonicalMmnRouteState } from './routeAuthority'
 import { LAYERZERO_SOLANA_V2_MAINNET_ALT } from './solanaOftProtocol'
@@ -136,14 +137,16 @@ export function buildMarcoBridgeTransactions(
   const transactions: MarcoBridgeBuiltTx[] = []
   if (source.walletFamily === 'evm' && source.chainId != null) {
     const from = getAddress(request.sourceWallet)
+    const token = normalizeCanonicalEvmAddress(canonicalSource.token)
+    const endpointContract = normalizeCanonicalEvmAddress(canonicalSource.endpoint_contract)
     if (needsApprove) {
       transactions.push({
         family: 'evm',
         purpose: 'approve',
         chainId: source.chainId,
         from,
-        to: getAddress(canonicalSource.token),
-        data: ERC20_APPROVE_IFACE.encodeFunctionData('approve', [canonicalSource.endpoint_contract, amountLD]),
+        to: getAddress(token),
+        data: ERC20_APPROVE_IFACE.encodeFunctionData('approve', [endpointContract, amountLD]),
         value: '0x0',
         nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : source.nativeFeeSymbol === 'USDC' ? 'USDC' : 'ETH',
       })
@@ -153,7 +156,7 @@ export function buildMarcoBridgeTransactions(
       purpose: 'oft_send',
       chainId: source.chainId,
       from,
-      to: getAddress(canonicalSource.endpoint_contract),
+      to: getAddress(endpointContract),
       data: OFT_SEND_IFACE.encodeFunctionData('send', [
         [
           sendParam.dstEid,

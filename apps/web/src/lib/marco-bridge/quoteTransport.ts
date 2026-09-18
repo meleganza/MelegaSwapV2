@@ -1,5 +1,6 @@
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
+import { normalizeCanonicalEvmAddress } from './canonicalEvmAddress'
 import { isRouteExecutable } from './executableRoutes'
 import { planMarcoBridgeRoute } from './routePolicy'
 import type { CanonicalMmnRouteState } from './routeAuthority'
@@ -70,9 +71,10 @@ export async function readOnlyMarcoBridgeQuote(
     oftCmd: '0x',
   }
 
+  const endpointContract = normalizeCanonicalEvmAddress(canonicalSource.endpoint_contract)
   const [messagingFee, oftReceipt] = await Promise.all([
-    reader.quoteSend(canonicalSource.endpoint_contract, sendParam),
-    reader.quoteOft(canonicalSource.endpoint_contract, sendParam),
+    reader.quoteSend(endpointContract, sendParam),
+    reader.quoteOft(endpointContract, sendParam),
   ])
   const received = BigNumber.from(oftReceipt.amountReceivedLD)
   const nativeFee = BigNumber.from(messagingFee.nativeFee)
