@@ -147,7 +147,7 @@ describe('canonical MMN route authority binding', () => {
       ok: true,
       status: 200,
       json: async () => publicBase,
-    })) as typeof fetch
+    })) as unknown as typeof fetch
     const ingested = await fetchCanonicalRouteAuthority(fetcher, async () => ({
       ok: true,
       paused: true,
