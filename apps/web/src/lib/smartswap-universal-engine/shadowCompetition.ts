@@ -6,7 +6,7 @@
 import { PROTOCOL_FEE_STATE } from './fee'
 import { DEFAULT_LATENCY_BUDGET, collectBoundedParallel, type LatencyBudget } from './latency'
 import { computeStructuralRouteCost } from './costTaxonomy'
-import { evaluateRevenuePolicy } from './evaluateRevenuePolicy'
+import { computeNetVenueInput, evaluateRevenuePolicy } from './evaluateRevenuePolicy'
 import { computeNetUserOutput, type NetExecutionResult } from './netExecution'
 import { FEE_ASSET_SOURCE, sealSmartSwapFee, type SealedSmartSwapFee } from './quoteFee'
 import { selectBestNetRoute } from './routeSelection'
@@ -25,12 +25,16 @@ import { isLegacyProductionAuthoritative, isProductionCutoverAllowed } from './o
 
 export const CROSS_CHAIN_FORBIDDEN = 'CROSS_CHAIN_FORBIDDEN' as const
 export const SPLIT_ROUTE_FORBIDDEN = 'SPLIT_ROUTE_FORBIDDEN' as const
+export const VENUE_NET_INPUT_QUOTE_MISMATCH = 'VENUE_NET_INPUT_QUOTE_MISMATCH' as const
+export const VENUE_ROUTE_COST_UNCERTIFIED = 'VENUE_ROUTE_COST_UNCERTIFIED' as const
 
 export interface ShadowCandidate {
   venueId: string
   status: 'ok' | 'timeout' | 'error' | 'no_route' | 'unsupported' | 'stale' | 'skipped'
   quote: NormalizedQuote | null
   durationMs: number
+  originalInputAmountRaw: string | null
+  netVenueInputRaw: string | null
   structuralRouteCostBps: number | null
   smartSwapFeeBps: number | null
   feeBand: string | null
@@ -165,10 +169,9 @@ export function assertSingleVenueRoute(quote: NormalizedQuote): void {
   if (quote.hops.some((hop) => hop.venueId !== quote.venueId)) throw new Error(SPLIT_ROUTE_FORBIDDEN)
 }
 
-function enrich(quote: NormalizedQuote, durationMs: number, kind: ShadowCandidate['kind']): ShadowCandidate {
-  assertSingleVenueRoute(quote)
-  const venueFeesBps = VENUE_STRUCTURAL_FEE_BPS[quote.venueId] ?? null
-  const semantics = VENUE_FEE_SEMANTICS_BY_ID[quote.venueId] ?? null
+function resolveVenueShadowEconomics(venueId: string, originalInputAmountRaw: string) {
+  const venueFeesBps = VENUE_STRUCTURAL_FEE_BPS[venueId] ?? null
+  const semantics = VENUE_FEE_SEMANTICS_BY_ID[venueId] ?? null
   const structural = computeStructuralRouteCost({
     venueFeesBps,
     bridgeCostsBps: 0,
@@ -179,44 +182,55 @@ function enrich(quote: NormalizedQuote, durationMs: number, kind: ShadowCandidat
   const assessment = evaluateRevenuePolicy({
     structuralRouteCostBps: structural.structuralRouteCostBps,
     swapValueNormalized: null,
-    inputAmountRaw: quote.inputAmountRaw,
-    feeEnforcementState: quote.protocolFee.state,
+    inputAmountRaw: originalInputAmountRaw,
+    feeEnforcementState: PROTOCOL_FEE_STATE.FEE_PREVIEW_ONLY,
   })
-  const sealedFee =
-    assessment.feeBand && assessment.feeBps != null
-      ? sealSmartSwapFee({
-          assessment,
-          baseAmountRaw: quote.grossOutputRaw,
-          feeAssetSource: FEE_ASSET_SOURCE.OUTPUT,
-          feeAsset: quote.outputAsset,
-          quoteTimestamp: quote.quotedAt,
-          quoteExpiry: quote.expiresAt ?? quote.quotedAt,
-        })
-      : null
-  const net =
-    sealedFee != null
-      ? computeNetUserOutput({
-          grossOutputRaw: quote.grossOutputRaw,
-          venueFeeRaw: quote.venueFeeRaw,
-          venueFeesEmbeddedInGross: semantics === 'EMBEDDED_IN_QUOTED_OUTPUT',
-          bridgeCostRaw: null,
-          bridgeCostsEmbeddedInGross: true,
-          gasCostInOutputRaw: null,
-          smartSwapFeeRaw: sealedFee.feeAmountRaw,
-          smartSwapFeeEmbeddedInGross: false,
-        })
-      : null
+  if (assessment.feeBps == null || assessment.feeBand == null) {
+    throw new Error(VENUE_ROUTE_COST_UNCERTIFIED)
+  }
+  const { feeAmountRaw, netVenueInputRaw } = computeNetVenueInput(originalInputAmountRaw, assessment.feeBps)
+  return { structural, assessment, feeAmountRaw, netVenueInputRaw, semantics }
+}
+
+function enrich(
+  quote: NormalizedQuote,
+  durationMs: number,
+  kind: ShadowCandidate['kind'],
+  economics: ReturnType<typeof resolveVenueShadowEconomics> & { originalInputAmountRaw: string },
+): ShadowCandidate {
+  assertSingleVenueRoute(quote)
+  if (quote.inputAmountRaw !== economics.netVenueInputRaw) {
+    throw new Error(VENUE_NET_INPUT_QUOTE_MISMATCH)
+  }
+  const sealedFee = sealSmartSwapFee({
+    assessment: economics.assessment,
+    baseAmountRaw: economics.originalInputAmountRaw,
+    feeAssetSource: FEE_ASSET_SOURCE.INPUT,
+    feeAsset: quote.inputAsset,
+    quoteTimestamp: quote.quotedAt,
+    quoteExpiry: quote.expiresAt ?? quote.quotedAt,
+  })
+  const net = computeNetUserOutput({
+    grossOutputRaw: quote.grossOutputRaw,
+    venueFeeRaw: quote.venueFeeRaw,
+    venueFeesEmbeddedInGross: economics.semantics === 'EMBEDDED_IN_QUOTED_OUTPUT',
+    bridgeCostRaw: null,
+    bridgeCostsEmbeddedInGross: true,
+    gasCostInOutputRaw: null,
+    smartSwapFeeRaw: sealedFee.feeAmountRaw,
+    smartSwapFeeEmbeddedInGross: true,
+  })
   return {
     venueId: quote.venueId,
     status: quote.stale ? 'stale' : 'ok',
     quote: {
       ...quote,
-      netUserOutputRaw: net?.netUserOutputRaw ?? quote.netUserOutputRaw,
+      netUserOutputRaw: net.netUserOutputRaw,
       productionExecutionCapable: false,
       protocolFee: {
         ...quote.protocolFee,
-        bps: assessment.feeBps,
-        amountRaw: sealedFee?.feeAmountRaw ?? null,
+        bps: economics.assessment.feeBps,
+        amountRaw: sealedFee.feeAmountRaw,
         productionExecutionEligible: false,
         state:
           quote.protocolFee.state === PROTOCOL_FEE_STATE.FEE_ENFORCEABLE
@@ -225,14 +239,16 @@ function enrich(quote: NormalizedQuote, durationMs: number, kind: ShadowCandidat
       },
     },
     durationMs,
-    structuralRouteCostBps: structural.structuralRouteCostBps,
-    smartSwapFeeBps: assessment.feeBps,
-    feeBand: assessment.feeBand,
+    originalInputAmountRaw: economics.originalInputAmountRaw,
+    netVenueInputRaw: economics.netVenueInputRaw,
+    structuralRouteCostBps: economics.structural.structuralRouteCostBps,
+    smartSwapFeeBps: economics.assessment.feeBps,
+    feeBand: economics.assessment.feeBand,
     feeEnforcementState: quote.protocolFee.state,
-    venueFeeSemantics: semantics,
+    venueFeeSemantics: economics.semantics,
     sealedFee,
     net,
-    assessment,
+    assessment: economics.assessment,
     error: null,
     kind,
   }
@@ -244,6 +260,8 @@ function emptyCandidate(venueId: string, status: ShadowCandidate['status'], dura
     status,
     quote: null,
     durationMs,
+    originalInputAmountRaw: null,
+    netVenueInputRaw: null,
     structuralRouteCostBps: VENUE_STRUCTURAL_FEE_BPS[venueId] ?? null,
     smartSwapFeeBps: null,
     feeBand: null,
@@ -310,14 +328,19 @@ export async function runEvmShadowCompetition(input: {
         if (!adapter.supportsAssetPair(input.request)) {
           throw new Error(`VENUE_PAIR_UNSUPPORTED:${venueId}`)
         }
-        const quoted = await quoteIfCapable(adapter, input.request, { signal, nowIso })
+        const economics = resolveVenueShadowEconomics(venueId, input.request.inputAmountRaw)
+        const netRequest = { ...input.request, inputAmountRaw: economics.netVenueInputRaw }
+        const quoted = await quoteIfCapable(adapter, netRequest, { signal, nowIso })
+        if (quoted.inputAmountRaw !== economics.netVenueInputRaw) {
+          throw new Error(VENUE_NET_INPUT_QUOTE_MISMATCH)
+        }
         if (!assetsEqual(quoted.inputAsset, input.request.inputAsset) || !assetsEqual(quoted.outputAsset, input.request.outputAsset)) {
           throw new Error(`VENUE_PAIR_UNSUPPORTED:${venueId}:identity`)
         }
         if (quoted.stale || quoteIsStale(quoted, nowIso, (input.budget ?? DEFAULT_LATENCY_BUDGET).staleQuoteMs)) {
           throw new Error('QUOTE_STALE')
         }
-        return quoted
+        return { quoted, economics }
       },
     }
   })
@@ -331,10 +354,13 @@ export async function runEvmShadowCompetition(input: {
       const kind =
         row.id === MELEGA_DEX_VENUE_ID
           ? 'LEGACY_MELEGA'
-          : row.value.confidence === 70
+          : row.value.quoted.confidence === 70
             ? 'FACTUAL'
             : 'SYNTHETIC'
-      return enrich(row.value, row.durationMs, kind)
+      return enrich(row.value.quoted, row.durationMs, kind, {
+        ...row.value.economics,
+        originalInputAmountRaw: input.request.inputAmountRaw,
+      })
     }
     const message = row.status === 'timeout' ? 'ADAPTER_TIMEOUT' : row.status === 'error' ? row.error : row.status
     if (message.includes('CIRCUIT_BREAKER_OPEN')) {

@@ -13,6 +13,7 @@ import {
 import { PROTOCOL_FEE_STATE, canMarkRouteProductionCapable, markFeeCollected } from '../fee'
 import { VENUE_HEALTH_STATE, healthSnapshot } from '../health'
 import { DEFAULT_LATENCY_BUDGET } from '../latency'
+import { computeNetVenueInput } from '../evaluateRevenuePolicy'
 import { normalizeMelegaLegacyQuote, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
 import {
   PRODUCTION_EXECUTION_MODE,
@@ -81,6 +82,13 @@ const LEGACY_BSC: LegacyMelegaQuoteSnapshot = {
   ],
   freshness: NOW,
   slippageBps: 50,
+}
+
+function melegaExactNetSnapshot(snapshot: LegacyMelegaQuoteSnapshot, feeBps = 20): LegacyMelegaQuoteSnapshot {
+  return {
+    ...snapshot,
+    inputAmountRaw: computeNetVenueInput(snapshot.inputAmountRaw, feeBps).netVenueInputRaw,
+  }
 }
 
 function uniswapQuotes(amountOutRaw: string) {
@@ -177,7 +185,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
   it('lets a valid Uniswap quote participate deterministically in SHADOW ranking', async () => {
     const production = normalizeMelegaLegacyQuote(LEGACY_ETH, NOW)
     const run = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('3000000000'),
       productionQuote: production,
@@ -218,7 +226,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
       },
     }
     const timed = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: hung,
       productionQuote: production,
@@ -232,7 +240,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
     expect(timed.result.candidates.some((row) => row.venueId === 'uniswap' && row.status === 'ok')).toBe(false)
 
     const failing = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: {
         async fetch() {
@@ -251,7 +259,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
     const production = normalizeMelegaLegacyQuote(LEGACY_ETH, NOW)
     const health = new ScopedVenueHealth({ failureThreshold: 1, cooldownMs: 60_000 })
     const blocked = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('3000000000'),
       productionQuote: production,
@@ -273,7 +281,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
       rpcUrlByChain: {},
     })
     const missingRpc = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('3000000000'),
       productionQuote: production,
@@ -288,7 +296,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
     const production = normalizeMelegaLegacyQuote(LEGACY_ETH, NOW)
     const before = JSON.stringify(production)
     const run = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('1'),
       uniswapSource: uniswapQuotes('3000000000'),
       productionQuote: production,
@@ -328,7 +336,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
   it('preserves Pancake catalog, evidence, and BSC SHADOW state after the Uniswap ETH run', async () => {
     const health = new ScopedVenueHealth({ failureThreshold: 3, cooldownMs: 10_000 })
     const eth = await runCertifiedUniswapShadowQuoteCompetition({
-      melegaSnapshot: LEGACY_ETH,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_ETH),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('3000000000'),
       productionQuote: normalizeMelegaLegacyQuote(LEGACY_ETH, NOW),
@@ -348,7 +356,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
     expect(PANCAKE_SWAP_VENUE.routers[56]).toBe('0x10ED43C718714eb63d5aA57B78B54704E256024E')
 
     const { adapters, catalog } = buildEvmShadowVenueRegistry({
-      melegaSnapshot: LEGACY_BSC,
+      melegaSnapshot: melegaExactNetSnapshot(LEGACY_BSC),
       pancakeSource: pancakeQuotes('800000000000000000000'),
       uniswapSource: uniswapQuotes('1'),
     })
@@ -373,7 +381,7 @@ describe('SmartSwap first canonical Uniswap SHADOW/QUOTE readiness', () => {
   it('rejects a non-certified Uniswap chain and forbids cross-chain', async () => {
     await expect(
       runCertifiedUniswapShadowQuoteCompetition({
-        melegaSnapshot: LEGACY_BSC,
+        melegaSnapshot: melegaExactNetSnapshot(LEGACY_BSC),
         pancakeSource: pancakeQuotes('1'),
         uniswapSource: uniswapQuotes('1'),
         request: bscRequest(),
