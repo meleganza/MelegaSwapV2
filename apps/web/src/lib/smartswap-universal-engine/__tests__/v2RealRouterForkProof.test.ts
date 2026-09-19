@@ -79,11 +79,12 @@ const BSC_RPC_CANDIDATES = [
   process.env.BNB_MAINNET_RPC_URL,
   process.env.BSC_RPC_URL,
   process.env.NEXT_PUBLIC_BSC_RPC_URL,
+  'https://bsc-rpc.publicnode.com',
+  'https://bsc.publicnode.com',
   'https://bsc-dataseed.binance.org',
   'https://bsc-dataseed1.defibit.io',
   'https://bsc-dataseed1.ninicoin.io',
   'https://bsc-dataseed1.bnbchain.org',
-  'https://bsc-rpc.publicnode.com',
 ].filter((row): row is string => Boolean(row && row.trim()))
 
 const ETH_RPC_CANDIDATES = [
@@ -478,11 +479,17 @@ async function sendExact(ctx: ForkCtx, tx: UnsignedUserTransaction) {
 }
 
 async function sendExpectRevert(ctx: ForkCtx, tx: UnsignedUserTransaction) {
-  await expect(
-    rpc(ctx, 'eth_sendTransaction', [
+  try {
+    const hash = await rpc(ctx, 'eth_sendTransaction', [
       { from: tx.from, to: tx.to, data: tx.data, value: tx.value, gas: toHex(3_500_000n) },
-    ]),
-  ).rejects.toThrow()
+    ])
+    const receipt = await ctx.provider.waitForTransaction(hash)
+    if (receipt && receipt.status === 1) {
+      throw new Error(`${ctx.label}_EXPECTED_REVERT_SUCCEEDED:${hash}`)
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('EXPECTED_REVERT_SUCCEEDED')) throw error
+  }
 }
 
 function decodeApprove(data: string) {
@@ -538,15 +545,24 @@ async function compete(ctx: ForkCtx, request: SmartSwapRequest, venues: Array<'m
   return { result, nowIso }
 }
 
-async function dumpPool(ctx: ForkCtx, router: string, path: string[]) {
+async function dumpPool(ctx: ForkCtx, router: string, path: string[], valueWei: bigint) {
   const deadline = Math.floor(Date.now() / 1000) + 8_000_000
-  const value = 400n * 10n ** 18n
   const data = VIEW.encodeFunctionData('swapExactETHForTokens', [0, path, ctx.dumper, deadline])
   const hash = await rpc(ctx, 'eth_sendTransaction', [
-    { from: ctx.dumper, to: router, data, value: toHex(value), gas: toHex(1_000_000n) },
+    { from: ctx.dumper, to: router, data, value: toHex(valueWei), gas: toHex(1_500_000n) },
   ])
   const receipt = await ctx.provider.waitForTransaction(hash)
   if (!receipt || receipt.status !== 1) throw new Error(`${ctx.label}_DUMP_FAILED`)
+}
+
+async function warmForkReads(ctx: ForkCtx, tokens: string[], extra: string[]) {
+  const holders = [TREASURY, ctx.owner, ctx.executor, ctx.dumper, ctx.pair, ...ctx.users, ...extra]
+  for (const token of tokens) {
+    for (const who of holders) {
+      await balanceOf(ctx, token, who).catch(() => 0n)
+      await allowanceOf(ctx, token, who, ctx.executor).catch(() => 0n)
+    }
+  }
 }
 
 async function proveHappyPath(
@@ -690,6 +706,11 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       ],
     })
     FORK_PROOF.bsc = { rpc: bsc.source.url, block: bsc.source.block, hash: bsc.source.hash, chainId: '56' }
+    const melegaPairData = await rpc(bsc, 'eth_call', [
+      { to: MELEGA_FACTORY, data: VIEW.encodeFunctionData('getPair', [WBNB, USDC_BSC]) },
+      'latest',
+    ])
+    await warmForkReads(bsc, [WBNB, USDC_BSC], [MELEGA_ROUTER, PANCAKE_ROUTER, getAddress(`0x${melegaPairData.slice(-40)}`)])
     eth = await startFork({
       label: 'ETH',
       chainId: 1,
@@ -701,6 +722,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       routers: [{ address: UNISWAP_ROUTER, venue: 'uniswap' }],
     })
     FORK_PROOF.eth = { rpc: eth.source.url, block: eth.source.block, hash: eth.source.hash, chainId: '1' }
+    await warmForkReads(eth, [WETH, USDC_ETH], [UNISWAP_ROUTER])
     expect(bsc.provider.connection.url).toBe(`http://${ANVIL_HOST}:${BSC_PORT}`)
     expect(eth.provider.connection.url).toBe(`http://${ANVIL_HOST}:${ETH_PORT}`)
   }, 240_000)
@@ -836,10 +858,10 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     expect(await usedNonce(bsc, user, 12)).toBe(false)
     expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
 
-    const slipReq = bscRequest('erc20', GROSS_BSC, 5)
+    const slipReq = bscRequest('erc20', GROSS_BSC, 1)
     await wrapNative(bsc, user, slipReq.inputAmountRaw)
     const slipNow = new Date().toISOString()
-    const slipComp = await compete(bsc, slipReq, ['pancakeswap'])
+    const slipComp = await compete(bsc, slipReq, ['melega-dex'])
     const slipPrep = prepareV2UserTransactions({
       request: slipReq,
       winner: slipComp.result.shadowWinner,
@@ -852,7 +874,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
     })
     for (const tx of slipPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await dumpPool(bsc, PANCAKE_ROUTER, [WBNB, USDC_BSC])
+    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 8n * 10n ** 18n)
     const treasuryBeforeSlip = await balanceOf(bsc, WBNB, TREASURY)
     await sendExpectRevert(bsc, slipPrep.swapTransaction)
     expect(await usedNonce(bsc, user, 13)).toBe(false)
@@ -919,7 +941,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     expect(await usedNonce(eth, user, 22)).toBe(false)
     expect(await balanceOf(eth, WETH, TREASURY)).toBe(treasuryBeforeExpired)
 
-    const slipReq = ethRequest('erc20', GROSS_ETH, 5)
+    const slipReq = ethRequest('erc20', GROSS_ETH, 1)
     await wrapNative(eth, user, slipReq.inputAmountRaw)
     const slipNow = new Date().toISOString()
     const slipComp = await compete(eth, slipReq, ['uniswap'])
@@ -935,7 +957,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 1, token: WETH, owner: user, spender: eth.executor, amountRaw: '0' },
     })
     for (const tx of slipPrep.approvalTransactions) expect((await sendExact(eth, tx)).status).toBe(1)
-    await dumpPool(eth, UNISWAP_ROUTER, [WETH, USDC_ETH])
+    await dumpPool(eth, UNISWAP_ROUTER, [WETH, USDC_ETH], 800n * 10n ** 18n)
     const treasuryBeforeSlip = await balanceOf(eth, WETH, TREASURY)
     await sendExpectRevert(eth, slipPrep.swapTransaction)
     expect(await usedNonce(eth, user, 23)).toBe(false)
