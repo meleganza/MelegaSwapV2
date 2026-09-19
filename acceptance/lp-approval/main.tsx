@@ -9,12 +9,16 @@ function App() {
   return (
     <main style={{ padding: 20 }}>
       <p>
-        LOCAL ACCEPTANCE · {chainId === 1 ? 'Ethereum' : 'BNB Chain'} · Simulated wallet/RPC · No public transactions
+        LOCAL ACCEPTANCE · {chainId === 1 ? 'Ethereum' : 'BNB Chain'} ·{' '}
+        {new URLSearchParams(location.search).has('fork')
+          ? 'Real Ethereum contracts on LOCAL ANVIL · App RPC unavailable'
+          : 'Simulated wallet/RPC'}{' '}
+        · No public transactions
       </p>
       <h1>Add / Remove Liquidity</h1>
       <LiquidityRemovePanel />
       <button data-testid="settle" onClick={confirmApproval} style={{ marginTop: 20 }}>
-        Fixture: confirm approval on chain
+        Fixture: mine/confirm local approval
       </button>
       <details>
         <summary>Local transaction evidence</summary>

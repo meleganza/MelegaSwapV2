@@ -5,7 +5,8 @@
       "home-trade-screen-redesign": true,
       "design-system-foundation": true,
       "mission-project-os-p0-remediation": true,
-      "mission-pp-cert-project-os-certification": true
+      "mission-pp-cert-project-os-certification": true,
+      "fix/eth-marco-remove-root-cause": false
     }
   },
   "rewrites": [

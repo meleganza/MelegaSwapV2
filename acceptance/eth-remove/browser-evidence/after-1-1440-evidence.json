@@ -1,0 +1,168 @@
+[
+  {
+    "event": "fork initial state",
+    "walletChain": 1,
+    "signerChain": 1,
+    "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "lp": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "router": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+    "balance": "150000499999999999",
+    "allowance": "0"
+  },
+  {
+    "event": "fork approve payload",
+    "to": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "hash": "0x4b6ed4ec5f7edf551e25b8f3e3a9e5de31bb197f0ee7772c7fec57f8c6047d76",
+    "data": "0x095ea7b3000000000000000000000000ff8ebf8edf1c533a02d066f852788773bdcd631cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "chainId": 1
+  },
+  {
+    "event": "transaction",
+    "chainId": 1,
+    "args": [
+      {
+        "hash": "0x4b6ed4ec5f7edf551e25b8f3e3a9e5de31bb197f0ee7772c7fec57f8c6047d76",
+        "type": 2,
+        "accessList": [],
+        "blockHash": null,
+        "blockNumber": null,
+        "transactionIndex": null,
+        "confirmations": 0,
+        "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+        "gasPrice": {
+          "type": "BigNumber",
+          "hex": "0x43037e5f"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x3b9aca00"
+        },
+        "maxFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x43037e5f"
+        },
+        "gasLimit": {
+          "type": "BigNumber",
+          "hex": "0xb5ce"
+        },
+        "to": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+        "value": {
+          "type": "BigNumber",
+          "hex": "0x00"
+        },
+        "nonce": 48,
+        "data": "0x095ea7b3000000000000000000000000ff8ebf8edf1c533a02d066f852788773bdcd631cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "r": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "s": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "v": 0,
+        "creates": null,
+        "chainId": 1
+      },
+      {
+        "summary": "Approve LP",
+        "translatableSummary": {
+          "text": "Approve %symbol%",
+          "data": {
+            "symbol": "LP"
+          }
+        },
+        "approval": {
+          "tokenAddress": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+          "spender": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C"
+        },
+        "type": "approve"
+      }
+    ]
+  },
+  {
+    "event": "fork approval receipt",
+    "hash": "0x4b6ed4ec5f7edf551e25b8f3e3a9e5de31bb197f0ee7772c7fec57f8c6047d76",
+    "status": 1,
+    "allowance": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+  },
+  {
+    "event": "fork approval confirmed",
+    "chainId": 1
+  },
+  {
+    "event": "fork remove payload ready",
+    "chainId": 1,
+    "walletChain": 1,
+    "signerChain": 1,
+    "permit": false,
+    "args": [
+      "0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "150000499999999999",
+      "14361330321023162235",
+      "1551240845808774",
+      "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "1789840062"
+    ],
+    "payload": {
+      "data": "0xbaa2abde0000000000000000000000005911dc98a9e1a4fffd802c3a57cda6bbd26cdb76000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000000214e8a8f6a187ff000000000000000000000000000000000000000000000000c74db1d65ea1d77b000000000000000000000000000000000000000000000000000582d867935486000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0000000000000000000000000000000000000000000000000000000006aaecabe",
+      "to": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+      "gasLimit": {
+        "type": "BigNumber",
+        "hex": "0x029074"
+      },
+      "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "value": {
+        "type": "BigNumber",
+        "hex": "0x00"
+      }
+    },
+    "ethCallResult": [
+      "14433497810073529885",
+      "1559036025938467"
+    ]
+  },
+  {
+    "event": "transaction",
+    "chainId": 1,
+    "args": [
+      {
+        "hash": "0xce6cf8fce11dd42656880fb8c6c470d2fbf05533e27f92a4473c5ec2d9b6e5b2",
+        "type": 2,
+        "accessList": [],
+        "blockHash": "0x1331eea40a1521fccc89ec4ffe8871a263b51acfdb9997141933753788df2576",
+        "blockNumber": 26013031,
+        "transactionIndex": 0,
+        "confirmations": 1,
+        "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+        "gasPrice": {
+          "type": "BigNumber",
+          "hex": "0x4216c5fd"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x3b9aca00"
+        },
+        "maxFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x4216c5fd"
+        },
+        "gasLimit": {
+          "type": "BigNumber",
+          "hex": "0x029074"
+        },
+        "to": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+        "value": {
+          "type": "BigNumber",
+          "hex": "0x00"
+        },
+        "nonce": 49,
+        "data": "0xbaa2abde0000000000000000000000005911dc98a9e1a4fffd802c3a57cda6bbd26cdb76000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000000214e8a8f6a187ff000000000000000000000000000000000000000000000000c74db1d65ea1d77b000000000000000000000000000000000000000000000000000582d867935486000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0000000000000000000000000000000000000000000000000000000006aaecabe",
+        "r": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "s": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "v": 0,
+        "creates": null,
+        "chainId": 1
+      },
+      {
+        "summary": "Remove MARCO/WETH liquidity",
+        "type": "remove-liquidity"
+      }
+    ]
+  }
+]

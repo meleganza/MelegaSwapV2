@@ -1,0 +1,88 @@
+[
+  {
+    "event": "allowance",
+    "chainId": 56,
+    "token": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "owner": "0x0000000000000000000000000000000000000001",
+    "spender": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3"
+  },
+  {
+    "event": "wallet approval request",
+    "chainId": 56,
+    "args": [
+      "approve",
+      "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      {
+        "type": "BigNumber",
+        "hex": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ]
+  },
+  {
+    "event": "transaction",
+    "chainId": 56,
+    "args": [
+      {
+        "hash": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "summary": "Approve LP",
+        "translatableSummary": {
+          "text": "Approve %symbol%",
+          "data": {
+            "symbol": "LP"
+          }
+        },
+        "approval": {
+          "tokenAddress": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+          "spender": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3"
+        },
+        "type": "approve"
+      }
+    ]
+  },
+  {
+    "event": "mock approval confirmed",
+    "chainId": 56
+  },
+  {
+    "event": "allowance",
+    "chainId": 56,
+    "token": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "owner": "0x0000000000000000000000000000000000000001",
+    "spender": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3"
+  },
+  {
+    "event": "mock removeLiquidity request",
+    "chainId": 56,
+    "args": [
+      "0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "150000000000000000",
+      "14361233000000000000",
+      "1551234850000000",
+      "0x0000000000000000000000000000000000000001",
+      "1789840065",
+      {
+        "gasLimit": {
+          "type": "BigNumber",
+          "hex": "0x030d40"
+        },
+        "value": "0"
+      }
+    ]
+  },
+  {
+    "event": "transaction",
+    "chainId": 56,
+    "args": [
+      {
+        "hash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "summary": "Remove MARCO/WBNB liquidity",
+        "type": "remove-liquidity"
+      }
+    ]
+  }
+]

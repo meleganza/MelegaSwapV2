@@ -19,5 +19,10 @@
     "src/pages/api/indexer/registry/refresh.ts": {
       "maxDuration": 300
     }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "fix/eth-marco-remove-root-cause": false
+    }
   }
 }

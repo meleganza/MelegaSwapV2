@@ -40,7 +40,10 @@ function useTokenAllowance(
   spender?: string,
   options?: TokenAllowanceOptions,
 ): CurrencyAmount<Token> | undefined {
-  const contract = useTokenContract(token?.address, false)
+  // Remove's authoritative read must use the same wallet transport as approve.
+  // The public app RPC can be unavailable even after the wallet mined approval.
+  // Calling allowance through a signer is read-only (eth_call), never a signature.
+  const contract = useTokenContract(token?.address, options?.preferDirect ?? false)
 
   const inputs = useMemo(() => [owner, spender], [owner, spender])
   const allowance = useSingleCallResult(contract, 'allowance', inputs).result
@@ -57,16 +60,18 @@ function useTokenAllowance(
     let cancelled = false
     if (!allowanceRequestKey || !contract || !owner || !spender) return undefined
 
-    const readDirectAllowance = () => {
-      void contract
-        .allowance(owner, spender)
-        .then((value) => {
-          if (!cancelled) setDirectAllowance({ key: allowanceRequestKey, raw: value.toString() })
-        })
-        .catch(() => {
-          // The approval hook owns the bounded fail-closed timeout. Keeping the
-          // last direct result scoped by key prevents stale allowance reuse.
-        })
+    const readDirectAllowance = async () => {
+      try {
+        if (options?.preferDirect && contract.signer && (await contract.signer.getChainId()) !== token?.chainId) {
+          if (!cancelled) setDirectAllowance(undefined)
+          return
+        }
+        const value = await contract.allowance(owner, spender)
+        if (!cancelled) setDirectAllowance({ key: allowanceRequestKey, raw: value.toString() })
+      } catch {
+        // The approval hook owns the bounded fail-closed timeout. Keeping the
+        // last direct result scoped by key prevents stale allowance reuse.
+      }
     }
 
     readDirectAllowance()
@@ -78,7 +83,7 @@ function useTokenAllowance(
       cancelled = true
       if (interval) window.clearInterval(interval)
     }
-  }, [allowanceRequestKey, contract, owner, spender, options?.pollIntervalMs])
+  }, [allowanceRequestKey, contract, owner, spender, options?.pollIntervalMs, options?.preferDirect, token?.chainId])
 
   return useMemo(() => {
     if (!token) return undefined
