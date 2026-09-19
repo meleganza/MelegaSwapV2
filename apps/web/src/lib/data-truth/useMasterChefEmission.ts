@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { ChainId } from '@pancakeswap/sdk'
+import contracts from 'config/constants/contracts'
 import { BLOCKS_PER_DAY } from 'config'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useFarms } from 'state/farms/hooks'
@@ -16,6 +17,7 @@ export interface MasterChefEmission extends MasterChefEmissionDiagnostics {
 }
 
 type ApiEmissionPayload = MasterChefEmissionDiagnostics & {
+  chainId?: number
   error?: string
   masterChefAddress?: string
   emissionMethod?: string
@@ -57,11 +59,12 @@ function mapApiPayload(json: ApiEmissionPayload): MasterChefEmissionDiagnostics 
   }
 }
 
-async function fetchMasterChefEmission(pids?: number[]): Promise<MasterChefEmissionDiagnostics | null> {
-  const qs = pids?.length ? `?pids=${pids.join(',')}` : ''
+async function fetchMasterChefEmission(pids?: number[], chainId = 56): Promise<MasterChefEmissionDiagnostics | null> {
+  const qs = chainId === 1 ? '?chainId=1' : pids?.length ? `?pids=${pids.join(',')}` : ''
   const res = await fetch(`/api/masterchef/emission${qs}`)
   if (!res.ok) return null
   const json = (await res.json()) as ApiEmissionPayload
+  if (chainId === 1 && json.chainId !== 1) return null
   return mapApiPayload(json)
 }
 
@@ -69,25 +72,26 @@ async function fetchMasterChefEmission(pids?: number[]): Promise<MasterChefEmiss
 export function useMasterChefEmission(farmPids?: number[]): MasterChefEmission {
   const { chainId } = useActiveChainId()
   const isBsc = chainId === ChainId.BSC
+  const isEthereum = chainId === ChainId.ETHEREUM
   const { regularCakePerBlock } = useFarms()
   // Null SWR key disables the fetcher; BSC keys stay byte-identical to the prior cache.
-  const swrKey = isBsc
+  const swrKey = isEthereum ? 'masterchef-emission-1' : isBsc
     ? farmPids?.length
       ? `masterchef-emission-${farmPids.join(',')}`
       : 'masterchef-emission-api'
     : null
-  const { data: apiEmission, error: swrError } = useSWR(swrKey, () => fetchMasterChefEmission(farmPids), {
+  const { data: apiEmission, error: swrError } = useSWR(swrKey, () => fetchMasterChefEmission(farmPids, chainId), {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
 
   return useMemo(() => {
-    const mapped = isBsc ? apiEmission ?? null : null
+    const mapped = isBsc || isEthereum ? apiEmission ?? null : null
     const cakePerBlock = isBsc ? regularCakePerBlock : 0
     const apiReady = mapped?.status === 'ready' && mapped.perBlock > 0
     const perBlock = apiReady ? mapped!.perBlock : cakePerBlock > 0 ? cakePerBlock : 0
     const bonusMultiplier = mapped?.bonusMultiplier ?? 1
-    const blocksPerDay = mapped?.blocksPerDay ?? BLOCKS_PER_DAY
+    const blocksPerDay = mapped?.blocksPerDay ?? (isEthereum ? 7200 : BLOCKS_PER_DAY)
     const perDay = mapped?.perDay ?? (perBlock > 0 ? perBlock * blocksPerDay * bonusMultiplier : 0)
     const readError =
       mapped?.readError ??
@@ -100,7 +104,7 @@ export function useMasterChefEmission(farmPids?: number[]): MasterChefEmission {
 
     return {
       status,
-      contract: mapped?.contract ?? MELEGA_PRODUCTION_CONTRACTS.masterChef,
+      contract: mapped?.contract ?? (isEthereum ? contracts.masterChef[1] : MELEGA_PRODUCTION_CONTRACTS.masterChef),
       method: mapped?.method ?? 'dexTokenPerBlock',
       rawPerBlockHex: mapped?.rawPerBlockHex ?? '',
       rawPerBlockWei: mapped?.rawPerBlockWei ?? '',
@@ -117,7 +121,7 @@ export function useMasterChefEmission(farmPids?: number[]): MasterChefEmission {
       readError,
       reason: mapped?.reason ?? readError,
       source: apiReady ? mapped!.source : cakePerBlock > 0 ? 'redux-farms-fallback' : 'unavailable',
-      perDayLabel: status === 'ready' && perDay > 0 ? `${perDay.toLocaleString(undefined, { maximumFractionDigits: 2 })} MARCO` : '',
+      perDayLabel: status === 'ready' && perDay > 0 ? `${perDay.toLocaleString(undefined, { maximumFractionDigits: isEthereum ? 8 : 2 })} MARCO` : '',
     }
-  }, [isBsc, regularCakePerBlock, apiEmission, swrError])
+  }, [isBsc, isEthereum, regularCakePerBlock, apiEmission, swrError])
 }

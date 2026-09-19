@@ -1,0 +1,39 @@
+{
+  "chainId": 1,
+  "masterChef": "0x585364c747CaF6cF6441656F803796230fb1d61c",
+  "head": 26013251,
+  "pages": 1,
+  "updatedAt": "2026-09-19T18:08:37.952Z",
+  "source": "Blockscout complete deposit index + RPC userInfo + LP conservation",
+  "reconciliation": [
+    {
+      "pid": 1,
+      "lp": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+      "stakedRaw": "14854999499999999751",
+      "masterChefLpBalanceRaw": "14854999499999999751",
+      "participants": 2
+    },
+    {
+      "pid": 2,
+      "lp": "0x15F6b6B609Cc2e3d8E4a355c76C99B3956954664",
+      "stakedRaw": "4949999754",
+      "masterChefLpBalanceRaw": "4949999754",
+      "participants": 2
+    },
+    {
+      "pid": 3,
+      "lp": "0x2ee39e16735B194006739C79785EF6F20ADBB007",
+      "stakedRaw": "0",
+      "masterChefLpBalanceRaw": "0",
+      "participants": 0
+    },
+    {
+      "pid": 4,
+      "lp": "0xD3871eDa34472Dd428B24d9A5051f9665D73E1C5",
+      "stakedRaw": "3061443289097151123",
+      "masterChefLpBalanceRaw": "3061443289097151123",
+      "participants": 2
+    }
+  ],
+  "uniqueActiveLpFarmers": 4
+}

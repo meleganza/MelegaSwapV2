@@ -138,6 +138,6 @@ export function formatHumanMarcoAmount(amount: number, symbol = 'MARCO'): string
       ? `${(amount / 1_000_000).toFixed(2)}M`
       : amount >= 1_000
         ? `${(amount / 1_000).toFixed(1)}K`
-        : amount.toFixed(2)
+        : amount < 0.01 ? amount.toPrecision(3) : amount.toFixed(2)
   return `${text} ${symbol}`
 }

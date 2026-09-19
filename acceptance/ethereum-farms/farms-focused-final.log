@@ -1,0 +1,168 @@
+
+ RUN  v0.27.2 /Users/marcomelega/Documents/Codex/2026-09-19/referenced-chatgpt-conversation-this-is-an-2/work/FarmsFix/apps/web
+
+ ✓ src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts  (8 tests) 23ms
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > does not fetch /api/masterchef/emission or use Redux fallback on chainId 137
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > does not fetch /api/masterchef/emission or use Redux fallback on chainId 42161
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > does not fetch /api/masterchef/emission or use Redux fallback on chainId 43114
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > does not fetch /api/masterchef/emission or use Redux fallback on chainId 8453
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > fetches chain-bound Ethereum emission without reusing BSC Redux data
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > rejects an Ethereum response that does not identify chain 1
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > fetches and parses /api/masterchef/emission on BSC
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | src/lib/data-truth/__tests__/useMasterChefEmission.chainGuard.test.ts > useMasterChefEmission chain guard > keeps BSC pid query and Redux fallback semantics
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts  (12 tests | 2 failed) 7ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > keeps Architecture 000 mockup and Module 001 Hero sources byte-frozen
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > ownership map records Module 002 file assignment
+     → ENOENT: no such file or directory, open '/Users/marcomelega/Documents/Codex/2026-09-19/referenced-chatgpt-conversation-this-is-an-2/work/FarmsFix/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts  (12 tests | 2 failed) 9ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > freezes Architecture tip, Founder mockup, and Modules 001–003 sources
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable
+     → expected true to be false // Object.is equality
+ ✓ src/views/FarmsStudio/__tests__/ethereumFarmersCount.test.tsx  (3 tests) 3ms
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts  (10 tests | 1 failed) 9ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts > FARMS_MODULE_003 My Farms > locks mockup and prior module source hashes
+     → expected false to be true // Object.is equality
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ✓ src/utils/__tests__/ethereumFarmApr.test.ts  (3 tests) 2ms
+ ✓ src/lib/yield-participants/__tests__/enrichYieldParticipantCards.test.ts  (4 tests) 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > keeps Architecture 000 mockup and Module 001 Hero sources byte-frozen
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts:64:36
+     62|   it('keeps Architecture 000 mockup and Module 001 Hero sources byte-f…
+     63|     const mockupPath = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePa…
+     64|     expect(existsSync(mockupPath)).toBe(true)
+       |                                    ^
+     65|     const mockSha = createHash('sha256').update(readFileSync(mockupPat…
+     66|     expect(mockSha).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > ownership map records Module 002 file assignment
+Error: ENOENT: no such file or directory, open '/Users/marcomelega/Documents/Codex/2026-09-19/referenced-chatgpt-conversation-this-is-an-2/work/FarmsFix/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts:288:17
+    286|
+    287|   it('ownership map records Module 002 file assignment', () => {
+    288|     const map = readFileSync(path.join(WEB, 'docs/runtime/FARMS_MODULE…
+       |                 ^
+    289|     expect(map).toContain('FarmsOverviewKpisModule.tsx')
+    290|     expect(map).toContain('useFarmsOverviewKpis.ts')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/Users/marcomelega/Documents/Codex/2026-09-19/referenced-chatgpt-conversation-this-is-an-2/work/FarmsFix/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > freezes Architecture tip, Founder mockup, and Modules 001–003 sources
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts:83:30
+     81|     expect(FARMS_ARCHITECTURE_000_TIP.startsWith('8edd68d4')).toBe(tru…
+     82|     const mock = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     83|     expect(existsSync(mock)).toBe(true)
+       |                              ^
+     84|     expect(createHash('sha256').update(readFileSync(mock)).digest('hex…
+     85|     expect(farmsExplore.mockupSha256).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable
+AssertionError: expected true to be false // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts:191:51
+    189|       } as any,
+    190|     })
+    191|     expect(isActiveStakeableExploreFarm(arbStub)).toBe(false)
+       |                                                   ^
+    192|
+    193|     const bsc = makeCard({
+
+  - Expected   "false"
+  + Received   "true"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts > FARMS_MODULE_003 My Farms > locks mockup and prior module source hashes
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts:19:95
+     17| describe('FARMS_MODULE_003 My Farms', () => {
+     18|   it('locks mockup and prior module source hashes', () => {
+     19|     const mock = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath); e…
+       |                                                                                               ^
+     20|     expect(createHash('sha256').update(readFileSync(mock)).digest('hex…
+     21|     expect(farmsMyFarms.mockupSha256).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+ Test Files  3 failed | 4 passed (7)
+      Tests  5 failed | 47 passed (52)
+   Start at  20:15:21
+   Duration  1.56s (transform 680ms, setup 60ms, collect 977ms, tests 54ms)

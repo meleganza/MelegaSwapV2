@@ -50,7 +50,7 @@ const Grid = styled.div`
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(6, ${farmsOverviewKpis.cardW});
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   column-gap: ${farmsOverviewKpis.cardGap};
   align-items: stretch;
   min-width: 0;
@@ -68,7 +68,7 @@ const Grid = styled.div`
 `
 
 const Card = styled.article`
-  width: ${farmsOverviewKpis.cardW};
+  width: 100%;
   height: ${farmsOverviewKpis.cardH};
   box-sizing: border-box;
   padding: ${farmsOverviewKpis.cardPad};

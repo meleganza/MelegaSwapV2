@@ -12,6 +12,7 @@ export type YieldParticipantSnapshot = {
   status: YieldParticipantIndexStatus
   updatedAt: string | null
   source: 'masterchef-smartchef-event-index'
+  farmTotals?: Record<string, YieldParticipantCount>
   farms: Record<string, YieldParticipantCount>
   pools: Record<string, YieldParticipantCount>
 }

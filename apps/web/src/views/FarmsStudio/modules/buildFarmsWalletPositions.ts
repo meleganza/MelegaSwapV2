@@ -1,5 +1,6 @@
 /** Pure FARMS_MODULE_003 portfolio builder. No React or runtime hooks. */
 import BigNumber from 'bignumber.js'
+import { CAKE } from '@pancakeswap/tokens'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { farmsMyFarms } from './farmsMyFarmsTokens'
@@ -62,7 +63,7 @@ function actions(card: FarmPreviewCard, state: FarmsPositionStatus, hasStake: bo
 export function cardToFarmsWalletPosition(card: FarmPreviewCard, opts: { wallet: string; chainId: number }): FarmsWalletPosition | null {
   if (!farmPositionInclusionEligible(card)) return null
   const raw = card.rawFarm as RawFarm | undefined
-  const token0 = raw?.token; const token1 = raw?.quoteToken; const reward = raw?.earningToken
+  const token0 = raw?.token; const token1 = raw?.quoteToken; const reward = raw?.earningToken ?? (opts.chainId === 1 ? CAKE[1] : undefined)
   const s0 = token0?.symbol ?? card.tokens[0] ?? 'TOKEN'; const s1 = token1?.symbol ?? card.tokens[1] ?? 'TOKEN'; const rs = reward?.symbol ?? card.rewardToken ?? 'REWARD'
   const stakeDecimals = raw?.lpToken?.decimals ?? 18
   const rewardDecimals = reward?.decimals ?? null

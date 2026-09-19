@@ -132,6 +132,9 @@ function resolveTvl(card: FarmPreviewCard): {
   if (liq > 0) {
     return { display: formatUsd(liq), state: 'Live', sort: liq, available: true }
   }
+  if (card.rawFarm?.lpTotalInQuoteToken != null && new BigNumber(card.rawFarm.lpTotalInQuoteToken).isZero()) {
+    return { display: '$0.00', state: 'Live', sort: 0, available: true }
+  }
   const label = card.tvl || card.liquidity
   if (
     !label ||
@@ -201,7 +204,7 @@ function resolveWalletLp(
   if (n === 0) {
     return { display: '0 LP', state: 'zero', sort: 0, available: true, hasLp: false }
   }
-  const text = n >= 1000 ? `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} LP` : `${n.toFixed(2)} LP`
+  const text = n >= 1000 ? `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} LP` : `${n < 0.01 ? n.toPrecision(3) : n.toFixed(2)} LP`
   return { display: text, state: 'available', sort: n, available: true, hasLp: n > 0 }
 }
 
