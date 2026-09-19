@@ -79,12 +79,11 @@ const BSC_RPC_CANDIDATES = [
   process.env.BNB_MAINNET_RPC_URL,
   process.env.BSC_RPC_URL,
   process.env.NEXT_PUBLIC_BSC_RPC_URL,
-  'https://bsc-rpc.publicnode.com',
-  'https://bsc.publicnode.com',
   'https://bsc-dataseed.binance.org',
   'https://bsc-dataseed1.defibit.io',
   'https://bsc-dataseed1.ninicoin.io',
   'https://bsc-dataseed1.bnbchain.org',
+  'https://bsc-dataseed2.binance.org',
 ].filter((row): row is string => Boolean(row && row.trim()))
 
 const ETH_RPC_CANDIDATES = [
@@ -220,7 +219,7 @@ async function pickForkSource(label: string, urls: string[], expectedChainId: st
       attempts.push(`${url} method=eth_blockNumber http=${latest.http} error=${latest.error ?? latest.bodyHead}`)
       continue
     }
-    const pinNumber = `0x${(BigInt(latest.result) - 8n).toString(16)}`
+    const pinNumber = `0x${(BigInt(latest.result) - 2n).toString(16)}`
     const block = await publicRpc(url, 'eth_getBlockByNumber', [pinNumber, false])
     const hash = (block.result as unknown as { hash?: string; timestamp?: string } | undefined)?.hash
     if (!hash) {
@@ -237,6 +236,11 @@ async function pickForkSource(label: string, urls: string[], expectedChainId: st
       }
     }
     if (!codesOk) continue
+    const storage = await publicRpc(url, 'eth_getStorageAt', [codeAddresses[0], '0x0', pinNumber])
+    if (storage.error || storage.result == null) {
+      attempts.push(`${url} method=eth_getStorageAt address=${codeAddresses[0]} block=${pinNumber} http=${storage.http} error=${storage.error ?? storage.bodyHead}`)
+      continue
+    }
     return {
       url,
       chainId: expectedChainId,
