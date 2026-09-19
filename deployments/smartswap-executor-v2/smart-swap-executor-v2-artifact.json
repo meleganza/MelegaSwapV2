@@ -1,0 +1,742 @@
+{
+  "contract": "SmartSwapExecutorV2",
+  "source": "contracts/smartswap/SmartSwapExecutorV2.sol",
+  "source_commit": "65fa3dba016b66122d42eb31390322e059155bbe",
+  "source_blob": "eb5e54725a2d3cdc316de18fd542ac66dcfbf688",
+  "source_sha256": "e5a4acafa5114834d249b70758722ae91b5fc4a17b4776c0376f714440535b52",
+  "compiled_at": "2026-09-19T10:57:09.399767+00:00",
+  "foundry_profile": "smartswap_executor_release",
+  "compiler": {
+    "version": "0.8.20+commit.a1b79de6"
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "viaIR": true,
+    "evmVersion": "shanghai",
+    "metadata": {
+      "appendCBOR": false,
+      "bytecodeHash": "none",
+      "useLiteralContent": true
+    },
+    "compilationTarget": {
+      "contracts/smartswap/SmartSwapExecutorV2.sol": "SmartSwapExecutorV2"
+    },
+    "remappings": [
+      ":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+      ":forge-std/=lib/forge-std/src/"
+    ]
+  },
+  "creation_bytecode_sha256": "36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217",
+  "deployed_bytecode_sha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+  "creation_bytecode_keccak": "0xca5257e7de17873f4adeeaf38aafec86418fd5832b71c101f12681e748eff41c",
+  "deployed_bytecode_keccak": "0xa4c1719a1b08959730964998f27170ecfc7dbaee72738decad3bec825d199a87",
+  "creation_bytecode_bytes": 7070,
+  "deployed_bytecode_bytes": 6602,
+  "methodIdentifiers": {
+    "INTENT_VERSION()": "6dbc0a27",
+    "MAX_PROTOCOL_FEE_BPS()": "6d947e4b",
+    "NATIVE()": "a0cf0aea",
+    "POLICY_ID()": "db4ef9a6",
+    "POLICY_VERSION()": "c1bb9bb6",
+    "allowedVenue(address)": "a8ff4b2b",
+    "authorizedFeeBps(uint256)": "6d75e305",
+    "execute((uint256,bytes32,bytes32,uint256,address,address,address,uint256,uint256,bytes32,address,bytes32,uint16,uint256,address,address,uint256,uint256,uint256,bool,bool),address[])": "4bce4501",
+    "owner()": "8da5cb5b",
+    "pause()": "8456cb59",
+    "paused()": "5c975abb",
+    "renounceOwnership()": "715018a6",
+    "routeHashOf(address[],bool,bool)": "0836b909",
+    "setRouter(address,bytes32,bool)": "1bdbc79b",
+    "transferOwnership(address)": "f2fde38b",
+    "treasury()": "61d027b3",
+    "unpause()": "3f4ba83a",
+    "usedNonce(address,uint256)": "f90a2f30",
+    "wrappedNative()": "eb6d3a11"
+  },
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "treasury_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "wrappedNative_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "owner_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "INTENT_VERSION",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "MAX_PROTOCOL_FEE_BPS",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "NATIVE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "POLICY_ID",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "POLICY_VERSION",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "allowedVenue",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "authorizedFeeBps",
+      "inputs": [
+        {
+          "name": "structuralRouteCostBps",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "execute",
+      "inputs": [
+        {
+          "name": "intent",
+          "type": "tuple",
+          "internalType": "struct SmartSwapExecutorV2.ExecutionIntent",
+          "components": [
+            {
+              "name": "version",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "policyId",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "policyVersion",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "user",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "inputAsset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "outputAsset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "inputAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "minUserOut",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "venueId",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "router",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "routeHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "feeBps",
+              "type": "uint16",
+              "internalType": "uint16"
+            },
+            {
+              "name": "feeAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "feeAsset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "structuralRouteCostBps",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "deadline",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "nonce",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "nativeIn",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "nativeOut",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ]
+        },
+        {
+          "name": "path",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "userOutput",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "owner",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "pause",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "paused",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "renounceOwnership",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "routeHashOf",
+      "inputs": [
+        {
+          "name": "path",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "nativeIn",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "nativeOut",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "setRouter",
+      "inputs": [
+        {
+          "name": "router",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "venueId",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "allowed",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "transferOwnership",
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "treasury",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "unpause",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "usedNonce",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "wrappedNative",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "OwnershipTransferred",
+      "inputs": [
+        {
+          "name": "previousOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Paused",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "RouterAllowlisted",
+      "inputs": [
+        {
+          "name": "router",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "venueId",
+          "type": "bytes32",
+          "indexed": false,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "allowed",
+          "type": "bool",
+          "indexed": false,
+          "internalType": "bool"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "SmartSwapExecuted",
+      "inputs": [
+        {
+          "name": "executionId",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "venueId",
+          "type": "bytes32",
+          "indexed": false,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "inputAsset",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "outputAsset",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "inputAmount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "userOutput",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "feeAsset",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "feeAmount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "beneficiary",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Unpaused",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "EnforcedPause",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ExpectedPause",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Expired",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "FeeBypass",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidAmount",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidPath",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NativeValue",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "OwnableInvalidOwner",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "OwnableUnauthorizedAccount",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ReentrancyGuardReentrantCall",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Replay",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SafeERC20FailedOperation",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "UnknownVenue",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "UnsupportedToken",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongBeneficiary",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongChain",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongFee",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongPolicy",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongRoute",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongRouter",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WrongUser",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAddress",
+      "inputs": []
+    }
+  ],
+  "public_executor_address": "NON_DEPLOYED/UNVERIFIED",
+  "v1_overwrite_guard": {
+    "deployments_v1_artifact_sha256": "e653af3e1dde8dbfd27f6cdcbe10d0719b79f234fa2af092a00a4aca6118287e",
+    "status": "UNCHANGED"
+  }
+}

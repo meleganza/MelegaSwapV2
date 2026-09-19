@@ -1,0 +1,55 @@
+{
+  "status": "NOT-EXECUTED",
+  "publicExecutorAddress": "NON_DEPLOYED/UNVERIFIED",
+  "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "constructor": {
+    "signature": "constructor(address treasury_, address wrappedNative_, address owner_)",
+    "bsc56": {
+      "args": [
+        "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
+      ],
+      "abiEncoded": "0x000000000000000000000000b6436ef4c7f76be0f26c0c5c9db72f2689abf65b000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+    },
+    "ethereum1": {
+      "args": [
+        "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
+      ],
+      "abiEncoded": "0x000000000000000000000000b6436ef4c7f76be0f26c0c5c9db72f2689abf65b000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+    }
+  },
+  "setRouter": {
+    "signature": "setRouter(address router, bytes32 venueId, bool allowed)",
+    "selector": "0x1bdbc79b",
+    "calls": [
+      {
+        "chainId": 56,
+        "venueId": "melega-dex",
+        "venueIdHash": "0x877b20d585b9e74b8a131af0e7b570769017d6338d83cef67e371130e4125538",
+        "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+        "allowed": true,
+        "calldata": "0x1bdbc79b000000000000000000000000c25033218d181b27d4a2944fbb04fc055da4eab3877b20d585b9e74b8a131af0e7b570769017d6338d83cef67e371130e41255380000000000000000000000000000000000000000000000000000000000000001"
+      },
+      {
+        "chainId": 56,
+        "venueId": "pancakeswap",
+        "venueIdHash": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+        "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "allowed": true,
+        "calldata": "0x1bdbc79b00000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024ed7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba30000000000000000000000000000000000000000000000000000000000000001"
+      },
+      {
+        "chainId": 1,
+        "venueId": "uniswap",
+        "venueIdHash": "0xa2a03459171c76bff45817330c10ef9f8af07011a33005b73b50189bbc7e7132",
+        "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        "allowed": true,
+        "calldata": "0x1bdbc79b0000000000000000000000007a250d5630b4cf539739df2c5dacb4c659f2488da2a03459171c76bff45817330c10ef9f8af07011a33005b73b50189bbc7e71320000000000000000000000000000000000000000000000000000000000000001"
+      }
+    ]
+  }
+}
