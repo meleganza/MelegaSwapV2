@@ -4,7 +4,7 @@
  * Does not reuse V1 signer-bound intent semantics.
  */
 
-import { defaultAbiCoder } from '@ethersproject/abi'
+import { defaultAbiCoder, Interface } from '@ethersproject/abi'
 import { getAddress } from '@ethersproject/address'
 import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
@@ -326,5 +326,258 @@ export function assertNoV1SignerFields(intent: V2ExecutionIntent): void {
   const record = intent as V2ExecutionIntent & { engineSeal?: unknown; intentSigner?: unknown; signature?: unknown }
   if (record.engineSeal != null || record.intentSigner != null || record.signature != null) {
     fail('V2_BINDING_V1_SIGNER_FIELD')
+  }
+}
+
+export const V2_PREP_NOW_INVALID = 'V2_PREP_NOW_INVALID' as const
+export const V2_PREP_CHAIN_MISMATCH = 'V2_PREP_CHAIN_MISMATCH' as const
+export const V2_PREP_EXECUTOR_INVALID = 'V2_PREP_EXECUTOR_INVALID' as const
+export const V2_PREP_DEADLINE_EXPIRED = 'V2_PREP_DEADLINE_EXPIRED' as const
+export const V2_PREP_ALLOWANCE_MISSING = 'V2_PREP_ALLOWANCE_MISSING' as const
+export const V2_PREP_ALLOWANCE_IDENTITY = 'V2_PREP_ALLOWANCE_IDENTITY' as const
+export const V2_PREP_AMOUNT_BOUNDS = 'V2_PREP_AMOUNT_BOUNDS' as const
+export const V2_PREP_MIN_OUT_ZERO = 'V2_PREP_MIN_OUT_ZERO' as const
+
+const TEAM_OPERATOR_REF = '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0'
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const UINT256_MAX = (BigInt(1) << BigInt(256)) - BigInt(1)
+
+/** Minimal execute fragment. Tests decode against the compiled ExecutorV2 ABI. */
+export const EXECUTOR_V2_EXECUTE_FRAGMENT = [
+  {
+    type: 'function',
+    name: 'execute',
+    stateMutability: 'payable',
+    inputs: [
+      {
+        name: 'intent',
+        type: 'tuple',
+        components: [
+          { name: 'version', type: 'uint256' },
+          { name: 'policyId', type: 'bytes32' },
+          { name: 'policyVersion', type: 'bytes32' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'user', type: 'address' },
+          { name: 'inputAsset', type: 'address' },
+          { name: 'outputAsset', type: 'address' },
+          { name: 'inputAmount', type: 'uint256' },
+          { name: 'minUserOut', type: 'uint256' },
+          { name: 'venueId', type: 'bytes32' },
+          { name: 'router', type: 'address' },
+          { name: 'routeHash', type: 'bytes32' },
+          { name: 'feeBps', type: 'uint16' },
+          { name: 'feeAmount', type: 'uint256' },
+          { name: 'feeAsset', type: 'address' },
+          { name: 'beneficiary', type: 'address' },
+          { name: 'structuralRouteCostBps', type: 'uint256' },
+          { name: 'deadline', type: 'uint256' },
+          { name: 'nonce', type: 'uint256' },
+          { name: 'nativeIn', type: 'bool' },
+          { name: 'nativeOut', type: 'bool' },
+        ],
+      },
+      { name: 'path', type: 'address[]' },
+    ],
+    outputs: [{ name: 'userOutput', type: 'uint256' }],
+  },
+]
+
+const ERC20_APPROVE_FRAGMENT = ['function approve(address spender, uint256 amount)']
+
+export interface ObservedAllowanceIdentity {
+  chainId: number
+  token: string
+  owner: string
+  spender: string
+  amountRaw: string
+}
+
+export interface UnsignedUserTransaction {
+  from: string
+  to: string
+  chainId: number
+  data: string
+  value: string
+}
+
+export interface PrepareV2UserTransactionsInput {
+  request: SmartSwapRequest
+  winner: ShadowCandidate | null | undefined
+  user: string
+  deadline: number
+  nonce: string | number
+  nowIso: string
+  staleAfterMs?: number
+  currentChainId: number
+  executorAddress: string
+  observedAllowance?: ObservedAllowanceIdentity
+}
+
+export interface V2UserTransactionPreparation {
+  approvalTransactions: UnsignedUserTransaction[]
+  swapTransaction: UnsignedUserTransaction
+  requiresRefreshBeforeSwap: boolean
+  requiresOnChainPreflight: true
+  productionExecutionCapable: false
+}
+
+function parseUint256(raw: string, code: string): bigint {
+  if (typeof raw !== 'string' || !/^\d+$/.test(raw)) fail(code, raw)
+  const value = BigInt(raw)
+  if (value < BigInt(0) || value > UINT256_MAX) fail(code, raw)
+  return value
+}
+
+function toHexQuantity(raw: string): string {
+  const value = parseUint256(raw, V2_PREP_AMOUNT_BOUNDS)
+  return value === BigInt(0) ? '0x0' : `0x${value.toString(16)}`
+}
+
+function encodeExecuteCalldata(intent: V2ExecutionIntent, path: string[]): string {
+  const iface = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT)
+  return iface.encodeFunctionData('execute', [
+    [
+      intent.version,
+      intent.policyId,
+      intent.policyVersion,
+      intent.chainId,
+      intent.user,
+      intent.inputAsset,
+      intent.outputAsset,
+      intent.inputAmount,
+      intent.minUserOut,
+      intent.venueId,
+      intent.router,
+      intent.routeHash,
+      intent.feeBps,
+      intent.feeAmount,
+      intent.feeAsset,
+      intent.beneficiary,
+      intent.structuralRouteCostBps,
+      intent.deadline,
+      intent.nonce,
+      intent.nativeIn,
+      intent.nativeOut,
+    ],
+    path,
+  ])
+}
+
+function encodeApproveCalldata(spender: string, amountRaw: string): string {
+  const iface = new Interface(ERC20_APPROVE_FRAGMENT)
+  return iface.encodeFunctionData('approve', [spender, amountRaw])
+}
+
+function assertAllowanceIdentity(
+  allowance: ObservedAllowanceIdentity,
+  intent: V2ExecutionIntent,
+  executor: string,
+): void {
+  if (!Number.isInteger(allowance.chainId) || allowance.chainId !== intent.chainId) {
+    fail(V2_PREP_ALLOWANCE_IDENTITY, 'chain')
+  }
+  let token: string
+  let owner: string
+  let spender: string
+  try {
+    token = getAddress(allowance.token)
+    owner = getAddress(allowance.owner)
+    spender = getAddress(allowance.spender)
+  } catch {
+    fail(V2_PREP_ALLOWANCE_IDENTITY, 'address')
+  }
+  if (token === ZERO_ADDRESS) fail(V2_PREP_ALLOWANCE_IDENTITY, 'token')
+  if (token !== intent.inputAsset) fail(V2_PREP_ALLOWANCE_IDENTITY, 'token')
+  if (owner !== intent.user) fail(V2_PREP_ALLOWANCE_IDENTITY, 'owner')
+  if (spender !== executor) fail(V2_PREP_ALLOWANCE_IDENTITY, 'spender')
+  parseUint256(allowance.amountRaw, V2_PREP_ALLOWANCE_IDENTITY)
+}
+
+export function prepareV2UserTransactions(input: PrepareV2UserTransactionsInput): V2UserTransactionPreparation {
+  const nowMs = Date.parse(input.nowIso)
+  if (!Number.isFinite(nowMs)) fail(V2_PREP_NOW_INVALID)
+  if (
+    typeof input.nonce === 'number' &&
+    (!Number.isSafeInteger(input.nonce) || input.nonce < 0)
+  ) {
+    fail(V2_BINDING_NONCE_INVALID)
+  }
+
+  const binding = buildV2ExecutionBinding({
+    request: input.request,
+    winner: input.winner,
+    user: input.user,
+    deadline: input.deadline,
+    nonce: input.nonce,
+    nowIso: input.nowIso,
+    staleAfterMs: input.staleAfterMs,
+  })
+  assertNoV1SignerFields(binding.intent)
+
+  if (!Number.isInteger(input.currentChainId) || input.currentChainId !== binding.intent.chainId) {
+    fail(V2_PREP_CHAIN_MISMATCH, String(input.currentChainId))
+  }
+
+  const executor = checksumAddress(input.executorAddress, V2_PREP_EXECUTOR_INVALID)
+  if (executor === ZERO_ADDRESS) fail(V2_PREP_EXECUTOR_INVALID, 'zero')
+  if (executor === getAddress(TEAM_OPERATOR_REF)) fail(V2_PREP_EXECUTOR_INVALID, 'team')
+  if (executor === CANONICAL_SMARTSWAP_FEE_BENEFICIARY) fail(V2_PREP_EXECUTOR_INVALID, 'treasury')
+  if (executor === binding.intent.router) fail(V2_PREP_EXECUTOR_INVALID, 'router')
+
+  const nowSec = Math.floor(nowMs / 1000)
+  if (!Number.isSafeInteger(binding.intent.deadline) || binding.intent.deadline <= nowSec) {
+    fail(V2_PREP_DEADLINE_EXPIRED)
+  }
+
+  parseUint256(binding.intent.inputAmount, V2_PREP_AMOUNT_BOUNDS)
+  parseUint256(binding.intent.feeAmount, V2_PREP_AMOUNT_BOUNDS)
+  const minUserOut = parseUint256(binding.intent.minUserOut, V2_PREP_AMOUNT_BOUNDS)
+  parseUint256(binding.intent.nonce, V2_PREP_AMOUNT_BOUNDS)
+  if (minUserOut === BigInt(0)) fail(V2_PREP_MIN_OUT_ZERO)
+  if (!Number.isInteger(binding.intent.feeBps) || binding.intent.feeBps < 0 || binding.intent.feeBps > 65535) {
+    fail(V2_PREP_AMOUNT_BOUNDS, 'feeBps')
+  }
+
+  const approvalTransactions: UnsignedUserTransaction[] = []
+  let requiresRefreshBeforeSwap = false
+
+  if (!binding.intent.nativeIn) {
+    if (!input.observedAllowance) fail(V2_PREP_ALLOWANCE_MISSING)
+    assertAllowanceIdentity(input.observedAllowance, binding.intent, executor)
+    const observed = BigInt(input.observedAllowance.amountRaw)
+    const gross = BigInt(binding.intent.inputAmount)
+    if (observed < gross) {
+      if (observed > BigInt(0)) {
+        approvalTransactions.push({
+          from: binding.intent.user,
+          to: binding.intent.inputAsset,
+          chainId: binding.intent.chainId,
+          data: encodeApproveCalldata(executor, '0'),
+          value: '0x0',
+        })
+      }
+      approvalTransactions.push({
+        from: binding.intent.user,
+        to: binding.intent.inputAsset,
+        chainId: binding.intent.chainId,
+        data: encodeApproveCalldata(executor, binding.intent.inputAmount),
+        value: '0x0',
+      })
+      requiresRefreshBeforeSwap = true
+    }
+  }
+
+  return {
+    approvalTransactions,
+    swapTransaction: {
+      from: binding.intent.user,
+      to: executor,
+      chainId: binding.intent.chainId,
+      data: encodeExecuteCalldata(binding.intent, binding.path),
+      value: binding.intent.nativeIn ? toHexQuantity(binding.intent.inputAmount) : '0x0',
+    },
+    requiresRefreshBeforeSwap,
+    requiresOnChainPreflight: true,
+    productionExecutionCapable: false,
   }
 }
