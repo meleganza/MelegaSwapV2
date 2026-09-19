@@ -31,6 +31,7 @@ export function useFarmsOverviewKpis(): FarmsOverviewKpisViewModel {
       emissionPerDayLabel: emissionReady ? emission.perDayLabel || `${emission.perDay} MARCO` : null,
       uniqueFarmersCount: uniqueFarmers.count,
       uniqueFarmersLoading: uniqueFarmers.loading,
+      uniqueFarmersDescription: uniqueFarmers.note ?? undefined,
     })
-  }, [runtime, cakePrice, emission, uniqueFarmers.count, uniqueFarmers.loading])
+  }, [runtime, cakePrice, emission, uniqueFarmers.count, uniqueFarmers.loading, uniqueFarmers.note])
 }

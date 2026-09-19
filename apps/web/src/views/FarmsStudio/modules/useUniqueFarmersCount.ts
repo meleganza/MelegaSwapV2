@@ -1,4 +1,7 @@
 import useSWR from 'swr'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
+import { getMasterChefAddress } from 'utils/addressHelpers'
 
 type UniqueFarmersResponse = {
   status?: string
@@ -23,12 +26,22 @@ export function useUniqueFarmersCount(): {
   note: string | null
   coveragePct: number | null
 } {
-  const { data, isValidating } = useSWR('farms-unique-farmers', fetchUniqueFarmers, {
+  const { chainId } = useActiveChainId()
+  const { snapshot } = useYieldParticipants()
+  const { data, isValidating } = useSWR(chainId === 56 ? 'farms-unique-farmers' : null, fetchUniqueFarmers, {
     revalidateOnFocus: false,
     dedupingInterval: 60_000,
     refreshInterval: 90_000,
   })
 
+  if (chainId !== 56) {
+    const indexed = snapshot.farmTotals?.[`${chainId}:${getMasterChefAddress(chainId).toLowerCase()}`]
+    return {
+      count: indexed?.participants ?? null, loading: false, indexing: !indexed,
+      note: 'Unique wallets with active LP farm positions on this network',
+      coveragePct: indexed ? 100 : null,
+    }
+  }
   const status = data?.status ?? 'unavailable'
   const indexing = status === 'indexing' || status === 'idle'
   // Prefer factual unique count whenever the API surfaces one (incl. seed/catch-up).

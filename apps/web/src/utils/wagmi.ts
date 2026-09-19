@@ -36,7 +36,7 @@ export const ethereum: Chain = {
   network: 'ethereum',
   nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.ankr.com/eth'] },
+    default: { http: ['https://ethereum-rpc.publicnode.com'] },
   },
   blockExplorers: {
     etherscan: { name: 'EtherScan', url: 'https://etherscan.io' },

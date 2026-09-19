@@ -9,6 +9,7 @@ import {
   resolveMasterChefStatus,
 } from 'lib/data-truth/masterChefEmissionMath'
 
+import { readEthereumFarmEmission } from 'lib/data-truth/ethereumFarmEmission'
 import { BSC_RPC_URLS } from 'config/constants/rpc'
 
 function resolveMasterChefRpcUrls(): string[] {
@@ -103,6 +104,18 @@ async function scanPoolAllocations(
 }
 
 const handler: NextApiHandler = async (req, res) => {
+  if (String(req.query.chainId ?? '56') === '1') {
+    try {
+      const result = await readEthereumFarmEmission(new ethers.providers.JsonRpcProvider({
+        url: 'https://ethereum-rpc.publicnode.com', timeout: 15000,
+      }))
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120')
+      return res.status(200).json(result)
+    } catch {
+      return res.status(503).json({ chainId: 1, status: 'unavailable', reason: 'Ethereum emission read unavailable' })
+    }
+  }
+  if (String(req.query.chainId ?? '56') !== '56') return res.status(400).json({ error: 'Unsupported emission chain' })
   try {
     const requestedPids = String(req.query.pids ?? '')
       .split(',')

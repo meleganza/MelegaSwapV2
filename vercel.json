@@ -6,7 +6,8 @@
       "design-system-foundation": true,
       "mission-project-os-p0-remediation": true,
       "mission-pp-cert-project-os-certification": true,
-      "fix/eth-marco-remove-root-cause": false
+      "fix/eth-marco-remove-root-cause": false,
+      "fix/ethereum-farms-data-layout": false
     }
   },
   "rewrites": [

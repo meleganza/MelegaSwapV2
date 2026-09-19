@@ -44,7 +44,7 @@ export const getFarmApr = (
   regularCakePerBlock: number,
 ): { cakeRewardsApr: number; lpRewardsApr: number } => {
   const yearlyCakeRewardAllocation = poolWeight
-    ? poolWeight.times(BLOCKS_PER_YEAR * regularCakePerBlock)
+    ? poolWeight.times((chainId === ChainId.ETHEREUM ? (86400 / 12) * 365 : BLOCKS_PER_YEAR) * regularCakePerBlock)
     : new BigNumber(NaN)
   
   const cakeRewardsApr = yearlyCakeRewardAllocation.times(cakePriceUsd).div(poolLiquidityUsd).times(100)

@@ -19,7 +19,7 @@ vi.mock('state/farms/hooks', () => ({
   useFarms: vi.fn(() => ({ regularCakePerBlock: 9 })),
 }))
 
-const NON_BSC_CHAIN_IDS = [1, 137, 42161, 43114, 8453] as const
+const NON_BSC_CHAIN_IDS = [137, 42161, 43114, 8453] as const
 
 const BSC_EMISSION_PAYLOAD = {
   status: 'ready' as const,
@@ -84,6 +84,31 @@ describe('useMasterChefEmission chain guard', () => {
       unmount()
     },
   )
+
+  it('fetches chain-bound Ethereum emission without reusing BSC Redux data', async () => {
+    vi.mocked(useActiveChainId).mockReturnValue({ chainId: 1 } as ReturnType<typeof useActiveChainId>)
+    vi.mocked(globalThis.fetch).mockResolvedValue({ ok: true, json: async () => ({
+      ...BSC_EMISSION_PAYLOAD, chainId: 1, masterChefAddress: '0x585364c747CaF6cF6441656F803796230fb1d61c',
+      normalizedEmissionPerBlock: 0.000001, totalDailyEmission: 0.0072, blocksPerDay: 7200,
+    }) } as Response)
+    const { result, rerender } = renderHook(() => useMasterChefEmission([1]))
+    expect(capture.key).toBe('masterchef-emission-1')
+    expect(result.current.perBlock).toBe(0)
+    const parsed = await capture.fetcher!()
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/masterchef/emission?chainId=1')
+    vi.mocked(useSWR).mockReturnValue({ data: parsed, error: undefined } as any)
+    rerender()
+    expect(result.current.perDay).toBe(0.0072)
+    expect(result.current.blocksPerDay).toBe(7200)
+    expect(result.current.contract).toBe('0x585364c747CaF6cF6441656F803796230fb1d61c')
+  })
+
+  it('rejects an Ethereum response that does not identify chain 1', async () => {
+    vi.mocked(useActiveChainId).mockReturnValue({ chainId: 1 } as ReturnType<typeof useActiveChainId>)
+    vi.mocked(globalThis.fetch).mockResolvedValue({ ok: true, json: async () => BSC_EMISSION_PAYLOAD } as Response)
+    renderHook(() => useMasterChefEmission())
+    expect(await capture.fetcher!()).toBeNull()
+  })
 
   it('fetches and parses /api/masterchef/emission on BSC', async () => {
     vi.mocked(useActiveChainId).mockReturnValue({ chainId: ChainId.BSC } as ReturnType<typeof useActiveChainId>)

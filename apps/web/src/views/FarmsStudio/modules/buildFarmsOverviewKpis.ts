@@ -24,6 +24,7 @@ function formatUsdValue(value: number, allowZero: boolean): string {
   if (!Number.isFinite(value)) return '—'
   if (value < 0) return '—'
   if (value === 0) return allowZero ? '$0.00' : '—'
+  if (value < 0.01) return '<$0.01'
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
   return `$${value.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: value < 1 ? 2 : 0 })}`
@@ -78,6 +79,7 @@ export function buildFarmsOverviewKpisFromParts(input: {
   /** Unique MasterChef Deposit wallets (active + finished). Null = unavailable. */
   uniqueFarmersCount?: number | null
   uniqueFarmersLoading?: boolean
+  uniqueFarmersDescription?: string
 }): FarmsOverviewKpisViewModel {
   const fetchedAt = new Date().toISOString()
   const { previewCards, farmsLoading, account, userDataLoaded, cakePriceUsd } = input
@@ -94,6 +96,8 @@ export function buildFarmsOverviewKpisFromParts(input: {
     const liq = c.rawFarm?.liquidity?.toNumber?.()
     if (liq != null && Number.isFinite(liq) && liq > 0) {
       tvlUsd += liq
+      valuedFarmCount += 1
+    } else if (c.rawFarm?.lpTotalInQuoteToken?.eq?.(0)) {
       valuedFarmCount += 1
     } else if (c.rawFarm?.lpTotalInQuoteToken && !c.rawFarm?.quoteTokenPriceBusd) {
       unvaluedWithLiquiditySignal += 1
@@ -155,7 +159,7 @@ export function buildFarmsOverviewKpisFromParts(input: {
     activeFarmersCard = card(
       'activeFarmers',
       'Indexing…',
-      'Unique wallets that participated in Melega DEX farms',
+      input.uniqueFarmersDescription ?? 'Unique wallets that participated in Melega DEX farms',
       'loading',
       'loading',
       'MasterChef Deposit/Withdraw/EmergencyWithdraw index in progress',
@@ -164,7 +168,7 @@ export function buildFarmsOverviewKpisFromParts(input: {
     activeFarmersCard = card(
       'activeFarmers',
       String(input.uniqueFarmersCount),
-      'Unique wallets that participated in Melega DEX farms',
+      input.uniqueFarmersDescription ?? 'Unique wallets that participated in Melega DEX farms',
       input.uniqueFarmersCount === 0 ? 'zero' : 'available',
       'live',
       'MasterChef event participant index · never LP supply',
@@ -173,7 +177,7 @@ export function buildFarmsOverviewKpisFromParts(input: {
     activeFarmersCard = card(
       'activeFarmers',
       '—',
-      'Unique wallets that participated in Melega DEX farms',
+      input.uniqueFarmersDescription ?? 'Unique wallets that participated in Melega DEX farms',
       'unavailable',
       'unavailable',
       'MasterChef participant index not ready',

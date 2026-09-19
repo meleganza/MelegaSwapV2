@@ -2325,7 +2325,45 @@
       "lastIndexedBlock": 115838004,
       "chainHead": 115838004,
       "updatedAt": "2026-08-14T06:09:24.407Z"
+    },
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c:0": {
+      "participants": 3,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
+    },
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c:1": {
+      "participants": 2,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
+    },
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c:2": {
+      "participants": 2,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
+    },
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c:3": {
+      "participants": 0,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
+    },
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c:4": {
+      "participants": 2,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
     }
   },
-  "pools": {}
+  "pools": {},
+  "farmTotals": {
+    "1:0x585364c747caf6cf6441656f803796230fb1d61c": {
+      "participants": 4,
+      "lastIndexedBlock": 26013251,
+      "chainHead": 26013251,
+      "updatedAt": "2026-09-19T18:08:37.952Z"
+    }
+  }
 }
