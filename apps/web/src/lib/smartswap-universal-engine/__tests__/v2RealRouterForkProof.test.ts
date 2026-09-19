@@ -814,54 +814,6 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     expect(eth.setCodeCalls).toEqual([])
   })
 
-  it('BSC expired / slippage collect no fee and consume no unused nonce', async () => {
-    const user = bsc.users[5]
-    const expiredReq = bscRequest('erc20')
-    await wrapNative(bsc, user, expiredReq.inputAmountRaw)
-    const expiredNow = new Date().toISOString()
-    const expiredComp = await compete(bsc, expiredReq, ['melega-dex'])
-    const expiredDeadline = Math.floor(Date.now() / 1000) + 90
-    const expiredPrep = prepareV2UserTransactions({
-      request: expiredReq,
-      winner: expiredComp.result.shadowWinner,
-      user,
-      deadline: expiredDeadline,
-      nonce: 12,
-      nowIso: expiredNow,
-      currentChainId: 56,
-      executorAddress: bsc.executor,
-      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
-    })
-    for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await advancePastDeadline(bsc, expiredDeadline)
-    const treasuryBeforeExpired = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, expiredPrep.swapTransaction)
-    expect(await usedNonce(bsc, user, 12)).toBe(false)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
-
-    const slipReq = bscRequest('erc20', GROSS_BSC, 1)
-    await wrapNative(bsc, user, slipReq.inputAmountRaw)
-    const slipNow = new Date().toISOString()
-    const slipComp = await compete(bsc, slipReq, ['melega-dex'])
-    const slipPrep = prepareV2UserTransactions({
-      request: slipReq,
-      winner: slipComp.result.shadowWinner,
-      user,
-      deadline: Math.floor(Date.now() / 1000) + 3_600,
-      nonce: 13,
-      nowIso: slipNow,
-      currentChainId: 56,
-      executorAddress: bsc.executor,
-      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
-    })
-    for (const tx of slipPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
-    const treasuryBeforeSlip = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, slipPrep.swapTransaction)
-    expect(await usedNonce(bsc, user, 13)).toBe(false)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
-  }, 90_000)
-
   it('BSC Melega native-in against real router', async () => {
     await proveHappyPath(bsc, {
       request: bscRequest('native'),
@@ -942,6 +894,71 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     FORK_PROOF.calldata.push(`BSC:competition:${result.shadowWinner!.venueId}:${keccak256(prepared.swapTransaction.data)}`)
     FORK_PROOF.bscCompetition = true
     FORK_PROOF.observed.push(`BSC competition winner=${result.shadowWinner!.venueId} melegaOut=${result.melega?.quote?.grossOutputRaw} pancakeOut=${result.pancake?.quote?.grossOutputRaw}`)
+  }, 120_000)
+
+  it('BSC expired / slippage collect no fee and consume no unused nonce', async () => {
+    const isolated = await startFork({
+      label: 'BSC-FAIL',
+      chainId: 56,
+      port: 18559,
+      expectedChainHex: '0x38',
+      urls: BSC_RPC_CANDIDATES,
+      codeAddresses: [MELEGA_ROUTER, PANCAKE_ROUTER, MELEGA_FACTORY, PANCAKE_FACTORY, WBNB, USDC_BSC],
+      wrapped: WBNB,
+      routers: [
+        { address: MELEGA_ROUTER, venue: 'melega-dex' },
+        { address: PANCAKE_ROUTER, venue: 'pancakeswap' },
+      ],
+    })
+    try {
+      const user = isolated.users[0]
+      const expiredReq = bscRequest('erc20')
+      await wrapNative(isolated, user, expiredReq.inputAmountRaw)
+      const expiredNow = new Date().toISOString()
+      const expiredComp = await compete(isolated, expiredReq, ['melega-dex'])
+      const expiredDeadline = Math.floor(Date.now() / 1000) + 90
+      const expiredPrep = prepareV2UserTransactions({
+        request: expiredReq,
+        winner: expiredComp.result.shadowWinner,
+        user,
+        deadline: expiredDeadline,
+        nonce: 12,
+        nowIso: expiredNow,
+        currentChainId: 56,
+        executorAddress: isolated.executor,
+        observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: isolated.executor, amountRaw: '0' },
+      })
+      for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(isolated, tx)).status).toBe(1)
+      await advancePastDeadline(isolated, expiredDeadline)
+      const treasuryBeforeExpired = await balanceOf(isolated, WBNB, TREASURY)
+      await sendExpectRevert(isolated, expiredPrep.swapTransaction)
+      expect(await usedNonce(isolated, user, 12)).toBe(false)
+      expect(await balanceOf(isolated, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
+
+      const slipReq = bscRequest('erc20', GROSS_BSC, 1)
+      await wrapNative(isolated, user, slipReq.inputAmountRaw)
+      const slipNow = new Date().toISOString()
+      const slipComp = await compete(isolated, slipReq, ['melega-dex'])
+      const slipPrep = prepareV2UserTransactions({
+        request: slipReq,
+        winner: slipComp.result.shadowWinner,
+        user,
+        deadline: Math.floor(Date.now() / 1000) + 3_600,
+        nonce: 13,
+        nowIso: slipNow,
+        currentChainId: 56,
+        executorAddress: isolated.executor,
+        observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: isolated.executor, amountRaw: '0' },
+      })
+      for (const tx of slipPrep.approvalTransactions) expect((await sendExact(isolated, tx)).status).toBe(1)
+      await dumpPool(isolated, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
+      const treasuryBeforeSlip = await balanceOf(isolated, WBNB, TREASURY)
+      await sendExpectRevert(isolated, slipPrep.swapTransaction)
+      expect(await usedNonce(isolated, user, 13)).toBe(false)
+      expect(await balanceOf(isolated, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
+    } finally {
+      stopFork(isolated)
+    }
   }, 120_000)
 
   it('Ethereum Uniswap native-in against real router', async () => {
