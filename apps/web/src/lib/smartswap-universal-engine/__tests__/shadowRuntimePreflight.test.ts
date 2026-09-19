@@ -18,7 +18,9 @@ import { bindAuthorizedHostSession } from '../widget'
 const WEB = path.resolve(__dirname, '../../../..')
 const ENGINE = path.join(WEB, 'src/lib/smartswap-universal-engine')
 const PREVIEW = path.join(WEB, 'src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview')
-const NOW = '2026-09-19T12:00:00.000Z'
+function freshNowIso(): string {
+  return new Date().toISOString()
+}
 const GROSS_INPUT = '1000000'
 const MELEGA_ROUTER = '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3'
 const PANCAKE_ROUTER = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
@@ -125,7 +127,7 @@ describe('authorized SHADOW runtime preflight', () => {
       request: bscRequest(),
       productionQuote: null,
       melegaSnapshot: null,
-      nowIso: NOW,
+      nowIso: freshNowIso(),
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,
     })
@@ -150,7 +152,7 @@ describe('authorized SHADOW runtime preflight', () => {
       request: bscRequest(),
       productionQuote: null,
       melegaSnapshot: null,
-      nowIso: NOW,
+      nowIso: freshNowIso(),
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,
     })
@@ -170,7 +172,7 @@ describe('authorized SHADOW runtime preflight', () => {
       request: bscRequest(),
       productionQuote: null,
       melegaSnapshot: null,
-      nowIso: NOW,
+      nowIso: freshNowIso(),
       rpcUrlByChain: { 56: 'https://bsc-dataseed.binance.org' },
       fetchImpl,
     })
@@ -191,7 +193,7 @@ describe('authorized SHADOW runtime preflight', () => {
       request: ethRequest(),
       productionQuote: null,
       melegaSnapshot: null,
-      nowIso: NOW,
+      nowIso: freshNowIso(),
       rpcUrlByChain: { 1: 'https://rpc.ankr.com/eth' },
       fetchImpl,
     })

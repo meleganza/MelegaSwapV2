@@ -23,7 +23,7 @@ import {
   shadowRuntimeRequestKey,
 } from '../useShadowRuntimePreflight'
 
-const WEB = path.resolve(__dirname, '../../../../..')
+const WEB = path.resolve(__dirname, '../../../../../..')
 const PREVIEW = path.resolve(__dirname, '..')
 
 const wbnb = {
