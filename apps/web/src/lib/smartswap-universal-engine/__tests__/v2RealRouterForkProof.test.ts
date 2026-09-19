@@ -322,7 +322,8 @@ async function startFork(input: {
 }): Promise<ForkCtx> {
   execFileSync('which', ['anvil'])
   try {
-    execSync(`fuser -k ${input.port}/tcp`, { stdio: 'ignore' })
+    const pids = execSync(`lsof -tiTCP:${input.port} -sTCP:LISTEN`, { encoding: 'utf8' }).trim()
+    for (const pid of pids.split(/\s+/).filter(Boolean)) execSync(`kill -9 ${pid}`)
   } catch {
     // port already free
   }
@@ -344,15 +345,23 @@ async function startFork(input: {
     ],
     { stdio: ['ignore', 'pipe', 'pipe'] },
   )
+  let anvilLog = ''
+  anvil.stderr?.on('data', (chunk) => {
+    anvilLog += String(chunk)
+  })
+  anvil.stdout?.on('data', (chunk) => {
+    anvilLog += String(chunk)
+  })
   const provider = new JsonRpcProvider({
     url: `http://${ANVIL_HOST}:${input.port}`,
     timeout: 20_000,
     throttleLimit: 1,
   })
   try {
+    if (anvil.exitCode != null) throw new Error(`${input.label}_ANVIL_EXIT:${anvil.exitCode}:${anvilLog.slice(-400)}`)
     await waitForAnvil(provider, input.expectedChainHex, { number: source.block, hash: source.hash })
   } catch (error) {
-    if (anvil && !anvil.killed) anvil.kill('SIGTERM')
+    if (anvil && !anvil.killed) anvil.kill('SIGKILL')
     throw error
   }
   const forkBlock =
