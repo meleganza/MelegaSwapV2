@@ -820,13 +820,17 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
   }, 120_000)
 
   it('BSC Pancake ERC20-in against real router', async () => {
-    await proveHappyPath(bsc, {
+    const happy = await proveHappyPath(bsc, {
       request: bscRequest('erc20'),
       venues: ['pancakeswap'],
       user: bsc.users[3],
       nonce: 1,
       expectVenue: 'pancakeswap',
     })
+    const treasuryBeforeReplay = await balanceOf(bsc, WBNB, TREASURY)
+    await sendExpectRevert(bsc, happy.prepared.swapTransaction)
+    expect(await usedNonce(bsc, happy.prepared.swapTransaction.from, 1)).toBe(true)
+    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeReplay)
     FORK_PROOF.pancakeErc20 = true
   }, 120_000)
 
@@ -864,20 +868,8 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     FORK_PROOF.observed.push(`BSC competition winner=${result.shadowWinner!.venueId} melegaOut=${result.melega?.quote?.grossOutputRaw} pancakeOut=${result.pancake?.quote?.grossOutputRaw}`)
   }, 120_000)
 
-  it('BSC replay / expired / slippage collect no fee and consume no unused nonce', async () => {
+  it('BSC expired / slippage collect no fee and consume no unused nonce', async () => {
     const user = bsc.users[5]
-    const happy = await proveHappyPath(bsc, {
-      request: bscRequest('erc20'),
-      venues: ['pancakeswap'],
-      user,
-      nonce: 11,
-      expectVenue: 'pancakeswap',
-    })
-    const treasuryBeforeReplay = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, happy.prepared.swapTransaction)
-    expect(await usedNonce(bsc, user, 11)).toBe(true)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeReplay)
-
     const expiredReq = bscRequest('erc20')
     await wrapNative(bsc, user, expiredReq.inputAmountRaw)
     const expiredNow = new Date().toISOString()
