@@ -134,6 +134,22 @@ function toHex(value: bigint | string) {
   return n === 0n ? '0x0' : `0x${n.toString(16)}`
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, code: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(code)), ms)
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
 function topicAddress(topic: string) {
   return getAddress(`0x${topic.slice(26)}`)
 }
@@ -487,24 +503,32 @@ async function usedNonce(ctx: ForkCtx, user: string, nonce: number) {
 }
 
 async function wrapNative(ctx: ForkCtx, user: string, amount: string) {
-  const hash = await rpc(ctx, 'eth_sendTransaction', [
-    {
-      from: user,
-      to: ctx.wrapped,
-      data: VIEW.encodeFunctionData('deposit', []),
-      value: toHex(amount),
-      gas: toHex(200_000n),
-    },
-  ])
-  const receipt = await ctx.provider.waitForTransaction(hash)
+  const hash = await withTimeout(
+    rpc(ctx, 'eth_sendTransaction', [
+      {
+        from: user,
+        to: ctx.wrapped,
+        data: VIEW.encodeFunctionData('deposit', []),
+        value: toHex(amount),
+        gas: toHex(200_000n),
+      },
+    ]),
+    20_000,
+    `${ctx.label}_DEPOSIT_TIMEOUT`,
+  )
+  const receipt = await withTimeout(ctx.provider.waitForTransaction(hash), 20_000, `${ctx.label}_DEPOSIT_RECEIPT_TIMEOUT`)
   if (!receipt || receipt.status !== 1) throw new Error(`${ctx.label}_DEPOSIT_FAILED`)
 }
 
 async function sendExact(ctx: ForkCtx, tx: UnsignedUserTransaction) {
-  const hash = await rpc(ctx, 'eth_sendTransaction', [
-    { from: tx.from, to: tx.to, data: tx.data, value: tx.value, gas: toHex(3_500_000n) },
-  ])
-  const receipt = await ctx.provider.waitForTransaction(hash)
+  const hash = await withTimeout(
+    rpc(ctx, 'eth_sendTransaction', [
+      { from: tx.from, to: tx.to, data: tx.data, value: tx.value, gas: toHex(3_500_000n) },
+    ]),
+    20_000,
+    `${ctx.label}_SEND_TIMEOUT`,
+  )
+  const receipt = await withTimeout(ctx.provider.waitForTransaction(hash), 20_000, `${ctx.label}_RECEIPT_TIMEOUT`)
   if (!receipt) throw new Error('LOCAL_TX_NO_RECEIPT')
   if (receipt.status !== 1) throw new Error(`LOCAL_TX_REVERTED:${tx.to}`)
   return receipt
@@ -567,13 +591,17 @@ function ethRequest(kind: 'native' | 'erc20', amount = GROSS_ETH, slippageBps = 
 
 async function compete(ctx: ForkCtx, request: SmartSwapRequest, venues: Array<'melega-dex' | 'pancakeswap' | 'uniswap'>) {
   const nowIso = new Date().toISOString()
-  const result = await runEvmShadowCompetition({
-    request,
-    productionQuote: null,
-    adapters: venueAdapters(ctx, venues),
-    nowIso,
-    budget: FORK_BUDGET,
-  })
+  const result = await withTimeout(
+    runEvmShadowCompetition({
+      request,
+      productionQuote: null,
+      adapters: venueAdapters(ctx, venues),
+      nowIso,
+      budget: FORK_BUDGET,
+    }),
+    30_000,
+    `${ctx.label}_COMPETE_TIMEOUT:${venues.join(',')}`,
+  )
   return { result, nowIso }
 }
 
@@ -786,6 +814,54 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     expect(eth.setCodeCalls).toEqual([])
   })
 
+  it('BSC expired / slippage collect no fee and consume no unused nonce', async () => {
+    const user = bsc.users[5]
+    const expiredReq = bscRequest('erc20')
+    await wrapNative(bsc, user, expiredReq.inputAmountRaw)
+    const expiredNow = new Date().toISOString()
+    const expiredComp = await compete(bsc, expiredReq, ['melega-dex'])
+    const expiredDeadline = Math.floor(Date.now() / 1000) + 90
+    const expiredPrep = prepareV2UserTransactions({
+      request: expiredReq,
+      winner: expiredComp.result.shadowWinner,
+      user,
+      deadline: expiredDeadline,
+      nonce: 12,
+      nowIso: expiredNow,
+      currentChainId: 56,
+      executorAddress: bsc.executor,
+      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
+    })
+    for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
+    await advancePastDeadline(bsc, expiredDeadline)
+    const treasuryBeforeExpired = await balanceOf(bsc, WBNB, TREASURY)
+    await sendExpectRevert(bsc, expiredPrep.swapTransaction)
+    expect(await usedNonce(bsc, user, 12)).toBe(false)
+    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
+
+    const slipReq = bscRequest('erc20', GROSS_BSC, 1)
+    await wrapNative(bsc, user, slipReq.inputAmountRaw)
+    const slipNow = new Date().toISOString()
+    const slipComp = await compete(bsc, slipReq, ['melega-dex'])
+    const slipPrep = prepareV2UserTransactions({
+      request: slipReq,
+      winner: slipComp.result.shadowWinner,
+      user,
+      deadline: Math.floor(Date.now() / 1000) + 3_600,
+      nonce: 13,
+      nowIso: slipNow,
+      currentChainId: 56,
+      executorAddress: bsc.executor,
+      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
+    })
+    for (const tx of slipPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
+    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
+    const treasuryBeforeSlip = await balanceOf(bsc, WBNB, TREASURY)
+    await sendExpectRevert(bsc, slipPrep.swapTransaction)
+    expect(await usedNonce(bsc, user, 13)).toBe(false)
+    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
+  }, 90_000)
+
   it('BSC Melega native-in against real router', async () => {
     await proveHappyPath(bsc, {
       request: bscRequest('native'),
@@ -867,54 +943,6 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     FORK_PROOF.bscCompetition = true
     FORK_PROOF.observed.push(`BSC competition winner=${result.shadowWinner!.venueId} melegaOut=${result.melega?.quote?.grossOutputRaw} pancakeOut=${result.pancake?.quote?.grossOutputRaw}`)
   }, 120_000)
-
-  it('BSC expired / slippage collect no fee and consume no unused nonce', async () => {
-    const user = bsc.users[5]
-    const expiredReq = bscRequest('erc20')
-    await wrapNative(bsc, user, expiredReq.inputAmountRaw)
-    const expiredNow = new Date().toISOString()
-    const expiredComp = await compete(bsc, expiredReq, ['pancakeswap'])
-    const expiredDeadline = Math.floor(Date.now() / 1000) + 90
-    const expiredPrep = prepareV2UserTransactions({
-      request: expiredReq,
-      winner: expiredComp.result.shadowWinner,
-      user,
-      deadline: expiredDeadline,
-      nonce: 12,
-      nowIso: expiredNow,
-      currentChainId: 56,
-      executorAddress: bsc.executor,
-      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
-    })
-    for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await advancePastDeadline(bsc, expiredDeadline)
-    const treasuryBeforeExpired = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, expiredPrep.swapTransaction)
-    expect(await usedNonce(bsc, user, 12)).toBe(false)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
-
-    const slipReq = bscRequest('erc20', GROSS_BSC, 1)
-    await wrapNative(bsc, user, slipReq.inputAmountRaw)
-    const slipNow = new Date().toISOString()
-    const slipComp = await compete(bsc, slipReq, ['melega-dex'])
-    const slipPrep = prepareV2UserTransactions({
-      request: slipReq,
-      winner: slipComp.result.shadowWinner,
-      user,
-      deadline: Number((await rpc(bsc, 'eth_getBlockByNumber', ['latest', false])).timestamp) + 3_600,
-      nonce: 13,
-      nowIso: slipNow,
-      currentChainId: 56,
-      executorAddress: bsc.executor,
-      observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
-    })
-    for (const tx of slipPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
-    const treasuryBeforeSlip = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, slipPrep.swapTransaction)
-    expect(await usedNonce(bsc, user, 13)).toBe(false)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
-  }, 240_000)
 
   it('Ethereum Uniswap native-in against real router', async () => {
     await proveHappyPath(eth, {
