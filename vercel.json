@@ -7,7 +7,8 @@
       "mission-project-os-p0-remediation": true,
       "mission-pp-cert-project-os-certification": true,
       "fix/eth-marco-remove-root-cause": false,
-      "fix/ethereum-farms-data-layout": false
+      "fix/ethereum-farms-data-layout": false,
+      "fix/home-top-yield-min-tvl": false
     }
   },
   "rewrites": [
