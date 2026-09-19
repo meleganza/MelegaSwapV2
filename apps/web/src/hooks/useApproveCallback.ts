@@ -58,6 +58,8 @@ export type ApproveCallbackOptions = {
   unknownAllowanceTimeoutMs?: number
   /** Refresh allowance directly while a locally recorded approval is pending. */
   pendingAllowancePollMs?: number
+  /** LP removal: keep authoritative allowance reads alive after receipt/timeout. */
+  directAllowancePollMs?: number
   /** Stop trusting an unconfirmed local transaction record after this bounded interval. */
   pendingApprovalTimeoutMs?: number
 }
@@ -91,7 +93,9 @@ export function useApproveCallback(
 
   const effectivePendingApproval = pendingApproval && !pendingApprovalTimedOut
   const currentAllowance = useTokenAllowance(token, account ?? undefined, spender, {
-    pollIntervalMs: effectivePendingApproval ? options?.pendingAllowancePollMs : undefined,
+    pollIntervalMs:
+      options?.directAllowancePollMs ?? (effectivePendingApproval ? options?.pendingAllowancePollMs : undefined),
+    preferDirect: Boolean(options?.directAllowancePollMs),
   })
 
   useEffect(() => {

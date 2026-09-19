@@ -440,6 +440,7 @@ export function useLiquidityMintRuntime({
     {
       unknownAllowanceTimeoutMs: 5_000,
       pendingAllowancePollMs: 2_500,
+      directAllowancePollMs: isRemoveMode ? 2_500 : undefined,
       pendingApprovalTimeoutMs: 30_000,
     },
   )
