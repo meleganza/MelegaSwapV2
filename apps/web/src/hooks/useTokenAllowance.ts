@@ -7,12 +7,15 @@ import { useSingleCallResult } from '../state/multicall/hooks'
 type TokenAllowanceOptions = {
   /** Re-read while an approval transaction is pending so confirmation is reflected without the legacy block feed. */
   pollIntervalMs?: number
+  /** LP removal opts into authoritative direct reads, independent of the block feed. */
+  preferDirect?: boolean
 }
 
 type DirectAllowanceSnapshot = { key: string; raw: string }
 
 /**
- * Resolve ERC-20 allowance raw units from multicall, then the keyed direct read.
+ * Resolve allowance from multicall with a keyed direct fallback by default.
+ * LP removal can opt into direct-only reads so a frozen multicall cannot mask confirmation.
  * A missing request key (disconnected wallet / no spender) must not compare
  * `undefined === undefined` and then read `.raw` on an absent snapshot.
  */
@@ -20,7 +23,11 @@ export function resolveAllowanceRaw(
   allowance?: { toString(): string } | null,
   directAllowance?: DirectAllowanceSnapshot,
   allowanceRequestKey?: string,
+  preferDirect = false,
 ): string | undefined {
+  if (preferDirect) {
+    return allowanceRequestKey && directAllowance?.key === allowanceRequestKey ? directAllowance.raw : undefined
+  }
   const fromMulticall = allowance?.toString()
   if (fromMulticall != null) return fromMulticall
   if (!allowanceRequestKey || !directAllowance) return undefined
@@ -75,9 +82,9 @@ function useTokenAllowance(
 
   return useMemo(() => {
     if (!token) return undefined
-    const raw = resolveAllowanceRaw(allowance, directAllowance, allowanceRequestKey)
+    const raw = resolveAllowanceRaw(allowance, directAllowance, allowanceRequestKey, options?.preferDirect)
     return raw != null ? CurrencyAmount.fromRawAmount(token, raw) : undefined
-  }, [token, allowance, directAllowance, allowanceRequestKey])
+  }, [token, allowance, directAllowance, allowanceRequestKey, options?.preferDirect])
 }
 
 export default useTokenAllowance
