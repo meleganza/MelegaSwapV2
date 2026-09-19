@@ -380,9 +380,9 @@ export const EXECUTOR_V2_EXECUTE_FRAGMENT = [
     ],
     outputs: [{ name: 'userOutput', type: 'uint256' }],
   },
-] as const
+]
 
-const ERC20_APPROVE_FRAGMENT = ['function approve(address spender, uint256 amount)'] as const
+const ERC20_APPROVE_FRAGMENT = ['function approve(address spender, uint256 amount)']
 
 export interface ObservedAllowanceIdentity {
   chainId: number
@@ -434,7 +434,7 @@ function toHexQuantity(raw: string): string {
 }
 
 function encodeExecuteCalldata(intent: V2ExecutionIntent, path: string[]): string {
-  const iface = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT as unknown as Parameters<typeof Interface>[0])
+  const iface = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT)
   return iface.encodeFunctionData('execute', [
     [
       intent.version,
@@ -464,7 +464,7 @@ function encodeExecuteCalldata(intent: V2ExecutionIntent, path: string[]): strin
 }
 
 function encodeApproveCalldata(spender: string, amountRaw: string): string {
-  const iface = new Interface(ERC20_APPROVE_FRAGMENT as unknown as Parameters<typeof Interface>[0])
+  const iface = new Interface(ERC20_APPROVE_FRAGMENT)
   return iface.encodeFunctionData('approve', [spender, amountRaw])
 }
 

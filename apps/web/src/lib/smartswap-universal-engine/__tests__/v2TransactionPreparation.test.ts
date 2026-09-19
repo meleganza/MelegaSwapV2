@@ -6,7 +6,7 @@ import { getAddress } from '@ethersproject/address'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { CANONICAL_EXAMPLE_ASSETS, evmNative } from '../assetIdentity'
-import { evmNetwork } from '../domain'
+import { evmNetwork, isEvmNetwork } from '../domain'
 import { computeFeeAmountRaw, computeNetVenueInput } from '../evaluateRevenuePolicy'
 import { CANONICAL_SMARTSWAP_FEE_BENEFICIARY } from '../feeEnforcement'
 import { createMelegaDexAdapter, type LegacyMelegaQuoteSnapshot } from '../melegaDexAdapter'
@@ -143,7 +143,7 @@ function prepArgs(
     deadline: DEADLINE,
     nonce: NONCE,
     nowIso: NOW,
-    currentChainId: request.network.domain === 'evm' ? request.network.chainId : 0,
+    currentChainId: isEvmNetwork(request.network) ? request.network.chainId : 0,
     executorAddress: EXECUTOR,
     observedAllowance: request.inputAsset.location.kind === 'native' ? undefined : allowance(GROSS_INPUT),
     ...extra,
@@ -299,11 +299,11 @@ describe('SmartSwap V2 unsigned transaction preparation', () => {
     const request = bscErc20Request()
     const melega = prepareV2UserTransactions(prepArgs(request, await melegaWinner(request)))
     const pancake = prepareV2UserTransactions(prepArgs(request, await pancakeWinner(request, `56:${WBNB}>${USDC_BSC}`)))
-    const melegaDecoded = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT as unknown as ConstructorParameters<typeof Interface>[0]).decodeFunctionData(
+    const melegaDecoded = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT).decodeFunctionData(
       'execute',
       melega.swapTransaction.data,
     )
-    const pancakeDecoded = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT as unknown as ConstructorParameters<typeof Interface>[0]).decodeFunctionData(
+    const pancakeDecoded = new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT).decodeFunctionData(
       'execute',
       pancake.swapTransaction.data,
     )
@@ -537,14 +537,27 @@ describe('SmartSwap V2 unsigned transaction local Anvil', () => {
 
   beforeAll(async () => {
     execFileSync('which', ['anvil'])
-    execSync('FOUNDRY_PROFILE=smartswap_executor_release forge build', { cwd: REPO, stdio: 'pipe' })
-    execSync('forge build', { cwd: REPO, stdio: 'pipe' })
+    ensureCompiledExecutor()
+    for (const rel of [
+      'out/MockWBNB.sol/MockWBNB.json',
+      'out/MockERC20.sol/MockERC20.json',
+      'out/MockSmartSwapV2Router.sol/MockSmartSwapV2Router.json',
+    ]) {
+      if (!existsSync(path.join(REPO, rel))) {
+        execSync('forge build', { cwd: REPO, stdio: 'pipe' })
+        break
+      }
+    }
     anvil = spawn(
       'anvil',
       ['--host', ANVIL_HOST, '--port', String(ANVIL_PORT), '--chain-id', '56', '--accounts', '10'],
       { stdio: ['ignore', 'pipe', 'pipe'] },
     )
-    provider = new JsonRpcProvider(`http://${ANVIL_HOST}:${ANVIL_PORT}`)
+    provider = new JsonRpcProvider({
+      url: `http://${ANVIL_HOST}:${ANVIL_PORT}`,
+      timeout: 1500,
+      throttleLimit: 1,
+    })
     let ready = false
     for (let i = 0; i < 80; i += 1) {
       try {
