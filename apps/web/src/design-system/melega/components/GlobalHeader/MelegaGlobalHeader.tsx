@@ -8,7 +8,6 @@ import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
 import { uxRebuildColors } from '../../tokens/uxRebuild'
 import {
-  ANALYTICS_MORE_ITEM,
   GLOBAL_HEADER_NAV,
   MORE_DROPDOWN_ITEMS,
   type HeaderNavItem,
@@ -359,10 +358,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
     return pathname
   }, [asPath, pathname])
 
-  const moreItems = useMemo(() => {
-    const hasAnalytics = MORE_DROPDOWN_ITEMS.some((i) => i.id === 'analytics')
-    return hasAnalytics ? MORE_DROPDOWN_ITEMS : [ANALYTICS_MORE_ITEM, ...MORE_DROPDOWN_ITEMS]
-  }, [])
+  const moreItems = useMemo(() => MORE_DROPDOWN_ITEMS, [])
 
   const closeMenus = useCallback(() => setOpenMenu(null), [])
 
