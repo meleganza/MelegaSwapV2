@@ -1060,5 +1060,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     expect(missing, `venues unverified: ${missing.join(',')}`).toEqual([])
     expect(bsc.setCodeCalls).toEqual([])
     expect(eth.setCodeCalls).toEqual([])
+    // eslint-disable-next-line no-console
+    console.log('FORK_PROOF', JSON.stringify(FORK_PROOF, null, 2))
   })
 })
