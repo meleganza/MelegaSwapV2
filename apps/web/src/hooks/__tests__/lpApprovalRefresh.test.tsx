@@ -13,7 +13,7 @@ vi.mock('../useCallWithGasPrice', () => ({ useCallWithGasPrice: () => ({ callWit
 vi.mock('../useContract', () => ({
   useTokenContract: (...args: unknown[]) => {
     contractRequests.push(args)
-    return contract
+    return args[1] === false && publicRpcUnavailable ? publicContract : contract
   },
 }))
 vi.mock('../../state/multicall/hooks', () => ({ useSingleCallResult: () => ({ result: [BigNumber.from(0)] }) }))
@@ -28,8 +28,16 @@ let owner = '0x0000000000000000000000000000000000000001'
 let pending = false
 let raw = '0'
 let failRead = false
+let publicRpcUnavailable = false
+let signerChainId = 1
+const publicContract = {
+  allowance: vi.fn(async () => {
+    throw new Error('Unauthorized: You must authenticate your request with an API key')
+  }),
+}
 const contractRequests: unknown[][] = []
 const contract = {
+  signer: { getChainId: async () => signerChainId },
   allowance: vi.fn(async () => {
     if (failRead) throw new Error('RPC timeout')
     return BigNumber.from(raw)
@@ -64,6 +72,7 @@ beforeEach(() => {
   pending = false
   raw = '0'
   failRead = false
+  publicRpcUnavailable = false
   contractRequests.length = 0
   owner = '0x0000000000000000000000000000000000000001'
 })
@@ -78,7 +87,29 @@ for (const chainId of [1, 56])
     const amount = CurrencyAmount.fromRawAmount(lp, '100')
     const expectedRouter =
       chainId === 1 ? '0xFF8EBf8edf1C533A02d066f852788773BdCD631C' : '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3'
-    const mount = () => renderHook(() => useApproveCallback(amount, ROUTER_ADDRESS[chainId], options))
+    const mount = () => {
+      signerChainId = chainId
+      return renderHook(() => useApproveCallback(amount, ROUTER_ADDRESS[chainId], options))
+    }
+
+    it('recovers a mined MARCO/WETH approval when the app RPC rejects all reads', async () => {
+      publicRpcUnavailable = true
+      pending = true
+      raw = '100'
+      const { result } = mount()
+      await flush()
+      expect(result.current[0]).toBe(ApprovalState.APPROVED)
+      expect(publicContract.allowance).not.toHaveBeenCalled()
+    })
+
+    it('does not accept allowance from a signer on another chain', async () => {
+      raw = '100'
+      const { result } = mount()
+      signerChainId = chainId === 1 ? 56 : 1
+      await flush()
+      await tick()
+      expect(result.current[0]).not.toBe(ApprovalState.APPROVED)
+    })
 
     it('advances from approval to APPROVED despite frozen multicall zero and pending receipt', async () => {
       const { result, rerender } = mount()

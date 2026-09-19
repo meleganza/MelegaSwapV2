@@ -1,0 +1,87 @@
+[
+  {
+    "event": "fork initial state",
+    "walletChain": 1,
+    "signerChain": 1,
+    "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "lp": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "router": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+    "balance": "150000499999999999",
+    "allowance": "0"
+  },
+  {
+    "event": "fork approve payload",
+    "to": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+    "hash": "0xd4df120cd9768b1dcc05a18ff5ae967c4445903748714c47dd9134a2ddf1a77f",
+    "data": "0x095ea7b3000000000000000000000000ff8ebf8edf1c533a02d066f852788773bdcd631cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "chainId": 1
+  },
+  {
+    "event": "transaction",
+    "chainId": 1,
+    "args": [
+      {
+        "hash": "0xd4df120cd9768b1dcc05a18ff5ae967c4445903748714c47dd9134a2ddf1a77f",
+        "type": 2,
+        "accessList": [],
+        "blockHash": null,
+        "blockNumber": null,
+        "transactionIndex": null,
+        "confirmations": 0,
+        "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+        "gasPrice": {
+          "type": "BigNumber",
+          "hex": "0x483c3daa"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x3b9aca00"
+        },
+        "maxFeePerGas": {
+          "type": "BigNumber",
+          "hex": "0x483c3daa"
+        },
+        "gasLimit": {
+          "type": "BigNumber",
+          "hex": "0xb5ce"
+        },
+        "to": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+        "value": {
+          "type": "BigNumber",
+          "hex": "0x00"
+        },
+        "nonce": 48,
+        "data": "0x095ea7b3000000000000000000000000ff8ebf8edf1c533a02d066f852788773bdcd631cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "r": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "s": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "v": 0,
+        "creates": null,
+        "chainId": 1
+      },
+      {
+        "summary": "Approve LP",
+        "translatableSummary": {
+          "text": "Approve %symbol%",
+          "data": {
+            "symbol": "LP"
+          }
+        },
+        "approval": {
+          "tokenAddress": "0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E",
+          "spender": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C"
+        },
+        "type": "approve"
+      }
+    ]
+  },
+  {
+    "event": "fork approval receipt",
+    "hash": "0xd4df120cd9768b1dcc05a18ff5ae967c4445903748714c47dd9134a2ddf1a77f",
+    "status": 1,
+    "allowance": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+  },
+  {
+    "event": "fork approval confirmed",
+    "chainId": 1
+  }
+]

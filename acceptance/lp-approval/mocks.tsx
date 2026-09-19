@@ -2,15 +2,19 @@
 import React, { useSyncExternalStore } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { CurrencyAmount, Token, Percent, WNATIVE, Pair } from '@pancakeswap/sdk'
+import { createLocalFork } from '../eth-remove/local-fork'
+export const evidence: any[] = []
+const forkMode = new URLSearchParams(location.search).get('fork') === '1'
+const localFork = forkMode ? await createLocalFork(evidence) : undefined
 export const chainId = Number(new URLSearchParams(location.search).get('chain') || 1)
-export const account = '0x0000000000000000000000000000000000000001'
+export const account = localFork?.owner ?? '0x0000000000000000000000000000000000000001'
 export const tokenA = new Token(chainId, '0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76', 18, 'MARCO')
 export const tokenB = WNATIVE[chainId]
 const lp = new Token(chainId, '0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E', 18, 'LP')
-export const amount = CurrencyAmount.fromRawAmount(lp, '150000000000000000')
+export const amount = CurrencyAmount.fromRawAmount(lp, localFork?.balance ?? '150000000000000000')
 const pair = new Pair(
-  CurrencyAmount.fromRawAmount(tokenA, '1443340000000000000000'),
-  CurrencyAmount.fromRawAmount(tokenB, '155903000000000000'),
+  CurrencyAmount.fromRawAmount(tokenA, localFork?.reserves[0] ?? '1443340000000000000000'),
+  CurrencyAmount.fromRawAmount(tokenB, localFork?.reserves[1] ?? '155903000000000000'),
 )
 const position = {
   id: lp.address,
@@ -26,8 +30,18 @@ const positions = [position]
 const details = {
   usdValue: 7.68,
   poolShare: new Percent(1, 100),
-  token0Deposited: CurrencyAmount.fromRawAmount(tokenA, '14433400000000000000'),
-  token1Deposited: CurrencyAmount.fromRawAmount(tokenB, '1559030000000000'),
+  token0Deposited: CurrencyAmount.fromRawAmount(
+    tokenA,
+    localFork
+      ? BigNumber.from(localFork.reserves[0]).mul(localFork.balance).div(localFork.supply).toString()
+      : '14433400000000000000',
+  ),
+  token1Deposited: CurrencyAmount.fromRawAmount(
+    tokenB,
+    localFork
+      ? BigNumber.from(localFork.reserves[1]).mul(localFork.balance).div(localFork.supply).toString()
+      : '1559030000000000',
+  ),
 }
 let pending = false
 let allowance = '0'
@@ -44,10 +58,10 @@ const notify = () => {
   listeners.forEach((fn) => fn())
 }
 const useVersion = () => useSyncExternalStore(subscribe, () => version)
-export const evidence: any[] = []
-export const confirmApproval = () => {
+export const confirmApproval = async () => {
+  if (localFork) await localFork.confirm()
   allowance = amount.quotient.toString()
-  evidence.push({ event: 'mock approval confirmed', chainId })
+  evidence.push({ event: localFork ? 'fork approval confirmed' : 'mock approval confirmed', chainId })
   notify()
 }
 const record = (event: string, args: unknown[]) => {
@@ -61,7 +75,8 @@ const contract = {
   },
   estimateGas: { approve: async () => BigNumber.from(50000) },
 }
-export const useTokenContract = (address?: string) => (address ? contract : null)
+export const useTokenContract = (address?: string, withSigner = true) =>
+  address ? localFork?.tokenContract(address, withSigner) ?? contract : null
 export const useSingleCallResult = () => ({ result: [BigNumber.from(0)] }) // frozen pre-approval multicall
 export const useHasPendingApproval = () => {
   useVersion()
@@ -72,7 +87,8 @@ const addTransaction = (tx: any, meta: any) => {
   record('transaction', [tx, meta])
 }
 export const useTransactionAdder = () => addTransaction
-const callWithGasPrice = async (_contract: any, method: string, args: unknown[]) => {
+const callWithGasPrice = async (_contract: any, method: string, args: unknown[], overrides: unknown) => {
+  if (localFork) return localFork.approve(_contract, method, args, overrides)
   record('wallet approval request', [method, ...args])
   return { hash: '0x' + 'a'.repeat(64) }
 }
@@ -127,7 +143,7 @@ const routerContract = {
   removeLiquidity: remove,
   removeLiquidityETH: remove,
 }
-export const useRouterContract = () => routerContract
+export const useRouterContract = () => localFork?.router ?? routerContract
 export const logError = console.error
 export const transactionErrorToUserReadableMessage = (e: Error) => e.message
 export const chainDisplayName = (id: number) => (id === 1 ? 'Ethereum' : 'BNB Chain')

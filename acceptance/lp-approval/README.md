@@ -1,7 +1,7 @@
 # LP approval local browser acceptance
 
 Run from repository root: `yarn vite --config acceptance/lp-approval/vite.config.ts`.
-Open `http://127.0.0.1:4179/?chain=1` or `?chain=56`.
+Open `http://127.0.0.1:4180/?chain=1` or `?chain=56`.
 
 This fixture mounts the real `useLiquidityMintRuntime`, `useApproveCallback`, `useTokenAllowance`, `LiquidityRemovePanel`, and `LiquidityRemoveConfirmModal`. Only wallet/provider, position discovery, unrelated add/portfolio dependencies and transaction responses are mocked. No private keys, public RPC, signing or broadcasting. BSC positions are synthetic fixtures, not claims about a deployed LP at that address.
 
@@ -34,3 +34,7 @@ Ethereum spender: `0xFF8EBf8edf1C533A02d066f852788773BdCD631C`; LP: `0x7f0183D7C
 BSC spender regression: `0xc25033218D181b27D4a2944Fbb04FC055da4EAB3`.
 
 Draft only. No merge, deployment command, public approval or withdrawal performed.
+
+## Post-#85 Ethereum transport regression
+
+For the real Ethereum router fork proof and unavailable-app-RPC reproduction, see [eth-remove](../eth-remove/README.md). Add `&fork=1` to the Ethereum URL only with the documented localhost Anvil fork running. All writes stay local.

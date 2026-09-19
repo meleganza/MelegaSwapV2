@@ -48,5 +48,5 @@ export default defineConfig({
     ].map((x) => ({ find: x, replacement: resolve(repo, 'apps/web/src', x) })),
   },
   define: { 'process.env': {} },
-  server: { host: '127.0.0.1', port: 4179, strictPort: true, fs: { allow: [repo] } },
+  server: { host: '127.0.0.1', port: 4180, strictPort: true, fs: { allow: [repo] } },
 })

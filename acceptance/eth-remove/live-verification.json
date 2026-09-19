@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-09-19T17:29:29.944638+00:00",
+  "mainAndMerge85": "c7ddc191cd34f08567f01970b7244625a60ba1f2",
+  "buildId": "Wj_hgRlJy0fqwbYvZ9etS",
+  "endpoint": "https://rpc.ankr.com/eth",
+  "eth_chainId_response": {
+    "jsonrpc": "2.0",
+    "error": {
+      "code": -32000,
+      "message": "Unauthorized: You must authenticate your request with an API key. Create an account on https://www.ankr.com/rpc/ and generate your personal API key for free."
+    },
+    "id": null
+  },
+  "assets": [
+    {
+      "url": "https://melega.finance/_next/static/chunks/5285-ca038ac2a1ee1e80.js",
+      "sha256": "fe6c37157d22eab08f1f21993e765e4a172edd7d74e48a37453a3422e6fcf26f",
+      "matches": [
+        {
+          "term": "network:\"ethereum\"",
+          "excerpt": "t(52171),v=t(34406),y={id:1,name:\"Ethereum Chain\",network:\"ethereum\",nativeCurrency:{name:\"ETH\",symbol:\"ETH\",decimals:18},rpcUrls:{default:{http:[\"https://rpc.ankr.com/eth\"]}}"
+        },
+        {
+          "term": "rpc.ankr.com/eth",
+          "excerpt": "TH\",decimals:18},rpcUrls:{default:{http:[\"https://rpc.ankr.com/eth\"]}},blockExplorers:{etherscan:{name:\"EtherScan\",url:\"https://etherscan.io\"},default:{name:\"EtherScan\",url:\"h"
+        }
+      ]
+    },
+    {
+      "url": "https://melega.finance/_next/static/chunks/8091-bb17b190637e088b.js",
+      "sha256": "41443a2b8f63ea72318bd24d7aa51e0acbce7ce3128f3d2854211a804669ebe2",
+      "matches": [
+        {
+          "term": "rpc.ankr.com/eth",
+          "excerpt": "goerli.infura.io/ws/v3\"]},default:{http:[\"https://rpc.ankr.com/eth_goerli\"]}},blockExplorers:{etherscan:{name:\"Etherscan\",url:\"https://goerli.etherscan.io\"},default:{name:\"Eth"
+        }
+      ]
+    },
+    {
+      "url": "https://melega.finance/_next/static/chunks/3923-88b0786615b52bbd.js",
+      "sha256": "b9a86906cea5a5ac264b7cbad8d9a4be48048f948b6c5cf4f01a8917b15631f9",
+      "matches": [
+        {
+          "term": "directAllowancePollMs",
+          "excerpt": "id 0,n,{pollIntervalMs:null!==(b=null==t?void 0:t.directAllowancePollMs)&&void 0!==b?b:M?null==t?void 0:t.pendingAllowancePollMs:void 0,preferDirect:Boolean(null==t?void 0:t.d"
+        }
+      ]
+    },
+    {
+      "url": "https://melega.finance/_next/static/chunks/7332.f68d818415758030.js",
+      "sha256": "bc9aab0945eec07bce321763b595d49363964c02c6734e3016eeacb24e3e6f02",
+      "matches": [
+        {
+          "term": "network:\"ethereum\"",
+          "excerpt": "t(52171),b=t(34406),v={id:1,name:\"Ethereum Chain\",network:\"ethereum\",nativeCurrency:{name:\"ETH\",symbol:\"ETH\",decimals:18},rpcUrls:{default:{http:[\"https://rpc.ankr.com/eth\"]}}"
+        },
+        {
+          "term": "rpc.ankr.com/eth",
+          "excerpt": "TH\",decimals:18},rpcUrls:{default:{http:[\"https://rpc.ankr.com/eth\"]}},blockExplorers:{etherscan:{name:\"EtherScan\",url:\"https://etherscan.io\"},default:{name:\"EtherScan\",url:\"h"
+        }
+      ]
+    }
+  ]
+}
