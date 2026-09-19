@@ -1,11 +1,13 @@
 import { spawn, execFileSync, execSync, type ChildProcess } from 'child_process'
 import { createHash } from 'crypto'
 import { existsSync, readFileSync } from 'fs'
+import net from 'net'
 import path from 'path'
-import { Interface } from '@ethersproject/abi'
+import { defaultAbiCoder, Interface } from '@ethersproject/abi'
 import { getAddress } from '@ethersproject/address'
 import { keccak256 } from '@ethersproject/keccak256'
 import { JsonRpcProvider } from '@ethersproject/providers'
+import { toUtf8Bytes } from '@ethersproject/strings'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { CANONICAL_EXAMPLE_ASSETS, evmNative } from '../assetIdentity'
 import { evmNetwork } from '../domain'
@@ -122,6 +124,7 @@ export const FORK_PROOF = {
   calldata: [] as string[],
   errors: [] as string[],
   observed: [] as string[],
+  negative: [] as string[],
 }
 
 function sha256Bytes(hex: string) {
@@ -152,6 +155,230 @@ function withTimeout<T>(promise: Promise<T>, ms: number, code: string): Promise<
 
 function topicAddress(topic: string) {
   return getAddress(`0x${topic.slice(26)}`)
+}
+
+const ERROR_STRING_SELECTOR = '0x08c379a0'
+const EXECUTOR_CUSTOM_ERRORS = [
+  'ZeroAddress',
+  'Expired',
+  'Replay',
+  'WrongChain',
+  'WrongUser',
+  'WrongBeneficiary',
+  'WrongFee',
+  'WrongPolicy',
+  'WrongRouter',
+  'WrongRoute',
+  'InvalidPath',
+  'NativeValue',
+  'FeeBypass',
+  'UnsupportedToken',
+  'UnknownVenue',
+  'InvalidAmount',
+] as const
+
+type ExpectedRevert = { custom: string } | { stringIncludes: string }
+
+interface RevertEvidence {
+  source: 'receipt-status-0' | 'provider-failed-receipt' | 'rpc-revert-data'
+  status: 0
+  hash?: string
+  selector: string
+  custom: string | null
+  message: string | null
+}
+
+interface RevertTransport {
+  sendTransaction: (tx: UnsignedUserTransaction) => Promise<string>
+  waitForReceipt: (hash: string) => Promise<{ status?: number; transactionHash?: string } | null>
+  ethCall: (tx: UnsignedUserTransaction) => Promise<string>
+}
+
+function customErrorSelector(name: string) {
+  return keccak256(toUtf8Bytes(`${name}()`)).slice(0, 10)
+}
+
+function errorText(error: unknown): string {
+  if (!(error instanceof Error)) return String(error)
+  const record = error as Error & { code?: unknown; reason?: unknown; body?: unknown; error?: unknown; status?: unknown }
+  return [record.message, record.code, record.reason, record.body, JSON.stringify(record.error ?? null), record.status]
+    .filter((row) => row != null && row !== '')
+    .join(' ')
+}
+
+function isTimeoutError(error: unknown): boolean {
+  const code = (error as { code?: string })?.code
+  return code === 'TIMEOUT' || /TIMEOUT|ETIMEDOUT|AbortError|timed out/i.test(errorText(error))
+}
+
+function isRateLimitError(error: unknown): boolean {
+  const status = (error as { status?: number })?.status
+  return status === 429 || /\b429\b|Too Many Requests|rate limit/i.test(errorText(error))
+}
+
+function isTransportError(error: unknown): boolean {
+  if (isTimeoutError(error) || isRateLimitError(error)) return true
+  const code = (error as { code?: string })?.code
+  if (code === 'NETWORK_ERROR') return true
+  return /ECONNREFUSED|ENOTFOUND|ECONNRESET|ENETUNREACH|socket hang up|fetch failed/i.test(errorText(error))
+}
+
+function extractRevertHex(error: unknown): string | null {
+  const seen = new Set<unknown>()
+  const walk = (value: unknown): string | null => {
+    if (value == null || seen.has(value)) return null
+    if (typeof value === 'string') {
+      const match = value.match(/0x[0-9a-fA-F]{8,}/)
+      if (match && (match[0].startsWith('0x08c379a0') || match[0].length >= 10)) return match[0]
+      try {
+        return walk(JSON.parse(value))
+      } catch {
+        return null
+      }
+    }
+    if (typeof value !== 'object') return null
+    seen.add(value)
+    const record = value as Record<string, unknown>
+    if (typeof record.data === 'string' && record.data.startsWith('0x') && record.data.length >= 10) return record.data
+    if (record.data && typeof record.data === 'object') {
+      const nested = walk(record.data)
+      if (nested) return nested
+    }
+    for (const key of ['error', 'body', 'reason', 'originalError']) {
+      const nested = walk(record[key])
+      if (nested) return nested
+    }
+    return null
+  }
+  return walk(error)
+}
+
+function extractFailedReceipt(error: unknown): { status: 0; transactionHash?: string } | null {
+  const receipt = (error as { receipt?: { status?: number | string; transactionHash?: string } })?.receipt
+  if (!receipt) return null
+  if (receipt.status === 0 || receipt.status === '0x0') {
+    return { status: 0, transactionHash: receipt.transactionHash }
+  }
+  return null
+}
+
+function parseRevertData(data: string): { selector: string; custom: string | null; message: string | null } {
+  const selector = data.slice(0, 10).toLowerCase()
+  for (const name of EXECUTOR_CUSTOM_ERRORS) {
+    if (customErrorSelector(name) === selector) return { selector, custom: name, message: null }
+  }
+  if (selector === ERROR_STRING_SELECTOR) {
+    try {
+      const message = defaultAbiCoder.decode(['string'], `0x${data.slice(10)}`)[0] as string
+      return { selector, custom: null, message }
+    } catch {
+      return { selector, custom: null, message: null }
+    }
+  }
+  return { selector, custom: null, message: null }
+}
+
+function matchExpectedRevert(
+  parsed: { selector: string; custom: string | null; message: string | null },
+  expected: ExpectedRevert,
+): void {
+  if ('custom' in expected) {
+    if (parsed.custom !== expected.custom) {
+      throw new Error(
+        `REVERT_REASON_MISMATCH:want=${expected.custom}:have=${parsed.custom ?? parsed.message ?? parsed.selector}`,
+      )
+    }
+    return
+  }
+  if (!parsed.message || !parsed.message.includes(expected.stringIncludes)) {
+    throw new Error(
+      `REVERT_REASON_MISMATCH:want=${expected.stringIncludes}:have=${parsed.custom ?? parsed.message ?? parsed.selector}`,
+    )
+  }
+}
+
+function throwIfTransport(error: unknown): void {
+  if (isTimeoutError(error)) throw new Error(`REVERT_HELPER_TRANSPORT:TIMEOUT:${errorText(error)}`)
+  if (isRateLimitError(error)) throw new Error(`REVERT_HELPER_TRANSPORT:RATE_LIMIT:${errorText(error)}`)
+  if (isTransportError(error)) throw new Error(`REVERT_HELPER_TRANSPORT:${errorText(error)}`)
+}
+
+async function revertDataViaCall(transport: RevertTransport, tx: UnsignedUserTransaction): Promise<string> {
+  try {
+    const result = await transport.ethCall(tx)
+    if (typeof result === 'string' && result.startsWith('0x') && result.length >= 10 && result !== '0x') return result
+    throw new Error('REVERT_HELPER_MISSING_REVERT_DATA')
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('REVERT_HELPER_')) throw error
+    throwIfTransport(error)
+    const data = extractRevertHex(error)
+    if (data) return data
+    throw error instanceof Error ? error : new Error(String(error))
+  }
+}
+
+function evidenceFromData(
+  source: RevertEvidence['source'],
+  data: string,
+  expected: ExpectedRevert,
+  hash?: string,
+): RevertEvidence {
+  const parsed = parseRevertData(data)
+  matchExpectedRevert(parsed, expected)
+  return { source, status: 0, hash, selector: parsed.selector, custom: parsed.custom, message: parsed.message }
+}
+
+async function sendExpectRevertWith(
+  transport: RevertTransport,
+  tx: UnsignedUserTransaction,
+  expected: ExpectedRevert,
+): Promise<RevertEvidence> {
+  let hash: string | undefined
+  try {
+    hash = await transport.sendTransaction(tx)
+  } catch (error) {
+    throwIfTransport(error)
+    const failedReceipt = extractFailedReceipt(error)
+    if ((error as { receipt?: { status?: number } })?.receipt && !failedReceipt) {
+      const status = (error as { receipt: { status?: number } }).receipt.status
+      if (status === 1) throw new Error('REVERT_HELPER_SUCCEEDED:provider-receipt')
+    }
+    const data = extractRevertHex(error)
+    if (failedReceipt) {
+      const revertData = data ?? (await revertDataViaCall(transport, tx))
+      return evidenceFromData('provider-failed-receipt', revertData, expected, failedReceipt.transactionHash)
+    }
+    if (data) return evidenceFromData('rpc-revert-data', data, expected)
+    if (/execution reverted|VM Exception while processing transaction/i.test(errorText(error))) {
+      const viaCall = await revertDataViaCall(transport, tx)
+      return evidenceFromData('rpc-revert-data', viaCall, expected)
+    }
+    throw error instanceof Error ? error : new Error(String(error))
+  }
+
+  const receipt = await transport.waitForReceipt(hash)
+  if (receipt == null) throw new Error('REVERT_HELPER_NULL_RECEIPT')
+  if (receipt.status === 1) throw new Error(`REVERT_HELPER_SUCCEEDED:${hash}`)
+  if (receipt.status !== 0) throw new Error(`REVERT_HELPER_UNEXPECTED_STATUS:${String(receipt.status)}`)
+  const revertData = await revertDataViaCall(transport, tx)
+  return evidenceFromData('receipt-status-0', revertData, expected, receipt.transactionHash ?? hash)
+}
+
+function isPortOccupied(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = net.connect({ host: ANVIL_HOST, port })
+    const finish = (occupied: boolean) => {
+      socket.removeAllListeners()
+      socket.destroy()
+      resolve(occupied)
+    }
+    socket.setTimeout(400)
+    socket.once('connect', () => finish(true))
+    socket.once('timeout', () => finish(true))
+    socket.once('error', (error: NodeJS.ErrnoException) => {
+      finish(error.code !== 'ECONNREFUSED')
+    })
+  })
 }
 
 function compiledExecutorArtifact() {
@@ -337,12 +564,7 @@ async function startFork(input: {
   routers: Array<{ address: string; venue: 'melega-dex' | 'pancakeswap' | 'uniswap' }>
 }): Promise<ForkCtx> {
   execFileSync('which', ['anvil'])
-  try {
-    const pids = execSync(`lsof -tiTCP:${input.port} -sTCP:LISTEN`, { encoding: 'utf8' }).trim()
-    for (const pid of pids.split(/\s+/).filter(Boolean)) execSync(`kill -9 ${pid}`)
-  } catch {
-    // port already free
-  }
+  if (await isPortOccupied(input.port)) throw new Error(`PORT_IN_USE:${input.port}`)
   const source = await pickForkSource(input.label, input.urls, input.expectedChainHex, input.codeAddresses)
   const anvil = spawn(
     'anvil',
@@ -374,7 +596,10 @@ async function startFork(input: {
     throttleLimit: 1,
   })
   try {
-    if (anvil.exitCode != null) throw new Error(`${input.label}_ANVIL_EXIT:${anvil.exitCode}:${anvilLog.slice(-400)}`)
+    if (anvil.exitCode != null) {
+      if (/already in use/i.test(anvilLog)) throw new Error(`PORT_IN_USE:${input.port}`)
+      throw new Error(`${input.label}_ANVIL_EXIT:${anvil.exitCode}:${anvilLog.slice(-400)}`)
+    }
     await waitForAnvil(provider, input.expectedChainHex, { number: source.block, hash: source.hash })
   } catch (error) {
     if (anvil && !anvil.killed) anvil.kill('SIGKILL')
@@ -534,18 +759,44 @@ async function sendExact(ctx: ForkCtx, tx: UnsignedUserTransaction) {
   return receipt
 }
 
-async function sendExpectRevert(ctx: ForkCtx, tx: UnsignedUserTransaction) {
-  try {
-    const hash = await rpc(ctx, 'eth_sendTransaction', [
-      { from: tx.from, to: tx.to, data: tx.data, value: tx.value, gas: toHex(3_500_000n) },
-    ])
-    const receipt = await ctx.provider.waitForTransaction(hash)
-    if (receipt && receipt.status === 1) {
-      throw new Error(`${ctx.label}_EXPECTED_REVERT_SUCCEEDED:${hash}`)
-    }
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('EXPECTED_REVERT_SUCCEEDED')) throw error
-  }
+async function sendExpectRevert(
+  ctx: ForkCtx,
+  tx: UnsignedUserTransaction,
+  expected: ExpectedRevert,
+): Promise<RevertEvidence> {
+  return sendExpectRevertWith(
+    {
+      sendTransaction: (row) =>
+        rpc(ctx, 'eth_sendTransaction', [
+          { from: row.from, to: row.to, data: row.data, value: row.value, gas: toHex(3_500_000n) },
+        ]),
+      waitForReceipt: (hash) => ctx.provider.waitForTransaction(hash),
+      ethCall: (row) =>
+        rpc(ctx, 'eth_call', [{ from: row.from, to: row.to, data: row.data, value: row.value }, 'latest']),
+    },
+    tx,
+    expected,
+  )
+}
+
+async function assertFailedExecute(
+  ctx: ForkCtx,
+  tx: UnsignedUserTransaction,
+  expected: ExpectedRevert,
+  input: { user: string; nonce: number; nonceUsed: boolean; inputToken: string; outputToken: string; label: string },
+): Promise<RevertEvidence> {
+  const treasuryBefore = await balanceOf(ctx, ctx.wrapped, TREASURY)
+  const userInBefore = await balanceOf(ctx, input.inputToken, input.user)
+  const userOutBefore = await balanceOf(ctx, input.outputToken, input.user)
+  const evidence = await sendExpectRevert(ctx, tx, expected)
+  expect(await usedNonce(ctx, input.user, input.nonce)).toBe(input.nonceUsed)
+  expect(await balanceOf(ctx, ctx.wrapped, TREASURY)).toBe(treasuryBefore)
+  expect(await balanceOf(ctx, input.inputToken, input.user)).toBe(userInBefore)
+  expect(await balanceOf(ctx, input.outputToken, input.user)).toBe(userOutBefore)
+  FORK_PROOF.negative.push(
+    `${input.label} source=${evidence.source} selector=${evidence.selector} custom=${evidence.custom ?? ''} message=${evidence.message ?? ''}`,
+  )
+  return evidence
 }
 
 function decodeApprove(data: string) {
@@ -754,6 +1005,117 @@ async function proveHappyPath(
   return { prepared, winner, receipt, router, inputToken, outputToken, expectedFee, expectedNet, pair }
 }
 
+describe('sendExpectRevert helper regressions', () => {
+  const tx: UnsignedUserTransaction = {
+    from: '0x1111111111111111111111111111111111111111',
+    to: '0x3333333333333333333333333333333333333333',
+    chainId: 56,
+    data: '0x',
+    value: '0x0',
+  }
+  const expected: ExpectedRevert = { custom: 'Replay' }
+  const replayData = customErrorSelector('Replay')
+  const expiredData = customErrorSelector('Expired')
+
+  it('rejects timeout and does not treat it as an EVM revert', async () => {
+    await expect(
+      sendExpectRevertWith(
+        {
+          sendTransaction: async () => {
+            throw Object.assign(new Error('request timed out'), { code: 'TIMEOUT' })
+          },
+          waitForReceipt: async () => null,
+          ethCall: async () => '0x',
+        },
+        tx,
+        expected,
+      ),
+    ).rejects.toThrow(/REVERT_HELPER_TRANSPORT:TIMEOUT/)
+  })
+
+  it('rejects HTTP 429 and does not treat it as an EVM revert', async () => {
+    await expect(
+      sendExpectRevertWith(
+        {
+          sendTransaction: async () => {
+            throw Object.assign(new Error('Too Many Requests'), { status: 429, code: 'SERVER_ERROR' })
+          },
+          waitForReceipt: async () => null,
+          ethCall: async () => '0x',
+        },
+        tx,
+        expected,
+      ),
+    ).rejects.toThrow(/REVERT_HELPER_TRANSPORT:RATE_LIMIT/)
+  })
+
+  it('rejects a null receipt', async () => {
+    await expect(
+      sendExpectRevertWith(
+        {
+          sendTransaction: async () => '0xabc0000000000000000000000000000000000000000000000000000000000001',
+          waitForReceipt: async () => null,
+          ethCall: async () => replayData,
+        },
+        tx,
+        expected,
+      ),
+    ).rejects.toThrow('REVERT_HELPER_NULL_RECEIPT')
+  })
+
+  it('rejects a successful receipt status=1', async () => {
+    await expect(
+      sendExpectRevertWith(
+        {
+          sendTransaction: async () => '0xabc0000000000000000000000000000000000000000000000000000000000002',
+          waitForReceipt: async () => ({
+            status: 1,
+            transactionHash: '0xabc0000000000000000000000000000000000000000000000000000000000002',
+          }),
+          ethCall: async () => replayData,
+        },
+        tx,
+        expected,
+      ),
+    ).rejects.toThrow(/REVERT_HELPER_SUCCEEDED/)
+  })
+
+  it('accepts status=0 with the Replay selector and rejects Expired for a Replay case', async () => {
+    const ok = await sendExpectRevertWith(
+      {
+        sendTransaction: async () => '0xabc0000000000000000000000000000000000000000000000000000000000003',
+        waitForReceipt: async () => ({
+          status: 0,
+          transactionHash: '0xabc0000000000000000000000000000000000000000000000000000000000003',
+        }),
+        ethCall: async () => {
+          throw Object.assign(new Error('execution reverted'), { data: replayData })
+        },
+      },
+      tx,
+      expected,
+    )
+    expect(ok.custom).toBe('Replay')
+    expect(ok.selector).toBe(replayData)
+    await expect(
+      sendExpectRevertWith(
+        {
+          sendTransaction: async () => '0xabc0000000000000000000000000000000000000000000000000000000000004',
+          waitForReceipt: async () => ({
+            status: 0,
+            transactionHash: '0xabc0000000000000000000000000000000000000000000000000000000000004',
+          }),
+          ethCall: async () => {
+            throw Object.assign(new Error('execution reverted'), { data: expiredData })
+          },
+        },
+        tx,
+        expected,
+      ),
+    ).rejects.toThrow(/REVERT_REASON_MISMATCH:want=Replay:have=Expired/)
+  })
+})
+
 describe('SmartSwap V2 real-router local Anvil fork proof', () => {
   let bsc: ForkCtx
   let eth: ForkCtx
@@ -855,10 +1217,14 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       nonce: 1,
       expectVenue: 'pancakeswap',
     })
-    const treasuryBeforeReplay = await balanceOf(bsc, WBNB, TREASURY)
-    await sendExpectRevert(bsc, happy.prepared.swapTransaction)
-    expect(await usedNonce(bsc, happy.prepared.swapTransaction.from, 1)).toBe(true)
-    expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeReplay)
+    await assertFailedExecute(bsc, happy.prepared.swapTransaction, { custom: 'Replay' }, {
+      user: bsc.users[3],
+      nonce: 1,
+      nonceUsed: true,
+      inputToken: WBNB,
+      outputToken: USDC_BSC,
+      label: 'BSC pancake replay',
+    })
     FORK_PROOF.pancakeErc20 = true
   }, 120_000)
 
@@ -930,10 +1296,14 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       })
       for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(isolated, tx)).status).toBe(1)
       await advancePastDeadline(isolated, expiredDeadline)
-      const treasuryBeforeExpired = await balanceOf(isolated, WBNB, TREASURY)
-      await sendExpectRevert(isolated, expiredPrep.swapTransaction)
-      expect(await usedNonce(isolated, user, 12)).toBe(false)
-      expect(await balanceOf(isolated, WBNB, TREASURY)).toBe(treasuryBeforeExpired)
+      await assertFailedExecute(isolated, expiredPrep.swapTransaction, { custom: 'Expired' }, {
+        user,
+        nonce: 12,
+        nonceUsed: false,
+        inputToken: WBNB,
+        outputToken: USDC_BSC,
+        label: 'BSC melega expired',
+      })
 
       const slipReq = bscRequest('erc20', GROSS_BSC, 1)
       await wrapNative(isolated, user, slipReq.inputAmountRaw)
@@ -952,10 +1322,19 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       })
       for (const tx of slipPrep.approvalTransactions) expect((await sendExact(isolated, tx)).status).toBe(1)
       await dumpPool(isolated, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
-      const treasuryBeforeSlip = await balanceOf(isolated, WBNB, TREASURY)
-      await sendExpectRevert(isolated, slipPrep.swapTransaction)
-      expect(await usedNonce(isolated, user, 13)).toBe(false)
-      expect(await balanceOf(isolated, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
+      await assertFailedExecute(
+        isolated,
+        slipPrep.swapTransaction,
+        { stringIncludes: 'INSUFFICIENT_OUTPUT_AMOUNT' },
+        {
+          user,
+          nonce: 13,
+          nonceUsed: false,
+          inputToken: WBNB,
+          outputToken: USDC_BSC,
+          label: 'BSC melega slippage',
+        },
+      )
     } finally {
       stopFork(isolated)
     }
@@ -992,10 +1371,14 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       nonce: 21,
       expectVenue: 'uniswap',
     })
-    const treasuryBeforeReplay = await balanceOf(eth, WETH, TREASURY)
-    await sendExpectRevert(eth, happy.prepared.swapTransaction)
-    expect(await usedNonce(eth, user, 21)).toBe(true)
-    expect(await balanceOf(eth, WETH, TREASURY)).toBe(treasuryBeforeReplay)
+    await assertFailedExecute(eth, happy.prepared.swapTransaction, { custom: 'Replay' }, {
+      user,
+      nonce: 21,
+      nonceUsed: true,
+      inputToken: WETH,
+      outputToken: USDC_ETH,
+      label: 'ETH uniswap replay',
+    })
 
     const expiredReq = ethRequest('erc20')
     await wrapNative(eth, user, expiredReq.inputAmountRaw)
@@ -1015,10 +1398,14 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     })
     for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(eth, tx)).status).toBe(1)
     await advancePastDeadline(eth, expiredDeadline)
-    const treasuryBeforeExpired = await balanceOf(eth, WETH, TREASURY)
-    await sendExpectRevert(eth, expiredPrep.swapTransaction)
-    expect(await usedNonce(eth, user, 22)).toBe(false)
-    expect(await balanceOf(eth, WETH, TREASURY)).toBe(treasuryBeforeExpired)
+    await assertFailedExecute(eth, expiredPrep.swapTransaction, { custom: 'Expired' }, {
+      user,
+      nonce: 22,
+      nonceUsed: false,
+      inputToken: WETH,
+      outputToken: USDC_ETH,
+      label: 'ETH uniswap expired',
+    })
 
     const slipReq = ethRequest('erc20', GROSS_ETH, 1)
     await wrapNative(eth, user, slipReq.inputAmountRaw)
@@ -1037,10 +1424,19 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     })
     for (const tx of slipPrep.approvalTransactions) expect((await sendExact(eth, tx)).status).toBe(1)
     await dumpPool(eth, UNISWAP_ROUTER, [WETH, USDC_ETH], 150n * 10n ** 18n)
-    const treasuryBeforeSlip = await balanceOf(eth, WETH, TREASURY)
-    await sendExpectRevert(eth, slipPrep.swapTransaction)
-    expect(await usedNonce(eth, user, 23)).toBe(false)
-    expect(await balanceOf(eth, WETH, TREASURY)).toBe(treasuryBeforeSlip)
+    await assertFailedExecute(
+      eth,
+      slipPrep.swapTransaction,
+      { stringIncludes: 'INSUFFICIENT_OUTPUT_AMOUNT' },
+      {
+        user,
+        nonce: 23,
+        nonceUsed: false,
+        inputToken: WETH,
+        outputToken: USDC_ETH,
+        label: 'ETH uniswap slippage',
+      },
+    )
   }, 240_000)
 
   it('production flags stay frozen and no global PASS if a venue is unverified', () => {
