@@ -1,3 +1,4 @@
+import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 import { useState, useEffect } from 'react'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
@@ -97,7 +98,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       })
 
       const sortedByTruth = [...farmsWithApr]
-        .filter((farm) => (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0) > 0)
+        .filter((farm) => meetsHomeTopYieldTvl(farm.liquidity?.toNumber()) && (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0) > 0)
         .sort((a, b) => {
         const tvlA = a.liquidity?.toNumber?.() ?? 0
         const tvlB = b.liquidity?.toNumber?.() ?? 0

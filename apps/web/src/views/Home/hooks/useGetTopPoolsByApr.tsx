@@ -1,3 +1,4 @@
+import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 import { useState, useEffect, useMemo } from 'react'
 import { useAppDispatch } from 'state'
 import { VaultKey } from 'state/types'
@@ -123,7 +124,7 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
         return { pool, apr, tvlUsd, life }
       })
       // Certified economics only — never surface inventory/skeleton names with empty TVL/APR.
-      .filter((row) => !row.pool.isFinished && row.apr > 0)
+      .filter((row) => !row.pool.isFinished && row.apr > 0 && meetsHomeTopYieldTvl(row.tvlUsd))
       .sort((a, b) => {
         if (b.apr !== a.apr) return b.apr - a.apr
         if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd

@@ -1,3 +1,4 @@
+import { meetsHomeTopYieldTvl } from 'views/Home/hooks/homeTopYieldEligibility'
 import { useMemo } from 'react'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
@@ -468,7 +469,7 @@ export const useHomeTradeData = () => {
   const farmRows = useMemo((): EarnRow[] => {
     // Active, factual farms only. Home ranking is APR descending as required.
     const ranked = topFarms
-      .filter((f) => f.pid !== 0 && !isArchivedPid(f.pid) && (farmApr(f) ?? 0) > 0)
+      .filter((f) => meetsHomeTopYieldTvl(farmTvlUsd(f)) && f.pid !== 0 && !isArchivedPid(f.pid) && (farmApr(f) ?? 0) > 0)
       .map((farm) => {
         const apr = farmApr(farm)
         const tvl = farmTvl(farm)
@@ -526,7 +527,7 @@ export const useHomeTradeData = () => {
         return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
       })
       // Certified economics only — same membership spirit as Pools Studio Explore.
-      .filter((row) => !row.pool.isFinished && row.aprValue != null && row.aprValue > 0)
+      .filter((row) => !row.pool.isFinished && row.aprValue != null && row.aprValue > 0 && meetsHomeTopYieldTvl(row.tvlUsd))
       .sort((a, b) =>
         (b.aprValue ?? 0) - (a.aprValue ?? 0) ||
         b.tvlUsd - a.tvlUsd ||

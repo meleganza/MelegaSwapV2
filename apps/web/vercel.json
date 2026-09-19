@@ -23,7 +23,8 @@
   "git": {
     "deploymentEnabled": {
       "fix/eth-marco-remove-root-cause": false,
-      "fix/ethereum-farms-data-layout": false
+      "fix/ethereum-farms-data-layout": false,
+      "fix/home-top-yield-min-tvl": false
     }
   }
 }
