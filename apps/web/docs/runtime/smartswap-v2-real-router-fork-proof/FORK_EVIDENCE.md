@@ -1,8 +1,7 @@
 # SmartSwap V2 — Real Router Local Anvil Fork Proof
 
-Status: **IN PROGRESS** (execute outcomes filled after `v2RealRouterForkProof.test.ts` runs)  
-Public path: **NOT GO_LIVE_READY**  
-This PR adds one adjacent fork test plus this evidence update. No runtime, contract, fee, catalog, or UI change. No merge, public deploy, payment, approval, Founder signature, public broadcast, or activation.
+Status: **VENUES VERIFIED ON LOCAL FORK** — **NOT GO_LIVE_READY**  
+Public path remains legacy. No merge, public deploy, payment, approval, Founder signature, public broadcast, or activation.
 
 Copied forward from #83 `FINAL_FOUNDER_REVIEW.md` FORK_EVIDENCE. #83 branch was not reopened. #50 was not reused.
 
@@ -14,6 +13,7 @@ Copied forward from #83 `FINAL_FOUNDER_REVIEW.md` FORK_EVIDENCE. #83 branch was 
 | BRANCH | `cursor/smartswap-v2-real-router-fork-proof-c987` |
 | Unique goal | Prove existing `SmartSwapExecutorV2` on **real** routers via **local** Anvil fork using existing `prepareV2UserTransactions` calldata |
 | Isolation | Anvil `--host 127.0.0.1` only. Public RPC is read-only fork source. Writes stay on localhost. |
+| Modes | `LEGACY_PRODUCTION` / `SHADOW` / `isProductionCutoverAllowed() === false` unchanged |
 
 ## Artifact (#83 match)
 
@@ -35,36 +35,34 @@ Configured env: `BNB_MAINNET_RPC_URL` UNSET, `ETHEREUM_RPC_URL` UNSET, `BSC_RPC_
 
 ### BSC (chainId `0x38`)
 
-Working `eth_chainId` + `eth_blockNumber`:
+Working `eth_chainId` + `eth_blockNumber` + `eth_getStorageAt` at pin:
 
-- `https://bsc-dataseed.binance.org` (repo `BSC_RPC_URLS` / indexer default)
+- `https://bsc-dataseed.binance.org` (**used**)
 - `https://bsc-dataseed1.defibit.io`
 - `https://bsc-dataseed1.ninicoin.io`
 - `https://bsc-dataseed1.bnbchain.org`
 - `https://bsc-dataseed2.binance.org`
-- `https://bsc-rpc.publicnode.com`
-- `https://bsc.publicnode.com`
 
-Failed:
+Failed / rejected for fork:
 
-- `https://rpc.ankr.com/bsc` — method `eth_chainId`, HTTP 200, error `Unauthorized: You must authenticate your request with an API key`
-
-Preferred source: `https://bsc-dataseed.binance.org`.
+| Endpoint | Method | Error |
+| --- | --- | --- |
+| `https://rpc.ankr.com/bsc` | `eth_chainId` | HTTP 200 `Unauthorized` (API key required) |
+| `https://bsc-rpc.publicnode.com` | Anvil fork / `eth_getTransactionReceipt` | HTTP 403 `Archive requests require a personal token` (Allnodes PublicNode) |
 
 ### Ethereum (chainId `0x1`)
 
-Working:
+Working (used `https://ethereum-rpc.publicnode.com`):
 
-- `https://ethereum-rpc.publicnode.com` (repo indexer default)
+- `https://ethereum-rpc.publicnode.com`
 - `https://ethereum.publicnode.com`
 - `https://1rpc.io/eth`
 - `https://rpc.flashbots.net`
 - `https://eth.drpc.org`
 - `https://eth.meowrpc.com`
 - `https://eth-mainnet.public.blastapi.io`
-- plus several others (Tenderly, merkle, mevblocker, nodies)
 
-Failed (exact):
+Failed:
 
 | Endpoint | Method | Error |
 | --- | --- | --- |
@@ -75,76 +73,68 @@ Failed (exact):
 | `https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161` | `eth_chainId` | HTTP 401 project ID has no access |
 | `https://eth-mainnet.g.alchemy.com/v2/demo` | `eth_chainId` | HTTP 429 |
 
-Preferred source: `https://ethereum-rpc.publicnode.com`.
+## Pinned forks actually used
 
-## Pinned fork sources (pre-test probe)
+From the passing `v2RealRouterForkProof.test.ts` run:
 
-Pin is finalized by the test at runtime (latest−8) and recorded in the vitest output.
-
-Pre-test liveness sample (not the execute pin):
-
-| Chain | RPC | Block | Hash | Routers with code |
+| Chain | RPC | Block | Hash | Listen |
 | --- | --- | --- | --- | --- |
-| BSC 56 | `https://bsc-dataseed.binance.org` | `0x751d001` (122802177) | `0x9bd8cdeea997dda5339d6d07c90550d61508386e2d1b2d655daf398a9dd85f2c` | Melega `0xc250…EAB3` 17845 B; Pancake `0x10ED…024E` 21936 B |
-| ETH 1 | `https://ethereum-rpc.publicnode.com` | `0x18ce85e` (26011742) | `0x18ced0119d705c855cf27affcea3da975281e780a70287a6ee64e9f9eb66b197` | Uniswap `0x7a25…488D` 21943 B |
+| BSC 56 | `https://bsc-dataseed.binance.org` | `0x751e113` (122806547) | `0x56771620f74d6d78ca68e4163cfaba58118e23cdb9d0b348aa2fd92236869fa4` | `127.0.0.1:18557` (+ `:18559` isolated failure-mode fork) |
+| ETH 1 | `https://ethereum-rpc.publicnode.com` | `0x18ce8ff` (26011903) | `0x48a5c1932caa91a3f5a4d8c09ec5b8e5b8537147119ba6d9b4c94b567ba1c474` | `127.0.0.1:18558` |
 
-Factories, WBNB/WETH, USDC, and the WBNB/USDC + WETH/USDC pairs also returned non-empty code. No `anvil_setCode` on those addresses.
+Routers with real code (no `anvil_setCode`):
 
-## Pairs (factual NET `getAmountsOut`)
+- Melega `0xc25033218D181b27D4a2944Fbb04FC055da4EAB3`
+- Pancake `0x10ED43C718714eb63d5aA57B78B54704E256024E`
+- Uniswap `0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D`
 
-GROSS BSC `50000000000000000` (0.05 BNB), fee 20 bps → NET `49900000000000000`.  
-GROSS ETH `20000000000000000` (0.02 ETH), fee 15 bps → NET `19970000000000000`.
+Pair: BSC WBNB/USDC (both factories have a real pair). ETH WETH/USDC Uniswap V2 `0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc`.
 
-| Venue | Pair | Factory getPair | NET quote out |
+## Execute outcomes
+
+GROSS BSC `50000000000000000` (0.05 BNB), fee 20 bps → fee `100000000000000`, net `49900000000000000`.  
+GROSS ETH `20000000000000000` (0.02 ETH), fee 15 bps → fee `30000000000000`, net `19970000000000000`.  
+Native-in fee received as **WBNB** / **WETH**. Net-to-router from pair `balanceOf` + Transfer logs. No `lastAmountIn()`.
+
+| Proof | Result | Observed | TS calldata keccak |
 | --- | --- | --- | --- |
-| Melega V2 | WBNB/USDC | `0x7165b14cf9d03061b67e3237078e5f5a03fe01a9` | `2487242764277502268` |
-| Pancake V2 | WBNB/USDC | `0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b` | `38391037249639135802` |
-| Uniswap V2 | WETH/USDC | `0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc` | `52588655` (6 decimals) |
+| Melega native-in | **PASS** (single-venue) | fee `1e14` WBNB; net `4.99e16`; userOut `+2487242764277502268` USDC | `0xaed504858e84a40665ee77a2dcbbc0ce2df7fae6035b71ee0512e9f011567a61` |
+| Melega ERC20-in | **PASS** (single-venue) | fee `1e14` WBNB; net `4.99e16`; userOut `+84297174923593828` USDC | `0xe84734b22e9c2f36ce1daf9462aecf5e2ed656d20716fec2e553a272fd79c5fb` |
+| Pancake native-in | **PASS** (single-venue) | fee `1e14` WBNB; net `4.99e16`; userOut `+38257214262792176718` USDC | `0x5828920da43099bfca2d0af4d2f8033f9d497afd00182db39daf179e9b25bff2` |
+| Pancake ERC20-in | **PASS** (single-venue) | fee `1e14` WBNB; net `4.99e16`; userOut `+38239978191243671082` USDC | `0x6247be268380d3ebfd3d489fd432bc99141988d86080ed2bcb17776205ce9123` |
+| BSC competition (same WBNB/USDC request) | **PASS** — winner **pancakeswap** (not forced) | melegaOut `29405714733814080` vs pancakeOut `38222753770010863175` | `0xe0b9ac9211a89d5b9afc81ec944685baded29a2b919a840ba8b4504b451f64db` |
+| Uniswap native-in | **PASS** (single-venue) | fee `3e13` WETH; net `1.997e16`; userOut `+52500356` USDC (6 dec) | `0x4e295cce9ddb5a99dc1b91c309fa746e7cf6e294be7ae2cb0fa2e61cbaf461b4` |
+| Uniswap ERC20-in | **PASS** (single-venue) | fee `3e13` WETH; net `1.997e16`; userOut `+52499825` USDC | `0xe58ffb321ee01b21247dac9d52d027b711fce3345dfc78237c4a5d37ff4327f1` |
+| Replay / expired / slippage | **PASS** on BSC (isolated fork `:18559`) and ETH | replay: nonce stays used, no extra fee; expired/slippage: nonce unused, treasury WBNB/WETH unchanged | ETH replay calldata `0x048356cd61039ebfb7a0aefcbeda7ce3185f0beb8e50a6d5647a03cd2216cb56` |
 
-Both BSC venues have a real WBNB/USDC route. Competition uses the same request; Pancake is expected to win on output without forcing.
+Approval spender was the local Executor, not Team/Treasury. Executor→router allowance was 0 after ERC20 swaps. No second output fee.
+
+**No global PASS would be claimed if any row above were unverified.** All listed venues verified on this local fork.
+
+## Commands actually run
+
+```bash
+yarn --ignore-engines test src/lib/smartswap-universal-engine/__tests__/v2RealRouterForkProof.test.ts
+# 11 passed (153.57s) on the evidence pin above
+git diff --check
+```
 
 ## Isolation rules applied
 
-- Anvil listen `127.0.0.1:18557` (BSC) and `127.0.0.1:18558` (ETH)
+- Anvil listen `127.0.0.1` only
 - Fund Anvil test accounts only; wrapped native via real `deposit()`
 - No `anvil_setCode` on router / factory / pool / token / wrapped native
 - No reserve storage edits
 - No Founder keys, signatures, public broadcast, or production `setRouter`
-- Native-in fee is WBNB (BSC) / WETH (ETH)
-- Net-to-router proven from pair `balanceOf` + Transfer logs — not mock `lastAmountIn()`
-
-## Execute outcomes
-
-Filled after `yarn test src/lib/smartswap-universal-engine/__tests__/v2RealRouterForkProof.test.ts`.
-
-| Proof | Result | Fee / net / userOut | Calldata keccak |
-| --- | --- | --- | --- |
-| Melega native-in | PENDING | | |
-| Melega ERC20-in | PENDING | | |
-| Pancake native-in | PENDING | | |
-| Pancake ERC20-in | PENDING | | |
-| BSC competition (same request) | PENDING | winner TBD (not forced) | |
-| Uniswap native-in | PENDING | | |
-| Uniswap ERC20-in | PENDING | | |
-| Replay / expired / slippage | PENDING | no fee; unused nonce on expired/slippage | |
-
-**No global PASS** unless every venue row above is verified.
-
-## Commands
-
-```bash
-FOUNDRY_PROFILE=smartswap_executor_release forge build   # if release artifact missing
-cd apps/web
-yarn test src/lib/smartswap-universal-engine/__tests__/v2RealRouterForkProof.test.ts
-git diff --check
-```
 
 ## Limits
 
 - Ordinary-token WBNB/USDC and WETH/USDC only. Does **not** certify FOT tokens.
 - Output is measured from user token balance, not only the router return value.
-- Local fork execute ≠ public V2 activation. CTA still legacy. `LEGACY_PRODUCTION` / `SHADOW` / `cutover=false` unchanged.
+- Melega WBNB/USDC is thin; later Melega ERC20 output is lower after earlier native-in on the same fork (factual pool impact, not a lowered `minUserOut`).
+- BSC expiry/slippage uses a dedicated `:18559` fork so `evm_increaseTime` / real dumps do not stall later receipts on the non-archive dataseed fork.
+- Local fork execute ≠ public V2 activation. CTA still legacy.
 
 ## #83 FORK_EVIDENCE (superseded for this PR)
 
-#83 recorded FORK_EVIDENCE as MISSING/BLOCKED because there was no real-router harness and env RPCs were unset, with Ankr ETH `Unauthorized` and BSC dataseed used only for `eth_blockNumber` liveness. This PR adds the harness and uses working documented public endpoints as the fork source. The #83 branch is not updated.
+#83 recorded FORK_EVIDENCE as MISSING/BLOCKED (no harness; env RPCs unset; Ankr ETH `Unauthorized`; BSC dataseed used only for `eth_blockNumber` liveness). This PR adds the harness and executes TS calldata against real routers on localhost. The #83 branch is not updated.
