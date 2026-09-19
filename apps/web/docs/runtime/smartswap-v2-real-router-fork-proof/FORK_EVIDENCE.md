@@ -5,7 +5,7 @@ Public path remains legacy. No merge, public deploy, payment, approval, Founder 
 
 Copied forward from #83 `FINAL_FOUNDER_REVIEW.md` FORK_EVIDENCE. #83 branch was not reopened. #50 was not reused.
 
-This revision is **not** the earlier 11/11 run. Evidence below is from HEAD after the architect `sendExpectRevert` / `startFork` fix.
+This revision is **not** the earlier 11/11 run. Evidence below is from the architect `sendExpectRevert` / `startFork` fix re-run on this HEAD.
 
 ## Identity
 
@@ -14,7 +14,8 @@ This revision is **not** the earlier 11/11 run. Evidence below is from HEAD afte
 | BASE_MAIN_SHA | `cf2575c290718e5bf9eacb24e70c1ee1728e11eb` |
 | BRANCH | `cursor/smartswap-v2-real-router-fork-proof-c987` |
 | Architect-reviewed parent | `189fbd2b2767b14860f618e607971bcf2150603b` |
-| Helper-fix commit | `1701b8128ceb3ae265d269ee9eac0fd8f882c14c` |
+| Helper-fix parent | `1701b8128ceb3ae265d269ee9eac0fd8f882c14c` |
+| CODE_HEAD (this suite run) | `72bed786cff9b1475379b2ece47d25cf9aa2837c` |
 | Unique goal | Prove existing `SmartSwapExecutorV2` on **real** routers via **local** Anvil fork using existing `prepareV2UserTransactions` calldata |
 | Isolation | Anvil `--host 127.0.0.1` only. Public RPC is read-only fork source. Writes stay on localhost. Occupied listen port → `PORT_IN_USE` (no `lsof`/`kill -9` of foreign processes). Cleanup kills only the Anvil child spawned by the test. |
 | Modes | `LEGACY_PRODUCTION` / `SHADOW` / `isProductionCutoverAllowed() === false` unchanged |
@@ -41,7 +42,7 @@ Positive EVM revert only:
 - provider exception carrying a failed receipt (`status=0`) plus revert data
 - RPC revert payload whose selector/string decodes with the compiled Executor ABI or `Error(string)`
 
-Timeout, HTTP 429, missing/null receipt, and `status=1` throw. They do **not** satisfy a negative case.
+Timeout, HTTP 429, missing/null receipt, and `status=1` throw. They do **not** satisfy a negative case. Transport errors from `waitForReceipt` are tagged the same way as send.
 
 Expected reasons (a different selector/string fails the case):
 
@@ -55,7 +56,7 @@ Treasury WBNB/WETH, user input/output balances, and `usedNonce` were checked on 
 
 ### Helper regressions (no fork)
 
-Focused `sendExpectRevert helper regressions` on this HEAD: **5 passed**.
+Focused `sendExpectRevert helper regressions` on this HEAD: **5 passed | 11 skipped** (4ms).
 
 | Case | Result |
 | --- | --- |
@@ -82,8 +83,8 @@ From the passing full-file run after the helper fix:
 
 | Chain | RPC | Block | Hash | Listen |
 | --- | --- | --- | --- | --- |
-| BSC 56 | `https://bsc-dataseed.binance.org` | `0x751ed04` (122809604) | `0x40c750b1ad71c6129fdc286826c7ab7f10d1c78cbd45da65bfb17d2f8272d815` | `127.0.0.1:18557` (+ `:18559` isolated expiry/slippage child) |
-| ETH 1 | `https://ethereum-rpc.publicnode.com` | `0x18ce971` (26012017) | `0x5d269fdc1cb52dc107c5e677b8cae14de08ad841a8adac2a68ff455751763cb8` | `127.0.0.1:18558` |
+| BSC 56 | `https://bsc-dataseed.binance.org` | `0x751efb3` (122810291) | `0x23e43516a5623766b5e5cd0a95972801db95a80e749415e4dcfc36c4e9ad7771` | `127.0.0.1:18557` (+ `:18559` isolated expiry/slippage child) |
+| ETH 1 | `https://ethereum-rpc.publicnode.com` | `0x18ce98b` (26012043) | `0xcd7c54753f1bac747427fda1de67050b63a05b87abbc5db4c18a2987ced65aa6` | `127.0.0.1:18558` |
 
 Routers (real code, no `anvil_setCode`): Melega `0xc250…EAB3`, Pancake `0x10ED…024E`, Uniswap `0x7a25…488D`.
 
@@ -95,13 +96,24 @@ Native-in fee as **WBNB / WETH**. Pair `balanceOf` + Transfer logs — not `last
 
 | Proof | Result | Observed | TS calldata keccak |
 | --- | --- | --- | --- |
-| Melega native-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+2487242764277502268` USDC | `0xc7d8ff21…45f713` |
-| Melega ERC20-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+84297174923593828` USDC | `0xe7b855d6…442c2d` |
-| Pancake native-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+38309693622732593826` USDC | `0x7ebb322c…cce11a` |
-| Pancake ERC20-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+38292422092768525151` USDC | `0x0e4d4f55…1f4292` |
-| BSC competition same WBNB/USDC | PASS — winner **pancakeswap** (not forced) | melegaOut `29405714733814080` vs pancakeOut `38275162245077046984` | `0xbd8764cd…540e5d` |
-| Uniswap native-in | PASS | fee `3e13` WETH; net `1.997e16`; userOut `+52498497` USDC (6 dec) | `0x82fb1624…a548c4` |
-| Uniswap ERC20-in | PASS | fee `3e13` WETH; net `1.997e16`; userOut `+52497966` USDC | `0x2c5abbf6…3d3a7a` |
+| Melega native-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+2487242764277502268` USDC | `0x3ce0a40f…6cc200` |
+| Melega ERC20-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+84297174923593828` USDC | `0xa8349614…0e391a` |
+| Pancake native-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+38309693622732593826` USDC | `0x2cc4bf3b…59d82e` |
+| Pancake ERC20-in (single-venue) | PASS | fee `1e14` WBNB; net `4.99e16`; userOut `+38292422092768525151` USDC | `0x20344e9e…61b073` |
+| BSC competition same WBNB/USDC | PASS — winner **pancakeswap** (not forced) | melegaOut `29405714733814080` vs pancakeOut `38275162245077046984` | `0xdea728c5…d946bf` |
+| Uniswap native-in | PASS | fee `3e13` WETH; net `1.997e16`; userOut `+52500157` USDC (6 dec) | `0x8f24c4b2…d16881` |
+| Uniswap ERC20-in | PASS | fee `3e13` WETH; net `1.997e16`; userOut `+52499627` USDC | `0x81216f33…9414b5` |
+
+Full calldata hashes from `FORK_PROOF.calldata`:
+
+- `BSC:melega-dex:native:0x3ce0a40ff3d6cd3c2dfca0a34788532342c9cac010968297024d73da786cc200`
+- `BSC:melega-dex:erc20:0xa83496147c973a9e650638d9cb0b0e9c965ccf6c79aa729524418515ed0e391a`
+- `BSC:pancakeswap:native:0x2cc4bf3b94799c73d42f97bba8466273dc292685cc96e0fd1df5e3c64f59d82e`
+- `BSC:pancakeswap:erc20:0x20344e9e7203ee7013b237557bebcc9dc18fa039a38cf121d68fc0e4e861b073`
+- `BSC:competition:pancakeswap:0xdea728c5a58cb8d73f834089ef89fbe44d0e2cded1656b74a492de4360d946bf`
+- `ETH:uniswap:native:0x8f24c4b2f70479daeff2980885950c0d1318529beec0cda4000a9c2dead16881`
+- `ETH:uniswap:erc20:0x81216f3377a23b1aac07fae49e6e8e6319e8b80503316e5e79ad31605b9414b5`
+- `ETH:uniswap:erc20:0x8257ba192f58749f84c3f4ae3a204e4e43119abd8b3ef59d35cecb35e44e2c5c`
 
 ### Decoded negative-case evidence (this HEAD)
 
@@ -123,7 +135,7 @@ yarn --ignore-engines test src/lib/smartswap-universal-engine/__tests__/v2RealRo
 # 5 passed | 11 skipped (4ms)
 
 yarn --ignore-engines test src/lib/smartswap-universal-engine/__tests__/v2RealRouterForkProof.test.ts
-# 16 passed (5 helper + 11 fork) in 154.46s — pins and negative rows above
+# 16 passed (5 helper + 11 fork) in 152.69s — pins and negative rows above
 git diff --check
 ```
 
