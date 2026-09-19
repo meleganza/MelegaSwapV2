@@ -285,13 +285,25 @@ interface ForkCtx {
   setCodeCalls: string[]
 }
 
-async function waitForAnvil(provider: JsonRpcProvider, expectedChainId: string) {
-  for (let i = 0; i < 120; i += 1) {
+async function waitForAnvil(
+  provider: JsonRpcProvider,
+  expectedChainId: string,
+  expectedBlock?: { number: string; hash: string },
+) {
+  for (let i = 0; i < 180; i += 1) {
     try {
       const chain = await provider.send('eth_chainId', [])
-      if (chain === expectedChainId) return
+      if (chain !== expectedChainId) {
+        await new Promise((resolve) => setTimeout(resolve, 250))
+        continue
+      }
+      if (!expectedBlock) return
+      const pinned = await provider.send('eth_getBlockByNumber', [expectedBlock.number, false])
+      if (pinned?.hash && String(pinned.hash).toLowerCase() === expectedBlock.hash.toLowerCase()) return
+      const latest = await provider.send('eth_getBlockByNumber', ['latest', false])
+      if (latest?.hash && String(latest.hash).toLowerCase() === expectedBlock.hash.toLowerCase()) return
     } catch {
-      // still booting
+      // still booting or remote fork fetch in flight
     }
     await new Promise((resolve) => setTimeout(resolve, 250))
   }
@@ -309,6 +321,11 @@ async function startFork(input: {
   routers: Array<{ address: string; venue: 'melega-dex' | 'pancakeswap' | 'uniswap' }>
 }): Promise<ForkCtx> {
   execFileSync('which', ['anvil'])
+  try {
+    execSync(`fuser -k ${input.port}/tcp`, { stdio: 'ignore' })
+  } catch {
+    // port already free
+  }
   const source = await pickForkSource(input.label, input.urls, input.expectedChainHex, input.codeAddresses)
   const anvil = spawn(
     'anvil',
@@ -333,12 +350,14 @@ async function startFork(input: {
     throttleLimit: 1,
   })
   try {
-    await waitForAnvil(provider, input.expectedChainHex)
+    await waitForAnvil(provider, input.expectedChainHex, { number: source.block, hash: source.hash })
   } catch (error) {
     if (anvil && !anvil.killed) anvil.kill('SIGTERM')
     throw error
   }
-  const forkBlock = await provider.send('eth_getBlockByNumber', [source.block, false])
+  const forkBlock =
+    (await provider.send('eth_getBlockByNumber', [source.block, false])) ||
+    (await provider.send('eth_getBlockByNumber', ['latest', false]))
   if (!forkBlock?.hash) throw new Error(`${input.label}_FORK_BLOCK_MISSING`)
   if (String(forkBlock.hash).toLowerCase() !== source.hash.toLowerCase()) {
     anvil.kill('SIGTERM')
