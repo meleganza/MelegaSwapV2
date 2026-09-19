@@ -30,6 +30,7 @@ export async function runAuthorizedEvmShadowCompetition(input: {
   })
   const registry = buildEvmShadowVenueRegistry({
     melegaSnapshot: input.melegaSnapshot,
+    melegaSource: source,
     pancakeSource: source,
     uniswapSource: source,
   })

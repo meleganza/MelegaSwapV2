@@ -17,8 +17,13 @@ import {
   previewFailure,
   type SmartSwapPreviewResult,
 } from 'lib/smart-swap-execution-preview'
+import { useShadowRuntimePreflight, type ShadowRuntimePreflight } from './useShadowRuntimePreflight'
 
-export function useSmartSwapExecutionPreview(): SmartSwapPreviewResult {
+export type SmartSwapExecutionPreviewWithShadow = SmartSwapPreviewResult & {
+  shadowRuntime: ShadowRuntimePreflight
+}
+
+export function useSmartSwapExecutionPreview(): SmartSwapExecutionPreviewWithShadow {
   const {
     independentField,
     typedValue,
@@ -37,8 +42,9 @@ export function useSmartSwapExecutionPreview(): SmartSwapPreviewResult {
     outputCurrency ?? undefined,
     recipient,
   )
+  const shadowRuntime = useShadowRuntimePreflight()
 
-  return useMemo(() => {
+  const preview = useMemo(() => {
     try {
       if (!typedValue || !parsedAmount) {
         return previewFailure('QUOTE_UNAVAILABLE', 'Enter an amount to preview execution.')
@@ -80,4 +86,6 @@ export function useSmartSwapExecutionPreview(): SmartSwapPreviewResult {
       return previewFailure('EXECUTION_UNAVAILABLE', 'Could not adapt trade into execution preview.')
     }
   }, [typedValue, parsedAmount, inputCurrency, outputCurrency, trade, allowedSlippage])
+
+  return { ...preview, shadowRuntime }
 }
