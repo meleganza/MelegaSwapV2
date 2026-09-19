@@ -356,7 +356,13 @@ async function sendExpectRevertWith(
     throw error instanceof Error ? error : new Error(String(error))
   }
 
-  const receipt = await transport.waitForReceipt(hash)
+  let receipt: { status?: number; transactionHash?: string } | null
+  try {
+    receipt = await transport.waitForReceipt(hash)
+  } catch (error) {
+    throwIfTransport(error)
+    throw error instanceof Error ? error : new Error(String(error))
+  }
   if (receipt == null) throw new Error('REVERT_HELPER_NULL_RECEIPT')
   if (receipt.status === 1) throw new Error(`REVERT_HELPER_SUCCEEDED:${hash}`)
   if (receipt.status !== 0) throw new Error(`REVERT_HELPER_UNEXPECTED_STATUS:${String(receipt.status)}`)
