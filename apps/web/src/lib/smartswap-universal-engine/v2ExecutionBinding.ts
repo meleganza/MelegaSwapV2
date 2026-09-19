@@ -496,6 +496,12 @@ function assertAllowanceIdentity(
 export function prepareV2UserTransactions(input: PrepareV2UserTransactionsInput): V2UserTransactionPreparation {
   const nowMs = Date.parse(input.nowIso)
   if (!Number.isFinite(nowMs)) fail(V2_PREP_NOW_INVALID)
+  if (
+    typeof input.nonce === 'number' &&
+    (!Number.isSafeInteger(input.nonce) || input.nonce < 0)
+  ) {
+    fail(V2_BINDING_NONCE_INVALID)
+  }
 
   const binding = buildV2ExecutionBinding({
     request: input.request,

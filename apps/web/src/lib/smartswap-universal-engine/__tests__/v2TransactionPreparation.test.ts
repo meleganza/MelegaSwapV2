@@ -23,6 +23,7 @@ import { createSyntheticQuoteSource } from '../shadowQuoteSource'
 import { createUniswapVenueAdapter } from '../uniswapAdapter'
 import {
   EXECUTOR_V2_EXECUTE_FRAGMENT,
+  V2_BINDING_NONCE_INVALID,
   V2_BINDING_QUOTE_STALE,
   V2_NATIVE_ASSET,
   V2_PREP_ALLOWANCE_IDENTITY,
@@ -472,6 +473,34 @@ describe('SmartSwap V2 unsigned transaction preparation', () => {
     expect(intent.nativeOut).toBe(false)
     expect(decoded.path).toEqual(binding.path)
     expect(intent.inputAsset).not.toBe(V2_NATIVE_ASSET)
+  })
+
+  it('12: numeric nonce 7 is accepted', async () => {
+    const request = bscErc20Request()
+    const winner = await pancakeWinner(request, `56:${WBNB}>${USDC_BSC}`)
+    const prepared = prepareV2UserTransactions(prepArgs(request, winner, { nonce: 7 }))
+    const decoded = decodeExecuteWithCompiledAbi(prepared.swapTransaction.data)
+    expect(decoded.intent.nonce.toString()).toBe('7')
+  })
+
+  it('13: unsafe numeric nonce Number(9007199254740993) is rejected', async () => {
+    const request = bscErc20Request()
+    const winner = await pancakeWinner(request, `56:${WBNB}>${USDC_BSC}`)
+    const unsafe = Number('9007199254740993')
+    expect(Number.isSafeInteger(unsafe)).toBe(false)
+    expect(() => prepareV2UserTransactions(prepArgs(request, winner, { nonce: unsafe }))).toThrow(
+      V2_BINDING_NONCE_INVALID,
+    )
+  })
+
+  it('14: decimal string nonce 9007199254740993 is preserved exactly in compiled ABI calldata', async () => {
+    const request = bscErc20Request()
+    const winner = await pancakeWinner(request, `56:${WBNB}>${USDC_BSC}`)
+    const exact = '9007199254740993'
+    const prepared = prepareV2UserTransactions(prepArgs(request, winner, { nonce: exact }))
+    const decoded = decodeExecuteWithCompiledAbi(prepared.swapTransaction.data)
+    expect(decoded.intent.nonce.toString()).toBe(exact)
+    expect(decoded.intent.nonce.toString()).not.toBe(String(Number(exact)))
   })
 
   it('11: production flags stay frozen', () => {
