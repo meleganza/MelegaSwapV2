@@ -16,6 +16,7 @@ This revision is **not** the earlier 11/11 run. Evidence below is from the archi
 | Architect-reviewed parent | `189fbd2b2767b14860f618e607971bcf2150603b` |
 | Helper-fix parent | `1701b8128ceb3ae265d269ee9eac0fd8f882c14c` |
 | CODE_HEAD (this suite run) | `72bed786cff9b1475379b2ece47d25cf9aa2837c` |
+| FINAL_HEAD | `b040f40e119252f7ea198aacc0f3d1ed29c5646e` |
 | Unique goal | Prove existing `SmartSwapExecutorV2` on **real** routers via **local** Anvil fork using existing `prepareV2UserTransactions` calldata |
 | Isolation | Anvil `--host 127.0.0.1` only. Public RPC is read-only fork source. Writes stay on localhost. Occupied listen port → `PORT_IN_USE` (no `lsof`/`kill -9` of foreign processes). Cleanup kills only the Anvil child spawned by the test. |
 | Modes | `LEGACY_PRODUCTION` / `SHADOW` / `isProductionCutoverAllowed() === false` unchanged |
