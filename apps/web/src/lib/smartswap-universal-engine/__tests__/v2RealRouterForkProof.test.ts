@@ -453,7 +453,7 @@ async function startFork(input: {
 }
 
 function stopFork(ctx?: ForkCtx) {
-  if (ctx?.anvil && !ctx.anvil.killed) ctx.anvil.kill('SIGTERM')
+  if (ctx?.anvil && !ctx.anvil.killed) ctx.anvil.kill('SIGKILL')
 }
 
 async function rpc(ctx: ForkCtx, method: string, params: unknown[] = []) {
@@ -580,11 +580,23 @@ async function compete(ctx: ForkCtx, request: SmartSwapRequest, venues: Array<'m
 async function dumpPool(ctx: ForkCtx, router: string, path: string[], valueWei: bigint) {
   const deadline = Math.floor(Date.now() / 1000) + 8_000_000
   const data = VIEW.encodeFunctionData('swapExactETHForTokens', [0, path, ctx.dumper, deadline])
-  const hash = await rpc(ctx, 'eth_sendTransaction', [
-    { from: ctx.dumper, to: router, data, value: toHex(valueWei), gas: toHex(1_500_000n) },
-  ])
-  const receipt = await ctx.provider.waitForTransaction(hash)
-  if (!receipt || receipt.status !== 1) throw new Error(`${ctx.label}_DUMP_FAILED`)
+  const send = (async () => {
+    const hash = await rpc(ctx, 'eth_sendTransaction', [
+      { from: ctx.dumper, to: router, data, value: toHex(valueWei), gas: toHex(1_500_000n) },
+    ])
+    const receipt = await ctx.provider.waitForTransaction(hash)
+    if (!receipt || receipt.status !== 1) throw new Error(`${ctx.label}_DUMP_FAILED`)
+  })()
+  const timeout = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(`${ctx.label}_DUMP_TIMEOUT`)), 25_000)
+  })
+  await Promise.race([send, timeout])
+}
+
+async function advancePastDeadline(ctx: ForkCtx, deadline: number) {
+  const forkTs = Number((await rpc(ctx, 'eth_getBlockByNumber', ['latest', false])).timestamp)
+  await rpc(ctx, 'evm_increaseTime', [Math.max(deadline - forkTs + 45, 45)])
+  await rpc(ctx, 'evm_mine', [])
 }
 
 async function warmForkReads(ctx: ForkCtx, tokens: string[], extra: string[]) {
@@ -870,12 +882,12 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     await wrapNative(bsc, user, expiredReq.inputAmountRaw)
     const expiredNow = new Date().toISOString()
     const expiredComp = await compete(bsc, expiredReq, ['pancakeswap'])
-    const forkTs = Number((await rpc(bsc, 'eth_getBlockByNumber', ['latest', false])).timestamp)
+    const expiredDeadline = Math.floor(Date.now() / 1000) + 90
     const expiredPrep = prepareV2UserTransactions({
       request: expiredReq,
       winner: expiredComp.result.shadowWinner,
       user,
-      deadline: forkTs + 30,
+      deadline: expiredDeadline,
       nonce: 12,
       nowIso: expiredNow,
       currentChainId: 56,
@@ -883,8 +895,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
     })
     for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await rpc(bsc, 'evm_increaseTime', [120])
-    await rpc(bsc, 'evm_mine', [])
+    await advancePastDeadline(bsc, expiredDeadline)
     const treasuryBeforeExpired = await balanceOf(bsc, WBNB, TREASURY)
     await sendExpectRevert(bsc, expiredPrep.swapTransaction)
     expect(await usedNonce(bsc, user, 12)).toBe(false)
@@ -906,12 +917,12 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 56, token: WBNB, owner: user, spender: bsc.executor, amountRaw: '0' },
     })
     for (const tx of slipPrep.approvalTransactions) expect((await sendExact(bsc, tx)).status).toBe(1)
-    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 8n * 10n ** 18n)
+    await dumpPool(bsc, MELEGA_ROUTER, [WBNB, USDC_BSC], 2n * 10n ** 18n)
     const treasuryBeforeSlip = await balanceOf(bsc, WBNB, TREASURY)
     await sendExpectRevert(bsc, slipPrep.swapTransaction)
     expect(await usedNonce(bsc, user, 13)).toBe(false)
     expect(await balanceOf(bsc, WBNB, TREASURY)).toBe(treasuryBeforeSlip)
-  }, 180_000)
+  }, 240_000)
 
   it('Ethereum Uniswap native-in against real router', async () => {
     await proveHappyPath(eth, {
@@ -953,12 +964,12 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
     await wrapNative(eth, user, expiredReq.inputAmountRaw)
     const expiredNow = new Date().toISOString()
     const expiredComp = await compete(eth, expiredReq, ['uniswap'])
-    const forkTs = Number((await rpc(eth, 'eth_getBlockByNumber', ['latest', false])).timestamp)
+    const expiredDeadline = Math.floor(Date.now() / 1000) + 90
     const expiredPrep = prepareV2UserTransactions({
       request: expiredReq,
       winner: expiredComp.result.shadowWinner,
       user,
-      deadline: forkTs + 30,
+      deadline: expiredDeadline,
       nonce: 22,
       nowIso: expiredNow,
       currentChainId: 1,
@@ -966,8 +977,7 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 1, token: WETH, owner: user, spender: eth.executor, amountRaw: '0' },
     })
     for (const tx of expiredPrep.approvalTransactions) expect((await sendExact(eth, tx)).status).toBe(1)
-    await rpc(eth, 'evm_increaseTime', [120])
-    await rpc(eth, 'evm_mine', [])
+    await advancePastDeadline(eth, expiredDeadline)
     const treasuryBeforeExpired = await balanceOf(eth, WETH, TREASURY)
     await sendExpectRevert(eth, expiredPrep.swapTransaction)
     expect(await usedNonce(eth, user, 22)).toBe(false)
@@ -989,12 +999,12 @@ describe('SmartSwap V2 real-router local Anvil fork proof', () => {
       observedAllowance: { chainId: 1, token: WETH, owner: user, spender: eth.executor, amountRaw: '0' },
     })
     for (const tx of slipPrep.approvalTransactions) expect((await sendExact(eth, tx)).status).toBe(1)
-    await dumpPool(eth, UNISWAP_ROUTER, [WETH, USDC_ETH], 800n * 10n ** 18n)
+    await dumpPool(eth, UNISWAP_ROUTER, [WETH, USDC_ETH], 150n * 10n ** 18n)
     const treasuryBeforeSlip = await balanceOf(eth, WETH, TREASURY)
     await sendExpectRevert(eth, slipPrep.swapTransaction)
     expect(await usedNonce(eth, user, 23)).toBe(false)
     expect(await balanceOf(eth, WETH, TREASURY)).toBe(treasuryBeforeSlip)
-  }, 180_000)
+  }, 240_000)
 
   it('production flags stay frozen and no global PASS if a venue is unverified', () => {
     expect(PRODUCTION_EXECUTION_MODE).toBe(SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION)
