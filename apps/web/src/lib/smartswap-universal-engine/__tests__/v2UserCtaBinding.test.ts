@@ -238,7 +238,7 @@ function decodeExecute(data: string) {
   return new Interface(EXECUTOR_V2_EXECUTE_FRAGMENT).decodeFunctionData('execute', data)
 }
 
-function publicDecision(plan: V2UserExecutionPlan, gate = V2_TEST_ONLY_CTA_EXECUTION_GATE) {
+function publicDecision(plan: V2UserExecutionPlan, gate: boolean = V2_TEST_ONLY_CTA_EXECUTION_GATE) {
   return resolveSmartSwapCtaDecision({
     planOk: plan.ok,
     cutoverAllowed: isProductionCutoverAllowed(),
