@@ -527,6 +527,10 @@ describe('SmartSwap V2 user-only CTA binding', () => {
     expect(callback).toContain('prepareMelegaSmartRouterSwap')
     expect(callback).not.toContain('prepareV2UserTransactions')
     expect(callback).not.toContain('v2UserExecutionPlan')
+    const hook = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/hooks/useSmartSwapV2CtaBinding.ts'), 'utf8')
+    expect(hook).toContain('V2_TEST_ONLY_CTA_EXECUTION_GATE')
+    expect(hook).not.toContain('useSigner')
+    expect(hook).not.toContain('sendTransaction')
   })
 
   it('unread ERC20 allowance and unread shadow fail closed to legacy', async () => {
