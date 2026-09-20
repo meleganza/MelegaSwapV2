@@ -52,7 +52,9 @@ export type V2PublicAction = (typeof V2_PUBLIC_ACTION)[keyof typeof V2_PUBLIC_AC
 /** Production remains false. Tests pass true only into consume/select helpers. */
 export const V2_TEST_ONLY_CTA_EXECUTION_GATE = false as const
 
-export const V2_USER_LOCAL_NONCE_SOURCE = 'USER_LOCAL_MS' as const
+export const V2_USER_LOCAL_NONCE_SOURCE = 'USER_LOCAL_MONOTONIC' as const
+export const V2_USER_LOCAL_NONCE_STORAGE_PREFIX = 'melega:v2-user-local-nonce' as const
+const UINT256_MAX = (BigInt(1) << BigInt(256)) - BigInt(1)
 
 export const V2_PLAN_REASON = {
   EXECUTOR_NOT_CONFIGURED: 'EXECUTOR_NOT_CONFIGURED',
@@ -154,12 +156,205 @@ function closedLegacy(reason: string, extra: Partial<V2UserExecutionPlan> = {}):
   }
 }
 
-/** Smallest deterministic user-local nonce: unix milliseconds. Compatible with usedNonce[user][nonce]. */
+/** Format a known millisecond clock value. Collision-safe allocation uses allocateV2UserPlanNonce. */
 export function nextV2UserLocalNonce(nowMs: number): string {
+  return toUint256Decimal(requireSafeNowMs(nowMs))
+}
+
+export interface V2UserLocalNonceClock {
+  next(nowMs: number, user?: string | null): string
+  allocate(user: string, requestKey: string, nowMs: number): string
+  peekPin(user: string, requestKey: string): string | null
+}
+
+function requireSafeNowMs(nowMs: number): bigint {
   if (!Number.isSafeInteger(nowMs) || nowMs <= 0) {
     throw new Error(V2_BINDING_NONCE_INVALID)
   }
-  return String(nowMs)
+  return BigInt(nowMs)
+}
+
+function toUint256Decimal(value: bigint): string {
+  if (value < BigInt(0) || value > UINT256_MAX) {
+    throw new Error(V2_BINDING_NONCE_INVALID)
+  }
+  return value.toString(10)
+}
+
+function nonceStorageKey(user: string): string {
+  return `${V2_USER_LOCAL_NONCE_STORAGE_PREFIX}:${user.toLowerCase()}`
+}
+
+function pinKey(user: string, requestKey: string): string {
+  return `${user.toLowerCase()}:${requestKey}`
+}
+
+function readBrowserLastIssued(user: string): bigint | null {
+  try {
+    if (typeof localStorage === 'undefined') return null
+    const raw = localStorage.getItem(nonceStorageKey(user))
+    if (!raw || !/^\d+$/.test(raw)) return null
+    return BigInt(raw)
+  } catch {
+    return null
+  }
+}
+
+function writeBrowserLastIssued(user: string, value: string): void {
+  try {
+    if (typeof localStorage === 'undefined') return
+    localStorage.setItem(nonceStorageKey(user), value)
+  } catch {
+    // Private mode / unavailable storage: in-memory last-issued still advances.
+  }
+}
+
+function readBrowserPin(user: string, requestKey: string): string | null {
+  try {
+    if (typeof sessionStorage === 'undefined') return null
+    const raw = sessionStorage.getItem(`${V2_USER_LOCAL_NONCE_STORAGE_PREFIX}:pin:${pinKey(user, requestKey)}`)
+    return raw && /^\d+$/.test(raw) ? raw : null
+  } catch {
+    return null
+  }
+}
+
+function writeBrowserPin(user: string, requestKey: string, nonce: string): void {
+  try {
+    if (typeof sessionStorage === 'undefined') return
+    sessionStorage.setItem(`${V2_USER_LOCAL_NONCE_STORAGE_PREFIX}:pin:${pinKey(user, requestKey)}`, nonce)
+  } catch {
+    // Pin remains in the in-memory map for this tab.
+  }
+}
+
+/** Browser-local monotonic clock. Pins stay tab-local so two tabs cannot silently reuse a nonce. */
+export function createV2UserLocalNonceClock(options?: {
+  lastIssuedByUser?: Map<string, bigint>
+  pins?: Map<string, string>
+  persistBrowser?: boolean
+}): V2UserLocalNonceClock {
+  const lastIssuedByUser = options?.lastIssuedByUser ?? new Map<string, bigint>()
+  const pins = options?.pins ?? new Map<string, string>()
+  const persistBrowser = options?.persistBrowser !== false
+
+  const next = (nowMs: number, user?: string | null): string => {
+    const fromClock = requireSafeNowMs(nowMs)
+    const owner = user && user.trim() ? user.toLowerCase() : '*'
+    const stored = lastIssuedByUser.get(owner) ?? (persistBrowser && user ? readBrowserLastIssued(user) : null)
+    const candidate = stored != null && stored >= fromClock ? stored + BigInt(1) : fromClock
+    const decimal = toUint256Decimal(candidate)
+    lastIssuedByUser.set(owner, candidate)
+    if (persistBrowser && user) writeBrowserLastIssued(user, decimal)
+    return decimal
+  }
+
+  return {
+    next,
+    allocate(user: string, requestKey: string, nowMs: number): string {
+      if (!user || !requestKey) throw new Error(V2_BINDING_NONCE_INVALID)
+      const key = pinKey(user, requestKey)
+      const pinned = pins.get(key) ?? (persistBrowser ? readBrowserPin(user, requestKey) : null)
+      if (pinned) {
+        pins.set(key, pinned)
+        return pinned
+      }
+      const nonce = next(nowMs, user)
+      pins.set(key, nonce)
+      if (persistBrowser) writeBrowserPin(user, requestKey, nonce)
+      return nonce
+    },
+    peekPin(user: string, requestKey: string): string | null {
+      return pins.get(pinKey(user, requestKey)) ?? (persistBrowser ? readBrowserPin(user, requestKey) : null)
+    },
+  }
+}
+
+const defaultNonceClockHolder: { current: V2UserLocalNonceClock } = {
+  current: createV2UserLocalNonceClock(),
+}
+
+export function allocateV2UserPlanNonce(user: string, requestKey: string, nowMs: number): string {
+  return defaultNonceClockHolder.current.allocate(user, requestKey, nowMs)
+}
+
+export function resetV2UserLocalNonceStateForTests(): void {
+  defaultNonceClockHolder.current = createV2UserLocalNonceClock({ persistBrowser: false })
+  try {
+    const clear = (storage: Storage) => {
+      const keys: string[] = []
+      for (let i = 0; i < storage.length; i += 1) {
+        const key = storage.key(i)
+        if (key && key.startsWith(V2_USER_LOCAL_NONCE_STORAGE_PREFIX)) keys.push(key)
+      }
+      keys.forEach((key) => storage.removeItem(key))
+    }
+    if (typeof localStorage !== 'undefined') clear(localStorage)
+    if (typeof sessionStorage !== 'undefined') clear(sessionStorage)
+  } catch {
+    // Test environments without Web Storage stay on the in-memory clock.
+  }
+}
+
+export function shouldReadV2ExecutorAllowance(input: {
+  config: V2ExecutorChainConfig
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  shadow: V2ShadowRuntimeFacts | null
+  user: string | null | undefined
+  walletChainId: number
+}): boolean {
+  if (!isV2ExecutorRuntimeEnabled(input.config)) return false
+  if (!checksumUser(input.user)) return false
+  const request = input.request
+  if (!request || !isEvmNetwork(request.network)) return false
+  if (request.inputAsset.location.kind === 'native') return false
+  if (!input.requestKey || input.requestKey !== currentRequestKeyOf(request)) return false
+  if (request.network.chainId !== input.walletChainId) return false
+  const shadow = input.shadow
+  if (!shadow || shadow.status !== 'ready' || shadow.v2Available !== true || !shadow.winner) return false
+  if (shadow.requestKey !== input.requestKey) return false
+  if (shadow.winner.status !== 'ok') return false
+  return true
+}
+
+export interface V2UserWalletTransport {
+  sendTransaction?: (...args: any[]) => Promise<{ hash: string }>
+  provider?: {
+    waitForTransaction?: (...args: any[]) => Promise<{ status?: number } | null | undefined>
+  }
+  waitForTransaction?: (...args: any[]) => Promise<{ status?: number } | null | undefined>
+}
+
+export function createV2UserWalletTransactionAdapter(wallet: V2UserWalletTransport): {
+  submitUserTransaction: (tx: UnsignedUserTransaction) => Promise<{ hash: string }>
+  waitForReceipt: (hash: string) => Promise<{ status: number }>
+} {
+  return {
+    async submitUserTransaction(tx: UnsignedUserTransaction) {
+      const submit = wallet.sendTransaction
+      if (typeof submit !== 'function') {
+        throw new Error('V2_WALLET_NOT_CONNECTED')
+      }
+      const sent = await submit({
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+        value: tx.value,
+        chainId: tx.chainId,
+      })
+      if (!sent?.hash) throw new Error('V2_WALLET_SUBMIT_FAILED')
+      return { hash: sent.hash }
+    },
+    async waitForReceipt(hash: string) {
+      const wait = wallet.waitForTransaction ?? wallet.provider?.waitForTransaction
+      if (typeof wait !== 'function') {
+        throw new Error('V2_WALLET_WAIT_UNAVAILABLE')
+      }
+      const receipt = await wait(hash)
+      return { status: receipt?.status ?? 0 }
+    },
+  }
 }
 
 export function currentRequestKeyOf(request: SmartSwapRequest | null): string | null {
@@ -310,9 +505,12 @@ export function buildV2UserExecutionPlan(input: BuildV2UserExecutionPlanInput): 
 
   let nonce: string
   try {
+    const nowMs = Date.parse(input.nowIso)
     nonce =
-      input.nonce === undefined ? nextV2UserLocalNonce(Date.parse(input.nowIso)) : String(input.nonce).trim()
-    if (input.nonce === undefined && !Number.isFinite(Date.parse(input.nowIso))) {
+      input.nonce === undefined
+        ? allocateV2UserPlanNonce(user, expectedKey, nowMs)
+        : String(input.nonce).trim()
+    if (!/^\d+$/.test(nonce) || BigInt(nonce) > UINT256_MAX) {
       throw new Error(V2_BINDING_NONCE_INVALID)
     }
   } catch {
@@ -421,6 +619,16 @@ export function resolveSmartSwapCtaDecision(input: {
   }
 }
 
+const consumeLocks = new Map<string, Promise<string>>()
+
+function consumeLockKey(plan: V2UserExecutionPlan): string {
+  return `${plan.nonce ?? ''}:${plan.requestKey ?? ''}:${plan.preparation?.swapTransaction.from ?? ''}`
+}
+
+export function resetV2CtaConsumeLocksForTests(): void {
+  consumeLocks.clear()
+}
+
 export async function consumePreparedV2UserPlan(input: {
   plan: V2UserExecutionPlan
   testOnlyExecutionGate: boolean
@@ -438,8 +646,24 @@ export async function consumePreparedV2UserPlan(input: {
     throw new Error('V2_CTA_PLAN_NOT_READY')
   }
 
+  const lockKey = consumeLockKey(input.plan)
+  const existing = consumeLocks.get(lockKey)
+  if (existing) return existing
+
+  const run = consumePreparedV2UserPlanUnlocked(input).finally(() => {
+    consumeLocks.delete(lockKey)
+  })
+  consumeLocks.set(lockKey, run)
+  return run
+}
+
+async function consumePreparedV2UserPlanUnlocked(input: {
+  plan: V2UserExecutionPlan
+  submitUserTransaction: (tx: UnsignedUserTransaction) => Promise<{ hash: string }>
+  waitForReceipt: (hash: string) => Promise<{ status: number }>
+}): Promise<string> {
   let submittedV2 = false
-  const approvals = input.plan.preparation.approvalTransactions
+  const approvals = input.plan.preparation!.approvalTransactions
   for (const approval of approvals) {
     try {
       submittedV2 = true
@@ -456,7 +680,7 @@ export async function consumePreparedV2UserPlan(input: {
 
   try {
     submittedV2 = true
-    const sent = await input.submitUserTransaction(input.plan.preparation.swapTransaction)
+    const sent = await input.submitUserTransaction(input.plan.preparation!.swapTransaction)
     const receipt = await input.waitForReceipt(sent.hash)
     if (receipt.status !== 1) {
       throw new Error('V2_EXECUTE_FAILED')
