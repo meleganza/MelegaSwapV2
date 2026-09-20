@@ -15,6 +15,7 @@ This revision is **not** a recycled 16/16. Evidence below is from the post-rebas
 | PRE_SYNC_HEAD | `d5c34a289ac7b59b67d854950f05d4a5fb992287` |
 | SYNC_METHOD | rebase onto `origin/main` (15 commits replayed, 0 conflicts) |
 | CODE_HEAD (this suite run) | `eb34586546cfe481a0eb7d56f710ce4750c52f0f` |
+| FINAL_HEAD | `10d3f41b750423395fd82cec6b356e20cc606f5f` |
 | BRANCH | `cursor/smartswap-v2-real-router-fork-proof-c987` |
 | Architect-reviewed parent (pre-rebase) | `189fbd2b2767b14860f618e607971bcf2150603b` |
 | Unique goal | Prove existing `SmartSwapExecutorV2` on **real** routers via **local** Anvil fork using existing `prepareV2UserTransactions` calldata |
