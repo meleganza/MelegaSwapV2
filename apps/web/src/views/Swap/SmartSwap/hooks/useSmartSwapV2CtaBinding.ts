@@ -44,6 +44,21 @@ export interface SmartSwapV2CtaRuntimeFacts {
   executorConfigByChain?: V2ExecutorConfigTable
 }
 
+/** In-flight slot: reuse while pending, clear after settle, never let an older Promise wipe a newer one. */
+export function runExclusiveCtaConsume(
+  slot: { current: Promise<string> | null },
+  start: () => Promise<string>,
+): Promise<string> {
+  if (slot.current) return slot.current
+  const captured: { promise: Promise<string> | null } = { promise: null }
+  const capturedPromise = start().finally(() => {
+    if (slot.current === captured.promise) slot.current = null
+  })
+  captured.promise = capturedPromise
+  slot.current = capturedPromise
+  return capturedPromise
+}
+
 export function bindSmartSwapV2CtaRuntimePlan(facts: SmartSwapV2CtaRuntimeFacts): V2UserExecutionPlan {
   return buildV2UserExecutionPlan({
     user: facts.user,
@@ -164,19 +179,21 @@ export function useSmartSwapV2CtaBinding(options?: {
   )
 
   const consumeInflight = useRef<Promise<string> | null>(null)
+  const consumeForPlan = useRef(plan)
   const consumeIfGated = useCallback(() => {
-    if (consumeInflight.current) return consumeInflight.current
-    const run = consumePreparedV2UserPlan({
-      plan,
-      testOnlyExecutionGate,
-      cutoverAllowed: isProductionCutoverAllowed(),
-      submitUserTransaction: adapter.submitUserTransaction,
-      waitForReceipt: adapter.waitForReceipt,
-    }).finally(() => {
-      if (!plan.ok) consumeInflight.current = null
-    })
-    consumeInflight.current = run
-    return run
+    if (consumeForPlan.current !== plan) {
+      consumeForPlan.current = plan
+      consumeInflight.current = null
+    }
+    return runExclusiveCtaConsume(consumeInflight, () =>
+      consumePreparedV2UserPlan({
+        plan,
+        testOnlyExecutionGate,
+        cutoverAllowed: isProductionCutoverAllowed(),
+        submitUserTransaction: adapter.submitUserTransaction,
+        waitForReceipt: adapter.waitForReceipt,
+      }),
+    )
   }, [adapter, plan, testOnlyExecutionGate])
 
   return { plan, decision, config, consumeIfGated }

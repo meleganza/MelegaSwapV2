@@ -35,10 +35,11 @@ import {
 } from '../v2UserExecutionPlan'
 import {
   bindSmartSwapV2CtaRuntimePlan,
+  runExclusiveCtaConsume,
   useSmartSwapV2CtaBinding,
 } from '../../../views/Swap/SmartSwap/hooks/useSmartSwapV2CtaBinding'
 import { buildShadowRuntimeRequest } from '../../../views/SmartSwapStudio/modules/SmartSwapExecutionPreview/useShadowRuntimePreflight'
-import { resetRuntimeMocks, runtimeMocks } from './v2CtaRuntimeBinding.mocks'
+import { releaseNextWalletSend, resetRuntimeMocks, runtimeMocks } from './v2CtaRuntimeBinding.mocks'
 
 const WEB = path.resolve(__dirname, '../../../..')
 const HOOK = path.join(WEB, 'src/views/Swap/SmartSwap/hooks/useSmartSwapV2CtaBinding.ts')
@@ -102,6 +103,11 @@ vi.mock('hooks/useProviderOrSigner', async () => {
     useProviderOrSigner: () => ({
       sendTransaction: async (tx: { to: string; data: string }) => {
         if (mocks.walletShouldReject) throw new Error('Transaction rejected.')
+        if (mocks.walletHoldNext) {
+          return new Promise<{ hash: string }>((resolve, reject) => {
+            mocks.walletDeferred.push({ tx, resolve, reject })
+          })
+        }
         mocks.walletSends.push({ to: tx.to, data: tx.data })
         if (mocks.walletExecuteFails && mocks.walletSends.length > 0 && tx.to === mocks.executor) {
           throw new Error('execute reverted')
@@ -298,6 +304,8 @@ describe('real-runtime SmartSwap V2 CTA binding', () => {
     expect(src).toContain('useSmartSwapShadowRuntimeFacts')
     expect(src).toContain('bindSmartSwapV2CtaRuntimePlan')
     expect(src).toContain('createV2UserWalletTransactionAdapter')
+    expect(src).toContain('runExclusiveCtaConsume')
+    expect(src).toContain('slot.current === captured.promise')
     expect(src).not.toMatch(/request:\s*null/)
     expect(src).not.toMatch(/requestKey:\s*null/)
     expect(src).not.toMatch(/shadow:\s*null/)
@@ -598,6 +606,204 @@ describe('real-runtime SmartSwap V2 CTA binding', () => {
     expect(PRODUCTION_EXECUTION_MODE).toBe(SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION)
     expect(UNIVERSAL_ENGINE_MODE).toBe(SMARTSWAP_OPERATING_MODE.SHADOW)
     expect(isProductionCutoverAllowed()).toBe(false)
+  })
+
+  it('A: double-click while pending submits once and both callers share the result', async () => {
+    const built = bscFormRequest()
+    runtimeMocks.runtime = {
+      request: built.request,
+      requestKey: built.requestKey,
+      shadow: readyShadow(built.request!, await pancakeWinner(built.request!)),
+    }
+    runtimeMocks.walletHoldNext = true
+    const gated = renderHook(() =>
+      useSmartSwapV2CtaBinding({
+        executorConfigByChain: testExecutorTable(56),
+        testOnlyExecutionGate: true,
+        nowIso: NOW,
+        deadline: DEADLINE,
+      }),
+    )
+    let first: Promise<string> | undefined
+    let second: Promise<string> | undefined
+    act(() => {
+      first = gated.result.current.consumeIfGated()
+      second = gated.result.current.consumeIfGated()
+    })
+    expect(first).toBe(second)
+    expect(runtimeMocks.walletDeferred).toHaveLength(1)
+    expect(runtimeMocks.walletSends).toHaveLength(0)
+    let hash = ''
+    await act(async () => {
+      releaseNextWalletSend()
+      hash = await first!
+    })
+    expect(await second).toBe(hash)
+    expect(runtimeMocks.walletSends).toHaveLength(1)
+  })
+
+  it('B: after successful completion a later CTA can execute a NEW plan', async () => {
+    const firstBuilt = bscFormRequest(GROSS_INPUT, 50)
+    const nextBuilt = bscFormRequest(GROSS_INPUT, 100)
+    runtimeMocks.runtime = {
+      request: firstBuilt.request,
+      requestKey: firstBuilt.requestKey,
+      shadow: readyShadow(firstBuilt.request!, await pancakeWinner(firstBuilt.request!)),
+    }
+    const gated = renderHook(() =>
+      useSmartSwapV2CtaBinding({
+        executorConfigByChain: testExecutorTable(56),
+        testOnlyExecutionGate: true,
+        nowIso: NOW,
+        deadline: DEADLINE,
+      }),
+    )
+    let firstHash = ''
+    await act(async () => {
+      firstHash = await gated.result.current.consumeIfGated()
+    })
+    expect(firstHash).toMatch(/^0x0+1$/)
+    expect(runtimeMocks.walletSends).toHaveLength(1)
+
+    runtimeMocks.runtime = {
+      request: nextBuilt.request,
+      requestKey: nextBuilt.requestKey,
+      shadow: readyShadow(nextBuilt.request!, await pancakeWinner(nextBuilt.request!)),
+    }
+    gated.rerender()
+    expect(gated.result.current.plan.requestKey).toBe(nextBuilt.requestKey)
+    let secondHash = ''
+    await act(async () => {
+      secondHash = await gated.result.current.consumeIfGated()
+    })
+    expect(secondHash).not.toBe(firstHash)
+    expect(secondHash).toMatch(/^0x[0-9a-f]+$/)
+    expect(runtimeMocks.walletSends).toHaveLength(2)
+  })
+
+  it('C: after failed consumption a later CTA can execute a NEW plan with no legacy fallback', async () => {
+    const firstBuilt = bscFormRequest(GROSS_INPUT, 50)
+    const nextBuilt = bscFormRequest(GROSS_INPUT, 100)
+    runtimeMocks.runtime = {
+      request: firstBuilt.request,
+      requestKey: firstBuilt.requestKey,
+      shadow: readyShadow(firstBuilt.request!, await pancakeWinner(firstBuilt.request!)),
+    }
+    runtimeMocks.walletShouldReject = true
+    const gated = renderHook(() =>
+      useSmartSwapV2CtaBinding({
+        executorConfigByChain: testExecutorTable(56),
+        testOnlyExecutionGate: true,
+        nowIso: NOW,
+        deadline: DEADLINE,
+      }),
+    )
+    let legacyCalls = 0
+    const selectedFail = selectSmartSwapCtaExecution({
+      decision: gated.result.current.decision,
+      plan: gated.result.current.plan,
+      legacyCallback: async () => {
+        legacyCalls += 1
+        return 'legacy-hash'
+      },
+      consumeV2: gated.result.current.consumeIfGated,
+    })
+    await expect(selectedFail.run?.()).rejects.toThrow(/V2_EXECUTE_FAILED|V2_APPROVAL_REJECTED/)
+    expect(legacyCalls).toBe(0)
+
+    runtimeMocks.walletShouldReject = false
+    runtimeMocks.runtime = {
+      request: nextBuilt.request,
+      requestKey: nextBuilt.requestKey,
+      shadow: readyShadow(nextBuilt.request!, await pancakeWinner(nextBuilt.request!)),
+    }
+    gated.rerender()
+    const selectedRetry = selectSmartSwapCtaExecution({
+      decision: gated.result.current.decision,
+      plan: gated.result.current.plan,
+      legacyCallback: async () => {
+        legacyCalls += 1
+        return 'legacy-hash'
+      },
+      consumeV2: gated.result.current.consumeIfGated,
+    })
+    let hash = ''
+    await act(async () => {
+      hash = await selectedRetry.run!()
+    })
+    expect(hash).toMatch(/^0x[0-9a-f]+$/)
+    expect(legacyCalls).toBe(0)
+    expect(runtimeMocks.walletSends).toHaveLength(1)
+  })
+
+  it('D: an older Promise settling after a plan change cannot clear a newer in-flight Promise', async () => {
+    const slot: { current: Promise<string> | null } = { current: null }
+    let resolveOld: ((value: string) => void) | undefined
+    let resolveNew: ((value: string) => void) | undefined
+    const oldPromise = runExclusiveCtaConsume(
+      slot,
+      () =>
+        new Promise<string>((resolve) => {
+          resolveOld = resolve
+        }),
+    )
+    expect(slot.current).toBe(oldPromise)
+    const newerPromise = new Promise<string>((resolve) => {
+      resolveNew = resolve
+    })
+    slot.current = newerPromise
+    resolveOld!('old-hash')
+    await expect(oldPromise).resolves.toBe('old-hash')
+    expect(slot.current).toBe(newerPromise)
+    resolveNew!('new-hash')
+    await expect(newerPromise).resolves.toBe('new-hash')
+
+    const firstBuilt = bscFormRequest(GROSS_INPUT, 50)
+    const nextBuilt = bscFormRequest(GROSS_INPUT, 100)
+    runtimeMocks.walletHoldNext = true
+    runtimeMocks.runtime = {
+      request: firstBuilt.request,
+      requestKey: firstBuilt.requestKey,
+      shadow: readyShadow(firstBuilt.request!, await pancakeWinner(firstBuilt.request!)),
+    }
+    const gated = renderHook(() =>
+      useSmartSwapV2CtaBinding({
+        executorConfigByChain: testExecutorTable(56),
+        testOnlyExecutionGate: true,
+        nowIso: NOW,
+        deadline: DEADLINE,
+      }),
+    )
+    let first: Promise<string> | undefined
+    act(() => {
+      first = gated.result.current.consumeIfGated()
+    })
+    expect(runtimeMocks.walletDeferred).toHaveLength(1)
+    runtimeMocks.runtime = {
+      request: nextBuilt.request,
+      requestKey: nextBuilt.requestKey,
+      shadow: readyShadow(nextBuilt.request!, await pancakeWinner(nextBuilt.request!)),
+    }
+    gated.rerender()
+    let second: Promise<string> | undefined
+    act(() => {
+      second = gated.result.current.consumeIfGated()
+    })
+    expect(second).not.toBe(first)
+    expect(runtimeMocks.walletDeferred).toHaveLength(2)
+    expect(first).toBeTruthy()
+    expect(second).toBeTruthy()
+    act(() => {
+      releaseNextWalletSend('0xold')
+    })
+    await act(async () => {
+      await first
+    })
+    expect(runtimeMocks.walletDeferred).toHaveLength(1)
+    act(() => {
+      releaseNextWalletSend('0xnew')
+    })
+    await expect(second).resolves.toBe('0xnew')
   })
 })
 
