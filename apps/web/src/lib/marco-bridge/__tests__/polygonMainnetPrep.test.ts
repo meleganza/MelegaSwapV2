@@ -19,7 +19,10 @@ import {
   POLYGON_OFT_CONSTRUCTOR,
   POLYGON_POS_CHAIN_ID,
   POLYGON_REQUIRED_DVNS_SORTED,
+  POLYGON_SAFE_FIRST_SIGNATURE,
   POLYGON_WALLET_NETWORK,
+  SAFE_PROXY_FACTORY_1_4_1,
+  SAFE_UI_BSC_HOME,
   STALE_POLYGON_MARCO_ERC20,
   ULN_CONFIRMATIONS,
   ULN_REQUIRED_DVN_COUNT,
@@ -110,8 +113,15 @@ describe('Polygon MAINNET OFT prep', () => {
     expect(POLYGON_REQUIRED_DVNS_SORTED[0] < POLYGON_REQUIRED_DVNS_SORTED[1]).toBe(true)
   })
 
-  it('does not activate a public DEX route in this prep module', () => {
-    expect(POLYGON_DEPLOY_OPERATOR_STEPS.some((step) => /Public DEX activation only after/i.test(step))).toBe(true)
+  it('first Founder signature is official Safe Add-network, not an OFT deploy', () => {
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.action).toBe('ADD_POLYGON_TO_EXISTING_SAFE')
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.ui).toBe(SAFE_UI_BSC_HOME)
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.expectedAddress).toBe(LZ_GOVERNANCE_SAFE)
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.expectedFactory).toBe(SAFE_PROXY_FACTORY_1_4_1)
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.forbiddenDeployers).toContain('0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0')
+    expect(POLYGON_SAFE_FIRST_SIGNATURE.clicks.some((step) => /STOP/i.test(step))).toBe(true)
+    expect(POLYGON_DEPLOY_OPERATOR_STEPS[0]).toMatch(/FIRST SIGNATURE ONLY/)
+    expect(POLYGON_DEPLOY_OPERATOR_STEPS[1]).toMatch(/Do not deploy OFT yet/)
     expect(POLYGON_OFT_ADDRESS).toBeNull()
   })
 })

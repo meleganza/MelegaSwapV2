@@ -155,12 +155,68 @@ export function peerBytes32(evmAddress: string): string {
 
 export const EXPECTED_POLYGON_TO_BNB_PEER = peerBytes32(BNB_OFT_ADAPTER)
 
+/** Official Safe 1.4.1 CREATE2 factory used on BSC creation — same address is live on Polygon. */
+export const SAFE_PROXY_FACTORY_1_4_1 = '0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67'
+export const SAFE_SINGLETON_1_4_1 = '0x41675C099F32341bf84BFc5382aF534df5C7461a'
+export const SAFE_L2_SINGLETON_1_4_1 = '0x29fcB43b46531BcA003ddC8FCB67FFE91900C762'
+export const SAFE_CREATION_SALT_NONCE = '0'
+export const SAFE_BSC_CREATION_TX =
+  '0xfe39ad956774b56f32b251d18c7ade860e8b0227e11108f7adbf2a2938650ff8'
+
+export const SAFE_UI_BSC_HOME =
+  'https://app.safe.global/home?safe=bnb:0x840410fef54CA6A922Eb248c8a12011144E17508'
+export const SAFE_UI_POLYGON_HOME_AFTER_DEPLOY =
+  'https://app.safe.global/home?safe=matic:0x840410fef54CA6A922Eb248c8a12011144E17508'
+
+/**
+ * First Founder signature only. Official Safe{Wallet} replays BSC CREATE2
+ * onto Polygon. This is an owner-EOA factory tx, not a 2-of-3 Safe tx.
+ * Do not deploy OFT, do not peer, do not use a temporary EOA.
+ */
+export const POLYGON_SAFE_FIRST_SIGNATURE = {
+  action: 'ADD_POLYGON_TO_EXISTING_SAFE',
+  ui: SAFE_UI_BSC_HOME,
+  clicks: [
+    'Open the official Safe{Wallet} URL above (BNB Safe).',
+    'Connect ONE current owner: 0xB3E79A5f594e7fc70325b228febDf4cec57Ff80A, 0xCE313C446591CF01bd7111256de431077aa84D5c, or 0x4C2eEd26f77cc2295F56012FD5441854455ce16d.',
+    'Header / sidebar network selector → Add network → Polygon (chainId 137).',
+    'Confirm Deploy Safe on Polygon at the same address.',
+    'Sign the factory transaction in the connected owner wallet. Switch that wallet to Polygon if prompted. Pay gas in POL from the owner EOA.',
+    'STOP. Do not create a contract, do not open Transaction Builder, do not deploy OFT.',
+  ],
+  expectedAddress: LZ_GOVERNANCE_SAFE,
+  expectedFactory: SAFE_PROXY_FACTORY_1_4_1,
+  forbiddenDeployers: [
+    '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0',
+    STALE_POLYGON_MARCO_ERC20,
+  ],
+  funding: {
+    requiredNow: false,
+    reason: 'All three Safe owners already hold ≥0.98 POL. The first tx is paid by the connected owner EOA, not by the Safe.',
+    ifTopUpNeeded: {
+      token: 'POL',
+      amount: '0.25',
+      to: 'the connected Safe owner EOA on Polygon — not a new wallet, not 0xB6eEb3ab…',
+    },
+    laterAfterSafeExists: {
+      token: 'POL',
+      amount: '3',
+      to: LZ_GOVERNANCE_SAFE,
+      purpose: 'Future Safe-owned OFT deploy only. Do not send this before the Safe exists on Polygon unless you accept counterfactual receipt.',
+    },
+  },
+  verifyAfter: [
+    'Polygonscan contract code at 0x840410fef54CA6A922Eb248c8a12011144E17508 is non-empty.',
+    'owner list is the same 3 addresses, threshold 2.',
+    'Safe{Wallet} opens https://app.safe.global/home?safe=matic:0x840410fef54CA6A922Eb248c8a12011144E17508',
+    'Return the Polygon deploy tx hash. Do not proceed to OFT until that is verified.',
+  ],
+} as const
+
 export const POLYGON_DEPLOY_OPERATOR_STEPS = [
-  'Deploy the existing 2-of-3 Safe 0x840410fe… onto Polygon via Safe{Wallet} → Add network (CREATE2, same address).',
-  'Fund that Safe with ≥ 3 POL for deploy + setPeer/setConfig + canary gas.',
-  'From the Safe, deploy LayerZero V2 OFT: name=MELEGA, symbol=MARCO, endpoint=Polygon EndpointV2, delegate/owner=Safe. Supply must stay 0.',
-  'Reject any deploy whose on-chain name/symbol is MARCO/MARCO, or that uses 0xD3e28c….',
-  'Do not mint. Do not set Base/Solana/Robinhood peers. Peer only BNB adapter 0xC92B49dd… at EID 30102.',
-  'Copy BNB↔Robinhood ULN (20 conf, 2 required DVNs Nethermind+LZ Labs, LZ executor) and enforced lzReceive 200000 gas / value 0 both ways.',
-  'Canary 0.000001 MARCO BNB→Polygon and back. Public DEX activation only after both DELIVERED.',
+  'FIRST SIGNATURE ONLY: official Safe{Wallet} → BNB Safe → network selector → Add network → Polygon. Same address 0x840410fe… via official CREATE2 factory 0x4e1DCf7A…. Owner EOA pays POL. No temporary EOA.',
+  'STOP and return the Polygon Safe deploy tx. Do not deploy OFT yet.',
+  'After verification: fund Safe with ≥ 3 POL, then Safe-owned LayerZero V2 OFT (MELEGA/MARCO/18/shared6/supply0, endpoint Polygon EndpointV2, owner=Safe).',
+  'Reject MARCO/MARCO and reject stale ERC20 0xD3e28c….',
+  'No peers, no Base, no liquidity until the OFT is verified.',
 ] as const

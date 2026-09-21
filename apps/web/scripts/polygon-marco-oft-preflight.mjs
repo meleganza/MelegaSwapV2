@@ -18,13 +18,11 @@ const report = {
   REJECT: { marcoMarco: true, staleErc20: STALE },
   BNB_PEER_AFTER_DEPLOY: { eid: 30102, peer: `0x${'00'.repeat(12)}${ADAPTER.slice(2).toLowerCase()}` },
   ENFORCED_OPTIONS: '0x00030100110100000000000000000000000000030d40',
-  OPERATOR_ACTION_REQUIRED: [
-    'Safe{Wallet}: add Polygon to existing Safe 0x840410fe… (CREATE2, same address).',
-    'Fund Safe with ≥ 3 POL.',
-    'Safe deploys LayerZero V2 OFT (MELEGA/MARCO/18/shared6, endpoint above, owner=Safe, supply 0).',
-    'Safe setPeer/setConfig/setEnforcedOptions both directions vs BNB adapter only.',
-    'Canary 0.000001 MARCO BNB↔Polygon. No public DEX activation until both DELIVERED.',
-  ],
+  FIRST_SIGNATURE_ONLY: {
+    url: 'https://app.safe.global/home?safe=bnb:0x840410fef54CA6A922Eb248c8a12011144E17508',
+    action: 'Network selector → Add network → Polygon. Sign owner-EOA factory tx. STOP.',
+    doNot: ['deploy OFT', 'use 0xB6eEb3ab…', 'peer/wire', 'send to stale 0xD3e28c…'],
+  },
 }
 
 console.log(JSON.stringify(report, null, 2))
