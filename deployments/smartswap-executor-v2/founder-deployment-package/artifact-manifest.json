@@ -1,0 +1,72 @@
+{
+  "status": "NOT_EXECUTED",
+  "classification": "ARTIFACT_MATCH",
+  "baseMainSha": "134d39fad838ed54a8c8117be38c47a3b09bef38",
+  "sourcePath": "contracts/smartswap/SmartSwapExecutorV2.sol",
+  "sourceSha": "eb5e54725a2d3cdc316de18fd542ac66dcfbf688",
+  "sourceSha256": "e5a4acafa5114834d249b70758722ae91b5fc4a17b4776c0376f714440535b52",
+  "sourceCommitOfFile": "5d7117afbf9efe656f631ac67e6e97e0574c8ba6",
+  "compiledAtMainSha": "134d39fad838ed54a8c8117be38c47a3b09bef38",
+  "solcVersion": "0.8.20+commit.a1b79de6",
+  "compilerSettings": {
+    "foundryProfile": "smartswap_executor_release",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "viaIR": true,
+    "evmVersion": "shanghai",
+    "metadata": {
+      "useLiteralContent": true,
+      "bytecodeHash": "none",
+      "appendCBOR": false
+    },
+    "libraries": {},
+    "license": "MIT",
+    "compilationTarget": "contracts/smartswap/SmartSwapExecutorV2.sol:SmartSwapExecutorV2"
+  },
+  "creationBytecodeSha256": "36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217",
+  "deployedBytecodeSha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+  "creationBytecodeKeccak256": "0xca5257e7de17873f4adeeaf38aafec86418fd5832b71c101f12681e748eff41c",
+  "deployedBytecodeKeccak256": "0xa4c1719a1b08959730964998f27170ecfc7dbaee72738decad3bec825d199a87",
+  "abiSha256": "9ec598d3a8b79b21e61cc184cc2fd8eb5df2384b355f39ad2620165da69e96c2",
+  "abiSha256Method": "sha256 of JSON.stringify(abi) with no whitespace, compiler order",
+  "creationBytecodeBytes": 7070,
+  "deployedBytecodeBytes": 6602,
+  "methodIdentifiers": {
+    "INTENT_VERSION()": "6dbc0a27",
+    "MAX_PROTOCOL_FEE_BPS()": "6d947e4b",
+    "NATIVE()": "a0cf0aea",
+    "POLICY_ID()": "db4ef9a6",
+    "POLICY_VERSION()": "c1bb9bb6",
+    "allowedVenue(address)": "a8ff4b2b",
+    "authorizedFeeBps(uint256)": "6d75e305",
+    "execute((uint256,bytes32,bytes32,uint256,address,address,address,uint256,uint256,bytes32,address,bytes32,uint16,uint256,address,address,uint256,uint256,uint256,bool,bool),address[])": "4bce4501",
+    "owner()": "8da5cb5b",
+    "pause()": "8456cb59",
+    "paused()": "5c975abb",
+    "renounceOwnership()": "715018a6",
+    "routeHashOf(address[],bool,bool)": "0836b909",
+    "setRouter(address,bytes32,bool)": "1bdbc79b",
+    "transferOwnership(address)": "f2fde38b",
+    "treasury()": "61d027b3",
+    "unpause()": "3f4ba83a",
+    "usedNonce(address,uint256)": "f90a2f30",
+    "wrappedNative()": "eb6d3a11"
+  },
+  "comparison": {
+    "canonical83Package": "deployments/smartswap-executor-v2/smart-swap-executor-v2-artifact.json",
+    "canonical83CreationSha256": "36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217",
+    "canonical83DeployedSha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+    "canonical83SourceSha256": "e5a4acafa5114834d249b70758722ae91b5fc4a17b4776c0376f714440535b52",
+    "pr84TestedCreationSha256": "36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217",
+    "pr84TestedDeployedSha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+    "result": "ARTIFACT_MATCH",
+    "difference": null
+  },
+  "executorAddress": "NON_DEPLOYED / UNKNOWN",
+  "didNotCreateAnotherExecutorContract": true,
+  "standardJsonInput": "verification-standard-json-input.json",
+  "standardJsonRecompiledBytecode": "MATCH",
+  "publicBroadcast": false
+}
