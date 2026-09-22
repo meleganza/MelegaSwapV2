@@ -1,0 +1,35 @@
+{
+  "status": "NOT_APPLIED",
+  "doNotEditProductionFileInThisMission": "apps/web/src/lib/smartswap-universal-engine/v2ExecutionRuntimeConfig.ts",
+  "currentProductionMustRemain": {
+    "56": { "status": "NOT_CONFIGURED", "enabled": false, "executorAddress": null },
+    "1": { "status": "NOT_CONFIGURED", "enabled": false, "executorAddress": null }
+  },
+  "orderedStates": [
+    "DEPLOYED_VERIFIED",
+    "CONFIGURED_DISABLED",
+    "CANARY_ENABLED",
+    "PUBLIC_CUTOVER"
+  ],
+  "futurePatchAfterVerifiedPublicDeployment": {
+    "56": {
+      "status": "CONFIGURED",
+      "enabled": false,
+      "executorAddress": "NON_DEPLOYED / UNKNOWN"
+    },
+    "1": {
+      "status": "CONFIGURED",
+      "enabled": false,
+      "executorAddress": "NON_DEPLOYED / UNKNOWN"
+    }
+  },
+  "firstConfigStepMustNotEnablePublicV2": true,
+  "resolverTruth": {
+    "resolveV2ExecutorConfig": "A row with enabled !== true is returned as CONFIGURED with executorAddress null. The stored address is not exposed while disabled.",
+    "isV2ExecutorRuntimeEnabled": "Requires status CONFIGURED, enabled true, and an executor address that is not zero, the owner, or the treasury.",
+    "isProductionCutoverAllowed": "Hardcoded false in operatingMode.ts.",
+    "V2_TEST_ONLY_CTA_EXECUTION_GATE": "false",
+    "PRODUCTION_EXECUTION_MODE": "LEGACY_PRODUCTION"
+  },
+  "publicCutover": "A later mission. Not this patch. Not this package."
+}
