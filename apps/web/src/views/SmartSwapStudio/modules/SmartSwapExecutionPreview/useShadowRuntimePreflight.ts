@@ -1,9 +1,10 @@
 /**
- * Isolated SHADOW preflight. Does not change legacy preview or Swap CTA.
+ * Isolated SHADOW preflight. Does not change legacy preview.
  * Never prepares unsigned V2 transactions or invents an executor address.
+ * Multiple consumers share one in-flight competition per requestKey.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BSC_RPC_URLS } from 'config/constants/rpc'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
@@ -267,7 +268,92 @@ export async function runShadowRuntimePreflightAttempt(input: {
   }
 }
 
-export function useShadowRuntimePreflight(): ShadowRuntimePreflight {
+export interface SmartSwapShadowRuntimeFacts {
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  shadow: ShadowRuntimePreflight
+}
+
+type SharedShadowEntry = {
+  key: string
+  generation: number
+  result: ShadowRuntimePreflight
+  listeners: Set<(next: ShadowRuntimePreflight) => void>
+}
+
+const sharedShadowEntries = new Map<string, SharedShadowEntry>()
+let sharedShadowGeneration = 0
+
+function sharedShadowKey(built: {
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  unavailableReason: string | null
+}): string {
+  if (built.unavailableReason) return `unavail:${built.unavailableReason}:${built.requestKey ?? ''}`
+  if (!built.request || !built.requestKey) return 'idle'
+  return `run:${built.requestKey}`
+}
+
+function publishSharedShadow(entry: SharedShadowEntry, next: ShadowRuntimePreflight): void {
+  entry.result = next
+  entry.listeners.forEach((listener) => listener(next))
+}
+
+function getOrStartSharedShadow(built: {
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  unavailableReason: string | null
+}): SharedShadowEntry {
+  const key = sharedShadowKey(built)
+  const existing = sharedShadowEntries.get(key)
+  if (existing) return existing
+
+  sharedShadowGeneration += 1
+  const generation = sharedShadowGeneration
+  const initial = !built.request && !built.unavailableReason
+    ? { ...IDLE_SHADOW_RUNTIME_PREFLIGHT, generation }
+    : built.unavailableReason
+      ? unavailableShadowRuntime(built.unavailableReason, generation, built.requestKey)
+      : {
+          ...IDLE_SHADOW_RUNTIME_PREFLIGHT,
+          status: 'loading' as const,
+          requestKey: built.requestKey,
+          generation,
+        }
+  const entry: SharedShadowEntry = {
+    key,
+    generation,
+    result: initial,
+    listeners: new Set(),
+  }
+  sharedShadowEntries.set(key, entry)
+
+  if (built.request || built.unavailableReason) {
+    void runShadowRuntimePreflightAttempt({
+      generation,
+      currentGeneration: () => entry.generation,
+      request: built.request,
+      requestKey: built.requestKey,
+      unavailableReason: built.unavailableReason,
+    }).then((next) => {
+      if (!next) return
+      publishSharedShadow(entry, next)
+    })
+  }
+
+  return entry
+}
+
+export function resetSharedShadowRuntimeForTests(): void {
+  sharedShadowEntries.clear()
+  sharedShadowGeneration = 0
+}
+
+export function useCurrentSmartSwapShadowRequest(): {
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  unavailableReason: string | null
+} {
   const {
     independentField,
     typedValue,
@@ -290,7 +376,7 @@ export function useShadowRuntimePreflight(): ShadowRuntimePreflight {
   const exactOut = independentField === Field.OUTPUT
   const resolvedChainId = Number(chainId || inputCurrency?.chainId || 0)
   const inputAmountRaw = !exactOut && parsedAmount?.quotient ? parsedAmount.quotient.toString() : null
-  const built = useMemo(
+  return useMemo(
     () =>
       buildShadowRuntimeRequest({
         chainId: resolvedChainId,
@@ -302,42 +388,28 @@ export function useShadowRuntimePreflight(): ShadowRuntimePreflight {
       }),
     [resolvedChainId, inputCurrency, outputCurrency, inputAmountRaw, exactOut, allowedSlippage],
   )
+}
 
-  const generationRef = useRef(0)
+export function useSmartSwapShadowRuntimeFacts(): SmartSwapShadowRuntimeFacts {
+  const built = useCurrentSmartSwapShadowRequest()
   const [state, setState] = useState<ShadowRuntimePreflight>(IDLE_SHADOW_RUNTIME_PREFLIGHT)
 
   useEffect(() => {
-    generationRef.current += 1
-    const generation = generationRef.current
-    if (!built.request && !built.unavailableReason) {
-      setState({ ...IDLE_SHADOW_RUNTIME_PREFLIGHT, generation })
-      return undefined
-    }
-    if (built.unavailableReason) {
-      setState(unavailableShadowRuntime(built.unavailableReason, generation, built.requestKey))
-      return undefined
-    }
-    setState({
-      ...IDLE_SHADOW_RUNTIME_PREFLIGHT,
-      status: 'loading',
-      requestKey: built.requestKey,
-      generation,
-    })
-    let cancelled = false
-    runShadowRuntimePreflightAttempt({
-      generation,
-      currentGeneration: () => generationRef.current,
-      request: built.request,
-      requestKey: built.requestKey,
-      unavailableReason: built.unavailableReason,
-    }).then((next) => {
-      if (cancelled || !next) return
-      setState(next)
-    })
+    const entry = getOrStartSharedShadow(built)
+    setState(entry.result)
+    entry.listeners.add(setState)
     return () => {
-      cancelled = true
+      entry.listeners.delete(setState)
     }
   }, [built])
 
-  return state
+  return {
+    request: built.request,
+    requestKey: built.requestKey,
+    shadow: state,
+  }
+}
+
+export function useShadowRuntimePreflight(): ShadowRuntimePreflight {
+  return useSmartSwapShadowRuntimeFacts().shadow
 }

@@ -23,6 +23,8 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/kerl-constitutional'
 import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
 import { useSmartSwapExecution } from 'lib/execution-layer'
+import { selectSmartSwapCtaExecution } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
+import { useSmartSwapV2CtaBinding } from '../hooks/useSmartSwapV2CtaBinding'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { warningSeverity } from 'utils/exchange'
@@ -107,6 +109,7 @@ export default function SwapCommitButton({
 
   const { callback: dexSwapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
   const swapCallback = kerlEnforced ? kerlSwap.callback : dexSwapCallback
+  const { decision: v2CtaDecision, plan: v2Plan, consumeIfGated } = useSmartSwapV2CtaBinding()
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: TradeWithStableSwap<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean
@@ -132,11 +135,18 @@ export default function SwapCommitButton({
     ) {
       return
     }
-    if (!swapCallback) {
+    const selected = selectSmartSwapCtaExecution({
+      decision: v2CtaDecision,
+      plan: v2Plan,
+      legacyCallback: swapCallback,
+      consumeV2: consumeIfGated,
+    })
+    if (!selected.run) {
       return
     }
     setSwapState({ attemptingTxn: true, tradeToConfirm, swapErrorMessage: undefined, txHash: undefined })
-    swapCallback()
+    selected
+      .run()
       .then((hash) => {
         setSwapState({ attemptingTxn: false, tradeToConfirm, swapErrorMessage: undefined, txHash: hash })
       })
@@ -148,7 +158,7 @@ export default function SwapCommitButton({
           txHash: undefined,
         })
       })
-  }, [priceImpactWithoutFee, swapCallback, tradeToConfirm, t, setSwapState])
+  }, [priceImpactWithoutFee, swapCallback, tradeToConfirm, t, setSwapState, v2CtaDecision, v2Plan, consumeIfGated])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn })
