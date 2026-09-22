@@ -1,7 +1,7 @@
 {
   "status": "NOT_EXECUTED",
   "classification": "ARTIFACT_MATCH",
-  "baseMainSha": "134d39fad838ed54a8c8117be38c47a3b09bef38",
+  "baseMainSha": "2f94866e7834514d6e8d1d6c3db416a41e9308f9",
   "sourcePath": "contracts/smartswap/SmartSwapExecutorV2.sol",
   "sourceSha": "eb5e54725a2d3cdc316de18fd542ac66dcfbf688",
   "sourceSha256": "e5a4acafa5114834d249b70758722ae91b5fc4a17b4776c0376f714440535b52",
@@ -68,5 +68,150 @@
   "didNotCreateAnotherExecutorContract": true,
   "standardJsonInput": "verification-standard-json-input.json",
   "standardJsonRecompiledBytecode": "MATCH",
-  "publicBroadcast": false
+  "publicBroadcast": false,
+  "compilerRuntimeTemplateSha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+  "deployedBytecodeSha256_terminology": "HISTORICAL_ALIAS of compilerRuntimeTemplateSha256 (solc evm.deployedBytecode.object). NOT the expected public eth_getCode hash after CREATE.",
+  "compilerRuntimeTemplateKeccak256": "0xa4c1719a1b08959730964998f27170ecfc7dbaee72738decad3bec825d199a87",
+  "immutableReferences": {
+    "sourceOfTruth": "solc 0.8.20+commit.a1b79de6 smartswap_executor_release / verification-standard-json-input.json",
+    "astBindings": [
+      {
+        "astId": "63",
+        "name": "treasury",
+        "mutability": "immutable",
+        "typeString": "address"
+      },
+      {
+        "astId": "65",
+        "name": "wrappedNative",
+        "mutability": "immutable",
+        "typeString": "address"
+      }
+    ],
+    "compilerImmutableReferences": {
+      "63": [
+        {
+          "length": 32,
+          "start": 1088
+        },
+        {
+          "length": 32,
+          "start": 1417
+        },
+        {
+          "length": 32,
+          "start": 2284
+        },
+        {
+          "length": 32,
+          "start": 2776
+        },
+        {
+          "length": 32,
+          "start": 3309
+        }
+      ],
+      "65": [
+        {
+          "length": 32,
+          "start": 473
+        },
+        {
+          "length": 32,
+          "start": 2098
+        },
+        {
+          "length": 32,
+          "start": 2149
+        },
+        {
+          "length": 32,
+          "start": 2220
+        },
+        {
+          "length": 32,
+          "start": 2317
+        },
+        {
+          "length": 32,
+          "start": 4219
+        },
+        {
+          "length": 32,
+          "start": 4384
+        }
+      ]
+    },
+    "note": "Offsets are into evm.deployedBytecode.object (compiler runtime TEMPLATE). Constructor patches ABI-word-sized values at these offsets. owner_ is Ownable storage and does not appear here."
+  },
+  "expectedPostConstructorRuntime": {
+    "bsc": {
+      "chainId": 56,
+      "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "sha256": "81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a",
+      "keccak256": "0x262bb476ce9ec68f74d9570b93e46cf9bd963bc6f0a6572d7b18d3b4e88f0f13"
+    },
+    "ethereum": {
+      "chainId": 1,
+      "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "sha256": "98235593533c8543c09c5e122f27f5c26296a985f3af19e5b2f17beae27930ea",
+      "keccak256": "0x4efbb79f0bf7338c519dd471ba33b0cc0a6f59b98ce2dfe9ac3463a54126a8d9"
+    },
+    "ownerDoesNotAlterRuntimeImmutables": true,
+    "ownerNote": "owner_ is constructor input for Ownable storage slot 0; it is not an immutable and does not appear in immutableReferences."
+  },
+  "publicPostDeployVerification": {
+    "algorithm": [
+      "verify creationTransaction.data keccak256",
+      "Founder signs CREATE",
+      "receipt.status == 1",
+      "obtain contractAddress",
+      "eth_getCode(contractAddress)",
+      "compare byte-for-byte / hash against EXPECTED_POST_CONSTRUCTOR_RUNTIME for THIS chain",
+      "verify owner(), treasury(), wrappedNative(), paused()",
+      "only after ALL pass may setRouter begin"
+    ],
+    "neverCompareEthGetCodeToCompilerTemplate": true
+  },
+  "baseMainShaAtPackageCreation": "134d39fad838ed54a8c8117be38c47a3b09bef38",
+  "gateCorrection": {
+    "mission": "MELEGA-SMARTSWAP-V2-IMMUTABLE-RUNTIME-GATE-CORRECTION",
+    "pr90Bug": "compared expected public runtime to compiler template hash",
+    "fix": "expectedPostConstructorRuntime derived from immutableReferences + chain immutables"
+  },
+  "stoppedRunReconciliation": {
+    "classification": "STOPPED_SAFELY_BEFORE_SIGNATURE",
+    "PUBLIC_DEPLOY_TX": "NONE",
+    "FOUNDER_SIGNATURE": "NONE",
+    "SETROUTER_TX": "NONE",
+    "RUNTIME_CONFIG": "NOT_CONFIGURED",
+    "CANARY": "NOT_STARTED",
+    "CUTOVER": false,
+    "ethereumAuthorization": "NOT_AUTHORIZED",
+    "observationsReadOnly": {
+      "observedAt": "2026-09-22T11:02:00Z",
+      "founder": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "bsc": {
+        "rpc": "https://bsc-dataseed.binance.org",
+        "nonceLatest": 3280,
+        "noncePending": 3280,
+        "balanceWei": "16460216118043106",
+        "balanceBnb": "0.016460216118043106",
+        "note": "Fresh read-only observation. Previous mission noted nonce 3280 and ~0.01646 BNB; nonce was not consumed."
+      },
+      "ethereum": {
+        "rpc": "https://rpc.flashbots.net",
+        "nonceLatest": 48,
+        "noncePending": 48,
+        "balanceWei": "1483193681087001",
+        "balanceEth": "0.001483193681087001",
+        "note": "Ethereum remains not authorized. Observation only."
+      }
+    },
+    "noPublicTransactionExists": true,
+    "noContractDeployed": true,
+    "noSetRouterSent": true
+  }
 }

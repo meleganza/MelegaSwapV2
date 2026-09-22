@@ -5,16 +5,24 @@ import { Interface, defaultAbiCoder } from '@ethersproject/abi'
 import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
 import { describe, expect, it } from 'vitest'
+import {
+  COMPILER_RUNTIME_TEMPLATE_SHA256,
+  CREATION_BYTECODE_SHA256,
+  PACKAGE_CHAIN_IMMUTABLES,
+  derivePostConstructorRuntime,
+} from '../immutableRuntimePatch'
 import { V2_EXECUTION_RUNTIME_CONFIG, V2_EXECUTOR_CONFIG_STATUS } from '../v2ExecutionRuntimeConfig'
 
 const PKG = path.resolve(__dirname, '../../../../../../deployments/smartswap-executor-v2/founder-deployment-package')
 const CANON = path.resolve(__dirname, '../../../../../../deployments/smartswap-executor-v2')
-const CREATION_SHA = '36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217'
-const DEPLOYED_SHA = '4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722'
 const ABI_SHA = '9ec598d3a8b79b21e61cc184cc2fd8eb5df2384b355f39ad2620165da69e96c2'
 const OWNER = '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0'
 const TREASURY = '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'
 const SET_ROUTER = new Interface(['function setRouter(address router, bytes32 venueId, bool allowed)'])
+const BSC_POST = '81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a'
+const ETH_POST = '98235593533c8543c09c5e122f27f5c26296a985f3af19e5b2f17beae27930ea'
+const BSC_POST_KEC = '0x262bb476ce9ec68f74d9570b93e46cf9bd963bc6f0a6572d7b18d3b4e88f0f13'
+const ETH_POST_KEC = '0x4efbb79f0bf7338c519dd471ba33b0cc0a6f59b98ce2dfe9ac3463a54126a8d9'
 
 function load(name: string) {
   return JSON.parse(readFileSync(path.join(PKG, name), 'utf8'))
@@ -46,6 +54,7 @@ describe('founder deployment package encoding', () => {
   const bsc = load('bsc.json')
   const eth = load('ethereum.json')
   const manifest = load('artifact-manifest.json')
+  const immutables = load('immutable-references.json')
   const future = load('future-runtime-config-patch.NOT_APPLIED.json')
   const standard = load('verification-standard-json-input.json')
   const creation = readFileSync(path.join(CANON, 'creation.hex'), 'utf8').trim()
@@ -53,11 +62,13 @@ describe('founder deployment package encoding', () => {
 
   it('matches the #83 and #84 artifact and does not invent an address', () => {
     expect(manifest.classification).toBe('ARTIFACT_MATCH')
-    expect(manifest.creationBytecodeSha256).toBe(CREATION_SHA)
-    expect(manifest.deployedBytecodeSha256).toBe(DEPLOYED_SHA)
+    expect(manifest.creationBytecodeSha256).toBe(CREATION_BYTECODE_SHA256)
+    expect(manifest.compilerRuntimeTemplateSha256).toBe(COMPILER_RUNTIME_TEMPLATE_SHA256)
+    expect(manifest.deployedBytecodeSha256).toBe(COMPILER_RUNTIME_TEMPLATE_SHA256)
+    expect(manifest.deployedBytecodeSha256_terminology).toMatch(/NOT the expected public eth_getCode/i)
     expect(manifest.abiSha256).toBe(ABI_SHA)
-    expect(sha256Hex(creation)).toBe(CREATION_SHA)
-    expect(sha256Hex(deployed)).toBe(DEPLOYED_SHA)
+    expect(sha256Hex(creation)).toBe(CREATION_BYTECODE_SHA256)
+    expect(sha256Hex(deployed)).toBe(COMPILER_RUNTIME_TEMPLATE_SHA256)
     expect(manifest.solcVersion).toBe('0.8.20+commit.a1b79de6')
     expect(manifest.compilerSettings.viaIR).toBe(true)
     expect(manifest.compilerSettings.evmVersion).toBe('shanghai')
@@ -73,10 +84,41 @@ describe('founder deployment package encoding', () => {
     expect(eth.nonceFixed).toBe(false)
   })
 
-  it('encodes canonical constructor args and creation payloads', () => {
-    for (const [doc, wrapped] of [
-      [bsc, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'],
-      [eth, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'],
+  it('records AST-mapped immutableReferences and post-constructor runtime gates', () => {
+    expect(immutables.astBindings).toEqual([
+      { astId: '63', name: 'treasury', mutability: 'immutable', typeString: 'address' },
+      { astId: '65', name: 'wrappedNative', mutability: 'immutable', typeString: 'address' },
+    ])
+    expect(immutables.compilerImmutableReferences['63'].map((r: { start: number }) => r.start)).toEqual([
+      1088, 1417, 2284, 2776, 3309,
+    ])
+    expect(immutables.compilerImmutableReferences['65'].map((r: { start: number }) => r.start)).toEqual([
+      473, 2098, 2149, 2220, 2317, 4219, 4384,
+    ])
+    expect(manifest.expectedPostConstructorRuntime.bsc.sha256).toBe(BSC_POST)
+    expect(manifest.expectedPostConstructorRuntime.bsc.keccak256).toBe(BSC_POST_KEC)
+    expect(manifest.expectedPostConstructorRuntime.ethereum.sha256).toBe(ETH_POST)
+    expect(manifest.expectedPostConstructorRuntime.ethereum.keccak256).toBe(ETH_POST_KEC)
+    expect(manifest.expectedPostConstructorRuntime.ownerDoesNotAlterRuntimeImmutables).toBe(true)
+
+    const bscDerived = derivePostConstructorRuntime({
+      compilerRuntimeTemplateHex: deployed,
+      immutables: PACKAGE_CHAIN_IMMUTABLES.bsc,
+    })
+    const ethDerived = derivePostConstructorRuntime({
+      compilerRuntimeTemplateHex: deployed,
+      immutables: PACKAGE_CHAIN_IMMUTABLES.ethereum,
+    })
+    expect(bscDerived.sha256).toBe(BSC_POST)
+    expect(bscDerived.keccak256).toBe(BSC_POST_KEC)
+    expect(ethDerived.sha256).toBe(ETH_POST)
+    expect(ethDerived.keccak256).toBe(ETH_POST_KEC)
+  })
+
+  it('encodes canonical constructor args and creation payloads with corrected runtime gate', () => {
+    for (const [doc, wrapped, postSha, postKec] of [
+      [bsc, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', BSC_POST, BSC_POST_KEC],
+      [eth, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', ETH_POST, ETH_POST_KEC],
     ] as const) {
       expect(doc.owner).toBe(OWNER)
       expect(doc.treasury).toBe(TREASURY)
@@ -90,9 +132,25 @@ describe('founder deployment package encoding', () => {
       const creationData = `0x${creation.replace(/^0x/, '')}${encoded.slice(2)}`
       expect(doc.creationTransaction.data.toLowerCase()).toBe(creationData.toLowerCase())
       expect(doc.creationTransaction.dataKeccak256.toLowerCase()).toBe(keccak256(creationData).toLowerCase())
-      expect(doc.creationTransaction.expectedRuntimeBytecodeSha256).toBe(DEPLOYED_SHA)
+      expect(doc.creationTransaction.compilerRuntimeTemplateSha256).toBe(COMPILER_RUNTIME_TEMPLATE_SHA256)
+      expect(doc.creationTransaction.expectedPostConstructorRuntimeSha256).toBe(postSha)
+      expect(doc.creationTransaction.expectedPostConstructorRuntimeKeccak256).toBe(postKec)
+      expect(doc.creationTransaction.oldIncorrectGateSha256FromPr90).toBe(COMPILER_RUNTIME_TEMPLATE_SHA256)
+      expect(doc.creationTransaction).not.toHaveProperty('expectedRuntimeBytecodeSha256')
       expect(doc.creationTransaction.status).toBe('NOT_EXECUTED')
-      expect(sha256Hex(deployed)).toBe(doc.creationTransaction.expectedRuntimeBytecodeSha256)
+      expect(sha256Hex(deployed)).toBe(doc.creationTransaction.compilerRuntimeTemplateSha256)
+      expect(sha256Hex(deployed)).not.toBe(doc.creationTransaction.expectedPostConstructorRuntimeSha256)
+      expect(doc.publicPostDeployVerification.neverCompareEthGetCodeTo).toBe('compilerRuntimeTemplateSha256')
+      expect(doc.publicPostDeployVerification.algorithm).toEqual([
+        'verify creationTransaction.data keccak256',
+        'Founder signs CREATE',
+        'receipt.status == 1',
+        'obtain contractAddress',
+        'eth_getCode(contractAddress)',
+        'compare byte-for-byte / hash against EXPECTED_POST_CONSTRUCTOR_RUNTIME for THIS chain',
+        'verify owner(), treasury(), wrappedNative(), paused()',
+        'only after ALL pass may setRouter begin',
+      ])
     }
   })
 
@@ -134,6 +192,20 @@ describe('founder deployment package encoding', () => {
       expect(doc.gasEstimate.RECOMMENDED_BUFFER.wei).toBe((raw * BigInt(2)).toString())
       expect(doc.gasEstimate.status).toBe('NOT_A_GUARANTEE')
     }
+  })
+
+  it('records stopped-run reconciliation without public activity', () => {
+    const stopped = bsc.stoppedRunReconciliation
+    expect(stopped.PUBLIC_DEPLOY_TX).toBe('NONE')
+    expect(stopped.FOUNDER_SIGNATURE).toBe('NONE')
+    expect(stopped.SETROUTER_TX).toBe('NONE')
+    expect(stopped.RUNTIME_CONFIG).toBe('NOT_CONFIGURED')
+    expect(stopped.CANARY).toBe('NOT_STARTED')
+    expect(stopped.CUTOVER).toBe(false)
+    expect(stopped.ethereumAuthorization).toBe('NOT_AUTHORIZED')
+    expect(stopped.noPublicTransactionExists).toBe(true)
+    expect(stopped.observationsReadOnly.bsc.nonceLatest).toBe(3280)
+    expect(stopped.observationsReadOnly.bsc.noncePending).toBe(3280)
   })
 
   it('leaves production runtime config unconfigured and the future patch unapplied', () => {

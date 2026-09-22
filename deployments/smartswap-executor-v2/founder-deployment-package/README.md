@@ -2,14 +2,16 @@
 
 Prepare-only. Public status: **NOT_EXECUTED**.
 
-This package is for the existing `contracts/smartswap/SmartSwapExecutorV2.sol` on current main `134d39fad838ed54a8c8117be38c47a3b09bef38`. It does not add another executor. It does not change production runtime config.
+This package is for the existing `contracts/smartswap/SmartSwapExecutorV2.sol` on current main `2f94866e7834514d6e8d1d6c3db416a41e9308f9` (includes merged #90). It does not add another executor. It does not change production runtime config.
 
-Founder decision, not taken here:
+Gate-correction mission: **MELEGA-SMARTSWAP-V2-IMMUTABLE-RUNTIME-GATE-CORRECTION**.
 
-- `DEPLOY_BSC = READY_FOR_FOUNDER_APPROVAL`
-- `DEPLOY_ETH = READY_FOR_FOUNDER_APPROVAL`
+Founder decision context:
 
-## Artifact
+- `DEPLOY_BSC` was previously approved, but the attempt stopped safely before signature. No public tx. No contract. No `setRouter`.
+- `DEPLOY_ETH = NOT_AUTHORIZED`
+
+## Artifact (build reproducibility)
 
 Classification: **ARTIFACT_MATCH**
 
@@ -26,10 +28,59 @@ Classification: **ARTIFACT_MATCH**
 | Libraries | none |
 | License | MIT |
 | CREATION_BYTECODE_SHA256 | `36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217` |
-| DEPLOYED_BYTECODE_SHA256 | `4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722` |
+| COMPILER_RUNTIME_TEMPLATE_SHA256 | `4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722` |
 | ABI_SHA256 | `9ec598d3a8b79b21e61cc184cc2fd8eb5df2384b355f39ad2620165da69e96c2` |
 
-The creation and deployed hashes match `deployments/smartswap-executor-v2/` from #83 and the artifact tested by #84. A fresh `FOUNDRY_PROFILE=smartswap_executor_release forge build` on this main SHA reproduced those bytes. `verification-standard-json-input.json` recompiled with solc 0.8.20 to the same bytes. Do not submit that file to an explorer from this mission.
+`COMPILER_RUNTIME_TEMPLATE_SHA256` is the SHA-256 of solc `evm.deployedBytecode.object`. That object still contains **immutable placeholders**. It is for build reproducibility only.
+
+**Never** compare public `eth_getCode` to `COMPILER_RUNTIME_TEMPLATE_SHA256`.
+
+## Immutable references (compiler truth)
+
+AST-mapped from solc output (not positional guessing):
+
+| AST id | Name | Offsets (start, length=32) |
+| --- | --- | --- |
+| 63 | `treasury` | 1088, 1417, 2284, 2776, 3309 |
+| 65 | `wrappedNative` | 473, 2098, 2149, 2220, 2317, 4219, 4384 |
+
+`owner_` is constructor input for Ownable storage. It is **not** an immutable and does not appear in `immutableReferences`.
+
+Full machine-readable map: `immutable-references.json`.
+
+## Expected post-constructor runtime (public eth_getCode gate)
+
+Derived deterministically:
+
+`compiler runtime template` + `immutableReferences` + chain `(treasury, wrappedNative)`.
+
+| Chain | EXPECTED_POST_CONSTRUCTOR_RUNTIME_SHA256 | EXPECTED_POST_CONSTRUCTOR_RUNTIME_KECCAK256 |
+| --- | --- | --- |
+| BSC 56 | `81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a` | `0x262bb476ce9ec68f74d9570b93e46cf9bd963bc6f0a6572d7b18d3b4e88f0f13` |
+| Ethereum 1 | `98235593533c8543c09c5e122f27f5c26296a985f3af19e5b2f17beae27930ea` | `0x4efbb79f0bf7338c519dd471ba33b0cc0a6f59b98ce2dfe9ac3463a54126a8d9` |
+
+BSC immutables: treasury `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b`, wrappedNative WBNB `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c`.
+
+Ethereum immutables: same treasury, wrappedNative WETH `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`.
+
+Independent local Anvil CREATE of the exact #90 `creationTransaction.data` produced byte-for-byte equality with these derived runtimes. Local executor addresses are disposable.
+
+## PR #90 gate bug (corrected here)
+
+#90 incorrectly used `COMPILER_RUNTIME_TEMPLATE_SHA256` as `expectedRuntimeBytecodeSha256` for public verification. That is invalid whenever immutable values are non-zero:
+
+`COMPILER_RUNTIME_TEMPLATE_SHA256 != EXPECTED_POST_CONSTRUCTOR_RUNTIME_SHA256` by design.
+
+## Public post-deploy verification algorithm
+
+1. verify `creationTransaction.data` keccak256
+2. Founder signs CREATE
+3. `receipt.status == 1`
+4. obtain `contractAddress`
+5. `eth_getCode(contractAddress)`
+6. compare byte-for-byte / hash against `EXPECTED_POST_CONSTRUCTOR_RUNTIME` for **that** chain
+7. verify `owner()`, `treasury()`, `wrappedNative()`, `paused()`
+8. only after **all** pass may `setRouter` begin
 
 ## Governance addresses
 
@@ -83,7 +134,7 @@ Ethereum creation data keccak256: `0xf2652d8efd7555a8dbe7c75c7655fd78b49d6c10862
 
 ## Gas observation
 
-Observed `2026-09-22T06:09:23Z`. Not a guaranteed future cost. Nothing was purchased.
+Observed `2026-09-22T06:09:23Z` (from #90). Not a guaranteed future cost. Nothing was purchased.
 
 | | BSC | Ethereum |
 | --- | --- | --- |
@@ -95,25 +146,22 @@ Observed `2026-09-22T06:09:23Z`. Not a guaranteed future cost. Nothing was purch
 | RAW_ESTIMATE | 0.000081401150 BNB | 0.000097101738 ETH |
 | RECOMMENDED_BUFFER | 2x = 0.000162802300 BNB | 2x = 0.000194203475 ETH |
 
-Ethereum base fee was corroborated near 0.067 gwei on Tenderly and Merkle at block 26031149. Several other public ETH endpoints returned 403 or Unauthorized from this environment. Re-read the fee before funding.
+## Stopped BSC run
 
-Gas units were measured by deploying the exact Founder creation payload and sending the exact `setRouter` calldata on a local Anvil fork. The fork impersonated the future owner address with no key. That chain state was discarded.
+| Field | Value |
+| --- | --- |
+| PUBLIC_DEPLOY_TX | NONE |
+| FOUNDER_SIGNATURE | NONE |
+| SETROUTER_TX | NONE |
+| RUNTIME_CONFIG | NOT_CONFIGURED |
+| CANARY | NOT_STARTED |
+| CUTOVER | FALSE |
+
+Fresh Founder BSC observation (read-only): nonce `3280`, balance ≈ `0.016460216118043106` BNB. Ethereum remains not authorized.
 
 ## Explorer verification, prepare only
 
 `verification-standard-json-input.json`
-
-| Field | Value |
-| --- | --- |
-| Contract | `SmartSwapExecutorV2` |
-| Path | `contracts/smartswap/SmartSwapExecutorV2.sol` |
-| Compiler | 0.8.20 |
-| Optimizer | yes, 200 |
-| viaIR | yes |
-| EVM | shanghai |
-| License | MIT |
-| Libraries | none |
-| Constructor args | the ABI-encoded args in the chain file, without the creation bytecode |
 
 Do not submit verification.
 
@@ -121,64 +169,29 @@ Do not submit verification.
 
 Today, `v2ExecutionRuntimeConfig.ts` keeps chain 56 and chain 1 at `NOT_CONFIGURED`, `enabled=false`, `executorAddress=null`. This mission does not change that file.
 
-`future-runtime-config-patch.NOT_APPLIED.json` is the later patch shape: `CONFIGURED`, the verified address, `enabled=false`. `resolveV2ExecutorConfig` still hides the address while `enabled` is not true. `isProductionCutoverAllowed()` is hardcoded false.
+`future-runtime-config-patch.NOT_APPLIED.json` is the later patch shape.
 
-States, in order: `DEPLOYED_VERIFIED` → `CONFIGURED_DISABLED` → `CANARY_ENABLED` → `PUBLIC_CUTOVER`.
+## Local fork rehearsal / Anvil cross-check
 
-## Local fork rehearsal
-
-`founderDeploymentPackageForkRehearsal.test.ts` deployed the current creation bytecode on local Anvil forks of BSC and Ethereum. The constructor used the canonical treasury and wrapped native with an Anvil test owner. `setRouter` used the exact calldata in the chain JSON. No `anvil_setCode` was applied to routers, factories, pools, tokens, or wrapped native.
-
-Checked on the fork: owner, treasury, wrapped native, `allowedVenue`, non-owner `setRouter` revert, `pause` rejecting `execute` with `EnforcedPause` and an unused nonce, `unpause` restoring a Melega native-in, Pancake ERC20-in, and Uniswap native-in plus ERC20-in. Treasury delta matched the protocol fee. ERC20 allowance spender was the executor. Executor to router allowance was zero after the ERC20 swap. `SmartSwapExecuted` was present. Prepared transactions came from `prepareV2UserTransactions`.
+`founderDeploymentPackageForkRehearsal.test.ts` and the immutable runtime gate tests deploy on local Anvil only. No public broadcast. Local executor addresses must never be promoted to production config.
 
 ## Canary plan, do not run
 
-After a verified deployment, a disabled config, and an owner `setRouter`, a later canary may send:
-
-- BSC: one small native-in and one small ERC20-in. The factual winner may be Melega or Pancake. Do not force the venue.
-- Ethereum: one small native-in and one small ERC20-in on Uniswap.
-
-Representative fork pairs were WBNB/USDC and WETH/USDC. Canary notionals must be smaller than the rehearsal (0.05 BNB and 0.02 ETH). The Founder picks the exact canary amount. The user signs only the user's own transactions.
-
-Pass:
-
-- executor, router, `feeBps`, treasury delta, and user input delta match the prepared intent
-- user output `>= minUserOut`
-- `usedNonce` becomes true only after a successful `execute`
-- ERC20 allowance spender is the executor only
-- executor → router allowance is zero after an ERC20 swap
-- no Team or platform signature
-- the same action does not also submit the legacy router swap
-- `SmartSwapExecuted` is in the receipt
-
-Stop immediately if any pass row fails, if a wallet prompt asks for a Team or platform signature, if the spender is not the executor, if a reverted execute consumes the nonce, if the router is not the factual winner, or if anyone proposes enabling public cutover during the canary.
+After a verified deployment, a disabled config, and an owner `setRouter`, a later canary may proceed. Not this mission.
 
 ## Rollback
 
 | Level | Action | Exists now |
 | --- | --- | --- |
 | 0 | Keep the public CTA on legacy | `PRODUCTION_EXECUTION_MODE = LEGACY_PRODUCTION`, config `NOT_CONFIGURED`, `V2_TEST_ONLY_CTA_EXECUTION_GATE = false` |
-| 1 | Leave runtime V2 disabled | `enabled: false` makes `isV2ExecutorRuntimeEnabled` false and `buildV2UserExecutionPlan` returns legacy |
-| 2 | Owner `pause()` | `pause()` is `onlyOwner`. `execute` is `whenNotPaused` |
+| 1 | Leave runtime V2 disabled | `enabled: false` |
+| 2 | Owner `pause()` | `pause()` is `onlyOwner` |
 | 3 | Owner `setRouter(router, venueId, false)` | clears `allowedVenue[router]` |
-| 4 | Public action back to legacy | levels 0 and 1. Legacy swap remains the production path |
-
-There is no proxy upgrade to roll back, and no owner sweep of user tokens.
+| 4 | Public action back to legacy | levels 0 and 1 |
 
 ## Security
 
-From the current contract:
-
-- `setRouter`, `pause`, and `unpause` are `onlyOwner`.
-- Inherited `transferOwnership` and `renounceOwnership` are also `onlyOwner`.
-- Treasury is immutable. It cannot change routers, pause, or fees.
-- Users cannot change `allowedVenue`. A non-owner `setRouter` reverts `OwnableUnauthorizedAccount`.
-- `execute` requires `msg.sender == intent.user`. There is no `intentSigner`, no platform signature, and no privileged relayer.
-- No `delegatecall`. No proxy or upgrade function.
-- No owner function withdraws arbitrary tokens. Fees move to the immutable treasury only inside the user's `execute`.
-- Owner can halt swaps with `pause`, replace the allowlist with `setRouter` for the three known venue ids, and transfer ownership. An allowlisted router is code the owner has chosen to trust. Unknown venue ids revert `UnknownVenue`.
-- Fee bands are pure: Melega and Pancake structural 25 bps → protocol 20 bps; Uniswap structural 30 bps → protocol 15 bps. The owner cannot edit them.
-- `renounceOwnership` would remove the ability to pause or change routers. This package does not call it.
+Unchanged from the current contract. Treasury and wrappedNative are immutable. Owner is Ownable storage.
 
 ## Files
 
@@ -186,6 +199,7 @@ From the current contract:
 - `bsc.json`
 - `ethereum.json`
 - `artifact-manifest.json`
+- `immutable-references.json`
 - `verification-standard-json-input.json`
 - `NOT_EXECUTED.md`
 - `future-runtime-config-patch.NOT_APPLIED.json`
