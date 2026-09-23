@@ -11,6 +11,7 @@ import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import TradeChartPanel from './TradeChartPanel'
 import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 import { formatCompactPriceNumber, formatFullPriceNumber } from 'utils/formatCompactPrice'
+import { resolveTradeHeaderPrice, selectTradeChartSeries } from './tradeChartPrice'
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -176,35 +177,38 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   )
   const publicPair = usePairOhlcv(activeChainId, pairAddress, token0Address, timeframe)
 
-  const pairPrices = useMemo(() => {
-    if (indexerCandles.length >= 2) {
-      return indexerCandles.map((c) => ({ time: String(c.time), value: c.close }))
-    }
-    if (indexerCandles.length === 1) {
-      return indexerCandles.map((c) => ({ time: String(c.time), value: c.close }))
-    }
-    if (publicPair.candles.length > 0) {
-      return publicPair.candles.map((candle) => ({ time: String(candle.timestamp), value: candle.close }))
-    }
-    return []
-  }, [indexerCandles, publicPair.candles])
+  const series = useMemo(
+    () =>
+      selectTradeChartSeries(
+        indexerCandles.map((candle) => ({ time: candle.time, value: candle.close })),
+        publicPair.candles.map((candle) => ({ time: candle.timestamp, value: candle.close })),
+      ),
+    [indexerCandles, publicPair.candles],
+  )
+  const pairPrices = series.pairPrices
 
   const chartLoading = indexerCandleStatus === 'loading' || (pairPrices.length < 2 && publicPair.status === 'loading')
+  const chartRendersSeries = !chartLoading && pairPrices.length >= 2
 
   const resolvedChartEmptyReason =
     pairPrices.length > 0 ? null : chartEmptyReason ?? (chartLoading ? 'loading' : 'insufficient_history')
 
-  const displayPrice = priceUsd
+  const displayPrice = resolveTradeHeaderPrice({ priceUsd, pairPrices, chartRendersSeries })
   const validChange =
     change24h != null && Number.isFinite(change24h) && Math.abs(change24h) > 0.0001 ? change24h : undefined
 
   const priceText =
-    displayPrice != null && Number.isFinite(displayPrice)
+    displayPrice != null
       ? formatCompactPriceNumber(displayPrice, { significantDigits: 6, unavailable: '' })
       : null
   const fullPriceText = formatFullPriceNumber(displayPrice)
 
-  const priceLoading = isIndexingMetrics && !priceText
+  const priceLoading =
+    !priceText &&
+    (Boolean(isIndexingMetrics) ||
+      chartLoading ||
+      indexerCandleStatus === 'loading' ||
+      publicPair.status === 'loading')
 
   return (
     <Shell data-trade-price-chart>
@@ -260,7 +264,9 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           emptyDetail={chartEmptyDetail}
           currentPriceUsd={displayPrice}
           isLoading={chartLoading}
-          sourceLabel={indexerCandles.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'}
+          sourceLabel={
+            series.source === 'indexer' && pairPrices.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'
+          }
         />
       </ChartBlock>
     </Shell>
