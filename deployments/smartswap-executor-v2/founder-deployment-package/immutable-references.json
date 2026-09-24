@@ -1,0 +1,96 @@
+{
+  "status": "COMPILER_TRUTH",
+  "contract": "SmartSwapExecutorV2",
+  "solcVersion": "0.8.20+commit.a1b79de6",
+  "creationBytecodeSha256": "36d2503e328425ab66b61e384fa02418ec18c29df3e7966f01ece0c1e4422217",
+  "compilerRuntimeTemplateSha256": "4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+  "abiSha256": "9ec598d3a8b79b21e61cc184cc2fd8eb5df2384b355f39ad2620165da69e96c2",
+  "sourceOfTruth": "solc 0.8.20+commit.a1b79de6 smartswap_executor_release / verification-standard-json-input.json",
+  "astBindings": [
+    {
+      "astId": "63",
+      "name": "treasury",
+      "mutability": "immutable",
+      "typeString": "address"
+    },
+    {
+      "astId": "65",
+      "name": "wrappedNative",
+      "mutability": "immutable",
+      "typeString": "address"
+    }
+  ],
+  "compilerImmutableReferences": {
+    "63": [
+      {
+        "length": 32,
+        "start": 1088
+      },
+      {
+        "length": 32,
+        "start": 1417
+      },
+      {
+        "length": 32,
+        "start": 2284
+      },
+      {
+        "length": 32,
+        "start": 2776
+      },
+      {
+        "length": 32,
+        "start": 3309
+      }
+    ],
+    "65": [
+      {
+        "length": 32,
+        "start": 473
+      },
+      {
+        "length": 32,
+        "start": 2098
+      },
+      {
+        "length": 32,
+        "start": 2149
+      },
+      {
+        "length": 32,
+        "start": 2220
+      },
+      {
+        "length": 32,
+        "start": 2317
+      },
+      {
+        "length": 32,
+        "start": 4219
+      },
+      {
+        "length": 32,
+        "start": 4384
+      }
+    ]
+  },
+  "note": "Offsets are into evm.deployedBytecode.object (compiler runtime TEMPLATE). Constructor patches ABI-word-sized values at these offsets. owner_ is Ownable storage and does not appear here.",
+  "expectedPostConstructorRuntime": {
+    "bsc": {
+      "chainId": 56,
+      "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "sha256": "81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a",
+      "keccak256": "0x262bb476ce9ec68f74d9570b93e46cf9bd963bc6f0a6572d7b18d3b4e88f0f13"
+    },
+    "ethereum": {
+      "chainId": 1,
+      "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "sha256": "98235593533c8543c09c5e122f27f5c26296a985f3af19e5b2f17beae27930ea",
+      "keccak256": "0x4efbb79f0bf7338c519dd471ba33b0cc0a6f59b98ce2dfe9ac3463a54126a8d9"
+    },
+    "ownerDoesNotAlterRuntimeImmutables": true,
+    "ownerNote": "owner_ is constructor input for Ownable storage slot 0; it is not an immutable and does not appear in immutableReferences."
+  }
+}

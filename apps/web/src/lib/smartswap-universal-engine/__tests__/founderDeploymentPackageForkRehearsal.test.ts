@@ -19,11 +19,16 @@ import { createPancakeSwapVenueAdapter } from '../pancakeSwapAdapter'
 import { type SmartSwapRequest } from '../quote'
 import { runEvmShadowCompetition } from '../shadowCompetition'
 import { createUniswapVenueAdapter } from '../uniswapAdapter'
+import { derivePostConstructorRuntime } from '../immutableRuntimePatch'
 import { prepareV2UserTransactions, type UnsignedUserTransaction } from '../v2ExecutionBinding'
 
 const PKG = path.resolve(__dirname, '../../../../../../deployments/smartswap-executor-v2/founder-deployment-package')
 const CANON_CREATION = readFileSync(
   path.resolve(__dirname, '../../../../../../deployments/smartswap-executor-v2/creation.hex'),
+  'utf8',
+).trim()
+const CANON_DEPLOYED_TEMPLATE = readFileSync(
+  path.resolve(__dirname, '../../../../../../deployments/smartswap-executor-v2/deployed.hex'),
   'utf8',
 ).trim()
 const ANVIL_HOST = '127.0.0.1'
@@ -181,6 +186,15 @@ async function startFork(input: {
   const deployReceipt = await provider.waitForTransaction(deployHash)
   if (!deployReceipt?.contractAddress || deployReceipt.status !== 1) throw new Error(`${input.label}_DEPLOY_FAILED`)
   const executor = getAddress(deployReceipt.contractAddress)
+  // Owner differs from Founder package, but immutables match → runtime must equal post-constructor expectation.
+  const code: string = await rpc('eth_getCode', [executor, 'latest'])
+  const expected = derivePostConstructorRuntime({
+    compilerRuntimeTemplateHex: CANON_DEPLOYED_TEMPLATE,
+    immutables: { treasury: TREASURY, wrappedNative: input.wrapped },
+  })
+  expect(code.toLowerCase()).toBe(expected.runtimeHex.toLowerCase())
+  expect(expected.sha256).toBe(input.pkg.creationTransaction.expectedPostConstructorRuntimeSha256)
+  expect(expected.sha256).not.toBe(input.pkg.creationTransaction.compilerRuntimeTemplateSha256)
   for (const call of input.pkg.setRouterCalls) {
     const hash = await rpc('eth_sendTransaction', [{
       from: owner, to: executor, data: call.calldata, gas: toHex(BigInt(500000)), gasPrice,
