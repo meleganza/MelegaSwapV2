@@ -28,6 +28,7 @@ import {
   type NativeFundsReadState,
 } from 'lib/marco-bridge/nativeFunds'
 import { planMarcoBridgeRoute } from 'lib/marco-bridge/routePolicy'
+import { POLYGON_CHAIN_ID, ensurePolygonWalletNetwork } from 'lib/marco-bridge/polygonChain'
 import { ARC_CHAIN_ID, ensureArcWalletNetwork } from 'lib/marco-bridge/arcChain'
 import { bindInjectedSignerAfterNetworkSwitch } from 'lib/marco-bridge/injectedSigner'
 import { ROBINHOOD_CHAIN_ID, ensureRobinhoodWalletNetwork } from 'lib/marco-bridge/robinhoodChain'
@@ -809,9 +810,20 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
         return
       }
     }
+    if (fromNetwork.chainId === POLYGON_CHAIN_ID && ethereum) {
+      try {
+        await ensurePolygonWalletNetwork(ethereum)
+        submitSigner = await bindInjectedSignerAfterNetworkSwitch(ethereum, POLYGON_CHAIN_ID)
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : 'Add Polygon (chain 137, native POL) in the wallet.')
+        return
+      }
+    }
     const reboundAfterSourceSwitch =
       Boolean(ethereum && submitSigner) &&
-      (fromNetwork.chainId === ARC_CHAIN_ID || fromNetwork.chainId === ROBINHOOD_CHAIN_ID)
+      (fromNetwork.chainId === POLYGON_CHAIN_ID ||
+        fromNetwork.chainId === ARC_CHAIN_ID ||
+        fromNetwork.chainId === ROBINHOOD_CHAIN_ID)
     if (!sourceNetworkCorrect && fromNetwork.chainId && canSwitch && !reboundAfterSourceSwitch) {
       void switchNetworkAsync(fromNetwork.chainId)
       return
@@ -869,7 +881,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       setTracking(nextTracking)
       setReview(true)
       if (nextTracking.sourceTx) {
-        const tracked = await fetch(marcoBridgeApiPath(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`), { cache: 'no-store' })
+        const tracked = await fetch(marcoBridgeApiPath(`/api/marco-bridge/track?sourceTx=${nextTracking.sourceTx}`), {
+          cache: 'no-store',
+        })
         if (tracked.ok) setTracking((await tracked.json()) as MarcoBridgeTracking)
       }
     } catch (cause) {
@@ -925,7 +939,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
           <HeroVeil aria-hidden="true" />
           <HeroCopy>
             <h1>MARCO Bridge</h1>
-            <p>Move MARCO across certified networks. One route, one tracked delivery.</p>
+            <p>Move MELEGA (MARCO) across certified networks. One route, one tracked delivery.</p>
           </HeroCopy>
           <Available aria-label="Available on">
             {networkEntries.map((network) => (
@@ -997,7 +1011,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               <input
                 aria-label="Destination wallet"
                 value={resolvedDestination}
-                readOnly={sourceLocked || (sameFamily && Boolean(sourceWallet) && !destination)}
+                readOnly={sourceLocked}
                 placeholder={toNetwork.walletFamily === 'evm' ? '0x…' : 'Solana address'}
                 onChange={(event) => {
                   setDestination(event.target.value)
@@ -1192,16 +1206,18 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
                 <li>
                   LayerZero EIDs: BNB {MARCO_WAVE1_NETWORKS.bnb.layerZeroEid} · Base{' '}
                   {MARCO_WAVE1_NETWORKS.base.layerZeroEid} · Solana {MARCO_WAVE1_NETWORKS.solana.layerZeroEid} ·
-                  Robinhood {MARCO_WAVE1_NETWORKS.robinhood.layerZeroEid} · Arc {MARCO_WAVE1_NETWORKS.arc.layerZeroEid}
+                  Robinhood {MARCO_WAVE1_NETWORKS.robinhood.layerZeroEid} · Arc {MARCO_WAVE1_NETWORKS.arc.layerZeroEid}{' '}
+                  · Polygon {MARCO_WAVE1_NETWORKS.polygon.layerZeroEid}
                 </li>
                 <li>Robinhood chain ID: {MARCO_WAVE1_NETWORKS.robinhood.chainId}</li>
                 <li>
-                  Arc chain ID: {MARCO_WAVE1_NETWORKS.arc.chainId} · native gas {MARCO_WAVE1_NETWORKS.arc.nativeFeeSymbol}
+                  Arc chain ID: {MARCO_WAVE1_NETWORKS.arc.chainId} · native gas{' '}
+                  {MARCO_WAVE1_NETWORKS.arc.nativeFeeSymbol}
                 </li>
                 <li>
                   Canonical MARCO: BNB {MARCO_WAVE1_NETWORKS.bnb.marcoIdentity} · Base{' '}
                   {MARCO_WAVE1_NETWORKS.base.marcoIdentity} · Robinhood {MARCO_WAVE1_NETWORKS.robinhood.marcoIdentity} ·
-                  Arc {MARCO_WAVE1_NETWORKS.arc.marcoIdentity}
+                  Arc {MARCO_WAVE1_NETWORKS.arc.marcoIdentity} · Polygon {MARCO_WAVE1_NETWORKS.polygon.marcoIdentity}
                 </li>
                 <li>
                   Solana mint/store: {MARCO_WAVE1_NETWORKS.solana.marcoIdentity} ·{' '}

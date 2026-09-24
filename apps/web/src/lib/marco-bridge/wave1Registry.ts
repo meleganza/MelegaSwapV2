@@ -64,6 +64,20 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
     nativeFeeSymbol: 'ETH',
     explorerUrl: 'https://robinhoodchain.blockscout.com',
   },
+  polygon: {
+    id: 'polygon',
+    label: 'Polygon PoS',
+    shortLabel: 'Polygon',
+    walletFamily: 'evm',
+    chainId: 137,
+    layerZeroEid: 30109,
+    marcoIdentity: '0xF31A621A0e75d90fdA320EeE52956D718Fa34615',
+    endpointContract: '0xF31A621A0e75d90fdA320EeE52956D718Fa34615',
+    tokenDecimals: 18,
+    sharedDecimals: 6,
+    nativeFeeSymbol: 'POL',
+    explorerUrl: 'https://polygonscan.com',
+  },
   arc: {
     id: 'arc',
     label: 'Arc',
@@ -94,6 +108,8 @@ export const MARCO_WAVE1_DIRECT_ROUTES: MarcoBridgeRoute[] = [
   direct('solana', 'bnb'),
   direct('bnb', 'robinhood'),
   direct('robinhood', 'bnb'),
+  direct('bnb', 'polygon'),
+  direct('polygon', 'bnb'),
   direct('bnb', 'arc'),
   direct('arc', 'bnb'),
 ]
@@ -104,7 +120,22 @@ export const MARCO_WAVE1_PUBLIC_ACTIVATION = {
   solanaProtectivePauseRequired: false,
 } as const
 
+// Set true only in a release carrying reverse DELIVERED, zero-supply and BNB unlock evidence.
+// Round-trip verified 2026-09-24: see docs/runtime/polygon-roundtrip-20260924.json.
+export const POLYGON_ROUND_TRIP_CERTIFIED = true
+
 export const MARCO_WAVE1_ROUTE_ACTIVATION: Record<`${MarcoBridgeNetworkId}:${MarcoBridgeNetworkId}`, boolean> = {
+  'bnb:polygon': POLYGON_ROUND_TRIP_CERTIFIED,
+  'polygon:bnb': POLYGON_ROUND_TRIP_CERTIFIED,
+  'polygon:polygon': false,
+  'polygon:base': false,
+  'polygon:solana': false,
+  'polygon:robinhood': false,
+  'polygon:arc': false,
+  'base:polygon': false,
+  'solana:polygon': false,
+  'robinhood:polygon': false,
+  'arc:polygon': false,
   'bnb:robinhood': true,
   'robinhood:bnb': true,
   'bnb:solana': true,

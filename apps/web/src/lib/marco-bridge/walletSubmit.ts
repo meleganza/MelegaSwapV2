@@ -17,6 +17,7 @@ import {
 import { MARCO_BRIDGE_SUBMITTED_COPY } from './lifecycle'
 import { assertMarcoBridgePreflight } from './preflight'
 import type { CanonicalMmnRouteState } from './routeAuthority'
+import { POLYGON_CHAIN_ID, ensurePolygonWalletNetwork } from './polygonChain'
 import { ARC_CHAIN_ID, ensureArcWalletNetwork } from './arcChain'
 import { bindInjectedSignerAfterNetworkSwitch } from './injectedSigner'
 import { ROBINHOOD_CHAIN_ID, ensureRobinhoodWalletNetwork } from './robinhoodChain'
@@ -431,6 +432,10 @@ export async function submitMarcoBridgeFromWallet(input: {
   if (source.chainId === ARC_CHAIN_ID && input.ethereum) {
     await ensureArcWalletNetwork(input.ethereum)
     signer = await bindInjectedSignerAfterNetworkSwitch(input.ethereum, ARC_CHAIN_ID)
+  }
+  if (source.chainId === POLYGON_CHAIN_ID && input.ethereum) {
+    await ensurePolygonWalletNetwork(input.ethereum)
+    signer = await bindInjectedSignerAfterNetworkSwitch(input.ethereum, POLYGON_CHAIN_ID)
   }
   if (!signer) {
     throw new MarcoBridgeError('WALLET_REQUIRED', 'Connect the source wallet to sign the unsigned bridge transactions.')

@@ -1,4 +1,4 @@
-export type MarcoBridgeNetworkId = 'bnb' | 'base' | 'solana' | 'robinhood' | 'arc'
+export type MarcoBridgeNetworkId = 'bnb' | 'base' | 'solana' | 'robinhood' | 'arc' | 'polygon'
 export type MarcoWalletFamily = 'evm' | 'solana'
 
 export type MarcoBridgeNetwork = {
@@ -12,7 +12,7 @@ export type MarcoBridgeNetwork = {
   endpointContract: string
   tokenDecimals: 9 | 18
   sharedDecimals: 6
-  nativeFeeSymbol: 'BNB' | 'ETH' | 'SOL' | 'USDC'
+  nativeFeeSymbol: 'BNB' | 'ETH' | 'SOL' | 'USDC' | 'POL'
   explorerUrl: string | null
   protectivePaused?: boolean
 }

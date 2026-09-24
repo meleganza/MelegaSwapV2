@@ -231,7 +231,16 @@ describe('Solana → BNB official OFT path', () => {
       .filter(([, value]) => value)
       .map(([key]) => key)
       .sort()
-    expect(enabled).toEqual(['arc:bnb', 'bnb:arc', 'bnb:robinhood', 'bnb:solana', 'robinhood:bnb', 'solana:bnb'])
+    expect(enabled).toEqual([
+      'arc:bnb',
+      'bnb:arc',
+      'bnb:polygon',
+      'bnb:robinhood',
+      'bnb:solana',
+      'polygon:bnb',
+      'robinhood:bnb',
+      'solana:bnb',
+    ])
     expect(localRouteActivationEnabled('solana', 'base')).toBe(false)
     expect(localRouteActivationEnabled('solana', 'robinhood')).toBe(false)
   })
