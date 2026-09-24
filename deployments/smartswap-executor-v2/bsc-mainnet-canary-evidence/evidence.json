@@ -1,0 +1,178 @@
+{
+  "title": "MELEGA-SMARTSWAP-V2-BSC-REAL-MAINNET-CANARY-EVIDENCE",
+  "recordedAt": "2026-09-24T20:30:00Z",
+  "chainId": 56,
+  "classification": {
+    "CANARY": "BSC_CANARY_PASS_READY_FOR_CUTOVER_REVIEW",
+    "CANARY1": "PASS",
+    "CANARY2": "PASS",
+    "PUBLIC_V2_EXECUTION": "DISABLED",
+    "PRODUCTION_ENABLED": false,
+    "RUNTIME_CONFIG": "CONFIGURED_DISABLED (enabled=false, unchanged)",
+    "CUTOVER": false,
+    "ETHEREUM": "UNTOUCHED"
+  },
+  "method": "Read-only public RPC (eth_getTransactionByHash, eth_getTransactionReceipt, eth_getLogs, eth_call, eth_getBalance). No transactions sent. No keys used.",
+  "rpc": {
+    "primary": "https://bsc-dataseed.bnbchain.org (tx, receipts, latest eth_call)",
+    "logs": "https://bsc-rpc.publicnode.com (eth_getLogs 123812000..123820154)",
+    "historicalBalance": "https://bsc.meowrpc.com (eth_getBalance / eth_getTransactionCount at past blocks)",
+    "debugTrace": "unavailable on tried public RPCs"
+  },
+  "addresses": {
+    "executor": "0x7c07082839edd5797737640bba6af47992b9861e",
+    "user": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "usdc": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "wbnb": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "pancakeRouter": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "metamaskDelegationManager": "0xdb9b1e94b5b69df7e401ddbede43491141047db3"
+  },
+  "executorRuntimeSha256": "81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a",
+  "canary1": {
+    "pair": "BNB -> USDC",
+    "tx": "0x4f167d5bb5abdf7ac438e596a91ac086ed5fe5b5b7966694b8e48eb28d79a9fe",
+    "block": 123812480,
+    "blockTime": "2026-09-24 21:24:49 CEST",
+    "status": 1,
+    "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "outerTo": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+    "embeddedTarget": "0x7c07082839edd5797737640bba6af47992b9861e",
+    "embeddedValue": "1000000000000000",
+    "outerValue": "0",
+    "gasUsed": 336588,
+    "effectiveGasPrice": 50000000,
+    "gasCostWei": "16829400000000",
+    "input": "1000000000000000",
+    "inputAsset": "native BNB",
+    "feeBps": 20,
+    "feeAmount": "2000000000000",
+    "feeAsset": "WBNB (native wrapped, transferred to Treasury)",
+    "treasuryDelta": "2000000000000",
+    "netVenueInput": "998000000000000",
+    "winner": "pancakeswap",
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "minUserOut": "773061674120213600",
+    "actualUserOut": "776946406150968400",
+    "outputAsset": "USDC",
+    "nonce": 1790277836205,
+    "nonceConsumed": true,
+    "approval": "NONE (native input)",
+    "duplicateExecution": "NONE",
+    "legacyFallback": "NONE",
+    "platformSignature": "NONE",
+    "executorRetainedFunds": "NONE"
+  },
+  "canary2": {
+    "pair": "USDC -> BNB (native out)",
+    "approval": {
+      "tx": "0x04b9f2591b3c1d86d8646fc784e5c0afa04ae2d7c794dfa1b16f1b7a5d4213ae",
+      "block": 123819642,
+      "blockTime": "2026-09-24 22:18:32 CEST",
+      "status": 1,
+      "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "spender": "0x7c07082839edd5797737640bba6af47992b9861e",
+      "amount": "388473203075484247",
+      "isMaxUint": false,
+      "viaWrapper": false,
+      "gas": {
+        "gasUsed": 53464,
+        "effectiveGasPrice": 50000000,
+        "costWei": "2673200000000"
+      }
+    },
+    "tx": "0xe5826b8e28c58f3f52ed2b8bd5adfa521a3139e3d4569ccdfad892de6ef576fa",
+    "block": 123819660,
+    "blockTime": "2026-09-24 22:18:40 CEST",
+    "status": 1,
+    "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "outerTo": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+    "outerValue": "0",
+    "outerSelector": "0xcef6d209 redeemDelegations(bytes[],bytes32[],bytes[])",
+    "wrapperDecode": {
+      "mode": "0x00 single call",
+      "target": "0x7c07082839edd5797737640bba6af47992b9861e",
+      "value": "0",
+      "calldataSelector": "0x4bce4501 execute(ExecutionIntent,address[])",
+      "calldataMatchesFinalPlan": true,
+      "delegation": {
+        "delegator": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+        "delegate": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+        "authority": "ROOT (0xff..ff)",
+        "signer": "Founder (self-delegation, MetaMask EIP-7702 account; Founder code = 0xef0100 || 0x63c0c19a282a1b52b07dd5a65b58948a07dae32b)",
+        "caveats": [
+          {
+            "enforcer": "0xbd7b277507723490cd50b12eaafe87c616be6880",
+            "terms": "0x00|Founder|446198578382554",
+            "note": "wallet-side native balance-change protection (actual native increase 477612398202838)"
+          },
+          {
+            "enforcer": "0xcdf6ab796408598cea671d79506d7d48e97a5437",
+            "terms": "0x01|USDC|Founder|427320523383032672",
+            "note": "wallet-side USDC balance-change protection (actual USDC decrease 388473203075484247)"
+          }
+        ]
+      },
+      "event": "RedeemedDelegation(root=Founder, redeemer=Founder) log 0x84"
+    },
+    "gasUsed": 363276,
+    "effectiveGasPrice": 50000000,
+    "gasCostWei": "18163800000000",
+    "input": "388473203075484247",
+    "inputAsset": "USDC",
+    "feeBps": 20,
+    "feeAmount": "776946406150968",
+    "feeAsset": "USDC (direct transfer to Treasury)",
+    "treasuryDelta": "776946406150968",
+    "netVenueInput": "387696256669333279",
+    "melegaQuote": "442813375845862",
+    "pancakeQuote": "495776198202838",
+    "winner": "pancakeswap",
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "venueId": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+    "pancakePair": "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b",
+    "minUserOut": "493297317211823",
+    "actualUserOut": "495776198202838",
+    "outputAsset": "native BNB (router swapExactTokensForETH to user)",
+    "userNativeBalance": {
+      "blockMinus1": "14987909006510560",
+      "block": "15465521404713398",
+      "netDeltaAfterGas": "477612398202838",
+      "equalsActualOutMinusGas": true
+    },
+    "nonce": "1790281105994",
+    "nonceConsumed": true,
+    "canary1NonceStillConsumed": true,
+    "allowancesAfter": {
+      "userToExecutor": "0",
+      "executorToPancakeRouter": "0",
+      "executorToMelegaRouter": "0"
+    },
+    "executorRetainedFunds": {
+      "USDC": "0",
+      "WBNB": "0",
+      "BNB": "0"
+    },
+    "duplicateExecution": "NONE",
+    "legacyFallback": "NONE",
+    "platformSignature": "NONE",
+    "relayer": "NONE (only MetaMask DelegationManager wrapper, Founder self-signed & self-submitted)",
+    "receiptLogs": [
+      "USDC Transfer Founder->Executor 388473203075484247 (log 0x78); Approval remaining=0 (log 0x79)",
+      "USDC Transfer Executor->Treasury 776946406150968 (log 0x7a)",
+      "USDC Approval Executor->PancakeRouter 387696256669333279 (log 0x7b), reset to 0 after swap (log 0x82)",
+      "USDC Transfer Executor->Pair 0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b 387696256669333279 (log 0x7c); router allowance consumed to 0 (log 0x7d)",
+      "Swap(sender=router,to=router) amount0In=387696256669333279 amount1Out=495776198202838 (log 0x80)",
+      "WBNB Withdrawal src=PancakeRouter 495776198202838 (log 0x81)",
+      "SmartSwapExecuted x1 (log 0x83): input 388473203075484247 userOutput 495776198202838 fee 776946406150968 USDC beneficiary Treasury"
+    ]
+  },
+  "caveats": [
+    "/tmp/melega-smartswap-v2-bsc-canary/CANARY2_PLAN.json is the stale 21:38 build (nonce 1790278726233, minOut 493296522711262, Pancake 495775399709812); ~/melega-smartswap-v2-bsc-canary/CANARY2_PLAN.json is the final 22:18:25 build and matches on-chain calldata byte-for-byte.",
+    "Final plan recorded ALLOWANCE_BEFORE=0 at build (22:18:25 CEST); exact approval mined 22:18:32 CEST, execute 22:18:40 CEST.",
+    "Historical eth_call (USDC balanceOf at block-1) unavailable on public RPCs (missing trie / archive token / not supported); treasury delta proven by same-tx Transfer log + latest balance.",
+    "debug_traceTransaction unavailable; native delivery proven by Swap/Withdrawal logs, Executor event userOutput, and Founder eth_getBalance delta == actualOut - gasCost exactly.",
+    "Melega quote is the off-chain getAmountsOut quote from the final plan; not re-provable on-chain after the fact."
+  ]
+}
