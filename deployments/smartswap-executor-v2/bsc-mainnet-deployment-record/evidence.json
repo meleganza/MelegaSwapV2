@@ -1,0 +1,138 @@
+{
+  "title": "MELEGA-SMARTSWAP-V2-BSC-DEPLOYMENT-RECORD",
+  "recordedAt": "2026-09-24T07:30:00Z",
+  "packageBase": "deployments/smartswap-executor-v2/founder-deployment-package/",
+  "packageMainSha": "e02f54ca45687febdc2450b9103f77e650b396f8",
+  "mergedPrs": [
+    "#90",
+    "#91"
+  ],
+  "classification": {
+    "BSC_EXECUTOR": "DEPLOYED_VERIFIED",
+    "BSC_ROUTERS": "CONFIGURED_VERIFIED",
+    "PUBLIC_V2_EXECUTION": "DISABLED",
+    "RUNTIME_CONFIG": "NOT_CONFIGURED",
+    "CANARY": "NOT_STARTED",
+    "CUTOVER": false,
+    "ETHEREUM": "NOT_AUTHORIZED / UNTOUCHED",
+    "BSC_SCAN": "EXPLORER_VERIFICATION_PENDING"
+  },
+  "executor": {
+    "address": "0x7c07082839edd5797737640bba6af47992b9861e",
+    "deployTx": "0x7c34dc160b00c48a32a2ee115130570cc2803ef06327a4e306e28fb39701e3f8",
+    "deployBlock": 123716629,
+    "deployNonce": 3281,
+    "deployGasUsed": 1530959,
+    "runtimeSha256": "81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a",
+    "owner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "paused": false
+  },
+  "routers": {
+    "melega": {
+      "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "setRouterTx": "0xeefe048ce81a5b59aeeee1c2b0078163a42b7b7b648b4aee0763ebb2e3a8cfb6",
+      "allowedVenue": "0x877b20d585b9e74b8a131af0e7b570769017d6338d83cef67e371130e4125538",
+      "block": 123716667
+    },
+    "pancake": {
+      "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+      "setRouterTx": "0xd802cb001599d38e4afa518970e1c8d0255292f52676f1cc5a2d32e0323aa5b1",
+      "allowedVenue": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+      "block": 123716691
+    }
+  },
+  "setRouterSubmission": {
+    "note": "MetaMask submitted setRouter via redeemDelegations wrapper; outer to is wrapper; embedded calldata is exact package setRouter; executor events + allowedVenue PASS.",
+    "wrapper": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+    "selector": "0xcef6d209",
+    "version": "1.3.0"
+  },
+  "gas": {
+    "deployCostWei": 76547950000000,
+    "melegaCostWei": 6915150000000,
+    "pancakeCostWei": 6916250000000,
+    "totalCostWei": 90379350000000,
+    "totalCostBnb": 9.037935e-05
+  },
+  "explorer": {
+    "status": "EXPLORER_VERIFICATION_PENDING",
+    "contractUrl": "https://bscscan.com/address/0x7c07082839edd5797737640bba6af47992b9861e#code",
+    "verifyInput": "deployments/smartswap-executor-v2/founder-deployment-package/verification-standard-json-input.json",
+    "constructorAbiEncoded": "0x000000000000000000000000b6436ef4c7f76be0f26c0c5c9db72f2689abf65b000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "note": "Explorer verification failure does not authorize redeploy."
+  },
+  "doNot": [
+    "Do not compare eth_getCode to compiler template 4ccb42b71a9a7826715f14a234a68c71dda90859a1e70c0981bb4a8695594722",
+    "Do not edit v2ExecutionRuntimeConfig in this PR",
+    "Do not enable runtime / canary / cutover / Ethereum"
+  ],
+  "independentVerify": {
+    "classification": "BSC_DEPLOYED_VERIFIED",
+    "INDEPENDENT_VERIFY": "PASS",
+    "MAIN_SHA": "e02f54ca45687febdc2450b9103f77e650b396f8",
+    "EXECUTOR_ADDRESS": "0x7c07082839edd5797737640bba6af47992b9861e",
+    "DEPLOY_TX": "0x7c34dc160b00c48a32a2ee115130570cc2803ef06327a4e306e28fb39701e3f8",
+    "DEPLOY": {
+      "status": 1,
+      "block": 123716629,
+      "gasUsed": 1530959,
+      "effectiveGasPrice": 50000000,
+      "costWei": 76547950000000,
+      "to": null,
+      "from_": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+      "nonce": 3281,
+      "contract": "0x7c07082839edd5797737640bba6af47992b9861e",
+      "logs": [
+        "0x7c07082839edd5797737640bba6af47992b9861e"
+      ]
+    },
+    "RUNTIME_SHA256": "81328ab7fcce60fedb386a41fb17adceffcf897b25530a4504a8cff5c389845a",
+    "OWNER_READ": "b6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "SETROUTER_NOTE": "Melega/Pancake Founder txs were submitted via MetaMask delegation wrapper redeemDelegations (to 0xdb9b1e94\u2026) which executed exact package setRouter calldata on the executor. Executor logs + allowedVenue PASS.",
+    "WRAPPER": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+    "WRAPPER_SELECTOR": "0xcef6d209",
+    "WRAPPER_VERSION": "1.3.0",
+    "MELEGA_TX": "0xeefe048ce81a5b59aeeee1c2b0078163a42b7b7b648b4aee0763ebb2e3a8cfb6",
+    "MELEGA": {
+      "status": 1,
+      "block": 123716667,
+      "gasUsed": 138303,
+      "effectiveGasPrice": 50000000,
+      "costWei": 6915150000000,
+      "to": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+      "from_": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+      "nonce": 3282,
+      "contract": null,
+      "logs": [
+        "0x7c07082839edd5797737640bba6af47992b9861e",
+        "0xdb9b1e94b5b69df7e401ddbede43491141047db3"
+      ]
+    },
+    "MELEGA_ALLOWEDVENUE": "0x877b20d585b9e74b8a131af0e7b570769017d6338d83cef67e371130e4125538",
+    "PANCAKE_TX": "0xd802cb001599d38e4afa518970e1c8d0255292f52676f1cc5a2d32e0323aa5b1",
+    "PANCAKE": {
+      "status": 1,
+      "block": 123716691,
+      "gasUsed": 138325,
+      "effectiveGasPrice": 50000000,
+      "costWei": 6916250000000,
+      "to": "0xdb9b1e94b5b69df7e401ddbede43491141047db3",
+      "from_": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+      "nonce": 3283,
+      "contract": null,
+      "logs": [
+        "0x7c07082839edd5797737640bba6af47992b9861e",
+        "0xdb9b1e94b5b69df7e401ddbede43491141047db3"
+      ]
+    },
+    "PANCAKE_ALLOWEDVENUE": "0xd7e0d5c07ddc27357df5c45737f3b7506ed8b6a6631c211732cdda1dfcf56ba3",
+    "RUNTIME_CONFIG": "NOT_CONFIGURED",
+    "CANARY": "NOT_STARTED",
+    "CUTOVER": false,
+    "ETHEREUM": "UNTOUCHED",
+    "TOTAL_GAS_COST_WEI": 90379350000000,
+    "TOTAL_GAS_COST_BNB": 9.037935e-05
+  }
+}
