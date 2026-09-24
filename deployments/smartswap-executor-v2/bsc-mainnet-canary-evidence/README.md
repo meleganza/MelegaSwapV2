@@ -105,6 +105,7 @@ Proof method: read-only public RPC (tx, receipt, `eth_getLogs`, `eth_call`, `eth
 - Historical `eth_call` at block-1 was unavailable on public RPCs (missing trie / archive token required). Treasury delta is proven by the same-tx `Transfer` log plus the current balance.
 - `debug_traceTransaction` was not available. Native delivery is proven by the `Swap`/`Withdrawal` logs, the Executor event `userOutput`, and the Founder's `eth_getBalance` delta (block 123819659 → 123819660), which equals actual out − gas exactly.
 - The Melega quote is the off-chain `getAmountsOut` result from the final pre-submit plan. It cannot be re-checked on-chain after the fact.
+- Numeric encoding: in `evidence.json` every uint256 / token / wei quantity (amounts, fees, quotes, min/actual out, allowances, balances, gas prices and costs, SmartSwap nonces) is a decimal string derived via BigInt/cast. Small metadata (chainId, block, status, feeBps, gasUsed) stays numeric. An earlier revision of `evidence.json` had JS Number precision loss on Canary 1 min/actual out (`…213600` / `…968400`); these are corrected to the exact on-chain `773061674120213652` / `776946406150968495`.
 
 ## Explicit non-goals (this PR)
 

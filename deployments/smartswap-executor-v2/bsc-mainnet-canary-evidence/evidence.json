@@ -13,6 +13,7 @@
     "ETHEREUM": "UNTOUCHED"
   },
   "method": "Read-only public RPC (eth_getTransactionByHash, eth_getTransactionReceipt, eth_getLogs, eth_call, eth_getBalance). No transactions sent. No keys used.",
+  "numericEncoding": "All uint256 / token / wei quantities (amounts, fees, quotes, minUserOut, actualUserOut, allowances, balances, balance deltas, gas prices, gas costs, SmartSwap nonces) are decimal strings derived via BigInt/cast. JSON numbers are used only for small metadata: chainId, block numbers, receipt status, feeBps, gasUsed.",
   "rpc": {
     "primary": "https://bsc-dataseed.bnbchain.org (tx, receipts, latest eth_call)",
     "logs": "https://bsc-rpc.publicnode.com (eth_getLogs 123812000..123820154)",
@@ -42,7 +43,7 @@
     "embeddedValue": "1000000000000000",
     "outerValue": "0",
     "gasUsed": 336588,
-    "effectiveGasPrice": 50000000,
+    "effectiveGasPrice": "50000000",
     "gasCostWei": "16829400000000",
     "input": "1000000000000000",
     "inputAsset": "native BNB",
@@ -53,10 +54,10 @@
     "netVenueInput": "998000000000000",
     "winner": "pancakeswap",
     "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-    "minUserOut": "773061674120213600",
-    "actualUserOut": "776946406150968400",
+    "minUserOut": "773061674120213652",
+    "actualUserOut": "776946406150968495",
     "outputAsset": "USDC",
-    "nonce": 1790277836205,
+    "nonce": "1790277836205",
     "nonceConsumed": true,
     "approval": "NONE (native input)",
     "duplicateExecution": "NONE",
@@ -78,7 +79,7 @@
       "viaWrapper": false,
       "gas": {
         "gasUsed": 53464,
-        "effectiveGasPrice": 50000000,
+        "effectiveGasPrice": "50000000",
         "costWei": "2673200000000"
       }
     },
@@ -117,7 +118,7 @@
       "event": "RedeemedDelegation(root=Founder, redeemer=Founder) log 0x84"
     },
     "gasUsed": 363276,
-    "effectiveGasPrice": 50000000,
+    "effectiveGasPrice": "50000000",
     "gasCostWei": "18163800000000",
     "input": "388473203075484247",
     "inputAsset": "USDC",
@@ -169,10 +170,11 @@
     ]
   },
   "caveats": [
-    "/tmp/melega-smartswap-v2-bsc-canary/CANARY2_PLAN.json is the stale 21:38 build (nonce 1790278726233, minOut 493296522711262, Pancake 495775399709812); ~/melega-smartswap-v2-bsc-canary/CANARY2_PLAN.json is the final 22:18:25 build and matches on-chain calldata byte-for-byte.",
+    "Canary 2 pre-submit plan (local harness build 2026-09-24 22:18:25 CEST, nonce 1790281105994, minOut 493297317211823) matched the on-chain execute() calldata byte-for-byte at proof time. The local harness later regenerated a new unsigned plan file (22:31:11 CEST); canonical Canary 2 values are the on-chain calldata/logs, with quotes from the 22:18:25 snapshot. An earlier stale 21:38 build (nonce 1790278726233) was never submitted.",
     "Final plan recorded ALLOWANCE_BEFORE=0 at build (22:18:25 CEST); exact approval mined 22:18:32 CEST, execute 22:18:40 CEST.",
     "Historical eth_call (USDC balanceOf at block-1) unavailable on public RPCs (missing trie / archive token / not supported); treasury delta proven by same-tx Transfer log + latest balance.",
     "debug_traceTransaction unavailable; native delivery proven by Swap/Withdrawal logs, Executor event userOutput, and Founder eth_getBalance delta == actualOut - gasCost exactly.",
-    "Melega quote is the off-chain getAmountsOut quote from the final plan; not re-provable on-chain after the fact."
+    "Melega quote is the off-chain getAmountsOut quote from the final plan; not re-provable on-chain after the fact.",
+    "Precision correction (2026-09-24): earlier revision recorded Canary 1 minUserOut/actualUserOut with JS Number precision loss (…213600 / …968400); corrected to exact on-chain values 773061674120213652 / 776946406150968495."
   ]
 }
