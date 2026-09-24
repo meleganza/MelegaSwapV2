@@ -16,9 +16,24 @@ type PairOhlcvResponse = {
   chainId: number
   pairAddress: string
   tokenAddress?: string | null
+  timeframe?: string
   candles: PublicPairCandle[]
   volume24hUsd: number | null
   source: string
+}
+
+/** Chain, pool, token, and timeframe must all match. A prior timeframe's candles are not this series. */
+export function publicPairOhlcvMatchesRequest(
+  response: PairOhlcvResponse | null | undefined,
+  chainId: number | undefined,
+  pairAddress?: string | null,
+  tokenAddress?: string | null,
+  timeframe?: string,
+): boolean {
+  if (!pairResponseMatchesRequest(response, chainId, pairAddress, tokenAddress)) return false
+  if (!response) return false
+  if (response.timeframe) return response.timeframe === timeframe
+  return response.candles.length === 0
 }
 
 async function fetchPairOhlcv(url: string): Promise<PairOhlcvResponse> {
@@ -50,8 +65,23 @@ export function usePairOhlcv(
     refreshInterval: 60_000,
     dedupingInterval: 55_000,
     shouldRetryOnError: false,
+    // Providers sets keepPreviousData globally. Timeframe and pair changes
+    // must not render the previous OHLCV response as the current series.
+    keepPreviousData: false,
   })
-  const currentData = pairResponseMatchesRequest(data, chainId, pairAddress, targetToken) ? data : undefined
+  const currentData = publicPairOhlcvMatchesRequest(data, chainId, pairAddress, targetToken, timeframe)
+    ? data
+    : undefined
+  const settledMismatch = Boolean(data) && !currentData && !isValidating
+  const status = currentData?.status
+    ? currentData.status
+    : isValidating
+      ? 'loading'
+      : settledMismatch || error
+        ? 'unavailable'
+        : valid
+          ? 'loading'
+          : 'idle'
 
   return {
     candles: currentData?.candles ?? [],
@@ -59,7 +89,7 @@ export function usePairOhlcv(
       currentData?.volume24hUsd != null && Number.isFinite(currentData.volume24hUsd) && currentData.volume24hUsd >= 0
         ? currentData.volume24hUsd
         : null,
-    status: currentData?.status ?? (isValidating ? 'loading' : error ? 'unavailable' : valid ? 'loading' : 'idle'),
+    status,
     source: currentData?.source ?? null,
   }
 }

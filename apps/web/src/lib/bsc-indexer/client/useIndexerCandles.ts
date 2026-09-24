@@ -15,6 +15,16 @@ function candlesToChartEntries(candles: OhlcvCandle[]): PriceChartEntry[] {
     }))
 }
 
+/** Pair + interval identity. Global SWR keepPreviousData must not leak another series. */
+export function indexerCandlePayloadMatches(
+  data: { pairAddress?: string; interval?: string; candles?: Array<{ interval?: string }> } | null | undefined,
+  pair: string | undefined,
+  interval: string,
+): boolean {
+  if (!data || !pair || data.pairAddress !== pair || data.interval !== interval) return false
+  return (data.candles ?? []).every((candle) => candle.interval == null || candle.interval === interval)
+}
+
 export function useIndexerCandles(
   pairAddress?: string,
   interval: OhlcvCandle['interval'] = '1H',
@@ -25,12 +35,16 @@ export function useIndexerCandles(
   const { data, error, isValidating } = useSWR(
     shouldFetch ? ['indexer-candles', pair, interval] : null,
     () => fetchIndexerCandles(pair!, interval),
-    { refreshInterval: 60_000, revalidateOnFocus: false },
+    // Providers sets keepPreviousData globally. A pair or timeframe change must
+    // not keep the previous series while the next identity is in flight.
+    { refreshInterval: 60_000, revalidateOnFocus: false, keepPreviousData: false },
   )
-  const currentData = data?.pairAddress === pair ? data : undefined
+  const currentData = indexerCandlePayloadMatches(data, pair, interval) ? data : undefined
 
   const chartEntries = candlesToChartEntries(currentData?.candles ?? [])
-  const status = shouldFetch ? currentData?.status ?? (isValidating ? 'loading' : 'unavailable') : 'disabled'
+  const status = !shouldFetch
+    ? 'disabled'
+    : currentData?.status ?? (isValidating || (!error && !data) ? 'loading' : 'unavailable')
 
   return {
     chartEntries,
