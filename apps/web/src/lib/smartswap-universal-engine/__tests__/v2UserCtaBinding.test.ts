@@ -248,10 +248,10 @@ function publicDecision(plan: V2UserExecutionPlan, gate: boolean = V2_TEST_ONLY_
 }
 
 describe('SmartSwap V2 user-only CTA binding', () => {
-  it('production BSC is CONFIGURED_DISABLED; Ethereum stays NOT_CONFIGURED', () => {
+  it('production BSC is CONFIGURED + enabled (public cutover candidate); Ethereum stays NOT_CONFIGURED', () => {
     expect(V2_EXECUTION_RUNTIME_CONFIG[56]).toEqual({
       status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
-      enabled: false,
+      enabled: true,
       executorAddress: '0x7c07082839edd5797737640bba6af47992b9861e',
     })
     expect(V2_EXECUTION_RUNTIME_CONFIG[1]).toEqual({
@@ -260,6 +260,12 @@ describe('SmartSwap V2 user-only CTA binding', () => {
       executorAddress: null,
     })
     expect(resolveV2ExecutorConfig(56)).toEqual({
+      status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
+      enabled: true,
+      executorAddress: getAddress('0x7c07082839edd5797737640bba6af47992b9861e'),
+    })
+    // Rollback row (enabled=false) still hides the address.
+    expect(resolveV2ExecutorConfig(56, { 56: { ...V2_EXECUTION_RUNTIME_CONFIG[56], enabled: false } })).toEqual({
       status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
       enabled: false,
       executorAddress: null,
@@ -381,6 +387,8 @@ describe('SmartSwap V2 user-only CTA binding', () => {
   })
 
   it('11: missing executor config fail-closes and leaves legacy selectable', async () => {
+    // BSC is enabled after cutover; the disabled (rollback) row keeps the fail-closed assertion.
+    const rollbackTable = { 56: { ...V2_EXECUTION_RUNTIME_CONFIG[56], enabled: false } }
     const productionHookPlan = buildV2UserExecutionPlan({
       user: USER,
       walletChainId: 56,
@@ -390,12 +398,13 @@ describe('SmartSwap V2 user-only CTA binding', () => {
       allowanceReadStatus: 'unread',
       nowIso: NOW,
       deadline: DEADLINE,
+      executorConfigByChain: rollbackTable,
     })
     expect(productionHookPlan.ok).toBe(false)
     expect(productionHookPlan.reason).toBe(V2_PLAN_REASON.EXECUTOR_NOT_CONFIGURED)
     const request = bscErc20Request()
     const winner = await pancakeWinner(request, `56:${WBNB}>${USDC_BSC}`)
-    const plan = planArgs(request, winner, { executorConfigByChain: undefined })
+    const plan = planArgs(request, winner, { executorConfigByChain: rollbackTable })
     expect(plan.ok).toBe(false)
     expect(plan.reason).toBe(V2_PLAN_REASON.EXECUTOR_NOT_CONFIGURED)
     const legacyRun = async () => 'legacy-hash'

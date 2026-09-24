@@ -1,13 +1,19 @@
 /**
  * Build the complete V2 user execution plan from current SmartSwap runtime facts.
- * Fail closed to LEGACY. Production CTA stays on legacy while cutover=false.
- * The test-only gate can consume a prepared plan; it is not activated in production.
+ * Fail closed to LEGACY. Two legitimate contexts:
+ *  A) pre-cutover / test preparation (cutover=false): plan may be ready but the public CTA stays LEGACY
+ *     unless the test-only gate is injected by tests;
+ *  B) BSC (56) chain-scoped public cutover: a fresh certified plan against the canonical ExecutorV2 is
+ *     production-ready and the public CTA becomes V2_EXECUTE.
+ * Every other chain (incl. Ethereum) stays LEGACY. The test-only gate is never activated in production.
  */
 
+import { Interface } from '@ethersproject/abi'
 import { getAddress } from '@ethersproject/address'
 import { isEvmNetwork } from './domain'
 import { CANONICAL_SMARTSWAP_FEE_BENEFICIARY } from './feeEnforcement'
 import {
+  BSC_V2_PUBLIC_CUTOVER_CHAIN_ID,
   PRODUCTION_EXECUTION_MODE,
   SMARTSWAP_OPERATING_MODE,
   UNIVERSAL_ENGINE_MODE,
@@ -16,6 +22,7 @@ import {
 import { quoteIsStale, type SmartSwapRequest } from './quote'
 import type { ShadowCandidate } from './shadowCompetition'
 import {
+  BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS,
   TEAM_OPERATOR_REF,
   V2_EXECUTION_RUNTIME_CONFIG,
   isV2ExecutorRuntimeEnabled,
@@ -38,6 +45,8 @@ import {
 export const V2_CTA_DECISION = {
   LEGACY: 'LEGACY',
   V2_CANARY_READY_BUT_DISABLED: 'V2_CANARY_READY_BUT_DISABLED',
+  /** BSC chain-scoped public cutover: fresh certified plan, canonical ExecutorV2. */
+  V2_PRODUCTION_READY: 'V2_PRODUCTION_READY',
 } as const
 
 export type V2CtaDecision = (typeof V2_CTA_DECISION)[keyof typeof V2_CTA_DECISION]
@@ -94,6 +103,8 @@ export interface BuildV2UserExecutionPlanInput {
   nonce?: string | number
   staleAfterMs?: number
   executorConfigByChain?: V2ExecutorConfigTable
+  /** Rollback/test seam for the BSC public-cutover truth. Cannot authorize non-BSC chains. */
+  bscPublicCutoverEnabled?: boolean
 }
 
 export interface V2UserExecutionPlan {
@@ -112,10 +123,17 @@ export interface V2UserExecutionPlan {
   teamIsSpender: false
   treasuryIsSigner: false
   treasuryIsSpender: false
-  productionExecutionCapable: false
-  productionCutoverAllowed: false
-  productionExecutionMode: typeof SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION
+  /** True only for a ready BSC plan under chain-scoped public cutover. */
+  productionExecutionCapable: boolean
+  productionCutoverAllowed: boolean
+  productionExecutionMode:
+    | typeof SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION
+    | typeof SMARTSWAP_OPERATING_MODE.PRODUCTION
   universalEngineMode: typeof SMARTSWAP_OPERATING_MODE.SHADOW
+  /** Winner quote freshness bound (min of quotedAt+staleAfterMs and expiresAt). Consumption fails closed after it. */
+  freshUntilIso: string | null
+  /** Canonical winner price impact if the venue quote reported one; never invented. */
+  winnerPriceImpactPercent: number | null
 }
 
 export interface V2CtaDecisionResult {
@@ -153,6 +171,8 @@ function closedLegacy(reason: string, extra: Partial<V2UserExecutionPlan> = {}):
     productionCutoverAllowed: false,
     productionExecutionMode: SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION,
     universalEngineMode: SMARTSWAP_OPERATING_MODE.SHADOW,
+    freshUntilIso: null,
+    winnerPriceImpactPercent: null,
   }
 }
 
@@ -165,6 +185,8 @@ export interface V2UserLocalNonceClock {
   next(nowMs: number, user?: string | null): string
   allocate(user: string, requestKey: string, nowMs: number): string
   peekPin(user: string, requestKey: string): string | null
+  /** Drop the pin after the nonce was consumed on-chain so the next plan cannot replay it. */
+  release(user: string, requestKey: string): void
 }
 
 function requireSafeNowMs(nowMs: number): bigint {
@@ -219,6 +241,15 @@ function readBrowserPin(user: string, requestKey: string): string | null {
   }
 }
 
+function clearBrowserPin(user: string, requestKey: string): void {
+  try {
+    if (typeof sessionStorage === 'undefined') return
+    sessionStorage.removeItem(`${V2_USER_LOCAL_NONCE_STORAGE_PREFIX}:pin:${pinKey(user, requestKey)}`)
+  } catch {
+    // In-memory pin removal below still applies.
+  }
+}
+
 function writeBrowserPin(user: string, requestKey: string, nonce: string): void {
   try {
     if (typeof sessionStorage === 'undefined') return
@@ -267,6 +298,11 @@ export function createV2UserLocalNonceClock(options?: {
     peekPin(user: string, requestKey: string): string | null {
       return pins.get(pinKey(user, requestKey)) ?? (persistBrowser ? readBrowserPin(user, requestKey) : null)
     },
+    release(user: string, requestKey: string): void {
+      if (!user || !requestKey) return
+      pins.delete(pinKey(user, requestKey))
+      if (persistBrowser) clearBrowserPin(user, requestKey)
+    },
   }
 }
 
@@ -276,6 +312,10 @@ const defaultNonceClockHolder: { current: V2UserLocalNonceClock } = {
 
 export function allocateV2UserPlanNonce(user: string, requestKey: string, nowMs: number): string {
   return defaultNonceClockHolder.current.allocate(user, requestKey, nowMs)
+}
+
+export function releaseV2UserPlanNoncePin(user: string, requestKey: string): void {
+  defaultNonceClockHolder.current.release(user, requestKey)
 }
 
 export function resetV2UserLocalNonceStateForTests(): void {
@@ -336,7 +376,8 @@ export function createV2UserWalletTransactionAdapter(wallet: V2UserWalletTranspo
       if (typeof submit !== 'function') {
         throw new Error('V2_WALLET_NOT_CONNECTED')
       }
-      const sent = await submit({
+      // Invoke as a method: an ethers Signer's sendTransaction relies on `this` (unbound call threw on `this.provider`).
+      const sent = await submit.call(wallet, {
         from: tx.from,
         to: tx.to,
         data: tx.data,
@@ -347,11 +388,12 @@ export function createV2UserWalletTransactionAdapter(wallet: V2UserWalletTranspo
       return { hash: sent.hash }
     },
     async waitForReceipt(hash: string) {
-      const wait = wallet.waitForTransaction ?? wallet.provider?.waitForTransaction
+      const owner = typeof wallet.waitForTransaction === 'function' ? wallet : wallet.provider
+      const wait = owner?.waitForTransaction
       if (typeof wait !== 'function') {
         throw new Error('V2_WALLET_WAIT_UNAVAILABLE')
       }
-      const receipt = await wait(hash)
+      const receipt = await wait.call(owner, hash)
       return { status: receipt?.status ?? 0 }
     },
   }
@@ -385,6 +427,32 @@ function quoteExpired(winner: ShadowCandidate, nowIso: string, staleAfterMs: num
     if (!Number.isFinite(expires) || !Number.isFinite(now) || now > expires) return true
   }
   return false
+}
+
+const ERC20_APPROVE_IFACE = new Interface(['function approve(address spender, uint256 amount)'])
+
+/** Decoded checksum spender of an ERC20 approve calldata, or null when it is not approve(). */
+export function decodeApproveSpender(data: string): string | null {
+  try {
+    const [spender] = ERC20_APPROVE_IFACE.decodeFunctionData('approve', data)
+    return getAddress(String(spender))
+  } catch {
+    return null
+  }
+}
+
+function quoteFreshUntilIso(winner: ShadowCandidate, staleAfterMs: number): string | null {
+  const quote = winner.quote
+  if (!quote) return null
+  const quoted = Date.parse(quote.quotedAt)
+  if (!Number.isFinite(quoted)) return null
+  let until = quoted + staleAfterMs
+  if (quote.expiresAt) {
+    const expires = Date.parse(quote.expiresAt)
+    if (!Number.isFinite(expires)) return null
+    until = Math.min(until, expires)
+  }
+  return new Date(until).toISOString()
 }
 
 function checksumUser(user: string | null | undefined): string | null {
@@ -558,10 +626,29 @@ export function buildV2UserExecutionPlan(input: BuildV2UserExecutionPlanInput): 
     if (preparation.swapTransaction.from === TREASURY || preparation.swapTransaction.to === TREASURY) {
       return closedLegacy(V2_PLAN_REASON.PREPARE_FAILED, { requestKey: expectedKey, nonce })
     }
+    // ERC20 approvals: user-signed, token contract target, spender strictly the configured ExecutorV2.
+    const approvalSpenderOk = preparation.approvalTransactions.every(
+      (tx) =>
+        tx.from === user &&
+        tx.to === binding.intent.inputAsset &&
+        tx.value === '0x0' &&
+        decodeApproveSpender(tx.data) === config.executorAddress,
+    )
+    if (!approvalSpenderOk) {
+      return closedLegacy(V2_PLAN_REASON.PREPARE_FAILED, { requestKey: expectedKey, nonce })
+    }
+    // Context B: chain-scoped BSC public cutover, canonical ExecutorV2 only.
+    const productionCutoverAllowed =
+      isProductionCutoverAllowed(walletChainId, input.bscPublicCutoverEnabled) &&
+      requestChainId === BSC_V2_PUBLIC_CUTOVER_CHAIN_ID &&
+      config.executorAddress === getAddress(BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS)
+    const decision = productionCutoverAllowed
+      ? V2_CTA_DECISION.V2_PRODUCTION_READY
+      : V2_CTA_DECISION.V2_CANARY_READY_BUT_DISABLED
     return {
       ok: true,
-      decision: V2_CTA_DECISION.V2_CANARY_READY_BUT_DISABLED,
-      reason: V2_CTA_DECISION.V2_CANARY_READY_BUT_DISABLED,
+      decision,
+      reason: decision,
       requestKey: expectedKey,
       executorAddress: config.executorAddress,
       winnerVenueId: shadow.winner.venueId,
@@ -574,10 +661,18 @@ export function buildV2UserExecutionPlan(input: BuildV2UserExecutionPlanInput): 
       teamIsSpender: false,
       treasuryIsSigner: false,
       treasuryIsSpender: false,
-      productionExecutionCapable: false,
-      productionCutoverAllowed: false,
-      productionExecutionMode: SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION,
+      productionExecutionCapable: productionCutoverAllowed,
+      productionCutoverAllowed,
+      productionExecutionMode: productionCutoverAllowed
+        ? SMARTSWAP_OPERATING_MODE.PRODUCTION
+        : SMARTSWAP_OPERATING_MODE.LEGACY_PRODUCTION,
       universalEngineMode: SMARTSWAP_OPERATING_MODE.SHADOW,
+      freshUntilIso: quoteFreshUntilIso(shadow.winner, staleAfterMs),
+      winnerPriceImpactPercent:
+        typeof shadow.winner.quote?.priceImpactPercent === 'number' &&
+        Number.isFinite(shadow.winner.quote.priceImpactPercent)
+          ? shadow.winner.quote.priceImpactPercent
+          : null,
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
@@ -596,18 +691,20 @@ export function resolveSmartSwapCtaDecision(input: {
   testOnlyExecutionGate: boolean
   planReason?: string
 }): V2CtaDecisionResult {
-  if (input.cutoverAllowed) {
-    return {
-      decision: V2_CTA_DECISION.LEGACY,
-      publicAction: V2_PUBLIC_ACTION.LEGACY,
-      reason: 'CUTOVER_FORBIDDEN',
-    }
-  }
+  // Plan not ready BEFORE any V2 submission -> safe legacy fallback (also under BSC cutover).
   if (!input.planOk) {
     return {
       decision: V2_CTA_DECISION.LEGACY,
       publicAction: V2_PUBLIC_ACTION.LEGACY,
       reason: input.planReason ?? V2_CTA_DECISION.LEGACY,
+    }
+  }
+  // Chain-scoped BSC public cutover (callers pass the plan's own productionCutoverAllowed).
+  if (input.cutoverAllowed) {
+    return {
+      decision: V2_CTA_DECISION.V2_PRODUCTION_READY,
+      publicAction: V2_PUBLIC_ACTION.V2_EXECUTE,
+      reason: V2_CTA_DECISION.V2_PRODUCTION_READY,
     }
   }
   return {
@@ -635,11 +732,12 @@ export async function consumePreparedV2UserPlan(input: {
   cutoverAllowed: boolean
   submitUserTransaction: (tx: UnsignedUserTransaction) => Promise<{ hash: string }>
   waitForReceipt: (hash: string) => Promise<{ status: number }>
+  /** Click-time clock. When provided, a plan past freshUntilIso fails closed BEFORE any submission. */
+  nowIso?: string
 }): Promise<string> {
-  if (input.cutoverAllowed) {
-    throw new Error('V2_CTA_CUTOVER_FORBIDDEN')
-  }
-  if (!input.testOnlyExecutionGate) {
+  // Production path: chain-scoped cutover re-checked at click time AND carried by the plan itself.
+  const productionAuthorized = input.cutoverAllowed === true && input.plan.productionCutoverAllowed === true
+  if (!productionAuthorized && !input.testOnlyExecutionGate) {
     throw new Error('V2_CTA_GATE_DISABLED')
   }
   if (!input.plan.ok || !input.plan.preparation) {
@@ -649,6 +747,13 @@ export async function consumePreparedV2UserPlan(input: {
   const lockKey = consumeLockKey(input.plan)
   const existing = consumeLocks.get(lockKey)
   if (existing) return existing
+  if (input.nowIso !== undefined) {
+    const now = Date.parse(input.nowIso)
+    const freshUntil = input.plan.freshUntilIso ? Date.parse(input.plan.freshUntilIso) : Number.NaN
+    if (!Number.isFinite(now) || !Number.isFinite(freshUntil) || now > freshUntil) {
+      throw new Error('V2_CTA_PLAN_STALE')
+    }
+  }
 
   const run = consumePreparedV2UserPlanUnlocked(input).finally(() => {
     consumeLocks.delete(lockKey)
@@ -684,6 +789,10 @@ async function consumePreparedV2UserPlanUnlocked(input: {
     const receipt = await input.waitForReceipt(sent.hash)
     if (receipt.status !== 1) {
       throw new Error('V2_EXECUTE_FAILED')
+    }
+    // On-chain nonce is now spent: release the pin so a later plan for the same request cannot replay it.
+    if (input.plan.requestKey) {
+      releaseV2UserPlanNoncePin(input.plan.preparation!.swapTransaction.from, input.plan.requestKey)
     }
     return sent.hash
   } catch (error) {

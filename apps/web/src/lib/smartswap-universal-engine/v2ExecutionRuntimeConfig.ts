@@ -1,6 +1,7 @@
 /**
  * Explicit SmartSwap V2 executor runtime configuration.
- * BSC ExecutorV2 is registered as CONFIGURED_DISABLED. Ethereum has no address.
+ * BSC ExecutorV2 is CONFIGURED and enabled (public cutover candidate). Ethereum has no address.
+ * Rollback: set BSC enabled=false -> resolveV2ExecutorConfig hides the address and the CTA returns to LEGACY.
  * No environment fallback to guessed addresses.
  */
 
@@ -33,8 +34,8 @@ const NOT_CONFIGURED: V2ExecutorChainConfig = {
   executorAddress: null,
 }
 
-/** Production table. BSC is CONFIGURED_DISABLED; Ethereum stays NOT_CONFIGURED. */
-/** BSC SmartSwapExecutorV2: CONFIGURED_DISABLED (address registered, execution off). */
+/** Production table. BSC is CONFIGURED + enabled; Ethereum stays NOT_CONFIGURED. */
+/** BSC SmartSwapExecutorV2 (canary-proven, #95). */
 export const BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS =
   '0x7c07082839edd5797737640bba6af47992b9861e' as const
 
@@ -44,7 +45,7 @@ export const V2_EXECUTION_RUNTIME_CONFIG: Record<
 > = {
   [EVM_CHAIN_IDS.BSC]: {
     status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
-    enabled: false,
+    enabled: true,
     executorAddress: BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS,
   },
   [EVM_CHAIN_IDS.ETHEREUM]: { ...NOT_CONFIGURED },

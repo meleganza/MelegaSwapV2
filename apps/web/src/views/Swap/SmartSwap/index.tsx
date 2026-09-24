@@ -51,6 +51,7 @@ import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
+import { isSmartSwapV2PublicCutoverActive } from './hooks/useSmartSwapV2CtaBinding'
 
 export const SmartSwapForm: React.FC<{
   handleOutputSelect: (newCurrencyOutput: Currency) => void
@@ -65,6 +66,9 @@ export const SmartSwapForm: React.FC<{
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
   const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
+  // Chain-scoped BSC V2 public cutover: the SmartSwap CTA owns the single Swap button so a certified V2 plan can
+  // execute; the legacy V2-router CTA is still rendered inside it as the pre-submission fallback. Other chains unchanged.
+  const bscV2CutoverActive = isSmartSwapV2PublicCutoverActive(chainId)
   
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -405,7 +409,7 @@ export const SmartSwapForm: React.FC<{
         </AutoColumn>
 
         <Box mt="0.25rem">
-          {tradeInfo?.fallbackV2 && !kerlEnforced ? (
+          {tradeInfo?.fallbackV2 && !kerlEnforced && !bscV2CutoverActive ? (
             <SwapCommitButton
               swapIsUnsupported={swapIsUnsupported}
               account={account}
@@ -446,6 +450,30 @@ export const SmartSwapForm: React.FC<{
               recipient={recipient}
               allowedSlippage={allowedSlippage}
               onUserInput={onUserInput}
+              legacyFallback={
+                tradeInfo?.fallbackV2 && !kerlEnforced ? (
+                  <SwapCommitButton
+                    swapIsUnsupported={swapIsUnsupported}
+                    account={account}
+                    showWrap={showWrap}
+                    wrapInputError={wrapInputError}
+                    onWrap={onWrap}
+                    wrapType={wrapType}
+                    parsedIndepentFieldAmount={parsedAmounts[independentField]}
+                    approval={approval}
+                    approveCallback={approveCallback}
+                    approvalSubmitted={approvalSubmitted}
+                    currencies={currencies}
+                    isExpertMode={isExpertMode}
+                    trade={v2Trade}
+                    swapInputError={tradeInfo.inputError}
+                    currencyBalances={currencyBalances}
+                    recipient={recipient}
+                    allowedSlippage={allowedSlippage}
+                    onUserInput={onUserInput}
+                  />
+                ) : undefined
+              }
             />
           )}
         </Box>
