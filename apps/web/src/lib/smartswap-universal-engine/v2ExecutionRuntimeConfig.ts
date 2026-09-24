@@ -1,6 +1,6 @@
 /**
  * Explicit SmartSwap V2 executor runtime configuration.
- * No public ExecutorV2 address exists. Do not invent one.
+ * BSC ExecutorV2 is registered as CONFIGURED_DISABLED. Ethereum has no address.
  * No environment fallback to guessed addresses.
  */
 
@@ -33,12 +33,20 @@ const NOT_CONFIGURED: V2ExecutorChainConfig = {
   executorAddress: null,
 }
 
-/** Production table. Both certified chains stay disabled until a certified address is set explicitly. */
+/** Production table. BSC is CONFIGURED_DISABLED; Ethereum stays NOT_CONFIGURED. */
+/** BSC SmartSwapExecutorV2: CONFIGURED_DISABLED (address registered, execution off). */
+export const BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS =
+  '0x7c07082839edd5797737640bba6af47992b9861e' as const
+
 export const V2_EXECUTION_RUNTIME_CONFIG: Record<
   typeof EVM_CHAIN_IDS.BSC | typeof EVM_CHAIN_IDS.ETHEREUM,
   V2ExecutorChainConfig
 > = {
-  [EVM_CHAIN_IDS.BSC]: { ...NOT_CONFIGURED },
+  [EVM_CHAIN_IDS.BSC]: {
+    status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
+    enabled: false,
+    executorAddress: BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS,
+  },
   [EVM_CHAIN_IDS.ETHEREUM]: { ...NOT_CONFIGURED },
 }
 

@@ -248,18 +248,22 @@ function publicDecision(plan: V2UserExecutionPlan, gate: boolean = V2_TEST_ONLY_
 }
 
 describe('SmartSwap V2 user-only CTA binding', () => {
-  it('production executor config is NOT_CONFIGURED on BSC and Ethereum', () => {
+  it('production BSC is CONFIGURED_DISABLED; Ethereum stays NOT_CONFIGURED', () => {
     expect(V2_EXECUTION_RUNTIME_CONFIG[56]).toEqual({
-      status: V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED,
+      status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
       enabled: false,
-      executorAddress: null,
+      executorAddress: '0x7c07082839edd5797737640bba6af47992b9861e',
     })
     expect(V2_EXECUTION_RUNTIME_CONFIG[1]).toEqual({
       status: V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED,
       enabled: false,
       executorAddress: null,
     })
-    expect(resolveV2ExecutorConfig(56).status).toBe(V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED)
+    expect(resolveV2ExecutorConfig(56)).toEqual({
+      status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
+      enabled: false,
+      executorAddress: null,
+    })
     expect(resolveV2ExecutorConfig(1).enabled).toBe(false)
     expect(V2_TEST_ONLY_CTA_EXECUTION_GATE).toBe(false)
     const src = readFileSync(path.join(ENGINE, 'v2ExecutionRuntimeConfig.ts'), 'utf8')
