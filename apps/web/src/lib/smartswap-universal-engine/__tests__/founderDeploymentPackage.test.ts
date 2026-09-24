@@ -208,11 +208,11 @@ describe('founder deployment package encoding', () => {
     expect(stopped.observationsReadOnly.bsc.noncePending).toBe(3280)
   })
 
-  it('leaves production runtime config unconfigured and the future patch unapplied', () => {
+  it('keeps BSC CONFIGURED_DISABLED, Ethereum NOT_CONFIGURED, and future patch unapplied', () => {
     expect(V2_EXECUTION_RUNTIME_CONFIG[56]).toEqual({
-      status: V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED,
+      status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
       enabled: false,
-      executorAddress: null,
+      executorAddress: '0x7c07082839edd5797737640bba6af47992b9861e',
     })
     expect(V2_EXECUTION_RUNTIME_CONFIG[1]).toEqual({
       status: V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED,
@@ -227,6 +227,7 @@ describe('founder deployment package encoding', () => {
       path.resolve(__dirname, '../v2ExecutionRuntimeConfig.ts'),
       'utf8',
     )
+    expect(runtime).toContain("status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED")
     expect(runtime).toContain("status: V2_EXECUTOR_CONFIG_STATUS.NOT_CONFIGURED")
     expect(runtime).not.toContain(bsc.creationTransaction.data.slice(0, 80))
   })
