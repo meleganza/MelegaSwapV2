@@ -124,6 +124,8 @@ describe('canonical BNB↔Base authority is accepted without Melega Base executi
       ['robinhood', 'bnb'],
       ['bnb', 'solana'],
       ['solana', 'bnb'],
+      ['bnb', 'polygon'],
+      ['polygon', 'bnb'],
       ['bnb', 'arc'],
       ['arc', 'bnb'],
     ])
@@ -134,7 +136,7 @@ describe('canonical BNB↔Base authority is accepted without Melega Base executi
     expect(isRouteExecutable('bnb', 'base', live)).toBe(false)
     expect(isRouteExecutable('base', 'bnb', live)).toBe(false)
     expect(resolveRouteExecution('bnb', 'base', live).executable).toBe(false)
-    expect(resolveRouteExecution('bnb', 'base', live).blockers[0]).toMatch(/outside BNB↔Robinhood, BNB↔Solana, and BNB↔Arc/)
+    expect(resolveRouteExecution('bnb', 'base', live).blockers[0]).toMatch(/outside BNB↔Robinhood, BNB↔Solana, BNB↔Arc, and BNB↔Polygon/)
   })
 
   it('fetching live authority with Base active does not fail closed as unavailable/503', async () => {

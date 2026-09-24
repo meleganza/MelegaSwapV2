@@ -1,0 +1,170 @@
+{
+  "checkedAt": "2026-09-24T20:31:16.573Z",
+  "sourceTx": "0x5eea845a2c6e137bf563fe2d2e0d5db6e00e55f0b64e569610647c8400066ace",
+  "guid": "0x43baea8f186a39914764f7844c3fe91969589bde43e489a230efdb3d05368f0b",
+  "sourceBlock": 94384295,
+  "polygonBlock": 94384491,
+  "confirmations": 197,
+  "layerZeroStatus": "DELIVERED",
+  "polygon": {
+    "supply": "0",
+    "balance": "0",
+    "burnAmount": "1000000000000",
+    "beforeSnapshotBlock": 94384183,
+    "beforeSnapshotSupply": "1000000000000",
+    "beforeSnapshotBalance": "1000000000000"
+  },
+  "scan": {
+    "data": [
+      {
+        "pathway": {
+          "srcEid": 30109,
+          "dstEid": 30102,
+          "sender": {
+            "address": "0xf31a621a0e75d90fda320eee52956d718fa34615",
+            "chain": "polygon"
+          },
+          "receiver": {
+            "address": "0xc92b49ddf9312cbfc01ad397963df915c7a2399e",
+            "id": "melega",
+            "name": "MELEGA",
+            "chain": "bsc"
+          },
+          "id": "30109-30102-0xf31a621a0e75d90fda320eee52956d718fa34615-0xc92b49ddf9312cbfc01ad397963df915c7a2399e",
+          "nonce": 1
+        },
+        "source": {
+          "status": "SUCCEEDED",
+          "tx": {
+            "txHash": "0x5eea845a2c6e137bf563fe2d2e0d5db6e00e55f0b64e569610647c8400066ace",
+            "blockHash": "0x1f44fc033f7b5e54a69718ecefe3a366cde126c3122d08c02eaa9c1649dd8550",
+            "blockNumber": "94384295",
+            "blockTimestamp": 1790281583,
+            "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+            "payload": "0x000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee00000000000000001",
+            "readinessTimestamp": 1790281763,
+            "options": {
+              "lzReceive": {
+                "gas": "200000",
+                "value": "0"
+              },
+              "ordered": false
+            }
+          }
+        },
+        "destination": {
+          "nativeDrop": {
+            "status": "N/A"
+          },
+          "lzCompose": {
+            "status": "N/A"
+          },
+          "tx": {
+            "txHash": "0xc0755c1a2ed8165f2d9266ad3ea6bc8013f043870b26ea861b836de2727b0b04",
+            "blockHash": "0x91184e00c621b12b7360f245ed29e221bcc712d932dab5fde9660e05ad1bd04c",
+            "blockNumber": 123821219,
+            "blockTimestamp": 1790281822
+          },
+          "status": "SUCCEEDED"
+        },
+        "verification": {
+          "dvn": {
+            "dvns": {
+              "0x31f748a368a893bdb5abb67ec95f232507601a73": {
+                "txHash": "0xd1025c52fa33345a8951965985c7f549f32603794f9eb3b7e13e361a7adf4424",
+                "blockHash": "0x0c2f746c26762f32de0e257e656004e602d4a7ff6430c9be514531bdde2cddfa",
+                "blockNumber": 123821210,
+                "blockTimestamp": 1790281818,
+                "proof": {
+                  "packetHeader": "0x0100000000000000010000759d000000000000000000000000f31a621a0e75d90fda320eee52956d718fa3461500007596000000000000000000000000c92b49ddf9312cbfc01ad397963df915c7a2399e",
+                  "payloadHash": "0x7281f5f88537f7f82100f83c70d17989685dcf2328d279dc27b61ec361d2c510"
+                },
+                "optional": false,
+                "status": "SUCCEEDED"
+              },
+              "0xfd6865c841c2d64565562fcc7e05e619a30615f0": {
+                "txHash": "0x724cd3faf14fc4ee4a69d65f560b46876af37c50474c5ceae4e9744f4f33a68d",
+                "blockHash": "0x19be3832f02993e5791d2d78b8d6f235c9a7e6cff5793ed4bef94854ad875549",
+                "blockNumber": 123821209,
+                "blockTimestamp": 1790281817,
+                "proof": {
+                  "packetHeader": "0x0100000000000000010000759d000000000000000000000000f31a621a0e75d90fda320eee52956d718fa3461500007596000000000000000000000000c92b49ddf9312cbfc01ad397963df915c7a2399e",
+                  "payloadHash": "0x7281f5f88537f7f82100f83c70d17989685dcf2328d279dc27b61ec361d2c510"
+                },
+                "optional": false,
+                "status": "SUCCEEDED"
+              }
+            },
+            "status": "SUCCEEDED"
+          },
+          "sealer": {
+            "tx": {
+              "txHash": "0x5ca5fe0e3bfd355e9acde4a3c71e37706d149ae4c2e009f5a849c81c75e177c3",
+              "blockHash": "0x20d16b035ed7e3db298afda53da16b8916b7f6b36b0e6325051d976ac4752515",
+              "blockNumber": 123821214,
+              "blockTimestamp": 1790281819
+            },
+            "status": "SUCCEEDED"
+          }
+        },
+        "guid": "0x43baea8f186a39914764f7844c3fe91969589bde43e489a230efdb3d05368f0b",
+        "config": {
+          "error": false,
+          "receiveLibrary": "0xB217266c3A98C8B2709Ee26836C98cf12f6cCEC1",
+          "sendLibrary": "0x6c26c61a97006888ea9E4FA36584c7df57Cd9dA3",
+          "inboundConfig": {
+            "confirmations": 120,
+            "requiredDVNCount": 2,
+            "optionalDVNCount": 0,
+            "optionalDVNThreshold": 0,
+            "requiredDVNs": [
+              "0x31f748a368a893bdb5abb67ec95f232507601a73",
+              "0xfd6865c841c2d64565562fcc7e05e619a30615f0"
+            ],
+            "requiredDVNNames": [
+              "Nethermind",
+              "LayerZero Labs"
+            ],
+            "optionalDVNs": [],
+            "optionalDVNNames": []
+          },
+          "outboundConfig": {
+            "confirmations": 120,
+            "requiredDVNCount": 2,
+            "optionalDVNCount": 0,
+            "optionalDVNThreshold": 0,
+            "requiredDVNs": [
+              "0x23de2fe932d9043291f870324b74f820e11dc81a",
+              "0x31f748a368a893bdb5abb67ec95f232507601a73"
+            ],
+            "requiredDVNNames": [
+              "LayerZero Labs",
+              "Nethermind"
+            ],
+            "optionalDVNs": [],
+            "optionalDVNNames": [],
+            "executor": "0xCd3F213AD101472e1713C72B1697E727C803885b"
+          },
+          "ulnSendVersion": "V302",
+          "ulnReceiveVersion": "V302"
+        },
+        "status": {
+          "name": "DELIVERED",
+          "message": "Executor transaction confirmed"
+        },
+        "created": "2026-09-24T20:26:49.000Z",
+        "updated": "2026-09-24T20:30:29.000Z"
+      }
+    ]
+  },
+  "status": "ROUND_TRIP_PASS",
+  "destinationTx": "0xc0755c1a2ed8165f2d9266ad3ea6bc8013f043870b26ea861b836de2727b0b04",
+  "destinationBlock": 123821219,
+  "bnb": {
+    "lockedBefore": "54320943949673000000000000",
+    "lockedAfter": "54320943949672000000000000",
+    "founderBefore": "0",
+    "founderAfter": "1000000000000",
+    "unlock": "1000000000000"
+  }
+}

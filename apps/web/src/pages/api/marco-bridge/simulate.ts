@@ -10,10 +10,16 @@ const isNetworkId = (value: unknown): value is MarcoBridgeNetworkId =>
   typeof value === 'string' && Object.prototype.hasOwnProperty.call(MARCO_WAVE1_NETWORKS, value)
 
 function resolveRpcUrl(chainId: number): string {
-  if (chainId === 56) return process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-rpc.publicnode.com'
+  if (chainId === 56)
+    return process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-rpc.publicnode.com'
   if (chainId === 4663) {
-    return process.env.ROBINHOOD_RPC_URL || process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL || 'https://rpc.mainnet.chain.robinhood.com'
+    return (
+      process.env.ROBINHOOD_RPC_URL ||
+      process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL ||
+      'https://rpc.mainnet.chain.robinhood.com'
+    )
   }
+  if (chainId === 137) return process.env.POLYGON_RPC_URL || 'https://polygon-bor-rpc.publicnode.com'
   if (chainId === 5042) {
     return process.env.ARC_RPC_URL || process.env.NEXT_PUBLIC_ARC_RPC_URL || 'https://rpc.mainnet.arc.io'
   }

@@ -31,6 +31,7 @@ function resolveRpcUrl(source: MarcoBridgeNetworkId): string {
       'https://rpc.mainnet.chain.robinhood.com'
     )
   }
+  if (source === 'polygon') return process.env.POLYGON_RPC_URL || 'https://polygon-bor-rpc.publicnode.com'
   if (source === 'arc') {
     return process.env.ARC_RPC_URL || process.env.NEXT_PUBLIC_ARC_RPC_URL || 'https://rpc.mainnet.arc.io'
   }

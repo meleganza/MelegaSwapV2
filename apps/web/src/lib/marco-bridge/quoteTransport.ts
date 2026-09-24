@@ -55,7 +55,11 @@ export async function readOnlyMarcoBridgeQuote(
   }
 
   const canonicalRoute = authority.routes.find((route) => route.from === input.from && route.to === input.to)
-  if (!canonicalRoute?.certified) {
+  const polygonReadOnly =
+    (input.from === 'polygon' || input.to === 'polygon') &&
+    canonicalRoute?.live_binding_verified === true &&
+    !canonicalRoute.paused
+  if (!canonicalRoute?.certified && !polygonReadOnly) {
     throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'The canonical MMN authority has not certified this route.')
   }
   const canonicalSource = authority.networks.find((network) => network.id === input.from)

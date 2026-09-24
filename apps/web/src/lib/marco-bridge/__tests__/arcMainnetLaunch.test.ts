@@ -315,7 +315,9 @@ describe('Arc Mainnet public launch', () => {
     expect(homepage).toContain("import('views/MarcoBridge/MarcoBridgeWorkspace')")
     expect(homepage).toContain('module.MarcoBridgePanel')
     expect(workspace).toContain('ensureArcWalletNetwork')
-    expect(workspace).toContain('native gas {MARCO_WAVE1_NETWORKS.arc.nativeFeeSymbol}')
+    expect(workspace.replace(/\{' '\}/g, ' ').replace(/\s+/g, ' ')).toContain(
+      'native gas {MARCO_WAVE1_NETWORKS.arc.nativeFeeSymbol}',
+    )
     expect(workspace).toContain('Object.values(MARCO_WAVE1_NETWORKS)')
   })
 
