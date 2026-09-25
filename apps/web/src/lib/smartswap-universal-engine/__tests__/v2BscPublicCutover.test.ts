@@ -226,7 +226,14 @@ async function uniswapWinner(request: SmartSwapRequest) {
   return result.shadowWinner!
 }
 
-/** Production table by default (canonical BSC ExecutorV2, no override). */
+/**
+ * CONTEXT B: V2-enabled behaviour is proven through the EXISTING rollback/test seam
+ * (`bscPublicCutoverEnabled: true`). The production default is the temporary rollback
+ * (BSC_V2_PUBLIC_CUTOVER_ENABLED=false, CONTEXT A) and is asserted separately below.
+ */
+const V2_SEAM = { bscPublicCutoverEnabled: true } as const
+
+/** Production Executor table by default (canonical BSC ExecutorV2, no override); CONTEXT B seam on. */
 function bscPlan(
   request: SmartSwapRequest,
   winner: ShadowCandidate,
@@ -246,6 +253,7 @@ function bscPlan(
     allowanceReadStatus: nativeIn ? 'native' : 'ok',
     nowIso: NOW,
     deadline: DEADLINE,
+    ...V2_SEAM,
     ...extra,
   })
 }
@@ -253,7 +261,7 @@ function bscPlan(
 function publicDecision(plan: V2UserExecutionPlan, chainId = 56, gate = V2_TEST_ONLY_CTA_EXECUTION_GATE) {
   return resolveSmartSwapCtaDecision({
     planOk: plan.ok,
-    cutoverAllowed: isProductionCutoverAllowed(chainId) && plan.productionCutoverAllowed,
+    cutoverAllowed: isProductionCutoverAllowed(chainId, V2_SEAM.bscPublicCutoverEnabled) && plan.productionCutoverAllowed,
     testOnlyExecutionGate: gate,
     planReason: plan.reason,
   })
@@ -373,7 +381,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: plan + public decision', () =>
     const hash = await consumePreparedV2UserPlan({
       plan,
       testOnlyExecutionGate: false,
-      cutoverAllowed: isProductionCutoverAllowed(56),
+      cutoverAllowed: isProductionCutoverAllowed(56, V2_SEAM.bscPublicCutoverEnabled),
       nowIso: NOW,
       ...rec,
     })
@@ -641,7 +649,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: plan + public decision', () =>
   })
 })
 
-describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production, no test gate)', () => {
+describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (CONTEXT B: explicit cutover seam, no test gate)', () => {
   async function mountBsc(kind: 'erc20' | 'native', winnerKind: 'melega' | 'pancake' = 'melega') {
     const built = kind === 'erc20' ? bscErc20() : bscNative()
     const winner =
@@ -653,7 +661,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
   it('hook: BSC ERC20 -> V2_EXECUTE; consume sends approve(Executor) then execute(Executor); never legacy router', async () => {
     await mountBsc('erc20')
     runtimeMocks.allowanceRaw = '0'
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     expect(hook.result.current.cutoverAllowed).toBe(true)
     expect(hook.result.current.plan.ok).toBe(true)
     expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
@@ -683,7 +691,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
 
   it('hook: BSC native (Pancake winner) -> V2_EXECUTE; exactly one execute to Executor, no approval', async () => {
     await mountBsc('native', 'pancake')
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
     await act(async () => {
       await hook.result.current.consumeIfGated()
@@ -694,7 +702,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
   it('14 hook: double click while pending -> single in-flight consume, one wallet request', async () => {
     await mountBsc('native', 'pancake')
     runtimeMocks.walletHoldNext = true
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     let first: Promise<string> | undefined
     let second: Promise<string> | undefined
     act(() => {
@@ -713,7 +721,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
   it('in-flight latch: after V2 submission starts, facts turning unavailable never switch the CTA to legacy', async () => {
     const built = await mountBsc('native', 'pancake')
     runtimeMocks.walletHoldNext = true
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     let first: Promise<string> | undefined
     act(() => {
       first = hook.result.current.consumeIfGated()
@@ -754,7 +762,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
     await mountBsc('erc20')
     runtimeMocks.allowanceRaw = '0'
     runtimeMocks.walletShouldReject = true
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     let legacyCalls = 0
     const selected = selectSmartSwapCtaExecution({
       decision: hook.result.current.decision,
@@ -775,7 +783,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
   it('hook: execute failure -> V2_EXECUTE_FAILED, no legacy', async () => {
     await mountBsc('native', 'pancake')
     runtimeMocks.walletExecuteFails = true
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     let legacyCalls = 0
     const selected = selectSmartSwapCtaExecution({
       decision: hook.result.current.decision,
@@ -800,7 +808,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
       requestKey: built.requestKey,
       shadow: readyShadow(built.request!, await uniswapWinner(built.request!)),
     }
-    const eth = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const eth = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     expect(eth.result.current.cutoverAllowed).toBe(false)
     expect(eth.result.current.plan.ok).toBe(false)
     expect(eth.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
@@ -819,6 +827,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
       useSmartSwapV2CtaBinding({
         nowIso: NOW,
         deadline: DEADLINE,
+        ...V2_SEAM,
         executorConfigByChain: { 56: { ...V2_EXECUTION_RUNTIME_CONFIG[56], enabled: false } },
       }),
     )
@@ -834,7 +843,7 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
       shadow: { status: 'loading', requestKey: built.requestKey, winner: null, v2Available: false },
     }
     vi.useFakeTimers()
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, ...V2_SEAM }))
     expect(hook.result.current.v2Pending).toBe(true)
     expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
     act(() => {
@@ -851,13 +860,91 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (production,
     const built = bscNative()
     const winner = await pancakeWinner(built.request!, NOW)
     runtimeMocks.runtime = { request: built.request, requestKey: built.requestKey, shadow: readyShadow(built.request!, winner) }
-    const hook = renderHook(() => useSmartSwapV2CtaBinding({ deadline: DEADLINE }))
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ deadline: DEADLINE, ...V2_SEAM }))
     expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
     act(() => {
       vi.advanceTimersByTime(10_002)
     })
     expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
     expect(hook.result.current.decision.reason).toBe(V2_PLAN_RETIRED)
+    expect(runtimeMocks.walletSends).toHaveLength(0)
+  })
+})
+
+describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', () => {
+  it('cutover truth is off: BSC_V2_PUBLIC_CUTOVER_ENABLED=false, isProductionCutoverAllowed(56)=false, form routing legacy', () => {
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
+    expect(isProductionCutoverAllowed(56)).toBe(false)
+    expect(isProductionCutoverAllowed(1)).toBe(false)
+    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(false)
+    expect(isSmartSwapV2PublicCutoverActive(1)).toBe(false)
+  })
+
+  it('Executor config stays intact: BSC CONFIGURED / enabled / canonical Executor; Ethereum NOT_CONFIGURED', () => {
+    expect(V2_EXECUTION_RUNTIME_CONFIG[56].status).toBe('CONFIGURED')
+    expect(V2_EXECUTION_RUNTIME_CONFIG[56].enabled).toBe(true)
+    expect(V2_EXECUTION_RUNTIME_CONFIG[56].executorAddress?.toLowerCase()).toBe(
+      '0x7c07082839edd5797737640bba6af47992b9861e',
+    )
+    expect(V2_EXECUTION_RUNTIME_CONFIG[1].status).toBe('NOT_CONFIGURED')
+    expect(V2_EXECUTION_RUNTIME_CONFIG[1].enabled).toBe(false)
+    expect(V2_EXECUTION_RUNTIME_CONFIG[1].executorAddress).toBeNull()
+  })
+
+  it('plan built with the production default is never production-cutover and the public decision is LEGACY', async () => {
+    const { request } = bscErc20()
+    const winner = await melegaWinner(request!)
+    const plan = buildV2UserExecutionPlan({
+      user: USER,
+      walletChainId: 56,
+      request,
+      requestKey: currentRequestKeyOf(request!),
+      shadow: readyShadow(request!, winner),
+      observedAllowance: { chainId: 56, token: WBNB_CS, owner: USER, spender: EXECUTOR, amountRaw: '0' },
+      allowanceReadStatus: 'ok',
+      nowIso: NOW,
+      deadline: DEADLINE,
+    })
+    expect(plan.productionCutoverAllowed).toBe(false)
+    expect(
+      resolveSmartSwapCtaDecision({
+        planOk: plan.ok,
+        cutoverAllowed: isProductionCutoverAllowed(56) && plan.productionCutoverAllowed,
+        testOnlyExecutionGate: false,
+        planReason: plan.reason,
+      }).publicAction,
+    ).toBe(V2_PUBLIC_ACTION.LEGACY)
+    const rec = recorder()
+    await expect(
+      consumePreparedV2UserPlan({ plan, testOnlyExecutionGate: false, cutoverAllowed: isProductionCutoverAllowed(56), ...rec }),
+    ).rejects.toThrow('V2_CTA_GATE_DISABLED')
+    expect(rec.sent).toHaveLength(0)
+  })
+
+  it('public BSC hook (ERC20 + native) is LEGACY: no Executor approval, no Executor execute reachable', async () => {
+    const erc20 = bscErc20()
+    runtimeMocks.allowanceRaw = '0'
+    runtimeMocks.runtime = {
+      request: erc20.request,
+      requestKey: erc20.requestKey,
+      shadow: readyShadow(erc20.request!, await melegaWinner(erc20.request!)),
+    }
+    const a = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    expect(a.result.current.cutoverAllowed).toBe(false)
+    expect(a.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
+    expect(a.result.current.v2Pending).toBe(false)
+    await expect(a.result.current.consumeIfGated()).rejects.toThrow('V2_CTA_GATE_DISABLED')
+
+    const native = bscNative()
+    runtimeMocks.runtime = {
+      request: native.request,
+      requestKey: native.requestKey,
+      shadow: readyShadow(native.request!, await pancakeWinner(native.request!)),
+    }
+    const b = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    expect(b.result.current.cutoverAllowed).toBe(false)
+    expect(b.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
+    await expect(b.result.current.consumeIfGated()).rejects.toThrow('V2_CTA_GATE_DISABLED')
     expect(runtimeMocks.walletSends).toHaveLength(0)
   })
 })
