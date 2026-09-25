@@ -19,7 +19,7 @@ import {
   UNIVERSAL_ENGINE_MODE,
   isProductionCutoverAllowed,
 } from './operatingMode'
-import { quoteIsStale, type SmartSwapRequest } from './quote'
+import { quoteIsStale, type NormalizedQuote, type SmartSwapRequest } from './quote'
 import type { ShadowCandidate } from './shadowCompetition'
 import {
   BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS,
@@ -134,6 +134,8 @@ export interface V2UserExecutionPlan {
   freshUntilIso: string | null
   /** Canonical winner price impact if the venue quote reported one; never invented. */
   winnerPriceImpactPercent: number | null
+  /** Display-only: the exact factual winner quote this plan was bound to (no requote, no second minimum). */
+  winnerQuote: NormalizedQuote | null
 }
 
 export interface V2CtaDecisionResult {
@@ -173,6 +175,7 @@ function closedLegacy(reason: string, extra: Partial<V2UserExecutionPlan> = {}):
     universalEngineMode: SMARTSWAP_OPERATING_MODE.SHADOW,
     freshUntilIso: null,
     winnerPriceImpactPercent: null,
+    winnerQuote: null,
   }
 }
 
@@ -673,6 +676,7 @@ export function buildV2UserExecutionPlan(input: BuildV2UserExecutionPlanInput): 
         Number.isFinite(shadow.winner.quote.priceImpactPercent)
           ? shadow.winner.quote.priceImpactPercent
           : null,
+      winnerQuote: shadow.winner.quote,
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

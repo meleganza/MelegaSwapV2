@@ -24,7 +24,7 @@ import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/k
 import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
 import { useSmartSwapExecution } from 'lib/execution-layer'
 import { V2_PUBLIC_ACTION, selectSmartSwapCtaExecution } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
-import { useSmartSwapV2CtaBinding } from '../hooks/useSmartSwapV2CtaBinding'
+import type { SmartSwapV2CtaBinding } from '../hooks/useSmartSwapV2CtaBinding'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { warningSeverity } from 'utils/exchange'
@@ -62,6 +62,8 @@ interface SwapCommitButtonPropsType {
   onUserInput: (field: Field, typedValue: string) => void
   /** Legacy V2-router CTA used as the pre-submission fallback when no certified V2 plan is active (BSC cutover). */
   legacyFallback?: ReactNode
+  /** The form's single SmartSwap V2 CTA binding (same plan/latch/refresh lifecycle as the displayed economics). */
+  v2Binding: SmartSwapV2CtaBinding
 }
 
 export default function SwapCommitButton({
@@ -84,6 +86,7 @@ export default function SwapCommitButton({
   parsedIndepentFieldAmount,
   onUserInput,
   legacyFallback,
+  v2Binding,
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
@@ -112,7 +115,7 @@ export default function SwapCommitButton({
 
   const { callback: dexSwapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
   const swapCallback = kerlEnforced ? kerlSwap.callback : dexSwapCallback
-  const { decision: v2CtaDecision, plan: v2Plan, consumeIfGated, v2Pending } = useSmartSwapV2CtaBinding()
+  const { decision: v2CtaDecision, plan: v2Plan, consumeIfGated, v2Pending } = v2Binding
   /** BSC chain-scoped cutover: certified V2 plan is the execution path; legacy-only gates must not block it. */
   const v2Active = v2CtaDecision.publicAction === V2_PUBLIC_ACTION.V2_EXECUTE && v2Plan.ok
   const v2WinnerImpact = v2Plan.winnerPriceImpactPercent
@@ -221,8 +224,8 @@ export default function SwapCommitButton({
   // End Modals
 
   const onSwapHandler = useCallback(() => {
-    // The legacy confirm modal needs a legacy trade; a certified V2 plan without one executes directly.
-    if (isExpertMode || (v2Active && !trade)) {
+    // The legacy confirm modal renders legacy trade economics; a certified V2 plan executes directly (wallet confirms).
+    if (isExpertMode || v2Active) {
       handleSwap()
     } else {
       setSwapState({

@@ -110,6 +110,8 @@ export default function AdvancedSwapDetailsDropdown({
     [pairs, path, priceImpactWithoutFee, realizedLPFee, slippageAdjustedAmounts, inputAmount, outputAmount, tradeType],
   )
   const lastTrade = useLastTruthy(trade)
+  // A certified V2 display never borrows a previous (legacy) trade's pairs / impact / fee.
+  const fallback = rest.v2Execution ? undefined : lastTrade
 
   if (!hasTrade) {
     return null
@@ -137,14 +139,14 @@ export default function AdvancedSwapDetailsDropdown({
             {executionDetailsOpen ? (
               <AdvancedSwapDetails
                 {...rest}
-                pairs={pairs ?? lastTrade.pairs ?? undefined}
-                path={path ?? lastTrade.path ?? undefined}
-                priceImpactWithoutFee={priceImpactWithoutFee ?? lastTrade.priceImpactWithoutFee ?? undefined}
-                realizedLPFee={realizedLPFee ?? lastTrade.realizedLPFee ?? undefined}
-                slippageAdjustedAmounts={slippageAdjustedAmounts ?? lastTrade.slippageAdjustedAmounts ?? undefined}
-                inputAmount={inputAmount ?? lastTrade.inputAmount ?? undefined}
-                outputAmount={outputAmount ?? lastTrade.outputAmount ?? undefined}
-                tradeType={tradeType ?? lastTrade.tradeType ?? undefined}
+                pairs={pairs ?? fallback?.pairs ?? undefined}
+                path={path ?? fallback?.path ?? undefined}
+                priceImpactWithoutFee={priceImpactWithoutFee ?? fallback?.priceImpactWithoutFee ?? undefined}
+                realizedLPFee={realizedLPFee ?? fallback?.realizedLPFee ?? undefined}
+                slippageAdjustedAmounts={slippageAdjustedAmounts ?? fallback?.slippageAdjustedAmounts ?? undefined}
+                inputAmount={inputAmount ?? fallback?.inputAmount ?? undefined}
+                outputAmount={outputAmount ?? fallback?.outputAmount ?? undefined}
+                tradeType={tradeType ?? fallback?.tradeType ?? undefined}
               />
             ) : null}
           </PanelBody>

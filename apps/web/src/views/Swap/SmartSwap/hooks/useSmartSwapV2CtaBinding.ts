@@ -4,6 +4,8 @@
  * BSC (56) chain-scoped public cutover: a fresh certified plan -> public V2_EXECUTE (user-signed only).
  * Every other chain, or any non-ready plan before submission -> LEGACY. The test-only gate stays false.
  * Once a V2 consume is in flight for the current request the CTA stays latched on V2 (never legacy).
+ * Ordinary quote freshness expiry is a refresh event, not a V2 failure: the same request gets ONE automatic read-only
+ * re-competition (V2_PENDING meanwhile), never under an in-flight consume.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,7 +35,10 @@ import {
   type V2ShadowRuntimeFacts,
   type V2UserExecutionPlan,
 } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
-import { useSmartSwapShadowRuntimeFacts } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview/useShadowRuntimePreflight'
+import {
+  refreshSharedShadowRuntime,
+  useSmartSwapShadowRuntimeFacts,
+} from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview/useShadowRuntimePreflight'
 
 export interface SmartSwapV2CtaRuntimeFacts {
   user: string | null
@@ -193,6 +198,39 @@ export function useSmartSwapV2CtaBinding(options?: {
     ],
   )
 
+  // In-flight latch: while V2 approval/execute runs for this request, the CTA never switches to legacy.
+  const [busyPlan, setBusyPlan] = useState<V2UserExecutionPlan | null>(null)
+  const busyPlanRef = useRef<V2UserExecutionPlan | null>(null)
+
+  // Same-request re-competition: only where the BSC V2 CTA is live (cutover + enabled Executor); read-only.
+  const refreshAllowed = chainCutoverAllowed && isV2ExecutorRuntimeEnabled(config)
+  const liveRef = useRef({ refreshAllowed, requestKey: runtime.requestKey, generation: runtime.shadow?.generation ?? 0 })
+  liveRef.current = { refreshAllowed, requestKey: runtime.requestKey, generation: runtime.shadow?.generation ?? 0 }
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+  const autoRefreshedRef = useRef<string | null>(null)
+  /** ONE automatic refresh per expired shadow generation (a failed/timed-out refresh surfaces the fallback, no loop). */
+  const requestExpiryRefresh = useCallback((target: V2UserExecutionPlan) => {
+    const live = liveRef.current
+    if (!mountedRef.current || !live.refreshAllowed || busyPlanRef.current) return
+    if (!target.requestKey || target.requestKey !== live.requestKey) return
+    const token = `${target.requestKey}#${live.generation}`
+    if (autoRefreshedRef.current === token) return
+    autoRefreshedRef.current = token
+    refreshSharedShadowRuntime(target.requestKey)
+  }, [])
+  /** User "Refresh price": one user-requested read-only re-competition for the SAME request, never under a latch. */
+  const refreshV2Quote = useCallback((): boolean => {
+    const live = liveRef.current
+    if (!mountedRef.current || !live.refreshAllowed || busyPlanRef.current || !live.requestKey) return false
+    return refreshSharedShadowRuntime(live.requestKey)
+  }, [])
+
   // Retire expired / executed plans so the public CTA honestly falls back before any new submission.
   const [retiredPlans] = useState(() => new WeakSet<V2UserExecutionPlan>())
   const [, setRetiredCount] = useState(0)
@@ -207,18 +245,19 @@ export function useSmartSwapV2CtaBinding(options?: {
   const fixedNowIso = options?.nowIso
   useEffect(() => {
     if (fixedNowIso || !plan.ok || !plan.freshUntilIso) return undefined
+    // Retire + request the refresh in the same tick so the CTA goes V2_EXECUTE -> V2_PENDING (never LEGACY).
+    const expire = () => {
+      retirePlan(plan)
+      requestExpiryRefresh(plan)
+    }
     const remaining = Date.parse(plan.freshUntilIso) - Date.now()
     if (!Number.isFinite(remaining) || remaining <= 0) {
-      retirePlan(plan)
+      expire()
       return undefined
     }
-    const timer = setTimeout(() => retirePlan(plan), remaining + 1)
+    const timer = setTimeout(expire, remaining + 1)
     return () => clearTimeout(timer)
-  }, [plan, fixedNowIso, retirePlan])
-
-  // In-flight latch: while V2 approval/execute runs for this request, the CTA never switches to legacy.
-  const [busyPlan, setBusyPlan] = useState<V2UserExecutionPlan | null>(null)
-  const busyPlanRef = useRef<V2UserExecutionPlan | null>(null)
+  }, [plan, fixedNowIso, retirePlan, requestExpiryRefresh])
   const latchedPlan = busyPlan && busyPlan.requestKey === plan.requestKey ? busyPlan : null
   const activePlan = latchedPlan ?? plan
   const planRetired = !latchedPlan && plan.ok && retiredPlans.has(plan)
@@ -244,7 +283,8 @@ export function useSmartSwapV2CtaBinding(options?: {
     Boolean(runtime.requestKey) &&
     (shadowStatus === 'loading' || (shadowStatus === 'ready' && plan.reason === V2_PLAN_REASON.ALLOWANCE_UNREAD))
   const [pendingExpiredKey, setPendingExpiredKey] = useState<string | null>(null)
-  const pendingKey = runtime.requestKey
+  // Bounded per shadow generation, so every same-request refresh gets its own pending window.
+  const pendingKey = runtime.requestKey ? `${runtime.requestKey}#${runtime.shadow?.generation ?? 0}` : null
   useEffect(() => {
     if (!pendingCandidate || !pendingKey) return undefined
     const timer = setTimeout(() => setPendingExpiredKey(pendingKey), V2_PENDING_MAX_MS)
@@ -286,9 +326,22 @@ export function useSmartSwapV2CtaBinding(options?: {
             busyPlanRef.current = null
             setBusyPlan(null)
           }
+          // A plan retired while latched (expired / stale / executed) is refreshed only after the latch released.
+          if (retiredPlans.has(target)) requestExpiryRefresh(target)
         })
     })
-  }, [adapter, plan, testOnlyExecutionGate, chainCutoverAllowed, fixedNowIso, retirePlan])
+  }, [adapter, plan, testOnlyExecutionGate, chainCutoverAllowed, fixedNowIso, retirePlan, retiredPlans, requestExpiryRefresh])
 
-  return { plan: activePlan, decision, config, consumeIfGated, v2Pending, cutoverAllowed: chainCutoverAllowed }
+  return {
+    plan: activePlan,
+    decision,
+    config,
+    consumeIfGated,
+    v2Pending,
+    cutoverAllowed: chainCutoverAllowed,
+    refreshV2Quote,
+    shadowGeneration: runtime.shadow?.generation ?? 0,
+  }
 }
+
+export type SmartSwapV2CtaBinding = ReturnType<typeof useSmartSwapV2CtaBinding>

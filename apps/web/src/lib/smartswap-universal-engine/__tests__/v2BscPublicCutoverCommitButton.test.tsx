@@ -138,6 +138,7 @@ function renderButton(props: Partial<Record<string, any>> = {}) {
       allowedSlippage={50}
       parsedIndepentFieldAmount={parsed}
       onUserInput={() => undefined}
+      v2Binding={S().binding}
       {...props}
     />,
   )
