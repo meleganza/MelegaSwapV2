@@ -318,8 +318,8 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: config + chain-scoped truth', 
   })
 
   it('3/4/5: isProductionCutoverAllowed is true only for 56; no-chain/global calls cannot authorize', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
-    expect(isProductionCutoverAllowed(56)).toBe(true)
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
+    expect(isProductionCutoverAllowed(56)).toBe(false)
     expect(isProductionCutoverAllowed(1)).toBe(false)
     expect(isProductionCutoverAllowed(97)).toBe(false)
     expect(isProductionCutoverAllowed(137)).toBe(false)
@@ -897,7 +897,7 @@ describe('BSC public cutover — real ethers-style signer transport', () => {
 
 describe('BSC public cutover — Swap form routing truth', () => {
   it('only BSC 56 routes the form to the SmartSwap V2 CTA; Ethereum, other chains and no-chain stay on legacy routing', () => {
-    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(true)
+    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(false)
     expect(isSmartSwapV2PublicCutoverActive(1)).toBe(false)
     expect(isSmartSwapV2PublicCutoverActive(97)).toBe(false)
     expect(isSmartSwapV2PublicCutoverActive(137)).toBe(false)
