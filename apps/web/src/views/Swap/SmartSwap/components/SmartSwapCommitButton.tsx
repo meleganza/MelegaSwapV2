@@ -1,5 +1,5 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Currency, CurrencyAmount, TradeType } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Percent, TradeType } from '@pancakeswap/sdk'
 import { Button, Text, useModal, confirmPriceImpactWithoutFee } from '@pancakeswap/uikit'
 
 import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
@@ -17,13 +17,13 @@ import {
 } from 'config/constants/exchange'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/kerl-constitutional'
 import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
 import { useSmartSwapExecution } from 'lib/execution-layer'
-import { selectSmartSwapCtaExecution } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
+import { V2_PUBLIC_ACTION, selectSmartSwapCtaExecution } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
 import { useSmartSwapV2CtaBinding } from '../hooks/useSmartSwapV2CtaBinding'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
@@ -60,6 +60,8 @@ interface SwapCommitButtonPropsType {
   allowedSlippage: number
   parsedIndepentFieldAmount: CurrencyAmount<Currency>
   onUserInput: (field: Field, typedValue: string) => void
+  /** Legacy V2-router CTA used as the pre-submission fallback when no certified V2 plan is active (BSC cutover). */
+  legacyFallback?: ReactNode
 }
 
 export default function SwapCommitButton({
@@ -81,6 +83,7 @@ export default function SwapCommitButton({
   allowedSlippage,
   parsedIndepentFieldAmount,
   onUserInput,
+  legacyFallback,
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
@@ -109,7 +112,19 @@ export default function SwapCommitButton({
 
   const { callback: dexSwapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
   const swapCallback = kerlEnforced ? kerlSwap.callback : dexSwapCallback
-  const { decision: v2CtaDecision, plan: v2Plan, consumeIfGated } = useSmartSwapV2CtaBinding()
+  const { decision: v2CtaDecision, plan: v2Plan, consumeIfGated, v2Pending } = useSmartSwapV2CtaBinding()
+  /** BSC chain-scoped cutover: certified V2 plan is the execution path; legacy-only gates must not block it. */
+  const v2Active = v2CtaDecision.publicAction === V2_PUBLIC_ACTION.V2_EXECUTE && v2Plan.ok
+  const v2WinnerImpact = v2Plan.winnerPriceImpactPercent
+  const v2PriceImpact = useMemo(
+    () =>
+      v2WinnerImpact != null && Number.isFinite(v2WinnerImpact) && v2WinnerImpact >= 0
+        ? new Percent(Math.round(v2WinnerImpact * 100).toString(), '10000')
+        : undefined,
+    [v2WinnerImpact],
+  )
+  /** Never apply the legacy route's impact to a different winning V2 venue; V2 minUserOut stays enforced on-chain. */
+  const effectivePriceImpact = v2Active ? v2PriceImpact : priceImpactWithoutFee
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: TradeWithStableSwap<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean
@@ -125,9 +140,9 @@ export default function SwapCommitButton({
   // Handlers
   const handleSwap = useCallback(() => {
     if (
-      priceImpactWithoutFee &&
+      effectivePriceImpact &&
       !confirmPriceImpactWithoutFee(
-        priceImpactWithoutFee,
+        effectivePriceImpact,
         PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
         ALLOWED_PRICE_IMPACT_HIGH,
         t,
@@ -158,7 +173,7 @@ export default function SwapCommitButton({
           txHash: undefined,
         })
       })
-  }, [priceImpactWithoutFee, swapCallback, tradeToConfirm, t, setSwapState, v2CtaDecision, v2Plan, consumeIfGated])
+  }, [effectivePriceImpact, swapCallback, tradeToConfirm, t, setSwapState, v2CtaDecision, v2Plan, consumeIfGated])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn })
@@ -206,7 +221,8 @@ export default function SwapCommitButton({
   // End Modals
 
   const onSwapHandler = useCallback(() => {
-    if (isExpertMode) {
+    // The legacy confirm modal needs a legacy trade; a certified V2 plan without one executes directly.
+    if (isExpertMode || (v2Active && !trade)) {
       handleSwap()
     } else {
       setSwapState({
@@ -217,7 +233,7 @@ export default function SwapCommitButton({
       })
       onPresentConfirmModal()
     }
-  }, [isExpertMode, handleSwap, onPresentConfirmModal, trade])
+  }, [isExpertMode, v2Active, handleSwap, onPresentConfirmModal, trade])
 
   // useEffect
   useEffect(() => {
@@ -232,7 +248,14 @@ export default function SwapCommitButton({
   }, [indirectlyOpenConfirmModalState, onPresentConfirmModal, setSwapState])
 
   // warnings on slippage
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+  // warningSeverity(undefined) means "blocked"; for V2 an unknown winner impact is not invented (minUserOut enforced).
+  const priceImpactSeverity = v2Active && !v2PriceImpact ? 0 : warningSeverity(effectivePriceImpact)
+
+  if (legacyFallback && !v2Active && !(v2Pending && !swapInputError)) {
+    // No certified V2 plan active (and none pending): pre-submission legacy fallback. An in-flight V2 consume keeps
+    // v2Active latched, so this never replaces the CTA after a V2 submission started.
+    return <>{legacyFallback}</>
+  }
 
   if (swapIsUnsupported) {
     return (
@@ -258,13 +281,24 @@ export default function SwapCommitButton({
     )
   }
 
+  if (v2Pending && !swapInputError) {
+    // BSC V2 facts still resolving (bounded): hold the single Swap CTA instead of offering legacy approval.
+    return (
+      <CommitButton width="100%" disabled id="swap-button" data-swap-action-cta data-smartswap-public-action="V2_PENDING">
+        <AutoRow gap="6px" justify="center">
+          {t('Swap')} <CircleLoader stroke="white" />
+        </AutoRow>
+      </CommitButton>
+    )
+  }
+
   const noRoute = kerlEnforced ? !kerlSwap.executionRequest : !trade?.route
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedIndepentFieldAmount?.greaterThan(BIG_INT_ZERO),
   )
 
-  if (noRoute && userHasSpecifiedInputOutput) {
+  if (noRoute && userHasSpecifiedInputOutput && !v2Active) {
     return (
       <GreyCard style={{ textAlign: 'center', padding: '0.75rem' }}>
         <Text color="textSubtle">{t('Insufficient liquidity for this trade.')}</Text>
@@ -279,10 +313,12 @@ export default function SwapCommitButton({
     priceImpactSeverity,
     isExpertMode,
   })
-  const showApproveFlow = actionCta.showApproveFlow
+  // V2 approvals (spender = ExecutorV2 only) run inside the V2 consume; never ask for legacy router approval.
+  const showApproveFlow = !v2Active && actionCta.showApproveFlow
 
   const isValid = !swapInputError
-  const approved = approval === ApprovalState.APPROVED
+  const approved = v2Active || approval === ApprovalState.APPROVED
+  const legacyCallbackError = v2Active ? null : swapCallbackError
 
   if (showApproveFlow) {
     return (
@@ -312,14 +348,15 @@ export default function SwapCommitButton({
   return (
     <>
       <CommitButton
-        variant={isValid && priceImpactSeverity > 2 && !swapCallbackError ? 'danger' : 'primary'}
+        variant={isValid && priceImpactSeverity > 2 && !legacyCallbackError ? 'danger' : 'primary'}
         onClick={() => {
           onSwapHandler()
         }}
         id="swap-button"
         width="100%"
         data-swap-action-cta
-        disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError || !approved}
+        data-smartswap-public-action={v2CtaDecision.publicAction}
+        disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!legacyCallbackError || !approved}
       >
         {swapInputError ||
           (priceImpactSeverity > 3 && !isExpertMode

@@ -453,6 +453,7 @@ describe('real-runtime SmartSwap V2 CTA binding', () => {
         walletChainId: 56,
       }),
     ).toBe(false)
+    // BSC is enabled after cutover; the disabled (rollback) row keeps the fail-closed assertion.
     const production = bindSmartSwapV2CtaRuntimePlan({
       user: USER,
       walletChainId: 56,
@@ -462,6 +463,9 @@ describe('real-runtime SmartSwap V2 CTA binding', () => {
       allowanceReadStatus: 'unread',
       nowIso: NOW,
       deadline: DEADLINE,
+      executorConfigByChain: {
+        56: { status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED, enabled: false, executorAddress: EXECUTOR },
+      },
     })
     expect(production.ok).toBe(false)
     expect(production.reason).toBe(V2_PLAN_REASON.EXECUTOR_NOT_CONFIGURED)

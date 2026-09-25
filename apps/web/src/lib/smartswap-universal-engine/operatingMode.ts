@@ -1,6 +1,8 @@
 /**
  * SmartSwap Universal Engine M1 — operating states.
- * Production execution stays LEGACY_PRODUCTION. V2 is SHADOW only.
+ * Global descriptors stay LEGACY_PRODUCTION / SHADOW: the SHADOW engine still runs the factual
+ * Melega/Pancake competition, and every chain other than BSC keeps legacy production execution.
+ * BSC (56) public V2 cutover is chain-scoped: only isProductionCutoverAllowed(56) can authorize it.
  */
 
 export const SMARTSWAP_UNIVERSAL_ENGINE_ID = 'SMARTSWAP_UNIVERSAL_ENGINE_M1' as const
@@ -41,6 +43,24 @@ export function assertV2CannotExecute(mode: SmartSwapOperatingMode = UNIVERSAL_E
   throw new Error(`${V2_SHADOW_EXECUTION_FORBIDDEN}: mode=${mode}`)
 }
 
-export function isProductionCutoverAllowed(): boolean {
-  return false
+/** Only chain with a certified, canary-proven ExecutorV2 (see #95 evidence). */
+export const BSC_V2_PUBLIC_CUTOVER_CHAIN_ID = 56 as const
+
+/**
+ * Single explicit BSC public-cutover truth.
+ * Software rollback: set to false -> public CTA returns to LEGACY (no contract redeploy).
+ */
+export const BSC_V2_PUBLIC_CUTOVER_ENABLED: boolean = true
+
+/**
+ * Chain-scoped production cutover. True ONLY for chainId 56 while the BSC truth is enabled.
+ * Calls without a chainId (SHADOW/readiness modules) always return false.
+ * `bscPublicCutoverEnabled` is a rollback/test seam; it can never authorize a non-BSC chain.
+ */
+export function isProductionCutoverAllowed(
+  chainId?: number,
+  bscPublicCutoverEnabled: boolean = BSC_V2_PUBLIC_CUTOVER_ENABLED,
+): boolean {
+  if (chainId === undefined || chainId === null) return false
+  return chainId === BSC_V2_PUBLIC_CUTOVER_CHAIN_ID && bscPublicCutoverEnabled === true
 }

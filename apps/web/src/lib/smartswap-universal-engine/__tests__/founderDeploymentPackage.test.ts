@@ -208,10 +208,10 @@ describe('founder deployment package encoding', () => {
     expect(stopped.observationsReadOnly.bsc.noncePending).toBe(3280)
   })
 
-  it('keeps BSC CONFIGURED_DISABLED, Ethereum NOT_CONFIGURED, and future patch unapplied', () => {
+  it('keeps BSC CONFIGURED (public cutover candidate), Ethereum NOT_CONFIGURED, and future patch unapplied', () => {
     expect(V2_EXECUTION_RUNTIME_CONFIG[56]).toEqual({
       status: V2_EXECUTOR_CONFIG_STATUS.CONFIGURED,
-      enabled: false,
+      enabled: true,
       executorAddress: '0x7c07082839edd5797737640bba6af47992b9861e',
     })
     expect(V2_EXECUTION_RUNTIME_CONFIG[1]).toEqual({
