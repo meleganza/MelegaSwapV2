@@ -7,6 +7,8 @@ export const MARCO_BRIDGE_ACTIVATION_ROUTES = [
   ['robinhood', 'bnb'],
   ['bnb', 'solana'],
   ['solana', 'bnb'],
+  ['bnb', 'polygon'],
+  ['polygon', 'bnb'],
   ['bnb', 'arc'],
   ['arc', 'bnb'],
 ] as const
@@ -21,7 +23,11 @@ export function isActivationRoute(from: MarcoBridgeNetworkId, to: MarcoBridgeNet
 
 export { localRouteActivationEnabled }
 
-export function findCanonicalRoute(authority: CanonicalMmnRouteState, from: MarcoBridgeNetworkId, to: MarcoBridgeNetworkId) {
+export function findCanonicalRoute(
+  authority: CanonicalMmnRouteState,
+  from: MarcoBridgeNetworkId,
+  to: MarcoBridgeNetworkId,
+) {
   return authority.routes.find((route) => route.from === from && route.to === to)
 }
 
@@ -31,9 +37,12 @@ export function routeExecutionBlockers(
   authority: CanonicalMmnRouteState,
 ): string[] {
   const blockers: string[] = []
-  if (!isActivationRoute(from, to)) blockers.push('Route is outside BNB↔Robinhood, BNB↔Solana, and BNB↔Arc activation.')
+  if (!isActivationRoute(from, to))
+    blockers.push('Route is outside BNB↔Robinhood, BNB↔Solana, BNB↔Arc, and BNB↔Polygon activation.')
   if (!localRouteActivationEnabled(from, to)) blockers.push('Local public activation is off for this route.')
   const route = findCanonicalRoute(authority, from, to)
+  if ((from === 'polygon' || to === 'polygon') && route?.live_binding_verified !== true)
+    blockers.push('Polygon live binding is unverified.')
   if (!route?.certified) blockers.push('Canonical MMN has not certified this route.')
   if (route?.paused) blockers.push('Canonical MMN marks this route paused.')
   const source = authority.networks.find((network) => network.id === from)
@@ -76,7 +85,13 @@ export function resolveRouteExecution(
     const blockers = routeExecutionBlockers(from, to, authority)
     return { executable: blockers.length === 0, blockers }
   }
-  if (quote?.live && quote.executionEnabled && !quote.routePaused) {
+  if (
+    isActivationRoute(from, to) &&
+    localRouteActivationEnabled(from, to) &&
+    quote?.live &&
+    quote.executionEnabled &&
+    !quote.routePaused
+  ) {
     return { executable: true, blockers: [] }
   }
   return { executable: false, blockers: ['Canonical route authority is unavailable.'] }

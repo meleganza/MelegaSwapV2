@@ -30,7 +30,7 @@ export type UnsignedEvmBridgeTx = {
   to: string
   data: string
   value: string
-  nativeFeeSymbol: 'BNB' | 'ETH' | 'USDC'
+  nativeFeeSymbol: 'BNB' | 'ETH' | 'USDC' | 'POL'
 }
 
 export type UnsignedSolanaBridgeTx = {
@@ -111,7 +111,10 @@ export function buildMarcoBridgeTransactions(
   authority: CanonicalMmnRouteState,
 ): MarcoBridgeBuild {
   if (!isActivationRoute(request.from, request.to)) {
-    throw new MarcoBridgeError('UNSUPPORTED_ROUTE', 'This builder only encodes BNB↔Robinhood, BNB↔Solana, and BNB↔Arc.')
+    throw new MarcoBridgeError(
+      'UNSUPPORTED_ROUTE',
+      'This builder only encodes BNB↔Robinhood, BNB↔Solana, BNB↔Arc, and BNB↔Polygon.',
+    )
   }
   const source = MARCO_WAVE1_NETWORKS[request.from]
   const canonicalSource = authority.networks.find((network) => network.id === request.from)
@@ -148,7 +151,14 @@ export function buildMarcoBridgeTransactions(
         to: getAddress(token),
         data: ERC20_APPROVE_IFACE.encodeFunctionData('approve', [endpointContract, amountLD]),
         value: '0x0',
-        nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : source.nativeFeeSymbol === 'USDC' ? 'USDC' : 'ETH',
+        nativeFeeSymbol:
+          source.nativeFeeSymbol === 'POL'
+            ? 'POL'
+            : source.nativeFeeSymbol === 'BNB'
+            ? 'BNB'
+            : source.nativeFeeSymbol === 'USDC'
+            ? 'USDC'
+            : 'ETH',
       })
     }
     transactions.push({
@@ -171,7 +181,14 @@ export function buildMarcoBridgeTransactions(
         from,
       ]),
       value: BigNumber.from(nativeFeeWei).toHexString(),
-      nativeFeeSymbol: source.nativeFeeSymbol === 'BNB' ? 'BNB' : source.nativeFeeSymbol === 'USDC' ? 'USDC' : 'ETH',
+      nativeFeeSymbol:
+        source.nativeFeeSymbol === 'POL'
+          ? 'POL'
+          : source.nativeFeeSymbol === 'BNB'
+          ? 'BNB'
+          : source.nativeFeeSymbol === 'USDC'
+          ? 'USDC'
+          : 'ETH',
     })
   } else {
     transactions.push({
@@ -217,7 +234,8 @@ export function assertBuildReady(build: MarcoBridgeBuild): void {
       build.blockers[0] ?? 'Bridge submission is not executable.',
     )
   }
-  if (build.sendParam.dstEid === 0) throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Destination EID is missing.')
+  if (build.sendParam.dstEid === 0)
+    throw new MarcoBridgeError('CANONICAL_CONFIG_MISSING', 'Destination EID is missing.')
 }
 
 export function robinhoodExplorerTx(hash: string): string {

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { ethers } from 'ethers'
 import { fetchCanonicalRouteAuthority } from 'lib/marco-bridge/routeAuthority'
 import { simulateMarcoBridgeBuild } from 'lib/marco-bridge/simulate'
+import { simulateEvmBridgeCall } from 'lib/marco-bridge/evmSimulation'
 import { buildMarcoBridgeTransactions, type UnsignedEvmBridgeTx } from 'lib/marco-bridge/transactionBuilder'
 import { MarcoBridgeError, type MarcoBridgeNetworkId, type MarcoBridgeQuote } from 'lib/marco-bridge/types'
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
@@ -10,10 +11,16 @@ const isNetworkId = (value: unknown): value is MarcoBridgeNetworkId =>
   typeof value === 'string' && Object.prototype.hasOwnProperty.call(MARCO_WAVE1_NETWORKS, value)
 
 function resolveRpcUrl(chainId: number): string {
-  if (chainId === 56) return process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-rpc.publicnode.com'
+  if (chainId === 56)
+    return process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-rpc.publicnode.com'
   if (chainId === 4663) {
-    return process.env.ROBINHOOD_RPC_URL || process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL || 'https://rpc.mainnet.chain.robinhood.com'
+    return (
+      process.env.ROBINHOOD_RPC_URL ||
+      process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL ||
+      'https://rpc.mainnet.chain.robinhood.com'
+    )
   }
+  if (chainId === 137) return process.env.POLYGON_RPC_URL || 'https://polygon-bor-rpc.publicnode.com'
   if (chainId === 5042) {
     return process.env.ARC_RPC_URL || process.env.NEXT_PUBLIC_ARC_RPC_URL || 'https://rpc.mainnet.arc.io'
   }
@@ -42,13 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const simulation = await simulateMarcoBridgeBuild(built, {
       async ethCall(tx: UnsignedEvmBridgeTx) {
         const provider = new ethers.providers.StaticJsonRpcProvider(resolveRpcUrl(tx.chainId), tx.chainId)
-        try {
-          await provider.call({ from: tx.from, to: tx.to, data: tx.data, value: tx.value })
-          return { ok: true, reverted: false, reason: 'eth_call succeeded.' }
-        } catch (cause) {
-          const reason = cause instanceof Error ? cause.message : 'eth_call reverted.'
-          return { ok: false, reverted: true, reason }
-        }
+        return simulateEvmBridgeCall(provider, tx)
       },
     })
     res.setHeader('Cache-Control', 'no-store')

@@ -1,5 +1,10 @@
+import { applyPolygonBinding, readPolygonLiveBinding } from './polygonAuthority'
 import { applyCanonicalBnbSolanaApplicationGate } from './canonicalBnbSolanaGate'
-import { readCanonicalSolanaStorePause, solanaStoreBlocksCanonicalRoute, type SolanaStorePauseRead } from './solanaStoreRead'
+import {
+  readCanonicalSolanaStorePause,
+  solanaStoreBlocksCanonicalRoute,
+  type SolanaStorePauseRead,
+} from './solanaStoreRead'
 import { MARCO_WAVE1_DIRECT_ROUTES, MARCO_WAVE1_NETWORKS } from './wave1Registry'
 import type { MarcoBridgeNetworkId } from './types'
 
@@ -22,6 +27,7 @@ export type CanonicalMmnNetwork = {
 export type CanonicalMmnRoute = {
   from: MarcoBridgeNetworkId
   to: MarcoBridgeNetworkId
+  live_binding_verified?: boolean
   certified: boolean
   publicly_active: boolean
   execution_enabled: boolean
@@ -72,7 +78,7 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
     const expected = MARCO_WAVE1_NETWORKS[id]
     const actual = state.networks.find((network) => network.id === id)
     if (!actual) {
-      if (id === 'arc') continue
+      if (id === 'arc' || id === 'polygon') continue
       throw new Error(`Canonical MMN network ${id} is missing.`)
     }
     if (
@@ -104,7 +110,7 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
     if (!actual?.certified) {
       const locallyBoundArc =
         (expected.from === 'bnb' && expected.to === 'arc') || (expected.from === 'arc' && expected.to === 'bnb')
-      if (locallyBoundArc) continue
+      if (locallyBoundArc || expected.from === 'polygon' || expected.to === 'polygon') continue
       throw new Error(`Canonical MMN route ${expected.from}->${expected.to} is not certified.`)
     }
   }
@@ -123,7 +129,10 @@ export async function fetchCanonicalRouteAuthority(
   })
   if (!response.ok) throw new Error(`Canonical MMN route authority failed with HTTP ${response.status}.`)
   const liveStore = await readStore({ fetcher })
-  return applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(await response.json()), {
-    solanaStorePaused: solanaStoreBlocksCanonicalRoute(liveStore),
-  })
+  return applyPolygonBinding(
+    applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(await response.json()), {
+      solanaStorePaused: solanaStoreBlocksCanonicalRoute(liveStore),
+    }),
+    await readPolygonLiveBinding(),
+  )
 }
