@@ -131,23 +131,25 @@ export function addModeShouldClearPair(opts?: SetLiquidityModeOptions): boolean 
   return opts?.preservePair !== true
 }
 
-/** Add-mode header follows live selects; Remove/other modes keep position-label semantics. */
+/**
+ * Pair identity is operation-scoped:
+ * - Remove Liquidity: the selected wallet LP position is the truth.
+ * - Every other mode renders the Add workspace (the shell shows Add whenever it is not removing,
+ *   including 'My Positions', where a sole wallet LP is auto-selected), so the live form
+ *   currencies are the truth and a selected LP position must never relabel the deposit.
+ */
 export function resolveLiquidityStudioPairLabel(
   mode: LiquidityStudioMode,
   selectedPositionPairLabel: string | undefined,
   currencyA?: Currency | null,
   currencyB?: Currency | null,
 ): string {
-  if (mode === 'Add Liquidity' && currencyA && currencyB) {
+  if (mode !== 'Remove Liquidity') {
     return pairLabel(currencyA, currencyB)
   }
   return (
     selectedPositionPairLabel ||
-    (currencyA && currencyB
-      ? pairLabel(currencyA, currencyB)
-      : mode === 'Remove Liquidity'
-      ? 'Select a liquidity position'
-      : pairLabel(currencyA, currencyB))
+    (currencyA && currencyB ? pairLabel(currencyA, currencyB) : 'Select a liquidity position')
   )
 }
 
@@ -1194,6 +1196,8 @@ export function useLiquidityMintRuntime({
       : undefined
 
   const resolvedPairLabel = resolveLiquidityStudioPairLabel(mode, selectedPosition?.pairLabel, currencyA, currencyB)
+  // The Add confirmation always describes the deposit being signed: the form currencies.
+  const addPairLabel = pairLabel(currencyA, currencyB)
 
   return {
     mode,
@@ -1281,7 +1285,7 @@ export function useLiquidityMintRuntime({
         open={addConfirmOpen}
         onClose={closeAddConfirm}
         onConfirm={confirmAddDeposit}
-        pairLabel={resolvedPairLabel}
+        pairLabel={addPairLabel}
         chainId={chainId}
         tokenASymbol={currencyA?.symbol}
         tokenBSymbol={currencyB?.symbol}
