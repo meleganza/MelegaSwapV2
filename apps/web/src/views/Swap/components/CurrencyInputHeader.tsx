@@ -105,7 +105,8 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
           <IconButton onClick={onPresentTransactionsModal} variant="text" scale="sm">
             <HistoryIcon color="textSubtle" width="24px" />
           </IconButton>
-          <IconButton variant="text" scale="sm" onClick={handleOnClick}>
+          {/* aria-label: the Trade cockpit "Refresh price" control forwards its click to this button. */}
+          <IconButton variant="text" scale="sm" onClick={handleOnClick} aria-label="Refresh price">
             <RefreshIcon disabled={!hasAmount} color="textSubtle" width="27px" />
           </IconButton>
         </Flex>

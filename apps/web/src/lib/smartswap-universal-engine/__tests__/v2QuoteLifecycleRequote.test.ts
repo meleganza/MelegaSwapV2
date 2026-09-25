@@ -515,6 +515,56 @@ describe('P0 V2 quote lifecycle: same requestKey auto re-competition (seam on, p
     expect(history.includes('LEGACY')).toBe(false)
   })
 
+  it('plan re-derived past freshness before the expiry timer (allowance re-read) -> same single refresh, V2_PENDING, never LEGACY', async () => {
+    // Browser-observed race (ERC20, mobile): the allowance re-read rebuilt the plan as QUOTE_EXPIRED just before the timer.
+    L().inputId = 'USDC'
+    L().outputId = 'BNB'
+    L().allowanceRaw = '0'
+    L().amountRaw = '7760000000000000000'
+    const { hook, history } = mount()
+    const first = L().competitions[0]
+    const source = createSyntheticQuoteSource({
+      [`56:${USDC.toLowerCase()}>${WBNB.toLowerCase()}`]: { amountOutRaw: '9900000000000000' },
+    })
+    const compete = async (request: SmartSwapRequest) => {
+      const result = await runEvmShadowCompetition({
+        request,
+        productionQuote: null,
+        adapters: [createPancakeSwapVenueAdapter(source)],
+        nowIso: '2026-08-20T00:00:00.000Z',
+      })
+      return { ...result.shadowWinner!, quote: { ...result.shadowWinner!.quote!, quotedAt: new Date(Date.now()).toISOString() } }
+    }
+    const w1 = await compete(first.request)
+    await act(async () => {
+      first.resolve(w1)
+      await flush()
+    })
+    expect(hook.result.current.cta).toBe('V2_EXECUTE')
+    // Clock passes the boundary WITHOUT the timer firing, then a re-render re-derives the plan.
+    vi.setSystemTime(new Date(Date.parse(hook.result.current.binding.plan.freshUntilIso!) + 50))
+    L().allowanceRaw = '1'
+    await act(async () => {
+      hook.rerender()
+      await flush()
+    })
+    expect(L().competitions).toHaveLength(2)
+    expect(hook.result.current.cta).toBe('V2_PENDING')
+    expect(hook.result.current.display.mode).toBe('V2_PENDING')
+    // The original timer firing afterwards does not start a duplicate competition.
+    await advance(1_000)
+    expect(L().competitions).toHaveLength(2)
+    const w2 = await compete(L().competitions[1].request)
+    await act(async () => {
+      L().competitions[1].resolve(w2)
+      await flush()
+    })
+    expect(hook.result.current.cta).toBe('V2_EXECUTE')
+    expect(hook.result.current.binding.plan.freshUntilIso).toBe(new Date(Date.parse(w2.quote.quotedAt) + 15_000).toISOString())
+    expect(history).toEqual(['V2_PENDING', 'V2_EXECUTE', 'V2_PENDING', 'V2_EXECUTE'])
+    expect(L().walletSends).toHaveLength(0)
+  })
+
   it('production default (no seam): BSC stays LEGACY, expiry never auto-refreshes, manual refresh is a no-op', async () => {
     const { hook, history } = mount({ deadline: DEADLINE })
     await resolveLatest('pancake', '7760000000000000000')

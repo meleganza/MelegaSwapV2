@@ -52,7 +52,11 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 import { isSmartSwapV2PublicCutoverActive, useSmartSwapV2CtaBinding } from './hooks/useSmartSwapV2CtaBinding'
-import { SMARTSWAP_DISPLAY_MODE, resolveSmartSwapExecutionDisplay } from './utils/v2ExecutionDisplay'
+import {
+  SMARTSWAP_DISPLAY_MODE,
+  resolveSmartSwapExecutionDisplay,
+  shouldRenderLegacyExecutionPreview,
+} from './utils/v2ExecutionDisplay'
 
 export const SmartSwapForm: React.FC<{
   handleOutputSelect: (newCurrencyOutput: Currency) => void
@@ -412,7 +416,7 @@ export const SmartSwapForm: React.FC<{
               onSlippageClick={onPresentSettingsModal}
             />
           )}
-          {executionPreview}
+          {shouldRenderLegacyExecutionPreview(v2Display) ? executionPreview : null}
           {!swapIsUnsupported ? (
             !showWrap && v2Exec ? (
               <AdvancedSwapDetailsDropdown

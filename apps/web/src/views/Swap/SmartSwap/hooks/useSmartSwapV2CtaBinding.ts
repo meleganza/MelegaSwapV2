@@ -243,8 +243,16 @@ export function useSmartSwapV2CtaBinding(options?: {
     [retiredPlans],
   )
   const fixedNowIso = options?.nowIso
+  // A plan re-derived (e.g. allowance re-read) after its freshness boundary is built as QUOTE_EXPIRED before the
+  // expiry timer fires; that is the same ordinary freshness event, so it requests the same single refresh.
+  const planQuoteExpired = !plan.ok && plan.reason === V2_PLAN_REASON.QUOTE_EXPIRED
   useEffect(() => {
-    if (fixedNowIso || !plan.ok || !plan.freshUntilIso) return undefined
+    if (fixedNowIso) return undefined
+    if (planQuoteExpired) {
+      requestExpiryRefresh(plan)
+      return undefined
+    }
+    if (!plan.ok || !plan.freshUntilIso) return undefined
     // Retire + request the refresh in the same tick so the CTA goes V2_EXECUTE -> V2_PENDING (never LEGACY).
     const expire = () => {
       retirePlan(plan)
@@ -257,7 +265,7 @@ export function useSmartSwapV2CtaBinding(options?: {
     }
     const timer = setTimeout(expire, remaining + 1)
     return () => clearTimeout(timer)
-  }, [plan, fixedNowIso, retirePlan, requestExpiryRefresh])
+  }, [plan, planQuoteExpired, fixedNowIso, retirePlan, requestExpiryRefresh])
   const latchedPlan = busyPlan && busyPlan.requestKey === plan.requestKey ? busyPlan : null
   const activePlan = latchedPlan ?? plan
   const planRetired = !latchedPlan && plan.ok && retiredPlans.has(plan)
@@ -281,7 +289,9 @@ export function useSmartSwapV2CtaBinding(options?: {
     isV2ExecutorRuntimeEnabled(config) &&
     !latchedPlan &&
     Boolean(runtime.requestKey) &&
-    (shadowStatus === 'loading' || (shadowStatus === 'ready' && plan.reason === V2_PLAN_REASON.ALLOWANCE_UNREAD))
+    (shadowStatus === 'loading' ||
+      (shadowStatus === 'ready' &&
+        (plan.reason === V2_PLAN_REASON.ALLOWANCE_UNREAD || (planQuoteExpired && !fixedNowIso))))
   const [pendingExpiredKey, setPendingExpiredKey] = useState<string | null>(null)
   // Bounded per shadow generation, so every same-request refresh gets its own pending window.
   const pendingKey = runtime.requestKey ? `${runtime.requestKey}#${runtime.shadow?.generation ?? 0}` : null

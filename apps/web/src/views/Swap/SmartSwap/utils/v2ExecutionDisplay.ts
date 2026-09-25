@@ -48,6 +48,15 @@ export type SmartSwapExecutionDisplay =
   | { mode: typeof SMARTSWAP_DISPLAY_MODE.V2_PENDING }
   | SmartSwapV2ExecutionDisplay
 
+/**
+ * The legacy execution preview (route card + Expected output / Minimum received / Price impact metrics) is derived
+ * from the legacy Melega trade. It may only render while the display is LEGACY; under V2 (fresh or re-quoting) it
+ * would present legacy economics next to a V2 CTA.
+ */
+export function shouldRenderLegacyExecutionPreview(display: SmartSwapExecutionDisplay): boolean {
+  return display.mode === SMARTSWAP_DISPLAY_MODE.LEGACY
+}
+
 const LEGACY_DISPLAY = { mode: SMARTSWAP_DISPLAY_MODE.LEGACY } as const
 const PENDING_DISPLAY = { mode: SMARTSWAP_DISPLAY_MODE.V2_PENDING } as const
 

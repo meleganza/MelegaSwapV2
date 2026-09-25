@@ -27,6 +27,7 @@ import { buildShadowRuntimeRequest } from '../../../views/SmartSwapStudio/module
 import {
   SMARTSWAP_DISPLAY_MODE,
   resolveSmartSwapExecutionDisplay,
+  shouldRenderLegacyExecutionPreview,
   type SmartSwapV2ExecutionDisplay,
 } from '../../../views/Swap/SmartSwap/utils/v2ExecutionDisplay'
 
@@ -277,6 +278,10 @@ describe('P0 V2 display truth (seam on; production flag off)', () => {
       outputCurrency: USDC_C,
     })
     expect(pending).toEqual({ mode: SMARTSWAP_DISPLAY_MODE.V2_PENDING })
+    // legacy execution preview (Melega route card: Expected output / Minimum received / Price impact) never renders under V2
+    expect(shouldRenderLegacyExecutionPreview(d1)).toBe(false)
+    expect(shouldRenderLegacyExecutionPreview(pending)).toBe(false)
+    expect(shouldRenderLegacyExecutionPreview({ mode: SMARTSWAP_DISPLAY_MODE.LEGACY })).toBe(true)
     const g2 = await pancakePlan(nativeToUsdc(), BNB_USDC_KEY, '7810000000000000000')
     const d2 = v2(resolveSmartSwapExecutionDisplay({ decision: g2.decision, plan: g2.plan, v2Pending: false, inputCurrency: BNB_C, outputCurrency: USDC_C }))
     expect(d2.outputAmount.quotient.toString()).toBe('7810000000000000000')
