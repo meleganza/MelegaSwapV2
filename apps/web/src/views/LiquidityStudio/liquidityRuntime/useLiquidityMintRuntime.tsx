@@ -10,6 +10,7 @@ import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
+import { ADD_LIQUIDITY_APPROVAL_OPTIONS } from './addLiquidityApprovalOptions'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
 import { PairState } from 'hooks/usePairs'
@@ -426,13 +427,17 @@ export function useLiquidityMintRuntime({
 
   const terminal = useLiquidityTerminalData(poolAddress, currencyA?.symbol, currencyB?.symbol, terminalEnabled)
 
+  // Token A / Token B approvals read the live allowance directly (bounded #85 config) so a frozen
+  // multicall value or an unfinalized local approval record cannot hold the CTA on "Confirming".
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
     chainId ? ROUTER_ADDRESS[chainId] : undefined,
+    ADD_LIQUIDITY_APPROVAL_OPTIONS,
   )
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
     chainId ? ROUTER_ADDRESS[chainId] : undefined,
+    ADD_LIQUIDITY_APPROVAL_OPTIONS,
   )
   const [liquidityApproval, approveLiquidityCallback] = useApproveCallback(
     removeParsedAmounts[BurnField.LIQUIDITY],
