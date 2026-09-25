@@ -66,7 +66,7 @@ export const MARCO_WAVE1_NETWORKS: Record<MarcoBridgeNetworkId, MarcoBridgeNetwo
   },
   polygon: {
     id: 'polygon',
-    label: 'Polygon PoS',
+    label: 'Polygon',
     shortLabel: 'Polygon',
     walletFamily: 'evm',
     chainId: 137,
