@@ -1,8 +1,9 @@
 /**
  * P0 SmartSwap V2 quote lifecycle: same-request automatic re-competition at the freshness boundary.
  * Real shared SHADOW runtime (sharedShadowEntries + generation guard) + real CTA binding; only the authorized
- * competition, wallet, and swap-form state are mocked. V2 is enabled ONLY through the existing seam
- * (`bscPublicCutoverEnabled: true`); the production flag stays false.
+ * competition, wallet, and swap-form state are mocked. Most cases use the existing seam
+ * (`bscPublicCutoverEnabled: true`); the production default (flag true) and the explicit false rollback seam are
+ * asserted separately.
  */
 import { act, renderHook } from '@testing-library/react'
 import { getAddress } from '@ethersproject/address'
@@ -227,9 +228,23 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('P0 V2 quote lifecycle: same requestKey auto re-competition (seam on, production flag off)', () => {
-  it('production default stays off (this suite only uses the seam)', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
+describe('P0 V2 quote lifecycle: same requestKey auto re-competition (seam on; production flag on)', () => {
+  it('production default is on (BSC public cutover re-enabled)', () => {
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
+  })
+
+  it('production default (no seam): expiry -> V2_PENDING -> fresh V2_EXECUTE for the same key, never LEGACY, no wallet call', async () => {
+    const { hook, history } = mount({ deadline: DEADLINE })
+    await resolveLatest('pancake', '7760000000000000000')
+    expect(hook.result.current.cta).toBe('V2_EXECUTE')
+    await advance(15_001)
+    expect(L().competitions).toHaveLength(2)
+    expect(hook.result.current.cta).toBe('V2_PENDING')
+    await resolveLatest('pancake', '7810000000000000000')
+    expect(hook.result.current.cta).toBe('V2_EXECUTE')
+    expect(hook.result.current.binding.plan.winnerQuote?.grossOutputRaw).toBe('7810000000000000000')
+    expect(history).toEqual(['V2_PENDING', 'V2_EXECUTE', 'V2_PENDING', 'V2_EXECUTE'])
+    expect(L().walletSends).toHaveLength(0)
   })
 
   it('1-6,15: gen1 ready -> expiry retires gen1 -> gen2 auto-starts for the SAME key (V2_PENDING, never LEGACY) -> new winner used; freshUntil = real quote time + 15s', async () => {
@@ -565,8 +580,8 @@ describe('P0 V2 quote lifecycle: same requestKey auto re-competition (seam on, p
     expect(L().walletSends).toHaveLength(0)
   })
 
-  it('production default (no seam): BSC stays LEGACY, expiry never auto-refreshes, manual refresh is a no-op', async () => {
-    const { hook, history } = mount({ deadline: DEADLINE })
+  it('rollback seam (explicit bscPublicCutoverEnabled: false): BSC stays LEGACY, expiry never auto-refreshes, manual refresh is a no-op', async () => {
+    const { hook, history } = mount({ deadline: DEADLINE, bscPublicCutoverEnabled: false })
     await resolveLatest('pancake', '7760000000000000000')
     expect(hook.result.current.cta).toBe('LEGACY')
     expect(hook.result.current.binding.v2Pending).toBe(false)

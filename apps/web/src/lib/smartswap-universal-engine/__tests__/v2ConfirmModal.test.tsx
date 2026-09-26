@@ -1,5 +1,5 @@
 /**
- * P0 #101 follow-up — non-expert BSC SmartSwap V2 confirmation modal (seam on; production flag off).
+ * P0 #101 follow-up — non-expert BSC SmartSwap V2 confirmation modal (seam on; production flag on).
  * Same ConfirmSwapModal shell in V2 mode, rendering ONLY the pinned certified plan facts; Confirm calls the existing
  * certified consume path (consumePreparedV2UserPlan). Expert = direct; legacy non-expert = legacy modal unchanged.
  */
@@ -387,9 +387,12 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('P0 #101 follow-up: non-expert V2 confirmation modal (seam on; production flag off)', () => {
-  it('production flag stays off', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
+describe('P0 #101 follow-up: non-expert V2 confirmation modal (seam on; production flag on)', () => {
+  it('production flag is on (BSC 56 only); the explicit false seam still turns it off', () => {
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
+    expect(isProductionCutoverAllowed(56)).toBe(true)
+    expect(isProductionCutoverAllowed(56, false)).toBe(false)
+    expect(isProductionCutoverAllowed(1)).toBe(false)
   })
 
   it('1-9: NON-EXPERT + V2_EXECUTE (BNB -> USDC): Swap opens the modal with exact V2 facts; no legacy output/impact; unknown impact not invented', async () => {
