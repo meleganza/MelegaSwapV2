@@ -217,13 +217,13 @@ describe('SmartSwapCommitButton under BSC V2 public cutover', () => {
     expect((cta as HTMLButtonElement).disabled).toBe(true)
   })
 
-  it('non-expert V2 without a legacy trade executes the certified plan directly (no legacy modal needed)', async () => {
+  it('non-expert V2 never executes on the Swap click itself (it opens the V2 confirmation; see v2ConfirmModal tests)', async () => {
     const b = bindingFor('V2')
     state.binding = b.value
     renderButton({ isExpertMode: false })
     fireEvent.click(screen.getByTestId('cta'))
     await Promise.resolve()
-    expect(b.consume).toHaveBeenCalledTimes(1)
+    expect(b.consume).toHaveBeenCalledTimes(0)
     expect(state.legacySwapCalls).toBe(0)
   })
 

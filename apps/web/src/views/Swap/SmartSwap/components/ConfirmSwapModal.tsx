@@ -14,6 +14,8 @@ import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import ConfirmSwapModalContainer from '../../components/ConfirmSwapModalContainer'
 import TransactionConfirmSwapContentWithSmartRouter from './TransactionConfirmSwapContent'
+import V2ConfirmSwapContent from './V2ConfirmSwapContent'
+import type { SmartSwapV2ExecutionDisplay } from '../utils/v2ExecutionDisplay'
 
 const PancakeRouterSlippageErrorMsg =
   'This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.'
@@ -68,6 +70,9 @@ interface ConfirmSwapModalProps {
   swapErrorMessage?: string
   customOnDismiss?: () => void
   openSettingModal?: () => void
+  /** BSC SmartSwap V2: pinned certified plan facts. When absent the legacy confirmation is unchanged. */
+  v2Execution?: SmartSwapV2ExecutionDisplay
+  v2ConfirmDisabled?: boolean
 }
 
 const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & ConfirmSwapModalProps>> = ({
@@ -84,6 +89,8 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
   attemptingTxn,
   txHash,
   openSettingModal,
+  v2Execution,
+  v2ConfirmDisabled = false,
 }) => {
   const { chainId } = useActiveChainId()
   const { t } = useTranslation()
@@ -103,6 +110,8 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
           onDismiss={onDismiss}
           message={swapErrorMessage}
         />
+      ) : v2Execution ? (
+        <V2ConfirmSwapContent v2={v2Execution} onConfirm={onConfirm} disabledConfirm={v2ConfirmDisabled} />
       ) : (
         <TransactionConfirmSwapContentWithSmartRouter
           trade={trade}
@@ -125,18 +134,28 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
       onDismiss,
       openSettingModal,
       currencyBalances,
+      v2Execution,
+      v2ConfirmDisabled,
     ],
   )
 
   // text to show while loading
   const pendingText = useMemo(() => {
+    if (v2Execution) {
+      return t('Swapping %amountA% %symbolA% for %amountB% %symbolB%', {
+        amountA: v2Execution.inputAmount.toSignificant(6),
+        symbolA: v2Execution.inputAmount.currency.symbol ?? '',
+        amountB: v2Execution.outputAmount.toSignificant(6),
+        symbolB: v2Execution.outputAmount.currency.symbol ?? '',
+      })
+    }
     return t('Swapping %amountA% %symbolA% for %amountB% %symbolB%', {
       amountA: trade.inputAmount?.toSignificant(6) ?? '',
       symbolA: trade.inputAmount?.currency?.symbol ?? '',
       amountB: trade.outputAmount?.toSignificant(6) ?? '',
       symbolB: trade.outputAmount?.currency?.symbol ?? '',
     })
-  }, [t, trade])
+  }, [t, trade, v2Execution])
 
   if (!chainId) return null
 
@@ -149,7 +168,7 @@ const ConfirmSwapModal: React.FC<React.PropsWithChildren<InjectedModalProps & Co
           chainId={chainId}
           hash={txHash}
           onDismiss={handleDismiss}
-          currencyToAdd={trade?.outputAmount.currency}
+          currencyToAdd={v2Execution ? v2Execution.outputAmount.currency : trade?.outputAmount.currency}
         />
       ) : (
         confirmationContent()

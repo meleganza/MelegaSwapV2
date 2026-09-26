@@ -127,3 +127,53 @@ export function resolveSmartSwapExecutionDisplay(input: {
     return PENDING_DISPLAY
   }
 }
+
+/**
+ * V2 confirmation pin: the modal shows exactly the plan/display the user clicked Swap on. A refresh may update the
+ * form, never the open modal. The review key covers everything the user reviews (winner, router, minUserOut, fee,
+ * freshness), so a same-economics re-derivation (e.g. allowance re-read) does not count as a replacement.
+ */
+export interface PinnedV2Confirmation {
+  plan: V2UserExecutionPlan
+  display: SmartSwapV2ExecutionDisplay
+  reviewKey: string
+}
+
+export function v2PlanReviewKey(plan: V2UserExecutionPlan): string | null {
+  const intent = plan.binding?.intent
+  if (!plan.ok || !intent || !plan.freshUntilIso) return null
+  return [plan.requestKey, plan.winnerVenueId, intent.router, intent.minUserOut, intent.feeAmount, plan.freshUntilIso].join('|')
+}
+
+export function pinV2Confirmation(
+  plan: V2UserExecutionPlan,
+  display: SmartSwapV2ExecutionDisplay | null | undefined,
+): PinnedV2Confirmation | null {
+  const reviewKey = v2PlanReviewKey(plan)
+  if (!display || !reviewKey || display.freshUntilIso !== plan.freshUntilIso) return null
+  return { plan, display, reviewKey }
+}
+
+export const PINNED_V2_CONFIRMATION_STATUS = {
+  CURRENT: 'CURRENT',
+  /** Past the pinned plan's freshUntil: never submit; close and return to the re-quote lifecycle. */
+  EXPIRED: 'EXPIRED',
+  /** A different fresh plan (new winner/minOut/freshness) replaced the pinned one: close, user reviews again. */
+  REPLACED: 'REPLACED',
+  /** Transient (e.g. allowance re-read): keep the pinned facts, confirmation disabled. */
+  NOT_READY: 'NOT_READY',
+} as const
+export type PinnedV2ConfirmationStatus = (typeof PINNED_V2_CONFIRMATION_STATUS)[keyof typeof PINNED_V2_CONFIRMATION_STATUS]
+
+export function pinnedV2ConfirmationStatus(
+  pinned: PinnedV2Confirmation,
+  current: { active: boolean; plan: V2UserExecutionPlan },
+  nowMs: number,
+): PinnedV2ConfirmationStatus {
+  // Same boundary as consumePreparedV2UserPlan (stale when now > freshUntil).
+  const freshUntil = Date.parse(pinned.plan.freshUntilIso ?? '')
+  if (!Number.isFinite(freshUntil) || !(nowMs <= freshUntil)) return PINNED_V2_CONFIRMATION_STATUS.EXPIRED
+  if (current.plan.ok && v2PlanReviewKey(current.plan) !== pinned.reviewKey) return PINNED_V2_CONFIRMATION_STATUS.REPLACED
+  if (!current.active) return PINNED_V2_CONFIRMATION_STATUS.NOT_READY
+  return PINNED_V2_CONFIRMATION_STATUS.CURRENT
+}

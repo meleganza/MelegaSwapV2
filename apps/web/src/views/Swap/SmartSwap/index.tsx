@@ -499,6 +499,7 @@ export const SmartSwapForm: React.FC<{
               allowedSlippage={allowedSlippage}
               onUserInput={onUserInput}
               v2Binding={v2Binding}
+              v2ExecutionDisplay={v2Exec}
               legacyFallback={
                 tradeInfo?.fallbackV2 && !kerlEnforced ? (
                   <SwapCommitButton
