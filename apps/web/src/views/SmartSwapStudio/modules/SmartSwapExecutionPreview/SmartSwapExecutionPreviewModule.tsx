@@ -12,6 +12,8 @@ import { SmartSwapCompactMetrics } from './SmartSwapCompactMetrics'
 import { SmartSwapInsightCard } from './SmartSwapInsightCard'
 import { resolveExecutionSourceLabel } from './resolveExecutionSourceLabel'
 import { useSmartSwapExecutionPreview } from './useSmartSwapExecutionPreview'
+import { PREVIEW_TRUTH, buildV2ExecutionPreviewView } from './v2PreviewTruth'
+import { useSmartSwapExecutionTruth } from 'views/Swap/SmartSwap/SmartSwapExecutionTruthContext'
 import { useSmartSwapFeeTransparency } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
 import { useSmartSwapAIAssistance } from 'views/SmartSwapStudio/modules/SmartSwapAIAssistance'
 import {
@@ -148,8 +150,13 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
     /* intentional: mode changes must not clear detailsOpen */
   }, [mode])
 
-  const hops = preview?.hopVisualization ?? []
-  const source = resolveExecutionSourceLabel(preview)
+  // One execution truth: while BSC V2 is the active public path (V2 or re-quoting) the preview renders ONLY the
+  // canonical display shared by the SmartSwap form / CTA / confirmation modal, never the legacy Melega trade below.
+  const v2View = buildV2ExecutionPreviewView(useSmartSwapExecutionTruth())
+  const hops = v2View ? v2View.hops : preview?.hopVisualization ?? []
+  const source = v2View
+    ? { label: v2View.sourceLabel, detail: v2View.sourceDetail }
+    : resolveExecutionSourceLabel(preview)
 
   const impact = preview ? formatImpactLabel(preview.priceImpactPercent, preview.priceImpactSeverity) : '—'
   const impactTone =
@@ -194,7 +201,7 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
   }, [preview, gasPrice, quoteChainId])
   const protocolFee = gasFeePlan ? `~${gasFeePlan.display.protocolFeeBnb} ${gasFeePlan.fee.feeAsset}` : '—'
 
-  const metrics = [
+  const legacyMetrics = [
     { label: 'Expected output', value: expected },
     { label: 'Minimum received', value: minimum },
     { label: 'Price impact', value: impact, tone: impactTone as 'ok' | 'warn' | 'neutral' },
@@ -207,6 +214,7 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
         : feeModel.unavailableReason ?? 'Fee estimate unavailable',
     },
   ]
+  const metrics = v2View ? v2View.metrics : legacyMetrics
 
   const aiBody = idle
     ? '—'
@@ -220,6 +228,11 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
       data-smart-ux-composition="true"
       data-intel-mode={mode}
       data-smart-idle={idle ? 'true' : 'false'}
+      data-smartswap-preview-truth={v2View ? v2View.truth : PREVIEW_TRUTH.LEGACY}
+      data-smartswap-preview-venue={v2View?.venueId ?? undefined}
+      data-smartswap-preview-router={v2View?.router ?? undefined}
+      data-smartswap-preview-expected-raw={v2View?.expectedOutputRaw ?? undefined}
+      data-smartswap-preview-min-raw={v2View?.minimumReceivedRaw ?? undefined}
     >
       {isSmart ? (
         <>
@@ -234,11 +247,11 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
             />
           ) : null}
           <SmartSwapCompactMetrics items={metrics} />
-          {!compact ? <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} /> : null}
+          {!compact && !v2View ? <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} /> : null}
         </>
       ) : null}
 
-      {!compact ? (
+      {!compact && !v2View ? (
         <AccordionShell data-execution-details-accordion data-execution-details-open={detailsOpen ? 'true' : 'false'}>
           <Toggle
             type="button"
