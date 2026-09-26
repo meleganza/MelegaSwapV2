@@ -14,6 +14,7 @@ import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
+import { SmartSwapExecutionTruthScope } from 'views/Swap/SmartSwap/SmartSwapExecutionTruthContext'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
 import { SmartSwapProductTabs, type SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
@@ -177,9 +178,12 @@ const HomeSwapInner: React.FC = () => {
   )
 }
 
+// The execution preview is a sibling of the SmartSwap form on Home: the scope hands it the form's single execution truth.
 export const HomeSwapPanel: React.FC = () => (
   <SwapFeaturesProvider>
-    <HomeSwapInner />
+    <SmartSwapExecutionTruthScope>
+      <HomeSwapInner />
+    </SmartSwapExecutionTruthScope>
   </SwapFeaturesProvider>
 )
 

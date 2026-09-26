@@ -52,11 +52,8 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 import { isSmartSwapV2PublicCutoverActive, useSmartSwapV2CtaBinding } from './hooks/useSmartSwapV2CtaBinding'
-import {
-  SMARTSWAP_DISPLAY_MODE,
-  resolveSmartSwapExecutionDisplay,
-  shouldRenderLegacyExecutionPreview,
-} from './utils/v2ExecutionDisplay'
+import { SMARTSWAP_DISPLAY_MODE, resolveSmartSwapExecutionDisplay } from './utils/v2ExecutionDisplay'
+import { SmartSwapExecutionTruthContext, usePublishSmartSwapExecutionTruth } from './SmartSwapExecutionTruthContext'
 
 export const SmartSwapForm: React.FC<{
   handleOutputSelect: (newCurrencyOutput: Currency) => void
@@ -149,6 +146,8 @@ export const SmartSwapForm: React.FC<{
         : resolveSmartSwapExecutionDisplay({ decision: v2Decision, plan: v2Plan, v2Pending, inputCurrency, outputCurrency }),
     [showWrap, v2Decision, v2Plan, v2Pending, inputCurrency, outputCurrency],
   )
+  // One execution truth: the execution preview renders this same display (sibling preview via the Home scope).
+  usePublishSmartSwapExecutionTruth(v2Display)
   const v2Exec = v2Display.mode === SMARTSWAP_DISPLAY_MODE.V2 ? v2Display : null
   const v2DisplayPending = v2Display.mode === SMARTSWAP_DISPLAY_MODE.V2_PENDING
 
@@ -416,7 +415,11 @@ export const SmartSwapForm: React.FC<{
               onSlippageClick={onPresentSettingsModal}
             />
           )}
-          {shouldRenderLegacyExecutionPreview(v2Display) ? executionPreview : null}
+          {executionPreview ? (
+            <SmartSwapExecutionTruthContext.Provider value={v2Display}>
+              {executionPreview}
+            </SmartSwapExecutionTruthContext.Provider>
+          ) : null}
           {!swapIsUnsupported ? (
             !showWrap && v2Exec ? (
               <AdvancedSwapDetailsDropdown

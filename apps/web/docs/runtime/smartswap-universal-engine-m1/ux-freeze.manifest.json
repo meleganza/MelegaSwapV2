@@ -17,10 +17,23 @@
       "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx",
       "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx",
       "src/views/Trade/TradeTerminalScreen.tsx"
+    ],
+    "amendments": [
+      {
+        "id": "SMARTSWAP_V2_PREVIEW_TRUTH_PARITY",
+        "reason": "P0: SmartSwap execution preview consumes the canonical V2 execution display (#101) via a local truth context; Home and /swap show the same V2 winner in the form and the preview",
+        "hashing": "sha256 over raw file bytes (LF), identical to the freeze tests",
+        "rehashedFiles": 3,
+        "valuesChanged": [
+          "src/views/Swap/SmartSwap/index.tsx",
+          "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx",
+          "src/views/HomeTrade/HomeSwapPanel.tsx"
+        ]
+      }
     ]
   },
   "files": {
-    "src/views/Swap/SmartSwap/index.tsx": "8460058fd5f391b05b4bafd6355a4f94535f7e7346825eacf22f0b0a883e0956",
+    "src/views/Swap/SmartSwap/index.tsx": "7a87713e3ba3af123ba0eb5842f455b49b7358ae8b2060fc0d879476f478dc64",
     "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx": "20b5de6eb41c9b89f8f26511fd241b017eff27193ef6cfa12dd1289ebfa65d33",
     "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "11c84ad5bb7d6b881b0c78777f794141141894d86be34b83bedda4ccf8e1cba3",
     "src/views/Swap/SmartSwap/components/SwapModalFooter.tsx": "9a4c7fcd12928403d4c5b06b35cdae42661e44b0c4183115de4c71c80480f4f4",
@@ -31,7 +44,7 @@
     "src/views/SmartSwapStudio/modules/SmartSwapHeroTrustPanel.tsx": "acd82c0599bd74bffa5e923b805e922b2be2a3cdde0ed9975f919574d1d3dea6",
     "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapVisualRoute.tsx": "9af44549802f891bab2b49d217739e9a5924340ae4856a4897d8d07688619885",
     "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewPanel.tsx": "304c3acafc9c07233251facac8173af1ab9fd340589c078a50ad30caa57d2405",
-    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx": "e7cedaafe9f9446d79dda3f440875d145fc270a671067d305a63dee5974aa8bf",
+    "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx": "61c448f8ba2e7d99514ce1d9827e2d19cd87ff733d08c0a52cf2e731e2b145b1",
     "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapCompactMetrics.tsx": "dd16f5d6ab2594f6075b4c998fcfae74d2dca189726733b473ce39d46befd0f4",
     "src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/SmartSwapFeeTransparencyPanel.tsx": "d758f00239c2fb6d9b3d2d221c868669eef979718f748e1bafb116229523e5e3",
     "src/views/SmartSwapStudio/modules/SmartSwapExecutionHandoff/SmartSwapExecutionHandoffPanel.tsx": "f5516361e92917c03543fb765bc62edb919aee0f6d53e2da6afc8bdd2a12c431",
@@ -39,7 +52,7 @@
     "src/views/SmartSwapStudio/modules/SmartSwapAIAssistance/SmartSwapAIAssistancePanel.tsx": "aed0783d42682abeea2ab15e8edf38766225daf7f452dbcd1e322206fb682ce4",
     "src/views/Trade/TradeCockpit.tsx": "fd0ba8c537658d7c6691d3b596a3ddb2eabb3d734aae18708e1ccd8bd00a02ef",
     "src/views/Trade/TradeTerminalScreen.tsx": "c6e6415720df7f78fff890922252224326332aa1f6b0a2337190df91b198a133",
-    "src/views/HomeTrade/HomeSwapPanel.tsx": "efbcc28672750761580be0bd78d52e873c38c6ccd493d593be20dc034500d45f",
+    "src/views/HomeTrade/HomeSwapPanel.tsx": "528c5fb0d2d77ec1db60bd4c9667bb40ef915c2f7f15176e7dbadbb92023ccc3",
     "src/views/HomeTrade/HomeSwapPanelShell.tsx": "dabf33aa19dcb554212cc828abd4aa7d32251abf60f412491cf56947266fd331",
     "src/components/DexPricing/DexSwapFeeDisclosure.tsx": "d062f566342ee13aa66603c0e165b8d3f3aca4a11bdd31d1b59b69496e25f467"
   }
