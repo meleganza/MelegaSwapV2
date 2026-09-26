@@ -274,21 +274,26 @@ export interface SmartSwapShadowRuntimeFacts {
   shadow: ShadowRuntimePreflight
 }
 
+type SharedShadowBuilt = {
+  request: SmartSwapRequest | null
+  requestKey: string | null
+  unavailableReason: string | null
+}
+
 type SharedShadowEntry = {
   key: string
   generation: number
   result: ShadowRuntimePreflight
   listeners: Set<(next: ShadowRuntimePreflight) => void>
+  built: SharedShadowBuilt
+  /** True while the entry's current generation competition is unresolved (dedupes same-request refreshes). */
+  inflight: boolean
 }
 
 const sharedShadowEntries = new Map<string, SharedShadowEntry>()
 let sharedShadowGeneration = 0
 
-function sharedShadowKey(built: {
-  request: SmartSwapRequest | null
-  requestKey: string | null
-  unavailableReason: string | null
-}): string {
+function sharedShadowKey(built: SharedShadowBuilt): string {
   if (built.unavailableReason) return `unavail:${built.unavailableReason}:${built.requestKey ?? ''}`
   if (!built.request || !built.requestKey) return 'idle'
   return `run:${built.requestKey}`
@@ -299,11 +304,45 @@ function publishSharedShadow(entry: SharedShadowEntry, next: ShadowRuntimePrefli
   entry.listeners.forEach((listener) => listener(next))
 }
 
-function getOrStartSharedShadow(built: {
-  request: SmartSwapRequest | null
-  requestKey: string | null
-  unavailableReason: string | null
-}): SharedShadowEntry {
+function loadingSharedShadow(requestKey: string | null, generation: number): ShadowRuntimePreflight {
+  return {
+    ...IDLE_SHADOW_RUNTIME_PREFLIGHT,
+    status: 'loading' as const,
+    requestKey,
+    generation,
+  }
+}
+
+/** Runs the entry's CURRENT generation. Only that generation may publish; superseded/evicted results are discarded. */
+function runSharedShadowGeneration(entry: SharedShadowEntry): void {
+  const { generation, built } = entry
+  entry.inflight = true
+  void runShadowRuntimePreflightAttempt({
+    generation,
+    currentGeneration: () => entry.generation,
+    request: built.request,
+    requestKey: built.requestKey,
+    unavailableReason: built.unavailableReason,
+  })
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      return applyShadowRuntimeResult({
+        startedGeneration: generation,
+        currentGeneration: entry.generation,
+        requestKey: built.requestKey,
+        winner: null,
+        error: message,
+      })
+    })
+    .then((next) => {
+      if (!acceptShadowGeneration(generation, entry.generation)) return
+      entry.inflight = false
+      if (!next) return
+      publishSharedShadow(entry, next)
+    })
+}
+
+function getOrStartSharedShadow(built: SharedShadowBuilt): SharedShadowEntry {
   const key = sharedShadowKey(built)
   const existing = sharedShadowEntries.get(key)
   if (existing) return existing
@@ -314,34 +353,54 @@ function getOrStartSharedShadow(built: {
     ? { ...IDLE_SHADOW_RUNTIME_PREFLIGHT, generation }
     : built.unavailableReason
       ? unavailableShadowRuntime(built.unavailableReason, generation, built.requestKey)
-      : {
-          ...IDLE_SHADOW_RUNTIME_PREFLIGHT,
-          status: 'loading' as const,
-          requestKey: built.requestKey,
-          generation,
-        }
+      : loadingSharedShadow(built.requestKey, generation)
   const entry: SharedShadowEntry = {
     key,
     generation,
     result: initial,
     listeners: new Set(),
+    built,
+    inflight: false,
   }
   sharedShadowEntries.set(key, entry)
 
-  if (built.request || built.unavailableReason) {
-    void runShadowRuntimePreflightAttempt({
-      generation,
-      currentGeneration: () => entry.generation,
-      request: built.request,
-      requestKey: built.requestKey,
-      unavailableReason: built.unavailableReason,
-    }).then((next) => {
-      if (!next) return
-      publishSharedShadow(entry, next)
-    })
-  }
+  if (built.request || built.unavailableReason) runSharedShadowGeneration(entry)
 
   return entry
+}
+
+/**
+ * Same-request refresh (plan freshness expiry or the user's "Refresh price"): re-runs the factual competition for the
+ * EXISTING shared entry of `requestKey` under a new generation. requestKey identity is preserved, consumers see
+ * `loading` while it runs, late results of the superseded generation are discarded, and an unresolved generation is
+ * reused instead of starting a duplicate competition. Returns true only when a new competition started.
+ */
+export function refreshSharedShadowRuntime(requestKey: string | null): boolean {
+  if (!requestKey) return false
+  const entry = sharedShadowEntries.get(`run:${requestKey}`)
+  if (!entry || !entry.built.request || entry.inflight || entry.listeners.size === 0) return false
+  sharedShadowGeneration += 1
+  entry.generation = sharedShadowGeneration
+  publishSharedShadow(entry, loadingSharedShadow(requestKey, entry.generation))
+  runSharedShadowGeneration(entry)
+  return true
+}
+
+/** Evict an entry once no consumer is subscribed (bounded cache; an old amount never resurrects an old result). */
+function releaseSharedShadow(entry: SharedShadowEntry): void {
+  if (entry.listeners.size > 0) return
+  // Deferred so an effect re-subscribing in the same commit keeps the entry.
+  void Promise.resolve().then(() => {
+    if (entry.listeners.size > 0 || sharedShadowEntries.get(entry.key) !== entry) return
+    sharedShadowEntries.delete(entry.key)
+    entry.generation = -1
+    entry.inflight = false
+  })
+}
+
+/** Test-only view of the shared cache size. */
+export function sharedShadowRuntimeEntryCountForTests(): number {
+  return sharedShadowEntries.size
 }
 
 export function resetSharedShadowRuntimeForTests(): void {
@@ -400,13 +459,20 @@ export function useSmartSwapShadowRuntimeFacts(): SmartSwapShadowRuntimeFacts {
     entry.listeners.add(setState)
     return () => {
       entry.listeners.delete(setState)
+      releaseSharedShadow(entry)
     }
   }, [built])
+
+  // Until the effect subscribes to the current request's entry, never expose another request's (or idle) result.
+  const shadow =
+    state.requestKey !== built.requestKey && built.request && built.requestKey && !built.unavailableReason
+      ? loadingSharedShadow(built.requestKey, 0)
+      : state
 
   return {
     request: built.request,
     requestKey: built.requestKey,
-    shadow: state,
+    shadow,
   }
 }
 

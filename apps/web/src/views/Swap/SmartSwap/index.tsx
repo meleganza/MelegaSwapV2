@@ -51,7 +51,12 @@ import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
-import { isSmartSwapV2PublicCutoverActive } from './hooks/useSmartSwapV2CtaBinding'
+import { isSmartSwapV2PublicCutoverActive, useSmartSwapV2CtaBinding } from './hooks/useSmartSwapV2CtaBinding'
+import {
+  SMARTSWAP_DISPLAY_MODE,
+  resolveSmartSwapExecutionDisplay,
+  shouldRenderLegacyExecutionPreview,
+} from './utils/v2ExecutionDisplay'
 
 export const SmartSwapForm: React.FC<{
   handleOutputSelect: (newCurrencyOutput: Currency) => void
@@ -134,6 +139,19 @@ export const SmartSwapForm: React.FC<{
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
 
+  // Single SmartSwap V2 CTA binding instance (CTA + display share the same plan, latch and refresh lifecycle).
+  const v2Binding = useSmartSwapV2CtaBinding()
+  const { decision: v2Decision, plan: v2Plan, v2Pending, refreshV2Quote } = v2Binding
+  const v2Display = useMemo(
+    () =>
+      showWrap
+        ? ({ mode: SMARTSWAP_DISPLAY_MODE.LEGACY } as const)
+        : resolveSmartSwapExecutionDisplay({ decision: v2Decision, plan: v2Plan, v2Pending, inputCurrency, outputCurrency }),
+    [showWrap, v2Decision, v2Plan, v2Pending, inputCurrency, outputCurrency],
+  )
+  const v2Exec = v2Display.mode === SMARTSWAP_DISPLAY_MODE.V2 ? v2Display : null
+  const v2DisplayPending = v2Display.mode === SMARTSWAP_DISPLAY_MODE.V2_PENDING
+
   const parsedAmounts = showWrap
     ? {
         [Field.INPUT]: parsedAmount,
@@ -141,7 +159,14 @@ export const SmartSwapForm: React.FC<{
       }
     : {
         [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : tradeInfo?.inputAmount,
-        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : tradeInfo?.outputAmount,
+        [Field.OUTPUT]:
+          independentField === Field.OUTPUT
+            ? parsedAmount
+            : v2Exec
+            ? v2Exec.outputAmount
+            : v2DisplayPending
+            ? undefined
+            : tradeInfo?.outputAmount,
       }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
@@ -231,8 +256,10 @@ export const SmartSwapForm: React.FC<{
   const onRefreshPrice = useCallback(() => {
     if (hasAmount) {
       refreshBlockNumber()
+      // Same control also re-runs the SmartSwap V2 competition for the current request (no-op when V2 is not live).
+      refreshV2Quote()
     }
-  }, [hasAmount, refreshBlockNumber])
+  }, [hasAmount, refreshBlockNumber, refreshV2Quote])
 
   const smartRouterOn = !!tradeInfo && !tradeInfo.fallbackV2
 
@@ -312,7 +339,9 @@ export const SmartSwapForm: React.FC<{
           <CurrencyInputPanel
             value={formattedAmounts[Field.OUTPUT]}
             onUserInput={handleTypeOutput}
-            label={independentField === Field.INPUT && !showWrap && tradeInfo ? t('To (estimated)') : t('To')}
+            label={
+              independentField === Field.INPUT && !showWrap && (tradeInfo || v2Exec) ? t('To (estimated)') : t('To')
+            }
             showMaxButton={false}
             currency={currencies[Field.OUTPUT]}
             balanceOverride={currencyBalances[Field.OUTPUT]}
@@ -372,13 +401,13 @@ export const SmartSwapForm: React.FC<{
           {showWrap ? null : (
             <SwapUI.Info
               price={
-                Boolean(tradeInfo) && (
+                (Boolean(tradeInfo) || v2Display.mode !== SMARTSWAP_DISPLAY_MODE.LEGACY) && (
                   <>
                     <SwapUI.InfoLabel>{t('Price')}</SwapUI.InfoLabel>
-                    {isLoading ? (
+                    {isLoading || v2DisplayPending ? (
                       <Skeleton width="100%" ml="8px" height="24px" />
                     ) : (
-                      <SwapUI.TradePrice price={tradeInfo?.executionPrice} />
+                      <SwapUI.TradePrice price={v2Exec ? v2Exec.executionPrice : tradeInfo?.executionPrice} />
                     )}
                   </>
                 )
@@ -387,11 +416,29 @@ export const SmartSwapForm: React.FC<{
               onSlippageClick={onPresentSettingsModal}
             />
           )}
-          {executionPreview}
+          {shouldRenderLegacyExecutionPreview(v2Display) ? executionPreview : null}
           {!swapIsUnsupported ? (
-            !showWrap &&
-            tradeInfo && (
+            !showWrap && v2Exec ? (
               <AdvancedSwapDetailsDropdown
+                hasStablePair={false}
+                path={v2Exec.path}
+                priceImpactWithoutFee={v2Exec.priceImpact}
+                slippageAdjustedAmounts={{ [Field.INPUT]: v2Exec.inputAmount, [Field.OUTPUT]: v2Exec.minimumReceived }}
+                inputAmount={v2Exec.inputAmount}
+                outputAmount={v2Exec.outputAmount}
+                tradeType={v2Exec.tradeType}
+                v2Execution={{
+                  venueLabel: v2Exec.venueLabel,
+                  router: v2Exec.router,
+                  feeAmount: v2Exec.feeAmount,
+                  feeBps: v2Exec.feeBps,
+                }}
+              />
+            ) : (
+              !showWrap &&
+              !v2DisplayPending &&
+              tradeInfo && (
+                <AdvancedSwapDetailsDropdown
                 hasStablePair={smartRouterOn}
                 pairs={tradeInfo.route.pairs}
                 path={tradeInfo.route.path}
@@ -402,6 +449,7 @@ export const SmartSwapForm: React.FC<{
                 outputAmount={tradeInfo.outputAmount}
                 tradeType={tradeInfo.tradeType}
               />
+              )
             )
           ) : (
             <UnsupportedCurrencyFooter currencies={[currencies.INPUT, currencies.OUTPUT]} />
@@ -450,6 +498,8 @@ export const SmartSwapForm: React.FC<{
               recipient={recipient}
               allowedSlippage={allowedSlippage}
               onUserInput={onUserInput}
+              v2Binding={v2Binding}
+              v2ExecutionDisplay={v2Exec}
               legacyFallback={
                 tradeInfo?.fallbackV2 && !kerlEnforced ? (
                   <SwapCommitButton

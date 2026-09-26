@@ -162,8 +162,47 @@ function TradeSummary({
   )
 }
 
+/** Certified BSC SmartSwap V2 plan facts (display only). When present, legacy Melega fee/LP rows are not shown. */
+export interface AdvancedSwapDetailsV2Execution {
+  venueLabel: string
+  router: string
+  feeAmount: CurrencyAmount<Currency>
+  feeBps: number
+}
+
+function V2ExecutionRows({ v2 }: { v2: AdvancedSwapDetailsV2Execution }) {
+  const { t } = useTranslation()
+  return (
+    <SummaryColumn data-smartswap-v2-details>
+      <RowBetween>
+        <Text fontSize="14px" color="textSubtle">
+          {t('Venue')}
+        </Text>
+        <Text fontSize="14px" data-smartswap-v2-venue>
+          {v2.venueLabel}
+        </Text>
+      </RowBetween>
+      <RowBetween>
+        <Text fontSize="14px" color="textSubtle">
+          {t('SmartSwap fee')}
+        </Text>
+        <Text fontSize="14px">{`${v2.feeAmount.toSignificant(4)} ${v2.feeAmount.currency.symbol} (${(
+          v2.feeBps / 100
+        ).toFixed(2)}%)`}</Text>
+      </RowBetween>
+      <RowBetween>
+        <Text fontSize="14px" color="textSubtle">
+          {t('Router')}
+        </Text>
+        <Text fontSize="14px" title={v2.router}>{`${v2.router.slice(0, 6)}…${v2.router.slice(-4)}`}</Text>
+      </RowBetween>
+    </SummaryColumn>
+  )
+}
+
 export interface AdvancedSwapDetailsProps {
   hasStablePair?: boolean
+  v2Execution?: AdvancedSwapDetailsV2Execution
   pairs?: Pair[]
   path?: Currency[]
   priceImpactWithoutFee?: Percent
@@ -187,6 +226,7 @@ export function AdvancedSwapDetails({
   outputAmount,
   tradeType,
   hasStablePair,
+  v2Execution,
 }: AdvancedSwapDetailsProps) {
   const { t } = useTranslation()
   const [isModalOpen, setIsModalOpen] = useState(() => false)
@@ -204,7 +244,8 @@ export function AdvancedSwapDetails({
             realizedLPFee={realizedLPFee}
             hasStablePair={hasStablePair}
           />
-          {outputAmount && (
+          {v2Execution && <V2ExecutionRows v2={v2Execution} />}
+          {outputAmount && !v2Execution && (
             <DexSwapFeeDisclosure
               trade={{
                 inputAmount,
@@ -227,7 +268,9 @@ export function AdvancedSwapDetails({
                   />
                 </span>
                 <SwapRoute path={path} />
-                <SearchIcon style={{ cursor: 'pointer' }} onClick={() => setIsModalOpen(true)} />
+                {v2Execution ? null : (
+                  <SearchIcon style={{ cursor: 'pointer' }} onClick={() => setIsModalOpen(true)} />
+                )}
                 <ModalV2 closeOnOverlayClick isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
                   <Modal
                     title={
