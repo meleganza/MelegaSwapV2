@@ -50,7 +50,7 @@ export const BSC_V2_PUBLIC_CUTOVER_CHAIN_ID = 56 as const
  * Single explicit BSC public-cutover truth.
  * Software rollback: set to false -> public CTA returns to LEGACY (no contract redeploy).
  */
-export const BSC_V2_PUBLIC_CUTOVER_ENABLED: boolean = false
+export const BSC_V2_PUBLIC_CUTOVER_ENABLED: boolean = true
 
 /**
  * Chain-scoped production cutover. True ONLY for chainId 56 while the BSC truth is enabled.

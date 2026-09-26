@@ -228,8 +228,9 @@ async function uniswapWinner(request: SmartSwapRequest) {
 
 /**
  * CONTEXT B: V2-enabled behaviour is proven through the EXISTING rollback/test seam
- * (`bscPublicCutoverEnabled: true`). The production default is the temporary rollback
- * (BSC_V2_PUBLIC_CUTOVER_ENABLED=false, CONTEXT A) and is asserted separately below.
+ * (`bscPublicCutoverEnabled: true`). The production default is now the BSC public cutover
+ * (BSC_V2_PUBLIC_CUTOVER_ENABLED=true, CONTEXT D); the rollback is proven through the explicit
+ * `bscPublicCutoverEnabled: false` seam (CONTEXT A).
  */
 const V2_SEAM = { bscPublicCutoverEnabled: true } as const
 
@@ -326,8 +327,8 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: config + chain-scoped truth', 
   })
 
   it('3/4/5: isProductionCutoverAllowed is true only for 56; no-chain/global calls cannot authorize', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
-    expect(isProductionCutoverAllowed(56)).toBe(false)
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
+    expect(isProductionCutoverAllowed(56)).toBe(true)
     expect(isProductionCutoverAllowed(1)).toBe(false)
     expect(isProductionCutoverAllowed(97)).toBe(false)
     expect(isProductionCutoverAllowed(137)).toBe(false)
@@ -871,12 +872,13 @@ describe('MELEGA-SMARTSWAP-V2-BSC-PUBLIC-CUTOVER: real hook binding (CONTEXT B: 
   })
 })
 
-describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', () => {
-  it('cutover truth is off: BSC_V2_PUBLIC_CUTOVER_ENABLED=false, isProductionCutoverAllowed(56)=false, form routing legacy', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
-    expect(isProductionCutoverAllowed(56)).toBe(false)
+describe('CONTEXT A: rollback seam (explicit bscPublicCutoverEnabled: false) = BSC V2 rollback', () => {
+  it('cutover truth: production default ON for 56 only; the explicit false seam turns BSC off; form routing BSC only', () => {
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
+    expect(isProductionCutoverAllowed(56)).toBe(true)
+    expect(isProductionCutoverAllowed(56, false)).toBe(false)
     expect(isProductionCutoverAllowed(1)).toBe(false)
-    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(false)
+    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(true)
     expect(isSmartSwapV2PublicCutoverActive(1)).toBe(false)
   })
 
@@ -891,7 +893,7 @@ describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', 
     expect(V2_EXECUTION_RUNTIME_CONFIG[1].executorAddress).toBeNull()
   })
 
-  it('plan built with the production default is never production-cutover and the public decision is LEGACY', async () => {
+  it('plan built with the rollback seam is never production-cutover and the public decision is LEGACY', async () => {
     const { request } = bscErc20()
     const winner = await melegaWinner(request!)
     const plan = buildV2UserExecutionPlan({
@@ -904,24 +906,25 @@ describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', 
       allowanceReadStatus: 'ok',
       nowIso: NOW,
       deadline: DEADLINE,
+      bscPublicCutoverEnabled: false,
     })
     expect(plan.productionCutoverAllowed).toBe(false)
     expect(
       resolveSmartSwapCtaDecision({
         planOk: plan.ok,
-        cutoverAllowed: isProductionCutoverAllowed(56) && plan.productionCutoverAllowed,
+        cutoverAllowed: isProductionCutoverAllowed(56, false) && plan.productionCutoverAllowed,
         testOnlyExecutionGate: false,
         planReason: plan.reason,
       }).publicAction,
     ).toBe(V2_PUBLIC_ACTION.LEGACY)
     const rec = recorder()
     await expect(
-      consumePreparedV2UserPlan({ plan, testOnlyExecutionGate: false, cutoverAllowed: isProductionCutoverAllowed(56), ...rec }),
+      consumePreparedV2UserPlan({ plan, testOnlyExecutionGate: false, cutoverAllowed: isProductionCutoverAllowed(56, false), ...rec }),
     ).rejects.toThrow('V2_CTA_GATE_DISABLED')
     expect(rec.sent).toHaveLength(0)
   })
 
-  it('public BSC hook (ERC20 + native) is LEGACY: no Executor approval, no Executor execute reachable', async () => {
+  it('rollback seam: BSC hook (ERC20 + native) is LEGACY: no Executor approval, no Executor execute reachable', async () => {
     const erc20 = bscErc20()
     runtimeMocks.allowanceRaw = '0'
     runtimeMocks.runtime = {
@@ -929,7 +932,7 @@ describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', 
       requestKey: erc20.requestKey,
       shadow: readyShadow(erc20.request!, await melegaWinner(erc20.request!)),
     }
-    const a = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const a = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, bscPublicCutoverEnabled: false }))
     expect(a.result.current.cutoverAllowed).toBe(false)
     expect(a.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
     expect(a.result.current.v2Pending).toBe(false)
@@ -941,10 +944,50 @@ describe('CONTEXT A: production default = temporary BSC V2 rollback (no seam)', 
       requestKey: native.requestKey,
       shadow: readyShadow(native.request!, await pancakeWinner(native.request!)),
     }
-    const b = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    const b = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE, bscPublicCutoverEnabled: false }))
     expect(b.result.current.cutoverAllowed).toBe(false)
     expect(b.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
     await expect(b.result.current.consumeIfGated()).rejects.toThrow('V2_CTA_GATE_DISABLED')
+    expect(runtimeMocks.walletSends).toHaveLength(0)
+  })
+})
+
+describe('CONTEXT D: production default ON (no seam, no override)', () => {
+  it('BSC ERC20 -> V2_EXECUTE; consume sends approve(Executor) then execute(Executor) only', async () => {
+    const built = bscErc20()
+    runtimeMocks.allowanceRaw = '0'
+    runtimeMocks.runtime = { request: built.request, requestKey: built.requestKey, shadow: readyShadow(built.request!, await melegaWinner(built.request!)) }
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    expect(hook.result.current.cutoverAllowed).toBe(true)
+    expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
+    await act(async () => {
+      await hook.result.current.consumeIfGated()
+    })
+    expect(runtimeMocks.walletSends).toHaveLength(2)
+    expect(getAddress(APPROVE_IFACE.decodeFunctionData('approve', runtimeMocks.walletSends[0].data).spender)).toBe(EXECUTOR)
+    expect(runtimeMocks.walletSends[1].to).toBe(EXECUTOR)
+  })
+
+  it('BSC native -> V2_EXECUTE; exactly one execute to Executor, no approval', async () => {
+    const built = bscNative()
+    runtimeMocks.runtime = { request: built.request, requestKey: built.requestKey, shadow: readyShadow(built.request!, await pancakeWinner(built.request!)) }
+    const hook = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    expect(hook.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
+    await act(async () => {
+      await hook.result.current.consumeIfGated()
+    })
+    expect(runtimeMocks.walletSends).toEqual([expect.objectContaining({ to: EXECUTOR })])
+  })
+
+  it('Ethereum stays LEGACY: no cutover, no plan, no wallet request', async () => {
+    const built = ethErc20()
+    runtimeMocks.walletChainId = 1
+    runtimeMocks.runtime = { request: built.request, requestKey: built.requestKey, shadow: readyShadow(built.request!, await uniswapWinner(built.request!)) }
+    const eth = renderHook(() => useSmartSwapV2CtaBinding({ nowIso: NOW, deadline: DEADLINE }))
+    expect(eth.result.current.cutoverAllowed).toBe(false)
+    expect(eth.result.current.plan.ok).toBe(false)
+    expect(eth.result.current.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
+    await expect(eth.result.current.consumeIfGated()).rejects.toThrow()
     expect(runtimeMocks.walletSends).toHaveLength(0)
   })
 })
@@ -984,7 +1027,7 @@ describe('BSC public cutover — real ethers-style signer transport', () => {
 
 describe('BSC public cutover — Swap form routing truth', () => {
   it('only BSC 56 routes the form to the SmartSwap V2 CTA; Ethereum, other chains and no-chain stay on legacy routing', () => {
-    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(false)
+    expect(isSmartSwapV2PublicCutoverActive(56)).toBe(true)
     expect(isSmartSwapV2PublicCutoverActive(1)).toBe(false)
     expect(isSmartSwapV2PublicCutoverActive(97)).toBe(false)
     expect(isSmartSwapV2PublicCutoverActive(137)).toBe(false)

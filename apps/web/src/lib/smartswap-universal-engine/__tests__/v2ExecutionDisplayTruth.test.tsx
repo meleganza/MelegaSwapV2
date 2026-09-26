@@ -142,11 +142,11 @@ async function pancakePlan(
     allowanceReadStatus: nativeIn ? 'native' : 'ok',
     nowIso: NOW,
     deadline: DEADLINE,
-    ...(extra.seam === false ? {} : SEAM),
+    ...(extra.seam === false ? { bscPublicCutoverEnabled: false } : SEAM),
   })
   const decision = resolveSmartSwapCtaDecision({
     planOk: plan.ok,
-    cutoverAllowed: isProductionCutoverAllowed(56, extra.seam === false ? undefined : true) && plan.productionCutoverAllowed,
+    cutoverAllowed: isProductionCutoverAllowed(56, extra.seam === false ? false : true) && plan.productionCutoverAllowed,
     testOnlyExecutionGate: false,
     planReason: plan.reason,
   })
@@ -196,9 +196,9 @@ beforeEach(() => {
   resetV2UserLocalNonceStateForTests()
 })
 
-describe('P0 V2 display truth (seam on; production flag off)', () => {
-  it('production flag stays off', () => {
-    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(false)
+describe('P0 V2 display truth (seam on; production flag on)', () => {
+  it('production flag is on (BSC public cutover re-enabled)', () => {
+    expect(BSC_V2_PUBLIC_CUTOVER_ENABLED).toBe(true)
   })
 
   it('BNB -> USDC, V2_EXECUTE (Pancake): To (estimated)=7.76 V2 output, Minimum received = plan minUserOut ~7.70, price from V2, no legacy 1.98', async () => {
@@ -289,7 +289,7 @@ describe('P0 V2 display truth (seam on; production flag off)', () => {
     expect(d2.minimumReceived.quotient.toString()).not.toBe(d1.minimumReceived.quotient.toString())
   })
 
-  it('legacy regression: cutover default (no seam) -> LEGACY display; Ethereum -> LEGACY display; V2 failure -> LEGACY display', async () => {
+  it('legacy regression: rollback seam (explicit false) -> LEGACY display; Ethereum -> LEGACY display; V2 failure -> LEGACY display', async () => {
     const off = await pancakePlan(nativeToUsdc(), BNB_USDC_KEY, '7760000000000000000', { seam: false })
     expect(off.decision.publicAction).toBe(V2_PUBLIC_ACTION.LEGACY)
     expect(resolveSmartSwapExecutionDisplay({ decision: off.decision, plan: off.plan, v2Pending: false, inputCurrency: BNB_C, outputCurrency: USDC_C })).toEqual({
