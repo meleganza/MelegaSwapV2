@@ -157,7 +157,7 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
       venue.deepLinks?.farms ??
       venue.deepLinks?.pools ??
       venue.deepLinks?.swap ??
-      (category === 'farm' ? '/farms' : category === 'pool' ? '/pools' : '/radar')
+      (category === 'farm' ? '/farms' : category === 'pool' ? '/pools' : '/projects')
 
     const identityId =
       venue.contractAddress != null

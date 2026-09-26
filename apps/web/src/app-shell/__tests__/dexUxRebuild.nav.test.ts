@@ -73,6 +73,7 @@ describe('DEX UX Rebuild navigation', () => {
     expect(cfg).toMatch(/source:\s*'\/trending'/)
     expect(cfg).toMatch(/destination:\s*'\/projects\?sort=trending'/)
     expect(cfg).not.toMatch(/destination:\s*'\/\?focus=projects'/)
+    expect(cfg).not.toMatch(/destination:\s*'\/radar'/)
   })
 
   it('List and Passport routes exist', () => {
