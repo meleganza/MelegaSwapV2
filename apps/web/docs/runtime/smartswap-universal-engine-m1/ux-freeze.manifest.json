@@ -29,13 +29,22 @@
           "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx",
           "src/views/HomeTrade/HomeSwapPanel.tsx"
         ]
+      },
+      {
+        "id": "SMARTSWAP_P0_CONFIRM_MODAL_STABILITY",
+        "reason": "P0: the pinned V2 confirmation owns its own modal node id and keeps the V2 CTA owner mounted while pinned, so the legacy confirmSwapModal hook can no longer ping-pong the open V2 review (modal thrash)",
+        "hashing": "sha256 over raw file bytes (LF), identical to the freeze tests",
+        "rehashedFiles": 1,
+        "valuesChanged": [
+          "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx"
+        ]
       }
     ]
   },
   "files": {
     "src/views/Swap/SmartSwap/index.tsx": "7a87713e3ba3af123ba0eb5842f455b49b7358ae8b2060fc0d879476f478dc64",
     "src/views/Swap/SmartSwap/components/ConfirmSwapModal.tsx": "20b5de6eb41c9b89f8f26511fd241b017eff27193ef6cfa12dd1289ebfa65d33",
-    "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "11c84ad5bb7d6b881b0c78777f794141141894d86be34b83bedda4ccf8e1cba3",
+    "src/views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx": "263388c87a4c24bb571adbf946b8afdf364766ed6c1d9c653ba2eed7d2b307bc",
     "src/views/Swap/SmartSwap/components/SwapModalFooter.tsx": "9a4c7fcd12928403d4c5b06b35cdae42661e44b0c4183115de4c71c80480f4f4",
     "src/views/Swap/SmartSwap/components/TransactionConfirmSwapContent.tsx": "ae3a55d0a80eaf85742d57a5d095bcdbfe5c17085f61249339a3af263cb7b7a3",
     "src/views/SmartSwapStudio/SmartSwapProductActions.tsx": "f3e97ced632372ae332cfb9b02ae2e47fdeb1a3b812e44abb40bb1ee99b75759",

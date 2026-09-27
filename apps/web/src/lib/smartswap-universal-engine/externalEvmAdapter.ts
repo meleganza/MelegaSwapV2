@@ -11,7 +11,8 @@ import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './
 import { refuseV2Execution, type SmartSwapVenueAdapter, type VenueIdentity } from './venueAdapter'
 import { computeMinimumReceived, type NormalizedQuote, type SmartSwapRequest } from './quote'
 import { VENUE_SUPPORT, isQuoteCapable, type CertifiedEvmVenue } from './certifiedVenues'
-import type { ShadowQuoteSource } from './shadowQuoteSource'
+import { evmContract } from './assetIdentity'
+import { fetchBestV2PathQuote, v2CandidatePaths, type ShadowQuoteSource } from './shadowQuoteSource'
 
 function pathAddress(asset: CanonicalAssetId, wrappedNative: string | undefined): string {
   if (asset.location.kind === 'native') {
@@ -67,26 +68,28 @@ export function createExternalEvmVenueAdapter(
       if (!router || !isQuoteCapable(spec.support[chainId] ?? VENUE_SUPPORT.NOT_VERIFIED)) {
         throw new Error(`VENUE_CHAIN_UNSUPPORTED:${spec.venueId}:${chainId}`)
       }
-      const path = [pathAddress(request.inputAsset, wrapped), pathAddress(request.outputAsset, wrapped)]
-      if (path[0] === path[1]) throw new Error('NO_ROUTE')
-      const observation = await source.fetch({
-        chainId,
-        router,
-        amountInRaw: request.inputAmountRaw,
-        path,
-        signal: context.signal,
-      })
+      const tokenIn = pathAddress(request.inputAsset, wrapped)
+      const tokenOut = pathAddress(request.outputAsset, wrapped)
+      if (tokenIn === tokenOut) throw new Error('NO_ROUTE')
+      // Same bounded candidate set as every other certified V2 venue on this chain; exact same input for each path.
+      const observation = await fetchBestV2PathQuote(
+        source,
+        { chainId, router, amountInRaw: request.inputAmountRaw, signal: context.signal },
+        v2CandidatePaths(chainId, tokenIn, tokenOut, wrapped),
+      )
       if (!observation.amountOutRaw || observation.amountOutRaw === '0') throw new Error('NO_ROUTE')
+      const path = observation.path.map((address) => address.toLowerCase())
       const quotedAt = observation.quotedAt || context.nowIso
-      const hops = [
-        {
-          index: 0,
-          venueId: spec.venueId,
-          poolRef: null,
-          tokenIn: request.inputAsset,
-          tokenOut: request.outputAsset,
-        },
-      ]
+      const hops = path.slice(1).map((address, index) => ({
+        index,
+        venueId: spec.venueId,
+        poolRef: null,
+        tokenIn: index === 0 ? request.inputAsset : evmContract(chainId, path[index], chainId === 56 ? 'WBNB' : undefined, 18),
+        tokenOut:
+          index === path.length - 2
+            ? request.outputAsset
+            : evmContract(chainId, address, chainId === 56 ? 'WBNB' : undefined, 18),
+      }))
       return {
         quoteId: `${spec.venueId}:${chainId}:${path.join('>')}:${request.inputAmountRaw}`,
         venueId: spec.venueId,
