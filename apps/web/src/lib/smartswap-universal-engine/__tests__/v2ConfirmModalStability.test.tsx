@@ -6,7 +6,7 @@
  */
 import React, { Profiler } from 'react'
 import { ThemeProvider } from 'styled-components'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { getAddress } from '@ethersproject/address'
 import { Interface } from '@ethersproject/abi'
 import { CurrencyAmount, Native, Percent, Token, TradeType } from '@pancakeswap/sdk'
@@ -468,6 +468,12 @@ async function settle(rounds = 20) {
   }
 }
 
+/** Condition wait (not a sleep): the provider lazily loads its ModalRenderer chunk on first present. */
+async function untilModalOpen() {
+  await waitFor(() => expect(document.querySelector('[data-testid="confirm-modal"]')).toBeTruthy(), { timeout: 15000 })
+  await settle()
+}
+
 async function openV2(extra: Record<string, any> = {}) {
   const a = await erc20Plan()
   expect(a.decision.publicAction).toBe(V2_PUBLIC_ACTION.V2_EXECUTE)
@@ -475,7 +481,7 @@ async function openV2(extra: Record<string, any> = {}) {
   const view = render(<Ui v2Binding={b.value} v2ExecutionDisplay={a.display} {...extra} />)
   await settle()
   fireEvent.click(screen.getByTestId('cta'))
-  await settle()
+  await untilModalOpen()
   const first = snapshot()
   expect(first.text).toBeTruthy()
   expect(first.confirmDisabled).toBe(false)
@@ -596,7 +602,7 @@ describe('P0 SmartSwap confirm modal stability (real uikit ModalProvider/useModa
     expect(bb.consume).toHaveBeenCalledTimes(0)
     // new review shows the new plan
     fireEvent.click(screen.getByTestId('cta'))
-    await settle()
+    await untilModalOpen()
     const next = snapshot()
     expect(next.text).not.toBe(first.text)
     expect(next.text).toContain((better.display as any).outputAmount.toSignificant(6))
