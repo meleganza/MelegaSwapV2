@@ -18,6 +18,20 @@ const kpiCountUp = keyframes`
 `
 
 const FarmsStudioGlobalStyle = createGlobalStyle`
+  /* Only the Farm workflow needs room for selector, status and Review.
+     Preserve the shared modal shell, fixed header and internal body scrolling. */
+  [data-testid='create-farm-modal'] {
+    width: min(1360px, calc(100vw - 32px));
+    max-height: calc(100dvh - 48px);
+  }
+
+  @media (max-width: 639px) {
+    [data-testid='create-farm-modal'] {
+      width: calc(100vw - 16px);
+      max-height: calc(100dvh - 24px);
+    }
+  }
+
   [data-farms-studio-screen] {
     color: ${farmsStudioColors.text};
     background: ${farmsStudioColors.canvas};

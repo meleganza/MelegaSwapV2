@@ -1,0 +1,761 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "modal": {
+        "left": 40,
+        "top": 24,
+        "right": 1400,
+        "bottom": 876,
+        "width": 1360,
+        "height": 852
+      },
+      "search": {
+        "left": 82,
+        "top": 287,
+        "right": 390.609375,
+        "bottom": 331,
+        "width": 308.609375,
+        "height": 44
+      },
+      "selector": {
+        "left": 69,
+        "top": 228,
+        "right": 403.609375,
+        "bottom": 572,
+        "width": 334.609375,
+        "height": 344
+      },
+      "list": {
+        "left": 82,
+        "top": 339,
+        "right": 390.609375,
+        "bottom": 559,
+        "width": 308.609375,
+        "height": 220
+      },
+      "status": {
+        "left": 419.609375,
+        "top": 228,
+        "right": 828.59375,
+        "bottom": 572,
+        "width": 408.984375,
+        "height": 344
+      },
+      "review": {
+        "left": 859.59375,
+        "top": 128,
+        "right": 1386,
+        "bottom": 529,
+        "width": 526.40625,
+        "height": 401
+      },
+      "close": {
+        "left": 1340,
+        "top": 38,
+        "right": 1384,
+        "bottom": 82,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 82,
+        "top": 267,
+        "right": 390.609375,
+        "bottom": 279,
+        "width": 308.609375,
+        "height": 12
+      },
+      "searchPosition": "relative",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 82,
+          "top": 339,
+          "right": 390.609375,
+          "bottom": 395,
+          "width": 308.609375,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 403,
+          "right": 390.609375,
+          "bottom": 459,
+          "width": 308.609375,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 467,
+          "right": 390.609375,
+          "bottom": 523,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 531,
+          "right": 390.609375,
+          "bottom": 587,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 595,
+          "right": 390.609375,
+          "bottom": 651,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 659,
+          "right": 390.609375,
+          "bottom": 715,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 723,
+          "right": 390.609375,
+          "bottom": 779,
+          "width": 308.609375,
+          "height": 56,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 787,
+          "right": 390.609375,
+          "bottom": 843,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 851,
+          "right": 390.609375,
+          "bottom": 907,
+          "width": 308.609375,
+          "height": 56,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 915,
+          "right": 390.609375,
+          "bottom": 971,
+          "width": 308.609375,
+          "height": 56,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 979,
+          "right": 390.609375,
+          "bottom": 1035,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 1043,
+          "right": 390.609375,
+          "bottom": 1099,
+          "width": 308.609375,
+          "height": 56,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 82,
+          "top": 339,
+          "right": 390.609375,
+          "bottom": 395,
+          "width": 308.609375,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 403,
+          "right": 390.609375,
+          "bottom": 459,
+          "width": 308.609375,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 467,
+          "right": 390.609375,
+          "bottom": 523,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 82,
+          "top": 531,
+          "right": 390.609375,
+          "bottom": 587,
+          "width": 308.609375,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        }
+      ],
+      "overflow": [],
+      "documentOverflow": false,
+      "listOverflow": false,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 0,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 38
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "modal": {
+        "left": 16,
+        "top": 24,
+        "right": 1264,
+        "bottom": 776,
+        "width": 1248,
+        "height": 752
+      },
+      "search": {
+        "left": 58,
+        "top": 287,
+        "right": 336.375,
+        "bottom": 331,
+        "width": 278.375,
+        "height": 44
+      },
+      "selector": {
+        "left": 45,
+        "top": 228,
+        "right": 349.375,
+        "bottom": 572,
+        "width": 304.375,
+        "height": 344
+      },
+      "list": {
+        "left": 58,
+        "top": 339,
+        "right": 336.375,
+        "bottom": 559,
+        "width": 278.375,
+        "height": 220
+      },
+      "status": {
+        "left": 365.375,
+        "top": 228,
+        "right": 737.390625,
+        "bottom": 572,
+        "width": 372.015625,
+        "height": 344
+      },
+      "review": {
+        "left": 768.390625,
+        "top": 128,
+        "right": 1250,
+        "bottom": 547,
+        "width": 481.609375,
+        "height": 419
+      },
+      "close": {
+        "left": 1204,
+        "top": 38,
+        "right": 1248,
+        "bottom": 82,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 58,
+        "top": 267,
+        "right": 336.375,
+        "bottom": 279,
+        "width": 278.375,
+        "height": 12
+      },
+      "searchPosition": "relative",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 58,
+          "top": 339,
+          "right": 336.375,
+          "bottom": 395,
+          "width": 278.375,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 403,
+          "right": 336.375,
+          "bottom": 459,
+          "width": 278.375,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 467,
+          "right": 336.375,
+          "bottom": 523,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 531,
+          "right": 336.375,
+          "bottom": 587,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 595,
+          "right": 336.375,
+          "bottom": 651,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 659,
+          "right": 336.375,
+          "bottom": 715,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 723,
+          "right": 336.375,
+          "bottom": 779,
+          "width": 278.375,
+          "height": 56,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 787,
+          "right": 336.375,
+          "bottom": 843,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 851,
+          "right": 336.375,
+          "bottom": 907,
+          "width": 278.375,
+          "height": 56,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 915,
+          "right": 336.375,
+          "bottom": 971,
+          "width": 278.375,
+          "height": 56,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 979,
+          "right": 336.375,
+          "bottom": 1035,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 1043,
+          "right": 336.375,
+          "bottom": 1099,
+          "width": 278.375,
+          "height": 56,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 58,
+          "top": 339,
+          "right": 336.375,
+          "bottom": 395,
+          "width": 278.375,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 403,
+          "right": 336.375,
+          "bottom": 459,
+          "width": 278.375,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 467,
+          "right": 336.375,
+          "bottom": 523,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 58,
+          "top": 531,
+          "right": 336.375,
+          "bottom": 587,
+          "width": 278.375,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        }
+      ],
+      "overflow": [],
+      "documentOverflow": false,
+      "listOverflow": false,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 0,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 38
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "modal": {
+        "left": 8,
+        "top": 23,
+        "right": 382,
+        "bottom": 843,
+        "width": 374,
+        "height": 820
+      },
+      "search": {
+        "left": 48,
+        "top": 321,
+        "right": 342,
+        "bottom": 365,
+        "width": 294,
+        "height": 44
+      },
+      "selector": {
+        "left": 35,
+        "top": 262,
+        "right": 355,
+        "bottom": 606,
+        "width": 320,
+        "height": 344
+      },
+      "list": {
+        "left": 48,
+        "top": 373,
+        "right": 342,
+        "bottom": 593,
+        "width": 294,
+        "height": 220
+      },
+      "status": {
+        "left": 35,
+        "top": 622,
+        "right": 355,
+        "bottom": 892.5,
+        "width": 320,
+        "height": 270.5
+      },
+      "review": {
+        "left": 20,
+        "top": 1349.5,
+        "right": 370,
+        "bottom": 1778.5,
+        "width": 350,
+        "height": 429
+      },
+      "close": {
+        "left": 322,
+        "top": 37,
+        "right": 366,
+        "bottom": 81,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 48,
+        "top": 301,
+        "right": 342,
+        "bottom": 313,
+        "width": 294,
+        "height": 12
+      },
+      "searchPosition": "relative",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 48,
+          "top": 373,
+          "right": 342,
+          "bottom": 429,
+          "width": 294,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 437,
+          "right": 342,
+          "bottom": 493,
+          "width": 294,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 501,
+          "right": 342,
+          "bottom": 557,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 565,
+          "right": 342,
+          "bottom": 621,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 629,
+          "right": 342,
+          "bottom": 685,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 693,
+          "right": 342,
+          "bottom": 749,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 757,
+          "right": 342,
+          "bottom": 813,
+          "width": 294,
+          "height": 56,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 821,
+          "right": 342,
+          "bottom": 877,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 885,
+          "right": 342,
+          "bottom": 941,
+          "width": 294,
+          "height": 56,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 949,
+          "right": 342,
+          "bottom": 1005,
+          "width": 294,
+          "height": 56,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 1013,
+          "right": 342,
+          "bottom": 1069,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 1077,
+          "right": 342,
+          "bottom": 1133,
+          "width": 294,
+          "height": 56,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 48,
+          "top": 373,
+          "right": 342,
+          "bottom": 429,
+          "width": 294,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 437,
+          "right": 342,
+          "bottom": 493,
+          "width": 294,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 501,
+          "right": 342,
+          "bottom": 557,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 48,
+          "top": 565,
+          "right": 342,
+          "bottom": 621,
+          "width": 294,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        }
+      ],
+      "overflow": [],
+      "documentOverflow": false,
+      "listOverflow": false,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 530,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 37
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    }
+  ],
+  "failures": []
+}
