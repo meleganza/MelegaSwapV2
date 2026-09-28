@@ -75,6 +75,7 @@ const check = (ok, message) => { if (!ok) failures.push(message) }
       check(inside(m.modal, { left: 0, top: 0, right: width, bottom: height }), prefix + 'modal fits viewport')
       check(m.reviewText.includes('ACTIVATION FLOW') && m.review.width >= 280, prefix + 'review readable')
       if (width >= 1280) {
+        check(Math.abs(m.modal.width - Math.min(1360, width - 32)) < 1, prefix + 'Farm width overrides shared shell in production')
         check(m.selector.width >= 280 && m.visibleCards.every(c => c.width >= 260), prefix + 'desktop selector/cards minimum widths')
         check(m.selector.right <= m.status.left && m.status.right <= m.review.left, prefix + 'three desktop columns')
       } else {

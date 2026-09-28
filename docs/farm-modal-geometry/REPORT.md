@@ -86,3 +86,9 @@ MERGED=false
 BLOCKERS=No remaining P0 geometry blocker. Baseline full-suite/dependency failures and development hydration/style issues are documented above; no production or transaction certification.
 
 **FARM_CREATION_MODAL_LAYOUT_P0_PASS** — browser geometry acceptance only, not full repository certification. Draft publication is for Architect/Founder review; no merge or manual production deployment. Branch-triggered Vercel output is preview only.
+
+## Production follow-up during authorized deployment
+
+The initial production build at `0db568eb7c357b499cd435a22bc29a1d351f169f` exposed a CSS cascade difference not present in the development screenshots: the single-attribute Farm width selector and the shared modal class had equal specificity, and production stylesheet order restored the 760px width. The production geometry runner caught Status/Review overlap; the deployment was immediately rolled back to `dpl_GFjydpnvZqkU7CFs7vAXVTvRTMzd`.
+
+The Farm-only selector now also requires `[role='dialog']`, giving it higher specificity than the shared Panel class regardless of style insertion order, without `!important`, z-index or shared-component changes. The same browser runner now explicitly asserts the expected desktop modal width. The original screenshots/results above remain development evidence; production acceptance requires a fresh optimized-build browser pass before promotion. Touched-file typecheck again reports zero own diagnostics and the two affected focused test files pass 6/6.
