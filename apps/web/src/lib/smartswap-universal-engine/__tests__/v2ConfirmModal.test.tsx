@@ -93,13 +93,13 @@ vi.mock('@pancakeswap/uikit', async () => {
     confirmPriceImpactWithoutFee: () => true,
     // Minimal ModalProvider semantics: present/dismiss + updateOnPropsChange for the confirm modal node.
     useModal: (node: React.ReactElement, _close?: boolean, _update?: boolean, id?: string) => {
-      if (id === 'confirmSwapModal') H().node = node
+      if (id === 'confirmSwapModal' || id === 'smartSwapV2ConfirmModal') H().node = node
       ReactLib.useEffect(() => {
         H().bump?.()
       })
       return [
         () => {
-          if (id !== 'confirmSwapModal') return
+          if (id !== 'confirmSwapModal' && id !== 'smartSwapV2ConfirmModal') return
           H().open = true
           H().bump?.()
         },

@@ -50,3 +50,49 @@ export function createSyntheticQuoteSource(
     },
   }
 }
+
+/**
+ * Chains where every certified V2 venue is also quoted through one hop via the chain's wrapped native (BSC cutover
+ * chain). Same bounded candidate set for EVERY venue on that chain, so no venue is compared direct-only against another
+ * venue's multi-hop route. Never invents hops from symbols.
+ */
+export const V2_WRAPPED_NATIVE_HOP_CHAIN_IDS: ReadonlySet<number> = new Set([56])
+
+/** Candidate V2 paths for one venue: direct [in,out], plus [in,wrappedNative,out] when neither end is wrapped native. */
+export function v2CandidatePaths(chainId: number, inAddress: string, outAddress: string, wrappedNative: string | undefined): string[][] {
+  const tokenIn = inAddress.toLowerCase()
+  const tokenOut = outAddress.toLowerCase()
+  const paths = [[tokenIn, tokenOut]]
+  const wrapped = wrappedNative?.toLowerCase()
+  if (wrapped && V2_WRAPPED_NATIVE_HOP_CHAIN_IDS.has(chainId) && tokenIn !== wrapped && tokenOut !== wrapped) {
+    paths.push([tokenIn, wrapped, tokenOut])
+  }
+  return paths
+}
+
+/**
+ * Quote every candidate path on the SAME venue router with the SAME exact (net) input; the highest amountOut wins
+ * (ties keep the shorter/earlier path). If every candidate fails, the direct path's failure reason is preserved.
+ */
+export async function fetchBestV2PathQuote(
+  source: ShadowQuoteSource,
+  base: Omit<ShadowQuoteRequest, 'path'>,
+  paths: string[][],
+): Promise<ShadowQuoteObservation> {
+  const settled = await Promise.allSettled(paths.map((path) => source.fetch({ ...base, path })))
+  let best: ShadowQuoteObservation | null = null
+  let bestOut = BigInt(0)
+  for (let i = 0; i < settled.length; i += 1) {
+    const result = settled[i]
+    const raw = result.status === 'fulfilled' ? result.value.amountOutRaw : null
+    if (result.status === 'fulfilled' && raw && /^\d+$/.test(raw) && BigInt(raw) > bestOut) {
+      // The quoted path is the requested candidate (the exact path the executor route hash will bind).
+      best = { ...result.value, path: paths[i] }
+      bestOut = BigInt(raw)
+    }
+  }
+  if (best) return best
+  const first = settled[0]
+  if (first && first.status === 'rejected') throw first.reason
+  throw new Error('NO_ROUTE')
+}

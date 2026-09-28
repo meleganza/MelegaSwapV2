@@ -43,6 +43,12 @@ import ConfirmSwapModal from './ConfirmSwapModal'
 
 const SettingsModalWithCustomDismiss = withCustomOnDismiss(SettingsModal)
 
+/**
+ * Pinned V2 confirmation owns its own modal node id: legacy/stable `confirmSwapModal` hooks (updateOnPropsChange) can
+ * never overwrite an open V2 review with their own props (that fight made the modal alternate V2/legacy every render).
+ */
+export const SMARTSWAP_V2_CONFIRM_MODAL_ID = 'smartSwapV2ConfirmModal'
+
 interface SwapCommitButtonPropsType {
   swapIsUnsupported: boolean
   account: string
@@ -255,9 +261,19 @@ export default function SwapCommitButton({
     />,
     true,
     true,
-    'confirmSwapModal',
+    v2Confirm ? SMARTSWAP_V2_CONFIRM_MODAL_ID : 'confirmSwapModal',
   )
   // End Modals
+
+  // The pinned V2 review never outlives its owner (stale handlers/plan must not stay confirmable).
+  const dismissConfirmModalRef = useRef(onDismissConfirmModal)
+  dismissConfirmModalRef.current = onDismissConfirmModal
+  useEffect(
+    () => () => {
+      if (v2ConfirmRef.current) dismissConfirmModalRef.current()
+    },
+    [],
+  )
 
   const onSwapHandler = useCallback(() => {
     if (isExpertMode) {
@@ -332,9 +348,10 @@ export default function SwapCommitButton({
   // warningSeverity(undefined) means "blocked"; for V2 an unknown winner impact is not invented (minUserOut enforced).
   const priceImpactSeverity = v2Active && !v2PriceImpact ? 0 : warningSeverity(effectivePriceImpact)
 
-  if (legacyFallback && !v2Active && !(v2Pending && !swapInputError)) {
+  if (legacyFallback && !v2Confirm && !v2Active && !(v2Pending && !swapInputError)) {
     // No certified V2 plan active (and none pending): pre-submission legacy fallback. An in-flight V2 consume keeps
-    // v2Active latched, so this never replaces the CTA after a V2 submission started.
+    // v2Active latched, so this never replaces the CTA after a V2 submission started. While a V2 review is pinned the
+    // V2 owner stays mounted (NOT_READY = Confirm disabled), so the legacy CTA/modal hook never mounts under it.
     return <>{legacyFallback}</>
   }
 

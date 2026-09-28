@@ -21,7 +21,7 @@ import {
 import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './health'
 import { refuseV2Execution, type SmartSwapVenueAdapter, type VenueIdentity } from './venueAdapter'
 import { computeMinimumReceived, type NormalizedQuote, type QuoteHop, type SmartSwapRequest } from './quote'
-import type { ShadowQuoteSource } from './shadowQuoteSource'
+import { fetchBestV2PathQuote, v2CandidatePaths, type ShadowQuoteSource } from './shadowQuoteSource'
 
 export const MELEGA_DEX_VENUE_ID = 'melega-dex' as const
 export const MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE = 'MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE' as const
@@ -177,6 +177,23 @@ export function resolveMelegaExactQuotePath(
   return path
 }
 
+/** Exact-quote candidates: a real matching Melega snapshot path as-is, otherwise the shared bounded V2 candidate set. */
+export function resolveMelegaExactQuoteCandidatePaths(
+  request: SmartSwapRequest,
+  snapshot: LegacyMelegaQuoteSnapshot | null,
+  wrappedNative: string,
+  chainId: number,
+): string[][] {
+  const path = resolveMelegaExactQuotePath(request, snapshot, wrappedNative)
+  if (snapshot && snapshotMatchesRequest(snapshot, request) && snapshot.pathAddresses.length >= 2) return [path]
+  return v2CandidatePaths(chainId, path[0], path[1], wrappedNative)
+}
+
+function wrappedSymbol(chainId: number, address: string): string | undefined {
+  const wrapped = MELEGA_DEX_VENUE.wrappedNative[chainId]
+  return chainId === 56 && wrapped && wrapped.toLowerCase() === address.toLowerCase() ? 'WBNB' : undefined
+}
+
 function hopsFromPath(request: SmartSwapRequest, path: string[], chainId: number): QuoteHop[] {
   if (path.length === 2) {
     return [
@@ -193,8 +210,9 @@ function hopsFromPath(request: SmartSwapRequest, path: string[], chainId: number
     index,
     venueId: MELEGA_DEX_VENUE_ID,
     poolRef: null,
-    tokenIn: index === 0 ? request.inputAsset : evmContract(chainId, path[index]),
-    tokenOut: index === path.length - 2 ? request.outputAsset : evmContract(chainId, address),
+    tokenIn: index === 0 ? request.inputAsset : evmContract(chainId, path[index], wrappedSymbol(chainId, path[index]), 18),
+    tokenOut:
+      index === path.length - 2 ? request.outputAsset : evmContract(chainId, address, wrappedSymbol(chainId, address), 18),
   }))
 }
 
@@ -233,15 +251,14 @@ export function createMelegaDexAdapter(
         if (!router || !wrapped || !isQuoteCapable(MELEGA_DEX_VENUE.support[chainId] ?? VENUE_SUPPORT.NOT_VERIFIED)) {
           throw new Error(`${MELEGA_DEX_EXACT_QUOTE_ROUTER_MISSING}:${chainId}`)
         }
-        const path = resolveMelegaExactQuotePath(request, snapshot, wrapped)
-        const observation = await options.quoteSource.fetch({
-          chainId,
-          router,
-          amountInRaw: request.inputAmountRaw,
-          path,
-          signal: context.signal,
-        })
+        // Same bounded candidate set as every other certified V2 venue on this chain; exact same input for each path.
+        const observation = await fetchBestV2PathQuote(
+          options.quoteSource,
+          { chainId, router, amountInRaw: request.inputAmountRaw, signal: context.signal },
+          resolveMelegaExactQuoteCandidatePaths(request, snapshot, wrapped, chainId),
+        )
         if (!observation.amountOutRaw || observation.amountOutRaw === '0') throw new Error('NO_ROUTE')
+        const path = observation.path.map((address) => address.toLowerCase())
         const quotedAt = observation.quotedAt || context.nowIso
         return {
           quoteId: `${MELEGA_DEX_VENUE_ID}:${chainId}:${path.join('>')}:${request.inputAmountRaw}`,
