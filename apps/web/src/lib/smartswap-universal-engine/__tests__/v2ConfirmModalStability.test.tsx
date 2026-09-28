@@ -499,6 +499,25 @@ describe('P0 SmartSwap confirm modal stability (real uikit ModalProvider/useModa
   })
   afterEach(() => observer.disconnect())
 
+  it('legacy fallback opened beneath the mounted SmartSwap owner remains stable', async () => {
+    const unavailable = await erc20Plan({ user: null })
+    const v2Binding = bindingFor(unavailable.plan, unavailable.decision.publicAction).value
+    const view = render(<Ui v2Binding={v2Binding} />)
+    await settle()
+    fireEvent.click(screen.getByTestId('legacy-cta'))
+    await settle()
+    const node = screen.getByTestId('legacy-modal-node')
+    const commits = C.commits
+    for (let i = 0; i < 5; i += 1) {
+      view.rerender(<Ui v2Binding={v2Binding} currencyBalances={{}} />)
+      await settle()
+      expect(screen.getByTestId('legacy-modal-node')).toBe(node)
+      expect(screen.queryByTestId('legacy-confirm-content')).toBeNull()
+    }
+    expect(C.commits - commits).toBeLessThan(30)
+    expect(H().sends).toHaveLength(0)
+  })
+
   it('A/B/C: allowance transition, shadow generation update, equivalent plan recreation, timers within freshness -> same pinned values, same mounted node, Confirm actionable, no render loop', async () => {
     const { a, b, view, first, node } = await openV2()
     expect(first.text).toContain(a.display.mode === 'V2' ? (a.display as any).outputAmount.toSignificant(6) : 'x')

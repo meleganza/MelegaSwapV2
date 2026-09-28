@@ -1,0 +1,58 @@
+
+ RUN  v0.27.2 /private/tmp/melega-pool-public-truth
+
+(node:26351) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ✓ apps/web/src/lib/smartswap-universal-engine/__tests__/v2ConfirmModalStability.test.tsx  (6 tests) 1060ms
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ✓ apps/web/src/lib/smartswap-universal-engine/__tests__/v2ConfirmModal.test.tsx  (11 tests) 106ms
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id confirmSwapModal
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id undefined
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > transfers ownership when another instance explicitly opens
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+ ✓ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx  (3 tests) 7ms
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  12:35:43
+   Duration  14.70s (transform 1.56s, setup 99ms, collect 11.55s, tests 1.17s)
