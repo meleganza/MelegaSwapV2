@@ -8,11 +8,11 @@ import { describe, expect, it } from 'vitest'
 const ROOT = path.resolve(__dirname, '..')
 
 describe('Product IA refinement — Pools product UX redesign', () => {
-  it('orders Hero(+Featured) → KPI → My Positions → Explore; Create Pool is modal', () => {
+  it('orders Hero(+Featured) → KPI → My Positions → Explore; public Create Pool is hidden', () => {
     const screen = readFileSync(path.join(ROOT, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('data-pools-ia="product-ux-redesign-v1"')
-    expect(screen).toContain('data-pools-create-pool="modal"')
-    expect(screen).toContain('create-pool-modal')
+    expect(screen).toContain('data-pools-create-pool="hidden"')
+    expect(screen).not.toContain('create-pool-modal')
     expect(screen).toContain('data-pools-module-007="unmounted"')
     expect(screen).not.toContain('<PoolsAnalyticsModule')
     expect(screen).not.toContain('PoolsRewardAdvisorModule')
@@ -30,7 +30,7 @@ describe('Product IA refinement — Pools product UX redesign', () => {
     expect(kpis).toBeGreaterThan(hero)
     expect(positions).toBeGreaterThan(kpis)
     expect(explore).toBeGreaterThan(positions)
-    expect(create).toBeGreaterThan(-1)
+    expect(create).toBe(-1)
   })
 
   it('Explore hook retains last-good pools during loading', () => {
@@ -76,9 +76,9 @@ describe('Product IA refinement — Pools product UX redesign', () => {
     expect(wizard).not.toMatch(/>\s*Daily Rewards\s*</)
   })
 
-  it('Hero keeps one direct Create Pool CTA without redundant copy', () => {
+  it('Hero does not advertise public pool creation', () => {
     const hero = readFileSync(path.join(ROOT, 'modules/PoolsHeroModule.tsx'), 'utf8')
-    expect(hero).toContain('create-pool')
+    expect(hero).not.toContain('pools-hero-create-pool')
     expect(hero).not.toContain('pools-hero-community-cta')
     expect(hero).not.toContain('pools-hero-how-it-works')
   })

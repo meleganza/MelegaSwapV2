@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { MelegaModal, typography } from 'design-system/melega'
+import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
-import CreatePoolCta from './components/CreatePoolCta'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
 import { PoolsHeroModule } from './modules/PoolsHeroModule'
@@ -54,39 +53,22 @@ const Content = styled.div`
 /**
  * Pools product IA:
  * Hero (Featured compact) → KPIs → My Positions → Explore Pools
- * Create Pool opens as a modal / ?create=1 — never a permanent page column.
+ * Public pool creation is hidden until an end-to-end user flow is available.
  */
 export const PoolsStudioScreen: React.FC = () => {
   const router = useRouter()
-  const [createOpen, setCreateOpen] = useState(false)
-
   useEffect(() => {
-    const q = router.query.create
-    const hash = typeof window !== 'undefined' ? window.location.hash : ''
-    if (q === '1' || q === 'true' || hash === '#create-pool') {
-      setCreateOpen(true)
-    }
-  }, [router.query.create])
-
-  const openCreate = useCallback(() => {
-    setCreateOpen(true)
-    void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
-      shallow: true,
-    })
-  }, [router])
-
-  const closeCreate = useCallback(() => {
-    setCreateOpen(false)
-    const nextQuery = { ...router.query }
-    delete nextQuery.create
-    void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
-  }, [router])
-
-  useEffect(() => {
-    const onOpen = () => openCreate()
-    window.addEventListener('melega:open-create-pool', onOpen)
-    return () => window.removeEventListener('melega:open-create-pool', onOpen)
-  }, [openCreate])
+    if (!router.isReady) return
+    const hash = router.asPath.split('#')[1]
+    if (router.query.create === undefined && hash !== 'create-pool') return
+    const query = { ...router.query }
+    delete query.create
+    void router.replace(
+      { pathname: router.pathname, query, hash: hash === 'create-pool' ? undefined : hash },
+      undefined,
+      { shallow: true, scroll: false },
+    )
+  }, [router.isReady, router.asPath, router.query, router.pathname, router.replace])
 
   return (
     <Root
@@ -101,9 +83,8 @@ export const PoolsStudioScreen: React.FC = () => {
       data-pools-module-008="mounted"
       data-pools-architecture="000"
       data-pools-ia="product-ux-redesign-v1"
-      data-pools-create-pool="modal"
+      data-pools-create-pool="hidden"
       data-ps-wallet-first="true"
-      data-pools-create-modal={createOpen ? 'open' : 'closed'}
       data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
     >
       <PageMeta />
@@ -112,7 +93,7 @@ export const PoolsStudioScreen: React.FC = () => {
       <PoolsRuntimeProvider>
         <PoolsActionHost />
         <Content data-ps-content data-pools-ia="product-ux-redesign-v1">
-          <PoolsHeroModule onRequestCreatePool={openCreate} />
+          <PoolsHeroModule />
           <DataSurfaceErrorBoundary
             surface="Pools Overview KPIs"
             userReason="Pool overview metrics are temporarily unavailable."
@@ -126,23 +107,6 @@ export const PoolsStudioScreen: React.FC = () => {
             <PoolsExplorePoolsModule />
           </DataSurfaceErrorBoundary>
         </Content>
-        <MelegaModal
-          open={createOpen}
-          onClose={closeCreate}
-          title="Create Pool"
-          subtitle="Configure stake, rewards, schedule and safety."
-          size="md"
-          testId="create-pool-modal"
-          closeTestId="create-pool-modal-close"
-          ariaLabel="Create Pool"
-          flush
-        >
-          <div id="create-pool" data-ps-create-pool-section>
-            <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
-              <CreatePoolCta />
-            </DataSurfaceErrorBoundary>
-          </div>
-        </MelegaModal>
       </PoolsRuntimeProvider>
     </Root>
   )

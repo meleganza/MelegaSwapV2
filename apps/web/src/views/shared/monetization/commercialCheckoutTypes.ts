@@ -102,15 +102,6 @@ export const COMMERCIAL_SERVICES: Array<{
     externalHref: (chainId) => `/farms?create=1&chain=${chainId}`,
   },
   {
-    id: 'create-pool',
-    title: 'Create Pool',
-    description: 'Stake rewards for single-asset holders.',
-    priceHint: 'Studio',
-    icon: '◉',
-    needsPackage: false,
-    externalHref: (chainId) => `/pools?create=1&chain=${chainId}`,
-  },
-  {
     id: 'claim-project',
     title: 'Claim Project',
     description: 'Verify ownership and publish your project identity.',

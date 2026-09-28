@@ -1,0 +1,16 @@
+apps/web/src/components/MyMelega/MyMelegaDrawer.tsx
+apps/web/src/design-system/melega/components/Modal/__tests__/melegaModalDesignSystem.test.ts
+apps/web/src/design-system/melega/components/Modal/__tests__/premiumModalSystemV3.test.ts
+apps/web/src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts
+apps/web/src/lib/__tests__/poolsProductUxRedesign.test.ts
+apps/web/src/lib/data-truth/myMelegaPositions.ts
+apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx
+apps/web/src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts
+apps/web/src/views/PoolsStudio/__tests__/productIaPoolsRefinement.test.ts
+apps/web/src/views/PoolsStudio/__tests__/publicPoolActionHidden.test.tsx
+apps/web/src/views/PoolsStudio/__tests__/publicPoolCreationHidden.test.tsx
+apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx
+apps/web/src/views/ProjectPage/v7/ProjectPageV7Shell.tsx
+apps/web/src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts
+apps/web/src/views/shared/monetization/__tests__/growthHubCommercialCheckout.test.ts
+apps/web/src/views/shared/monetization/commercialCheckoutTypes.ts

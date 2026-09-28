@@ -18,13 +18,13 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
     )
   })
 
-  it('applies MelegaModal to Create Farm and Create Pool screens', () => {
+  it('retains the Farm modal while public Pool creation is hidden', () => {
     const farms = load('src/views/FarmsStudio/FarmsStudioScreen.tsx')
     const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
     expect(farms).toContain('MelegaModal')
     expect(farms).toContain('create-farm-modal')
-    expect(pools).toContain('MelegaModal')
-    expect(pools).toContain('create-pool-modal')
+    expect(pools).not.toContain('MelegaModal')
+    expect(pools).not.toContain('create-pool-modal')
   })
 
   it('styles Chain Switch surfaces with Melega modal family', () => {
@@ -42,7 +42,7 @@ describe('MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR', () => {
     const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
     const modal = load('src/design-system/melega/components/Modal/MelegaModal.tsx')
     expect(farms).toContain('size="md"')
-    expect(pools).toContain('size="md"')
+    expect(pools).not.toContain('CreatePoolCta')
     expect(farms).not.toContain('size="lg"')
     expect(pools).not.toContain('size="lg"')
     expect(modal).toContain("maxWidthMd: '740px'")

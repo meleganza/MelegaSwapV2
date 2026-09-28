@@ -84,16 +84,16 @@ describe('POOLS_MODULE_001 Hero', () => {
     const screen = load('PoolsStudioScreen.tsx')
     expect(screen).toContain('PoolsHeroModule')
     expect(screen).toContain('data-pools-module-001="mounted"')
-    expect(screen).toContain('CreatePoolCta')
+    expect(screen).not.toContain('CreatePoolCta')
     expect(screen).not.toContain('PoolsStudioPageHeader')
     // Modules 002–008 may mount after Hero; Modules 009+ remain forbidden here.
     expect(screen).not.toContain('data-pools-module="009"')
   })
 
-  it('uses one factual Create Pool destination and no dead secondary CTA', () => {
+  it('keeps internal destination metadata but exposes no creation CTA', () => {
     expect(poolsHero.createPoolHref).toBe('#create-pool')
     const mod = load('modules/PoolsHeroModule.tsx')
-    expect(mod).toContain('create-pool')
+    expect(mod).not.toContain('create-pool')
     expect(mod).not.toContain('pools-hero-how-it-works')
     expect(mod).not.toContain('pools-hero-community-cta')
   })

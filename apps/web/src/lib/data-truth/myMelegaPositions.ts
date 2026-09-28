@@ -17,7 +17,6 @@ export const MY_MELEGA_ROUTES = {
   portfolio: '/portfolio',
   addLiquidity: '/liquidity-studio?view=add',
   createFarm: '/farms?create=1',
-  createPool: '/pools?create=1',
   swap: '/swap',
 } as const
 

@@ -86,7 +86,7 @@ describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
     expect(shell).toContain('<BandTitle>Earn</BandTitle>')
     expect(shell).not.toContain('Earn & Liquidity')
     expect(shell).toContain('project-v7-create-farm')
-    expect(shell).toContain('project-v7-create-pool')
+    expect(shell).not.toContain('project-v7-create-pool')
     expect(shell).toContain('grid-template-columns: repeat(5, minmax(140px, 1fr))')
     expect(shell).toContain('SPONSORED RESEARCH')
     expect(shell).not.toContain('ClaimProjectWizardModal')

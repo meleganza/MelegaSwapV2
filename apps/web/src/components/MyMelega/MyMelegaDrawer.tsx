@@ -412,10 +412,6 @@ export const MyMelegaDrawer: React.FC = () => {
                     <span aria-hidden>▣</span>
                     Create Farm
                   </QuickBtn>
-                  <QuickBtn href={MY_MELEGA_ROUTES.createPool} onClick={closeDrawer}>
-                    <span aria-hidden>○</span>
-                    Create Pool
-                  </QuickBtn>
                   <QuickBtn href={MY_MELEGA_ROUTES.swap} onClick={closeDrawer}>
                     <span aria-hidden>⇄</span>
                     Swap
