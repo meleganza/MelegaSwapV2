@@ -1,0 +1,21 @@
+
+ RUN  v0.27.2 /private/tmp/melega-pool-public-truth/apps/web
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ✓ src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts  (11 tests) 17ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  10:19:42
+   Duration  1.48s (transform 596ms, setup 101ms, collect 611ms, tests 17ms)

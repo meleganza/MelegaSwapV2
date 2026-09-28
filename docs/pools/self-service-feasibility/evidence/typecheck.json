@@ -1,0 +1,20 @@
+{
+  "target": "ES2020",
+  "files": [
+    "apps/web/src/components/MyMelega/MyMelegaDrawer.tsx",
+    "apps/web/src/lib/data-truth/myMelegaPositions.ts",
+    "apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx",
+    "apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx",
+    "apps/web/src/views/ProjectPage/v7/ProjectPageV7Shell.tsx",
+    "apps/web/src/views/shared/monetization/commercialCheckoutTypes.ts"
+  ],
+  "baseline": {
+    "total": 205,
+    "touched": []
+  },
+  "current": {
+    "total": 205,
+    "touched": []
+  },
+  "introduced": []
+}

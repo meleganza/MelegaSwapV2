@@ -78,13 +78,13 @@ describe('MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3', () => {
     expect(network).toContain('preparing.length > 0')
   })
 
-  it('Farms/Pools screens mount MelegaModal with one shell title', () => {
+  it('Farm retains its shell while Pools has no creation modal', () => {
     const farms = load('src/views/FarmsStudio/FarmsStudioScreen.tsx')
     const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
     expect(farms).toContain('create-farm-modal')
     expect(farms).toContain('title="Create Farm"')
-    expect(pools).toContain('create-pool-modal')
-    expect(pools).toContain('title="Create Pool"')
+    expect(pools).not.toContain('create-pool-modal')
+    expect(pools).not.toContain('title="Create Pool"')
     expect(existsSync(path.join(WEB, 'src/design-system/melega/components/Modal/MelegaModal.tsx'))).toBe(true)
   })
 })

@@ -1,0 +1,13 @@
+
+ RUN  v0.27.2 /private/tmp/melega-pool-public-truth/apps/web
+
+ ✓ src/views/shared/monetization/__tests__/growthHubCommercialCheckout.test.ts  (10 tests) 4ms
+ ✓ src/views/PoolsStudio/__tests__/publicPoolCreationHidden.test.tsx  (7 tests) 24ms
+ ✓ src/views/PoolsStudio/__tests__/productIaPoolsRefinement.test.ts  (7 tests) 2ms
+ ✓ src/config/constants/__tests__/feeSchedule.test.ts  (4 tests) 1ms
+ ✓ src/views/PoolsStudio/__tests__/publicPoolActionHidden.test.tsx  (1 test) 83ms
+
+ Test Files  5 passed (5)
+      Tests  29 passed (29)
+   Start at  10:19:34
+   Duration  1.59s (transform 655ms, setup 97ms, collect 602ms, tests 114ms)

@@ -12,11 +12,11 @@ import { poolsExplore } from 'views/PoolsStudio/modules/poolsExplorePoolsTokens'
 const STUDIO = path.resolve(__dirname, '../../views/PoolsStudio')
 
 describe('MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN', () => {
-  it('locks product IA markers and modal create', () => {
+  it('locks product IA markers and hidden public creation', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('data-pools-ia="product-ux-redesign-v1"')
-    expect(screen).toContain('data-pools-create-pool="modal"')
-    expect(screen).toContain('create-pool-modal')
+    expect(screen).toContain('data-pools-create-pool="hidden"')
+    expect(screen).not.toContain('create-pool-modal')
     expect(screen).not.toContain('<PoolsAnalyticsModule')
     expect(screen).toContain('variant="with-create-side"')
   })

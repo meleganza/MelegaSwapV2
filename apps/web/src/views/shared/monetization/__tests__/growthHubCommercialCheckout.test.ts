@@ -23,7 +23,7 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
   const featuredFarm = load('views/FarmsStudio/modules/FarmsHeroFeaturedCompact.tsx')
   const featuredPool = load('views/PoolsStudio/modules/PoolsHeroFeaturedCompact.tsx')
 
-  it('Growth Hub renames Grow → Boost with six service cards', () => {
+  it('Growth Hub renames Grow → Boost with five public service cards', () => {
     expect(shell).toContain('Boost Your Project')
     expect(shell).toContain('Increase visibility. Grow liquidity. Acquire holders.')
     expect(shell).toContain('data-growth-hub="boost-your-project"')
@@ -33,7 +33,7 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
     }
     expect(types).toContain("'featured'")
     expect(types).toContain("'claim-project'")
-    expect(COMMERCIAL_SERVICE_COUNT(types)).toBe(6)
+    expect(COMMERCIAL_SERVICE_COUNT(types)).toBe(5)
   })
 
   it('CommercialCheckoutModal keeps one compact identity and the verified checkout', () => {

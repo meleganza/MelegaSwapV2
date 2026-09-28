@@ -1658,9 +1658,6 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
                   emptyLabel={projectYield.pools.loading ? 'Indexing pools…' : 'No active pools for this token.'}
                 />
                 <YieldDetails items={projectYield.pools.items} />
-                <Btn $ghost href={`/pools?create=1&chain=${chainId}`} data-testid="project-v7-create-pool">
-                  CREATE POOL
-                </Btn>
               </EconomyCard>
               <EconomyCard data-testid="project-v7-holders">
                 <EconomyTitle>Holders</EconomyTitle>

@@ -1,0 +1,192 @@
+
+ RUN  v0.27.2 /private/tmp/melega-pool-public-truth/apps/web
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts  (13 tests | 2 failed) 14ms
+   ❯ src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts > multichain farm inventory normalization > does not expose Arbitrum 42161 config stubs as stakeable from a BSC wallet
+     → expected false to be true // Object.is equality
+   ❯ src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts > chain switch + badge + trending truth > paid ticker placements require disclosed Boosted/Featured labels
+     → expected 'BOOST' to match /Boosted/
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts  (0 test)
+ ✓ src/views/shared/monetization/__tests__/growthHubCommercialCheckout.test.ts  (10 tests) 2ms
+ ❯ src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts  (8 tests | 2 failed) 2ms
+   ❯ src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts > POOLS_MODULE_001 Hero > keeps Architecture 000 Founder mockup byte-identical
+     → expected false to be true // Object.is equality
+   ❯ src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts > POOLS_MODULE_001 Hero > ownership map records Module 001 file assignment
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/POOLS_MODULE_OWNERSHIP_MAP.md'
+ ✓ src/views/PoolsStudio/__tests__/publicPoolCreationHidden.test.tsx  (7 tests) 21ms
+ ✓ src/views/PoolsStudio/__tests__/productIaPoolsRefinement.test.ts  (7 tests) 2ms
+ ❯ src/design-system/melega/components/Modal/__tests__/premiumModalSystemV3.test.ts  (7 tests | 1 failed) 2ms
+   ❯ src/design-system/melega/components/Modal/__tests__/premiumModalSystemV3.test.ts > MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3 > Create Pool: Tokens → Rewards → Safety → Review funnel
+     → expected 'import React, { useCallback, useEffec…' to include '\'Safety\''
+ ❯ src/design-system/melega/components/Modal/__tests__/melegaModalDesignSystem.test.ts  (6 tests | 1 failed) 1ms
+   ❯ src/design-system/melega/components/Modal/__tests__/melegaModalDesignSystem.test.ts > MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR > Create Farm / Create Pool use md MelegaModal (720–760px band)
+     → expected 'import React, { useCallback, useEffec…' to include 'size="md"'
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/lib/__tests__/poolsProductUxRedesign.test.ts  (5 tests | 1 failed) 1ms
+   ❯ src/lib/__tests__/poolsProductUxRedesign.test.ts > MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN > Hero Create Pool + community CTA; compact explore cards
+     → expected '268px' to be '248px' // Object.is equality
+ ✓ src/components/MyMelega/__tests__/publicPoolActionHidden.test.tsx  (1 test) 64ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts [ src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts ]
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/src/views/ProjectPage/v7/ProjectPageV7Shell.tsx'
+ ❯ Proxy.readFileSync ../../node:fs:436:20
+ ❯ load src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts:18:31
+     16|
+     17| const WEB = path.resolve(process.cwd(), 'src')
+     18| const load = (rel: string) => readFileSync(path.join(WEB, rel), 'utf8')
+       |                               ^
+     19|
+     20| describe('MELEGASWAP_V2_CANONICAL_PROJECT_PAGE_V7', () => {
+ ❯ src/views/ProjectPage/v7/__tests__/projectPageV7Canonical.test.ts:21:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/src/views/ProjectPage/v7/ProjectPageV7Shell.tsx",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts > multichain farm inventory normalization > does not expose Arbitrum 42161 config stubs as stakeable from a BSC wallet
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts:67:84
+     65|     const arbStubs = global.filter((c) => c.rawFarm?.token?.chainId ==…
+     66|     expect(arbStubs.length).toBeGreaterThan(0)
+     67|     expect(arbStubs.every((card) => isActiveStakeableExploreFarm(card)…
+       |                                                                                    ^
+     68|
+     69|     const fromBsc = {
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts > chain switch + badge + trending truth > paid ticker placements require disclosed Boosted/Featured labels
+AssertionError: expected 'BOOST' to match /Boosted/
+ ❯ src/lib/__tests__/multichainFarmsPoolsTrendingRepair.test.ts:185:31
+    183|       featured: [],
+    184|     })
+    185|     expect(merged[0].primary).toMatch(/Boosted/)
+       |                               ^
+    186|     expect(tickerItemIsEligible(merged[0])).toBe(true)
+    187|     expect(tickerItemIsEligible(organic[0])).toBe(true)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts > POOLS_MODULE_001 Hero > keeps Architecture 000 Founder mockup byte-identical
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts:22:36
+     20|   it('keeps Architecture 000 Founder mockup byte-identical', () => {
+     21|     const mockupPath = path.join(REPO, POOLS_FOUNDER_MOCKUP.relativePa…
+     22|     expect(existsSync(mockupPath)).toBe(true)
+       |                                    ^
+     23|     const bytes = readFileSync(mockupPath)
+     24|     const sha = createHash('sha256').update(bytes).digest('hex')
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts > POOLS_MODULE_001 Hero > ownership map records Module 001 file assignment
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/POOLS_MODULE_OWNERSHIP_MAP.md'
+ ❯ Proxy.readFileSync ../../node:fs:436:20
+ ❯ src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts:110:17
+    108|
+    109|   it('ownership map records Module 001 file assignment', () => {
+    110|     const map = readFileSync(path.join(WEB, 'docs/runtime/POOLS_MODULE…
+       |                 ^
+    111|     expect(map).toContain('PoolsHeroModule.tsx')
+    112|     expect(map).toContain('poolsHeroTokens.ts')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/POOLS_MODULE_OWNERSHIP_MAP.md",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/design-system/melega/components/Modal/__tests__/premiumModalSystemV3.test.ts > MELEGASWAP_V2_PREMIUM_MODAL_SYSTEM_V3 > Create Pool: Tokens → Rewards → Safety → Review funnel
+AssertionError: expected 'import React, { useCallback, useEffec…' to include '\'Safety\''
+ ❯ src/design-system/melega/components/Modal/__tests__/premiumModalSystemV3.test.ts:65:18
+     63|     expect(pool).toContain("'Tokens'")
+     64|     expect(pool).toContain("'Rewards'")
+     65|     expect(pool).toContain("'Safety'")
+       |                  ^
+     66|     expect(pool).toContain("'Review'")
+     67|     expect(pool).toContain('Melega Treasury')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/design-system/melega/components/Modal/__tests__/melegaModalDesignSystem.test.ts > MELEGASWAP_V2_MODAL_DESIGN_SYSTEM_REFACTOR > Create Farm / Create Pool use md MelegaModal (720–760px band)
+AssertionError: expected 'import React, { useCallback, useEffec…' to include 'size="md"'
+ ❯ src/design-system/melega/components/Modal/__tests__/melegaModalDesignSystem.test.ts:44:19
+     42|     const pools = load('src/views/PoolsStudio/PoolsStudioScreen.tsx')
+     43|     const modal = load('src/design-system/melega/components/Modal/Mele…
+     44|     expect(farms).toContain('size="md"')
+       |                   ^
+     45|     expect(pools).not.toContain('CreatePoolCta')
+     46|     expect(farms).not.toContain('size="lg"')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/lib/__tests__/poolsProductUxRedesign.test.ts > MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN > Hero Create Pool + community CTA; compact explore cards
+AssertionError: expected '268px' to be '248px' // Object.is equality
+ ❯ src/lib/__tests__/poolsProductUxRedesign.test.ts:48:32
+     46|     expect(poolsHero.communityCtaMaxW).toBe('340px')
+     47|     expect(poolsExplore.cardW).toBe('328px')
+     48|     expect(poolsExplore.cardH).toBe('248px')
+       |                                ^
+     49|     expect(poolsExplore.cardPad).toBe('12px')
+     50|   })
+
+  - Expected   "248px"
+  + Received   "268px"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+ Test Files  6 failed | 4 passed (10)
+      Tests  7 failed | 57 passed (64)
+   Start at  10:19:12
+   Duration  2.16s (transform 954ms, setup 111ms, collect 1.11s, tests 109ms)

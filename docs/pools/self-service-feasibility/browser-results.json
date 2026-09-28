@@ -1,0 +1,28 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "url": "http://localhost:3118/pools?chain=56&view=explore",
+    "wizard": false,
+    "modal": false,
+    "actions": [],
+    "deployerCopy": false,
+    "overflow": false,
+    "explore": true,
+    "drawerCreatePool": false,
+    "wallet": "disconnected"
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "url": "http://localhost:3118/pools?chain=56&view=explore",
+    "wizard": false,
+    "modal": false,
+    "actions": [],
+    "deployerCopy": false,
+    "overflow": false,
+    "explore": true,
+    "drawerCreatePool": false,
+    "wallet": "disconnected"
+  }
+]

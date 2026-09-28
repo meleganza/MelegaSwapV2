@@ -128,9 +128,9 @@ describe('multichain pool inventory + layout', () => {
     expect(merged.length).toBe(global.length)
   })
 
-  it('Pools screen uses Create Pool modal instead of permanent side column', () => {
+  it('Pools screen leaves the internal Create Pool wizard unmounted', () => {
     const screen = load('views/PoolsStudio/PoolsStudioScreen.tsx')
-    expect(screen).toContain('create-pool-modal')
+    expect(screen).not.toContain('create-pool-modal')
     expect(screen).toContain('product-ux-redesign-v1')
     expect(screen).not.toContain('PositionsCreateRow')
     expect(screen).not.toContain('data-ps-create-pool-permanently-expanded')
