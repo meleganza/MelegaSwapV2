@@ -21,9 +21,17 @@ export type MarcoPayPaymentSession = {
   paymentId: string
   intentId: string | null
   approvalUrl: string
+  referenceAmountMinor: string
   marcoAmountMinor: string | null
   destinationWallet: string | null
   chainId: number | null
+  referral: {
+    referralCode: string
+    catalogRef: string
+    listedPriceMinor: string
+    discountMinor: string
+    netPaidMinor: string
+  } | null
 }
 
 type GatewayResponse = {
@@ -46,6 +54,13 @@ type GatewayResponse = {
   receivingWallet?: string
   settlement_wallet?: string
   amount_minor?: string
+  referral?: {
+    referral_code?: string
+    catalog_ref?: string
+    listed_price_minor?: string
+    discount_minor?: string
+    net_paid_minor?: string
+  } | null
   chain_id?: number | string
   chainId?: number | string
   chain?: number | string | { id?: number | string; chain_id?: number | string }
@@ -67,6 +82,8 @@ export function buildMarcoPayCreateBody(input: {
   amountMinor: string
   currency: string
   item?: string | null
+  referralCode?: string | null
+  catalogRef?: string | null
 }): string {
   if (!MARCO_PAY_MERCHANT_ORDER_REF_PATTERN.test(input.merchantOrderRef)) {
     throw new MarcoPayGatewayError('INVALID_ORDER_REF', 'This checkout did not provide a valid order reference.')
@@ -84,6 +101,9 @@ export function buildMarcoPayCreateBody(input: {
     amount_minor: input.amountMinor,
     currency,
     item: input.item ?? null,
+    ...(input.referralCode
+      ? { referral_code: input.referralCode, catalog_ref: input.catalogRef ?? null }
+      : {}),
   })
 }
 
@@ -196,7 +216,7 @@ function readMarcoAmountMinor(payload: GatewayResponse): string | null {
   return value || null
 }
 
-function sessionFromPayload(payload: GatewayResponse, usdMinor: string): MarcoPayPaymentSession {
+function sessionFromPayload(payload: GatewayResponse, fallbackUsdMinor: string): MarcoPayPaymentSession {
   const paymentId = readPaymentId(payload)
   if (!payload.ok || !paymentId) {
     throw new MarcoPayGatewayError(
@@ -211,8 +231,12 @@ function sessionFromPayload(payload: GatewayResponse, usdMinor: string): MarcoPa
     )
   }
   const marcoMinor = readMarcoAmountMinor(payload)
+  const referenceAmountMinor =
+    typeof payload.amount_minor === 'string' && /^\d+$/.test(payload.amount_minor)
+      ? payload.amount_minor
+      : fallbackUsdMinor
   try {
-    assertLiveMarcoConversion({ usdMinor, marcoMinor })
+    assertLiveMarcoConversion({ usdMinor: referenceAmountMinor, marcoMinor })
   } catch {
     throw new MarcoPayGatewayError('MARCO_CONVERSION_INVALID', 'MARCO Pay is temporarily unavailable.')
   }
@@ -224,9 +248,24 @@ function sessionFromPayload(payload: GatewayResponse, usdMinor: string): MarcoPa
     paymentId,
     intentId: readIntentId(payload, paymentId),
     approvalUrl: readApprovalUrl(payload, paymentId),
+    referenceAmountMinor,
     marcoAmountMinor: marcoMinor,
     destinationWallet: destination,
     chainId: readChainId(payload),
+    referral:
+      payload.referral?.referral_code &&
+      payload.referral.catalog_ref &&
+      payload.referral.listed_price_minor &&
+      payload.referral.discount_minor &&
+      payload.referral.net_paid_minor
+        ? {
+            referralCode: payload.referral.referral_code,
+            catalogRef: payload.referral.catalog_ref,
+            listedPriceMinor: payload.referral.listed_price_minor,
+            discountMinor: payload.referral.discount_minor,
+            netPaidMinor: payload.referral.net_paid_minor,
+          }
+        : null,
   }
 }
 
@@ -277,6 +316,8 @@ export async function createMarcoPayPaymentSession(input: {
   amountMinor: string
   currency: string
   item?: string | null
+  referralCode?: string | null
+  catalogRef?: string | null
   secret: string
   merchantApiKey?: string | null
   nowSeconds?: number
@@ -324,7 +365,7 @@ export async function createMarcoPayPaymentSession(input: {
   })
   const marcoAmountMinor = created.marcoAmountMinor || state.marcoAmountMinor
   try {
-    assertLiveMarcoConversion({ usdMinor: input.amountMinor, marcoMinor: marcoAmountMinor })
+    assertLiveMarcoConversion({ usdMinor: created.referenceAmountMinor, marcoMinor: marcoAmountMinor })
   } catch {
     throw new MarcoPayGatewayError('MARCO_CONVERSION_INVALID', 'MARCO Pay is temporarily unavailable.')
   }

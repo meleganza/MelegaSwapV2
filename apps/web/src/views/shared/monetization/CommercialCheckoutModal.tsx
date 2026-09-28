@@ -63,6 +63,12 @@ import {
   refreshMCreditsQuote,
 } from 'lib/mcredits/passportState'
 import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
+import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
+import {
+  MARCO_REFERRAL_CHANGE_EVENT,
+  getBrowserMarcoReferralStorage,
+  resolveMarcoReferralForCheckout,
+} from 'lib/marco-referral/client'
 
 type MarcoPayReadiness = {
   executable: boolean
@@ -82,6 +88,10 @@ type MarcoPayOrderConfig = {
   paymentId: string
   approvalUrl: string
   wallet: MarcoPayWalletTransfer | null
+  referenceAmountMinor: string
+  referralApplied: boolean
+  referralCode: string | null
+  referralDiscountMinor: string | null
 }
 
 const IDENTITY_CHAINS = [
@@ -1376,12 +1386,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     packages.find((item) => item.isDefault) ??
     packages[0] ??
     null
+  const referralCatalogRef = dexReferralCatalogRef(selectedPackage ? String(selectedPackage.id) : null)
   const projectPageReady = Boolean(detected?.projectPageExists && identityReady)
   const runtimeCheckoutBlocker = visibilityCheckoutBlocker({
     service,
     payment: pay,
     projectPageReady,
-    hasReferral: Boolean(referral.trim()),
+    hasReferral: Boolean(referral.trim() && referralCatalogRef && pay === 'MARCO_PAY'),
     hasFeaturedAddOns: false,
   })
   const isMarcoPay = pay === 'MARCO_PAY'
@@ -1398,7 +1409,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       : null)
   const subtotal = selectedPackage?.usdPrice ?? 0
   const totalUsd = subtotal
-  const settlementEstimate = resolveSettlementEstimate(pay, totalUsd, settlementMarket)
+  const payableUsd =
+    isMarcoPay && marcoPayOrder && /^\d+$/.test(marcoPayOrder.referenceAmountMinor)
+      ? Number(marcoPayOrder.referenceAmountMinor) / 100
+      : totalUsd
+  const settlementEstimate = resolveSettlementEstimate(pay, payableUsd, settlementMarket)
   const paymentLabel = PAYMENT_ASSET_META[pay].label.replace('\n', ' · ')
 
   useEffect(() => {
@@ -1520,6 +1535,28 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setStatus('idle')
     setQuoteSummary(null)
   }, [buyerWallet, open, status])
+
+  useEffect(() => {
+    if (!open) return undefined
+    let active = true
+    const refresh = () => {
+      const storage = getBrowserMarcoReferralStorage()
+      if (!storage) {
+        if (active) setReferral('')
+        return
+      }
+      void resolveMarcoReferralForCheckout(storage).then((verified) => {
+        if (active) setReferral(verified?.code ?? '')
+      })
+    }
+    const onReferralChange = () => refresh()
+    refresh()
+    window.addEventListener(MARCO_REFERRAL_CHANGE_EVENT, onReferralChange)
+    return () => {
+      active = false
+      window.removeEventListener(MARCO_REFERRAL_CHANGE_EVENT, onReferralChange)
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return undefined
@@ -1708,7 +1745,14 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setError(marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.')
       return null
     }
-    if (marcoPayOrderRef.current?.paymentId && marcoPayOrderRef.current.wallet) return marcoPayOrderRef.current
+    const requestedReferralCode = referral && referralCatalogRef ? referral : null
+    if (
+      marcoPayOrderRef.current?.paymentId &&
+      marcoPayOrderRef.current.wallet &&
+      marcoPayOrderRef.current.referralCode === requestedReferralCode
+    ) {
+      return marcoPayOrderRef.current
+    }
     if (prepareFlightRef.current) return prepareFlightRef.current
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       setWalletStage('connect')
@@ -1732,6 +1776,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             serviceId: service,
             packageId: selectedPackage.id,
             targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
+            referralCode: requestedReferralCode,
           }),
         })
         const payload = await response.json()
@@ -1750,6 +1795,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           paymentId: session.paymentId,
           approvalUrl: session.approvalUrl,
           wallet,
+          referenceAmountMinor: String(payload.order.referenceAmountMinor),
+          referralApplied: payload.order.referralApplied === true,
+          referralCode:
+            typeof payload.order.referralCode === 'string' && payload.order.referralCode
+              ? payload.order.referralCode
+              : null,
+          referralDiscountMinor:
+            typeof payload.order.referralDiscountMinor === 'string'
+              ? payload.order.referralDiscountMinor
+              : null,
         }
         marcoPayOrderRef.current = next
         setMarcoPayOrder(next)
@@ -1774,6 +1829,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     poolTarget,
     projectId,
     projectSlug,
+    referral,
+    referralCatalogRef,
     selectedPackage,
     service,
   ])
@@ -2753,6 +2810,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       <strong>MARCO Passport</strong>.
                     </div>
                   ) : null}
+                  {pay === 'MARCO_PAY' && referral && referralCatalogRef ? (
+                    <div>Passport PRO referral recognised. The authoritative discount is verified by MARCO at review.</div>
+                  ) : null}
                 </SettlementNote>
               </SettlementSummary>
             </div>
@@ -2781,11 +2841,20 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       <span>Settlement</span>
                       <strong>{paymentLabel} on BNB Chain</strong>
                     </ReviewRow>
+                    {marcoPayOrder?.referralApplied ? (
+                      <ReviewRow>
+                        <span>Passport PRO</span>
+                        <strong>
+                          Referral recognised · −$
+                          {formatApproxNumber(Number(marcoPayOrder.referralDiscountMinor ?? '0') / 100, 2)}
+                        </strong>
+                      </ReviewRow>
+                    ) : null}
                   </ReviewRows>
                   <ReviewDivider />
                   <ReviewTotal>
                     <span>Total</span>
-                    <strong>${formatApproxNumber(totalUsd, 2)}</strong>
+                    <strong>${formatApproxNumber(payableUsd, 2)}</strong>
                   </ReviewTotal>
                   <ReviewQuote>
                     <ReviewQuoteLabel>Approx. {settlementEstimate.label} required</ReviewQuoteLabel>

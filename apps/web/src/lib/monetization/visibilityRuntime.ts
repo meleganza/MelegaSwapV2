@@ -25,9 +25,8 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
     reason: null,
   },
   referral: {
-    live: false,
-    reason:
-      'Permanent referral attribution and 50% payout settlement require the referral ledger backend. The historical ratified policy is 10%, so the new split also requires an explicit economic-policy migration.',
+    live: true,
+    reason: null,
   },
   projectPublisher: {
     live: false,
@@ -52,7 +51,7 @@ export function visibilityCheckoutBlocker(args: {
   if (args.payment === 'M_CREDITS' && !canAcceptMCreditsPayment(args.service)) {
     return service.reason ?? 'This service is not enabled for production checkout.'
   }
-  if (args.hasReferral) return VISIBILITY_RUNTIME.referral.reason
+  if (args.hasReferral && !VISIBILITY_RUNTIME.referral.live) return VISIBILITY_RUNTIME.referral.reason
   if (args.hasFeaturedAddOns) return 'Featured Farm/Pool bundle settlement is awaiting production activation.'
   return null
 }

@@ -119,6 +119,62 @@ describe('MARCO Pay merchant session', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(2)
   })
 
+  it('binds a PRO referral in the signed body and trusts only MARCO for the discounted amount', async () => {
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (String(url).includes('/api/public/pay/state')) {
+        return jsonResponse({
+          ok: true,
+          marco_amount_minor: '25000000',
+          receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+          chain_id: 56,
+        })
+      }
+      expect(JSON.parse(String(init?.body))).toEqual({
+        application_ref: applicationRef,
+        merchant_order_ref: 'mp_referral_order_1',
+        amount_minor: '2900',
+        currency: 'USD',
+        item: 'trend-boost',
+        referral_code: 'founder-1',
+        catalog_ref: 'mpp_ref_dex_trend_6h',
+      })
+      return jsonResponse({
+        ok: true,
+        payment_id: 'pay_referral_1',
+        amount_minor: '2610',
+        marco_amount_minor: '25000000',
+        referral: {
+          referral_code: 'founder-1',
+          catalog_ref: 'mpp_ref_dex_trend_6h',
+          listed_price_minor: '2900',
+          discount_minor: '290',
+          net_paid_minor: '2610',
+        },
+      })
+    })
+    const session = await createMarcoPayPaymentSession({
+      applicationRef,
+      merchantOrderRef: 'mp_referral_order_1',
+      amountMinor: '2900',
+      currency: 'USD',
+      item: 'trend-boost',
+      referralCode: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      secret,
+      merchantApiKey,
+      nowSeconds: now,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })
+    expect(session.referenceAmountMinor).toBe('2610')
+    expect(session.referral).toEqual({
+      referralCode: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      listedPriceMinor: '2900',
+      discountMinor: '290',
+      netPaidMinor: '2610',
+    })
+  })
+
   it('builds approval_url from payment_id when MARCO omits it', async () => {
     const fetchImpl = vi.fn(async (url: string) => {
       if (String(url).includes('/api/public/pay/state')) return jsonResponse({ ok: true })

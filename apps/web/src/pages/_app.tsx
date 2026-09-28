@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import type { NextPageWithLayout } from 'app-runtime/appTypes'
+import { MarcoReferralCapture } from 'components/MarcoWidgets/MarcoReferralCapture'
 
 // Render the approved shell on the server so the first response is useful HTML.
 // Wallet and polling effects remain client-only inside the runtime tree.
@@ -13,6 +14,7 @@ export default function App(props: AppProps) {
   if (Component.barePage) {
     return (
       <>
+        <MarcoReferralCapture />
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content="#0f0f0f" />
@@ -23,5 +25,10 @@ export default function App(props: AppProps) {
     )
   }
 
-  return <FullMyApp {...props} />
+  return (
+    <>
+      <MarcoReferralCapture />
+      <FullMyApp {...props} />
+    </>
+  )
 }

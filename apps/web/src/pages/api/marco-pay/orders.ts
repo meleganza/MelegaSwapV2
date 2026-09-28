@@ -14,6 +14,8 @@ import {
 } from 'lib/marco-pay/orders'
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
 import { buildMarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
+import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
+import { normalizeMarcoReferralCode } from 'lib/marco-referral/client'
 
 const SERVICES = new Set<MarcoPayOrder['serviceId']>([
   'featured',
@@ -53,6 +55,10 @@ function publicOrder(order: MarcoPayOrder) {
     marcoAmountMinor: order.marcoAmountMinor,
     destinationWallet: order.destinationWallet,
     chainId: order.chainId,
+    referenceAmountMinor: order.referenceAmountMinor,
+    referralApplied: Boolean(order.referralCode && order.referralCatalogRef),
+    referralCode: order.referralCode,
+    referralDiscountMinor: order.referralDiscountMinor,
   }
 }
 
@@ -109,10 +115,16 @@ const handler: NextApiHandler = async (req, res) => {
   const buyerWallet = String(body.buyerWallet || '').trim()
   const serviceId = String(body.serviceId || '') as MarcoPayOrder['serviceId']
   const targetId = body.targetId ? String(body.targetId).trim() : null
+  const rawReferralCode = typeof body.referralCode === 'string' ? body.referralCode.trim() : ''
+  const referralCode = rawReferralCode ? normalizeMarcoReferralCode(rawReferralCode) : null
+  const packageId = body.packageId ? String(body.packageId) : null
+  const referralCatalogRef = referralCode ? dexReferralCatalogRef(packageId) : null
   if (!projectId || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
     return res.status(400).json({ error: 'PROJECT_AND_WALLET_REQUIRED' })
   }
   if (!SERVICES.has(serviceId)) return res.status(400).json({ error: 'SERVICE_UNSUPPORTED' })
+  if (rawReferralCode && !referralCode) return res.status(400).json({ error: 'REFERRAL_CODE_INVALID' })
+  if (referralCode && !referralCatalogRef) return res.status(409).json({ error: 'REFERRAL_CATALOG_UNAVAILABLE' })
   if (!VISIBILITY_RUNTIME[serviceId]?.live) return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
   if ((serviceId === 'featured-farm' || serviceId === 'featured-pool') && !targetId) {
     return res.status(400).json({ error: 'TARGET_REQUIRED' })
@@ -124,6 +136,9 @@ const handler: NextApiHandler = async (req, res) => {
       existing &&
       existing.buyerWallet === buyerWallet.toLowerCase() &&
       existing.serviceId === serviceId &&
+      existing.packageId === packageId &&
+      existing.referralCode === referralCode &&
+      existing.referralCatalogRef === referralCatalogRef &&
       OPEN_STATES.has(existing.state)
         ? existing
         : await createMarcoPayOrder({
@@ -133,8 +148,10 @@ const handler: NextApiHandler = async (req, res) => {
             projectContract: body.projectContract ? String(body.projectContract) : null,
             buyerWallet,
             serviceId,
-            packageId: body.packageId ? String(body.packageId) : null,
+            packageId,
             targetId,
+            referralCode,
+            referralCatalogRef,
           })
     const secret = await resolveMarcoPayWebhookSecret()
     const merchantApiKey = getMarcoPayMerchantApiKey()
@@ -170,9 +187,11 @@ const handler: NextApiHandler = async (req, res) => {
           item: order.serviceId,
           secret,
           merchantApiKey,
+          referralCode: order.referralCode,
+          catalogRef: order.referralCatalogRef,
         })
         quote = {
-          reference_amount_minor: order.referenceAmountMinor,
+          reference_amount_minor: session.referenceAmountMinor,
           reference_currency: order.referenceCurrency,
           marco_amount_minor: session.marcoAmountMinor,
           destination: session.destinationWallet,
@@ -184,6 +203,8 @@ const handler: NextApiHandler = async (req, res) => {
             paymentRef: session.paymentId,
             intentRef: session.intentId,
             approvalUrl: session.approvalUrl,
+            referenceAmountMinor: session.referenceAmountMinor,
+            referralDiscountMinor: session.referral?.discountMinor ?? null,
             marcoAmountMinor: session.marcoAmountMinor,
             destinationWallet: session.destinationWallet,
             chainId: session.chainId ?? 56,
