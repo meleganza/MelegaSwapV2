@@ -1,0 +1,41 @@
+[
+  {
+    "width": 1440,
+    "sameButton": true,
+    "drift": 0,
+    "stats": {
+      "mounts": 1,
+      "unmounts": 0,
+      "correct": 1,
+      "wrong": 0,
+      "ticks": 26
+    },
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "sameButton": true,
+    "drift": 0,
+    "stats": {
+      "mounts": 1,
+      "unmounts": 0,
+      "correct": 1,
+      "wrong": 0,
+      "ticks": 25
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "sameButton": true,
+    "drift": 0,
+    "stats": {
+      "mounts": 1,
+      "unmounts": 0,
+      "correct": 1,
+      "wrong": 0,
+      "ticks": 26
+    },
+    "errors": []
+  }
+]
