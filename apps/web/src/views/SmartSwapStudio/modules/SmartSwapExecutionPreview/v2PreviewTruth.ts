@@ -22,6 +22,7 @@ import {
   type SmartSwapExecutionDisplay,
   type SmartSwapV2ExecutionDisplay,
 } from 'views/Swap/SmartSwap/utils/v2ExecutionDisplay'
+import { V2_GAS_ESTIMATE_STATE } from 'lib/smartswap-universal-engine/v2GasEstimate'
 
 export const PREVIEW_TRUTH = {
   LEGACY: 'LEGACY',
@@ -88,9 +89,22 @@ function pendingView(): V2ExecutionPreviewView {
 
 function executeView(d: SmartSwapV2ExecutionDisplay): V2ExecutionPreviewView {
   const outSymbol = d.outputAmount.currency.symbol ?? ''
-  const impactPercent = d.priceImpact ? Number(d.priceImpact.toFixed(2)) : null
+  const factualImpactPercent = d.priceImpact ? Number(d.priceImpact.toFixed(6)) : null
+  const impactPercent = factualImpactPercent == null ? null : Number(factualImpactPercent.toFixed(2))
   const severity = classifyImpactSeverity(impactPercent, impactPercent == null ? 'unavailable' : 'available')
   const hopCount = Math.max(1, d.path.length - 1)
+  const gasMetric: V2PreviewMetric =
+    d.gasEstimate.state === V2_GAS_ESTIMATE_STATE.SWAP
+      ? { label: 'Estimated gas', value: `${d.gasEstimate.gasUnits.toLocaleString()} gas units`, sub: 'Swap transaction' }
+      : d.gasEstimate.state === V2_GAS_ESTIMATE_STATE.APPROVAL_REQUIRED
+      ? {
+          label: 'Estimated gas',
+          value: d.gasEstimate.gasUnits == null ? 'Approval required' : `${d.gasEstimate.gasUnits.toLocaleString()} gas units`,
+          sub: 'Approval only · swap gas available after approval',
+        }
+      : d.gasEstimate.state === V2_GAS_ESTIMATE_STATE.ESTIMATING
+      ? { label: 'Estimated gas', value: 'Estimating…', sub: 'Read-only wallet estimate' }
+      : { label: 'Estimated gas', value: '—', sub: 'Unable to estimate from current wallet state' }
   return {
     truth: PREVIEW_TRUTH.V2,
     sourceLabel: d.venueLabel,
@@ -101,10 +115,13 @@ function executeView(d: SmartSwapV2ExecutionDisplay): V2ExecutionPreviewView {
       { label: 'Minimum received', value: `${d.minimumReceived.toSignificant(6)} ${outSymbol}` },
       {
         label: 'Price impact',
-        value: formatImpactLabel(impactPercent, severity),
+        value:
+          factualImpactPercent != null && factualImpactPercent > 0 && factualImpactPercent < 0.01
+            ? '<0.01%'
+            : formatImpactLabel(impactPercent, severity),
         tone: severity === 'HIGH' ? 'warn' : severity === 'LOW' ? 'ok' : 'neutral',
       },
-      { label: 'Estimated gas', value: '—', sub: 'Estimated by your wallet at confirmation' },
+      gasMetric,
       {
         label: 'Protocol fee',
         value: formatV2SmartSwapFee(d.feeAmount, d.feeBps),

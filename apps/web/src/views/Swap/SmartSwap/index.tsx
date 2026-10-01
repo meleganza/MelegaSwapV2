@@ -138,13 +138,13 @@ export const SmartSwapForm: React.FC<{
 
   // Single SmartSwap V2 CTA binding instance (CTA + display share the same plan, latch and refresh lifecycle).
   const v2Binding = useSmartSwapV2CtaBinding()
-  const { decision: v2Decision, plan: v2Plan, v2Pending, refreshV2Quote } = v2Binding
+  const { decision: v2Decision, plan: v2Plan, v2Pending, refreshV2Quote, gasEstimate } = v2Binding
   const v2Display = useMemo(
     () =>
       showWrap
         ? ({ mode: SMARTSWAP_DISPLAY_MODE.LEGACY } as const)
-        : resolveSmartSwapExecutionDisplay({ decision: v2Decision, plan: v2Plan, v2Pending, inputCurrency, outputCurrency }),
-    [showWrap, v2Decision, v2Plan, v2Pending, inputCurrency, outputCurrency],
+        : resolveSmartSwapExecutionDisplay({ decision: v2Decision, plan: v2Plan, v2Pending, inputCurrency, outputCurrency, gasEstimate }),
+    [showWrap, v2Decision, v2Plan, v2Pending, inputCurrency, outputCurrency, gasEstimate],
   )
   // One execution truth: the execution preview renders this same display (sibling preview via the Home scope).
   usePublishSmartSwapExecutionTruth(v2Display)

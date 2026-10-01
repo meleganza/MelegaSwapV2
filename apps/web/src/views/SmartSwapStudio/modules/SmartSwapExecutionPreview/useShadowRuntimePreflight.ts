@@ -79,6 +79,10 @@ export function readOnlyRpcUrlByChain(): Partial<Record<number, string>> {
   }
 }
 
+export function readOnlyRpcFallbackUrlsByChain(): Partial<Record<number, string[]>> {
+  return { 56: BSC_RPC_URLS }
+}
+
 export function shadowRuntimeRequestKey(input: {
   chainId: number
   inputAsset: CanonicalAssetId
@@ -212,6 +216,7 @@ export async function runShadowRuntimePreflightAttempt(input: {
   timeoutMs?: number
   nowIso?: string
   rpcUrlByChain?: Partial<Record<number, string>>
+  rpcFallbackUrlsByChain?: Partial<Record<number, string[]>>
   fetchImpl?: typeof fetch
   runAuthorized?: typeof runAuthorizedEvmShadowCompetition
 }): Promise<ShadowRuntimePreflight | null> {
@@ -244,6 +249,7 @@ export async function runShadowRuntimePreflightAttempt(input: {
         melegaSnapshot: null,
         nowIso: input.nowIso,
         rpcUrlByChain: input.rpcUrlByChain ?? readOnlyRpcUrlByChain(),
+        rpcFallbackUrlsByChain: input.rpcFallbackUrlsByChain ?? readOnlyRpcFallbackUrlsByChain(),
         fetchImpl: input.fetchImpl,
       }),
       new Promise<never>((_, reject) => {

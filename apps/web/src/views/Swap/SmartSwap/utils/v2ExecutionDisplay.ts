@@ -16,6 +16,7 @@ import {
   type V2UserExecutionPlan,
 } from 'lib/smartswap-universal-engine/v2UserExecutionPlan'
 import type { CanonicalAssetId } from 'lib/smartswap-universal-engine/assetIdentity'
+import type { V2GasEstimate } from 'lib/smartswap-universal-engine/v2GasEstimate'
 
 export const SMARTSWAP_DISPLAY_MODE = {
   LEGACY: 'LEGACY',
@@ -36,6 +37,8 @@ export interface SmartSwapV2ExecutionDisplay {
   executionPrice: Price<Currency, Currency>
   /** Only when the winning venue quote factually reported one; otherwise undefined (never the legacy impact). */
   priceImpact: Percent | undefined
+  /** Read-only eth_estimateGas result for the exact prepared transaction. */
+  gasEstimate: V2GasEstimate
   feeAmount: CurrencyAmount<Currency>
   feeBps: number
   path: Currency[]
@@ -82,6 +85,7 @@ export function resolveSmartSwapExecutionDisplay(input: {
   v2Pending: boolean
   inputCurrency?: Currency | null
   outputCurrency?: Currency | null
+  gasEstimate?: V2GasEstimate
 }): SmartSwapExecutionDisplay {
   if (input.v2Pending) return PENDING_DISPLAY
   const { plan } = input
@@ -103,7 +107,7 @@ export function resolveSmartSwapExecutionDisplay(input: {
     const impact = plan.winnerPriceImpactPercent
     const priceImpact =
       impact != null && Number.isFinite(impact) && impact >= 0
-        ? new Percent(Math.round(impact * 100).toString(), '10000')
+        ? new Percent(Math.round(impact * 1_000_000).toString(), '100000000')
         : undefined
     const middle = quote.hops.slice(0, -1).map((hop) => hopCurrency(hop.tokenOut, intent.chainId))
     if (middle.some((currency) => !currency)) return PENDING_DISPLAY
@@ -117,6 +121,7 @@ export function resolveSmartSwapExecutionDisplay(input: {
       minimumReceived,
       executionPrice,
       priceImpact,
+      gasEstimate: input.gasEstimate ?? { state: 'IDLE', gasUnits: null },
       feeAmount: CurrencyAmount.fromRawAmount(inputCurrency, intent.feeAmount),
       feeBps: intent.feeBps,
       path: [inputCurrency, ...(middle as Currency[]), outputCurrency],

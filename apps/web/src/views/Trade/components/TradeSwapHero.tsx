@@ -39,7 +39,8 @@ const Hero = styled.section`
 
   @media (max-width: 767px) {
     height: 224px;
-    grid-template-columns: minmax(150px, 0.38fr) minmax(0, 0.62fr);
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 12px;
     padding: 16px;
   }
 `
@@ -152,6 +153,16 @@ const Featured = styled.div`
 
   @media (max-width: 767px) {
     padding: 2px 0;
+
+    /* The shared rail normally uses a 260px mobile "peek" card. Inside the
+       split Swap hero that width exceeds this column and Hero clips it. The
+       hero owns its available width, so its featured card must fill it. */
+    & > section > div > * {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
   }
 `
 

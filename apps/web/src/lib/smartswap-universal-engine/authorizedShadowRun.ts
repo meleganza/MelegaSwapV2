@@ -18,6 +18,7 @@ export async function runAuthorizedEvmShadowCompetition(input: {
   melegaSnapshot: LegacyMelegaQuoteSnapshot | null
   nowIso?: string
   rpcUrlByChain: Partial<Record<number, string>>
+  rpcFallbackUrlsByChain?: Partial<Record<number, string[]>>
   fetchImpl?: typeof fetch
 }): Promise<ShadowCompetitionResult> {
   if (input.session.engine.mode !== 'SHADOW') throw new Error('SMARTSWAP_SESSION_NOT_SHADOW')
@@ -26,6 +27,7 @@ export async function runAuthorizedEvmShadowCompetition(input: {
   assertHostDoesNotOwnVenues(input.session.host)
   const source = createFactualV2QuoteSource({
     rpcUrlByChain: input.rpcUrlByChain,
+    rpcFallbackUrlsByChain: input.rpcFallbackUrlsByChain,
     fetchImpl: input.fetchImpl,
   })
   const registry = buildEvmShadowVenueRegistry({

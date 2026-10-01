@@ -1,0 +1,392 @@
+{
+  "block": 124486658,
+  "chainId": 56,
+  "realSwapExecuted": false,
+  "realApprovalExecuted": false,
+  "cases": [
+    {
+      "case": "usdc_bnb_5",
+      "input": "5 USDC",
+      "output": "BNB",
+      "grossInputRaw": "5000000000000000000",
+      "winnerVenue": "pancakeswap",
+      "netVenueInputRaw": "4990000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "4990000000000000000",
+          "getAmountsOutRaw": "2250669272205499",
+          "netUserOutputRaw": "2250669272205499",
+          "reserves": [
+            {
+              "reserveIn": "2686513618666395962",
+              "reserveOut": "3465420308291518",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "6436761465947366",
+          "priceImpactPercent": 64.784135
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "4990000000000000000",
+          "getAmountsOutRaw": "6537123075481910",
+          "netUserOutputRaw": "6537123075481910",
+          "reserves": [
+            {
+              "reserveIn": "153944948841900978109156",
+              "reserveOut": "202186752677647917769",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "6553718738102928",
+          "priceImpactPercent": 0.003225
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.003225,
+      "previewPriceImpact": "Low (0.00%)",
+      "confirmPinnedPriceImpact": "0.00"
+    },
+    {
+      "case": "usdc_bnb_50",
+      "input": "50 USDC",
+      "output": "BNB",
+      "grossInputRaw": "50000000000000000000",
+      "winnerVenue": "pancakeswap",
+      "netVenueInputRaw": "49900000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "49900000000000000000",
+          "getAmountsOutRaw": "3287959654846849",
+          "netUserOutputRaw": "3287959654846849",
+          "reserves": [
+            {
+              "reserveIn": "2686513618666395962",
+              "reserveOut": "3465420308291518",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "64367614659473663",
+          "priceImpactPercent": 94.641903
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "49900000000000000000",
+          "getAmountsOutRaw": "65352213983721689",
+          "netUserOutputRaw": "65352213983721689",
+          "reserves": [
+            {
+              "reserveIn": "153944948841900978109156",
+              "reserveOut": "202186752677647917769",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "65537187381029281",
+          "priceImpactPercent": 0.032241
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.032241,
+      "previewPriceImpact": "Low (0.03%)",
+      "confirmPinnedPriceImpact": "0.03"
+    },
+    {
+      "case": "usdc_bnb_500",
+      "input": "500 USDC",
+      "output": "BNB",
+      "grossInputRaw": "500000000000000000000",
+      "winnerVenue": "pancakeswap",
+      "netVenueInputRaw": "499000000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "499000000000000000000",
+          "getAmountsOutRaw": "3446816844933798",
+          "netUserOutputRaw": "3446816844933798",
+          "reserves": [
+            {
+              "reserveIn": "2686513618666395962",
+              "reserveOut": "3465420308291518",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "643676146594736635",
+          "priceImpactPercent": 99.21451
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+          ],
+          "amountInRaw": "499000000000000000000",
+          "getAmountsOutRaw": "651626530342726893",
+          "netUserOutputRaw": "651626530342726893",
+          "reserves": [
+            {
+              "reserveIn": "153944948841900978109156",
+              "reserveOut": "202186752677647917769",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "655371873810292815",
+          "priceImpactPercent": 0.321483
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.321483,
+      "previewPriceImpact": "Low (0.32%)",
+      "confirmPinnedPriceImpact": "0.32"
+    },
+    {
+      "case": "blion_marco_1",
+      "input": "1 BLION",
+      "output": "MARCO",
+      "grossInputRaw": "1000000000000000000",
+      "winnerVenue": "pancakeswap",
+      "netVenueInputRaw": "998000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "998000000000000000",
+          "getAmountsOutRaw": "7019148116236",
+          "netUserOutputRaw": "7019148116236",
+          "reserves": [
+            {
+              "reserveIn": "96836451293878197565958121243",
+              "reserveOut": "266928824007941764",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2548516532895789286",
+              "reserveOut": "6535202121441125135131247",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "7054377842507",
+          "priceImpactPercent": 0.000027
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "998000000000000000",
+          "getAmountsOutRaw": "7071930959703",
+          "netUserOutputRaw": "7071930959703",
+          "reserves": [
+            {
+              "reserveIn": "9384492627084377920860767944",
+              "reserveOut": "25992469565073797",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2174784645778225545",
+              "reserveOut": "5591924291125030322118086",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "7107425443652",
+          "priceImpactPercent": 0.000025
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.000025,
+      "previewPriceImpact": "Low (0.00%)",
+      "confirmPinnedPriceImpact": "0.00"
+    },
+    {
+      "case": "blion_marco_1000",
+      "input": "1000 BLION",
+      "output": "MARCO",
+      "grossInputRaw": "1000000000000000000000",
+      "winnerVenue": "pancakeswap",
+      "netVenueInputRaw": "998000000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "998000000000000000000",
+          "getAmountsOutRaw": "7019149963186771",
+          "netUserOutputRaw": "7019149963186771",
+          "reserves": [
+            {
+              "reserveIn": "96836451293878197565958121243",
+              "reserveOut": "266928824007941764",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2548516532895789286",
+              "reserveOut": "6535202121441125135131247",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "7054377842507612",
+          "priceImpactPercent": 0.000001
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "998000000000000000000",
+          "getAmountsOutRaw": "7071931976699677",
+          "netUserOutputRaw": "7071931976699677",
+          "reserves": [
+            {
+              "reserveIn": "9384492627084377920860767944",
+              "reserveOut": "25992469565073797",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2174784645778225545",
+              "reserveOut": "5591924291125030322118086",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "7107425443652109",
+          "priceImpactPercent": 0.00001
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.00001,
+      "previewPriceImpact": "Low (0.00%)",
+      "confirmPinnedPriceImpact": "0.00"
+    },
+    {
+      "case": "eyed_marco_100",
+      "input": "100 EYED",
+      "output": "MARCO",
+      "grossInputRaw": "100000000000000000000",
+      "winnerVenue": "melega-dex",
+      "netVenueInputRaw": "99800000000000000000",
+      "venues": {
+        "melega-dex": {
+          "status": "ok",
+          "error": null,
+          "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+          "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+          "path": [
+            "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "99800000000000000000",
+          "getAmountsOutRaw": "55801907836426150",
+          "netUserOutputRaw": "55801907836426150",
+          "reserves": [
+            {
+              "reserveIn": "1180015628932302514399241049",
+              "reserveOut": "258588334244645461",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2548516532895789286",
+              "reserveOut": "6535202121441125135131247",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "56081972372026070",
+          "priceImpactPercent": 0.000009
+        },
+        "pancakeswap": {
+          "status": "ok",
+          "error": null,
+          "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+          "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+          "path": [
+            "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+          ],
+          "amountInRaw": "99800000000000000000",
+          "getAmountsOutRaw": "55395327761903141",
+          "netUserOutputRaw": "55395327761903141",
+          "reserves": [
+            {
+              "reserveIn": "12800849770559386396808871725",
+              "reserveOut": "2777221828540337453",
+              "lpFeeBps": 25
+            },
+            {
+              "reserveIn": "2174784645778225545",
+              "reserveOut": "5591924291125030322118086",
+              "lpFeeBps": 25
+            }
+          ],
+          "midOutputRaw": "55673347521271587",
+          "priceImpactPercent": 0.000001
+        }
+      },
+      "planReason": "V2_PRODUCTION_READY",
+      "winnerPriceImpactPercent": 0.000009,
+      "previewPriceImpact": "Low (0.00%)",
+      "confirmPinnedPriceImpact": "0.00"
+    }
+  ]
+}

@@ -1,0 +1,362 @@
+[
+  {
+    "case": "usdc_bnb_5",
+    "venue": "melega-dex",
+    "winner": false,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0x7165B14cF9d03061b67E3237078e5F5A03Fe01a9"
+    ],
+    "reserves": [
+      [
+        "2686513618666395962",
+        "3465420308291518"
+      ]
+    ],
+    "getAmountsOut": "2250669272205499",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "6436761465947366",
+    "app_mid_matches": true,
+    "impactPercent_independent": 64.78413581329218,
+    "impactPercent_app": 64.784135,
+    "rawDeviationInclLpFeePercent": 65.03413581329218,
+    "app_vs_independent_abs_diff": 8.132921749393063e-07
+  },
+  {
+    "case": "usdc_bnb_5",
+    "venue": "pancakeswap",
+    "winner": true,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0xd99c7F6C65857AC913a8f880A4cb84032AB2FC5b"
+    ],
+    "reserves": [
+      [
+        "154209649443574217576748",
+        "201838174260531169335"
+      ]
+    ],
+    "getAmountsOut": "6514651548201575",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "6531189800341113",
+    "app_mid_matches": true,
+    "impactPercent_independent": 0.0032195916075555184,
+    "impactPercent_app": 0.003219,
+    "rawDeviationInclLpFeePercent": 0.2532195916075555,
+    "app_vs_independent_abs_diff": 5.916075555183545e-07
+  },
+  {
+    "case": "usdc_bnb_50",
+    "venue": "melega-dex",
+    "winner": false,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0x7165B14cF9d03061b67E3237078e5F5A03Fe01a9"
+    ],
+    "reserves": [
+      [
+        "2686513618666395962",
+        "3465420308291518"
+      ]
+    ],
+    "getAmountsOut": "3287959654846849",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "64367614659473663",
+    "app_mid_matches": true,
+    "impactPercent_independent": 94.64190383667119,
+    "impactPercent_app": 94.641903,
+    "rawDeviationInclLpFeePercent": 94.89190383667119,
+    "app_vs_independent_abs_diff": 8.366711909957303e-07
+  },
+  {
+    "case": "usdc_bnb_50",
+    "venue": "pancakeswap",
+    "winner": true,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0xd99c7F6C65857AC913a8f880A4cb84032AB2FC5b"
+    ],
+    "reserves": [
+      [
+        "154209649443574217576748",
+        "201838174260531169335"
+      ]
+    ],
+    "getAmountsOut": "65127596601104138",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "65311898003411130",
+    "app_mid_matches": true,
+    "impactPercent_independent": 0.03218656621702698,
+    "impactPercent_app": 0.032186,
+    "rawDeviationInclLpFeePercent": 0.282186566217027,
+    "app_vs_independent_abs_diff": 5.662170269801758e-07
+  },
+  {
+    "case": "usdc_bnb_500",
+    "venue": "melega-dex",
+    "winner": false,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0x7165B14cF9d03061b67E3237078e5F5A03Fe01a9"
+    ],
+    "reserves": [
+      [
+        "2686513618666395962",
+        "3465420308291518"
+      ]
+    ],
+    "getAmountsOut": "3446816844933798",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "643676146594736635",
+    "app_mid_matches": true,
+    "impactPercent_independent": 99.21451070726037,
+    "impactPercent_app": 99.21451,
+    "rawDeviationInclLpFeePercent": 99.46451070726037,
+    "app_vs_independent_abs_diff": 7.072603693814017e-07
+  },
+  {
+    "case": "usdc_bnb_500",
+    "venue": "pancakeswap",
+    "winner": true,
+    "path": [
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    ],
+    "pairs": [
+      "0xd99c7F6C65857AC913a8f880A4cb84032AB2FC5b"
+    ],
+    "reserves": [
+      [
+        "154209649443574217576748",
+        "201838174260531169335"
+      ]
+    ],
+    "getAmountsOut": "649390103973547339",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "653118980034111308",
+    "app_mid_matches": true,
+    "impactPercent_independent": 0.32093365444213806,
+    "impactPercent_app": 0.320933,
+    "rawDeviationInclLpFeePercent": 0.5709336544421381,
+    "app_vs_independent_abs_diff": 6.544421380372256e-07
+  },
+  {
+    "case": "blion_marco_1",
+    "venue": "melega-dex",
+    "winner": false,
+    "path": [
+      "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0x4c7A472c5356679beC7BB0B36038b2edc132255A",
+      "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E"
+    ],
+    "reserves": [
+      [
+        "96836451293878197565958121243",
+        "266928824007941764"
+      ],
+      [
+        "2550063856303954749",
+        "6531226770269034535932871"
+      ]
+    ],
+    "getAmountsOut": "7010621905655",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "7045808838120",
+    "app_mid_matches": true,
+    "impactPercent_independent": 2.7315243708576698e-05,
+    "impactPercent_app": 2.7e-05,
+    "rawDeviationInclLpFeePercent": 0.4994023152437086,
+    "app_vs_independent_abs_diff": 3.152437085766987e-07
+  },
+  {
+    "case": "blion_marco_1",
+    "venue": "pancakeswap",
+    "winner": true,
+    "path": [
+      "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0xD391e4A594b50d6a52A4BB500eD3eA579C6b56F1",
+      "0x94bAD9CDC0AEdB114456FFD973f1a7602bD18522"
+    ],
+    "reserves": [
+      [
+        "9384492627084377920860767944",
+        "25992469565073797"
+      ],
+      [
+        "2174798524760319104",
+        "5591888515522464322118086"
+      ]
+    ],
+    "getAmountsOut": "7071840584541",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "7107334614890",
+    "app_mid_matches": true,
+    "impactPercent_independent": 2.5018053602646034e-05,
+    "impactPercent_app": 2.5e-05,
+    "rawDeviationInclLpFeePercent": 0.4994000180536026,
+    "app_vs_independent_abs_diff": 1.8053602646032793e-08
+  },
+  {
+    "case": "blion_marco_1000",
+    "venue": "melega-dex",
+    "winner": false,
+    "path": [
+      "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0x4c7A472c5356679beC7BB0B36038b2edc132255A",
+      "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E"
+    ],
+    "reserves": [
+      [
+        "96836451293878197565958121243",
+        "266928824007941764"
+      ],
+      [
+        "2550063856303954749",
+        "6531226770269034535932871"
+      ]
+    ],
+    "getAmountsOut": "7010623750366745",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "7045808838120218",
+    "app_mid_matches": true,
+    "impactPercent_independent": 1.1335548864292224e-06,
+    "impactPercent_app": 1e-06,
+    "rawDeviationInclLpFeePercent": 0.4993761335548864,
+    "app_vs_independent_abs_diff": 1.3355488642922242e-07
+  },
+  {
+    "case": "blion_marco_1000",
+    "venue": "pancakeswap",
+    "winner": true,
+    "path": [
+      "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0xD391e4A594b50d6a52A4BB500eD3eA579C6b56F1",
+      "0x94bAD9CDC0AEdB114456FFD973f1a7602bD18522"
+    ],
+    "reserves": [
+      [
+        "9384492627084377920860767944",
+        "25992469565073797"
+      ],
+      [
+        "2174798524760319104",
+        "5591888515522464322118086"
+      ]
+    ],
+    "getAmountsOut": "7071841601524373",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "7107334614890895",
+    "app_mid_matches": true,
+    "impactPercent_independent": 1.0709125880722365e-05,
+    "impactPercent_app": 1e-05,
+    "rawDeviationInclLpFeePercent": 0.4993857091258807,
+    "app_vs_independent_abs_diff": 7.091258807223645e-07
+  },
+  {
+    "case": "eyed_marco_100",
+    "venue": "melega-dex",
+    "winner": true,
+    "path": [
+      "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0x0Ca5da766a0D95a5B16aBFB974071C29391d1581",
+      "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E"
+    ],
+    "reserves": [
+      [
+        "1180015628932302514399241049",
+        "258588334244645461"
+      ],
+      [
+        "2550063856303954749",
+        "6531226770269034535932871"
+      ]
+    ],
+    "getAmountsOut": "55734124850922171",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "56013849189792497",
+    "app_mid_matches": true,
+    "impactPercent_independent": 9.246782491639119e-06,
+    "impactPercent_app": 9e-06,
+    "rawDeviationInclLpFeePercent": 0.49938424678249166,
+    "app_vs_independent_abs_diff": 2.4678249163911857e-07
+  },
+  {
+    "case": "eyed_marco_100",
+    "venue": "pancakeswap",
+    "winner": false,
+    "path": [
+      "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+    ],
+    "pairs": [
+      "0xC959F7F59dcEffF369907A621127E9Abfd8349BB",
+      "0x94bAD9CDC0AEdB114456FFD973f1a7602bD18522"
+    ],
+    "reserves": [
+      [
+        "12800849770490386396808871725",
+        "2777221828555269995"
+      ],
+      [
+        "2174798524760319104",
+        "5591888515522464322118086"
+      ]
+    ],
+    "getAmountsOut": "55394619841853514",
+    "router_matches_9975_formula": true,
+    "app_getAmountsOut_matches": true,
+    "midOutRaw": "55672636048887150",
+    "app_mid_matches": true,
+    "impactPercent_independent": 1.7616634954565807e-06,
+    "impactPercent_app": 1e-06,
+    "rawDeviationInclLpFeePercent": 0.4993767616634955,
+    "app_vs_independent_abs_diff": 7.616634954565807e-07
+  }
+]
