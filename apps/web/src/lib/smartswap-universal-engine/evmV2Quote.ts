@@ -52,8 +52,8 @@ const PERCENT_SCALE = BigInt(1_000_000)
 /** A negative result within one scale unit can only be integer-division rounding; anything below is bad data. */
 const ROUNDING_TOLERANCE_UNITS = BigInt(1)
 const HUNDRED_PERCENT_UNITS = BigInt(100) * PERCENT_SCALE
-/** Reserve-read budget from request start, inside the existing 1200ms quote timeout. */
-export const V2_PRICE_IMPACT_GRACE_MS = 750
+/** Reserve-read budget from request start, still inside the existing 1200ms quote timeout. */
+export const V2_PRICE_IMPACT_GRACE_MS = 1_100
 
 export interface V2ImpactHop {
   reserveIn: bigint
@@ -230,6 +230,176 @@ export async function readV2PathReserves(input: {
   }
 }
 
+export type V2ReserveFailureCode =
+  | 'FACTORY_METADATA_MISSING'
+  | 'GET_PAIR_ZERO'
+  | 'PAIR_CALL_FAILED'
+  | 'TOKEN0_CALL_FAILED'
+  | 'TOKEN1_CALL_FAILED'
+  | 'RESERVES_CALL_FAILED'
+  | 'RESERVE_ZERO'
+  | 'RESERVE_ORIENTATION_FAILED'
+  | 'RPC_RESPONSE_MALFORMED'
+  | 'UNSUPPORTED_VENUE'
+  | 'RESERVE_READ_TIMEOUT'
+  | 'RESERVE_READ_FAILED'
+  | 'QUOTE_RESERVE_MISMATCH'
+  | 'MATH_INVALID'
+
+export interface V2ReserveHopDiagnostic {
+  tokenIn: string
+  tokenOut: string
+  pair: string | null
+  token0: string | null
+  token1: string | null
+  reserve0: string | null
+  reserve1: string | null
+  reserveIn: string | null
+  reserveOut: string | null
+  orientation: 'TOKEN0_IN' | 'TOKEN1_IN' | null
+  failureCode: V2ReserveFailureCode | null
+  failedOperation: string | null
+}
+
+export interface V2PathReserveDiagnostic {
+  venueId: string | null
+  router: string
+  factory: string | null
+  path: string[]
+  hops: V2ReserveHopDiagnostic[]
+  failureCode: V2ReserveFailureCode | null
+  failedOperation: string | null
+}
+
+/**
+ * Explicit read-only diagnostics for factual-impact failures. This never participates in routing and never throws.
+ * Public quoting still degrades to nullable impact; tests and operators retain the first exact failed operation.
+ */
+export async function diagnoseV2PathReserves(input: {
+  fetchImpl: typeof fetch
+  rpc: string
+  chainId: number
+  router: string
+  path: string[]
+  signal?: AbortSignal
+}): Promise<V2PathReserveDiagnostic> {
+  const venue = resolveCertifiedV2Venue(input.chainId, input.router)
+  const base: V2PathReserveDiagnostic = {
+    venueId: venue?.venueId ?? null,
+    router: input.router,
+    factory: venue?.v2Factories?.[input.chainId] ?? null,
+    path: input.path,
+    hops: [],
+    failureCode: null,
+    failedOperation: null,
+  }
+  if (!venue) return { ...base, failureCode: 'UNSUPPORTED_VENUE', failedOperation: 'resolveCertifiedV2Venue' }
+  const factory = venue.v2Factories?.[input.chainId]
+  if (!factory) return { ...base, failureCode: 'FACTORY_METADATA_MISSING', failedOperation: 'v2Factories[chainId]' }
+
+  const call = async (to: string, data: string, code: V2ReserveFailureCode, operation: string) => {
+    try {
+      return { ok: true as const, value: await readOnlyEthCall(input.fetchImpl, input.rpc, to, data, input.signal) }
+    } catch (error) {
+      const malformed = error instanceof Error && error.message === 'EMPTY_RESULT'
+      return { ok: false as const, code: malformed ? ('RPC_RESPONSE_MALFORMED' as const) : code, operation }
+    }
+  }
+
+  for (let i = 0; i < input.path.length - 1; i += 1) {
+    const tokenIn = input.path[i]
+    const tokenOut = input.path[i + 1]
+    const hop: V2ReserveHopDiagnostic = {
+      tokenIn,
+      tokenOut,
+      pair: null,
+      token0: null,
+      token1: null,
+      reserve0: null,
+      reserve1: null,
+      reserveIn: null,
+      reserveOut: null,
+      orientation: null,
+      failureCode: null,
+      failedOperation: null,
+    }
+    const pairCall = await call(
+      factory,
+      V2_FACTORY.encodeFunctionData('getPair', [tokenIn, tokenOut]),
+      'PAIR_CALL_FAILED',
+      `hop[${i}].factory.getPair`,
+    )
+    if (!pairCall.ok) {
+      Object.assign(hop, { failureCode: pairCall.code, failedOperation: pairCall.operation })
+      base.hops.push(hop)
+      return { ...base, failureCode: pairCall.code, failedOperation: pairCall.operation }
+    }
+    try {
+      hop.pair = (V2_FACTORY.decodeFunctionResult('getPair', pairCall.value)[0] as string).toLowerCase()
+    } catch {
+      hop.failureCode = 'RPC_RESPONSE_MALFORMED'
+      hop.failedOperation = `hop[${i}].factory.getPair.decode`
+      base.hops.push(hop)
+      return { ...base, failureCode: hop.failureCode, failedOperation: hop.failedOperation }
+    }
+    if (hop.pair === ZERO_ADDRESS) {
+      hop.failureCode = 'GET_PAIR_ZERO'
+      hop.failedOperation = `hop[${i}].factory.getPair`
+      base.hops.push(hop)
+      return { ...base, failureCode: hop.failureCode, failedOperation: hop.failedOperation }
+    }
+    const token0Call = await call(hop.pair, V2_PAIR.encodeFunctionData('token0'), 'TOKEN0_CALL_FAILED', `hop[${i}].pair.token0`)
+    if (!token0Call.ok) {
+      Object.assign(hop, { failureCode: token0Call.code, failedOperation: token0Call.operation })
+      base.hops.push(hop)
+      return { ...base, failureCode: token0Call.code, failedOperation: token0Call.operation }
+    }
+    const token1Call = await call(hop.pair, V2_PAIR.encodeFunctionData('token1'), 'TOKEN1_CALL_FAILED', `hop[${i}].pair.token1`)
+    if (!token1Call.ok) {
+      Object.assign(hop, { failureCode: token1Call.code, failedOperation: token1Call.operation })
+      base.hops.push(hop)
+      return { ...base, failureCode: token1Call.code, failedOperation: token1Call.operation }
+    }
+    const reservesCall = await call(hop.pair, V2_PAIR.encodeFunctionData('getReserves'), 'RESERVES_CALL_FAILED', `hop[${i}].pair.getReserves`)
+    if (!reservesCall.ok) {
+      Object.assign(hop, { failureCode: reservesCall.code, failedOperation: reservesCall.operation })
+      base.hops.push(hop)
+      return { ...base, failureCode: reservesCall.code, failedOperation: reservesCall.operation }
+    }
+    try {
+      hop.token0 = (V2_PAIR.decodeFunctionResult('token0', token0Call.value)[0] as string).toLowerCase()
+      hop.token1 = (V2_PAIR.decodeFunctionResult('token1', token1Call.value)[0] as string).toLowerCase()
+      const reserves = V2_PAIR.decodeFunctionResult('getReserves', reservesCall.value)
+      hop.reserve0 = reserves[0].toString()
+      hop.reserve1 = reserves[1].toString()
+    } catch {
+      hop.failureCode = 'RPC_RESPONSE_MALFORMED'
+      hop.failedOperation = `hop[${i}].pair.decode`
+      base.hops.push(hop)
+      return { ...base, failureCode: hop.failureCode, failedOperation: hop.failedOperation }
+    }
+    const a = tokenIn.toLowerCase()
+    const b = tokenOut.toLowerCase()
+    if (!((hop.token0 === a && hop.token1 === b) || (hop.token0 === b && hop.token1 === a))) {
+      hop.failureCode = 'RESERVE_ORIENTATION_FAILED'
+      hop.failedOperation = `hop[${i}].pair.tokens`
+      base.hops.push(hop)
+      return { ...base, failureCode: hop.failureCode, failedOperation: hop.failedOperation }
+    }
+    hop.orientation = hop.token0 === a ? 'TOKEN0_IN' : 'TOKEN1_IN'
+    hop.reserveIn = hop.orientation === 'TOKEN0_IN' ? hop.reserve0 : hop.reserve1
+    hop.reserveOut = hop.orientation === 'TOKEN0_IN' ? hop.reserve1 : hop.reserve0
+    if (BigInt(hop.reserveIn!) === BigInt(0) || BigInt(hop.reserveOut!) === BigInt(0)) {
+      hop.failureCode = 'RESERVE_ZERO'
+      hop.failedOperation = `hop[${i}].pair.getReserves`
+      base.hops.push(hop)
+      return { ...base, failureCode: hop.failureCode, failedOperation: hop.failedOperation }
+    }
+    base.hops.push(hop)
+  }
+  return base
+}
+
 /** Reads may straddle blocks. Never attach impact when these reserves cannot reproduce the quoted output. */
 function reservesMatchQuote(amountIn: bigint, amountOut: bigint, hops: V2ImpactHop[]): boolean {
   if (!validImpactHops(hops)) return false
@@ -247,7 +417,15 @@ function reservesMatchQuote(amountIn: bigint, amountOut: bigint, hops: V2ImpactH
  */
 export function createFactualV2QuoteSource(input: {
   rpcUrlByChain: Partial<Record<number, string>>
+  rpcFallbackUrlsByChain?: Partial<Record<number, string[]>>
   fetchImpl?: typeof fetch
+  onImpactDiagnostic?: (event: {
+    chainId: number
+    router: string
+    path: string[]
+    failureCode: V2ReserveFailureCode
+    failedOperation: string
+  }) => void
 }): ShadowQuoteSource {
   const fetchImpl = input.fetchImpl ?? fetch
   return {
@@ -261,18 +439,30 @@ export function createFactualV2QuoteSource(input: {
       request.signal?.addEventListener('abort', abortReserves, { once: true })
       if (request.signal?.aborted) abortReserves()
       const reserveTimer = setTimeout(abortReserves, V2_PRICE_IMPACT_GRACE_MS)
+      const reserveRpcs = Array.from(
+        new Set([rpc, ...(input.rpcFallbackUrlsByChain?.[request.chainId] ?? [])].filter((url) => Boolean(url?.trim()))),
+      )
+      const firstFactualReserves = new Promise<V2ImpactHop[] | null>((resolve) => {
+        let pending = reserveRpcs.length
+        for (const reserveRpc of reserveRpcs) {
+          readV2PathReserves({
+            fetchImpl,
+            rpc: reserveRpc,
+            chainId: request.chainId,
+            router: request.router,
+            path: request.path,
+            signal: reserveController.signal,
+          }).then((hops) => {
+            if (hops) resolve(hops)
+            else if (--pending === 0) resolve(null)
+          })
+        }
+      })
       const reserves = Promise.race([
-        readV2PathReserves({
-          fetchImpl,
-          rpc,
-          chainId: request.chainId,
-          router: request.router,
-          path: request.path,
-          signal: reserveController.signal,
-        }),
-        new Promise<null>((resolve) => {
-          if (reserveController.signal.aborted) resolve(null)
-          else reserveController.signal.addEventListener('abort', () => resolve(null), { once: true })
+        firstFactualReserves.then((hops) => ({ kind: 'RESULT' as const, hops })),
+        new Promise<{ kind: 'TIMEOUT'; hops: null }>((resolve) => {
+          if (reserveController.signal.aborted) resolve({ kind: 'TIMEOUT', hops: null })
+          else reserveController.signal.addEventListener('abort', () => resolve({ kind: 'TIMEOUT', hops: null }), { once: true })
         }),
       ])
       try {
@@ -295,15 +485,40 @@ export function createFactualV2QuoteSource(input: {
         const amountOutRaw = decodeGetAmountsOut(payload.result)
         let priceImpactPercent: number | null = null
         try {
-          const hops = await reserves
-          priceImpactPercent =
-            hops && reservesMatchQuote(BigInt(request.amountInRaw), BigInt(amountOutRaw), hops)
-              ? computeV2PriceImpactPercent({
-                  amountInRaw: BigInt(request.amountInRaw),
-                  amountOutRaw: BigInt(amountOutRaw),
-                  hops,
-                })
-              : null
+          const reserveOutcome = await reserves
+          const hops = reserveOutcome.hops
+          if (!hops) {
+            input.onImpactDiagnostic?.({
+              chainId: request.chainId,
+              router: request.router,
+              path: request.path,
+              failureCode: reserveOutcome.kind === 'TIMEOUT' ? 'RESERVE_READ_TIMEOUT' : 'RESERVE_READ_FAILED',
+              failedOperation: 'readV2PathReserves',
+            })
+          } else if (!reservesMatchQuote(BigInt(request.amountInRaw), BigInt(amountOutRaw), hops)) {
+            input.onImpactDiagnostic?.({
+              chainId: request.chainId,
+              router: request.router,
+              path: request.path,
+              failureCode: 'QUOTE_RESERVE_MISMATCH',
+              failedOperation: 'reservesMatchQuote',
+            })
+          } else {
+            priceImpactPercent = computeV2PriceImpactPercent({
+              amountInRaw: BigInt(request.amountInRaw),
+              amountOutRaw: BigInt(amountOutRaw),
+              hops,
+            })
+            if (priceImpactPercent == null) {
+              input.onImpactDiagnostic?.({
+                chainId: request.chainId,
+                router: request.router,
+                path: request.path,
+                failureCode: 'MATH_INVALID',
+                failedOperation: 'computeV2PriceImpactPercent',
+              })
+            }
+          }
         } catch {
           priceImpactPercent = null
         }
@@ -420,7 +635,7 @@ export async function probeEvmRpcReadiness(input: EvmRpcReadinessProbeInput): Pr
     return readinessSnapshot(input.venueId, VENUE_HEALTH_STATE.UNAVAILABLE, 'rpc-unavailable', false, input.nowIso)
   }
   const blockNumber = parseHexQuantity(block.result)
-  if (blockNumber == null || blockNumber < 0n) {
+  if (blockNumber == null || blockNumber < BigInt(0)) {
     return readinessSnapshot(input.venueId, VENUE_HEALTH_STATE.UNAVAILABLE, 'rpc-unavailable', false, input.nowIso)
   }
 

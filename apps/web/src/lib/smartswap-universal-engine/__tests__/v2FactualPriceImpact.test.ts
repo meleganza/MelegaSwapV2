@@ -19,6 +19,7 @@ import {
   computeV2PriceImpactPercent,
   createFactualV2QuoteSource,
   resetV2PairMetadataCacheForTests,
+  V2_PRICE_IMPACT_GRACE_MS,
 } from '../evmV2Quote'
 import { createMelegaDexAdapter } from '../melegaDexAdapter'
 import { createPancakeSwapVenueAdapter } from '../pancakeSwapAdapter'
@@ -438,8 +439,10 @@ describe('factual V2 price impact: quote source over V2 reserves', () => {
   it('hung reserve RPC cannot discard a router quote arriving near the 1200ms adapter deadline', async () => {
     const chain = mockChain({ pools: [ONE_HOP] })
     let reserveSignal: AbortSignal | undefined
+    const diagnostics: string[] = []
     const source = createFactualV2QuoteSource({
       rpcUrlByChain: { 56: RPC },
+      onImpactDiagnostic: (event) => diagnostics.push(`${event.failureCode}:${event.failedOperation}`),
       fetchImpl: (async (url, init) => {
         const { params } = JSON.parse(String(init!.body))
         if (params[0].to.toLowerCase() !== PANCAKE_ROUTER) {
@@ -466,13 +469,14 @@ describe('factual V2 price impact: quote source over V2 reserves', () => {
             }),
         },
       ])
-      await vi.advanceTimersByTimeAsync(1050)
+      await vi.advanceTimersByTimeAsync(V2_PRICE_IMPACT_GRACE_MS)
       const [result] = await pending
       expect(result.status).toBe('ok')
       if (result.status !== 'ok') throw new Error('router quote lost')
       expect(result.value.amountOutRaw).toBe(v2AmountOut(E18, ONE_HOP.reserveA, ONE_HOP.reserveB).toString())
       expect(result.value.priceImpactPercent).toBeNull()
       expect(reserveSignal!.aborted).toBe(true)
+      expect(diagnostics).toEqual(['RESERVE_READ_TIMEOUT:readV2PathReserves'])
     } finally {
       vi.useRealTimers()
     }

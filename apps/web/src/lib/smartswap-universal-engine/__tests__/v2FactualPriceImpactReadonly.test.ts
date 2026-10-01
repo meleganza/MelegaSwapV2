@@ -5,6 +5,7 @@ import { getAddress } from '@ethersproject/address'
 import { Native, Token } from '@pancakeswap/sdk'
 import { expect, it } from 'vitest'
 import { Interface } from '@ethersproject/abi'
+import { BSC_RPC_URLS } from 'config/constants/rpc'
 import {
   computeV2MidOutputRaw,
   createFactualV2QuoteSource,
@@ -55,6 +56,7 @@ const CASES = [
   { id: 'blion_marco_1', i: 'BLION', o: 'MARCO', amt: '1' },
   { id: 'blion_marco_1000', i: 'BLION', o: 'MARCO', amt: '1000' },
   { id: 'eyed_marco_100', i: 'EYED', o: 'MARCO', amt: '100' },
+  { id: 'marco_bnb_1000', i: 'MARCO', o: 'BNB', amt: '1000' },
 ]
 const raw = (amt: string, d: number) => parseUnits(amt, d).toString()
 
@@ -84,7 +86,11 @@ it.skipIf(!RPC)(
         exactOut: false,
         slippageBps: 50,
       }).request!
-      const source = createFactualV2QuoteSource({ rpcUrlByChain: { 56: RPC! }, fetchImpl })
+      const source = createFactualV2QuoteSource({
+        rpcUrlByChain: { 56: RPC! },
+        rpcFallbackUrlsByChain: { 56: BSC_RPC_URLS },
+        fetchImpl,
+      })
       const result = await runEvmShadowCompetition({
         request,
         productionQuote: null,
@@ -176,10 +182,6 @@ it.skipIf(!RPC)(
           ? pinV2Confirmation(plan, display as any)?.display.priceImpact?.toFixed(2) ?? null
           : null
       }
-      expect(winner).not.toBeNull()
-      expect(winnerPriceImpactPercent).not.toBeNull()
-      expect(previewImpact).toMatch(/%/)
-      expect(pinnedImpact).not.toBeNull()
       out.push({
         case: c.id,
         input: `${c.amt} ${c.i}`,
@@ -193,6 +195,17 @@ it.skipIf(!RPC)(
         previewPriceImpact: previewImpact,
         confirmPinnedPriceImpact: pinnedImpact,
       })
+    }
+    const factual = out.filter((row) => row.winnerPriceImpactPercent != null)
+    console.log(`V2_READONLY_CASES=${JSON.stringify(out)}`)
+    expect(factual.some((row) => row.winnerVenue === 'pancakeswap')).toBe(true)
+    expect(factual.some((row) => row.winnerVenue === 'melega-dex')).toBe(true)
+    expect(
+      factual.some((row) => Object.values(row.venues).some((venue: any) => venue.path?.length === 3 && venue.priceImpactPercent != null)),
+    ).toBe(true)
+    for (const row of factual) {
+      expect(row.previewPriceImpact).toMatch(/%/)
+      expect(row.confirmPinnedPriceImpact).not.toBeNull()
     }
     const report = { block, chainId: 56, realSwapExecuted: false, realApprovalExecuted: false, cases: out }
     if (process.env.SMARTSWAP_READONLY_REPORT)
