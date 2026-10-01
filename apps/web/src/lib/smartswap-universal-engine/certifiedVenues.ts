@@ -4,6 +4,7 @@
  * the widely published official V2 routers — NOT Melega's inherited smart-router.
  */
 
+import { MELEGA_BNB_FACTORY } from 'config/melegaChainRegistry'
 import { EVM_CHAIN_IDS } from './domain'
 
 export const VENUE_SUPPORT = {
@@ -26,6 +27,11 @@ export interface CertifiedEvmVenue {
   v2LpFeeBps: number
   quoteMethod: 'v2-getAmountsOut'
   routers: Partial<Record<number, string>>
+  /**
+   * V2 factory per chain for READ-ONLY pair reserve reads (factual price impact only). Each entry equals the
+   * certified router's own `factory()` on that chain. Missing => price impact stays unavailable (null).
+   */
+  v2Factories?: Partial<Record<number, string>>
   wrappedNative: Partial<Record<number, string>>
   support: Record<number, VenueSupportState>
 }
@@ -37,6 +43,10 @@ export const PANCAKE_SWAP_VENUE: CertifiedEvmVenue = {
   quoteMethod: 'v2-getAmountsOut',
   routers: {
     [EVM_CHAIN_IDS.BSC]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+  },
+  v2Factories: {
+    // PancakeSwap V2 factory == PancakeRouter(0x10ED…024E).factory() on BSC mainnet (read-only eth_call).
+    [EVM_CHAIN_IDS.BSC]: '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73',
   },
   wrappedNative: {
     [EVM_CHAIN_IDS.BSC]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -84,6 +94,10 @@ export const MELEGA_DEX_VENUE: CertifiedEvmVenue = {
   quoteMethod: 'v2-getAmountsOut',
   routers: {
     [EVM_CHAIN_IDS.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3',
+  },
+  v2Factories: {
+    // Repo truth (melegaChainRegistry / swap-sdk FACTORY_ADDRESS) == MelegaRouter(0xc250…EAB3).factory().
+    [EVM_CHAIN_IDS.BSC]: MELEGA_BNB_FACTORY,
   },
   wrappedNative: {
     [EVM_CHAIN_IDS.BSC]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
