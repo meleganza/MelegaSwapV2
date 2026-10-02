@@ -87,16 +87,6 @@ export const searchGlobal = (
       contractHits.forEach((entry) => {
         results.push({ ...entry, score: 200 })
       })
-    } else {
-      results.push({
-        id: `wallet-${normalized}`,
-        label: trimmed,
-        subtitle: 'Wallet or contract address — open Radar intelligence',
-        href: `/radar?contract=${encodeURIComponent(trimmed)}`,
-        category: 'contract',
-        searchableText: normalized,
-        score: 150,
-      })
     }
   }
 

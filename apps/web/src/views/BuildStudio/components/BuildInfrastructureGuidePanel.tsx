@@ -107,7 +107,6 @@ export const BuildInfrastructureGuidePanel: React.FC<Props> = ({ open, onClose }
         <LinkRow>
           <GuideLink href="/import-existing-token">Import existing token</GuideLink>
           <GuideLink href="/projects">Projects registry</GuideLink>
-          <GuideLink href="/radar">Radar intelligence</GuideLink>
           <GuideLink href="/pools">Pools runtime</GuideLink>
           <GuideLink href="/farms">Farms runtime</GuideLink>
         </LinkRow>

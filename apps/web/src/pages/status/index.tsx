@@ -80,10 +80,6 @@ const StatusPage: React.FC = () => (
           <Label>Event indexer</Label>
           <Value>Tier-1 MARCO/WBNB + Tier-2 liquid pairs</Value>
         </Row>
-        <Row>
-          <Label>DEX Intelligence</Label>
-          <Value>Coming Soon</Value>
-        </Row>
       </Card>
       <MelegaFooter
         left={<span style={{ fontSize: 12, color: colors.textMuted }}>© 2026 Melega DEX</span>}

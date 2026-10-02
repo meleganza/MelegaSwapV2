@@ -15,7 +15,6 @@ const EXTENSION_DEFS: Omit<ExtensionCard, 'available' | 'requirements' | 'status
     title: 'Radar Visibility',
     purpose: 'Index project infrastructure in ecosystem radar for operational discovery.',
     activationTime: '~15 min',
-    href: '/radar',
   },
   {
     id: 'projects',
