@@ -61,6 +61,8 @@ export type MarcoPayOrder = {
   referralCode: string | null
   referralCatalogRef: string | null
   referralDiscountMinor: string | null
+  referralDestinationRef?: string | null
+  referralCampaignRef?: string | null
   legacyOrderId: string
   paymentRef: string | null
   intentRef: string | null
@@ -122,6 +124,8 @@ function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
     referralCode: order.referralCode ?? null,
     referralCatalogRef: order.referralCatalogRef ?? null,
     referralDiscountMinor: order.referralDiscountMinor ?? null,
+    referralDestinationRef: order.referralDestinationRef ?? null,
+    referralCampaignRef: order.referralCampaignRef ?? null,
   }
   MEMORY.set(next.orderId, next)
   return next
@@ -220,6 +224,8 @@ export async function createMarcoPayOrder(input: {
   targetId?: string | null
   referralCode?: string | null
   referralCatalogRef?: string | null
+  referralDestinationRef?: string | null
+  referralCampaignRef?: string | null
 }): Promise<MarcoPayOrder> {
   const pkg =
     input.serviceId === 'featured'
@@ -271,6 +277,8 @@ export async function createMarcoPayOrder(input: {
     referralCode: input.referralCode ?? null,
     referralCatalogRef: input.referralCatalogRef ?? null,
     referralDiscountMinor: null,
+    referralDestinationRef: input.referralDestinationRef ?? null,
+    referralCampaignRef: input.referralCampaignRef ?? null,
     legacyOrderId,
     paymentRef: null,
     intentRef: null,
