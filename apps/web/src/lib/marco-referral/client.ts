@@ -7,6 +7,8 @@
  */
 
 export const MARCO_REFERRAL_QUERY_PARAM = 'ref'
+export const MARCO_REFERRAL_DESTINATION_PARAM = 'rd'
+export const MARCO_REFERRAL_CAMPAIGN_PARAM = 'rc'
 export const MARCO_REFERRAL_STORAGE_KEY = 'marco.passport-pro.referral.v1'
 export const MARCO_REFERRAL_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 export const MARCO_REFERRAL_CHANGE_EVENT = 'marco:referral-change'
@@ -21,6 +23,8 @@ export type StoredMarcoReferral = {
   expiresAt: number
   verifiedAt: number | null
   status: 'PENDING' | 'VERIFIED'
+  destinationRef?: string | null
+  campaignRef?: string | null
 }
 
 export type ReferralStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
@@ -36,6 +40,11 @@ type ReferralResolvePayload = {
 export function normalizeMarcoReferralCode(value: unknown): string | null {
   const code = typeof value === 'string' ? value.trim().toLowerCase() : ''
   return CODE_PATTERN.test(code) ? code : null
+}
+
+function normalizeAnalyticsContext(value: unknown): string | null {
+  const context = typeof value === 'string' ? value.trim().toLowerCase() : ''
+  return /^[a-z0-9][a-z0-9._-]{0,63}$/.test(context) ? context : null
 }
 
 /** Storage is optional: privacy modes and embedded browsers may deny access. */
@@ -80,6 +89,8 @@ export function readStoredMarcoReferral(
       expiresAt: Number(parsed.expiresAt),
       verifiedAt: Number.isFinite(parsed.verifiedAt) ? Number(parsed.verifiedAt) : null,
       status: parsed.status === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
+      destinationRef: normalizeAnalyticsContext(parsed.destinationRef),
+      campaignRef: normalizeAnalyticsContext(parsed.campaignRef),
     }
   } catch {
     removeStoredMarcoReferral(storage)
@@ -106,6 +117,8 @@ export function captureMarcoReferral(
       expiresAt: now + MARCO_REFERRAL_MAX_AGE_MS,
       verifiedAt: null,
       status: 'PENDING',
+      destinationRef: normalizeAnalyticsContext(url.searchParams.get(MARCO_REFERRAL_DESTINATION_PARAM)),
+      campaignRef: normalizeAnalyticsContext(url.searchParams.get(MARCO_REFERRAL_CAMPAIGN_PARAM)),
     }
     storage.setItem(MARCO_REFERRAL_STORAGE_KEY, JSON.stringify(captured))
     return captured
@@ -166,4 +179,46 @@ export async function resolveMarcoReferralForCheckout(
   const stored = readStoredMarcoReferral(storage, now)
   if (!stored) return null
   return verifyMarcoReferral(stored, storage, fetchImpl, now)
+}
+
+export type MarcoReferralQuote = {
+  referral_code: string
+  catalog_ref: string
+  listed_price_minor: string
+  discount_minor: string
+  net_paid_minor: string
+  commission_amount_minor: string
+}
+
+/** Server-side pre-payment quote. Exact integer facts come only from Passport. */
+export async function quoteMarcoReferralForCheckout(input: {
+  code: string
+  catalogRef: string
+  destinationRef?: string | null
+  campaignRef?: string | null
+  fetchImpl?: typeof fetch
+}): Promise<MarcoReferralQuote | null> {
+  const endpoint = new URL('/api/public/referral/quote', MARCO_REFERRAL_AUTHORITY)
+  endpoint.searchParams.set('code', input.code)
+  endpoint.searchParams.set('catalog_ref', input.catalogRef)
+  if (input.destinationRef) endpoint.searchParams.set('rd', input.destinationRef)
+  if (input.campaignRef) endpoint.searchParams.set('rc', input.campaignRef)
+  try {
+    const response = await (input.fetchImpl ?? fetch)(endpoint.toString(), {
+      headers: { accept: 'application/json' },
+      cache: 'no-store',
+      signal: typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+        ? AbortSignal.timeout(6_000)
+        : undefined,
+    })
+    const body = await response.json() as Partial<MarcoReferralQuote> & { ok?: boolean }
+    const integer = (value: unknown): value is string => typeof value === 'string' && /^\d+$/.test(value)
+    if (!response.ok || body.ok !== true || body.referral_code !== input.code || body.catalog_ref !== input.catalogRef
+      || !integer(body.listed_price_minor) || !integer(body.discount_minor) || !integer(body.net_paid_minor)
+      || !integer(body.commission_amount_minor)
+      || BigInt(body.listed_price_minor) - BigInt(body.discount_minor) !== BigInt(body.net_paid_minor)) return null
+    return body as MarcoReferralQuote
+  } catch {
+    return null
+  }
 }

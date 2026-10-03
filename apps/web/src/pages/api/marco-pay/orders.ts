@@ -15,7 +15,7 @@ import {
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
 import { buildMarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
-import { normalizeMarcoReferralCode } from 'lib/marco-referral/client'
+import { normalizeMarcoReferralCode, quoteMarcoReferralForCheckout } from 'lib/marco-referral/client'
 
 const SERVICES = new Set<MarcoPayOrder['serviceId']>([
   'featured',
@@ -59,6 +59,8 @@ function publicOrder(order: MarcoPayOrder) {
     referralApplied: Boolean(order.referralCode && order.referralCatalogRef),
     referralCode: order.referralCode,
     referralDiscountMinor: order.referralDiscountMinor,
+    referralDestinationRef: order.referralDestinationRef,
+    referralCampaignRef: order.referralCampaignRef,
   }
 }
 
@@ -119,12 +121,23 @@ const handler: NextApiHandler = async (req, res) => {
   const referralCode = rawReferralCode ? normalizeMarcoReferralCode(rawReferralCode) : null
   const packageId = body.packageId ? String(body.packageId) : null
   const referralCatalogRef = referralCode ? dexReferralCatalogRef(packageId) : null
+  const referralDestinationRef = referralCode && typeof body.referralDestination === 'string' ? body.referralDestination.trim() : null
+  const referralCampaignRef = referralCode && typeof body.referralCampaign === 'string' ? body.referralCampaign.trim() : null
   if (!projectId || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
     return res.status(400).json({ error: 'PROJECT_AND_WALLET_REQUIRED' })
   }
   if (!SERVICES.has(serviceId)) return res.status(400).json({ error: 'SERVICE_UNSUPPORTED' })
   if (rawReferralCode && !referralCode) return res.status(400).json({ error: 'REFERRAL_CODE_INVALID' })
   if (referralCode && !referralCatalogRef) return res.status(409).json({ error: 'REFERRAL_CATALOG_UNAVAILABLE' })
+  if (referralCode) {
+    const authorityQuote = await quoteMarcoReferralForCheckout({
+      code: referralCode,
+      catalogRef: referralCatalogRef!,
+      destinationRef: referralDestinationRef,
+      campaignRef: referralCampaignRef,
+    })
+    if (!authorityQuote) return res.status(422).json({ error: 'REFERRAL_NOT_VERIFIED' })
+  }
   if (!VISIBILITY_RUNTIME[serviceId]?.live) return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
   if ((serviceId === 'featured-farm' || serviceId === 'featured-pool') && !targetId) {
     return res.status(400).json({ error: 'TARGET_REQUIRED' })
@@ -139,6 +152,8 @@ const handler: NextApiHandler = async (req, res) => {
       existing.packageId === packageId &&
       existing.referralCode === referralCode &&
       existing.referralCatalogRef === referralCatalogRef &&
+      existing.referralDestinationRef === referralDestinationRef &&
+      existing.referralCampaignRef === referralCampaignRef &&
       OPEN_STATES.has(existing.state)
         ? existing
         : await createMarcoPayOrder({
@@ -152,6 +167,8 @@ const handler: NextApiHandler = async (req, res) => {
             targetId,
             referralCode,
             referralCatalogRef,
+            referralDestinationRef,
+            referralCampaignRef,
           })
     const secret = await resolveMarcoPayWebhookSecret()
     const merchantApiKey = getMarcoPayMerchantApiKey()
@@ -189,6 +206,8 @@ const handler: NextApiHandler = async (req, res) => {
           merchantApiKey,
           referralCode: order.referralCode,
           catalogRef: order.referralCatalogRef,
+          destinationRef: order.referralDestinationRef,
+          campaignRef: order.referralCampaignRef,
         })
         quote = {
           reference_amount_minor: session.referenceAmountMinor,

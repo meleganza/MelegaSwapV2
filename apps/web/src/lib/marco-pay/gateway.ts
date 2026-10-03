@@ -84,6 +84,8 @@ export function buildMarcoPayCreateBody(input: {
   item?: string | null
   referralCode?: string | null
   catalogRef?: string | null
+  destinationRef?: string | null
+  campaignRef?: string | null
 }): string {
   if (!MARCO_PAY_MERCHANT_ORDER_REF_PATTERN.test(input.merchantOrderRef)) {
     throw new MarcoPayGatewayError('INVALID_ORDER_REF', 'This checkout did not provide a valid order reference.')
@@ -102,7 +104,12 @@ export function buildMarcoPayCreateBody(input: {
     currency,
     item: input.item ?? null,
     ...(input.referralCode
-      ? { referral_code: input.referralCode, catalog_ref: input.catalogRef ?? null }
+      ? {
+          referral_code: input.referralCode,
+          catalog_ref: input.catalogRef ?? null,
+          ...(input.destinationRef ? { destination_ref: input.destinationRef } : {}),
+          ...(input.campaignRef ? { campaign_ref: input.campaignRef } : {}),
+        }
       : {}),
   })
 }
@@ -318,6 +325,8 @@ export async function createMarcoPayPaymentSession(input: {
   item?: string | null
   referralCode?: string | null
   catalogRef?: string | null
+  destinationRef?: string | null
+  campaignRef?: string | null
   secret: string
   merchantApiKey?: string | null
   nowSeconds?: number
