@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useId } from "react";
 import get from "lodash/get";
 import { Context } from "./ModalContext";
 import { Handler } from "./types";
@@ -9,17 +9,21 @@ const useModal = (
   updateOnPropsChange = false,
   modalId = "defaultNodeId"
 ): [Handler, Handler] => {
+  // Logical names are shared by nested swap/fallback hooks. Only the instance
+  // that presented a dialog may publish prop updates to it.
+  const instanceId = useId();
+  const ownerId = `${modalId}:${instanceId}`;
   const { isOpen, nodeId, modalNode, setModalNode, onPresent, onDismiss } = useContext(Context);
   const onPresentCallback = useCallback(() => {
-    onPresent(modal, modalId, closeOnOverlayClick);
-  }, [modal, modalId, onPresent, closeOnOverlayClick]);
+    onPresent(modal, ownerId, closeOnOverlayClick);
+  }, [modal, ownerId, onPresent, closeOnOverlayClick]);
 
   // Updates the "modal" component if props are changed
   // Use carefully since it might result in unnecessary rerenders
   // Typically if modal is static there is no need for updates, use when you expect props to change
   useEffect(() => {
-    // NodeId is needed in case there are 2 useModal hooks on the same page and one has updateOnPropsChange
-    if (updateOnPropsChange && isOpen && nodeId === modalId) {
+    // Instance ownership also isolates two hooks with the same logical modalId.
+    if (updateOnPropsChange && isOpen && nodeId === ownerId) {
       const modalProps = get(modal, "props");
       const oldModalProps = get(modalNode, "props");
       // Note: I tried to use lodash isEqual to compare props but it is giving false-negatives too easily
@@ -32,7 +36,7 @@ const useModal = (
         setModalNode(modal);
       }
     }
-  }, [updateOnPropsChange, nodeId, modalId, isOpen, modal, modalNode, setModalNode]);
+  }, [updateOnPropsChange, nodeId, ownerId, isOpen, modal, modalNode, setModalNode]);
 
   return [onPresentCallback, onDismiss];
 };

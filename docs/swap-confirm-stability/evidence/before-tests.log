@@ -1,0 +1,139 @@
+
+ RUN  v0.27.2 /private/tmp/melega-pool-public-truth
+
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id confirmSwapModal
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id undefined
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+stderr | packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > transfers ownership when another instance explicitly opens
+Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot
+
+ ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx  (3 tests | 3 failed) 53ms
+   ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id confirmSwapModal
+     → expected "spy" to not be called at all
+
+Received:
+    1st spy call:
+
+    Array [
+      <Dialog
+        label="smart:999"
+        onConfirm={[Function confirm]}
+      />,
+    ]
+
+
+Number of calls: 1
+
+   ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id undefined
+     → expected "spy" to not be called at all
+
+Received:
+    1st spy call:
+
+    Array [
+      <Dialog
+        label="smart:999"
+        onConfirm={[Function confirm]}
+      />,
+    ]
+
+
+Number of calls: 1
+
+   ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > transfers ownership when another instance explicitly opens
+     → expected "spy" to not be called at all
+
+Received:
+    1st spy call:
+
+    Array [
+      <Dialog
+        label="smart:999"
+        onConfirm={[Function confirm]}
+      />,
+    ]
+
+    2nd spy call:
+
+    Array [
+      <Dialog
+        label="fallback:1"
+        onConfirm={[Function spy]}
+      />,
+    ]
+
+
+Number of calls: 2
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id confirmSwapModal
+ FAIL  packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > isolates a fallback from a mounted parent using id undefined
+AssertionError: expected "spy" to not be called at all
+
+Received:
+    1st spy call:
+
+    Array [
+      <Dialog
+        label="smart:999"
+        onConfirm={[Function confirm]}
+      />,
+    ]
+
+
+Number of calls: 1
+
+ ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx:41:23
+     39|     const view = render(<Harness value={1} id={id} write={write} confi…
+     40|     fireEvent.click(screen.getByText('Open fallback'))
+     41|     expect(write).not.toHaveBeenCalled()
+       |                       ^
+     42|     fireEvent.click(screen.getByText('fallback:1'))
+     43|     expect(confirm).toHaveBeenCalledTimes(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx > modal updates belong to the presenting hook instance > transfers ownership when another instance explicitly opens
+AssertionError: expected "spy" to not be called at all
+
+Received:
+    1st spy call:
+
+    Array [
+      <Dialog
+        label="smart:999"
+        onConfirm={[Function confirm]}
+      />,
+    ]
+
+    2nd spy call:
+
+    Array [
+      <Dialog
+        label="fallback:1"
+        onConfirm={[Function spy]}
+      />,
+    ]
+
+
+Number of calls: 2
+
+ ❯ packages/uikit/src/widgets/Modal/__tests__/useModalOwnership.test.tsx:55:23
+     53|     fireEvent.click(screen.getByText('Open smart'))
+     54|     expect(screen.getByText('smart:999')).toBeTruthy()
+     55|     expect(write).not.toHaveBeenCalled()
+       |                       ^
+     56|   })
+     57| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  12:32:16
+   Duration  6.03s (transform 2.16s, setup 212ms, collect 3.12s, tests 53ms)
