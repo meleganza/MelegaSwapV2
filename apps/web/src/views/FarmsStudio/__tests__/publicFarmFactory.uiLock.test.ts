@@ -49,6 +49,6 @@ describe('publicFarmFactory UI locks', () => {
   it('mobile-friendly styles remain present', () => {
     const ui = load('modules/PublicFarmFactoryWorkspace.tsx')
     expect(ui).toContain('@media (max-width: 767px)')
-    expect(ui).toContain('@media (max-width: 1023px)')
+    expect(ui).toContain('@media (max-width: 1199px)')
   })
 })
