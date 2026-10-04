@@ -1,6 +1,7 @@
 # P0 — Swap confirmation ownership
 
-Base: b56f69c27e8bb5078cabc1b9692283fc9817bdce (origin/main).
+Original fix base: b56f69c27e8bb5078cabc1b9692283fc9817bdce. Revalidated after merging current
+`origin/main` at efba7cd182396c9400cb502be884ca9c47d2cb9b on 2026-10-04.
 
 The legacy fallback returned by SmartSwapCommitButton mounts a second SwapCommitButton beneath its still-mounted parent. Both register `useModal(..., true, true, 'confirmSwapModal')`. Previously, both hooks treated the shared logical name as ownership and wrote their different modal props into ModalContext, producing an update feedback loop. This is independent of the MARCO/AARON pair and explains a flickering, unclickable confirmation.
 
@@ -23,4 +24,7 @@ The config explicitly resolves UIKit from this checkout, avoiding a shared node_
 
 ## Publication
 
-Keep the review branch based on main. Current production is 2953e673522c8465cb87179208162ab2131200f0 (Farm geometry fix, PR #107 still open). A production hotfix must start from that deployed revision and apply this patch, preserving the Farm fix without deploying unrelated main-only changes. Stage the production build without domain assignment, inspect it, then promote. Keep the previous deployment available for rollback. No PR merge is required or performed by this mission.
+The September production hotfix proved the ownership fix, but its review commit was never merged
+into `main`; later production rollouts therefore reintroduced the defect. PR #108 is now rebased in
+place through a merge with current `main` so the fix can land durably. Keep it draft until the current
+Vercel preview and AARON confirmation stability checks pass. No real transaction is required.
