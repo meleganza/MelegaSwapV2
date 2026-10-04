@@ -5,6 +5,7 @@ import {
   captureMarcoReferral,
   readStoredMarcoReferral,
   resolveMarcoReferralForCheckout,
+  quoteMarcoReferralForCheckout,
 } from '../client'
 import { dexReferralCatalogRef } from '../catalog'
 
@@ -58,6 +59,43 @@ describe('MARCO Passport PRO referral transport', () => {
     expect(first?.code).toBe('founder-1')
     expect(second?.code).toBe('founder-1')
     expect(readStoredMarcoReferral(storage, 2_000)?.expiresAt).toBe(1_000 + MARCO_REFERRAL_MAX_AGE_MS)
+  })
+
+  it('keeps destination and campaign as analytics context on the same code', () => {
+    const storage = new MemoryStorage()
+    const captured = captureMarcoReferral(
+      'https://melega.finance/swap?ref=founder-1&rd=melega-dex&rc=launch-2026',
+      storage,
+      1_000,
+    )
+    expect(captured).toMatchObject({
+      code: 'founder-1',
+      destinationRef: 'melega-dex',
+      campaignRef: 'launch-2026',
+    })
+  })
+
+  it('accepts only an exact authoritative quote and carries analytics context', async () => {
+    const fetchImpl = vi.fn(async (url: string) => {
+      expect(url).toContain('rd=melega-dex')
+      expect(url).toContain('rc=launch-2026')
+      return new Response(JSON.stringify({
+        ok: true,
+        referral_code: 'founder-1',
+        catalog_ref: 'mpp_ref_dex_trend_6h',
+        listed_price_minor: '10000',
+        discount_minor: '1000',
+        net_paid_minor: '9000',
+        commission_amount_minor: '2700',
+      }))
+    })
+    await expect(quoteMarcoReferralForCheckout({
+      code: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      destinationRef: 'melega-dex',
+      campaignRef: 'launch-2026',
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })).resolves.toMatchObject({ net_paid_minor: '9000', commission_amount_minor: '2700' })
   })
 
   it('expires attribution after 30 days', () => {

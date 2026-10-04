@@ -7,6 +7,7 @@ import { useCallback } from 'react'
 import { AdvancedSwapDetails } from '../../components/AdvancedSwapDetails'
 import { TruncatedText } from '../../components/styleds'
 import type { SmartSwapV2ExecutionDisplay } from '../utils/v2ExecutionDisplay'
+import { V2_GAS_ESTIMATE_STATE } from 'lib/smartswap-universal-engine/v2GasEstimate'
 
 /**
  * BSC SmartSwap V2 confirmation body (inside the existing ConfirmSwapModal shell).
@@ -79,6 +80,16 @@ export default function V2ConfirmSwapContent({
           tradeType={v2.tradeType}
           v2Execution={{ venueLabel: v2.venueLabel, router: v2.router, feeAmount: v2.feeAmount, feeBps: v2.feeBps }}
         />
+        <RowBetween data-smartswap-v2-confirm-gas>
+          <Text small color="textSubtle">{t('Estimated gas')}</Text>
+          <Text small>
+            {v2.gasEstimate.state === V2_GAS_ESTIMATE_STATE.SWAP
+              ? `${v2.gasEstimate.gasUnits.toLocaleString()} gas units`
+              : v2.gasEstimate.state === V2_GAS_ESTIMATE_STATE.APPROVAL_REQUIRED
+              ? 'Approval required; swap estimate follows'
+              : '—'}
+          </Text>
+        </RowBetween>
         <Button variant="primary" onClick={onConfirm} disabled={disabledConfirm} id="confirm-swap-or-send" width="100%">
           {t('Confirm Swap')}
         </Button>

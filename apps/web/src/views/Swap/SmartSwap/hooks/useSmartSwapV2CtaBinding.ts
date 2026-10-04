@@ -25,6 +25,11 @@ import {
 } from 'lib/smartswap-universal-engine/v2ExecutionRuntimeConfig'
 import type { ObservedAllowanceIdentity } from 'lib/smartswap-universal-engine/v2ExecutionBinding'
 import {
+  estimatePreparedV2Gas,
+  V2_GAS_ESTIMATE_STATE,
+  type V2GasEstimate,
+} from 'lib/smartswap-universal-engine/v2GasEstimate'
+import {
   V2_PLAN_REASON,
   V2_TEST_ONLY_CTA_EXECUTION_GATE,
   buildV2UserExecutionPlan,
@@ -271,6 +276,26 @@ export function useSmartSwapV2CtaBinding(options?: {
   const planRetired = !latchedPlan && plan.ok && retiredPlans.has(plan)
   const activePlanOk = latchedPlan ? true : plan.ok && !planRetired
 
+  const [gasEstimate, setGasEstimate] = useState<V2GasEstimate>({
+    state: V2_GAS_ESTIMATE_STATE.IDLE,
+    gasUnits: null,
+  })
+  useEffect(() => {
+    const preparation = activePlanOk ? activePlan.preparation : null
+    if (!preparation || !walletTransport) {
+      setGasEstimate({ state: V2_GAS_ESTIMATE_STATE.IDLE, gasUnits: null })
+      return undefined
+    }
+    let live = true
+    setGasEstimate({ state: V2_GAS_ESTIMATE_STATE.ESTIMATING, gasUnits: null })
+    estimatePreparedV2Gas(walletTransport, preparation).then((estimate) => {
+      if (live) setGasEstimate(estimate)
+    })
+    return () => {
+      live = false
+    }
+  }, [activePlan, activePlanOk, walletTransport])
+
   const decision = useMemo(
     () =>
       resolveSmartSwapCtaDecision({
@@ -351,6 +376,7 @@ export function useSmartSwapV2CtaBinding(options?: {
     cutoverAllowed: chainCutoverAllowed,
     refreshV2Quote,
     shadowGeneration: runtime.shadow?.generation ?? 0,
+    gasEstimate,
   }
 }
 

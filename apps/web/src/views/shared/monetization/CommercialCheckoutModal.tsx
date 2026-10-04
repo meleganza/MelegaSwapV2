@@ -67,6 +67,7 @@ import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
 import {
   MARCO_REFERRAL_CHANGE_EVENT,
   getBrowserMarcoReferralStorage,
+  readStoredMarcoReferral,
   resolveMarcoReferralForCheckout,
 } from 'lib/marco-referral/client'
 
@@ -1746,6 +1747,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return null
     }
     const requestedReferralCode = referral && referralCatalogRef ? referral : null
+    const referralContext = (() => {
+      const storage = getBrowserMarcoReferralStorage()
+      return storage ? readStoredMarcoReferral(storage) : null
+    })()
     if (
       marcoPayOrderRef.current?.paymentId &&
       marcoPayOrderRef.current.wallet &&
@@ -1777,6 +1782,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             packageId: selectedPackage.id,
             targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
             referralCode: requestedReferralCode,
+            referralDestination: requestedReferralCode ? referralContext?.destinationRef ?? null : null,
+            referralCampaign: requestedReferralCode ? referralContext?.campaignRef ?? null : null,
           }),
         })
         const payload = await response.json()
