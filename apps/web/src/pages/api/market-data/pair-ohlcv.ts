@@ -11,6 +11,15 @@ const GECKO_NETWORK_BY_CHAIN: Record<number, string> = {
   43114: 'avax',
 }
 
+const DEXSCREENER_NETWORK_BY_CHAIN: Record<number, string> = {
+  1: 'ethereum',
+  56: 'bsc',
+  137: 'polygon',
+  8453: 'base',
+  42161: 'arbitrum',
+  43114: 'avalanche',
+}
+
 type GeckoOhlcvPayload = {
   data?: {
     attributes?: {
@@ -26,6 +35,31 @@ type GeckoPoolPayload = {
       quote_token?: { data?: { id?: string } }
     }
   }
+}
+
+type DexScreenerPairPayload = {
+  pairs?: Array<{
+    pairAddress?: string
+    baseToken?: { address?: string }
+    quoteToken?: { address?: string }
+  }>
+}
+
+async function resolveTokenSideFromDexScreener(
+  chainId: number,
+  pairAddress: string,
+  tokenAddress: string,
+): Promise<'base' | 'quote' | null> {
+  const network = DEXSCREENER_NETWORK_BY_CHAIN[chainId]
+  if (!network) return null
+  const response = await fetch(
+    `https://api.dexscreener.com/latest/dex/pairs/${encodeURIComponent(network)}/${pairAddress}`,
+    { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(3500) },
+  )
+  if (!response.ok) return null
+  const payload = (await response.json()) as DexScreenerPairPayload
+  const exactPair = payload.pairs?.find((pair) => pair.pairAddress?.toLowerCase() === pairAddress)
+  return resolveOhlcvTokenSide(tokenAddress, exactPair?.baseToken?.address, exactPair?.quoteToken?.address)
 }
 
 type NormalizedCandle = {
@@ -58,8 +92,12 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const chainId = Number(req.query.chainId)
-  const pairAddress = String(req.query.pairAddress || '').trim().toLowerCase()
-  const tokenAddress = String(req.query.tokenAddress || '').trim().toLowerCase()
+  const pairAddress = String(req.query.pairAddress || '')
+    .trim()
+    .toLowerCase()
+  const tokenAddress = String(req.query.tokenAddress || '')
+    .trim()
+    .toLowerCase()
   const network = GECKO_NETWORK_BY_CHAIN[chainId]
   const timeframe = resolveOhlcvTimeframe(req.query.timeframe)
 
@@ -93,17 +131,26 @@ const handler: NextApiHandler = async (req, res) => {
         return res.status(400).json({ error: 'TOKEN_NOT_IN_PAIR' })
       }
     } catch (error) {
-      res.setHeader('Cache-Control', 'public, s-maxage=20, stale-while-revalidate=60')
-      return res.status(200).json({
-        status: 'unavailable',
-        chainId,
-        pairAddress,
-        tokenAddress,
-        candles: [],
-        volume24hUsd: null,
-        source: 'geckoterminal-public-ohlcv',
-        reason: error instanceof Error ? error.message : 'Pool orientation unavailable',
-      })
+      try {
+        tokenSide = await resolveTokenSideFromDexScreener(chainId, pairAddress, tokenAddress)
+      } catch {
+        tokenSide = null
+      }
+      if (!tokenSide) {
+        res.setHeader('Cache-Control', 'public, s-maxage=20, stale-while-revalidate=60')
+        return res.status(200).json({
+          status: 'unavailable',
+          chainId,
+          pairAddress,
+          tokenAddress,
+          candles: [],
+          volume24hUsd: null,
+          source: 'geckoterminal-public-ohlcv',
+          reason: error instanceof Error ? error.message : 'Pool orientation unavailable',
+        })
+      }
+      // Continue with the exact same GeckoTerminal OHLCV request. This only
+      // replaces rate-limited pool-orientation metadata, not candle data.
     }
   }
 
@@ -143,9 +190,7 @@ const handler: NextApiHandler = async (req, res) => {
       .filter((row): row is NormalizedCandle => Boolean(row))
       .sort((a, b) => a.timestamp - b.timestamp)
       .slice(-24)
-    const volume24hUsd = candles.length
-      ? candles.reduce((total, candle) => total + candle.volumeUsd, 0)
-      : null
+    const volume24hUsd = candles.length ? candles.reduce((total, candle) => total + candle.volumeUsd, 0) : null
 
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
     return res.status(200).json({

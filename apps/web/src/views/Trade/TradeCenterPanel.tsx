@@ -92,6 +92,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
         chartEmptyDetail={chartUnavailableDetail ?? missingReasonDetail}
         isIndexingMetrics={isIndexingMetrics}
         pairAddress={data.primaryPairAddress}
+        fallbackPairPrices={data.publicTradePricePoints}
       />
       <TradePairStats stats={orderedStats} />
     </Shell>

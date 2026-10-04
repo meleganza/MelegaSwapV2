@@ -137,6 +137,7 @@ export interface TradePriceChartProps {
   chartEmptyDetail?: string
   isIndexingMetrics?: boolean
   pairAddress?: string | null
+  fallbackPairPrices?: Array<{ time: string; value: number }>
 }
 
 export const TradePriceChart: React.FC<TradePriceChartProps> = ({
@@ -150,6 +151,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   chartEmptyDetail,
   isIndexingMetrics,
   pairAddress,
+  fallbackPairPrices = [],
 }) => {
   const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const { chainId: activeChainId } = useActiveChainId()
@@ -182,8 +184,9 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
       selectTradeChartSeries(
         indexerCandles.map((candle) => ({ time: candle.time, value: candle.close })),
         publicPair.candles.map((candle) => ({ time: candle.timestamp, value: candle.close })),
+        fallbackPairPrices,
       ),
-    [indexerCandles, publicPair.candles],
+    [indexerCandles, publicPair.candles, fallbackPairPrices],
   )
   const pairPrices = series.pairPrices
 
@@ -198,17 +201,12 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     change24h != null && Number.isFinite(change24h) && Math.abs(change24h) > 0.0001 ? change24h : undefined
 
   const priceText =
-    displayPrice != null
-      ? formatCompactPriceNumber(displayPrice, { significantDigits: 6, unavailable: '' })
-      : null
+    displayPrice != null ? formatCompactPriceNumber(displayPrice, { significantDigits: 6, unavailable: '' }) : null
   const fullPriceText = formatFullPriceNumber(displayPrice)
 
   const priceLoading =
     !priceText &&
-    (Boolean(isIndexingMetrics) ||
-      chartLoading ||
-      indexerCandleStatus === 'loading' ||
-      publicPair.status === 'loading')
+    (Boolean(isIndexingMetrics) || chartLoading || indexerCandleStatus === 'loading' || publicPair.status === 'loading')
 
   return (
     <Shell data-trade-price-chart>
@@ -265,7 +263,11 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           currentPriceUsd={displayPrice}
           isLoading={chartLoading}
           sourceLabel={
-            series.source === 'indexer' && pairPrices.length >= 2 ? 'Melega durable indexer' : 'Public pair OHLCV'
+            series.source === 'indexer' && pairPrices.length >= 2
+              ? 'Melega durable indexer'
+              : series.source === 'trades'
+              ? 'Public pair trades'
+              : 'Public pair OHLCV'
           }
         />
       </ChartBlock>
