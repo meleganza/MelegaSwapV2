@@ -2,7 +2,7 @@
  * LIQUIDITY_MODULE_006_MY_POSITIONS — wallet LP positions (read + route).
  * Reuses shared liquidityRuntime. No second wallet indexer.
  */
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -11,17 +11,11 @@ import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwit
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import {
-  useLiquidityPositionDetails,
-  type LiquidityPositionRow,
-} from '../liquidityRuntime/useLiquidityPositions'
+import { useLiquidityPositionDetails, type LiquidityPositionRow } from '../liquidityRuntime/useLiquidityPositions'
 import { useLPApr } from 'state/swap/useLPApr'
-import {
-  formatPoolShare,
-  formatPositionUsd,
-  resolvePositionStatus,
-} from './liquidityMyPositionsModel'
+import { formatPoolShare, formatPositionUsd, resolvePositionStatus } from './liquidityMyPositionsModel'
 import { LIQUIDITY_MY_POSITIONS_COPY, liquidityMyPositions } from './liquidityMyPositionsTokens'
+import { buildLiquidityPositionDirectory } from './liquidityPositionDirectory'
 
 const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;
@@ -251,14 +245,8 @@ const Skeleton = styled.div`
   min-height: 168px;
   border-radius: ${liquidityMyPositions.cardRadius};
   border: ${liquidityMyPositions.cardBorder};
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.07),
-    rgba(255, 255, 255, 0.03)
-  );
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
 `
-
 
 const Toolbar = styled.div`
   margin-top: 14px;
@@ -289,6 +277,47 @@ const ViewBtn = styled.button<{ $on?: boolean }>`
   color: ${({ $on }) => ($on ? '#fff' : liquidityMyPositions.muted)};
   font-size: 12px;
   font-weight: 750;
+`
+
+const DirectoryControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 420px;
+  justify-content: flex-end;
+
+  @media (max-width: ${liquidityMyPositions.mobileBreak}) {
+    flex-basis: 100%;
+    justify-content: stretch;
+  }
+`
+
+const PositionSearch = styled.input`
+  width: min(320px, 100%);
+  min-width: 0;
+  height: 36px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.28);
+  color: ${liquidityMyPositions.text};
+  padding: 0 12px;
+  font-size: 13px;
+
+  &::placeholder {
+    color: ${liquidityMyPositions.dim};
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(244, 196, 48, 0.7);
+    outline-offset: 1px;
+  }
+`
+
+const PositionCount = styled.span`
+  color: ${liquidityMyPositions.muted};
+  font-size: 12px;
+  white-space: nowrap;
 `
 
 const ListTable = styled.div`
@@ -356,9 +385,8 @@ const ListLogos = styled.div`
   }
 `
 
-const MoreBtn = styled.button`
+const PageButton = styled.button`
   appearance: none;
-  margin-top: 12px;
   cursor: pointer;
   min-height: 36px;
   padding: 0 14px;
@@ -368,6 +396,19 @@ const MoreBtn = styled.button`
   color: ${liquidityMyPositions.text};
   font-size: 13px;
   font-weight: 700;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+`
+
+const Pagination = styled.nav`
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 `
 
 function PositionCard({
@@ -385,7 +426,9 @@ function PositionCard({
     lpApr?.lpApr7d != null && Number.isFinite(lpApr.lpApr7d)
       ? `${lpApr.lpApr7d >= 100 ? lpApr.lpApr7d.toFixed(0) : lpApr.lpApr7d.toFixed(2)}%`
       : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
-  const lpLabel = row.lpBalance?.greaterThan(0) ? row.lpBalance.toSignificant(6) : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
+  const lpLabel = row.lpBalance?.greaterThan(0)
+    ? row.lpBalance.toSignificant(6)
+    : LIQUIDITY_MY_POSITIONS_COPY.emptyMetric
   const valueLabel = formatPositionUsd(details.usdValue)
   const shareLabel = formatPoolShare(details.poolShare)
   const status = resolvePositionStatus({
@@ -463,7 +506,6 @@ function PositionCard({
   )
 }
 
-
 function PositionListRow({
   row,
   onManage,
@@ -485,8 +527,22 @@ function PositionListRow({
       <ListCell data-testid="liquidity-my-positions-list-pair">
         <ListPair>
           <ListLogos aria-hidden="true">
-            <MelegaTokenAvatar symbol={token0.symbol} name={token0.name} address={token0.address} chainId={positionChainId} size={24} radius="circle" />
-            <MelegaTokenAvatar symbol={token1.symbol} name={token1.name} address={token1.address} chainId={positionChainId} size={24} radius="circle" />
+            <MelegaTokenAvatar
+              symbol={token0.symbol}
+              name={token0.name}
+              address={token0.address}
+              chainId={positionChainId}
+              size={24}
+              radius="circle"
+            />
+            <MelegaTokenAvatar
+              symbol={token1.symbol}
+              name={token1.name}
+              address={token1.address}
+              chainId={positionChainId}
+              size={24}
+              radius="circle"
+            />
           </ListLogos>
           <span>{row.pairLabel}</span>
         </ListPair>
@@ -544,11 +600,21 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
   const [pendingSwitch, setPendingSwitch] = useState<PendingSwitch | null>(null)
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
-  const [expanded, setExpanded] = useState(false)
-  const previewMin = LIQUIDITY_MY_POSITIONS_COPY.previewMin
-  const visiblePositions =
-    expanded || positions.length <= previewMin ? positions : positions.slice(0, previewMin)
-  const canExpand = positions.length > previewMin
+  const [positionQuery, setPositionQuery] = useState('')
+  const [positionPage, setPositionPage] = useState(1)
+  const directory = useMemo(
+    () => buildLiquidityPositionDirectory(positions, positionQuery, positionPage),
+    [positions, positionQuery, positionPage],
+  )
+
+  useEffect(() => {
+    setPositionQuery('')
+    setPositionPage(1)
+  }, [account, chainId])
+
+  useEffect(() => {
+    if (directory.page !== positionPage) setPositionPage(directory.page)
+  }, [directory.page, positionPage])
 
   const proceedManage = useCallback(
     (row: LiquidityPositionRow) => {
@@ -664,16 +730,10 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
       {positionsPhase === 'error' ? (
         <Empty data-testid="liquidity-my-positions-error">
           <EmptyText>
-            {positionsTimedOut
-              ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut
-              : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
+            {positionsTimedOut ? LIQUIDITY_MY_POSITIONS_COPY.emptyTimedOut : LIQUIDITY_MY_POSITIONS_COPY.emptyError}
           </EmptyText>
           <EmptyActions>
-            <PrimaryBtn
-              type="button"
-              data-testid="liquidity-my-positions-retry"
-              onClick={() => retryPositions()}
-            >
+            <PrimaryBtn type="button" data-testid="liquidity-my-positions-retry" onClick={() => retryPositions()}>
               {LIQUIDITY_MY_POSITIONS_COPY.retry}
             </PrimaryBtn>
             <SecondaryBtn
@@ -708,11 +768,33 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
                 {LIQUIDITY_MY_POSITIONS_COPY.viewList}
               </ViewBtn>
             </ViewToggle>
+            <DirectoryControls>
+              <PositionSearch
+                type="search"
+                value={positionQuery}
+                onChange={(event) => {
+                  setPositionQuery(event.currentTarget.value)
+                  setPositionPage(1)
+                }}
+                placeholder="Search pair, symbol, or address"
+                aria-label="Search wallet liquidity positions"
+                data-testid="liquidity-my-positions-search"
+              />
+              <PositionCount data-testid="liquidity-my-positions-count">
+                {directory.filtered.length === directory.totalPositions
+                  ? `${directory.totalPositions} positions`
+                  : `${directory.filtered.length} of ${directory.totalPositions}`}
+              </PositionCount>
+            </DirectoryControls>
           </Toolbar>
 
-          {viewMode === 'cards' ? (
+          {directory.filtered.length === 0 ? (
+            <Empty data-testid="liquidity-my-positions-no-results">
+              <EmptyText>No wallet positions match this search.</EmptyText>
+            </Empty>
+          ) : viewMode === 'cards' ? (
             <Grid data-testid="liquidity-my-positions-grid">
-              {visiblePositions.map((row) => (
+              {directory.visible.map((row) => (
                 <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
               ))}
             </Grid>
@@ -725,29 +807,40 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colShare}</span>
                 <span>{LIQUIDITY_MY_POSITIONS_COPY.colActions}</span>
               </ListHead>
-              {visiblePositions.map((row) => (
+              {directory.visible.map((row) => (
                 <PositionListRow key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
               ))}
             </ListTable>
           )}
 
-          {canExpand ? (
-            <MoreBtn
-              type="button"
-              data-testid="liquidity-my-positions-expand"
-              onClick={() => setExpanded((v) => !v)}
-            >
-              {expanded ? LIQUIDITY_MY_POSITIONS_COPY.showLess : LIQUIDITY_MY_POSITIONS_COPY.showAll}
-            </MoreBtn>
+          {directory.filtered.length > 0 && directory.totalPages > 1 ? (
+            <Pagination aria-label="Wallet liquidity position pages" data-testid="liquidity-my-positions-pagination">
+              <PageButton
+                type="button"
+                disabled={directory.page <= 1}
+                onClick={() => setPositionPage((page) => Math.max(1, page - 1))}
+              >
+                Previous
+              </PageButton>
+              <PositionCount>
+                {directory.firstVisible}–{directory.lastVisible} of {directory.filtered.length} · Page {directory.page}{' '}
+                of {directory.totalPages}
+              </PositionCount>
+              <PageButton
+                type="button"
+                disabled={directory.page >= directory.totalPages}
+                onClick={() => setPositionPage((page) => Math.min(directory.totalPages, page + 1))}
+              >
+                Next
+              </PageButton>
+            </Pagination>
           ) : null}
         </>
       ) : null}
 
       <ChainSwitchConfirmDialog
         open={Boolean(pendingSwitch)}
-        targetChainId={
-          pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56
-        }
+        targetChainId={pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56}
         productLabel={`This liquidity position is on ${chainDisplayName(
           pendingSwitch?.row.chainId ?? pendingSwitch?.row.pair.token0.chainId ?? 56,
         )}. Switch network to continue?`}
