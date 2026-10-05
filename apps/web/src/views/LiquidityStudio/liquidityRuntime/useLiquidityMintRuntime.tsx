@@ -18,7 +18,7 @@ import { Field } from 'state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks'
 import { Field as BurnField } from 'state/burn/actions'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks'
-import { useGasPrice, useUserSlippageTolerance } from 'state/user/hooks'
+import { useGasPrice, useUserSlippageTolerance, useUserTransactionTTL } from 'state/user/hooks'
 import { useLPApr } from 'state/swap/useLPApr'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { calculateGasMargin } from 'utils'
@@ -55,7 +55,7 @@ import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 import { resolveReceiptOutcome } from 'lib/transactions/resolveReceiptOutcome'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { computeProRataAmountRaw } from './walletLpPositionMath'
-import { buildRemoveLiquidityCall } from 'lib/liquidity-runtime/removeLiquidityCall'
+import { buildRemoveLiquidityCall, resolveFreshRemoveLiquidityDeadline } from 'lib/liquidity-runtime/removeLiquidityCall'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -233,6 +233,7 @@ export function useLiquidityMintRuntime({
   const native = useNativeCurrency()
   const gasPrice = useGasPrice()
   const [allowedSlippage] = useUserSlippageTolerance()
+  const [transactionTtl] = useUserTransactionTTL()
   const addTransaction = useTransactionAdder()
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
@@ -862,6 +863,12 @@ export function useLiquidityMintRuntime({
       })
       return
     }
+    // Rebase the user's TTL at the moment Confirm is pressed. The review may have
+    // remained open longer than the absolute block-derived deadline used for preview.
+    const submitDeadline = resolveFreshRemoveLiquidityDeadline({
+      configuredDeadlineUnix: deadline?.toString(),
+      ttlSeconds: transactionTtl,
+    })
     const constructed = buildRemoveLiquidityCall({
       chainId: removeTargetChainId,
       walletChainId: chainId,
@@ -879,7 +886,7 @@ export function useLiquidityMintRuntime({
       amountARaw: removeParsedAmounts[BurnField.CURRENCY_A]?.quotient.toString(),
       amountBRaw: removeParsedAmounts[BurnField.CURRENCY_B]?.quotient.toString(),
       allowedSlippageBips: allowedSlippage,
-      deadlineUnix: deadline?.toString(),
+      deadlineUnix: submitDeadline,
       recipient: account,
       receiveNative,
       lpAllowanceRaw: removeParsedAmounts[BurnField.LIQUIDITY]?.quotient.toString() ?? '0',
@@ -1006,6 +1013,7 @@ export function useLiquidityMintRuntime({
     removeLpTokenAddress,
     removeParsedAmounts,
     deadline,
+    transactionTtl,
     currencyA,
     currencyB,
     receiveNative,

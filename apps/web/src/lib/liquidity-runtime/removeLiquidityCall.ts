@@ -15,7 +15,7 @@ import {
 
 export const ETHEREUM_CHAIN_ID = ChainId.ETHEREUM
 export const ETHEREUM_WETH = WNATIVE[ChainId.ETHEREUM]?.address ?? '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-export const BIPS_DENOMINATOR = 10_000n
+export const BIPS_DENOMINATOR = BigInt(10_000)
 
 export type RemoveLiquidityMethod = 'removeLiquidity' | 'removeLiquidityETH'
 
@@ -76,7 +76,27 @@ export type RemoveLiquidityCall = {
   requireSwitch: boolean
 }
 
-const ZERO = 0n
+const ZERO = BigInt(0)
+
+export function resolveFreshRemoveLiquidityDeadline(input: {
+  configuredDeadlineUnix?: number | string | null
+  ttlSeconds?: number | null
+  nowUnix?: number
+}): string | null {
+  const ttlSeconds = input.ttlSeconds == null ? null : Math.floor(input.ttlSeconds)
+  const nowUnix = input.nowUnix ?? Math.floor(Date.now() / 1000)
+  if (ttlSeconds == null || !Number.isSafeInteger(ttlSeconds) || ttlSeconds <= 0) return null
+  if (!Number.isSafeInteger(nowUnix) || nowUnix <= 0) return null
+
+  const ttl = BigInt(ttlSeconds)
+  const now = BigInt(nowUnix)
+  const configuredDeadline = parseRawAmount(
+    input.configuredDeadlineUnix == null ? null : String(input.configuredDeadlineUnix),
+  )
+  const configuredBase = configuredDeadline != null && configuredDeadline > ttl ? configuredDeadline - ttl : ZERO
+  const freshBase = configuredBase > now ? configuredBase : now
+  return (freshBase + ttl).toString()
+}
 
 function normalizeAddress(value?: string | null): string | null {
   if (!value) return null
