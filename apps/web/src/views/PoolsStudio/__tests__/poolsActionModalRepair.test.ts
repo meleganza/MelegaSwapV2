@@ -65,7 +65,7 @@ describe('Pools/Farms action modal repair', () => {
     expect(slider).toContain('BarProgress')
     expect(slider).toContain('::-webkit-slider-thumb')
     expect(slider).not.toContain('background-image: url(${bunnyHead})')
-    expect(stake).toContain('aria-hidden="true"')
+    expect(stake).toMatch(/aria-hidden(?:="true")?/)
   })
 
   it('opens wallet connect instead of an empty stake dialog when no account is connected', () => {

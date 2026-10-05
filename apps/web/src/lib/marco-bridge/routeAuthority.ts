@@ -121,6 +121,7 @@ export function assertCanonicalRouteAuthority(payload: unknown): CanonicalMmnRou
 export async function fetchCanonicalRouteAuthority(
   fetcher: typeof fetch = fetch,
   readStore: (input: { fetcher?: typeof fetch }) => Promise<SolanaStorePauseRead> = readCanonicalSolanaStorePause,
+  readPolygon: typeof readPolygonLiveBinding = readPolygonLiveBinding,
 ): Promise<CanonicalMmnRouteState> {
   const response = await fetcher(CANONICAL_MMN_ROUTE_STATE_URL, {
     method: 'GET',
@@ -133,6 +134,6 @@ export async function fetchCanonicalRouteAuthority(
     applyCanonicalBnbSolanaApplicationGate(assertCanonicalRouteAuthority(await response.json()), {
       solanaStorePaused: solanaStoreBlocksCanonicalRoute(liveStore),
     }),
-    await readPolygonLiveBinding(),
+    await readPolygon(),
   )
 }

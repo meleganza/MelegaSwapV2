@@ -18,6 +18,15 @@ import {
 } from 'lib/trending/topMoversSharedSnapshot'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
+type TokenDisplayMetadata = { address?: string; symbol?: string; name?: string }
+
+const EVM_ADDRESS_LABEL = /^0x[a-fA-F0-9]{40}$/
+const TRUNCATED_EVM_ADDRESS_LABEL = /^0x[a-fA-F0-9]{4,}…[a-fA-F0-9]{4,}$/
+
+function isHumanTokenLabel(value?: string): value is string {
+  const label = value?.trim()
+  return Boolean(label && !EVM_ADDRESS_LABEL.test(label) && !TRUNCATED_EVM_ADDRESS_LABEL.test(label))
+}
 
 type DexScreenerPair = {
   chainId?: string
@@ -112,7 +121,7 @@ async function loadLiveDexScreenerMovers(addresses: string[]): Promise<TierRanke
 
   return [...bestByAddress.entries()]
     .map(([address, pair]) => {
-      const meta = displayMeta(address)
+      const meta = resolveTopMoverDisplayMeta(address, pair.baseToken)
       const pct = Number(pair.priceChange?.h24)
       const volume24h = finitePositive(pair.volume?.h24)
       const liquidityScore = finitePositive(pair.liquidity?.usd)
@@ -157,10 +166,11 @@ export type ServerTopMoversPayload = {
   liveMarketAuthority: boolean
 }
 
-function displayMeta(address: string) {
+/** Resolve display identity without ever presenting an address as the primary ticker. */
+export function resolveTopMoverDisplayMeta(address: string, live?: TokenDisplayMetadata) {
   const key = address.toLowerCase()
   const canonical = getCanonicalIndexedAssets().find((asset) => asset.address?.toLowerCase() === key)
-  if (canonical?.address && canonical.symbol) {
+  if (canonical?.address && isHumanTokenLabel(canonical.symbol)) {
     return {
       symbol: canonical.symbol,
       slug: canonical.registrySlug ?? canonical.id,
@@ -171,7 +181,7 @@ function displayMeta(address: string) {
   const listed = ((defaultTokenList.tokens ?? []) as TokenListEntry[]).find(
     (token) => token.chainId === 56 && token.address?.toLowerCase() === key && token.symbol,
   )
-  if (listed?.symbol) {
+  if (listed && isHumanTokenLabel(listed.symbol)) {
     return {
       symbol: listed.symbol,
       slug: listed.symbol.toLowerCase(),
@@ -179,10 +189,19 @@ function displayMeta(address: string) {
       chainId: 56,
     }
   }
+  const liveAddress = live?.address?.toLowerCase()
+  if (liveAddress === key && isHumanTokenLabel(live?.symbol)) {
+    return {
+      symbol: live.symbol.trim(),
+      slug: key,
+      displayName: isHumanTokenLabel(live.name) ? live.name.trim() : live.symbol.trim(),
+      chainId: 56,
+    }
+  }
   return {
-    symbol: `${key.slice(0, 6)}…${key.slice(-4)}`,
+    symbol: 'Unknown token',
     slug: key,
-    displayName: `${key.slice(0, 6)}…${key.slice(-4)}`,
+    displayName: 'Unknown token',
     chainId: 56,
   }
 }
@@ -194,7 +213,9 @@ function displayMeta(address: string) {
 export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTopMoversPayload> {
   const tier = await loadTierMetricsSnapshot()
   const internalMeasured = tier.rows
-    .filter((row) => isTrendingTierStatus(row.status))
+    .filter(
+      (row): row is typeof row & { status: TierRankedAsset['tierStatus'] } => isTrendingTierStatus(row.status),
+    )
     .filter((row) => row.priceChange24h != null && Number.isFinite(row.priceChange24h))
     .filter((row) => row.tradeCount24h > 0 || row.volume24hWbnb > 0)
     .filter((row) =>
@@ -207,7 +228,7 @@ export async function buildServerTopMoversSnapshot(limit = 40): Promise<ServerTo
     )
     .map((row) => {
       const address = pickTrendingBaseToken(row.token0, row.token1)
-      return { row, address, meta: displayMeta(address) }
+      return { row, address, meta: resolveTopMoverDisplayMeta(address) }
     })
     .sort((a, b) => {
       const byMove = Math.abs(b.row.priceChange24h!) - Math.abs(a.row.priceChange24h!)

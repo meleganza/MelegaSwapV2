@@ -610,20 +610,29 @@ describe('live Solana pause truth', () => {
       ok: true,
       json: async () => staleEnvelope(),
     })
-    const blocked = await fetchCanonicalRouteAuthority(mmnFetcher as unknown as typeof fetch, async () => ({
-      ok: false,
-      reason: 'rpc_error',
-      detail: 'mocked',
-    }))
+    const readPolygon = async () => ({ ok: false as const, reason: 'rpc_error' as const, detail: 'mocked' })
+    const blocked = await fetchCanonicalRouteAuthority(
+      mmnFetcher as unknown as typeof fetch,
+      async () => ({
+        ok: false,
+        reason: 'rpc_error',
+        detail: 'mocked',
+      }),
+      readPolygon,
+    )
     expect(isRouteExecutable('bnb', 'solana', blocked)).toBe(false)
     expect(isRouteExecutable('bnb', 'robinhood', blocked)).toBe(true)
-    const enabled = await fetchCanonicalRouteAuthority(mmnFetcher as unknown as typeof fetch, async () => ({
-      ok: true,
-      paused: false,
-      store: CANONICAL_BNB_SOLANA_GATE.store,
-      owner: CANONICAL_BNB_SOLANA_GATE.programId,
-      mint: CANONICAL_BNB_SOLANA_GATE.mint,
-    }))
+    const enabled = await fetchCanonicalRouteAuthority(
+      mmnFetcher as unknown as typeof fetch,
+      async () => ({
+        ok: true,
+        paused: false,
+        store: CANONICAL_BNB_SOLANA_GATE.store,
+        owner: CANONICAL_BNB_SOLANA_GATE.programId,
+        mint: CANONICAL_BNB_SOLANA_GATE.mint,
+      }),
+      readPolygon,
+    )
     expect(isRouteExecutable('bnb', 'solana', enabled)).toBe(true)
     expect(isRouteExecutable('solana', 'bnb', enabled)).toBe(true)
   })
