@@ -5,7 +5,11 @@
 import { describe, expect, it } from 'vitest'
 import { ChainId, WNATIVE } from '@pancakeswap/sdk'
 import { MELEGA_BNB_FACTORY, MELEGA_BNB_ROUTER, MELEGA_ETH_ROUTER } from 'config/melegaChainRegistry'
-import { applySlippageMin, buildRemoveLiquidityCall } from '../removeLiquidityCall'
+import {
+  applySlippageMin,
+  buildRemoveLiquidityCall,
+  resolveFreshRemoveLiquidityDeadline,
+} from '../removeLiquidityCall'
 
 const ACCOUNT = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 const MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
@@ -28,6 +32,26 @@ const bscBase = {
 }
 
 describe('BSC remove-liquidity regression', () => {
+  it('rebases a stale review deadline when the user confirms', () => {
+    expect(
+      resolveFreshRemoveLiquidityDeadline({
+        configuredDeadlineUnix: 1_700_001_200,
+        ttlSeconds: 1_200,
+        nowUnix: 1_800_000_000,
+      }),
+    ).toBe('1800001200')
+  })
+
+  it('preserves a newer chain timestamp while refreshing the deadline', () => {
+    expect(
+      resolveFreshRemoveLiquidityDeadline({
+        configuredDeadlineUnix: 1_800_001_300,
+        ttlSeconds: 1_200,
+        nowUnix: 1_800_000_000,
+      }),
+    ).toBe('1800001300')
+  })
+
   it('keeps BNB ERC20/ERC20 removal on the BNB router', () => {
     const call = buildRemoveLiquidityCall({
       ...bscBase,

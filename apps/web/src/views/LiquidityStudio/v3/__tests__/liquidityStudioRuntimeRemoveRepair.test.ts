@@ -97,6 +97,9 @@ describe('MELEGASWAP_V2_LIQUIDITY_STUDIO_RUNTIME_REMOVE_REPAIR', () => {
   it('confirm withdrawal calls wallet remove path with lifecycle', () => {
     expect(runtime).toContain("setRemoveTxLifecycle('waiting_wallet')")
     expect(runtime).toContain('confirmRemoveWithdrawal')
+    expect(runtime).toContain('resolveFreshRemoveLiquidityDeadline')
+    expect(runtime).toContain('ttlSeconds: transactionTtl')
+    expect(runtime).toContain('deadlineUnix: submitDeadline')
     expect(runtime).toContain('removeLiquidityETH')
     expect(runtime).toContain('removeLiquidity')
   })

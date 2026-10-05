@@ -1,5 +1,10 @@
 import { TranslateFunction } from '@pancakeswap/localization'
 
+export function isTransactionDeadlineExpiredReason(reason?: string): boolean {
+  if (!reason) return false
+  return reason.startsWith('PancakeRouter: EXPIRED') || reason.startsWith('DEXRouter: EXPIRED')
+}
+
 /**
  * This is hacking out the revert reason from the ethers provider thrown error however it can.
  * This object seems to be undocumented by ethers.
@@ -17,13 +22,14 @@ export function transactionErrorToUserReadableMessage(error: any, t: TranslateFu
   if (reason?.indexOf('execution reverted: ') === 0) reason = reason.substring('execution reverted: '.length)
 
   const formatErrorMessage = (message: string) => [message, `(${reason})`].join(' ')
+  if (isTransactionDeadlineExpiredReason(reason)) {
+    return formatErrorMessage(
+      t(
+        'The transaction could not be sent because the deadline has passed. Please confirm again to use a fresh transaction deadline.',
+      ),
+    )
+  }
   switch (reason) {
-    case 'PancakeRouter: EXPIRED':
-      return formatErrorMessage(
-        t(
-          'The transaction could not be sent because the deadline has passed. Please check that your transaction deadline is not too low.',
-        ),
-      )
     case 'PancakeRouter: INSUFFICIENT_OUTPUT_AMOUNT':
     case 'PancakeRouter: EXCESSIVE_INPUT_AMOUNT':
     case 'PancakeRouter: INSUFFICIENT_A_AMOUNT':
