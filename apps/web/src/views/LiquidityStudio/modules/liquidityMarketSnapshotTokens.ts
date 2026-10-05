@@ -56,6 +56,6 @@ export type LiquiditySnapshotCardState = 'loading' | 'available' | 'unavailable'
 export const LIQUIDITY_MODULE_001_004_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
-  LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
+  LiquidityPoolDiscoveryModule: '895dd9e14a4ca47a4685014ebe8a5b61a08f0faf633fad081778806054335c5c',
   LiquidityAddModule: '10111db6247476457ec6e6f385b4202f22e2ebe11588c83be498d19e69a3b535',
 } as const

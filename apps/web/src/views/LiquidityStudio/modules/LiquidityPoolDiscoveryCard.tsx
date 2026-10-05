@@ -6,6 +6,7 @@ import React from 'react'
 import NextLink from 'next/link'
 import styled from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { getMelegaChain } from 'config/melegaChainRegistry'
 import type { DiscoveryPoolCardModel } from './liquidityPoolDiscoveryModel'
 import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
 
@@ -151,7 +152,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
           symbol={card.symbol0}
           name={card.symbol0}
           address={card.token0}
-          chainId={liquidityPoolDiscovery.chainId}
+          chainId={card.chainId}
           size={22}
           radius="circle"
         />
@@ -159,7 +160,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
           symbol={card.symbol1}
           name={card.symbol1}
           address={card.token1}
-          chainId={liquidityPoolDiscovery.chainId}
+          chainId={card.chainId}
           size={22}
           radius="circle"
         />
@@ -167,7 +168,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       <PairMeta>
         <PairName>{card.pairName}</PairName>
         <Status $active={card.active} data-testid="liquidity-pool-discovery-status" title={card.statusReason}>
-          {card.status}
+          {getMelegaChain(card.chainId)?.shortLabel ?? `Chain ${card.chainId}`} · {card.status}
         </Status>
       </PairMeta>
     </PairRow>
