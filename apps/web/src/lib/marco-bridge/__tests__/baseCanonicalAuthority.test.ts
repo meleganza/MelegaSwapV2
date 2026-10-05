@@ -149,13 +149,17 @@ describe('canonical BNB↔Base authority is accepted without Melega Base executi
       ok: true,
       json: async () => payload,
     })
-    const live = await fetchCanonicalRouteAuthority(fetcher as unknown as typeof fetch, async () => ({
-      ok: true,
-      paused: false,
-      store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
-      owner: '7L8x99W1yVVgtsu3wWy9DgD9ysnnfF4XXhdKhUrQxEuW',
-      mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-    }))
+    const live = await fetchCanonicalRouteAuthority(
+      fetcher as unknown as typeof fetch,
+      async () => ({
+        ok: true,
+        paused: false,
+        store: MARCO_WAVE1_NETWORKS.solana.endpointContract,
+        owner: '7L8x99W1yVVgtsu3wWy9DgD9ysnnfF4XXhdKhUrQxEuW',
+        mint: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
+      }),
+      async () => ({ verified: false, reason: 'mocked for Base authority unit test' }),
+    )
     expect(live.routes.find((route) => route.from === 'bnb' && route.to === 'base')?.execution_enabled).toBe(true)
     expect(() => assertCanonicalRouteAuthority(payload)).not.toThrow()
     const handler = readFileSync(join(LIB_ROOT, '../../pages/api/marco-bridge/route-state.ts'), 'utf8')
