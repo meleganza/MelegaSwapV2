@@ -18,3 +18,4 @@ describe('R763B founder batch 2 copy guards', () => {
     }
   })
 })
+export {}

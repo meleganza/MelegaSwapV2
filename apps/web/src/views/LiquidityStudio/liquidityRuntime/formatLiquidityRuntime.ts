@@ -69,9 +69,9 @@ export const poolMetricsFromData = (pool?: PoolData) => ({
   volume: formatUsd(pool?.volumeUSD),
   volumeChange: formatPctChange(pool?.volumeUSDChange),
   apr: formatPct(pool?.lpApr7d),
-  aprChange: formatPctChange(pool?.lpApr7dChange),
+  aprChange: undefined,
   fees: formatUsd(pool?.lpFees24h),
-  feesChange: formatPctChange(pool?.lpFees24hChange),
+  feesChange: undefined,
 })
 
 export const estimateImpermanentLossPct = (priceChangePct = 0): string => {

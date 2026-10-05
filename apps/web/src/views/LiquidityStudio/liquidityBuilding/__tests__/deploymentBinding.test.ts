@@ -1,12 +1,7 @@
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
-import {
-  LB_DEPLOYED_ADDRESSES,
-  ZERO_ADDRESS,
-  isDeployedAddress,
-  resolveProductionBinding,
-} from '../addresses'
+import { LB_DEPLOYED_ADDRESSES, ZERO_ADDRESS, isDeployedAddress, resolveProductionBinding } from '../addresses'
 import { canSubmitMutatingAction, BLOCKED_ACTIVATION_GATES } from '../programStatus'
 
 const ROOT = path.resolve(__dirname, '../../../../../../../')
@@ -34,27 +29,25 @@ describe('LB018 contract deployment binding', () => {
       }).ok,
     ).toBe(false)
 
-    expect(
-      resolveProductionBinding({
-        chainId: 56,
-        deploymentReadinessState: 'VALID',
-        activationAuthorized: true,
-        lbFactory: '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C',
-        lbAuthorizer: null,
-        lbFeeSink: '0x1111111111111111111111111111111111111111',
-      }).reason,
-    ).toBe('LB_AUTHORIZER_MISSING')
+    const missingAuthorizer = resolveProductionBinding({
+      chainId: 56,
+      deploymentReadinessState: 'VALID',
+      activationAuthorized: true,
+      lbFactory: '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C',
+      lbAuthorizer: null,
+      lbFeeSink: '0x1111111111111111111111111111111111111111',
+    })
+    expect('reason' in missingAuthorizer ? missingAuthorizer.reason : null).toBe('LB_AUTHORIZER_MISSING')
 
-    expect(
-      resolveProductionBinding({
-        chainId: 1,
-        deploymentReadinessState: 'DEPLOYED',
-        activationAuthorized: true,
-        lbFactory: '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C',
-        lbAuthorizer: '0x2222222222222222222222222222222222222222',
-        lbFeeSink: '0x3333333333333333333333333333333333333333',
-      }).reason,
-    ).toBe('WRONG_CHAIN')
+    const wrongChain = resolveProductionBinding({
+      chainId: 1,
+      deploymentReadinessState: 'DEPLOYED',
+      activationAuthorized: true,
+      lbFactory: '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C',
+      lbAuthorizer: '0x2222222222222222222222222222222222222222',
+      lbFeeSink: '0x3333333333333333333333333333333333333333',
+    })
+    expect('reason' in wrongChain ? wrongChain.reason : null).toBe('WRONG_CHAIN')
   })
 
   it('resolveProductionBinding accepts only full verified chain-56 set', () => {

@@ -11,11 +11,7 @@ import { useContract } from 'hooks/useContract'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { callWithEstimateGas } from 'utils/calls/estimateGas'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
-import {
-  ERC20_APPROVE_ABI,
-  LB_FACTORY_WRITE_ABI,
-  LB_PROGRAM_VIEW_ABI,
-} from './abi/fragments'
+import { ERC20_APPROVE_ABI, LB_FACTORY_WRITE_ABI, LB_PROGRAM_VIEW_ABI } from './abi/fragments'
 import {
   buildCreateProgramArgs,
   canSubmitFounderWalletActivate,
@@ -38,11 +34,7 @@ export function useFounderActivateWriter() {
   const factoryAddress = LB_DEPLOYED_ADDRESSES.lbFactory
   const factoryBound = isDeployedAddress(factoryAddress)
 
-  const factory = useContract(
-    factoryBound ? factoryAddress : undefined,
-    LB_FACTORY_WRITE_ABI as unknown as any,
-    true,
-  )
+  const factory = useContract(factoryBound ? factoryAddress : undefined, LB_FACTORY_WRITE_ABI as unknown as any, true)
 
   const buildWallet = useCallback((): FounderActivateWallet | null => {
     if (!factory || !address) return null
@@ -129,7 +121,7 @@ export function useFounderActivateWriter() {
         quoteAsset: input.quoteAsset,
         quoteEnabled: input.quoteEnabled,
       })
-      if (!orientation.ok) {
+      if ('reason' in orientation) {
         return { ok: false, reason: orientation.reason, step: 'FAILED', txs: [] }
       }
 

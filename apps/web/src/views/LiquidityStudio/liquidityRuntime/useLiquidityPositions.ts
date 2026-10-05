@@ -38,6 +38,9 @@ export interface LiquidityPositionRow {
   ownershipSource?: WalletLpOwnershipSource
   totalSupply?: CurrencyAmount<Token>
   totalSupplyRaw?: string
+  /** Total pool TVL, never the wallet position value. */
+  poolTvlUsd?: number
+  poolTvlSource?: 'factory-reserves-canonical-price-graph'
   usdValue?: number
   usdValuationSource?: 'canonical-price-graph'
 }
@@ -444,7 +447,13 @@ export function useLiquidityPositions(enabled = true) {
 }
 
 export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {
-  const fallbackTotalSupply = useTotalSupply(position?.pair.liquidityToken)
+  const { chainId: activeChainId } = useActiveChainId()
+  const mayUseActiveChainFallback = position?.chainId == null || position.chainId === activeChainId
+  const fallbackTotalSupply = useTotalSupply(
+    mayUseActiveChainFallback && !position?.totalSupply && !position?.totalSupplyRaw
+      ? position?.pair.liquidityToken
+      : undefined,
+  )
   const userBalance = position?.lpBalance
   const totalSupply = resolvePositionTotalSupply(position?.totalSupply, fallbackTotalSupply)
 
@@ -454,7 +463,12 @@ export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {
     return safeGetLiquidityDeposited(position?.pair, totalSupply, userBalance)
   }, [position?.pair, position?.totalSupplyRaw, totalSupply, userBalance])
 
-  const liveUsdValue = usePositionUsdValue(position?.pair.token0, position?.pair.token1, token0Deposited, token1Deposited)
+  const liveUsdValue = usePositionUsdValue(
+    mayUseActiveChainFallback ? position?.pair.token0 : undefined,
+    mayUseActiveChainFallback ? position?.pair.token1 : undefined,
+    token0Deposited,
+    token1Deposited,
+  )
   const usdValue = position?.usdValue ?? liveUsdValue
 
   const poolShare = useMemo(() => computePositionPoolShare(totalSupply, userBalance), [totalSupply, userBalance])

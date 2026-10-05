@@ -207,6 +207,13 @@ const EmptyText = styled.p`
   color: ${liquidityMyPositions.muted};
 `
 
+const ChainReadNotice = styled.div`
+  margin-top: 10px;
+  color: ${liquidityMyPositions.muted};
+  font-size: 12px;
+  line-height: 18px;
+`
+
 const EmptyActions = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -288,7 +295,9 @@ const DirectoryControls = styled.div`
 
   @media (max-width: ${liquidityMyPositions.mobileBreak}) {
     flex-basis: 100%;
-    justify-content: stretch;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
   }
 `
 
@@ -318,6 +327,10 @@ const PositionCount = styled.span`
   color: ${liquidityMyPositions.muted};
   font-size: 12px;
   white-space: nowrap;
+
+  @media (max-width: ${liquidityMyPositions.mobileBreak}) {
+    align-self: flex-end;
+  }
 `
 
 const ListTable = styled.div`
@@ -421,7 +434,9 @@ function PositionCard({
   onRemove: (row: LiquidityPositionRow) => void
 }) {
   const details = useLiquidityPositionDetails(row)
-  const lpApr = useLPApr(row.pair)
+  // Multichain rows are already batch-hydrated. Do not fan out one historical
+  // subgraph request per card; APR remains unknown until a shared source exists.
+  const lpApr = useLPApr(row.poolTvlSource ? undefined : row.pair)
   const aprLabel =
     lpApr?.lpApr7d != null && Number.isFinite(lpApr.lpApr7d)
       ? `${lpApr.lpApr7d >= 100 ? lpApr.lpApr7d.toFixed(0) : lpApr.lpApr7d.toFixed(2)}%`
@@ -595,6 +610,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
     setCurrencyA,
     setCurrencyB,
     retryPositions,
+    positionChainStatuses = [],
   } = useLiquidityRuntime()
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync, isLoading: switching } = useSwitchNetwork()
@@ -610,7 +626,7 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
   useEffect(() => {
     setPositionQuery('')
     setPositionPage(1)
-  }, [account, chainId])
+  }, [account])
 
   useEffect(() => {
     if (directory.page !== positionPage) setPositionPage(directory.page)
@@ -690,6 +706,24 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
         hidden
         aria-hidden
       />
+
+      <div data-testid="liquidity-chain-read-statuses" hidden aria-hidden>
+        {positionChainStatuses.map((status) => (
+          <span
+            key={status.chainId}
+            data-chain-id={status.chainId}
+            data-chain-state={status.state}
+            data-position-count={status.positionCount}
+          />
+        ))}
+      </div>
+
+      {positionsPhase === 'ready' &&
+      positionChainStatuses.some((status) => ['UNAVAILABLE', 'ERROR', 'TIMED_OUT'].includes(status.state)) ? (
+        <ChainReadNotice data-testid="liquidity-chain-read-partial">
+          Positions from available networks are shown. One or more networks could not be read right now.
+        </ChainReadNotice>
+      ) : null}
 
       {positionsPhase === 'connecting' ? (
         <Empty data-testid="liquidity-my-positions-disconnected">

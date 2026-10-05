@@ -2,6 +2,31 @@ import type { LiquidityPositionRow } from '../liquidityRuntime/useLiquidityPosit
 
 export const LIQUIDITY_POSITION_PAGE_SIZE = 20
 
+function knownPoolTvl(row: LiquidityPositionRow): number | undefined {
+  return typeof row.poolTvlUsd === 'number' && Number.isFinite(row.poolTvlUsd) && row.poolTvlUsd >= 0
+    ? row.poolTvlUsd
+    : undefined
+}
+
+function compareText(left: string, right: string): number {
+  const a = left.toLocaleLowerCase()
+  const b = right.toLocaleLowerCase()
+  return a < b ? -1 : a > b ? 1 : 0
+}
+
+export function compareLiquidityPositionsByPoolTvl(left: LiquidityPositionRow, right: LiquidityPositionRow): number {
+  const leftTvl = knownPoolTvl(left)
+  const rightTvl = knownPoolTvl(right)
+  if (leftTvl != null && rightTvl == null) return -1
+  if (leftTvl == null && rightTvl != null) return 1
+  if (leftTvl != null && rightTvl != null && leftTvl !== rightTvl) return rightTvl - leftTvl
+  const byLabel = compareText(left.pairLabel, right.pairLabel)
+  if (byLabel !== 0) return byLabel
+  const byChain = (left.chainId ?? left.pair.token0.chainId ?? 0) - (right.chainId ?? right.pair.token0.chainId ?? 0)
+  if (byChain !== 0) return byChain
+  return compareText(left.pairAddress ?? left.id, right.pairAddress ?? right.id)
+}
+
 function searchablePositionText(row: LiquidityPositionRow): string {
   return [
     row.pairLabel,
@@ -35,13 +60,7 @@ export function buildLiquidityPositionDirectory(
     normalizedQuery
       ? positions.filter((position) => searchablePositionText(position).includes(normalizedQuery))
       : [...positions]
-  ).sort((left, right) => {
-    const byLabel = left.pairLabel.localeCompare(right.pairLabel, undefined, { sensitivity: 'base' })
-    if (byLabel !== 0) return byLabel
-    const byChain = (left.chainId ?? 0) - (right.chainId ?? 0)
-    if (byChain !== 0) return byChain
-    return (left.pairAddress ?? left.id).localeCompare(right.pairAddress ?? right.id)
-  })
+  ).sort(compareLiquidityPositionsByPoolTvl)
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const page = Math.min(Math.max(1, requestedPage), totalPages)
   const start = (page - 1) * pageSize

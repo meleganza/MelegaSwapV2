@@ -3,12 +3,7 @@ import styled from 'styled-components'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
 import { LsSectionTitle } from '../components/liquidityStudioPrimitives'
 import type { ProgramStatus } from './programStatus'
-import {
-  LB_UX,
-  type LbActivityItem,
-  type ProgramMetrics,
-  translateActivityReason,
-} from './uxCopy'
+import { LB_UX, type LbActivityItem, type ProgramMetrics, translateActivityReason } from './uxCopy'
 
 const Lead = styled.p`
   margin: 0;
@@ -83,7 +78,7 @@ export function LbActiveDashboardView({
   metrics: ProgramMetrics
   activity: LbActivityItem[]
 }) {
-  const fmt = (v: string | null, empty = LB_UX.metricUnavailable) => v ?? empty
+  const fmt = (v: string | null, empty: string = LB_UX.metricUnavailable) => v ?? empty
   return (
     <div data-testid="lb-active-dashboard" data-status={status}>
       <Lead>{LB_UX.activeHero}</Lead>
@@ -104,9 +99,7 @@ export function LbActiveDashboardView({
         </MetricCell>
         <MetricCell>
           <MetricLabel>{LB_UX.metricLpPosition}</MetricLabel>
-          <MetricValue data-testid="lb-metric-lp">
-            {fmt(metrics.lpPositionLabel, LB_UX.lpOwnedByOwner)}
-          </MetricValue>
+          <MetricValue data-testid="lb-metric-lp">{fmt(metrics.lpPositionLabel, LB_UX.lpOwnedByOwner)}</MetricValue>
         </MetricCell>
       </MetricGrid>
       <div style={{ marginTop: 12 }}>

@@ -39,11 +39,11 @@ import {
 } from './formatLiquidityRuntime'
 import { runtimeErrorFromPhase, type LiquidityRuntimeError } from './liquidityRuntimeErrors'
 import {
-  useLiquidityPositions,
   useLiquidityPositionDetails,
   type LiquidityPositionRow,
   type LiquidityPositionsPhase,
 } from './useLiquidityPositions'
+import { useMultichainLiquidityPositions, type LiquidityChainStatus } from './useMultichainLiquidityPositions'
 import { buildLiquidityWalletPortfolio } from './buildLiquidityWalletPortfolio'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import useLiquidityTerminalData from './useLiquidityTerminalData'
@@ -179,6 +179,7 @@ export interface LiquidityMintRuntime {
   positionsLoading: boolean
   positionsPhase: LiquidityPositionsPhase
   positionsTimedOut: boolean
+  positionChainStatuses?: LiquidityChainStatus[]
   retryPositions: () => void
   /** WalletPortfolio assembled from the same producer rows — no second scan. */
   liquidityWalletPortfolio: WalletPortfolio
@@ -333,7 +334,8 @@ export function useLiquidityMintRuntime({
     positionsPhase,
     positionsTimedOut,
     retryPositions,
-  } = useLiquidityPositions(positionsEnabled)
+    chainStatuses: positionChainStatuses,
+  } = useMultichainLiquidityPositions(positionsEnabled)
 
   const chainName =
     chainId === 56
@@ -454,7 +456,9 @@ export function useLiquidityMintRuntime({
 
   const removeTargetChainId = selectedPosition?.chainId ?? selectedPosition?.pair.token0.chainId ?? chainId
   const removeLpTokenAddress =
-    selectedPosition?.pairAddress ?? selectedPosition?.lpBalance.currency.address ?? selectedPosition?.pair.liquidityToken.address
+    selectedPosition?.pairAddress ??
+    selectedPosition?.lpBalance.currency.address ??
+    selectedPosition?.pair.liquidityToken.address
   const removeCall = useMemo(
     () =>
       buildRemoveLiquidityCall({
@@ -736,8 +740,8 @@ export function useLiquidityMintRuntime({
       [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? 0 : allowedSlippage)[0],
     }
 
-    let estimate: (...args: unknown[]) => Promise<BigNumber>
-    let method: (...args: unknown[]) => Promise<TransactionResponse>
+    let estimate: typeof routerContract.estimateGas.addLiquidity | typeof routerContract.estimateGas.addLiquidityETH
+    let method: typeof routerContract.addLiquidity | typeof routerContract.addLiquidityETH
     let args: Array<string | string[] | number>
     let value: BigNumber | null
 
@@ -773,9 +777,11 @@ export function useLiquidityMintRuntime({
     setAddTxLifecycle('preparing')
     setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
     try {
-      const estimatedGasLimit = await estimate(...args, value ? { value } : {})
+      const estimateCall = estimate as unknown as (...callArgs: unknown[]) => Promise<BigNumber>
+      const methodCall = method as unknown as (...callArgs: unknown[]) => Promise<TransactionResponse>
+      const estimatedGasLimit = await estimateCall(...args, value ? { value } : {})
       setAddTxLifecycle('waiting_wallet')
-      const response = await method(...args, {
+      const response = await methodCall(...args, {
         ...(value ? { value } : {}),
         gasLimit: calculateGasMargin(estimatedGasLimit),
       })
@@ -892,7 +898,9 @@ export function useLiquidityMintRuntime({
       setRemoveTxLifecycle('failed')
       setLiquidityState({
         attemptingTxn: false,
-        liquidityErrorMessage: `Switch to ${constructed.requiredChainLabel ?? 'the position network'} before removing liquidity.`,
+        liquidityErrorMessage: `Switch to ${
+          constructed.requiredChainLabel ?? 'the position network'
+        } before removing liquidity.`,
         txHash: undefined,
       })
       return
@@ -940,7 +948,7 @@ export function useLiquidityMintRuntime({
               nativeMinimum,
               recipient,
               deadlineRaw,
-              { gasLimit: estimatedGasLimit, value: constructed.value ?? 0 },
+              { gasLimit: estimatedGasLimit },
             )
           : await routerContract.removeLiquidityETH(
               tokenAddress,
@@ -949,14 +957,16 @@ export function useLiquidityMintRuntime({
               nativeMinimum,
               recipient,
               deadlineRaw,
-              { gasLimit: estimatedGasLimit, value: constructed.value ?? 0 },
+              { gasLimit: estimatedGasLimit },
             )
       } else {
-        const estimate = routerContract.estimateGas.removeLiquidity
-        const method = routerContract.removeLiquidity
+        const estimate = routerContract.estimateGas.removeLiquidity as unknown as (
+          ...args: unknown[]
+        ) => Promise<BigNumber>
+        const method = routerContract.removeLiquidity as unknown as (...args: unknown[]) => Promise<TransactionResponse>
         const args = constructed.args
         const estimatedGasLimit = await estimate(...args)
-        response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit), value: constructed.value ?? 0 })
+        response = await method(...args, { gasLimit: calculateGasMargin(estimatedGasLimit) })
       }
       setRemoveTxLifecycle('submitted')
       setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
@@ -1225,6 +1235,7 @@ export function useLiquidityMintRuntime({
     positionsLoading,
     positionsPhase,
     positionsTimedOut,
+    positionChainStatuses,
     retryPositions,
     liquidityWalletPortfolio,
     selectedPositionId: selectedPosition?.id,
