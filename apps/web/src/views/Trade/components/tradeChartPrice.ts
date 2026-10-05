@@ -11,7 +11,7 @@ export function factualChartPoints(points: Array<{ time: string | number; value:
     .map((point) => ({ time: String(point.time), value: point.value }))
 }
 
-export type TradeChartSeriesSource = 'indexer' | 'public' | 'none'
+export type TradeChartSeriesSource = 'indexer' | 'public' | 'trades' | 'none'
 
 /**
  * Series passed to TradeChartPanel.
@@ -21,11 +21,14 @@ export type TradeChartSeriesSource = 'indexer' | 'public' | 'none'
 export function selectTradeChartSeries(
   indexerPoints: Array<{ time: string | number; value: number }>,
   publicPoints: Array<{ time: string | number; value: number }>,
+  tradePoints: Array<{ time: string | number; value: number }> = [],
 ): { pairPrices: ChartPricePoint[]; source: TradeChartSeriesSource } {
   const indexer = factualChartPoints(indexerPoints)
   if (indexer.length >= 1) return { pairPrices: indexer, source: 'indexer' }
   const pub = factualChartPoints(publicPoints)
   if (pub.length > 0) return { pairPrices: pub, source: 'public' }
+  const trades = factualChartPoints(tradePoints)
+  if (trades.length > 0) return { pairPrices: trades, source: 'trades' }
   return { pairPrices: [], source: 'none' }
 }
 

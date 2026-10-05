@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  latestFactualClose,
-  resolveTradeHeaderPrice,
-  selectTradeChartSeries,
-} from '../tradeChartPrice'
+import { latestFactualClose, resolveTradeHeaderPrice, selectTradeChartSeries } from '../tradeChartPrice'
 
 const point = (value: number, time = 1) => ({ time, value })
 
@@ -12,28 +8,40 @@ describe('trade chart header price', () => {
     const series = selectTradeChartSeries([], [point(1.1, 1), point(1.25, 2)])
     expect(series.source).toBe('public')
     expect(series.pairPrices).toHaveLength(2)
-    const price = resolveTradeHeaderPrice({ priceUsd: undefined, pairPrices: series.pairPrices, chartRendersSeries: true })
+    const price = resolveTradeHeaderPrice({
+      priceUsd: undefined,
+      pairPrices: series.pairPrices,
+      chartRendersSeries: true,
+    })
     expect(price).toBe(1.25)
   })
 
+  it('uses factual public trade prices when the OHLCV provider is temporarily unavailable', () => {
+    const series = selectTradeChartSeries([], [], [point(0.000275, 1), point(0.000277, 2)])
+    expect(series.source).toBe('trades')
+    expect(series.pairPrices).toHaveLength(2)
+    expect(resolveTradeHeaderPrice({ pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(0.000277)
+  })
+
   it('uses the latest durable indexer close, not the public close, when indexer candles render', () => {
-    const series = selectTradeChartSeries(
-      [point(2.5, 1), point(3.75, 2)],
-      [point(9.1, 1), point(9.9, 2)],
-    )
+    const series = selectTradeChartSeries([point(2.5, 1), point(3.75, 2)], [point(9.1, 1), point(9.9, 2)])
     expect(series.source).toBe('indexer')
     expect(resolveTradeHeaderPrice({ pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(3.75)
   })
 
   it('keeps a positive finite priceUsd authoritative over candle closes', () => {
     const series = selectTradeChartSeries([], [point(1.25, 1), point(1.4, 2)])
-    expect(resolveTradeHeaderPrice({ priceUsd: 8.5, pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(8.5)
+    expect(resolveTradeHeaderPrice({ priceUsd: 8.5, pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(
+      8.5,
+    )
   })
 
   it('returns no price when priceUsd and factual candles are both missing', () => {
     const series = selectTradeChartSeries([], [])
     expect(series.source).toBe('none')
-    expect(resolveTradeHeaderPrice({ priceUsd: undefined, pairPrices: series.pairPrices, chartRendersSeries: false })).toBeUndefined()
+    expect(
+      resolveTradeHeaderPrice({ priceUsd: undefined, pairPrices: series.pairPrices, chartRendersSeries: false }),
+    ).toBeUndefined()
   })
 
   it('does not use a close while the current series is not rendered', () => {
@@ -76,12 +84,8 @@ describe('trade chart header price', () => {
         chartRendersSeries: true,
       }),
     ).toBe(6)
-    expect(
-      resolveTradeHeaderPrice({ priceUsd: 0, pairPrices: series.pairPrices, chartRendersSeries: true }),
-    ).toBe(6)
-    expect(
-      resolveTradeHeaderPrice({ priceUsd: -1, pairPrices: series.pairPrices, chartRendersSeries: true }),
-    ).toBe(6)
+    expect(resolveTradeHeaderPrice({ priceUsd: 0, pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(6)
+    expect(resolveTradeHeaderPrice({ priceUsd: -1, pairPrices: series.pairPrices, chartRendersSeries: true })).toBe(6)
     expect(
       resolveTradeHeaderPrice({
         priceUsd: Number.POSITIVE_INFINITY,
