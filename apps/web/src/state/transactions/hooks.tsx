@@ -24,7 +24,7 @@ import { AppState, useAppDispatch } from '../index'
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
-  response: TransactionResponse,
+  response: Pick<TransactionResponse, 'hash'>,
   customData?: {
     summary?: string
     translatableSummary?: { text: string; data?: Record<string, string | number> }
@@ -41,7 +41,7 @@ export function useTransactionAdder(): (
 
   return useCallback(
     (
-      response: TransactionResponse,
+      response: Pick<TransactionResponse, 'hash'>,
       {
         summary,
         translatableSummary,

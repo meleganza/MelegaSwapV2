@@ -25,6 +25,7 @@ type ApiEmissionPayload = MasterChefEmissionDiagnostics & {
   normalizedEmissionPerBlock?: number
   totalDailyEmission?: number
   multiplier?: number
+  decimals?: number
 }
 
 function mapApiPayload(json: ApiEmissionPayload): MasterChefEmissionDiagnostics | null {

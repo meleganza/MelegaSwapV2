@@ -12,7 +12,7 @@ import {
 } from './poolClassificationSummary'
 import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
-import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
+import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem, PoolVisibilityStatus } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
 import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 import {
@@ -30,8 +30,7 @@ function isPoolsMetricUnavailable(value?: string | null): boolean {
 
 function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
-  if (typeof (tokenPerBlock as BigNumber).times === 'function') return tokenPerBlock as BigNumber
-  return new BigNumber(tokenPerBlock as string | number)
+  return new BigNumber(tokenPerBlock)
 }
 
 export const formatUsd = (value?: number | null): string => {

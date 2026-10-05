@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Fraction } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Fraction, TradeType } from '@pancakeswap/sdk'
 import type { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import {
   FSC_01_POLICY_REF,
@@ -55,7 +55,7 @@ export function resolveSwapProtocolFeeContext(
 }
 
 export function computeGrossProtocolFeeAmount(
-  trade: TradeWithStableSwap<Currency, Currency>,
+  trade: TradeWithStableSwap<Currency, Currency, TradeType>,
 ): string {
   const ctx = resolveSwapProtocolFeeContext(trade)
   const feeFraction = new Fraction(Math.round(ctx.protocolFeeRate * 1_000_000), 1_000_000)

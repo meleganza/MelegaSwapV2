@@ -16,6 +16,7 @@
     "performance:baseline": "node scripts/lightspeed-baseline.mjs",
     "performance:check": "node scripts/lightspeed-baseline.mjs --check",
     "test": "LC_ALL=\"en_US.UTF-8\" vitest --run",
+    "test:certification": "node scripts/run-full-funnel-certification.mjs",
     "test:watch": "LC_ALL=\"en_US.UTF-8\" vitest --watch",
     "test:config": "vitest --run --config vitest-config-test.config.ts",
     "verify:kap-006c-dex-gravity": "tsx src/lib/dex-gravity/verifyKap006c.ts",

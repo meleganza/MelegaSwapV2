@@ -32,6 +32,5 @@ export function resolveHolderMetric(
   return {
     display: 'Unavailable',
     reasonCode: 'EXPLORER_SOURCE_MISSING',
-    reason: result.reason || result.diagnostic,
   }
 }

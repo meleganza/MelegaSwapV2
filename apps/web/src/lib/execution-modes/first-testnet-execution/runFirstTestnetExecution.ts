@@ -147,7 +147,7 @@ export async function runFirstTestnetExecution(input: {
       rollbackStatus: 'Rolled back to DRY_RUN — dispatch failed before confirmed receipt',
       warnings,
       trackerLifecycle: [],
-      error: dispatch.error?.message,
+      error: 'error' in dispatch ? dispatch.error.message : undefined,
     }
   }
 

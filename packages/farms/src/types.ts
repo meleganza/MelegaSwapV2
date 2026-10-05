@@ -143,6 +143,8 @@ export interface DeserializedFarmsState {
 }
 
 export interface FarmWithStakedValue extends DeserializedFarm {
+  earningToken?: Token
+  lpToken?: Token
   apr?: number
   lpRewardsApr?: number
   liquidity?: BigNumber

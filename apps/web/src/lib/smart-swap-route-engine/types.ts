@@ -74,6 +74,7 @@ export interface SmartSwapRoute {
   outputToken: SmartSwapTokenRef
   hops: SmartSwapHop[]
   pools: SmartSwapPoolRef[]
+  pathAddresses?: string[]
   /** Expected output in raw integer string (token decimals). */
   expectedOutputRaw: string
   expectedOutputFormatted: string | null

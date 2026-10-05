@@ -170,7 +170,7 @@ export const PoolsHeroArtwork: React.FC = () => (
     data-pools-hero-animated="true"
     aria-hidden="true"
   >
-    <Artwork src={POOLS_HERO_ARTWORK} alt="" width={1669} height={942} decoding="async" fetchPriority="high" />
+    <Artwork src={POOLS_HERO_ARTWORK} alt="" width={1669} height={942} decoding="async" />
     <DepthVeil />
     <Glow />
     <OrbitalGlow />

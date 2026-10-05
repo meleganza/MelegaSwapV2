@@ -270,8 +270,8 @@ export function cardToExploreFarmModel(
   const pid = card.pid ?? raw.pid ?? null
   const apr = resolveApr(card)
   const tvl = resolveTvl(card)
-  const wallet = resolveWalletLp(card, { ...opts, chainId: farmChainId })
-  const allowance = resolveAllowance(card, { ...opts, chainId: farmChainId })
+  const wallet = resolveWalletLp(card, { account: opts.account, userDataLoaded: opts.userDataLoaded })
+  const allowance = resolveAllowance(card, { account: opts.account, userDataLoaded: opts.userDataLoaded })
   const newest = resolveNewest(card)
   const multiplier = resolveMultiplier(card)
   const rewardRate = resolveRewardRate(card)

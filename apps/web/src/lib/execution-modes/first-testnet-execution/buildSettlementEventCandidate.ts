@@ -1,5 +1,5 @@
-import type { ExecutionEvidence, ExecutionReport } from '../execution-contract/types'
-import type { ExecutionInstruction } from '../execution-layer/types'
+import type { ExecutionEvidence, ExecutionReport } from '../../execution-contract/types'
+import type { ExecutionInstruction } from '../../execution-layer/types'
 
 export interface SettlementEventCandidate {
   schema: 'melega.settlement-event-candidate.v1'

@@ -132,7 +132,7 @@ export function useSwapCallback(
           inputAmount: trade.inputAmount,
           outputAmount: trade.outputAmount,
         })
-        if (!handoffPlan.ok) {
+        if ('message' in handoffPlan) {
           throw new Error(handoffPlan.message)
         }
 

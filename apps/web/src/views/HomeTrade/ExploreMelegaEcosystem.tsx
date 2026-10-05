@@ -4,11 +4,11 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { IdCard, Gift, Rocket, Orbit, Landmark } from 'lucide-react'
+import { IdCard, Gift, Rocket, Orbit, Landmark, type LucideIcon } from 'lucide-react'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { ECOSYSTEM_DESTINATIONS } from './ecosystemDestinations'
 
-const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean }>> = {
+const ICONS: Record<string, LucideIcon> = {
   passport: IdCard,
   smartdrop: Gift,
   blackpump: Rocket,

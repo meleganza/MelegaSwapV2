@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Fraction } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Fraction, TradeType } from '@pancakeswap/sdk'
 import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { computeGrossProtocolFeeAmount as computeD87GrossFee } from 'lib/d87-pricing/swapProtocolFee'
 import {
@@ -37,7 +37,7 @@ function resolveOriginProject(input: Currency, output: Currency): string | undef
  * D87 protocol fee is economic metadata — Treasury Runtime owns FSC-01 settlement.
  */
 export function buildSwapHandoffContext(
-  trade: TradeWithStableSwap<Currency, Currency>,
+  trade: TradeWithStableSwap<Currency, Currency, TradeType>,
   chainId: number,
   user?: string,
 ): SwapHandoffContext {
@@ -51,7 +51,7 @@ export function buildSwapHandoffContext(
     outputAmount: trade.outputAmount,
   })
 
-  const fee = plan.ok ? plan.feeAmount : computeD87GrossFee(trade)
+  const fee = 'code' in plan ? computeD87GrossFee(trade) : plan.feeAmount
 
   return {
     schema: 'melega.dex-swap-handoff-context.v1',
@@ -63,7 +63,7 @@ export function buildSwapHandoffContext(
     amount: trade.inputAmount.toSignificant(6),
     fee,
     originProject: resolveOriginProject(trade.inputAmount.currency, trade.outputAmount.currency),
-    smartRouter: plan.ok
+    smartRouter: !('code' in plan)
       ? {
           architecture: plan.architecture,
           protocolFeeBps: plan.protocolFeeBps,

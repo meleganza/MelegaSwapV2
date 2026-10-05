@@ -39,7 +39,7 @@ export type MelegaChainRecord = {
   status: MelegaChainStatus
   capabilities: MelegaChainCapabilities
   contracts: MelegaChainContracts
-  notes?: string[]
+  notes?: readonly string[]
 }
 
 /** Canonical Melega V2 Router on Base — must match packages/smart-router + web exchange.ts */

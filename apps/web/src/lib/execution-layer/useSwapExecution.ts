@@ -98,7 +98,11 @@ export function useV2SwapExecution(instruction: SwapExecutionInstruction | null)
 
   useExecutionTrackerReceiptSync(instruction)
 
-  const swapCalls = useV2SwapCallArguments(trade, instruction?.allowedSlippageBps, instruction?.recipient ?? null)
+  const swapCalls = useV2SwapCallArguments(
+    trade as Parameters<typeof useV2SwapCallArguments>[0],
+    instruction?.allowedSlippageBps,
+    instruction?.recipient ?? null,
+  )
 
   const { state, callback, error } = useV2SwapCallback(
     trade as V2TradeAndStableSwap,

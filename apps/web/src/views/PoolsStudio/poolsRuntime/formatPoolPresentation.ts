@@ -38,8 +38,7 @@ export type PoolSafetyRisk = 'Very Low' | 'Low' | 'Medium' | 'High'
 
 function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
-  if (typeof (tokenPerBlock as BigNumber).times === 'function') return tokenPerBlock as BigNumber
-  return new BigNumber(tokenPerBlock as string | number)
+  return new BigNumber(tokenPerBlock)
 }
 
 function safeBlocksRemaining(pool: Pool.DeserializedPool<Token>, currentBlock: number): number {

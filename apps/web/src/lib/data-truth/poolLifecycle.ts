@@ -23,8 +23,7 @@ export interface PoolLifecycleFlags {
 
 function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
-  if (typeof (tokenPerBlock as BigNumber).times === 'function') return tokenPerBlock as BigNumber
-  return new BigNumber(tokenPerBlock as string | number)
+  return new BigNumber(tokenPerBlock)
 }
 
 /** Machine-readable SmartChef / SousChef lifecycle from on-chain pool state. */

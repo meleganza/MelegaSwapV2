@@ -80,7 +80,7 @@ export async function dispatchExecutionInstruction(
   }
 
   const validation = validateExecutionInstruction(instruction)
-  if (!validation.ok) {
+  if ('error' in validation) {
     return { ok: false, error: validation.error }
   }
 

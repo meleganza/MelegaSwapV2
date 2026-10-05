@@ -22,6 +22,7 @@ export type RegistrySource =
   | 'kerl'
   | 'env'
   | 'static-dev'
+  | 'static-config'
   | 'config'
 
 export const MELEGA_SMART_ROUTER_PHASE = {

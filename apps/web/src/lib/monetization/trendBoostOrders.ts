@@ -4,7 +4,7 @@
  */
 import fs from 'fs'
 import path from 'path'
-import { randomUUID } from 'crypto'
+import { randomBytes } from 'crypto'
 import { get, list, put } from '@vercel/blob'
 import { FEATURED_PAYMENT_TOKENS, FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
 import { isQuoteExpired } from 'lib/featured-placement/quote'
@@ -214,7 +214,7 @@ export function createTrendBoostOrder(input: {
   const now = new Date().toISOString()
   const order: TrendBoostOrder = {
     schema: 'melega.trend-boost-order.v1',
-    orderId: `trend_${randomUUID().replace(/-/g, '').slice(0, 24)}`,
+    orderId: `trend_${randomBytes(12).toString('hex')}`,
     state: 'DRAFT',
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,

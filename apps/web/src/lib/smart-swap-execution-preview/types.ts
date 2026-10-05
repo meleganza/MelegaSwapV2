@@ -47,7 +47,7 @@ export interface SmartSwapProtocolFeeDisplay {
   bps: number | null
   availability: SmartSwapMetricAvailability
   label: string
-  note: 'Display only — beneficiary is MELEGA TREASURY WALLET per FSC-01 policy'
+  note: string
   rule: 'standard' | 'buy-marco' | 'unavailable'
 }
 

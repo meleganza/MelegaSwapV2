@@ -52,7 +52,7 @@ function preparedSwap(
     feeOnTransfer: input.feeOnTransfer,
   })
 
-  if (!swapPlan.ok) {
+  if ('code' in swapPlan) {
     return blocked(input, swapPlan.code as CivilizationBlockCode, swapPlan.message)
   }
 
@@ -105,7 +105,7 @@ function preparedKerlSwap(
     tradeType: input.tradeType,
   })
 
-  if (!kerlRequest.ok) {
+  if ('code' in kerlRequest) {
     return blocked(input, kerlRequest.code as CivilizationBlockCode, kerlRequest.message)
   }
 
@@ -118,7 +118,7 @@ function preparedKerlSwap(
     feeOnTransfer: input.feeOnTransfer,
   })
 
-  if (!swapPlan.ok) {
+  if ('code' in swapPlan) {
     return blocked(input, swapPlan.code as CivilizationBlockCode, swapPlan.message)
   }
 

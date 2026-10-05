@@ -1,0 +1,31 @@
+name: Full Funnel Deterministic Certification
+
+on:
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/full-funnel-certification.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-funnel-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deterministic-certification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # The frozen lock currently resolves @iota/iota-sdk@1.15, whose published engine floor is Node 24.
+          node-version: 24
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn test:certification

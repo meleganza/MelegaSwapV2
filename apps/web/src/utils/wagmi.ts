@@ -4,7 +4,7 @@ import memoize from 'lodash/memoize'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
-import { noopStorage } from '@wagmi/core'
+import { createStorage, noopStorage } from '@wagmi/core'
 import { BSC_TESTNET_RPC_URLS } from 'config/constants/rpc'
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 
@@ -299,7 +299,7 @@ export const metaMaskConnector = new MetaMaskConnector({
 export const client = createClient({
   autoConnect: false,
   provider,
-  storage: typeof window === 'undefined' ? noopStorage : undefined,
+  storage: typeof window === 'undefined' ? createStorage({ storage: noopStorage }) : undefined,
   // Keep the synchronous boot path limited to injected wallets. Advanced
   // connector SDKs are loaded only for wallet intent or session restoration.
   connectors: [metaMaskConnector, injectedConnector],

@@ -119,7 +119,7 @@ export class ExecutionTracker {
     const report = buildExecutionReport(evidence)
 
     for (const field of TRACKER_FORBIDDEN_SETTLEMENT_FIELDS) {
-      if (field in (report as Record<string, unknown>)) {
+      if (field in (report as unknown as Record<string, unknown>)) {
         throw new Error(`Execution tracker report must not include settlement field: ${field}`)
       }
     }
@@ -295,7 +295,7 @@ export class ExecutionTracker {
     const report = buildExecutionReport(evidence)
 
     for (const field of TRACKER_FORBIDDEN_SETTLEMENT_FIELDS) {
-      if (field in (report as Record<string, unknown>)) {
+      if (field in (report as unknown as Record<string, unknown>)) {
         throw new Error(`Execution tracker report must not include settlement field: ${field}`)
       }
     }

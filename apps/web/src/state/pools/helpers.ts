@@ -102,7 +102,7 @@ export const transformVault = (vaultKey: VaultKey, vault: SerializedCakeVault): 
         // currentOverdueFee: currentOverdueFeeAsString,
         // currentPerformanceFee: currentPerformanceFeeAsString,
       },
-    } = vault as SerializedLockedCakeVault
+    } = vault as unknown as SerializedLockedCakeVault
 
     const totalDexTokenInVault = new BigNumber(totalDexTokenInVaultAsString)
     const totalLockedAmount = new BigNumber(totalLockedAmountAsString)

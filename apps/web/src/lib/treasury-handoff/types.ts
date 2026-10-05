@@ -51,8 +51,8 @@ export interface SwapHandoffContext {
     pricingRef: 'D87_DEX_PRICING_RATIFIED'
     treasuryPolicyRef: 'FSC-01'
     blocked?: string
-    protocolFeeCollected?: Record<string, unknown>
-    smartRouterSwapRouted?: Record<string, unknown>
+    protocolFeeCollected?: object
+    smartRouterSwapRouted?: object
   }
 }
 

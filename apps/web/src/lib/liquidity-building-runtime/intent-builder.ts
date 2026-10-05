@@ -74,7 +74,7 @@ export function buildExecutionIntent(input: IntentBuildInput): IntentBuildResult
   }
 
   const provenance = resolveTreasuryProvenanceReference(input)
-  if (!provenance.ok) {
+  if ('reason' in provenance) {
     return { ok: false, reason: provenance.reason }
   }
 

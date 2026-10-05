@@ -78,7 +78,7 @@ export const FarmHarvestConfirmModal: React.FC<FarmHarvestConfirmModalProps> = (
         {!account ? (
           <ConnectWalletButton width="100%" />
         ) : (
-          <Flex gap="8px">
+          <Flex style={{ gap: '8px' }}>
             <Button variant="secondary" width="100%" onClick={onDismiss} disabled={pending}>
               Cancel
             </Button>

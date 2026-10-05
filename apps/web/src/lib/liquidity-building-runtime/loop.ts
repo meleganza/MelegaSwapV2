@@ -135,7 +135,7 @@ export async function runAutonomousLoopStep(args: {
     projectToken: args.projectToken,
     quoteAsset: args.quoteAsset,
   })
-  if (!built.ok) {
+  if ('reason' in built) {
     machine.transition('EXECUTION_FAILED', built.reason)
     blockedReasons.push(built.reason)
     return {
@@ -178,7 +178,7 @@ export async function runAutonomousLoopStep(args: {
     to: args.program,
     idempotencyKey: `${args.program}:${signed.intent.executionNonce}`,
   })
-  if (!relayResult.ok) {
+  if ('reason' in relayResult) {
     machine.transition('RELAY_UNAVAILABLE', relayResult.code)
     blockedReasons.push(relayResult.reason)
     return {

@@ -103,7 +103,7 @@ export function buildPendingProjectRecord(input: {
       })
     : createProvenanceField<string[]>({ value: null, source: 'ai_discovery' })
 
-  const rating = unavailableField('ai_discovery')
+  const rating = createProvenanceField<number>({ value: null, source: 'ai_discovery' })
 
   const draft: PendingProjectRecord = {
     schema: 'melega.project-profile.pending.v1',

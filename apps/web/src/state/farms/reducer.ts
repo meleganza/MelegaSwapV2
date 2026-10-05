@@ -1,5 +1,5 @@
 import type { SerializedFarm, SerializedFarmsState } from '@pancakeswap/farms'
-import { createSlice, type AnyAction, type PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createSlice, type AnyAction } from '@reduxjs/toolkit'
 import stringify from 'fast-json-stable-stringify'
 import keyBy from 'lodash/keyBy'
 import { resetUserState } from '../global/actions'
@@ -20,6 +20,14 @@ type FarmUserDataResponse = {
   earnings: string
 }
 
+const initialFarmsFulfilled = createAction<{ data: SerializedFarm[]; chainId: number }>(
+  'farms/fetchInitialFarmsData/fulfilled',
+)
+const farmsPublicDataFulfilled = createAction<[SerializedFarm[], number, number]>(
+  'farms/fetchFarmsPublicDataAsync/fulfilled',
+)
+const farmUserDataFulfilled = createAction<FarmUserDataResponse[]>('farms/fetchFarmUserDataAsync/fulfilled')
+
 const loadingKey = (action: AnyAction, requestStatus: 'pending' | 'fulfilled' | 'rejected') =>
   stringify({ arg: action.meta?.arg, type: action.type.split(`/${requestStatus}`)[0] })
 
@@ -36,15 +44,15 @@ export const farmsSlice = createSlice({
       state.userDataLoaded = false
     })
     builder.addCase(
-      'farms/fetchInitialFarmsData/fulfilled',
-      (state, action: PayloadAction<{ data: SerializedFarm[]; chainId: number }>) => {
+      initialFarmsFulfilled,
+      (state, action) => {
         state.data = action.payload.data
         state.chainId = action.payload.chainId
       },
     )
     builder.addCase(
-      'farms/fetchFarmsPublicDataAsync/fulfilled',
-      (state, action: PayloadAction<[SerializedFarm[], number, number]>) => {
+      farmsPublicDataFulfilled,
+      (state, action) => {
         const [farmPayload, poolLength, regularCakePerBlock] = action.payload
         const farmPayloadPidMap = keyBy(farmPayload, 'pid')
         state.data = state.data.map((farm) => ({ ...farm, ...farmPayloadPidMap[farm.pid] }))
@@ -54,8 +62,8 @@ export const farmsSlice = createSlice({
       },
     )
     builder.addCase(
-      'farms/fetchFarmUserDataAsync/fulfilled',
-      (state, action: PayloadAction<FarmUserDataResponse[]>) => {
+      farmUserDataFulfilled,
+      (state, action) => {
         const userDataMap = keyBy(action.payload, 'pid')
         state.data = state.data.map((farm) => {
           const userData = userDataMap[farm.pid]

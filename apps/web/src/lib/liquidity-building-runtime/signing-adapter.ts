@@ -68,7 +68,7 @@ export async function signArtifact(
     }
   }
   const result = await signer.signExecutionIntent({ intent: artifact.intent })
-  if (!result.ok) {
+  if ('reason' in result) {
     return {
       ...artifact,
       signingStatus: 'REJECTED',

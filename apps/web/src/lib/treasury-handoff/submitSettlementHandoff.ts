@@ -1,12 +1,13 @@
 import { normalizeTreasuryIntakePayload } from './normalizeTreasuryIntakePayload'
 import { assertPayloadDoesNotOwnSettlement } from './ownership'
-import { setSettlementReference, type SettlementReference } from './settlementReferenceStore'
+import { setSettlementReference } from './settlementReferenceStore'
 import type {
   ExecutionReceiptPayload,
   SettlementHandoffResult,
   SettlementHandoffStatus,
   TreasuryRuntimeEndpointStatus,
   TreasurySettlementResponse,
+  SettlementReference,
 } from './types'
 
 export interface SubmitHandoffDeps {
@@ -46,7 +47,7 @@ export async function submitSettlementHandoff(
   assertPayloadDoesNotOwnSettlement(payload as unknown as Record<string, unknown>)
 
   const normalized = normalizeTreasuryIntakePayload(payload)
-  if (!normalized.ok) {
+  if ('reason' in normalized) {
     const rejected: TreasurySettlementResponse = {
       status: 'rejected',
       machine_code: normalized.machine_code,

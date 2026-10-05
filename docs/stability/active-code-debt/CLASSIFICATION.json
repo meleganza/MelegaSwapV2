@@ -1,0 +1,71 @@
+{
+  "classifierVersion": 1,
+  "entrypoints": [
+    "apps/web/src/pages/_app.tsx",
+    "apps/web/src/pages/_document.tsx",
+    "apps/web/src/pages/_error.tsx",
+    "apps/web/src/middleware.ts",
+    "apps/web/src/pages/index.tsx",
+    "apps/web/src/pages/swap/index.tsx",
+    "apps/web/src/pages/liquidity.tsx",
+    "apps/web/src/pages/farms/index.tsx",
+    "apps/web/src/pages/pools/index.tsx",
+    "apps/web/src/pages/bridge/index.tsx",
+    "apps/web/src/pages/projects/index.tsx",
+    "apps/web/src/pages/list/index.tsx",
+    "apps/web/src/pages/portfolio/index.tsx",
+    "apps/web/src/pages/project-hq/[slug].tsx",
+    "apps/web/src/pages/docs/index.tsx",
+    "apps/web/src/pages/audit/index.tsx",
+    "apps/web/src/pages/support/index.tsx"
+  ],
+  "activeProductionFiles": 2250,
+  "repositoryDiagnostics": 438,
+  "activeProductionDiagnostics": 0,
+  "remainingCategoryC": 212,
+  "remainingCategoryD": 226,
+  "remainingCategoryCTopDirectories": [
+    {
+      "directory": "apps/web/src/lib",
+      "diagnostics": 171
+    },
+    {
+      "directory": "apps/web/src/views",
+      "diagnostics": 24
+    },
+    {
+      "directory": "apps/web/src/hooks",
+      "diagnostics": 8
+    },
+    {
+      "directory": "apps/web/src/design-system",
+      "diagnostics": 7
+    },
+    {
+      "directory": "apps/web/src/components",
+      "diagnostics": 2
+    }
+  ],
+  "remainingCategoryDTopDirectories": [
+    {
+      "directory": "apps/web/src/views",
+      "diagnostics": 177
+    },
+    {
+      "directory": "apps/web/src/lib",
+      "diagnostics": 41
+    },
+    {
+      "directory": "apps/web/src/pages",
+      "diagnostics": 6
+    },
+    {
+      "directory": "apps/web/src/app-shell",
+      "diagnostics": 1
+    },
+    {
+      "directory": "apps/web/src/state",
+      "diagnostics": 1
+    }
+  ]
+}

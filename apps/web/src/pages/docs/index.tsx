@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
 import { MELEGA_FACTORY_BSC, MELEGA_ROUTER_BSC, MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 import { uxRebuildColors, uxRebuildFont, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 
 type DocSection = {
@@ -297,7 +298,7 @@ const Note = styled.p`
   color: ${uxRebuildColors.muted};
 `
 
-const DocsPage: React.FC = () => (
+const DocsPage: NextPageWithLayout = () => (
   <Root data-melega-docs-page>
     <PageMeta title="Docs" />
     <Inner>
