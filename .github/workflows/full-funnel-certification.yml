@@ -24,8 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          # The frozen lock resolves rpc-websockets@9, whose published engine floor is Node 18.
-          node-version: 20
+          # The frozen lock currently resolves @iota/iota-sdk@1.15, whose published engine floor is Node 24.
+          node-version: 24
           cache: yarn
       - run: yarn install --frozen-lockfile
       - run: yarn test:certification
