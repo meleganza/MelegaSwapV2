@@ -33,7 +33,7 @@ import ProjectTransparencySummary from './ProjectTransparencySummary'
 import ProjectMoreSection from './ProjectMoreSection'
 import { AnimatedSection, PageFrame, Section, SectionTitle, SoftCard, MutedText, Shell } from './theme'
 import { getPrimaryAsset } from './helpers'
-import { shortenAddress } from '../presentation/humanLabels'
+import { shortenAddress } from '../../presentation/humanLabels'
 
 const ClientWalletRelationship = dynamic(() => import('./ProjectWalletConsumer'), {
   ssr: false,
@@ -43,7 +43,7 @@ const ClientWalletRelationship = dynamic(() => import('./ProjectWalletConsumer')
   evidencePack: ProjectEvidencePack
 }>
 
-const ProjectMachineSection = dynamic(() => import('../ProjectMachineSection'), {
+const ProjectMachineSection = dynamic(() => import('../../ProjectMachineSection'), {
   ssr: false,
   loading: () => null,
 })

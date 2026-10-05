@@ -1,6 +1,6 @@
 import { EventIntakeFamily } from 'lib/real-event-intake/event-intake-types'
 
-export type SubmissionValidationStatus = 'valid' | 'invalid' | 'pending' | 'not_indexed'
+export type SubmissionValidationStatus = 'valid' | 'invalid' | 'pending' | 'blocked' | 'not_indexed'
 
 export type SubmissionReviewStatus =
   | 'draft'

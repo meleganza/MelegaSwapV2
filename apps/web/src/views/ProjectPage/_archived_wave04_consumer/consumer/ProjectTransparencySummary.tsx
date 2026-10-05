@@ -5,9 +5,9 @@ import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import { Accordion, AccordionSummary, BodyText, MutedText, Section, SectionTitle, SoftCard } from './theme'
 
-const ReadinessTrustSnapshot = dynamic(() => import('../ReadinessTrustSnapshot'), { ssr: false })
-const TrustEvidencePanel = dynamic(() => import('../TrustEvidencePanel'), { ssr: false })
-const ProjectMachineSection = dynamic(() => import('../ProjectMachineSection'), { ssr: false })
+const ReadinessTrustSnapshot = dynamic(() => import('../../ReadinessTrustSnapshot'), { ssr: false })
+const TrustEvidencePanel = dynamic(() => import('../../TrustEvidencePanel'), { ssr: false })
+const ProjectMachineSection = dynamic(() => import('../../ProjectMachineSection'), { ssr: false })
 
 interface Props {
   evidencePack: ProjectEvidencePack

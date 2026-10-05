@@ -181,8 +181,8 @@ export const ContractInputHero: React.FC<Props> = ({ embedded }) => {
             <ChainBtn
               key={c}
               type="button"
-              $active={chainLabel === c || (c === 'ETH' && chainLabel === 'Ethereum')}
-              onClick={() => setChainLabel(c === 'ETH' ? 'ETH' : c)}
+              $active={chainLabel === c}
+              onClick={() => setChainLabel(c)}
             >
               {c}
             </ChainBtn>

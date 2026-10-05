@@ -40,6 +40,9 @@ export type PublicFarmFactoryFeeResult =
   | {
       ok: true
       rejected: false
+      reason?: never
+      message?: never
+      recipient?: never
       fee: CreateFeeDisplay
       feeBnb: string
       isFree: boolean

@@ -2,8 +2,8 @@
  * MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_VALIDATION_BINDING_AND_READY
  */
 import { describe, expect, it, beforeEach } from 'vitest'
-import { readFileSync, existsSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync, existsSync } from 'fs'
+import path from 'path'
 import { Interface } from '@ethersproject/abi'
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import { sha256 } from '@ethersproject/sha2'

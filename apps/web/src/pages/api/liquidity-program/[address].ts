@@ -19,7 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   const store = resolveLbProgramStore()
   const result = await getProgramDetail(store, address)
-  if (!result.ok) {
+  if ('reason' in result) {
     const status = result.reason === 'PROGRAM_NOT_FOUND' ? 404 : 400
     return res.status(status).json({ ok: false, reason: result.reason })
   }

@@ -19,6 +19,8 @@ export type RelaySubmitRequest = {
 export type RelaySubmitResult =
   | {
       ok: true
+      code?: never
+      reason?: never
       transactionHash: string
       status: TxMonitorStatus
       submissionId: string

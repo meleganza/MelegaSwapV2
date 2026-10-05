@@ -59,7 +59,7 @@ export const InfrastructureSuggestions: React.FC = () => {
           {suggestions.map((s) => (
             <Item key={s.id}>
               <Title>{s.title}</Title>
-              <Sub>{s.description}</Sub>
+              <Sub>{s.estimatedImpact}</Sub>
             </Item>
           ))}
         </List>

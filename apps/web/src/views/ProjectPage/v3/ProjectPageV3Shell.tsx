@@ -536,6 +536,8 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
       'create-farm': 'project-v3-grow-farm',
       'create-pool': 'project-v3-grow-pool',
       'claim-project': 'project-v3-grow-claim',
+      'featured-farm': 'project-v3-grow-featured-farm',
+      'featured-pool': 'project-v3-grow-featured-pool',
     }
     return map[id]
   }
@@ -795,7 +797,7 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
               ['Age', '—'],
               ['Chain', selected?.shortLabel ?? 'BNB'],
               ['Updated', market.lastUpdate || '—'],
-            ] as [string, string, 'up' | 'down' | 'mute' | undefined?][]
+            ] as [string, string, ('up' | 'down' | 'mute')?][]
           ).map(([label, value, tone]) => (
             <StripCell key={label}>
               <StripLabel>{label}</StripLabel>
@@ -819,7 +821,7 @@ export const ProjectPageV3Shell: React.FC<ProjectPageV3Props> = ({
               tokenAddress={contract}
               tokenSymbol={symbol ?? document.identity.displayName}
               tokenDecimals={tokenDecimals}
-              tokenLogoURL={logoUrl}
+              tokenLogo={logoUrl}
               textOptions={AddToWalletTextOptions.TEXT}
             />
           ) : null}

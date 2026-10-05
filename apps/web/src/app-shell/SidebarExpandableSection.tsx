@@ -2,7 +2,7 @@ import React, { useEffect, useId, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { MelegaSidebarSection, MelegaSidebarItem } from 'design-system/melega'
-import type { ShellNavItem } from '../config/navigation'
+import type { ShellNavItem } from './config/navigation'
 import { ShellNavIcon } from './icons'
 
 const MoreButton = styled.button<{ $open?: boolean }>`

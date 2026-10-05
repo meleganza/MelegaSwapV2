@@ -3,6 +3,7 @@ import { CardHeader, Heading, Text, Flex, TokenPairImage as UIKitTokenPairImage 
 import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import { Token } from 'config/constants/types'
+import type { Token as SdkToken } from '@pancakeswap/sdk'
 import { TokenPairImage } from 'components/TokenImage'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { melegaOperational as tokens } from 'ui/tokens'
@@ -49,7 +50,7 @@ const StyledCardHeader: React.FC<{
   }
   
   const getImageUrlFromToken = (token?: Token) => {
-    const address = token?.isNative ? token.wrapped.address : token.address
+    const address = token?.address
     return `/images/${chainId}/tokens/${address}.png`
   }  
 
@@ -70,7 +71,12 @@ const StyledCardHeader: React.FC<{
             height={64}
           />
         ) : (
-          <TokenPairImage primaryToken={earningToken} secondaryToken={stakingToken} width={64} height={64} />
+          <TokenPairImage
+            primaryToken={earningToken as unknown as SdkToken}
+            secondaryToken={stakingToken as unknown as SdkToken}
+            width={64}
+            height={64}
+          />
         )}
       </Flex>
     </Wrapper>

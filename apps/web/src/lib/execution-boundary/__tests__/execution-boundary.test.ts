@@ -179,7 +179,7 @@ describe('KERL execution contract — evidence model', () => {
     const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
     const evidence = mapTransactionToExecutionEvidence(
       instruction,
-      { addedTime: Date.now(), from: '0xfrom', summary: 'pending' },
+      { hash: '0xpending', addedTime: Date.now(), from: '0xfrom', summary: 'pending' },
       createExecutionId(instruction.id, 1),
     )
 

@@ -34,7 +34,7 @@ const Value = styled.strong`
 
 export interface StatusItem {
   label: string
-  value: string
+  value?: string
   status?: string
 }
 

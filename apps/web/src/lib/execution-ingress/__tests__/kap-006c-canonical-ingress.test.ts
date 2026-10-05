@@ -61,7 +61,11 @@ describe('KAP-006C canonical execution ingress', () => {
     const result = await dispatchExecutionInstruction(instruction, {
       account: '0xuser',
       chainId: 56,
-      adapters: { smartSwap },
+      adapters: {
+        smartSwap,
+        v2Swap: vi.fn(async () => '0xv2hash'),
+        bridgeBurn: vi.fn(async () => '0xbridgehash'),
+      },
     })
 
     expect(result.ok).toBe(true)

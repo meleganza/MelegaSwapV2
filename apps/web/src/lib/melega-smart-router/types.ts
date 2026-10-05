@@ -90,6 +90,8 @@ export interface SmartRouterSwapRoutedEvent {
 
 export interface MelegaSmartRouterSwapPlan {
   ok: true
+  code?: never
+  message?: never
   architecture: typeof MELEGA_SMART_ROUTER_ARCHITECTURE
   chainId: number
   protocolFeeBps: number

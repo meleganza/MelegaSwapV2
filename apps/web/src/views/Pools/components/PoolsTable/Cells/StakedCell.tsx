@@ -43,11 +43,11 @@ const StakedCell: React.FC<React.PropsWithChildren<StakedCellProps>> = ({ pool, 
   )
 
   const labelText = `${
-    pool.vaultKey === VaultKey.CakeVault && (vaultData as Pool.DeserializedPoolLockedVault<Token>).userData.locked
+    pool.vaultKey === VaultKey.CakeVault && (vaultData as unknown as Pool.DeserializedPoolLockedVault<Token>).userData.locked
       ? t('')
       : t('Recent ')
   }${pool.stakingToken?.symbol} ${
-    pool.vaultKey === VaultKey.CakeVault && (vaultData as Pool.DeserializedPoolLockedVault<Token>).userData.locked
+    pool.vaultKey === VaultKey.CakeVault && (vaultData as unknown as Pool.DeserializedPoolLockedVault<Token>).userData.locked
       ? t('Locked')
       : t('profit')
   }`

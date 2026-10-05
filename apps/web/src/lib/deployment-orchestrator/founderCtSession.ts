@@ -115,7 +115,9 @@ export function validateCtFactoryFromOnChain(input: {
   runtimeBytecode: string
   creationFeeWeiOnChain?: string | null
   feeRecipientOnChain?: string | null
-}): { ok: true; evidence: CtDeploymentEvidence } | { ok: false; reason: string; evidence: CtDeploymentEvidence } {
+}):
+  | { ok: true; evidence: CtDeploymentEvidence; reason?: never }
+  | { ok: false; reason: string; evidence: CtDeploymentEvidence } {
   const status = receiptStatusOf(input.receipt.status)
   const contractAddress = normalizeAddress(input.receipt.contractAddress ?? null)
   const from = normalizeAddress(input.receipt.from ?? null)

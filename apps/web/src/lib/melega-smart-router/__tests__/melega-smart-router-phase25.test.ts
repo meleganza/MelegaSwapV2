@@ -1,4 +1,4 @@
-import { TradeType } from '@pancakeswap/sdk'
+import { TradeType, type Currency } from '@pancakeswap/sdk'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   CAPABILITY_MANIFEST_SCHEMA,
@@ -25,7 +25,8 @@ const mockCurrency = (address?: string, symbol = 'TOKEN', isNative = false) => (
 })
 
 const mockAmount = (value: string, currency: ReturnType<typeof mockCurrency>) => ({
-  currency,
+  currency: currency as unknown as Currency,
+  quotient: { toString: () => value },
   toSignificant: () => value,
 })
 

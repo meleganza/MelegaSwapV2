@@ -178,7 +178,7 @@ export const FounderDeploymentPanel: React.FC = () => {
       buildFounderExecutionSession({
         connectedWallet: isConnected ? address ?? null : null,
         chainId: chainId ?? null,
-        balanceWei: balance?.value ?? null,
+        balanceWei: balance?.value ? BigInt(balance.value.toString()) : null,
         gasPriceWei,
         artifactValid: review.artifactValid,
         constructorValid: review.constructorValid,
@@ -282,7 +282,7 @@ export const FounderDeploymentPanel: React.FC = () => {
   // gas.estimates was removed; never throw on missing legacy field during connect.
   const selectedGas =
     Array.isArray((session.gas as { estimates?: { subsystemId: string }[] }).estimates)
-      ? (session.gas as { estimates: { subsystemId: string }[] }).estimates.find((e) => e.subsystemId === selected)
+      ? (session.gas as unknown as { estimates: { subsystemId: string; gasUnits: string; costBnb: string }[] }).estimates.find((e) => e.subsystemId === selected)
       : undefined
 
   return (

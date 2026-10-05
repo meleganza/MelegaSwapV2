@@ -40,9 +40,9 @@ const AutoEarningsCell: React.FC<React.PropsWithChildren<AutoEarningsCellProps>>
     pricePerFullShare,
     earningTokenPrice,
     vaultKey === VaultKey.CakeVault
-      ? (vaultData as Pool.DeserializedPoolLockedVault<Token>).userData.currentPerformanceFee
-          .plus((vaultData as Pool.DeserializedPoolLockedVault<Token>).userData.currentOverdueFee)
-          .plus((vaultData as Pool.DeserializedPoolLockedVault<Token>).userData.userBoostedShare)
+      ? (vaultData as unknown as Pool.DeserializedPoolLockedVault<Token>).userData.currentPerformanceFee
+          .plus((vaultData as unknown as Pool.DeserializedPoolLockedVault<Token>).userData.currentOverdueFee)
+          .plus((vaultData as unknown as Pool.DeserializedPoolLockedVault<Token>).userData.userBoostedShare)
       : null,
   )
 

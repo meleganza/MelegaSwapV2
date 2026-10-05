@@ -84,7 +84,7 @@ function makePool(overrides: Record<string, unknown> = {}): Pool.DeserializedPoo
     apr: 12,
     poolCategory: PoolCategory.COMMUNITY,
     ...overrides,
-  } as Pool.DeserializedPool<Token>
+  } as unknown as Pool.DeserializedPool<Token>
 }
 
 describe('getRemainingRewards funded display cap', () => {

@@ -19,7 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   const store = resolveLbProgramStore()
   const result = await listProgramsForOwner(store, wallet)
-  if (!result.ok) {
+  if ('reason' in result) {
     return res.status(400).json({ ok: false, reason: result.reason })
   }
 

@@ -8,6 +8,7 @@ import type { DryRunHandoffPackage } from './types'
 
 export type HandoffConsumerSuccess = {
   ok: true
+  error?: never
   packageId: string
   correlationId: string
   executionId: string

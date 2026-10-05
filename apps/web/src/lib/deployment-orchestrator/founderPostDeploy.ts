@@ -22,6 +22,7 @@ export type PostDeployOutcome =
   | {
       status: 'READY'
       bind: true
+      reason?: never
       verification: 'VERIFIED' | 'VERIFICATION_PENDING'
       contractAddress: string
     }

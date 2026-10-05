@@ -30,8 +30,8 @@ import {
 } from 'lib/deployment-orchestrator/founderLbSession'
 import { LB_CANONICAL_DEPLOYED_ADDRESSES } from 'config/constants/liquidityBuildingDeployment'
 import { FOUNDER_TREASURY_DESTINATION } from 'lib/deployment-orchestrator/founderDeployer'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const STEP4_ADDR = LB_STEP4_FACTUAL.contractAddress
 const STEP4_TX = LB_STEP4_FACTUAL.txHash

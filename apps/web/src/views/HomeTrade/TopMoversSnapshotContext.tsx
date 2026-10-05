@@ -42,7 +42,7 @@ type TopMoversApiPayload = {
   liveMarketAuthority?: boolean
 }
 
-type TopMoversSnapshotContextValue = {
+export type TopMoversSnapshotContextValue = {
   snapshot: TopMoversSharedSnapshot
   tickerItems: MelegaTickerItem[]
   homeEntries: TopMoverEntry[]

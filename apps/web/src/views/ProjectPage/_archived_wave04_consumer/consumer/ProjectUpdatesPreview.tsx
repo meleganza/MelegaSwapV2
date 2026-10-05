@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import type { ProjectUpdate, ProjectUpdatesDocument } from 'registry/projects/identity/updates'
-import { formatRelativeTime, humanEnumLabel } from '../presentation/humanLabels'
+import { formatRelativeTime, humanEnumLabel } from '../../presentation/humanLabels'
 import { BodyText, Card, MutedText, Section, SectionTitle, TextLink } from './theme'
 
 const Timeline = styled.ol`

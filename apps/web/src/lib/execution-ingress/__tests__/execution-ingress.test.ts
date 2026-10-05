@@ -332,7 +332,7 @@ describe('KERL execution ingress — dispatch', () => {
     if (result.ok && result.report) {
       assertReportDoesNotImplySettlement(result.report)
       for (const field of SETTLEMENT_FORBIDDEN_FIELDS) {
-        expect(field in (result.report as Record<string, unknown>)).toBe(false)
+        expect(field in (result.report as unknown as Record<string, unknown>)).toBe(false)
       }
     }
   })

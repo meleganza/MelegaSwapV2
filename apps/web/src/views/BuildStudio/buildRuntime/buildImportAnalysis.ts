@@ -162,7 +162,7 @@ export function runImportAnalysis(
     summary: intel.preview.operationalSummary,
     detections,
     pipelineComplete: [true, true, true, true, score.score >= 50],
-    errors: [...discovery.errors, ...intel.errors],
+    errors: [...discovery.errors, ...intel.errors] as BuildRuntimeError[],
   }
 }
 

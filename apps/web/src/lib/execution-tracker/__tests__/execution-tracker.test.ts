@@ -180,7 +180,7 @@ describe('KERL execution tracker — lifecycle', () => {
       tracker.syncReceiptFromTransaction(
         executionId,
         instruction,
-        { addedTime: Date.now(), from: '0xfrom', summary: 'no hash' },
+        { hash: '', addedTime: Date.now(), from: '0xfrom', summary: 'no hash' },
         56,
       )
     }).not.toThrow()

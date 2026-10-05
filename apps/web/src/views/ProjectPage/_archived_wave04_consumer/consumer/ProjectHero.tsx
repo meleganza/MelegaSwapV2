@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import { PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
-import { humanEnumLabel, shortenAddress } from '../presentation/humanLabels'
+import { humanEnumLabel, shortenAddress } from '../../presentation/humanLabels'
 import {
   ActionRow,
   MetricCell,
@@ -245,7 +245,7 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument }) => {
   const contractAddress = primaryAsset?.contractAddress ?? null
   const buyLabel = getBuyCtaLabel(document.slug, symbol)
   const website = getSocialResources(document).find(
-    (r) => r.resourceType === 'website' && Boolean(r.href),
+    (r) => r.resourceType === 'website' && Boolean(r.url),
   )
 
   const onCopy = useCallback(async () => {
@@ -317,9 +317,9 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument }) => {
               </CopyButton>
             </>
           ) : null}
-          {website?.href ? (
+          {website?.url ? (
             <QuietLink
-              href={website.href}
+              href={website.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Website (opens in a new tab)"

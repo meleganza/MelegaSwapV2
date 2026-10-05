@@ -31,7 +31,7 @@ function kpi(
   title: string,
   availability: PortfolioMetricAvailability,
   value = PORTFOLIO_UNAVAILABLE,
-  status = PORTFOLIO_NOT_AVAILABLE,
+  status: string = PORTFOLIO_NOT_AVAILABLE,
 ): PortfolioKpiCardModel {
   return { id, title, value, status, availability }
 }

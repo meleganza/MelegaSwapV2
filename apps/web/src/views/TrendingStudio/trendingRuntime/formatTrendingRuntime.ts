@@ -345,7 +345,7 @@ export function filterTrendingProjects(
   }
 
   if (chip === 'New Listings') {
-    return projects.filter((p) => !p.isCanonical || p.registryStatus === 'partial')
+    return projects.filter((p) => !p.isCanonical)
   }
 
   if (chip === 'BNB') {

@@ -5,8 +5,8 @@ import { createDefaultPublicFarmFactoryDraft, parseReturnToCreateFarm } from '..
 import { MARCO_REWARD_REJECTION_MESSAGE } from '../modules/publicFarmEligibility'
 import { PUBLIC_FARM_FACTORY_CAPABILITY } from '../modules/publicFarmFactoryCapability'
 import { dedupeCanonicalFarms, PUBLIC_FARM_CREATED_TOPIC0 } from 'lib/bsc-indexer/indexer/publicFarmFactoryTopics'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const TREASURY = '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'
 

@@ -15,6 +15,7 @@ export const PROJECT_DATA_REASON_LABELS: Record<ProjectDataReasonCode, string> =
 
 export interface ResolvedMetricValue {
   display: string
+  reason?: string
   reasonCode?: ProjectDataReasonCode
   raw?: number
 }

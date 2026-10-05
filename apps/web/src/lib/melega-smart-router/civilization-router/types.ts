@@ -136,6 +136,7 @@ export interface TreasuryHandoffPreparedEvent {
 
 export interface CivilizationRoutePrepared {
   ok: true
+  code?: never
   schema: typeof CIVILIZATION_ROUTER_SCHEMA
   routeType: CivilizationRouteType
   chainId: number

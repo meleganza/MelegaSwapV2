@@ -25,6 +25,7 @@ export interface DryRunGatewayContext {
 
 export type DryRunGatewaySuccess = {
   ok: true
+  error?: never
   executionId: string
   instructionType: SupportedInstructionType
   evidence: ExecutionEvidence

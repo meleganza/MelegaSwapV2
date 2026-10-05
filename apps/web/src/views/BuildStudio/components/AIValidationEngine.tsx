@@ -45,7 +45,9 @@ export const AIValidationEngine: React.FC = () => {
     <BsPanel data-bs-panel data-bs-validation $height={buildStudioLayout.validationH}>
       <Inner>
         <BsSectionTitle>
-          <IconSparkles size={20} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+          <span style={{ marginRight: 8, verticalAlign: 'middle' }}>
+            <IconSparkles size={20} />
+          </span>
           AI Validation Engine
         </BsSectionTitle>
         <Grid>

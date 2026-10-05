@@ -5,15 +5,15 @@ import { MelegaTicker } from '../MelegaTicker'
 import { mergeTickerWithPaidPlacements, type PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
 import { TrendingRibbon } from 'views/HomeTrade/TrendingRibbon'
 
-const ribbonState = ((globalThis as { __trendBoostRibbonState?: { items: Array<Record<string, unknown>>; rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState =
-  (globalThis as { __trendBoostRibbonState?: { items: Array<Record<string, unknown>>; rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState ?? {
+const ribbonState = ((globalThis as unknown as { __trendBoostRibbonState?: { items: unknown[]; rankedAssets: unknown[] } }).__trendBoostRibbonState =
+  (globalThis as unknown as { __trendBoostRibbonState?: { items: unknown[]; rankedAssets: unknown[] } }).__trendBoostRibbonState ?? {
     items: [],
     rankedAssets: [],
   })
 
 vi.mock('views/HomeTrade/useDexTrendingTicker', () => ({
   default: () => ({
-    items: (globalThis as { __trendBoostRibbonState: { items: Array<Record<string, unknown>> } }).__trendBoostRibbonState.items,
+    items: (globalThis as unknown as { __trendBoostRibbonState: { items: unknown[] } }).__trendBoostRibbonState.items,
     useMarquee: false,
     trendingEmpty: false,
     isLoading: false,
@@ -23,7 +23,7 @@ vi.mock('views/HomeTrade/useDexTrendingTicker', () => ({
 vi.mock('views/HomeTrade/TopMoversSnapshotContext', () => ({
   useTopMoversSnapshot: () => ({
     snapshot: { snapshotId: 'logo-identity-fix' },
-    rankedAssets: (globalThis as { __trendBoostRibbonState: { rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState.rankedAssets,
+    rankedAssets: (globalThis as unknown as { __trendBoostRibbonState: { rankedAssets: unknown[] } }).__trendBoostRibbonState.rankedAssets,
   }),
 }))
 

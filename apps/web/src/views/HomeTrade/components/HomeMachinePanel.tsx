@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
-import type { HomeMachinePayload } from './buildHomeMachine'
+import type { HomeMachinePayload } from '../buildHomeMachine'
 
 const Panel = styled.div`
   background: ${premiumStudioColors.card};

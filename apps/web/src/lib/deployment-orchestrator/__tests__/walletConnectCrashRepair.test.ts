@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { BigNumber } from '@ethersproject/bignumber'
 import { parseUnits } from '@ethersproject/units'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   assessFounderDeployGates,

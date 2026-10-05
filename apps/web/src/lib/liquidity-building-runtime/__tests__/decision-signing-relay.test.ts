@@ -94,7 +94,7 @@ describe('LB009 signing / relay / treasury', () => {
 
     const pk = assertNoPrivateKeySignerConfig({
       LB_EXECUTION_PRIVATE_KEY: '0xabc',
-    } as NodeJS.ProcessEnv)
+    } as unknown as NodeJS.ProcessEnv)
     expect(pk.ok).toBe(false)
   })
 

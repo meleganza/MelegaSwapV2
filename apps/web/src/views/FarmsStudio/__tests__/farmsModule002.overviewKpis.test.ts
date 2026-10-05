@@ -53,7 +53,7 @@ function farmCard(partial: Partial<FarmPreviewCard> & { pid?: number; liq?: numb
       userData: partial.pendingReward ? { earnings: partial.pendingReward } : undefined,
       apr: partial.aprExact ?? 12,
       lpRewardsApr: 0,
-    } as FarmPreviewCard['rawFarm']),
+    } as unknown as FarmPreviewCard['rawFarm']),
     ...partial,
   }
 }
@@ -158,7 +158,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
             lpTotalInQuoteToken: '10',
             quoteTokenPriceBusd: undefined,
             earningToken: { decimals: 18, symbol: 'MARCO' },
-          } as FarmPreviewCard['rawFarm'],
+          } as unknown as FarmPreviewCard['rawFarm'],
         }),
         farmCard({ pid: 0, liq: 999999 }), // excluded non-LP pid
       ],
@@ -177,7 +177,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     const vm = buildFarmsOverviewKpisFromParts({
       previewCards: [
         farmCard({ pid: 1, status: 'live' }),
-        farmCard({ pid: 2, status: 'finished', multiplier: '—', rawFarm: { pid: 2, multiplier: '0X', liquidity: new BigNumber(1) } as FarmPreviewCard['rawFarm'] }),
+        farmCard({ pid: 2, status: 'finished', multiplier: '—', rawFarm: { pid: 2, multiplier: '0X', liquidity: new BigNumber(1) } as unknown as FarmPreviewCard['rawFarm'] }),
         farmCard({ pid: 0, status: 'live', liq: 100 }),
       ],
       farmsLoading: false,
@@ -197,8 +197,8 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
           pair: 'Ended / MARCO',
           apr: '99.00%',
           status: 'finished',
-          emissionState: 'inactive',
-          rawFarm: { pid: 3, multiplier: '0X', liquidity: new BigNumber(1) } as FarmPreviewCard['rawFarm'],
+          emissionState: 'no_allocation',
+          rawFarm: { pid: 3, multiplier: '0X', liquidity: new BigNumber(1) } as unknown as FarmPreviewCard['rawFarm'],
         }),
       ],
       farmsLoading: false,

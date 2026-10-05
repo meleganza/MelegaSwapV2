@@ -1,6 +1,6 @@
 import React from 'react'
 import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
-import { humanEnumLabel } from '../presentation/humanLabels'
+import { humanEnumLabel } from '../../presentation/humanLabels'
 import { BodyText, Card, MutedText, Section, SectionTitle, TextLink } from './theme'
 
 interface Props {

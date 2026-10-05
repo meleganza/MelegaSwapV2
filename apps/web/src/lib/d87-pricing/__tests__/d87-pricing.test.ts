@@ -73,7 +73,8 @@ describe('FSC-01 constitution consumption', () => {
     expect(fsc.policyRef).toBe(FSC_01_POLICY_REF)
     expect(fsc.owner).toBe('MELEGA TREASURY WALLET')
     expect(fsc.splits.map((s) => s.percent)).toEqual([52.5, 22.5, 10, 10, 5])
-    expect(fsc.splits.find((s) => s.destination === 'referral_distribution')?.referralSpec).toBe('SRD-01')
+    const referralSplit = fsc.splits.find((s) => s.destination === 'referral_distribution')
+    expect(referralSplit && 'referralSpec' in referralSplit ? referralSplit.referralSpec : undefined).toBe('SRD-01')
   })
 
   it('resolveSwapProtocolFeeContextFromFields attaches FSC-01 ref', () => {

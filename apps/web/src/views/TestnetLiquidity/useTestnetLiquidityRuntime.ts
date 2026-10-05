@@ -258,8 +258,14 @@ export function useTestnetLiquidityRuntime() {
           account,
           deadline.toHexString(),
         ]
-        const estimated = await routerContract.estimateGas.addLiquidityETH(...args, { value: nativeWei })
-        const tx = await routerContract.addLiquidityETH(...args, {
+        const estimateAddLiquidityEth = routerContract.estimateGas.addLiquidityETH as unknown as (
+          ...callArgs: unknown[]
+        ) => Promise<BigNumber>
+        const sendAddLiquidityEth = routerContract.addLiquidityETH as unknown as (
+          ...callArgs: unknown[]
+        ) => Promise<{ hash: string; wait: () => Promise<unknown> }>
+        const estimated = await estimateAddLiquidityEth(...args, { value: nativeWei })
+        const tx = await sendAddLiquidityEth(...args, {
           value: nativeWei,
           gasLimit: calculateGasMargin(estimated),
         })
@@ -279,8 +285,14 @@ export function useTestnetLiquidityRuntime() {
           account,
           deadline.toHexString(),
         ]
-        const estimated = await routerContract.estimateGas.addLiquidity(...args)
-        const tx = await routerContract.addLiquidity(...args, { gasLimit: calculateGasMargin(estimated) })
+        const estimateAddLiquidity = routerContract.estimateGas.addLiquidity as unknown as (
+          ...callArgs: unknown[]
+        ) => Promise<BigNumber>
+        const sendAddLiquidity = routerContract.addLiquidity as unknown as (
+          ...callArgs: unknown[]
+        ) => Promise<{ hash: string; wait: () => Promise<unknown> }>
+        const estimated = await estimateAddLiquidity(...args)
+        const tx = await sendAddLiquidity(...args, { gasLimit: calculateGasMargin(estimated) })
         setLiquidityTxHash(tx.hash)
         await tx.wait()
       }

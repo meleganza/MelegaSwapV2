@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createHash } from 'node:crypto'
+import { createHash } from 'crypto'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   activeLbStep,
@@ -21,8 +21,8 @@ import {
   validateLbStepFromOnChain,
 } from 'lib/deployment-orchestrator/founderLbSession'
 import { LB_CANONICAL_DEPLOYED_ADDRESSES } from 'config/constants/liquidityBuildingDeployment'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const STEP1_ADDR = LB_STEP1_FACTUAL.contractAddress
 const STEP1_TX = LB_STEP1_FACTUAL.txHash

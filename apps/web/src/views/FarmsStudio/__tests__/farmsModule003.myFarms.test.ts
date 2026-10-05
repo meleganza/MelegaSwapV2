@@ -12,7 +12,7 @@ const WEB = path.resolve(__dirname, '../../../../'), REPO = path.resolve(__dirna
 const sha = (file: string) => createHash('sha256').update(readFileSync(path.join(WEB, file))).digest('hex')
 function card(partial: Partial<FarmPreviewCard> = {}): FarmPreviewCard {
   const pid = partial.pid ?? 1
-  return { id: `farm-${pid}`, pair: 'AAA / BBB', tokens: ['AAA', 'BBB'], status: 'live', tvl: '$1K', dailyRewards: '—', multiplier: '1x', rawFarm: { pid, token: { symbol: 'AAA', decimals: 18, address: '0xa' }, quoteToken: { symbol: 'BBB', decimals: 18, address: '0xb' }, earningToken: { symbol: 'MARCO', decimals: 18, address: '0xr' }, lpAddress: '0xlp', userData: {} } as any, userStaked: new BigNumber(0), pendingReward: new BigNumber(0), ...partial }
+  return { id: `farm-${pid}`, pair: 'AAA / BBB', tokens: ['AAA', 'BBB'] as [string, string], status: 'live', tvl: '$1K', dailyRewards: '—', multiplier: '1x', rawFarm: { pid, token: { symbol: 'AAA', decimals: 18, address: '0xa' }, quoteToken: { symbol: 'BBB', decimals: 18, address: '0xb' }, earningToken: { symbol: 'MARCO', decimals: 18, address: '0xr' }, lpAddress: '0xlp', userData: {} } as unknown as FarmPreviewCard['rawFarm'], userStaked: new BigNumber(0), pendingReward: new BigNumber(0), ...partial } as unknown as FarmPreviewCard
 }
 describe('FARMS_MODULE_003 My Farms', () => {
   it('locks mockup and prior module source hashes', () => {

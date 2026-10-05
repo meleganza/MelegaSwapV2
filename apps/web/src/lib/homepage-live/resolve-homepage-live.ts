@@ -15,7 +15,7 @@ const toProjectItems = (limit = 6): HomepageLiveItem[] =>
     .map((project) => ({
       id: project.slug,
       label: project.displayName ?? project.slug,
-      meta: project.status,
+      meta: project.registryStatus,
       href: `/@${project.slug}/`,
     }))
 
@@ -24,8 +24,8 @@ const toAssetItems = (limit = 6): HomepageLiveItem[] =>
     .slice(0, limit)
     .map((asset) => ({
       id: asset.slug,
-      label: asset.displayName ?? asset.symbol ?? asset.slug,
-      meta: asset.canonical ? 'Canonical' : undefined,
+      label: asset.name ?? asset.symbol ?? asset.slug,
+      meta: asset.trust.verificationStatus,
       href: `/assets/${asset.slug}`,
     }))
 

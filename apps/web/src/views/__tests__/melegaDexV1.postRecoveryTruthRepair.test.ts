@@ -11,6 +11,7 @@ import {
   sortDiscoveryCards,
 } from '../LiquidityStudio/modules/liquidityPoolDiscoveryModel'
 import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
+import type { PoolPreviewCard } from '../PoolsStudio/poolsStudioData'
 
 /** Mirror of useDexTrendingRankings.isCredibleMoverChange (keep import-free for vitest). */
 function isCredibleMoverChange(input: {

@@ -43,7 +43,7 @@ describe('economic activation runtime', () => {
     const session = resolveActivationSession()
     expect(session.journal.some((entry) => entry.kind === 'constitutional')).toBe(true)
     expect(session.journal.some((entry) => entry.kind === 'requirement')).toBe(true)
-    expect(session.journal.every((entry) => entry.state !== 'EXECUTING')).toBe(true)
+    expect(session.journal.every((entry) => entry.state !== 'RUNTIME')).toBe(true)
   })
 
   it('derives melega-dex runtime from registry', () => {

@@ -2,9 +2,9 @@
  * Mission: Avalanche V2 Router Founder deployment preparation.
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync, existsSync } from 'node:fs'
-import path from 'node:path'
-import { createHash } from 'node:crypto'
+import { readFileSync, existsSync } from 'fs'
+import path from 'path'
+import { createHash } from 'crypto'
 import { Interface } from '@ethersproject/abi'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,

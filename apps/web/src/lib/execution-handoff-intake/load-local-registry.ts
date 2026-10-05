@@ -8,7 +8,7 @@ import {
 } from './constants'
 
 export type RegistryLoadResult =
-  | { ok: true; value: unknown; relativePath: string }
+  | { ok: true; value: unknown; relativePath: string; error?: never }
   | { ok: false; error: ExecutionError; relativePath?: string }
 
 function loadError(code: string, message: string): ExecutionError {

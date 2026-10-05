@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { dexIndexToEnrichedProjects, buildDexTokenIndex } from './buildDexTokenIndex'
 import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
-import type { ContractPreviewData, RadarFilterChip } from '../radarStudioData'
+import type { ContractPreviewData } from '../radarStudioData'
 import { buildContractIntelligence } from './buildContractIntelligence'
 import { buildHeatmapRows } from './buildHeatmap'
 import { isDexIntelligencePublicReady } from 'lib/data-truth/dexIntelligenceDisposition'
@@ -22,6 +22,7 @@ import {
   filterLiveEvents,
   filterRadarEvents,
   mapProjectToRadarEvent,
+  type RadarFilterChip,
 } from './formatRadarRuntime'
 import { createRadarRuntimeError, type RadarRuntimeError } from './radarRuntimeErrors'
 
@@ -112,7 +113,7 @@ export function useRadarIntelligenceRuntime() {
       const raw = (address ?? contractInput).trim()
       const chainId = CHAIN_ID_BY_LABEL[chain ?? chainLabel] ?? 56
       const discovery = discoverProjectFromContract(raw, chainId)
-      const errors: RadarRuntimeError[] = [...discovery.errors]
+      const errors = discovery.errors as unknown as RadarRuntimeError[]
 
       if (!discovery.found || !discovery.project) {
         errors.push(createRadarRuntimeError('PROJECT_NOT_INDEXED'))
@@ -153,7 +154,10 @@ export function useRadarIntelligenceRuntime() {
       const discovery = discoverProjectFromContract(q, chainId)
       if (discovery.found && discovery.project) {
         const { preview, errors: intelErrors } = buildContractIntelligence(discovery.project, q, chainId)
-        setRuntimeErrors([...discovery.errors, ...intelErrors])
+        setRuntimeErrors([
+          ...(discovery.errors as unknown as RadarRuntimeError[]),
+          ...intelErrors,
+        ])
         setContractPreview(preview)
         setPreviewOpen(true)
       }

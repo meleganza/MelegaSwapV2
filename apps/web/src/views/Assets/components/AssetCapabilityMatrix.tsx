@@ -34,7 +34,7 @@ const AssetCapabilityMatrix: React.FC<AssetCapabilityMatrixProps> = ({ capabilit
 
   return (
     <Flex flexDirection="column" width="100%">
-      <Heading as="h3" scale="sm" color="secondary" mb="16px">
+      <Heading as="h3" scale="md" color="secondary" mb="16px">
         {t('Asset capability matrix')}
       </Heading>
       <Grid>

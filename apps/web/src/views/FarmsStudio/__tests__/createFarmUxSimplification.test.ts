@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { CREATE_FARM_FORBIDDEN_PUBLIC_TERMS, CREATE_FARM_UX } from '../modules/createFarmUxCopy'
 
 const ROOT = path.resolve(__dirname, '..')

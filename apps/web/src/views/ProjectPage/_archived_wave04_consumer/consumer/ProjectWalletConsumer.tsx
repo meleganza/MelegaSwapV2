@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
-import { useProjectWalletRelationship } from '../useProjectWalletRelationship'
+import { useProjectWalletRelationship } from '../../useProjectWalletRelationship'
 import { MutedText, SkeletonBlock, SoftCard } from './theme'
 
 const Stack = styled.div`

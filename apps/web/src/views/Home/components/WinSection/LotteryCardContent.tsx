@@ -15,7 +15,7 @@ const StyledLink = styled(Link)`
 `
 
 const StyledBalance = styled(Balance)`
-  background: ${({ theme }) => theme.colors.gradients.gold};
+  background: ${({ theme }) => theme.colors.primary};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `

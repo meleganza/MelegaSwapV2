@@ -1,7 +1,7 @@
 import type { ExecutionError } from '../execution-contract/types'
 import { REGISTRY_FORBIDDEN_URL_PATTERN, REGISTRY_INTAKE_ERROR_CODES } from './constants'
 
-export type RegistryJsonValidateResult = { ok: true } | { ok: false; error: ExecutionError }
+export type RegistryJsonValidateResult = { ok: true; error?: never } | { ok: false; error: ExecutionError }
 
 function registryError(code: string, message: string): ExecutionError {
   return { code, category: 'adapter_error', message }

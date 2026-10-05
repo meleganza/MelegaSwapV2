@@ -1,4 +1,4 @@
-export type EventIntakeValidationStatus = 'valid' | 'invalid' | 'pending' | 'unsafe' | 'not_indexed'
+export type EventIntakeValidationStatus = 'valid' | 'invalid' | 'pending' | 'blocked' | 'unsafe' | 'not_indexed'
 
 export type EventIntakeSafetyClassification =
   | 'observation_only'

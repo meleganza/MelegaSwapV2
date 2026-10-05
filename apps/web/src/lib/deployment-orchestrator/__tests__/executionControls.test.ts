@@ -14,8 +14,8 @@ import {
   isUserRejectedError,
   WEI_PER_BNB,
 } from 'lib/deployment-orchestrator'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const DEPLOYER = AUTHORIZED_MELEGA_DEPLOYER
 

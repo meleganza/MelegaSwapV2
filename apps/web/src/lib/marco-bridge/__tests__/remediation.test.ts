@@ -610,7 +610,12 @@ describe('live Solana pause truth', () => {
       ok: true,
       json: async () => staleEnvelope(),
     })
-    const readPolygon = async () => ({ ok: false as const, reason: 'rpc_error' as const, detail: 'mocked' })
+    const readPolygon = async () => ({
+      ok: false as const,
+      verified: false,
+      reason: 'rpc_error' as const,
+      detail: 'mocked',
+    })
     const blocked = await fetchCanonicalRouteAuthority(
       mmnFetcher as unknown as typeof fetch,
       async () => ({
