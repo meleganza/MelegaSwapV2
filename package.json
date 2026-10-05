@@ -15,6 +15,7 @@
     "test:config": "yarn turbo run test:config --filter=[HEAD^1]",
     "test:ci": "yarn turbo run test --filter=[HEAD^1]",
     "test:certification": "yarn workspace web test:certification",
+    "typecheck": "yarn workspace web tsc --noEmit --pretty false",
     "lint": "turbo run lint --filter=web",
     "lint:report": "eslint --no-error-on-unmatched-pattern --max-warnings=0",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json}\"",

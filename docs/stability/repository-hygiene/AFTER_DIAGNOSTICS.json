@@ -1,0 +1,21 @@
+{
+  "mission": "MELEGA-DEX-REPOSITORY-HYGIENE-AND-LEGACY-DEBT-ZERO",
+  "phase": "AFTER",
+  "generatedAt": "2026-10-05T22:00:02.225Z",
+  "command": "cd apps/web && yarn tsc --noEmit --pretty false",
+  "total": 0,
+  "categoryC": 0,
+  "categoryD": 0,
+  "categoryCounts": {
+    "C1": 0,
+    "C2": 0,
+    "C3": 0,
+    "D1": 0,
+    "D2": 0,
+    "D3": 0,
+    "D4": 0
+  },
+  "byCode": [],
+  "byFile": [],
+  "diagnostics": []
+}
