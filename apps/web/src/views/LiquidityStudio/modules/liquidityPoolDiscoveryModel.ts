@@ -22,6 +22,7 @@ const ASSET_SYMBOL_BY_ADDRESS: Map<string, string> = (() => {
 
 export type DiscoveryPoolMetrics = {
   tvlUsd?: number | null
+  tvlKnown?: boolean
   volumeUsd?: number | null
   feesUsd?: number | null
   /** Factual LP APR when subgraph provides lpApr7d (>0). */
@@ -71,6 +72,7 @@ export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable
 
 export type DiscoveryPoolCardModel = {
   id: string
+  chainId: number
   pairAddress: string
   token0: string
   token1: string
@@ -87,6 +89,7 @@ export type DiscoveryPoolCardModel = {
   liquidityLabel: string
   reservesLabel: string
   tvlUsd: number | null
+  tvlKnown: boolean
   volumeUsd: number | null
   feesUsd: number | null
   aprPct: number | null
@@ -184,8 +187,8 @@ export function buildAddLiquidityHref(token0?: string, token1?: string): string 
 }
 
 function metricLabel(value: number | null, missingSource: string): { label: string; note?: string } {
-  if (value != null && Number.isFinite(value) && value > 0) {
-    return { label: formatDiscoveryUsd(value) }
+  if (value != null && Number.isFinite(value) && value >= 0) {
+    return { label: value === 0 ? '$0.00' : formatDiscoveryUsd(value) }
   }
   return { label: LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable, note: missingSource }
 }
@@ -194,21 +197,23 @@ export function toDiscoveryCard(
   pair: ClassifiedAmmPair,
   metrics?: DiscoveryPoolMetrics,
   bnbUsd?: number | null,
+  chainId = MELEGA_CHAIN_ID,
 ): DiscoveryPoolCardModel | null {
   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
   if (!pair.token0 || !pair.token1) return null
 
-  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
-  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
+  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0, chainId)
+  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1, chainId)
   const identityResolved = isResolvedDiscoverySymbol(symbol0) && isResolvedDiscoverySymbol(symbol1)
   const resolved = resolveDiscoveryStatus(pair, metrics)
-  const reserveTvl = estimateReserveTvlUsd(pair, bnbUsd)
-  const tvlUsd =
-    metrics?.tvlUsd != null && Number.isFinite(metrics.tvlUsd) && metrics.tvlUsd > 0 ? metrics.tvlUsd : reserveTvl
+  const reserveTvl = chainId === MELEGA_CHAIN_ID ? estimateReserveTvlUsd(pair, bnbUsd) : null
+  const metricTvlKnown = metrics?.tvlKnown === true && metrics.tvlUsd != null && Number.isFinite(metrics.tvlUsd)
+  const tvlUsd = metricTvlKnown ? (metrics?.tvlUsd as number) : reserveTvl
+  const tvlKnown = metricTvlKnown || reserveTvl != null
   const volumeUsd = metrics?.volumeUsd ?? null
   const feesUsd = metrics?.feesUsd ?? null
   const tvl = metricLabel(
-    tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+    tvlKnown && tvlUsd != null && Number.isFinite(tvlUsd) ? tvlUsd : null,
     reserveTvl ? 'TVL source: Factory reserves × quote USD' : 'TVL source: Info subgraph unavailable for this pair',
   )
   const volume = metricLabel(
@@ -238,7 +243,8 @@ export function toDiscoveryCard(
     (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
 
   return {
-    id: pair.pairAddress.toLowerCase(),
+    id: `${chainId}:${pair.pairAddress.toLowerCase()}`,
+    chainId,
     pairAddress: pair.pairAddress,
     token0: pair.token0,
     token1: pair.token1,
@@ -256,7 +262,8 @@ export function toDiscoveryCard(
     aprLabel,
     liquidityLabel: tvl.label,
     reservesLabel,
-    tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+    tvlUsd: tvlKnown && tvlUsd != null && Number.isFinite(tvlUsd) ? tvlUsd : null,
+    tvlKnown,
     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
     aprPct,
@@ -293,7 +300,7 @@ export function filterDiscoveryCards(
 }
 
 function hasDiscoveryMetrics(card: DiscoveryPoolCardModel): boolean {
-  return (card.tvlUsd != null && card.tvlUsd > 0) || (card.volumeUsd != null && card.volumeUsd > 0)
+  return card.tvlKnown || (card.volumeUsd != null && card.volumeUsd > 0)
 }
 
 function recencyTs(card: DiscoveryPoolCardModel): number {
@@ -307,10 +314,9 @@ export function compareDiscoveryDefault(a: DiscoveryPoolCardModel, b: DiscoveryP
   if (bHas !== aHas) return bHas - aHas
   const tvl = (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1)
   if (tvl !== 0) return tvl
-  const vol = (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1)
-  if (vol !== 0) return vol
-  const recency = recencyTs(b) - recencyTs(a)
-  if (recency !== 0) return recency
+  const label = a.pairName.localeCompare(b.pairName)
+  if (label !== 0) return label
+  if (a.chainId !== b.chainId) return a.chainId - b.chainId
   return a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase())
 }
 
@@ -321,13 +327,7 @@ export function sortDiscoveryCards(
   const next = [...cards]
   switch (sort) {
     case 'tvl':
-      return next.sort(
-        (a, b) =>
-          (hasDiscoveryMetrics(b) ? 1 : 0) - (hasDiscoveryMetrics(a) ? 1 : 0) ||
-          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
-          (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
-          a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase()),
-      )
+      return next.sort(compareDiscoveryDefault)
     case 'volume':
       return next.sort(
         (a, b) =>

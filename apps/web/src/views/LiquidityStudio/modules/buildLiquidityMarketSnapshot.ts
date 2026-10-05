@@ -21,6 +21,7 @@ export type LiquiditySnapshotCardModel = {
 
 export type LiquidityMarketSnapshotView = {
   cards: LiquiditySnapshotCardModel[]
+  chainCount: number | null
   phase: 'loading' | 'ready' | 'partial' | 'unavailable'
   fetchedAt: string | null
 }
@@ -69,18 +70,18 @@ export function buildLiquidityMarketSnapshot(input: {
   nowIso?: string
   /** Optional Factory-reserve TVL sum (factual) when protocol subgraph TVL is empty. */
   factoryTvlUsd?: number | null
+  factoryPoolCount?: number | null
+  unpricedPoolCount?: number | null
+  chainCount?: number | null
   /** Optional durable-index 24h volume (USD) when subgraph volume is empty. */
   indexerVolume24hUsd?: number | null
 }): LiquidityMarketSnapshotView {
   const now = input.nowIso ?? new Date().toISOString()
-  const protocolTvl = formatSnapshotUsd(input.protocol?.liquidityUSD)
   const factoryTvl = formatSnapshotUsd(input.factoryTvlUsd)
-  const tvlFormatted = protocolTvl ?? factoryTvl
-  const tvlSource = protocolTvl
-    ? 'Verified protocol liquidity'
-    : factoryTvl
-      ? 'Factory reserves × quote USD'
-      : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
+  const tvlFormatted = input.factoryReady ? factoryTvl : null
+  const tvlSource = factoryTvl
+    ? `All public Melega factories · ${input.unpricedPoolCount ?? 0} unpriced pools`
+    : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
   const indexerVol = formatSnapshotUsd(input.indexerVolume24hUsd)
   const protocolVol = formatSnapshotUsd(input.protocol?.volumeUSD)
   // Canonical Melega indexer WBNB-side volume wins over external protocol totals.
@@ -94,10 +95,10 @@ export function buildLiquidityMarketSnapshot(input: {
     state: input.protocolLoading ? 'loading' : tvlFormatted ? 'available' : 'unavailable',
     timestamp: tvlFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : tvlFormatted ? 'ok' : 'unavailable',
-    source: protocolTvl ? undefined : factoryTvl ? 'melega-factory-reserves' : undefined,
+    source: factoryTvl ? 'melega-global-factory-census' : undefined,
   })
 
-  const activeCount = input.factoryReady ? countActivePools(input.pools) : null
+  const activeCount = input.factoryReady ? input.factoryPoolCount ?? countActivePools(input.pools) : null
   const activePools = card('activePools', {
     value: input.factoryLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
@@ -152,6 +153,7 @@ export function buildLiquidityMarketSnapshot(input: {
 
   return {
     cards,
+    chainCount: input.chainCount ?? null,
     phase,
     fetchedAt: available > 0 || input.factoryFreshness ? input.factoryFreshness ?? now : null,
   }

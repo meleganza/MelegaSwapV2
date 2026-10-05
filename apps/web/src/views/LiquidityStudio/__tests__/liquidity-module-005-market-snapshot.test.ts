@@ -83,6 +83,9 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
       factoryUnavailable: false,
       pools: [pair(), pair({ pairAddress: '0x1111111111111111111111111111111111111111', active: false, classification: 'inactive' })],
       factoryFreshness: '2026-07-27T00:00:00.000Z',
+      factoryTvlUsd: 1_250_000,
+      factoryPoolCount: 1,
+      unpricedPoolCount: 0,
       nowIso: '2026-07-27T00:00:00.000Z',
     })
     expect(ready.phase).toBe('partial') // LP providers always unavailable
@@ -115,6 +118,8 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
       factoryReady: true,
       factoryUnavailable: false,
       pools: [pair()],
+      factoryTvlUsd: 1000,
+      factoryPoolCount: 1,
     })
     expect(partial.phase).toBe('partial')
     expect(partial.cards[0].state).toBe('available')
@@ -129,7 +134,7 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
   it('uses read-only protocol + factory sources; does not touch mint runtime', () => {
     const hook = load('modules/useLiquidityMarketSnapshot.ts')
     expect(hook).toContain('useProtocolDataSWR')
-    expect(hook).toContain('useMelegaFactoryPools')
+    expect(hook).toContain('useGlobalLiquiditySnapshot')
     expect(hook).not.toContain('useLiquidityMintRuntime')
     expect(hook).not.toContain('useLiquidityRuntime')
     expect(hook).not.toContain('onPrimaryAction')

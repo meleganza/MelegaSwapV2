@@ -661,9 +661,9 @@ const LiquidityV3Body: React.FC = () => {
     () => [
       { label: LIQ_V3_COPY.snapshot.total, value: cardValue(snapshot.cards, 'tvl') },
       { label: LIQ_V3_COPY.snapshot.volume, value: cardValue(snapshot.cards, 'volume24h') },
-      { label: LIQ_V3_COPY.snapshot.chains, value: String(LIQ_V3_LIVE_CHAINS.length) },
+      { label: LIQ_V3_COPY.snapshot.chains, value: snapshot.chainCount == null ? '—' : String(snapshot.chainCount) },
     ],
-    [snapshot.cards],
+    [snapshot.cards, snapshot.chainCount],
   )
 
   const lbSupported = (chainId ?? 56) === 56

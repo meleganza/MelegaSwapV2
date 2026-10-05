@@ -4,35 +4,15 @@
  * 24H volume comes from the certified canonical market snapshot (same as Home).
  */
 import { useMemo } from 'react'
-import { WBNB } from '@pancakeswap/sdk'
 import { useProtocolDataSWR } from 'state/info/hooks'
-import useBUSDPrice from 'hooks/useBUSDPrice'
-import { useMelegaFactoryPools } from 'views/PoolsStudio/poolsRuntime/useMelegaFactoryPools'
-import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import { useCanonicalMarketSnapshot } from 'lib/market-data'
+import { useGlobalLiquiditySnapshot } from 'lib/global-liquidity/useGlobalLiquiditySnapshot'
 import { buildLiquidityMarketSnapshot, type LiquidityMarketSnapshotView } from './buildLiquidityMarketSnapshot'
-import { estimateReserveTvlUsd } from './liquidityPoolDiscoveryModel'
 
 export function useLiquidityMarketSnapshot(): LiquidityMarketSnapshotView {
   const protocol = useProtocolDataSWR()
-  const factory = useMelegaFactoryPools(MELEGA_CHAIN_ID)
-  const wbnbPrice = useBUSDPrice(WBNB[56])
-  const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+  const { data: globalLiquidity, error: globalError, isLoading: globalLoading } = useGlobalLiquiditySnapshot()
   const marketSnapshot = useCanonicalMarketSnapshot()
-
-  const factoryTvlUsd = useMemo(() => {
-    if (factory.discoveryState !== 'ready' || factory.pools.length === 0) return null
-    let sum = 0
-    let any = false
-    for (const pool of factory.pools) {
-      const tvl = estimateReserveTvlUsd(pool, bnbUsd)
-      if (tvl != null && tvl > 0) {
-        sum += tvl
-        any = true
-      }
-    }
-    return any ? sum : null
-  }, [factory.discoveryState, factory.pools, bnbUsd])
 
   const indexerVolume24hUsd =
     marketSnapshot.volume24hUsd != null && marketSnapshot.volume24hUsd > 0
@@ -42,23 +22,25 @@ export function useLiquidityMarketSnapshot(): LiquidityMarketSnapshotView {
   return useMemo(
     () =>
       buildLiquidityMarketSnapshot({
-        protocolLoading: false,
+        protocolLoading: globalLoading,
         protocol: protocol ?? null,
-        factoryLoading: factory.discoveryState === 'loading',
-        factoryReady: factory.discoveryState === 'ready',
-        factoryUnavailable:
-          factory.discoveryState === 'unavailable' || factory.discoveryState === 'unsupported_chain',
-        pools: factory.pools,
-        factoryFreshness: factory.freshness,
-        factoryTvlUsd,
+        factoryLoading: globalLoading,
+        factoryReady: globalLiquidity?.status === 'complete',
+        factoryUnavailable: Boolean(globalError) || globalLiquidity?.status !== 'complete',
+        pools: [],
+        factoryFreshness: globalLiquidity?.sourceTimestamp,
+        factoryTvlUsd:
+          globalLiquidity?.status === 'complete' ? Number(globalLiquidity.totalPricedTvlUsd) : null,
+        factoryPoolCount: globalLiquidity?.status === 'complete' ? globalLiquidity.uniquePairCount : null,
+        unpricedPoolCount: globalLiquidity?.unpricedPairCount ?? null,
+        chainCount: globalLiquidity?.status === 'complete' ? globalLiquidity.chains.length : null,
         indexerVolume24hUsd,
       }),
     [
       protocol,
-      factory.discoveryState,
-      factory.pools,
-      factory.freshness,
-      factoryTvlUsd,
+      globalLoading,
+      globalError,
+      globalLiquidity,
       indexerVolume24hUsd,
     ],
   )
