@@ -46,8 +46,7 @@ type DeserializedPool = Pool.DeserializedPool<Token>
 
 function tokenPerBlockBn(tokenPerBlock: DeserializedPool['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
-  if (typeof (tokenPerBlock as BigNumber).times === 'function') return tokenPerBlock as BigNumber
-  return new BigNumber(tokenPerBlock as string | number)
+  return new BigNumber(tokenPerBlock)
 }
 
 function formatUsd(value: number): string {

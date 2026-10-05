@@ -1,4 +1,4 @@
-import type { SerializableTransactionReceipt } from 'state/transactions/reducer'
+import type { SerializableTransactionReceipt } from 'state/transactions/actions'
 
 import type {
   ExecutionAdapter,

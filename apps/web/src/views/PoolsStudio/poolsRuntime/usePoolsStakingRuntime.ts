@@ -139,7 +139,13 @@ export interface PoolsStakingRuntime {
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   donutSegments: ReturnType<typeof buildDonutSegments>
-  advisorItems: Array<{ label: string; value: string; tone: 'green' | 'gold' | 'blue'; icon: string; reason?: string }>
+  advisorItems: Array<{
+    label: string
+    value: string
+    tone: 'green' | 'gold' | 'blue' | 'muted' | 'default'
+    icon: string
+    reason?: string
+  }>
   sustainability: { label: string; score: number; level: string }
   analytics: PoolsAnalyticsData
   terminal: ReturnType<typeof usePoolsTerminalData>
@@ -649,9 +655,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       ? 'Loading pools…'
       : phase === 'reading_wallet'
         ? 'Reading wallet…'
-        : phase === 'calculating_rewards'
-          ? 'Calculating rewards…'
-          : undefined
+        : undefined
 
   const requestModal = useCallback((pool: PoolPreviewCard, action: Exclude<PoolsModalAction, null>) => {
     setModalRequest({ pool, action })

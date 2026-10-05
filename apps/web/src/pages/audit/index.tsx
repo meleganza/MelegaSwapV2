@@ -5,8 +5,9 @@ import React from 'react'
 import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
 import AuditCenterV2 from 'views/AuditStudio/AuditCenterV2'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 
-const AuditPage: React.FC = () => (
+const AuditPage: NextPageWithLayout = () => (
   <>
     <PageMeta />
     <AuditCenterV2 />

@@ -25,16 +25,13 @@ export function buildKerlTradeFacade(
       }
       return outputCurrency.isToken && outputCurrency.wrapped.address.toLowerCase() === addr.toLowerCase()
         ? outputCurrency.wrapped
-        : new Token(request.chainId, addr, 18)
+        : new Token(request.chainId, addr, 18, 'UNKNOWN')
     }),
     pairs: [],
     percent: new Percent(100, 100),
   }
 
-  const executionPrice = new Price({
-    baseAmount: inputAmount,
-    quoteAmount: outputAmount,
-  })
+  const executionPrice = new Price(inputCurrency, outputCurrency, inputAmount.quotient, outputAmount.quotient)
 
   return {
     tradeType: request.tradeType,

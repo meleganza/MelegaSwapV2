@@ -97,7 +97,7 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   const titleContent = (
     <Flex width="100%" alignItems="center" justifyContent="space-between" flexDirection="column">
       <Flex flexDirection="row" alignItems="center" width="100%" marginBottom={hideTitle && !subtitle ? 0 : 15}>
-        {!hideTitle ? <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle> : <Box flex="1" />}
+        {!hideTitle ? <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle> : <Box style={{ flex: 1 }} />}
         <Flex width="100%" justifyContent="end">
           <NotificationDot show={expertMode}>
             <GlobalSettings color="textSubtle" mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />

@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { randomUUID } from 'crypto'
+import { randomBytes } from 'crypto'
 import { get, list, put } from '@vercel/blob'
 import {
   CASHBACK_STATES,
@@ -161,7 +161,7 @@ export function createFeaturedOrder(input: {
   const pkg = getFeaturedPackage(input.packageId)
   const order: FeaturedOrder = {
     schema: 'melega.featured-home-order.v1',
-    orderId: `feat_${randomUUID().replace(/-/g, '').slice(0, 24)}`,
+    orderId: `feat_${randomBytes(12).toString('hex')}`,
     state: 'DRAFT',
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,

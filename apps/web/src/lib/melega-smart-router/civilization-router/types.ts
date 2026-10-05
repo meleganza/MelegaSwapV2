@@ -85,7 +85,11 @@ export interface CivilizationSwapRouteInput {
   chainId: number
   user?: string
   tradeType: import('@pancakeswap/sdk').TradeType
-  inputAmount: { currency: import('@pancakeswap/sdk').Currency; toSignificant: (decimals?: number) => string }
+  inputAmount: {
+    currency: import('@pancakeswap/sdk').Currency
+    quotient: { toString: () => string }
+    toSignificant: (decimals?: number) => string
+  }
   outputAmount: { currency: import('@pancakeswap/sdk').Currency; toSignificant: (decimals?: number) => string }
   feeOnTransfer?: boolean
 }
@@ -145,6 +149,7 @@ export interface CivilizationRoutePrepared {
       chainId: number
       architecture: 'ADAPTER' | 'WRAPPER'
       machineReadable: true
+      kerlExecutionRequestRef?: string
     }
     treasuryHandoffPrepared?: TreasuryHandoffPreparedEvent
     narrativeTradeRouted?: { blocked: true; reason: string }

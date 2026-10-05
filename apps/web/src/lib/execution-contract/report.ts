@@ -30,12 +30,12 @@ export function buildExecutionReport(evidence: ExecutionEvidence): ExecutionRepo
 
 export function assertReportDoesNotImplySettlement(report: ExecutionReport): void {
   for (const field of SETTLEMENT_FORBIDDEN_FIELDS) {
-    if (field in (report as Record<string, unknown>)) {
+    if (field in (report as unknown as Record<string, unknown>)) {
       throw new Error(`Execution report must not imply settlement: ${field}`)
     }
   }
 
-  if ('receipt' in (report as Record<string, unknown>)) {
+  if ('receipt' in (report as unknown as Record<string, unknown>)) {
     throw new Error('Execution report must not embed raw receipt — use receiptReference only')
   }
 }

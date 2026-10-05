@@ -64,7 +64,7 @@ export function useKerlConstitutionalSwap(input: {
   ])
 
   const executionRequest = produced?.ok ? produced.request : null
-  const inputError = produced && !produced.ok ? produced.message : undefined
+  const inputError = produced && 'message' in produced ? produced.message : undefined
 
   const trade = useMemo(() => {
     if (!executionRequest || !input.inputCurrency || !input.outputCurrency) return null

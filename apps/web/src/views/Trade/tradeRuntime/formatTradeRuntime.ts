@@ -1,6 +1,5 @@
 import { Currency, CurrencyAmount, Percent } from '@pancakeswap/sdk'
 import { RouteType } from '@pancakeswap/smart-router/evm'
-import { getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { Field } from 'state/swap/actions'
 import type { useTradeInfo } from 'views/Swap/SmartSwap/hooks/useTradeInfo'
 
@@ -9,7 +8,7 @@ type TradeInfo = NonNullable<ReturnType<typeof useTradeInfo>>
 export function formatAmount(amount?: CurrencyAmount<Currency>): string | undefined {
   if (!amount) return undefined
   try {
-    const raw = getFullDisplayBalance(amount, amount.currency.decimals, 6)
+    const raw = amount.toSignificant(6)
     if (!raw || raw === 'NaN' || !Number.isFinite(Number(raw.replace(/,/g, '')))) return undefined
     return `${raw} ${amount.currency.symbol}`
   } catch {
@@ -37,8 +36,7 @@ export function routerSourceLabel(tradeInfo: TradeInfo | null | undefined, smart
   if (smartRouter && !tradeInfo.fallbackV2) {
     const type = (tradeInfo.route as { routeType?: RouteType })?.routeType
     if (type === RouteType.V2) return 'MelegaSwap V2'
-    if (type === RouteType.V3) return 'MelegaSwap V3'
-    if (type === RouteType.STABLE) return 'StableSwap'
+    if (type === RouteType.STABLE_SWAP) return 'StableSwap'
     if (type === RouteType.MIXED) return 'Melega Smart Router'
     return 'Melega Smart Router'
   }

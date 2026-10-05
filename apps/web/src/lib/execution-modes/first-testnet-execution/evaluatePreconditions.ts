@@ -33,10 +33,10 @@ export function evaluateTestnetExecutionPreconditions(
   checks.push({
     id: 'certified_handoff',
     satisfied: handoffResult.ok,
-    detail: handoffResult.ok ? 'Testnet handoff validated' : handoffResult.error.message,
+    detail: 'error' in handoffResult ? handoffResult.error.message : 'Testnet handoff validated',
   })
 
-  if (!handoffResult.ok) {
+  if ('error' in handoffResult) {
     return finalize(checks)
   }
 
@@ -45,7 +45,7 @@ export function evaluateTestnetExecutionPreconditions(
   checks.push({
     id: 'valid_instruction',
     satisfied: validation.ok,
-    detail: validation.ok ? 'Instruction contract valid' : validation.error.message,
+    detail: 'error' in validation ? validation.error.message : 'Instruction contract valid',
   })
 
   const instructionType = validation.ok ? validation.instructionType : null

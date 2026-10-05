@@ -26,13 +26,16 @@ export interface FarmsOverviewKpisViewModel {
     activeFarmersState: KpiMetricState
     rewards24hUsd: number | null
     rewards24hState: KpiMetricState
-    rewards24hSource: 'unavailable_no_indexed_distribution'
+    rewards24hSource:
+      | 'unavailable_no_indexed_distribution'
+      | 'masterchef_dexTokenPerBlock_emission'
+      | 'unavailable_emission_read'
     sustainableApr: string | null
     sustainableAprFarm: string | null
     harvestableUsd: number | null
     harvestableFarmCount: number
     walletState: 'disconnected' | 'loading' | 'ready'
-    emissionNotUsedAs24h: true
+    emissionNotUsedAs24h: boolean
     poolsTvlNotIncluded: true
     provenance: Record<string, string>
     fetchedAt: string

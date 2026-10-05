@@ -186,7 +186,6 @@ function AddressTokenLogo({
     return (
       <TokenLogo
         badSrcs={BAD_SRCS}
-        size={size}
         srcs={srcs}
         width={size}
         alt={`${symbol ?? 'token'} logo`}

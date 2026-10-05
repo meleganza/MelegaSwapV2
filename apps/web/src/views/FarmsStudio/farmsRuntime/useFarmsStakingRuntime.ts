@@ -64,6 +64,7 @@ export interface FarmsFeaturedMetrics {
   pair: string
   tokens: [string, string]
   apr: string
+  displayApr?: string
   tvl: string
   dailyRewards: string
   multiplier: string
@@ -390,9 +391,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
       ? 'Loading farms…'
       : phase === 'reading_wallet'
         ? 'Reading wallet…'
-        : phase === 'calculating_rewards'
-          ? 'Calculating rewards…'
-          : undefined
+        : undefined
 
   const requestModal = useCallback((farm: FarmPreviewCard, action: Exclude<FarmsModalAction, null>) => {
     setModalRequest({ farm, action })

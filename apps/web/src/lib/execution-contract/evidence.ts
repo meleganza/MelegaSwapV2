@@ -111,7 +111,7 @@ export function assertEvidenceIntegrity(evidence: ExecutionEvidence): void {
   }
 
   for (const field of SETTLEMENT_FORBIDDEN_FIELDS) {
-    if (field in (evidence as Record<string, unknown>)) {
+    if (field in (evidence as unknown as Record<string, unknown>)) {
       throw new Error(`Execution evidence must not include settlement field: ${field}`)
     }
   }

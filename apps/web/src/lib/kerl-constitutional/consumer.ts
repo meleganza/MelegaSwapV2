@@ -22,7 +22,7 @@ export function assertDexConsumesExecutionRequestOnly(
 /** Maps ExecutionRequest to wrapper execution parameters — no routing decisions. */
 export function resolveWrapperExecutionParams(request: ExecutionRequest) {
   const gate = assertDexConsumesExecutionRequestOnly(request)
-  if (!gate.ok) {
+  if ('message' in gate) {
     throw new Error(gate.message)
   }
 

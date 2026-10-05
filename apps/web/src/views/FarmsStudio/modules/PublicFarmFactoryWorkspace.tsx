@@ -699,7 +699,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
   const selectPair = (pair: PublicFarmSelectedPair) => {
     setCreateSoftNote(null)
-    setPairDropdownOpen(false)
     patch({ selectedPair: pair, selectionMode: 'search_existing' })
   }
 

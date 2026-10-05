@@ -19,6 +19,9 @@ export async function submitSwapViaIngress(
   const adapters: IngressAdapterHandlers = {
     smartSwap: async () => legacyCallback(),
     v2Swap: async () => legacyCallback(),
+    bridgeBurn: async () => {
+      throw new Error('Bridge instructions are not supported by the swap ingress')
+    },
   }
 
   const result = await dispatchExecutionInstruction(instruction, {
@@ -27,7 +30,7 @@ export async function submitSwapViaIngress(
     adapters,
   })
 
-  if (!result.ok) {
+  if ('error' in result) {
     throw new Error(result.error?.message ?? 'Execution ingress dispatch failed')
   }
 

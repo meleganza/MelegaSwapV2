@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic'
-import { NextPage } from 'next'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 
 const ListScreen = dynamic(() => import('views/ListStudio/ListStudioScreen'), { ssr: false })
 
-const ListPage: NextPage = () => <ListScreen />
+const ListPage: NextPageWithLayout = () => <ListScreen />
 
 ListPage.chains = []
 

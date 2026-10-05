@@ -120,6 +120,7 @@ export enum VaultKey {
 interface CorePoolProps {
   startBlock?: number;
   endBlock?: number;
+  bonusEndBlock?: number;
   apr?: number;
   rawApr?: number;
   stakingTokenPrice?: number;

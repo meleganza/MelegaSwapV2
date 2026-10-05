@@ -40,7 +40,7 @@ export const FarmsActionHost: React.FC = () => {
   const farm = modalRequest?.farm.rawFarm
   const action = modalRequest?.action
   const displayApr = modalRequest?.farm.displayApr
-  const farmLabel = modalRequest?.farm.label ?? farm?.lpSymbol ?? 'Farm'
+  const farmLabel = modalRequest?.farm.lpLabel ?? farm?.lpSymbol ?? 'Farm'
   const requestKey = farm && action ? `${farm.pid}:${action}` : null
   const presentedKeyRef = useRef<string | null>(null)
 

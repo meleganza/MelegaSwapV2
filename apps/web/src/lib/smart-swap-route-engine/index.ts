@@ -4,6 +4,7 @@ export type {
   SmartSwapGasEstimate,
   SmartSwapHop,
   SmartSwapImpact,
+  SmartSwapMetricAvailability,
   SmartSwapPoolRef,
   SmartSwapRoute,
   SmartSwapRouteSource,

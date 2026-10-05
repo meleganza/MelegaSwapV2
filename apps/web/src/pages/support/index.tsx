@@ -8,6 +8,7 @@ import { PageMeta } from 'components/Layout/Page'
 import { CHAIN_IDS } from 'utils/wagmi'
 import { uxRebuildColors, uxRebuildFont, uxRebuildLayout, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { MELEGA_FOOTER_SOCIALS } from 'views/HomeTrade/melegaDexFooterLinks'
+import type { NextPageWithLayout } from 'app-runtime/appTypes'
 
 const Page = styled.main`
   max-width: ${uxRebuildLayout.contentMax};
@@ -76,7 +77,7 @@ const List = styled.ul`
   line-height: 1.6;
 `
 
-const SupportPage: React.FC = () => {
+const SupportPage: NextPageWithLayout = () => {
   const telegram = MELEGA_FOOTER_SOCIALS.find((s) => s.id === 'telegram-community')
   const announcements = MELEGA_FOOTER_SOCIALS.find((s) => s.id === 'telegram-announcements')
 

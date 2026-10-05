@@ -14,7 +14,7 @@ import { melegaDarkTheme } from 'style/melega-theme'
 
 const StyledUIKitProvider: React.FC<React.PropsWithChildren> = ({ children, ...props }) => {
   return (
-    <UIKitProvider theme={melegaDarkTheme} {...props}>
+    <UIKitProvider theme={melegaDarkTheme as unknown as React.ComponentProps<typeof UIKitProvider>['theme']} {...props}>
       {children}
     </UIKitProvider>
   )

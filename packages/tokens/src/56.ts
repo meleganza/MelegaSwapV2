@@ -4022,14 +4022,6 @@ export const bscTokens = {
     'Cboin',
     'http://www.cboin.biz/',
   ),
-  twt: new ERC20Token(
-    ChainId.BSC,
-    '0x4B0F1812e5Df2A09796481Ff14017e6005508003',
-    18,
-    'TWT',
-    'Trust Wallet',
-    'https://trustwallet.com/',
-  ),
   ftm: new ERC20Token(
     ChainId.BSC,
     '0xad29abb318791d579433d831ed122afeaf29dcfe',
@@ -4037,14 +4029,6 @@ export const bscTokens = {
     'FTM',
     'Fantom',
     'http://fantom.foundation/',
-  ),
-  gmt: new ERC20Token(
-    ChainId.BSC,
-    '0x3019BF2a2eF8040C242C9a4c5c4BD4C81678b2A1',
-    8,
-    'GMT',
-    'Green Metaverse Token',
-    'https://www.stepn.com/',
   ),
   traff: new ERC20Token(
     ChainId.BSC,

@@ -2127,7 +2127,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         fallbackSigner: signer ?? null,
       })
       const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
-      if (!chainGate.ok) {
+      if (chainGate.stage === 'switch_network') {
         setWalletStage(chainGate.stage)
         throw new Error(chainGate.message || RC_COPY.wrongNetwork)
       }
@@ -2137,7 +2137,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       }
 
       let txHash: string
-      let receipt: Awaited<ReturnType<Awaited<ReturnType<typeof signer.sendTransaction>>['wait']>>
+      let receipt: { to?: string; status?: number; logs?: unknown[] }
       try {
         const transaction = await paymentWallet.signer.sendTransaction({
           to: prepared.to,
@@ -2357,7 +2357,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             fallbackSigner: signer ?? null,
           })
           const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
-          if (!chainGate.ok) {
+          if (chainGate.stage === 'switch_network') {
             setWalletStage(chainGate.stage)
             throw new Error(chainGate.message || RC_COPY.wrongNetwork)
           }

@@ -1,0 +1,272 @@
+src/config/melegaChainRegistry.ts(95,14): error TS2322: Type 'readonly [{ readonly chainId: ChainId.BSC; readonly name: "BNB Smart Chain"; readonly shortLabel: "BNB"; readonly nativeCurrency: { readonly name: "BNB"; readonly symbol: "BNB"; readonly decimals: 18; }; ... 4 more ...; readonly contracts: { ...; }; }, ... 4 more ..., { ...; }]' is not assignable to type 'readonly MelegaChainRecord[]'.
+src/lib/bsc-indexer/featuredMarkets.ts(83,19): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/featuredMarkets.ts(84,19): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/featuredMarkets.ts(84,19): error TS2791: Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later.
+src/lib/bsc-indexer/pairs/classify.ts(22,35): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/pairs/classify.ts(22,52): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts(30,61): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts(124,23): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts(132,63): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts(136,21): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts(137,35): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/refreshOnChainRegistry.ts(75,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/bsc-indexer/registry/refreshOnChainRegistry.ts(75,47): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/d87-pricing/swapProtocolFee.ts(58,10): error TS2314: Generic type 'TradeWithStableSwap<TInput, TOutput, TTradeType>' requires 3 type argument(s).
+src/lib/data-truth/masterChefEmissionMath.ts(31,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/lib/data-truth/poolLifecycle.ts(26,15): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/data-truth/poolLifecycle.ts(26,72): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/data-truth/poolLifecycle.ts(53,37): error TS2339: Property 'bonusEndBlock' does not exist on type 'DeserializedPool<Token>'.
+src/lib/data-truth/useMasterChefEmission.ts(48,26): error TS2339: Property 'decimals' does not exist on type 'ApiEmissionPayload'.
+src/lib/data-truth/yieldMetricHelpers.ts(55,15): error TS2339: Property 'earningToken' does not exist on type 'FarmWithStakedValue'.
+src/lib/deployment-orchestrator/founderWalletTx.ts(46,50): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/deployment-orchestrator/founderWalletTx.ts(198,36): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/deployment-orchestrator/founderWalletTx.ts(200,50): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/deployment-orchestrator/founderWalletTx.ts(228,72): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/deployment-orchestrator/founderWalletTx.ts(229,78): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/execution-contract/evidence.ts(114,19): error TS2352: Conversion of type 'ExecutionEvidence' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/execution-contract/report.ts(33,19): error TS2352: Conversion of type 'ExecutionReport' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/execution-contract/report.ts(38,21): error TS2352: Conversion of type 'ExecutionReport' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/execution-contract/types.ts(1,15): error TS2614: Module '"state/transactions/reducer"' has no exported member 'SerializableTransactionReceipt'. Did you mean to use 'import SerializableTransactionReceipt from "state/transactions/reducer"' instead?
+src/lib/execution-ingress/canonicalSubmit.ts(19,9): error TS2741: Property 'bridgeBurn' is missing in type '{ smartSwap: () => Promise<string>; v2Swap: () => Promise<string>; }' but required in type 'IngressAdapterHandlers'.
+src/lib/execution-ingress/canonicalSubmit.ts(31,28): error TS2339: Property 'error' does not exist on type 'IngressDispatchResult'.
+src/lib/execution-ingress/dispatch.ts(84,43): error TS2339: Property 'error' does not exist on type 'IngressValidateResult'.
+src/lib/execution-layer/types.ts(1,15): error TS2614: Module '"state/transactions/reducer"' has no exported member 'SerializableTransactionReceipt'. Did you mean to use 'import SerializableTransactionReceipt from "state/transactions/reducer"' instead?
+src/lib/execution-layer/useSwapExecution.ts(101,44): error TS2345: Argument of type 'V2TradeAndStableSwap' is not assignable to parameter of type 'Trade<Currency, Currency, TradeType>'.
+src/lib/execution-modes/first-testnet-execution/buildSettlementEventCandidate.ts(1,57): error TS2307: Cannot find module '../execution-contract/types' or its corresponding type declarations.
+src/lib/execution-modes/first-testnet-execution/buildSettlementEventCandidate.ts(2,43): error TS2307: Cannot find module '../execution-layer/types' or its corresponding type declarations.
+src/lib/execution-modes/first-testnet-execution/evaluatePreconditions.ts(36,76): error TS2339: Property 'error' does not exist on type 'TestnetHandoffValidateResult'.
+src/lib/execution-modes/first-testnet-execution/evaluatePreconditions.ts(48,71): error TS2339: Property 'error' does not exist on type 'IngressValidateResult'.
+src/lib/execution-modes/first-testnet-execution/runFirstTestnetExecution.ts(150,23): error TS2339: Property 'error' does not exist on type 'IngressDispatchResult'.
+src/lib/execution-tracker/tracker.ts(122,21): error TS2352: Conversion of type 'ExecutionReport' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/execution-tracker/tracker.ts(298,21): error TS2352: Conversion of type 'ExecutionReport' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/featured-placement/orderStore.ts(3,10): error TS2305: Module '"crypto"' has no exported member 'randomUUID'.
+src/lib/holder-count/resolveHolderMetric.ts(35,5): error TS2322: Type '{ display: string; reasonCode: "EXPLORER_SOURCE_MISSING"; reason: string; }' is not assignable to type 'ResolvedMetricValue'.
+src/lib/kerl-constitutional/consumer.ts(26,26): error TS2339: Property 'message' does not exist on type '{ ok: true; } | { ok: false; code: string; message: string; }'.
+src/lib/kerl-constitutional/tradeFacade.ts(28,11): error TS2554: Expected 4-6 arguments, but got 3.
+src/lib/kerl-constitutional/useKerlConstitutionalSwap.ts(67,58): error TS2339: Property 'message' does not exist on type '{ ok: true; request: ExecutionRequest; } | { ok: false; code: string; message: string; }'.
+src/lib/kerl-constitutional/useKerlConstitutionalSwap.ts(85,20): error TS2345: Argument of type '{ hash: string; }' is not assignable to parameter of type 'TransactionResponse'.
+src/lib/liquidity-building-runtime/decision-engine.ts(21,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(90,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(96,15): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(102,18): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(108,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(108,25): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(119,17): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(119,31): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(121,25): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(129,25): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/decision-engine.ts(129,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(32,16): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(32,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(33,16): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(33,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(36,16): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(36,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(37,16): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(37,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(39,49): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(162,39): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/eligible-flow.ts(162,50): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/intent-builder.ts(78,44): error TS2339: Property 'reason' does not exist on type '{ ok: true; value: string; } | { ok: false; reason: string; }'.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(19,47): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(92,21): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(95,33): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(97,48): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(98,34): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(100,40): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(101,33): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(102,56): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(136,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/kms-signature-normalization.ts(137,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/liquidity-building-runtime/loop.ts(139,50): error TS2339: Property 'reason' does not exist on type 'IntentBuildResult'.
+src/lib/liquidity-building-runtime/loop.ts(140,31): error TS2339: Property 'reason' does not exist on type 'IntentBuildResult'.
+src/lib/liquidity-building-runtime/loop.ts(182,57): error TS2339: Property 'code' does not exist on type 'RelaySubmitResult'.
+src/lib/liquidity-building-runtime/loop.ts(183,37): error TS2339: Property 'reason' does not exist on type 'RelaySubmitResult'.
+src/lib/liquidity-building-runtime/signing-adapter.ts(75,32): error TS2339: Property 'code' does not exist on type 'KmsSignResult'.
+src/lib/liquidity-building-runtime/signing-adapter.ts(75,47): error TS2339: Property 'reason' does not exist on type 'KmsSignResult'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(56,36): error TS2339: Property 'code' does not exist on type 'MelegaSmartRouterResult'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(56,76): error TS2339: Property 'message' does not exist on type 'MelegaSmartRouterResult'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(102,34): error TS2339: Property 'quotient' does not exist on type '{ currency: Currency; toSignificant: (decimals?: number) => string; }'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(109,39): error TS2339: Property 'code' does not exist on type '{ ok: true; request: ExecutionRequest; } | { ok: false; code: string; message: string; }'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(109,82): error TS2339: Property 'message' does not exist on type '{ ok: true; request: ExecutionRequest; } | { ok: false; code: string; message: string; }'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(122,36): error TS2339: Property 'code' does not exist on type 'MelegaSmartRouterResult'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(122,76): error TS2339: Property 'message' does not exist on type 'MelegaSmartRouterResult'.
+src/lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts(147,9): error TS2322: Type '{ routeType: "STANDARD_SWAP" | "BUY_MARCO" | "SELL_MARCO"; chainId: number; architecture: "ADAPTER"; machineReadable: true; kerlExecutionRequestRef: string; }' is not assignable to type '{ routeType: CivilizationRouteType; chainId: number; architecture: "ADAPTER" | "WRAPPER"; machineReadable: true; }'.
+src/lib/melega-smart-router/marcoRegistry.ts(14,5): error TS2322: Type 'RegistryResolutionSource' is not assignable to type 'RegistrySource'.
+src/lib/melega-smart-router/treasuryCollectorRegistry.ts(11,5): error TS2322: Type 'RegistryResolutionSource' is not assignable to type 'RegistrySource'.
+src/lib/monetization/trendBoostOrders.ts(7,10): error TS2305: Module '"crypto"' has no exported member 'randomUUID'.
+src/lib/monetization/verifyPaymentReceipt.ts(118,36): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-execution-preview/buildExecutionPreview.ts(27,7): error TS2322: Type '"Policy rate — not proven as collected in current execution path"' is not assignable to type '"Display only — beneficiary is MELEGA TREASURY WALLET per FSC-01 policy"'.
+src/lib/smart-swap-execution-preview/buildExecutionPreview.ts(36,7): error TS2322: Type '"Policy rate — not proven as collected in current execution path"' is not assignable to type '"Display only — beneficiary is MELEGA TREASURY WALLET per FSC-01 policy"'.
+src/lib/smart-swap-execution-preview/buildExecutionPreview.ts(44,5): error TS2322: Type '"Protocol fee not proven in current execution path"' is not assignable to type '"Display only — beneficiary is MELEGA TREASURY WALLET per FSC-01 policy"'.
+src/lib/smart-swap-execution-preview/fromRoute.ts(30,26): error TS2339: Property 'pathAddresses' does not exist on type 'SmartSwapRoute'.
+src/lib/smart-swap-execution-preview/impact.ts(1,15): error TS2305: Module '"lib/smart-swap-route-engine"' has no exported member 'SmartSwapMetricAvailability'.
+src/lib/smart-swap-execution-preview/minimumReceived.ts(10,56): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-execution-preview/types.ts(8,3): error TS2305: Module '"lib/smart-swap-route-engine"' has no exported member 'SmartSwapMetricAvailability'.
+src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts(49,26): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts(49,46): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts(62,86): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts(96,29): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts(99,16): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-route-engine/rankRoutes.ts(14,22): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-route-engine/rankRoutes.ts(15,26): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smart-swap-route-engine/rankRoutes.ts(68,19): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/capabilities.ts(29,30): error TS2322: Type 'true' is not assignable to type 'false'.
+src/lib/smartswap-universal-engine/evaluateRevenuePolicy.ts(103,54): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(35,45): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(42,50): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(43,53): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(45,65): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(46,56): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(54,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/netExecution.ts(54,35): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/quote.ts(55,50): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/smartswap-universal-engine/routeSelection.ts(69,13): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/trade-market/fetchMarcoPairLiquidity.ts(32,17): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/lib/trade-market/fetchMarcoPairLiquidity.ts(32,17): error TS2791: Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later.
+src/lib/treasury-handoff/buildSwapHandoffContext.ts(40,10): error TS2314: Generic type 'TradeWithStableSwap<TInput, TOutput, TTradeType>' requires 3 type argument(s).
+src/lib/treasury-handoff/buildSwapHandoffContext.ts(66,5): error TS2322: Type '{ architecture: "ADAPTER"; protocolFeeBps: number; buyMarcoIncentiveApplied: boolean; treasuryCollector: string; underlyingRouter: string; pricingRef: "D87_DEX_PRICING_RATIFIED"; treasuryPolicyRef: "FSC-01"; protocolFeeCollected: ProtocolFeeCollectedEvent; smartRouterSwapRouted: SmartRouterSwapRoutedEvent; } | { ......' is not assignable to type '{ architecture: "ADAPTER"; protocolFeeBps?: number; buyMarcoIncentiveApplied?: boolean; treasuryCollector?: string; underlyingRouter?: string; pricingRef: "D87_DEX_PRICING_RATIFIED"; treasuryPolicyRef: "FSC-01"; blocked?: string; protocolFeeCollected?: Record<...>; smartRouterSwapRouted?: Record<...>; }'.
+src/lib/treasury-handoff/buildSwapHandoffContext.ts(84,25): error TS2339: Property 'code' does not exist on type 'MelegaSmartRouterResult'.
+src/lib/treasury-handoff/submitSettlementHandoff.ts(3,39): error TS2724: '"./settlementReferenceStore"' has no exported member named 'SettlementReference'. Did you mean 'getSettlementReference'?
+src/lib/treasury-handoff/submitSettlementHandoff.ts(52,32): error TS2339: Property 'machine_code' does not exist on type 'NormalizeTreasuryIntakeResult'.
+src/lib/treasury-handoff/submitSettlementHandoff.ts(53,26): error TS2339: Property 'reason' does not exist on type 'NormalizeTreasuryIntakeResult'.
+src/pages/audit/index.tsx(16,11): error TS2339: Property 'chains' does not exist on type 'FC<{}>'.
+src/pages/docs/index.tsx(352,10): error TS2339: Property 'chains' does not exist on type 'FC<{}>'.
+src/pages/list/index.tsx(8,10): error TS2339: Property 'chains' does not exist on type 'FunctionComponent<{}> & { getInitialProps?(context: NextPageContext): {} | Promise<{}>; }'.
+src/pages/portfolio/index.tsx(11,15): error TS2339: Property 'chains' does not exist on type 'FunctionComponent<{}> & { getInitialProps?(context: NextPageContext): {} | Promise<{}>; }'.
+src/pages/portfolio/index.tsx(12,15): error TS2339: Property 'isShowScrollToTopButton' does not exist on type 'FunctionComponent<{}> & { getInitialProps?(context: NextPageContext): {} | Promise<{}>; }'.
+src/pages/support/index.tsx(132,13): error TS2339: Property 'chains' does not exist on type 'FC<{}>'.
+src/Providers.tsx(17,20): error TS2322: Type '{ colors: { primary: "#F4C430"; primaryBright: "#E8C547"; secondary: "#A7ADB4"; tertiary: "#14171A"; background: "#050607"; backgroundAlt: "#0D0F11"; backgroundAlt2: "#14171A"; text: "#FFFFFF"; ... 48 more ...; warning33: CSSVarFunction; }; ... 15 more ...; zIndices: ZIndices; }' is not assignable to type 'DefaultTheme'.
+src/registry/projects/pending/discoverPendingProject.ts(128,5): error TS2322: Type 'ProvenanceField<string>' is not assignable to type 'ProvenanceField<number>'.
+src/state/farms/getFarmsPrices.ts(29,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(33,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(38,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(48,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(55,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(65,3): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(76,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(84,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(88,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(92,5): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(95,3): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(116,44): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(118,5): error TS2322: Type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to type 'BigNumber'.
+src/state/farms/getFarmsPrices.ts(140,141): error TS2345: Argument of type 'BigNumber' is not assignable to parameter of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/getFarmsPrices.ts(141,78): error TS2345: Argument of type 'BigNumber' is not assignable to parameter of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/state/farms/hooks.ts(164,3): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/state/farms/index.ts(53,48): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/state/farms/reducer.ts(38,5): error TS2769: No overload matches this call.
+src/state/farms/reducer.ts(45,5): error TS2769: No overload matches this call.
+src/state/farms/reducer.ts(56,5): error TS2769: No overload matches this call.
+src/state/farms/selectors.ts(55,48): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/farms/selectors.ts(56,9): error TS2322: Type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to type 'BigNumber'.
+src/state/lists/hooks.ts(208,3): error TS2741: Property '[ChainId.BSC_TESTNET]' is missing in type '{ 1: { [x: string]: { token: WrappedTokenInfo; list: TokenList; }; }; 42161: { [x: string]: { token: WrappedTokenInfo; list: TokenList; }; }; ... 9 more ...; 369: { ...; }; }' but required in type 'Readonly<{ 1: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList; }; }>; 56: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList; }; }>; ... 10 more ...; 324: Readonly<...>; }>'.
+src/state/pools/fetchVaultPublic.ts(70,62): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/helpers.ts(62,5): error TS2322: Type '{ required: boolean; thresholdPoints: globalThis.BigNumber | BigNumber; }' is not assignable to type '{ required: boolean; thresholdPoints: BigNumber; }'.
+src/state/pools/helpers.ts(65,5): error TS2322: Type '{ allowance: globalThis.BigNumber | BigNumber; stakingTokenBalance: globalThis.BigNumber | BigNumber; stakedBalance: globalThis.BigNumber | BigNumber; pendingReward: globalThis.BigNumber | BigNumber; }' is not assignable to type '{ allowance: BigNumber; stakingTokenBalance: BigNumber; stakedBalance: BigNumber; pendingReward: BigNumber; }'.
+src/state/pools/helpers.ts(66,5): error TS2322: Type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to type 'BigNumber'.
+src/state/pools/helpers.ts(67,5): error TS2322: Type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to type 'BigNumber'.
+src/state/pools/helpers.ts(105,9): error TS2352: Conversion of type 'SerializedCakeVault' to type 'SerializedLockedCakeVault' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/state/pools/helpers.ts(118,7): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/helpers.ts(135,53): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/helpers.ts(136,53): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/index.ts(199,32): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/index.ts(214,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/state/pools/index.ts(486,85): error TS2552: Cannot find name 'SerializedLockedVaultUser'. Did you mean 'SerializedVaultUser'?
+src/state/pools/reducer.ts(84,5): error TS2769: No overload matches this call.
+src/state/pools/reducer.ts(86,7): error TS2322: Type '{ userDataLoaded: boolean; userData: PoolUserData; totalStaked?: string; stakingLimit?: string; numberBlocksForUserLimit?: number; profileRequirement?: WritableDraft<{ required: boolean; thresholdPoints: string; }>; ... 16 more ...; vaultKey?: VaultKey; }[]' is not assignable to type 'WritableDraft<SerializedPool>[]'.
+src/state/pools/reducer.ts(94,76): error TS2339: Property 'payload' does not exist on type 'Action<"pool/fetchPoolsUserData/rejected">'.
+src/state/pools/reducer.ts(96,5): error TS2769: No overload matches this call.
+src/state/pools/reducer.ts(102,5): error TS2769: No overload matches this call.
+src/state/pools/reducer.ts(105,5): error TS2769: No overload matches this call.
+src/state/pools/reducer.ts(106,47): error TS2740: Type 'SerializedVaultUser' is missing the following properties from type 'WritableDraft<DeserializedLockedVaultUser>': lockStartTime, lockEndTime, userBoostedShare, locked, and 3 more.
+src/state/pools/reducer.ts(108,5): error TS2769: No overload matches this call.
+src/utils/wagmi.ts(302,3): error TS2322: Type 'BaseStorage' is not assignable to type 'ClientStorage'.
+src/views/CommandCenter/commandCenterRuntime/commandCenterPortfolioCutover.ts(93,32): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/farmsRuntime/FarmHarvestConfirmModal.tsx(81,17): error TS2769: No overload matches this call.
+src/views/FarmsStudio/farmsRuntime/FarmsActionHost.tsx(43,40): error TS2551: Property 'label' does not exist on type 'FarmPreviewCard'. Did you mean 'lpLabel'?
+src/views/FarmsStudio/farmsRuntime/FarmsActionHost.tsx(110,45): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/farmsRuntime/FarmsActionHost.tsx(213,9): error TS2322: Type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to type 'BigNumber'.
+src/views/FarmsStudio/farmsRuntime/formatFarmsRuntime.ts(36,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/farmsRuntime/formatFarmsRuntime.ts(156,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/FarmsStudio/farmsRuntime/formatFarmsRuntime.ts(157,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime.ts(115,3): error TS2322: Type '(FarmWithStakedValue | { apr: number; lpRewardsApr: number; liquidity: BigNumber; tokenPriceBusd?: string; quoteTokenPriceBusd?: string; tokenAmountTotal?: BigNumber; ... 25 more ...; isTokenOnly?: boolean; })[]' is not assignable to type 'FarmWithStakedValue[]'.
+src/views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime.ts(393,11): error TS2367: This comparison appears to be unintentional because the types '"idle"' and '"calculating_rewards"' have no overlap.
+src/views/FarmsStudio/modules/buildFarmsExploreFarms.ts(273,51): error TS2345: Argument of type '{ chainId: number; walletChainId?: number; account?: string; userDataLoaded: boolean; chainSupported: boolean; masterChefAddress?: string; }' is not assignable to parameter of type '{ account?: string; userDataLoaded: boolean; }'.
+src/views/FarmsStudio/modules/buildFarmsExploreFarms.ts(274,55): error TS2345: Argument of type '{ chainId: number; walletChainId?: number; account?: string; userDataLoaded: boolean; chainSupported: boolean; masterChefAddress?: string; }' is not assignable to parameter of type '{ account?: string; userDataLoaded: boolean; }'.
+src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts(260,39): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts(260,59): error TS2339: Property 'earningToken' does not exist on type 'FarmWithStakedValue'.
+src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts(335,7): error TS2322: Type '"masterchef_dexTokenPerBlock_emission" | "unavailable_emission_read"' is not assignable to type '"unavailable_no_indexed_distribution"'.
+src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts(344,7): error TS2322: Type 'boolean' is not assignable to type 'true'.
+src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts(16,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts(66,82): error TS2339: Property 'earningToken' does not exist on type 'FarmWithStakedValue'.
+src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts(68,30): error TS2551: Property 'lpToken' does not exist on type 'FarmWithStakedValue'. Did you mean 'token'?
+src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts(73,58): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts(74,89): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/FarmsStudio/modules/FarmsHeroFeaturedCompact.tsx(110,19): error TS2339: Property 'displayApr' does not exist on type 'FarmsFeaturedMetrics'.
+src/views/FarmsStudio/modules/FarmsHeroFeaturedCompact.tsx(110,63): error TS2339: Property 'displayApr' does not exist on type 'FarmsFeaturedMetrics'.
+src/views/FarmsStudio/modules/publicFarmFactoryFee.ts(99,45): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/views/FarmsStudio/modules/publicFarmFactoryFee.ts(100,30): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+src/views/FarmsStudio/modules/PublicFarmFactoryWorkspace.tsx(702,5): error TS2304: Cannot find name 'setPairDropdownOpen'.
+src/views/Home/hooks/useGetTopFarmsByApr.tsx(85,13): error TS2322: Type '{ apr: number; lpRewardsApr: number; liquidity: BigNumber; tokenPriceBusd?: string; quoteTokenPriceBusd?: string; tokenAmountTotal?: BigNumber; quoteTokenAmountTotal?: BigNumber; ... 24 more ...; isTokenOnly?: boolean; }[]' is not assignable to type 'FarmWithStakedValue[]'.
+src/views/HomeTrade/ExploreMelegaEcosystem.tsx(12,3): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean; }>'.
+src/views/HomeTrade/ExploreMelegaEcosystem.tsx(13,3): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean; }>'.
+src/views/HomeTrade/ExploreMelegaEcosystem.tsx(14,3): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean; }>'.
+src/views/HomeTrade/ExploreMelegaEcosystem.tsx(15,3): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean; }>'.
+src/views/HomeTrade/ExploreMelegaEcosystem.tsx(16,3): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean; }>'.
+src/views/ListStudio/createToken/createTokenTx.ts(150,39): error TS2791: Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later.
+src/views/ListStudio/createTokenReadiness.ts(51,11): error TS1355: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals.
+src/views/Pools/components/CakeVaultCard/VaultStakeModal.tsx(230,9): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/Pools/components/Modals/StakeModal.tsx(140,44): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(24,45): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(26,48): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(27,44): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(28,54): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(38,45): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(40,50): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(41,46): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/Pools/helpers.tsx(42,56): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/buildPools24hRewards.ts(49,15): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/modules/buildPools24hRewards.ts(49,72): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/modules/buildPools24hRewards.ts(157,37): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts(47,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts(286,65): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts(288,69): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/PoolsHeroArtwork.tsx(173,89): error TS2769: No overload matches this call.
+src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts(77,39): error TS2345: Argument of type 'BigNumber | BigNumber' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts(397,37): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts(490,39): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/buildPoolGateReport.ts(90,21): error TS2339: Property 'bonusEndBlock' does not exist on type 'DeserializedPool<Token>'.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(41,15): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(41,72): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(47,49): error TS2339: Property 'bonusEndBlock' does not exist on type 'DeserializedPool<Token>'.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(127,32): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(171,27): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts(260,49): error TS2339: Property 'bonusEndBlock' does not exist on type 'DeserializedPool<Token>'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(33,15): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(33,72): error TS2352: Conversion of type 'string' to type 'BigNumber' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(51,30): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(103,21): error TS2304: Cannot find name 'PoolVisibilityStatus'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(149,40): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(223,39): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(341,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(342,5): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts(371,44): error TS2345: Argument of type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default' is not assignable to parameter of type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/PoolsActionHost.tsx(62,9): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/PoolsActionHost.tsx(70,24): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/PoolsActionHost.tsx(78,9): error TS2322: Type 'BigNumber | BigNumber' is not assignable to type 'BigNumber'.
+src/views/PoolsStudio/poolsRuntime/PoolsActionHost.tsx(88,9): error TS2322: Type 'BigNumber' is not assignable to type 'import("/Users/marcomelega/Projects/MelegaSwapV2/apps/web/node_modules/bignumber.js/bignumber").default'.
+src/views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime.ts(652,11): error TS2367: This comparison appears to be unintentional because the types '"idle"' and '"calculating_rewards"' have no overlap.
+src/views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime.ts(685,5): error TS2322: Type '{ label: string; value: string; tone: "muted"; icon: string; reason: string; }[] | ({ label: string; value: string; tone: "green"; icon: string; reason: string; } | { label: string; value: string; tone: "green"; icon: string; reason?: undefined; } | { ...; })[]' is not assignable to type '{ label: string; value: string; tone: "gold" | "blue" | "green"; icon: string; reason?: string; }[]'.
+src/views/shared/monetization/CommercialCheckoutModal.tsx(2131,24): error TS2345: Argument of type '"ready" | "switch_network"' is not assignable to parameter of type 'SetStateAction<WalletFlowStage>'.
+src/views/shared/monetization/CommercialCheckoutModal.tsx(2148,9): error TS2740: Type '{}' is missing the following properties from type 'TransactionReceipt': to, from, contractAddress, transactionIndex, and 11 more.
+src/views/shared/monetization/CommercialCheckoutModal.tsx(2361,28): error TS2345: Argument of type '"ready" | "switch_network"' is not assignable to parameter of type 'SetStateAction<WalletFlowStage>'.
+src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapVisualRoute.tsx(189,9): error TS2322: Type '{ badSrcs: { [imageSrc: string]: true; }; size: string; srcs: string[]; width: string; alt: string; style: { borderRadius: string; }; }' is not assignable to type 'IntrinsicAttributes & TokenLogoProps & { children?: ReactNode; }'.
+src/views/Swap/components/CurrencyInputHeader.tsx(100,101): error TS2769: No overload matches this call.
+src/views/Swap/SmartSwap/hooks/useSwapCallback.ts(136,39): error TS2339: Property 'message' does not exist on type 'MelegaSmartRouterResult'.
+src/views/Trade/tradeRuntime/formatTradeRuntime.ts(12,39): error TS2345: Argument of type 'CurrencyAmount<Currency>' is not assignable to parameter of type 'BigNumber'.
+src/views/Trade/tradeRuntime/formatTradeRuntime.ts(40,28): error TS2339: Property 'V3' does not exist on type 'typeof RouteType'.
+src/views/Trade/tradeRuntime/formatTradeRuntime.ts(41,28): error TS2339: Property 'STABLE' does not exist on type 'typeof RouteType'.
+../../packages/tokens/src/56.ts(4025,3): error TS1117: An object literal cannot have multiple properties with the same name.
+../../packages/tokens/src/56.ts(4041,3): error TS1117: An object literal cannot have multiple properties with the same name.
+../../packages/tokens/src/helpers.ts(7,14): error TS2741: Property '[ChainId.BSC_TESTNET]' is missing in type '{ 1: {}; 56: {}; 42161: {}; 137: {}; 148: {}; 8453: {}; 10: {}; 324: {}; 43114: {}; 250: {}; 25: {}; 369: {}; }' but required in type 'Readonly<{ 1: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList; }; }>; 56: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList; }; }>; ... 10 more ...; 324: Readonly<...>; }>'.

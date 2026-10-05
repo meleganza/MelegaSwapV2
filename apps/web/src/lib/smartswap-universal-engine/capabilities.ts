@@ -15,7 +15,7 @@ export type VenueCapability = (typeof VENUE_CAPABILITY)[keyof typeof VENUE_CAPAB
 export type VenueCapabilityMap = Record<VenueCapability, boolean>
 
 export function capabilityMap(enabled: VenueCapability[]): VenueCapabilityMap {
-  const map = {
+  const map: VenueCapabilityMap = {
     QUOTE: false,
     EXACT_IN: false,
     EXACT_OUT: false,
@@ -25,7 +25,7 @@ export function capabilityMap(enabled: VenueCapability[]): VenueCapabilityMap {
     EVM: false,
     SOLANA: false,
     CROSS_CHAIN: false,
-  } satisfies VenueCapabilityMap
+  }
   for (const cap of enabled) map[cap] = true
   return map
 }

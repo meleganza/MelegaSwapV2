@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import keyBy from 'lodash/keyBy'
 import type {
   PoolsState,
@@ -43,11 +43,18 @@ const initialState: PoolsState = {
 
 type PoolUserData = {
   sousId: number
-  allowance: unknown
-  stakingTokenBalance: unknown
-  stakedBalance: unknown
-  pendingReward: unknown
+  allowance: string
+  stakingTokenBalance: string
+  stakedBalance: string
+  pendingReward: string
 }
+
+const poolsUserDataFulfilled = createAction<PoolUserData[]>('pool/fetchPoolsUserData/fulfilled')
+const poolsUserDataRejected = createAction<unknown>('pool/fetchPoolsUserData/rejected')
+const cakeVaultPublicDataFulfilled = createAction<SerializedLockedCakeVault>('cakeVault/fetchPublicData/fulfilled')
+const cakeVaultFeesFulfilled = createAction<SerializedVaultFees>('cakeVault/fetchFees/fulfilled')
+const cakeVaultUserFulfilled = createAction<SerializedVaultUser>('cakeVault/fetchUser/fulfilled')
+const ifoPublicDataFulfilled = createAction<PublicIfoData>('ifoVault/fetchIfoPublicDataAsync/fulfilled')
 
 export const poolsSlice = createSlice({
   name: 'Pools',
@@ -81,7 +88,7 @@ export const poolsSlice = createSlice({
       state.userDataLoaded = false
       state.cakeVault = { ...state.cakeVault, userData: initialPoolVaultState.userData }
     })
-    builder.addCase('pool/fetchPoolsUserData/fulfilled', (state, action: PayloadAction<PoolUserData[]>) => {
+    builder.addCase(poolsUserDataFulfilled, (state, action) => {
       const userDataBySousId = keyBy(action.payload, 'sousId')
       state.data = state.data.map((pool) => ({
         ...pool,
@@ -90,22 +97,22 @@ export const poolsSlice = createSlice({
       }))
       state.userDataLoaded = true
     })
-    builder.addCase('pool/fetchPoolsUserData/rejected', (_state, action) => {
+    builder.addCase(poolsUserDataRejected, (_state, action) => {
       console.error('[Pools Action] Error fetching pool user data', action.payload)
     })
     builder.addCase(
-      'cakeVault/fetchPublicData/fulfilled',
+      cakeVaultPublicDataFulfilled,
       (state, action: PayloadAction<SerializedLockedCakeVault>) => {
         state.cakeVault = { ...state.cakeVault, ...action.payload }
       },
     )
-    builder.addCase('cakeVault/fetchFees/fulfilled', (state, action: PayloadAction<SerializedVaultFees>) => {
+    builder.addCase(cakeVaultFeesFulfilled, (state, action) => {
       state.cakeVault = { ...state.cakeVault, fees: action.payload }
     })
-    builder.addCase('cakeVault/fetchUser/fulfilled', (state, action: PayloadAction<SerializedVaultUser>) => {
+    builder.addCase(cakeVaultUserFulfilled, (state, action) => {
       state.cakeVault = { ...state.cakeVault, userData: action.payload }
     })
-    builder.addCase('ifoVault/fetchIfoPublicDataAsync/fulfilled', (state, action: PayloadAction<PublicIfoData>) => {
+    builder.addCase(ifoPublicDataFulfilled, (state, action) => {
       state.ifo = { ...state.ifo, ceiling: action.payload.ceiling }
     })
   },

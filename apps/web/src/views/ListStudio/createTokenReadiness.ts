@@ -48,7 +48,9 @@ export const CREATE_TOKEN_READINESS = {
   deploymentAuthorityReady: true,
   verificationReady: true,
   executionEnabled: factoryBound && LIST_CREATE_TOKEN_AVAILABLE,
-  uiMode: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE ? 'user_create_token' : 'readiness_explanation') as const,
+  uiMode: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE
+    ? 'user_create_token'
+    : 'readiness_explanation') as 'user_create_token' | 'readiness_explanation',
   uiState: (factoryBound && LIST_CREATE_TOKEN_AVAILABLE
     ? 'READY'
     : factoryBound
