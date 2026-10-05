@@ -163,10 +163,7 @@ const ProductCard = styled.article<{ $recommended?: boolean }>`
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease;
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
 
   &:hover {
     transform: translateY(-1px);
@@ -215,10 +212,8 @@ const IconBox = styled.div<{ $tone: 'blue' | 'gold' }>`
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: ${({ $tone }) =>
-    $tone === 'blue' ? 'rgba(59, 130, 246, 0.10)' : 'rgba(244, 196, 48, 0.10)'};
-  border: 1px solid
-    ${({ $tone }) => ($tone === 'blue' ? 'rgba(59, 130, 246, 0.22)' : 'rgba(244, 196, 48, 0.25)')};
+  background: ${({ $tone }) => ($tone === 'blue' ? 'rgba(59, 130, 246, 0.10)' : 'rgba(244, 196, 48, 0.10)')};
+  border: 1px solid ${({ $tone }) => ($tone === 'blue' ? 'rgba(59, 130, 246, 0.22)' : 'rgba(244, 196, 48, 0.25)')};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -262,12 +257,8 @@ const TokenCircle = styled.div<{ $variant: 'blue' | 'gold' }>`
   color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   background: ${({ $variant }) =>
-    $variant === 'blue'
-      ? 'linear-gradient(180deg, #1e3a5f, #2563eb)'
-      : 'linear-gradient(180deg, #d9a500, #f4c430)'};
-  border: 1px solid
-    ${({ $variant }) =>
-      $variant === 'blue' ? 'rgba(96, 165, 250, 0.35)' : 'rgba(244, 196, 48, 0.45)'};
+    $variant === 'blue' ? 'linear-gradient(180deg, #1e3a5f, #2563eb)' : 'linear-gradient(180deg, #d9a500, #f4c430)'};
+  border: 1px solid ${({ $variant }) => ($variant === 'blue' ? 'rgba(96, 165, 250, 0.35)' : 'rgba(244, 196, 48, 0.45)')};
   margin-left: ${({ $variant }) => ($variant === 'gold' ? '-14px' : '0')};
 `
 
@@ -548,10 +539,7 @@ type ProgramUiState = 'none' | 'pending' | 'active' | 'paused'
 function mapProgramUi(status: ProgramStatus, activationPending: boolean): ProgramUiState {
   if (status === 'ACTIVE') return 'active'
   if (status === 'SAFETY_PAUSED' || status === 'PAUSED') return 'paused'
-  if (
-    activationPending ||
-    ['SETUP_REQUIRED', 'AWAITING_APPROVAL', 'AWAITING_DEPOSIT', 'READY'].includes(status)
-  ) {
+  if (activationPending || ['SETUP_REQUIRED', 'AWAITING_APPROVAL', 'AWAITING_DEPOSIT', 'READY'].includes(status)) {
     return 'pending'
   }
   return 'none'
@@ -575,16 +563,14 @@ const LiquidityStudioHome: React.FC = () => {
 
   const overview = useMemo(() => {
     const summary = liquidityWalletPortfolio.summary
-    const positions = (liquidityWalletPortfolio.positions ?? []).filter(
-      (p) => p.positionType === 'LIQUIDITY',
-    )
+    const positions = (liquidityWalletPortfolio.positions ?? []).filter((p) => p.positionType === 'LIQUIDITY')
     const connected = Boolean(account)
     if (!connected || positionsLoading) {
       return { lpValue: '—', fees: '—', count: '—' as string }
     }
     const knownEmpty = positions.length === 0
     return {
-      lpValue: formatUsd(summary.netWorthUsd),
+      lpValue: formatUsd(summary.netValueUsd),
       fees: formatUsd(summary.claimableValueUsd),
       count: knownEmpty || positions.length > 0 ? String(positions.length) : '—',
     }
@@ -594,8 +580,8 @@ const LiquidityStudioHome: React.FC = () => {
     programUi === 'active'
       ? 'Open Liquidity Building'
       : programUi === 'pending'
-        ? 'View Activation Status'
-        : 'Set Up Liquidity Building'
+      ? 'View Activation Status'
+      : 'Set Up Liquidity Building'
 
   const programCopy =
     programUi === 'active'
@@ -606,25 +592,25 @@ const LiquidityStudioHome: React.FC = () => {
           cta: 'Open Dashboard',
         }
       : programUi === 'paused'
-        ? {
-            color: '#ef4444',
-            title: 'Safety paused',
-            body: lb.programReason || 'Your program is paused for safety. Review requirements to continue.',
-            cta: 'Review Program',
-          }
-        : programUi === 'pending'
-          ? {
-              color: '#f59e0b',
-              title: 'Activation pending',
-              body: 'Your program is configured and waiting for activation requirements.',
-              cta: 'View Activation Status',
-            }
-          : {
-              color: '#7a7a7a',
-              title: 'No active program',
-              body: 'Set up a Liquidity Building program to get started.',
-              cta: 'View Status',
-            }
+      ? {
+          color: '#ef4444',
+          title: 'Safety paused',
+          body: lb.programReason || 'Your program is paused for safety. Review requirements to continue.',
+          cta: 'Review Program',
+        }
+      : programUi === 'pending'
+      ? {
+          color: '#f59e0b',
+          title: 'Activation pending',
+          body: 'Your program is configured and waiting for activation requirements.',
+          cta: 'View Activation Status',
+        }
+      : {
+          color: '#7a7a7a',
+          title: 'No active program',
+          body: 'Set up a Liquidity Building program to get started.',
+          cta: 'View Status',
+        }
 
   return (
     <Page data-testid="liquidity-studio-home" data-ls-view="home">

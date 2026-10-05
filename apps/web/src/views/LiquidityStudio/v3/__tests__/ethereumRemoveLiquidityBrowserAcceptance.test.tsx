@@ -55,7 +55,7 @@ function ethereumPosition(): LiquidityPositionRow {
       toSignificant: () => '1.25',
       quotient: { toString: () => '1250000000000000000' },
       currency: { address: ETH_LP, decimals: 18, chainId: 1 },
-    } as LiquidityPositionRow['lpBalance'],
+    } as unknown as LiquidityPositionRow['lpBalance'],
   }
 }
 

@@ -60,7 +60,9 @@ const Bar = styled.div<{ $gold?: boolean; $scale?: number }>`
   width: ${liquidityStudioLayout.liquidityBarWidth};
   min-height: 48px;
   height: ${({ $scale }) =>
-    $scale ? Math.max(48, liquidityStudioLayout.liquidityBarHeight * $scale) : liquidityStudioLayout.liquidityBarHeight}px;
+    $scale
+      ? `${Math.max(48, Number.parseFloat(liquidityStudioLayout.liquidityBarHeight) * $scale)}px`
+      : liquidityStudioLayout.liquidityBarHeight};
   border-radius: 999px;
   background: ${({ $gold }) =>
     $gold
@@ -141,8 +143,7 @@ const IlChart = styled.div`
   min-height: 48px;
   border-radius: 8px;
   overflow: hidden;
-  background-image:
-    linear-gradient(${liquidityStudioColors.rowBorder} 1px, transparent 1px),
+  background-image: linear-gradient(${liquidityStudioColors.rowBorder} 1px, transparent 1px),
     linear-gradient(90deg, ${liquidityStudioColors.rowBorder} 1px, transparent 1px);
   background-size: 20px 20px;
 `
@@ -184,13 +185,9 @@ const SplitDivider = styled.span`
 export const PositionPreviewPanel: React.FC = () => {
   const { preview, loadingLabel, mode, selectedPosition } = useLiquidityRuntime()
   const tokenASymbol =
-    preview.tokenASymbol && preview.tokenASymbol !== 'A' && preview.tokenASymbol !== '—'
-      ? preview.tokenASymbol
-      : '—'
+    preview.tokenASymbol && preview.tokenASymbol !== 'A' && preview.tokenASymbol !== '—' ? preview.tokenASymbol : '—'
   const tokenBSymbol =
-    preview.tokenBSymbol && preview.tokenBSymbol !== 'B' && preview.tokenBSymbol !== '—'
-      ? preview.tokenBSymbol
-      : '—'
+    preview.tokenBSymbol && preview.tokenBSymbol !== 'B' && preview.tokenBSymbol !== '—' ? preview.tokenBSymbol : '—'
   const leftPct = preview.tokenAPct > 0 ? preview.tokenAPct : mode === 'Remove Liquidity' && !selectedPosition ? 0 : 50
   const rightPct = preview.tokenBPct > 0 ? preview.tokenBPct : mode === 'Remove Liquidity' && !selectedPosition ? 0 : 50
   const leftScale = Math.max(0.35, Number(leftPct) / 100 || 0.35)
@@ -222,71 +219,71 @@ export const PositionPreviewPanel: React.FC = () => {
           </StatusNote>
         ) : (
           <>
-        <Bars>
-          <BarCol>
-            <Bar $scale={leftScale} data-ls-liquidity-bar />
-            <BarLabel>{tokenASymbol}</BarLabel>
-            <BarPct>{leftPct}%</BarPct>
-          </BarCol>
-          <BarCol>
-            <Bar $gold $scale={rightScale} data-ls-liquidity-bar />
-            <BarLabel>{tokenBSymbol}</BarLabel>
-            <BarPct>{rightPct}%</BarPct>
-          </BarCol>
-        </Bars>
-        <SplitBadge aria-label={`${tokenASymbol} ${leftPct}% / ${tokenBSymbol} ${rightPct}%`}>
-          <SplitHalf>
-            {tokenASymbol} {leftPct}%
-          </SplitHalf>
-          <SplitDivider />
-          <SplitHalf $gold>
-            {tokenBSymbol} {rightPct}%
-          </SplitHalf>
-        </SplitBadge>
-        <Metrics>
-          <MetricCard>
-            <MetricLabel>{mode === 'Remove Liquidity' ? 'LP removed' : 'Expected LP'}</MetricLabel>
-            <MetricValue style={{ overflowWrap: 'anywhere' }}>{preview.expectedLp}</MetricValue>
-          </MetricCard>
-          <MetricCard>
-            <MetricLabel>Pool share</MetricLabel>
-            <MetricValue>{preview.poolShare}</MetricValue>
-          </MetricCard>
-          <MetricCard>
-            <MetricLabel>APR</MetricLabel>
-            <MetricValue>{preview.apr}</MetricValue>
-          </MetricCard>
-          <MetricCard>
-            <MetricLabel>Fee tier</MetricLabel>
-            <MetricValue>{preview.feeTier}</MetricValue>
-          </MetricCard>
-          {preview.estimatedDailyFees ? (
-            <MetricCard>
-              <MetricLabel>Est. daily fees</MetricLabel>
-              <MetricValue style={{ fontSize: '18px' }}>{preview.estimatedDailyFees}</MetricValue>
-            </MetricCard>
-          ) : null}
-          {preview.currentValue ? (
-            <MetricCard>
-              <MetricLabel>Current value</MetricLabel>
-              <MetricValue style={{ fontSize: '18px' }}>{preview.currentValue}</MetricValue>
-            </MetricCard>
-          ) : null}
-        </Metrics>
-        <IlBlock>
-          <IlTitle>Impermanent loss preview ({preview.impermanentLoss})</IlTitle>
-          <IlChart data-ls-mini-chart aria-hidden>
-            <IlSvg viewBox="0 0 400 60" preserveAspectRatio="none">
-              <path
-                d="M 0 48 Q 100 6 200 32 T 400 20"
-                fill="none"
-                stroke={liquidityStudioColors.gold}
-                strokeWidth="2"
-                vectorEffect="non-scaling-stroke"
-              />
-            </IlSvg>
-          </IlChart>
-        </IlBlock>
+            <Bars>
+              <BarCol>
+                <Bar $scale={leftScale} data-ls-liquidity-bar />
+                <BarLabel>{tokenASymbol}</BarLabel>
+                <BarPct>{leftPct}%</BarPct>
+              </BarCol>
+              <BarCol>
+                <Bar $gold $scale={rightScale} data-ls-liquidity-bar />
+                <BarLabel>{tokenBSymbol}</BarLabel>
+                <BarPct>{rightPct}%</BarPct>
+              </BarCol>
+            </Bars>
+            <SplitBadge aria-label={`${tokenASymbol} ${leftPct}% / ${tokenBSymbol} ${rightPct}%`}>
+              <SplitHalf>
+                {tokenASymbol} {leftPct}%
+              </SplitHalf>
+              <SplitDivider />
+              <SplitHalf $gold>
+                {tokenBSymbol} {rightPct}%
+              </SplitHalf>
+            </SplitBadge>
+            <Metrics>
+              <MetricCard>
+                <MetricLabel>{mode === 'Remove Liquidity' ? 'LP removed' : 'Expected LP'}</MetricLabel>
+                <MetricValue style={{ overflowWrap: 'anywhere' }}>{preview.expectedLp}</MetricValue>
+              </MetricCard>
+              <MetricCard>
+                <MetricLabel>Pool share</MetricLabel>
+                <MetricValue>{preview.poolShare}</MetricValue>
+              </MetricCard>
+              <MetricCard>
+                <MetricLabel>APR</MetricLabel>
+                <MetricValue>{preview.apr}</MetricValue>
+              </MetricCard>
+              <MetricCard>
+                <MetricLabel>Fee tier</MetricLabel>
+                <MetricValue>{preview.feeTier}</MetricValue>
+              </MetricCard>
+              {preview.estimatedDailyFees ? (
+                <MetricCard>
+                  <MetricLabel>Est. daily fees</MetricLabel>
+                  <MetricValue style={{ fontSize: '18px' }}>{preview.estimatedDailyFees}</MetricValue>
+                </MetricCard>
+              ) : null}
+              {preview.currentValue ? (
+                <MetricCard>
+                  <MetricLabel>Current value</MetricLabel>
+                  <MetricValue style={{ fontSize: '18px' }}>{preview.currentValue}</MetricValue>
+                </MetricCard>
+              ) : null}
+            </Metrics>
+            <IlBlock>
+              <IlTitle>Impermanent loss preview ({preview.impermanentLoss})</IlTitle>
+              <IlChart data-ls-mini-chart aria-hidden>
+                <IlSvg viewBox="0 0 400 60" preserveAspectRatio="none">
+                  <path
+                    d="M 0 48 Q 100 6 200 32 T 400 20"
+                    fill="none"
+                    stroke={liquidityStudioColors.gold}
+                    strokeWidth="2"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </IlSvg>
+              </IlChart>
+            </IlBlock>
           </>
         )}
       </Body>

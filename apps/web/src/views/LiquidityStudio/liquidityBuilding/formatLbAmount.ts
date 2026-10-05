@@ -32,10 +32,7 @@ export function formatLbTokenAmount(
     } catch {
       human = trimmed
     }
-  } else if (
-    WEI_LIKE.test(trimmed) &&
-    BigInt(trimmed) >= BigInt(10) ** BigInt(Math.max(0, decimals - 2))
-  ) {
+  } else if (WEI_LIKE.test(trimmed) && BigInt(trimmed) >= BigInt(`1${'0'.repeat(Math.max(0, decimals - 2))}`)) {
     // Mid-size integers that look like wei at 18 decimals (e.g. 1e18)
     try {
       const asUnits = formatUnits(trimmed, decimals)

@@ -152,7 +152,7 @@ describe('founderActivateFlow', () => {
       wallet,
     })
     expect(result.ok).toBe(false)
-    if (result.ok) return
+    if (!('reason' in result)) return
     expect(result.step).toBe('REJECTED')
     expect(result.reason).toBe('WALLET_REJECTED')
   })
@@ -162,14 +162,14 @@ describe('founderActivateFlow', () => {
       ok: true,
       reason: null,
     })
-    expect(
-      canSubmitFounderWalletActivate({ walletConnected: false, correctChain: true, factoryBound: true }).ok,
-    ).toBe(false)
+    expect(canSubmitFounderWalletActivate({ walletConnected: false, correctChain: true, factoryBound: true }).ok).toBe(
+      false,
+    )
   })
 
   it('wires Activate CTA to founder activateProgram writer (no stub)', () => {
-    const fs = require('node:fs') as typeof import('node:fs')
-    const path = require('node:path') as typeof import('node:path')
+    const fs = require('fs') as typeof import('fs')
+    const path = require('path') as typeof import('path')
     const root = path.resolve(__dirname, '..')
     const hook = fs.readFileSync(path.join(root, 'useLiquidityBuildingCard.ts'), 'utf8')
     expect(hook).toContain('activateProgram')
@@ -211,4 +211,3 @@ describe('founderActivateFlow', () => {
     expect(events.some((e) => e.includes('Program activated'))).toBe(true)
   })
 })
-
