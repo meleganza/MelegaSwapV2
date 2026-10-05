@@ -1,19 +1,22 @@
 import React, { useEffect } from 'react'
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { MelegaTicker } from '../MelegaTicker'
+import { MelegaTicker, type MelegaTickerItem } from '../MelegaTicker'
 import { mergeTickerWithPaidPlacements, type PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
+import { resolveTopMoverDisplayMeta } from 'lib/trending/buildServerTopMoversSnapshot'
+import { entriesToTickerItems, type TopMoverEntry } from 'lib/trending/topMoversSharedSnapshot'
 import { TrendingRibbon } from 'views/HomeTrade/TrendingRibbon'
 
-const ribbonState = ((globalThis as { __trendBoostRibbonState?: { items: Array<Record<string, unknown>>; rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState =
-  (globalThis as { __trendBoostRibbonState?: { items: Array<Record<string, unknown>>; rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState ?? {
+type RibbonState = { items: MelegaTickerItem[]; rankedAssets: Array<Record<string, unknown>> }
+const ribbonState = ((globalThis as unknown as { __trendBoostRibbonState?: RibbonState }).__trendBoostRibbonState =
+  (globalThis as unknown as { __trendBoostRibbonState?: RibbonState }).__trendBoostRibbonState ?? {
     items: [],
     rankedAssets: [],
   })
 
 vi.mock('views/HomeTrade/useDexTrendingTicker', () => ({
   default: () => ({
-    items: (globalThis as { __trendBoostRibbonState: { items: Array<Record<string, unknown>> } }).__trendBoostRibbonState.items,
+    items: (globalThis as unknown as { __trendBoostRibbonState: RibbonState }).__trendBoostRibbonState.items,
     useMarquee: false,
     trendingEmpty: false,
     isLoading: false,
@@ -23,7 +26,7 @@ vi.mock('views/HomeTrade/useDexTrendingTicker', () => ({
 vi.mock('views/HomeTrade/TopMoversSnapshotContext', () => ({
   useTopMoversSnapshot: () => ({
     snapshot: { snapshotId: 'logo-identity-fix' },
-    rankedAssets: (globalThis as { __trendBoostRibbonState: { rankedAssets: Array<Record<string, unknown>> } }).__trendBoostRibbonState.rankedAssets,
+    rankedAssets: (globalThis as unknown as { __trendBoostRibbonState: RibbonState }).__trendBoostRibbonState.rankedAssets,
   }),
 }))
 
@@ -88,6 +91,76 @@ describe('ticker interaction and identity continuity', () => {
     rerender(<MelegaTicker items={items} marqueeMinItems={2} paused />)
     expect(container.querySelectorAll('a')).toHaveLength(6)
     expect(state(container)).toBe('paused')
+  })
+})
+
+describe('organic Top Movers identity through the server snapshot and TrendingRibbon', () => {
+  afterEach(() => {
+    ribbonState.items = []
+    ribbonState.rankedAssets = []
+  })
+
+  it('recovers live canonical symbols, keeps ranking data, and never renders an address label', () => {
+    const rows = [
+      {
+        address: '0xaa7cd678c8a2809c6dff1250a87f184e779922c9',
+        live: { address: '0xAA7cD678C8a2809c6DFF1250a87f184E779922c9', symbol: 'BROWNIE', name: "CZ's Dog" },
+        accent: '↑ 6.2%',
+        accentPositive: true,
+      },
+      {
+        address: '0xad29abb318791d579433d831ed122afeaf29dcfe',
+        live: { address: '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', symbol: 'FTM', name: 'Fantom' },
+        accent: '↑ 4.2%',
+        accentPositive: true,
+      },
+    ]
+    const entries: TopMoverEntry[] = rows.map(({ address, live, accent, accentPositive }) => {
+      const meta = resolveTopMoverDisplayMeta(address, live)
+      return {
+        id: `trade-asset-${address}`,
+        symbol: meta.symbol,
+        address,
+        chainId: meta.chainId,
+        changeLabel: accent,
+        changePct: Number(accent.replace(/[^0-9.-]/g, '')),
+        accentPositive,
+        href: `/swap?outputCurrency=${address}`,
+      }
+    })
+    ribbonState.items = entriesToTickerItems(entries)
+    ribbonState.rankedAssets = rows.map(({ address, live }, index) => {
+      const meta = resolveTopMoverDisplayMeta(address, live)
+      return {
+        address,
+        chainId: meta.chainId,
+        symbol: meta.symbol,
+        displayName: meta.displayName,
+        slug: address,
+        change24h: { pct: index === 0 ? 6.2 : 4.2 },
+      }
+    })
+
+    const { container } = render(<TrendingRibbon />)
+    const labels = [...container.querySelectorAll('a')].map((node) => node.textContent ?? '')
+    expect(labels.slice(0, 2)).toEqual(expect.arrayContaining([expect.stringContaining('BROWNIE'), expect.stringContaining('FTM')]))
+    expect(labels.join(' ')).toContain('↑ 6.2%')
+    expect(labels.join(' ')).toContain('↑ 4.2%')
+    expect(labels.join(' ')).not.toMatch(/0x[a-fA-F0-9]{4,}(?:…|\.\.\.)[a-fA-F0-9]{4,}/)
+    expect(labels.join(' ')).not.toMatch(/0x[a-fA-F0-9]{40}/)
+  })
+
+  it('uses a neutral unknown label and rejects metadata for another address', () => {
+    const address = '0x1111111111111111111111111111111111111111'
+    const unknown = resolveTopMoverDisplayMeta(address)
+    const crossAddress = resolveTopMoverDisplayMeta(address, {
+      address: '0x2222222222222222222222222222222222222222',
+      symbol: 'WRONG',
+      name: 'Wrong chain/address identity',
+    })
+    expect(unknown.symbol).toBe('Unknown token')
+    expect(crossAddress.symbol).toBe('Unknown token')
+    expect(unknown.symbol).not.toMatch(/^0x|0x.*…/i)
   })
 })
 
