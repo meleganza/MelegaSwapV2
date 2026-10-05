@@ -64,11 +64,11 @@ describe('DS001.2 global header shell contracts', () => {
   it('secondary surfaces remain available via More overflow destinations', () => {
     expect(MORE_DROPDOWN_ITEMS.map((i) => i.label)).toEqual([
       'Trending Projects',
-      'DEX Intelligence',
       'Identity Hub',
       'Identity Console',
       'Build Studio',
     ])
+    expect(MORE_DROPDOWN_ITEMS.some((i) => i.href === '/radar' || i.label === 'DEX Intelligence')).toBe(false)
   })
 
   it('GlobalSearch placeholder matches approved mockup', () => {

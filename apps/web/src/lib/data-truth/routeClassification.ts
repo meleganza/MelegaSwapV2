@@ -22,13 +22,6 @@ export const MELEGA_ROUTE_CLASSIFICATION: ClassifiedRoute[] = [
   { path: '/trending', classification: 'PUBLIC_PRODUCT', label: 'Trending', publicNav: true },
   { path: '/projects', classification: 'PUBLIC_PRODUCT', label: 'Projects', publicNav: true },
   { path: '/collectibles', classification: 'PUBLIC_PRODUCT', label: 'Identity Hub', publicNav: true },
-  {
-    path: '/radar',
-    classification: 'PUBLIC_PRODUCT',
-    label: 'DEX Intelligence',
-    publicNav: true,
-    notes: 'Coming Soon — analytics not operational',
-  },
   { path: '/build', classification: 'PUBLIC_PRODUCT', label: 'Build Studio', publicNav: true },
   { path: '/orchestrator', classification: 'OPERATOR_ONLY', label: 'Economic Orchestrator', publicNav: false },
   { path: '/runtime/labs', classification: 'INTERNAL', label: 'Labs Runtime Connector', publicNav: false },
