@@ -90,9 +90,13 @@ export const useFetchPublicPoolsData = (chainId: number) => {
   const dispatch = useAppDispatch()
   // const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
-  const lPoolAddresses = getPoolsConfigForChain(chainId)
-    .filter(({ sousId }) => sousId !== 0)
-    .map(({ earningToken }) => earningToken.address)
+  const lPoolAddresses = useMemo(
+    () =>
+      getPoolsConfigForChain(chainId)
+        .filter(({ sousId }) => sousId !== 0)
+        .map(({ earningToken }) => earningToken.address),
+    [chainId],
+  )
 
   useSlowRefreshEffect(
     (currentBlock) => {
@@ -108,7 +112,7 @@ export const useFetchPublicPoolsData = (chainId: number) => {
 
       fetchPoolsDataWithFarms()
     },
-    [dispatch, chainId, farmFlag],
+    [dispatch, chainId, farmFlag, lPoolAddresses],
   )
 }
 
@@ -146,7 +150,7 @@ export const usePoolsPageFetch = () => {
         dispatch(fetchCakeFlexibleSideVaultUserData({ account, chainId }))
       }
     })
-  }, [account, dispatch])
+  }, [account, dispatch, chainId])
 
   useEffect(() => {
     batch(() => {
@@ -154,7 +158,7 @@ export const usePoolsPageFetch = () => {
       // if (chainId === 56)
       dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
     })
-  }, [dispatch])
+  }, [dispatch, chainId])
 }
 
 export const useCakeVaultUserData = (chainId) => {
@@ -165,7 +169,7 @@ export const useCakeVaultUserData = (chainId) => {
     if (account) {
       dispatch(fetchCakeVaultUserData({ account, chainId }))
     }
-  }, [account, dispatch])
+  }, [account, dispatch, chainId])
 }
 
 export const useCakeVaultPublicData = () => {
@@ -174,7 +178,7 @@ export const useCakeVaultPublicData = () => {
   const { chainId } = useActiveChainId()
   useFastRefreshEffect(() => {
     dispatch(fetchCakeVaultPublicData({ chainId }))
-  }, [dispatch])
+  }, [dispatch, chainId])
 }
 
 export const useFetchIfo = () => {

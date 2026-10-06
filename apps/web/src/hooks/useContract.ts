@@ -92,7 +92,7 @@ export const useMasterchef = (withSignerIfPossible = true, chainId: number) => {
 
 export const useSousChef = (id, chainId?: number) => {
   const { data: signer } = useSigner()
-  return useMemo(() => getSouschefContract(id, signer, chainId), [id, signer])
+  return useMemo(() => getSouschefContract(id, signer, chainId), [id, signer, chainId])
 }
 
 export const useIfoV3Contract = (address, withSignerIfPossible = true) => {

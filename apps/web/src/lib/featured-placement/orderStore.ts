@@ -3,7 +3,6 @@ import path from 'path'
 import { randomBytes } from 'crypto'
 import { get, list, put } from '@vercel/blob'
 import {
-  CASHBACK_STATES,
   FEATURED_OFFER,
   getFeaturedPackage,
   type FeaturedOrderState,
@@ -242,5 +241,3 @@ export function clearFeaturedOrdersForTests() {
     /* ignore */
   }
 }
-
-export { CASHBACK_STATES }

@@ -31,14 +31,16 @@ export const ClaimProjectFallback: React.FC = () => {
   )
   const [loading, setLoading] = useState(contract.ok)
 
+  const contractAddress = contract.ok ? contract.address : null
+
   useEffect(() => {
-    if (!contract.ok) return
+    if (!contractAddress) return undefined
     let cancelled = false
     setLoading(true)
     void fetch('/api/registry/projects/onboard', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ contract: contract.address, chainId }),
+      body: JSON.stringify({ contract: contractAddress, chainId }),
     })
       .then(async (response) => {
         const payload = await response.json().catch(() => null)
@@ -46,7 +48,7 @@ export const ClaimProjectFallback: React.FC = () => {
         if (!response.ok || !payload?.ok) {
           setReason(payload?.reason || 'This contract is not claimable from this link.')
           setDetected({
-            contract: contract.address,
+            contract: contractAddress,
             chainId,
             name: '',
             symbol: '',
@@ -56,7 +58,7 @@ export const ClaimProjectFallback: React.FC = () => {
         const symbol = payload.dex?.symbol || payload.onChain?.symbol || ''
         const sanitized = sanitizeClaimDisplayName(payload.dex?.name || payload.onChain?.name, symbol)
         setDetected({
-          contract: contract.address,
+          contract: contractAddress,
           chainId,
           name: sanitized.name,
           symbol,
@@ -74,7 +76,7 @@ export const ClaimProjectFallback: React.FC = () => {
     return () => {
       cancelled = true
     }
-  }, [chainId, contract.ok, contract.ok ? contract.address : ''])
+  }, [chainId, contractAddress])
 
   return (
     <div

@@ -67,7 +67,7 @@ const StakeModalContainer = ({
     dispatch(updateUserStakedBalance({ sousId, account, chainId }))
     dispatch(updateUserPendingReward({ sousId, account, chainId }))
     dispatch(updateUserBalance({ sousId, account, chainId }))
-  }, [dispatch, sousId, account])
+  }, [dispatch, sousId, account, chainId])
 
   const handleConfirmClick = useCallback(
     async (stakeAmount: string) => {
@@ -129,6 +129,7 @@ const StakeModalContainer = ({
       onDone,
       onDismiss,
       onTxSuccess,
+      sousId,
       toastSuccess,
       t,
       earningToken.symbol,

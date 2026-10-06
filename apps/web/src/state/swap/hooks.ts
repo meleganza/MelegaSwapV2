@@ -367,7 +367,7 @@ export const useFetchPairPrices = ({
     }
 
     updatePairId()
-  }, [token0Address, token1Address, pairId])
+  }, [token0Address, token1Address, pairId, chainId])
 
   const normalizedPairData = useMemo(
     () => normalizePairDataByActiveToken({ activeToken: token0Address, pairData }),

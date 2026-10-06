@@ -1483,6 +1483,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     inFlow,
     builderStep,
     card.walletConnected,
+    card.correctChain,
     tokenReady,
     budgetReady,
     pairReady,
