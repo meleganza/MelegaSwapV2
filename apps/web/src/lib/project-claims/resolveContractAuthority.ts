@@ -8,6 +8,55 @@ export type ContractAuthority = {
   type: 'owner' | 'getOwner' | 'deployer'
 }
 
+export type ProjectAuthorityState = 'LIVE_OWNER' | 'RENOUNCED_OR_DEAD' | 'UNKNOWN' | 'NO_OWNERSHIP_INTERFACE'
+
+export type ProjectAuthorityDecision = {
+  state: ProjectAuthorityState
+  ownerAddress: string | null
+  authorities: ContractAuthority[]
+}
+
+export type PageClaimDecision = {
+  allowed: boolean
+  authorityType: ContractAuthority['type'] | 'public_registration' | null
+  ownerSignatureRequired: boolean
+}
+
+export function decidePageClaimAuthority(
+  decision: ProjectAuthorityDecision,
+  claimant: string,
+  existingClaimant?: string | null,
+): PageClaimDecision {
+  if (existingClaimant && existingClaimant.toLowerCase() !== claimant.toLowerCase()) {
+    return { allowed: false, authorityType: null, ownerSignatureRequired: false }
+  }
+  if (decision.state === 'RENOUNCED_OR_DEAD') {
+    return { allowed: true, authorityType: 'public_registration', ownerSignatureRequired: false }
+  }
+  const authority = decision.authorities.find(
+    (candidate) => candidate.address.toLowerCase() === claimant.toLowerCase(),
+  )
+  return {
+    allowed: Boolean(authority),
+    authorityType: authority?.type ?? null,
+    ownerSignatureRequired: Boolean(authority),
+  }
+}
+
+const CANONICAL_DEAD_OWNERS = new Set([
+  ethers.constants.AddressZero.toLowerCase(),
+  '0x000000000000000000000000000000000000dead',
+])
+
+export function classifyProjectOwner(value: unknown): ProjectAuthorityDecision | null {
+  if (!ethers.utils.isAddress(String(value ?? ''))) return null
+  const address = ethers.utils.getAddress(String(value))
+  if (CANONICAL_DEAD_OWNERS.has(address.toLowerCase())) {
+    return { state: 'RENOUNCED_OR_DEAD', ownerAddress: address, authorities: [] }
+  }
+  return { state: 'LIVE_OWNER', ownerAddress: address, authorities: [{ address, type: 'owner' }] }
+}
+
 async function readExplorerDeployer(chainId: number, contract: string): Promise<string | null> {
   const apiKey = process.env.ETHERSCAN_API_KEY || process.env.BSCSCAN_API_KEY
   if (!apiKey) return null
@@ -28,10 +77,10 @@ async function readExplorerDeployer(chainId: number, contract: string): Promise<
   }
 }
 
-export async function resolveContractAuthorities(chainId: number, contract: string): Promise<ContractAuthority[]> {
-  if (!ethers.utils.isAddress(contract)) return []
+export async function resolveProjectAuthority(chainId: number, contract: string): Promise<ProjectAuthorityDecision> {
+  if (!ethers.utils.isAddress(contract)) return { state: 'UNKNOWN', ownerAddress: null, authorities: [] }
   const urls = getProjectRpcUrls(chainId)
-  const found = new Map<string, ContractAuthority>()
+  let ownershipInterfaceObserved = false
 
   for (const rpcUrl of urls) {
     try {
@@ -42,10 +91,11 @@ export async function resolveContractAuthorities(chainId: number, contract: stri
       for (const method of ['owner', 'getOwner'] as const) {
         try {
           const value = await token[method]()
-          if (ethers.utils.isAddress(value) && value !== ethers.constants.AddressZero) {
-            const address = ethers.utils.getAddress(value)
-            found.set(address.toLowerCase(), { address, type: method })
-          }
+          const decision = classifyProjectOwner(value)
+          if (!decision) continue
+          ownershipInterfaceObserved = true
+          if (decision.state === 'RENOUNCED_OR_DEAD') return decision
+          return { ...decision, authorities: decision.authorities.map((authority) => ({ ...authority, type: method })) }
         } catch {
           // Many ERC-20 contracts expose only one ownership convention.
         }
@@ -57,6 +107,20 @@ export async function resolveContractAuthorities(chainId: number, contract: stri
   }
 
   const deployer = await readExplorerDeployer(chainId, contract)
-  if (deployer) found.set(deployer.toLowerCase(), { address: deployer, type: 'deployer' })
-  return [...found.values()]
+  if (deployer) {
+    return {
+      state: ownershipInterfaceObserved ? 'UNKNOWN' : 'NO_OWNERSHIP_INTERFACE',
+      ownerAddress: null,
+      authorities: [{ address: deployer, type: 'deployer' }],
+    }
+  }
+  return {
+    state: ownershipInterfaceObserved ? 'UNKNOWN' : 'NO_OWNERSHIP_INTERFACE',
+    ownerAddress: null,
+    authorities: [],
+  }
+}
+
+export async function resolveContractAuthorities(chainId: number, contract: string): Promise<ContractAuthority[]> {
+  return (await resolveProjectAuthority(chainId, contract)).authorities
 }

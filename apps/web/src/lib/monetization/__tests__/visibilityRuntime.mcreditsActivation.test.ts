@@ -16,7 +16,6 @@ describe('M-Credits visibility binding', () => {
       visibilityCheckoutBlocker({
         service: 'featured-pool',
         payment: 'M_CREDITS',
-        projectPageReady: true,
         hasReferral: false,
         hasFeaturedAddOns: false,
       }),
@@ -25,7 +24,6 @@ describe('M-Credits visibility binding', () => {
       visibilityCheckoutBlocker({
         service: 'trend-boost',
         payment: 'M_CREDITS',
-        projectPageReady: true,
         hasReferral: false,
         hasFeaturedAddOns: false,
       }),

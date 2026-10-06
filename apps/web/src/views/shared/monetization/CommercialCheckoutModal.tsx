@@ -34,7 +34,6 @@ import {
   assessPaymentWalletChain,
   resolvePaymentWalletForSettlement,
 } from 'lib/monetization/paymentWalletChain'
-import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import {
   assignMarcoPayHandoff,
   beginMarcoPayIsolation,
@@ -212,24 +211,6 @@ type EligibleVisibilityTarget = {
   pid?: number
   stakeSymbol?: string
   rewardSymbol?: string
-}
-
-type ProjectDraft = {
-  handle: string
-  logoUrl: string
-  description: string
-  website: string
-  x: string
-  telegram: string
-}
-
-const EMPTY_DRAFT: ProjectDraft = {
-  handle: '',
-  logoUrl: '',
-  description: '',
-  website: '',
-  x: '',
-  telegram: '',
 }
 
 const Grid = styled.div<{ $serviceWide?: boolean }>`
@@ -1344,7 +1325,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   projectContract = null,
   chainId = 56,
   initialService = null,
-  identityReady = true,
+  identityReady: _identityReady = true,
   onHistoryChange,
   visibilityOnly: _visibilityOnly = false,
 }) => {
@@ -1358,7 +1339,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [contract, setContract] = useState(projectContract ?? '')
   const [detected, setDetected] = useState<DetectedProject | null>(null)
   const [detecting, setDetecting] = useState(false)
-  const [draft, setDraft] = useState<ProjectDraft>(EMPTY_DRAFT)
   const [pay, setPay] = useState<CommercialPaymentAsset>('BNB')
   const [farmTarget, setFarmTarget] = useState('')
   const [poolTarget, setPoolTarget] = useState('')
@@ -1388,11 +1368,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     packages[0] ??
     null
   const referralCatalogRef = dexReferralCatalogRef(selectedPackage ? String(selectedPackage.id) : null)
-  const projectPageReady = Boolean(detected?.projectPageExists && identityReady)
   const runtimeCheckoutBlocker = visibilityCheckoutBlocker({
     service,
     payment: pay,
-    projectPageReady,
     hasReferral: Boolean(referral.trim() && referralCatalogRef && pay === 'MARCO_PAY'),
     hasFeaturedAddOns: false,
   })
@@ -1473,12 +1451,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       if (!next)
         throw new Error(json.onChain?.reasonUnavailable || 'The token identity could not be verified on-chain.')
       setDetected(next)
-      setDraft((current) => ({
-        ...current,
-        handle: current.handle || next.slug || next.symbol.toLowerCase(),
-        logoUrl: current.logoUrl || next.logoUrl || '',
-        website: current.website || next.website || '',
-      }))
     } catch (cause) {
       setDetected(null)
       setError(cause instanceof Error ? cause.message : String(cause))
@@ -1494,7 +1466,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setIdentityChain(chainId)
     setContract(projectContract ?? '')
     setDetected(null)
-    setDraft(EMPTY_DRAFT)
     setPay('BNB')
     setFarmTarget('')
     setPoolTarget('')
@@ -1657,88 +1628,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     done: index < stepIndex,
   }))
 
-  const publishDetectedProject = useCallback(async (): Promise<boolean> => {
-    if (!detected) return false
-    if (!address || !signer) {
-      setError('Connect the project owner/deployer wallet to verify and publish the Project Page.')
-      return false
-    }
-    if (!draft.description.trim()) {
-      setError('Add a short project description before continuing.')
-      return false
-    }
-    const metadata = normalizeClaimMetadata({
-      name: detected.name,
-      symbol: detected.symbol,
-      handle: draft.handle || detected.symbol,
-      description: draft.description,
-      logo: draft.logoUrl || null,
-      website: draft.website || null,
-      x: draft.x || null,
-      telegram: draft.telegram || null,
-      discord: null,
-    })
-    if (!metadata.handle) {
-      setError('Choose a valid Project Page handle before continuing.')
-      return false
-    }
-
-    setBusy(true)
-    try {
-      const preflightResponse = await fetch('/api/registry/projects/claim', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          action: 'preflight',
-          chainId: detected.chainId,
-          contract: detected.contract,
-          claimant: address,
-        }),
-      })
-      const preflight = await preflightResponse.json()
-      if (!preflightResponse.ok || !preflight.ok) {
-        throw new Error(preflight.reason || 'Project ownership verification failed.')
-      }
-
-      const issuedAt = new Date().toISOString()
-      const message = buildProjectClaimMessage({
-        chainId: detected.chainId,
-        contract: detected.contract,
-        claimant: address,
-        metadata,
-        issuedAt,
-      })
-      const signature = await signer.signMessage(message)
-      const publishResponse = await fetch('/api/registry/projects/claim', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          action: 'publish',
-          chainId: detected.chainId,
-          contract: detected.contract,
-          claimant: address,
-          metadata,
-          issuedAt,
-          signature,
-        }),
-      })
-      const published = await publishResponse.json()
-      if (!publishResponse.ok || !published.ok) {
-        throw new Error(published.reason || 'Project Page publication failed.')
-      }
-      const slug = published.claim?.slug ?? metadata.handle
-      setDetected((current) =>
-        current ? { ...current, tier: 'canonical', slug, projectPageExists: true, logoUrl: metadata.logo } : current,
-      )
-      return true
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Project Page publication failed.')
-      return false
-    } finally {
-      setBusy(false)
-    }
-  }, [address, detected, draft, signer])
-
   const prepareMarcoPayOrder = useCallback(async (): Promise<MarcoPayOrderConfig | null> => {
     if (!selectedPackage || !service || !detected) return null
     if (!VISIBILITY_RUNTIME[service]?.live) return null
@@ -1848,10 +1737,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       if (!detected) {
         setError('Detect the project before choosing visibility.')
         return
-      }
-      if (!detected.projectPageExists) {
-        const published = await publishDetectedProject()
-        if (!published) return
       }
       setStep('service')
       return
@@ -2489,7 +2374,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             disabled={busy || detecting}
             data-testid="commercial-checkout-next"
           >
-            {busy && step === 'project' ? 'Verifying & publishing…' : 'Continue'}
+            {busy && step === 'project' ? 'Checking project…' : 'Continue'}
           </PrimaryBtn>
         )}
       </MelegaModalFooterActions>
@@ -2566,7 +2451,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       </Meta>
                       <BadgeRow>
                         <Badge $green={detected.projectPageExists}>
-                          {detected.projectPageExists ? `Project Page @${detected.slug}` : 'Project Page required'}
+                          {detected.projectPageExists ? `Project Page @${detected.slug}` : 'Unclaimed Project Page'}
                         </Badge>
                         {detected.dexListed ? <Badge $green>Listed</Badge> : <Badge>Detected on-chain</Badge>}
                       </BadgeRow>
@@ -2574,42 +2459,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   </Identity>
                   {!detected.projectPageExists ? (
                     <>
-                      <Alert>
-                        Complete the missing Project Page details here. Continue verifies the connected owner/deployer
-                        wallet, requests a safe signature and publishes the Project Page without leaving this popup.
-                      </Alert>
-                      <FieldGrid>
-                        <Input
-                          value={draft.handle}
-                          onChange={(event) => setDraft({ ...draft, handle: event.target.value.replace(/^@/, '') })}
-                          placeholder="@handle"
-                        />
-                        <Input
-                          value={draft.logoUrl}
-                          onChange={(event) => setDraft({ ...draft, logoUrl: event.target.value })}
-                          placeholder="Logo URL"
-                        />
-                        <Input
-                          value={draft.website}
-                          onChange={(event) => setDraft({ ...draft, website: event.target.value })}
-                          placeholder="Website"
-                        />
-                        <Input
-                          value={draft.x}
-                          onChange={(event) => setDraft({ ...draft, x: event.target.value })}
-                          placeholder="X / Twitter"
-                        />
-                        <Input
-                          value={draft.telegram}
-                          onChange={(event) => setDraft({ ...draft, telegram: event.target.value })}
-                          placeholder="Telegram"
-                        />
-                      </FieldGrid>
-                      <Textarea
-                        value={draft.description}
-                        onChange={(event) => setDraft({ ...draft, description: event.target.value })}
-                        placeholder="Short project description"
-                      />
+                      <Alert>You can boost this project without claiming its Project Page. Page ownership is not being assigned.</Alert>
                     </>
                   ) : null}
                 </Stack>

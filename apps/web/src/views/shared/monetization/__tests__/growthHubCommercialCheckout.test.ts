@@ -88,7 +88,9 @@ describe('MELEGASWAP_V2_GROWTH_HUB_AND_COMMERCIAL_CHECKOUT', () => {
   it('keeps production activation gates instead of activating recovered services', () => {
     const runtime = load('lib/monetization/visibilityRuntime.ts')
     expect(runtime).toContain("'sponsored-research': {")
-    expect(runtime.match(/live: false/g)?.length).toBe(5)
+    for (const capability of ['sponsored-research', 'featured-farm', 'featured-pool', 'projectPublisher']) {
+      expect(runtime).toMatch(new RegExp(`${capability.replace('-', "[-']?")}[^}]+live: false`))
+    }
     expect(checkout).toContain('runtimeCheckoutBlocker ??')
   })
 

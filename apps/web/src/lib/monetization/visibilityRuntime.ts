@@ -30,18 +30,16 @@ export const VISIBILITY_RUNTIME: Record<string, VisibilityRuntimeCapability> = {
   },
   projectPublisher: {
     live: false,
-    reason: 'Project Page ownership proof and publishing must be backed by a server-side registry before checkout.',
+    reason: 'Project Page ownership proof and publishing remain a separate permissioned action.',
   },
 }
 
 export function visibilityCheckoutBlocker(args: {
   service: CommercialServiceId | null
   payment: CommercialPaymentAsset
-  projectPageReady: boolean
   hasReferral: boolean
   hasFeaturedAddOns: boolean
 }): string | null {
-  if (!args.projectPageReady) return VISIBILITY_RUNTIME.projectPublisher.reason
   if (!args.service) return 'Choose a visibility service.'
   const service = VISIBILITY_RUNTIME[args.service]
   if (!service?.live) return service?.reason ?? 'This service is not enabled for production checkout.'

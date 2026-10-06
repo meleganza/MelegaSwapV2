@@ -38,6 +38,25 @@ async function open(service='trend-boost'){
  return close
 }
 describe('Boost P0 behaviour',()=>{
+ it('allows an unclaimed or unknown-authority token to enter the Boost funnel without a claim request',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async(input:string)=>{
+   requests.push(input)
+   const data=input.includes('/onboard')
+    ? {ok:true,tier:'pending',onChain:{verifiedDeployment:true,name:'MISSION 1',symbol:'M01',decimals:18},dex:{listed:true}}
+    : input.includes('/readiness')?{executable:false,paymentMethods:{mCredits:false}}
+    : input.includes('/pair-liquidity')?{}
+    : {targets:[]}
+   return {ok:true,json:async()=>data}
+  }))
+  render(<CommercialCheckoutModal open onClose={vi.fn()} projectId="" projectSlug="" identityReady />)
+  fireEvent.change(screen.getByPlaceholderText('Paste the token address (0x...)'),{target:{value:'0x4034875250F797D00b819e9011c5BB9c2e799631'}})
+  fireEvent.click(screen.getByRole('button',{name:'Detect token'}))
+  expect((await screen.findAllByText('MISSION 1 · $M01')).length).toBeGreaterThan(0)
+  expect(screen.getByText(/boost this project without claiming/i)).toBeTruthy()
+  next()
+  expect(screen.getByTestId('commercial-step-service')).toBeTruthy()
+  expect(requests.some(x=>x.includes('/claim'))).toBe(false)
+ })
  it('retains exactly the active ecosystem destinations',()=>{
   expect(ECOSYSTEM_DESTINATIONS.map(x=>x.id)).toEqual(['passport','smartdrop'])
  })
