@@ -15,7 +15,7 @@ export type ProjectClaimRecord = {
   chainId: number
   contract: string
   claimant: string
-  authorityType: 'owner' | 'getOwner' | 'deployer'
+  authorityType: 'owner' | 'getOwner' | 'deployer' | 'public_registration'
   slug: string
   metadata: ProjectClaimMetadata
   signature: string

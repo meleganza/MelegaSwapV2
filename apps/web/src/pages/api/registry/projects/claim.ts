@@ -2,10 +2,11 @@ import type { NextApiHandler } from 'next'
 import { ethers } from 'ethers'
 import {
   buildProjectClaimMessage,
+  decidePageClaimAuthority,
   getProjectClaimByContract,
   normalizeClaimMetadata,
   persistProjectClaim,
-  resolveContractAuthorities,
+  resolveProjectAuthority,
   toPublicProjectClaim,
   type ProjectClaimMessageInput,
   type ProjectClaimRecord,
@@ -39,16 +40,17 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(400).json({ ok: false, code: 'INVALID_IDENTITY', reason: 'Valid contract and wallet required.' })
   }
 
-  const authorities = await resolveContractAuthorities(chainId, contract)
-  if (!authorities.length) {
+  const authorityDecision = await resolveProjectAuthority(chainId, contract)
+  const existingClaim = await getProjectClaimByContract(chainId, contract)
+  const claimDecision = decidePageClaimAuthority(authorityDecision, claimant, existingClaim?.claimant)
+  if (!authorityDecision.authorities.length && authorityDecision.state !== 'RENOUNCED_OR_DEAD') {
     return res.status(409).json({
       ok: false,
       code: 'AUTHORITY_UNRESOLVED',
       reason: 'This contract does not expose a verifiable owner and no deployer proof is available. Claim is blocked.',
     })
   }
-  const authority = authorities.find((candidate) => candidate.address.toLowerCase() === claimant.toLowerCase())
-  if (!authority) {
+  if (!claimDecision.allowed) {
     return res.status(403).json({
       ok: false,
       code: 'WALLET_NOT_AUTHORIZED',
@@ -57,7 +59,13 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (action === 'preflight') {
-    return res.status(200).json({ ok: true, authorized: true, authorityType: authority.type })
+    return res.status(200).json({
+      ok: true,
+      authorized: true,
+      authorityType: claimDecision.authorityType,
+      authorityState: authorityDecision.state,
+      ownerSignatureRequired: claimDecision.ownerSignatureRequired,
+    })
   }
 
   const issuedAt = String(body.issuedAt ?? '')
@@ -88,7 +96,7 @@ const handler: NextApiHandler = async (req, res) => {
     chainId,
     contract: ethers.utils.getAddress(contract),
     claimant: ethers.utils.getAddress(claimant),
-    authorityType: authority.type,
+    authorityType: claimDecision.authorityType!,
     slug: metadata.handle,
     metadata,
     signature,
