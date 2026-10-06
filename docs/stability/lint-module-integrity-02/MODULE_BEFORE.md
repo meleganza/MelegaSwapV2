@@ -1,7 +1,8 @@
 # Module integrity inventory — before
 
-Mission: `MELEGA-DEX-LINT-MODULE-INTEGRITY-02`  
-Base main: `392736b8b96a7c60719ca590c1bd798c8c3a0b67`  
+Mission: `MELEGA-DEX-LINT-MODULE-INTEGRITY-02`
+
+Base main: `392736b8b96a7c60719ca590c1bd798c8c3a0b67`
 Captured after a clean lockfile install on 2026-10-06.
 
 ## Baseline
@@ -318,4 +319,3 @@ The M2 set is 75 ambiguous barrel reports across six barrel files plus the activ
 | import/no-named-as-default | apps/web/src/views/TrendingStudio/TrendingStudioScreen.tsx:10 | historical/dead | no | Using exported name 'TrendingSidebar' as identifier for default export. Source: import TrendingSidebar from './components/TrendingSidebar' | N4 |
 | import/no-named-as-default | apps/web/src/views/TrendingStudio/TrendingStudioScreen.tsx:11 | historical/dead | no | Using exported name 'TrendingStudioPageHeader' as identifier for default export. Source: import TrendingStudioPageHeader from './components/TrendingStudioPageHeader' | N4 |
 | import/no-named-as-default | apps/web/src/views/TrendingStudio/components/TrendingNowGrid.tsx:6 | historical/dead | no | Using exported name 'TrendingProjectCard' as identifier for default export. Source: import TrendingProjectCard from './TrendingProjectCard' | N4 |
-
