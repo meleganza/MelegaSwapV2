@@ -1,5 +1,5 @@
 import { isMarcoPayIsolationActive } from 'lib/marco-pay/approval'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -236,6 +236,7 @@ export const MarcoConnect: React.FC<{
 
   useEffect(() => {
     if (!isActive || !hostRef.current) return undefined
+    const host = hostRef.current
     let cancelled = false
     let sdk: MarcoConnectSdk | null = null
     let unsubscribeDisconnect: void | (() => void)
@@ -246,10 +247,10 @@ export const MarcoConnect: React.FC<{
       Boolean((window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect?.mount),
     )
       .then(() => {
-        if (cancelled || !hostRef.current) return
+        if (cancelled) return
         const api = (window as Window & { MarcoConnect?: MarcoConnectApi }).MarcoConnect
         if (!api) throw new Error('MARCO_CONNECT_API_UNAVAILABLE')
-        sdk = api.mount(hostRef.current, {
+        sdk = api.mount(host, {
           application: DEFAULT_APPLICATION,
           theme: 'dark',
           size,
@@ -264,7 +265,7 @@ export const MarcoConnect: React.FC<{
           activeMarcoHost?.replaceChildren()
         }
         publishActiveMarcoConnectSdk(sdk)
-        activeMarcoHost = hostRef.current
+        activeMarcoHost = host
         sdkRef.current = sdk
         unsubscribeDisconnect = sdk.on('disconnect', () => {
           if (isMarcoPayIsolationActive()) return
@@ -285,7 +286,7 @@ export const MarcoConnect: React.FC<{
         publishActiveMarcoConnectSdk(null)
         activeMarcoHost = null
         sdk?.destroy()
-        hostRef.current?.replaceChildren()
+        host.replaceChildren()
       }
     }
   }, [isActive, size])
@@ -293,7 +294,7 @@ export const MarcoConnect: React.FC<{
   const navbar = resolveMarcoConnectNavbarState(address)
   const displayedAddress = address || null
   const shortAddress = navbar.connected ? navbar.label : null
-  const requestPassportOpen = () => {
+  const requestPassportOpen = useCallback(() => {
     if (isMarcoPayIsolationActive()) return
     const sdk = sdkRef.current
     if (!ready || failed || !sdk || passportOpenRef.current) return
@@ -302,12 +303,12 @@ export const MarcoConnect: React.FC<{
       if (passportOpenRef.current === request) passportOpenRef.current = null
     })
     passportOpenRef.current = request
-  }
+  }, [failed, ready])
 
   useEffect(() => {
     if (!displayedAddress || !passportIntentRef.current) return
     requestPassportOpen()
-  }, [displayedAddress, ready, failed])
+  }, [displayedAddress, requestPassportOpen])
 
   return (
     <Root

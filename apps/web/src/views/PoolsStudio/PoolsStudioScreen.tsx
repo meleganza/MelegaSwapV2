@@ -63,11 +63,13 @@ export const PoolsStudioScreen: React.FC = () => {
     if (router.query.create === undefined && hash !== 'create-pool') return
     const query = { ...router.query }
     delete query.create
-    void router.replace(
-      { pathname: router.pathname, query, hash: hash === 'create-pool' ? undefined : hash },
-      undefined,
-      { shallow: true, scroll: false },
-    )
+    Promise.resolve(
+      router.replace(
+        { pathname: router.pathname, query, hash: hash === 'create-pool' ? undefined : hash },
+        undefined,
+        { shallow: true, scroll: false },
+      ),
+    ).catch(() => undefined)
   }, [router.isReady, router.asPath, router.query, router.pathname, router.replace])
 
   return (

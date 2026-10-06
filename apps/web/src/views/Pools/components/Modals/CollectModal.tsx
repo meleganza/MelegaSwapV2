@@ -48,7 +48,7 @@ export const CollectModalContainer = ({
       onTxSuccess?.({ action: 'claim', sousId, txHash: receipt.transactionHash })
       onDismiss?.()
     }
-  }, [account, dispatch, earningTokenSymbol, fetchWithCatchTxError, onDismiss, onReward, onTxSuccess, sousId, t, toastSuccess])
+  }, [account, chainId, dispatch, earningTokenSymbol, fetchWithCatchTxError, onDismiss, onReward, onTxSuccess, sousId, t, toastSuccess])
 
   return (
     <Pool.CollectModal

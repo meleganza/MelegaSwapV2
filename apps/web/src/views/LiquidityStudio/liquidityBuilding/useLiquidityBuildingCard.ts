@@ -313,7 +313,10 @@ export function useLiquidityBuildingCard(options: UseLiquidityBuildingCardOption
 
   const metrics: ProgramMetrics =
     programRead.source === 'ON_CHAIN' ? programRead.snapshot.metrics : EMPTY_PROGRAM_METRICS
-  const activity: LbActivityItem[] = programRead.source === 'ON_CHAIN' ? programRead.activity : []
+  const activity: LbActivityItem[] = useMemo(
+    () => (programRead.source === 'ON_CHAIN' ? programRead.activity : []),
+    [programRead],
+  )
   const liquiditySeries = useMemo(() => seriesFromActivity(activity), [activity])
 
   const pairLabel =

@@ -76,6 +76,7 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
     }
   }, [
     account,
+    chainId,
     dispatch,
     lpContract,
     sousChefContract,
