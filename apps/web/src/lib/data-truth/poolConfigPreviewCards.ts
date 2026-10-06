@@ -3,7 +3,7 @@
  * Off-active-chain explore cards use Unavailable metrics — never fabricated APR/TVL.
  */
 import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
-import { poolIdentity } from './globalYieldInventory'
+import { poolIdentity } from './yieldIdentity'
 import generated from './poolsLiveInventory.generated.json'
 
 export type GeneratedPoolRow = {

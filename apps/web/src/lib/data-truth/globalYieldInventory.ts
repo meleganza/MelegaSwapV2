@@ -12,6 +12,9 @@ import farmsArb from '@pancakeswap/farms/constants/42161'
 import type { SerializedFarmConfig } from '@pancakeswap/farms'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { LIVE_POOL_INVENTORY_BY_CHAIN } from './liveInventoryCounts'
+import { farmIdentity } from './yieldIdentity'
+
+export { farmIdentity, poolIdentity } from './yieldIdentity'
 
 export const LIVE_YIELD_CHAIN_IDS = [56, 8453, 137, 1, 42161, 43114] as const
 export type LiveYieldChainId = (typeof LIVE_YIELD_CHAIN_IDS)[number]
@@ -53,14 +56,6 @@ const FARM_CONFIG_BY_CHAIN: Record<number, SerializedFarmConfig[]> = {
   42161: farmsArb as SerializedFarmConfig[],
   // Avalanche: pid-0 MARCO token-only only — no LP farm inventory yet.
   43114: [],
-}
-
-export function farmIdentity(chainId: number, masterChef: string, pid: number): string {
-  return `${chainId}:${(masterChef || 'unknown').toLowerCase()}:${pid}`
-}
-
-export function poolIdentity(chainId: number, contractAddress: string): string {
-  return `${chainId}:${(contractAddress || '').toLowerCase()}`
 }
 
 export function listNormalizedFarms(): NormalizedFarmInventoryRow[] {

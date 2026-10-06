@@ -1,14 +1,23 @@
 export * from './types'
 export * from './event-catalog'
 export * from './event-fabric'
-export * from './fabric-graph'
+export {
+  CIVILIZATION_MODULES,
+  FUTURE_MODULES,
+  CIVILIZATION_FABRIC_EDGES,
+  CIVILIZATION_RUNTIME_EDGES,
+  buildFabricGraphNodes,
+} from './fabric-graph'
 export * from './fabric-schema'
-export * from './validate-fabric'
-export * from './buildCivilizationFabric'
+export {
+  detectFabricFeedbackLoops,
+  detectCircularDependencies,
+  validateFabricGraph,
+  validateRuntimeGraph,
+} from './validate-fabric'
+export {
+  WIRED_CIVILIZATION_MODULES,
+  buildCivilizationFabricProfile,
+  buildCivilizationRuntimeProfile,
+} from './buildCivilizationFabric'
 export * from './useCivilizationFabricSync'
-
-/** Deprecated aliases — Civilization Event Fabric is the constitutional runtime node. */
-export * from './event-bus'
-export * from './runtime-graph'
-export * from './buildCivilizationRuntime'
-export * from './useCivilizationRuntimeSync'
