@@ -21,7 +21,7 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { HomeSwapIconButton, HomeSwapPanelShell } from 'views/HomeTrade/HomeSwapPanelShell'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
-import { humanChainName } from '../presentation/humanLabels'
+import { humanChainName } from '../../presentation/humanLabels'
 import { EmptyState, EmptyStateBody, EmptyStateTitle, MutedText, Section, SectionTitle } from './theme'
 import { getBuySectionTitle } from './helpers'
 

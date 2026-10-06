@@ -27,8 +27,8 @@ import {
   verifyAuthorizerConstructorState,
 } from 'lib/deployment-orchestrator/founderLbSession'
 import { LB_CANONICAL_DEPLOYED_ADDRESSES } from 'config/constants/liquidityBuildingDeployment'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const STEP3_ADDR = LB_STEP3_FACTUAL.contractAddress
 const STEP3_TX = LB_STEP3_FACTUAL.txHash

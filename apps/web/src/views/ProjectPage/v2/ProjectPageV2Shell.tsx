@@ -415,7 +415,7 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
                   tokenAddress={contract}
                   tokenSymbol={symbol ?? document.identity.displayName}
                   tokenDecimals={tokenDecimals}
-                  tokenLogoURL={logoUrl}
+                  tokenLogo={logoUrl}
                   textOptions={AddToWalletTextOptions.TEXT}
                 />
               ) : null}

@@ -239,7 +239,11 @@ export async function runCertifiedUniswapShadowQuoteCompetition(input: {
   if (!isEvmNetwork(request.network) || request.network.chainId !== certification.venue.chainId) {
     throw new Error(`${UNISWAP_SHADOW_QUOTE_WRONG_CHAIN}:${isEvmNetwork(request.network) ? request.network.chainId : 'non-evm'}`)
   }
-  if (request.inputAsset.network.chainId !== request.outputAsset.network.chainId) {
+  if (
+    !isEvmNetwork(request.inputAsset.network) ||
+    !isEvmNetwork(request.outputAsset.network) ||
+    request.inputAsset.network.chainId !== request.outputAsset.network.chainId
+  ) {
     throw new Error(CROSS_CHAIN_FORBIDDEN)
   }
   const registry = buildEvmShadowVenueRegistry({

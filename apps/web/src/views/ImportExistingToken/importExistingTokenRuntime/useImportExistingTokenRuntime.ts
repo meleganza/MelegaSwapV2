@@ -50,7 +50,7 @@ export function useImportExistingTokenRuntime() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contract: trimmed, chainId }),
       })
-      const data = (await res.json()) as Record<string, unknown>
+      const data = (await res.json()) as unknown as Record<string, unknown>
       const onChain = data.onChain as
         | { name?: string | null; symbol?: string | null; reasonUnavailable?: string | null }
         | undefined
@@ -186,7 +186,7 @@ export function useImportExistingTokenRuntime() {
       analyzed,
       analyzing,
       pending: analysis?.pending ?? false,
-      pendingId: analysis?.pendingProject?.pending_id ?? null,
+      pendingId: analysis?.pendingProject?.id ?? null,
       found: analysis?.found ?? false,
       projectSlug: analysis?.project?.slug ?? null,
       infrastructureScore: analysis?.score?.score ?? 0,

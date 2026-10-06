@@ -2,8 +2,8 @@
  * Avalanche LIVE /runtime/deployment must not crash (router bound; seed may be pending).
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { Pair, WNATIVE, ERC20Token, ChainId, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP } from '@pancakeswap/sdk'
 import { CAKE } from '@pancakeswap/tokens'
 import { CHAIN_IDS, isChainSupported } from 'utils/wagmi'

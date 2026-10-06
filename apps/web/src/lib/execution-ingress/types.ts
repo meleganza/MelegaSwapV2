@@ -26,6 +26,7 @@ export interface IngressDispatchContext {
 
 export interface IngressValidationResult {
   ok: true
+  error?: never
   instructionType: SupportedInstructionType
 }
 
@@ -38,6 +39,7 @@ export type IngressValidateResult = IngressValidationResult | IngressValidationF
 
 export interface IngressDispatchSuccess {
   ok: true
+  error?: never
   instructionType: SupportedInstructionType
   executionId: string
   report?: ExecutionReport

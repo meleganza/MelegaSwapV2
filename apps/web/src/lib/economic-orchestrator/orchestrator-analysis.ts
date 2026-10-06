@@ -1,7 +1,7 @@
 import { getConstitutionalCanonicalEconomy } from 'lib/economic-activation'
 import { resolveEconomicIdentityReadModel } from 'lib/economic-identity'
 import { buildDefaultPipeline } from 'lib/labs-economic-pipeline'
-import { PipelineStageStatus } from 'lib/labs-economic-pipeline/pipeline-types'
+import { PipelineStageId, PipelineStageStatus } from 'lib/labs-economic-pipeline/pipeline-types'
 import { resolveLabsRuntimeReadModel } from 'lib/labs-runtime'
 import { resolveSmartExecutionReadModel } from 'lib/smart-execution'
 import { resolveUserLaunchReadModel } from 'lib/user-launch'
@@ -205,7 +205,7 @@ export const buildDependencyGraph = (
     label: stage.label,
     status: stage.status,
     route: stageRoute[stage.stageId] ?? '/pipeline',
-    dependsOn: (dependsOnMap[stage.stageId] ?? []).filter((dep) => order.includes(dep)),
+    dependsOn: (dependsOnMap[stage.stageId] ?? []).filter((dep) => order.includes(dep as PipelineStageId)),
   }))
 }
 

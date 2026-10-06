@@ -78,7 +78,7 @@ const Graph: React.FC = () => {
           {layers.map((layer, index) => (
             <React.Fragment key={layer.key}>
               <Layer>
-                <Heading as="h3" scale="sm" color="secondary">
+                <Heading as="h3" scale="md" color="secondary">
                   {layer.title}
                 </Heading>
                 <Grid>

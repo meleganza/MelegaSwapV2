@@ -34,24 +34,17 @@ import {
 
 function sampleInstruction() {
   return createSmartSwapExecutionInstruction({
-    id: 'arming-test-instruction',
-    correlationId: 'arming-test-correlation',
     chainId: 97,
-    adapter: 'smart-router',
-    domain: 'swap',
-    source: 'dex-routing',
-    createdAt: '2026-07-03T00:00:00.000Z',
-    version: '1.0',
-    payload: {
+    trade: {
       tradeType: 'EXACT_INPUT',
       inputCurrency: '0x0000000000000000000000000000000000000001',
       outputCurrency: '0x0000000000000000000000000000000000000002',
       inputAmount: '1000000000000000000',
       outputAmount: '2000000000000000000',
-      slippageBps: 50,
-      recipient: '0x00000000000000000000000000000000000000aa',
       deadline: 9999999999,
-    },
+    } as unknown as Parameters<typeof createSmartSwapExecutionInstruction>[0]['trade'],
+    allowedSlippage: 50,
+    recipient: '0x00000000000000000000000000000000000000aa',
   })
 }
 
@@ -190,7 +183,11 @@ describe('testnet-arming T1', () => {
       account: '0x00000000000000000000000000000000000000aa',
       chainId: 97,
       certifiedHandoff: true,
-      adapters: { smartSwap: async () => '0xhash' },
+      adapters: {
+        smartSwap: async () => '0xhash',
+        v2Swap: async () => '0xv2hash',
+        bridgeBurn: async () => '0xbridgehash',
+      },
     })
     expect(dispatch.ok).toBe(false)
   })

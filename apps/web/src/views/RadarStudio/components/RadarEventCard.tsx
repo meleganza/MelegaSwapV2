@@ -403,14 +403,14 @@ export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
 
         <ButtonRow>
           <RdPrimaryBtn
-            as={Link}
+            as="a"
             href={event.tradeHref ?? '/swap'}
             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
             Trade
           </RdPrimaryBtn>
           <RdGhostBtn
-            as={Link}
+            as="a"
             href={event.projectHref ?? `/@${event.projectSlug ?? ''}/`}
             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >

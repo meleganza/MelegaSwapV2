@@ -6,8 +6,8 @@ function preview(partial: Partial<SmartSwapExecutionPreview>): SmartSwapExecutio
   return {
     routeId: 't',
     inputAmount: '1',
-    inputToken: { address: '0x1', symbol: 'BNB', decimals: 18 },
-    outputToken: { address: '0x2', symbol: 'MARCO', decimals: 18 },
+    inputToken: { chainId: 56, address: '0x1', symbol: 'BNB', decimals: 18 },
+    outputToken: { chainId: 56, address: '0x2', symbol: 'MARCO', decimals: 18 },
     expectedOutput: '1',
     expectedOutputFormatted: '1',
     minimumReceived: '1',

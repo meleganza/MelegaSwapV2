@@ -31,24 +31,17 @@ import {
 
 function sampleInstruction() {
   return createSmartSwapExecutionInstruction({
-    id: 'mode-test-instruction',
-    correlationId: 'mode-test-correlation',
     chainId: 97,
-    adapter: 'smart-router',
-    domain: 'swap',
-    source: 'dex-routing',
-    createdAt: '2026-07-03T00:00:00.000Z',
-    version: '1.0',
-    payload: {
+    trade: {
       tradeType: 'EXACT_INPUT',
       inputCurrency: '0x0000000000000000000000000000000000000001',
       outputCurrency: '0x0000000000000000000000000000000000000002',
       inputAmount: '1000000000000000000',
       outputAmount: '2000000000000000000',
-      slippageBps: 50,
-      recipient: '0x00000000000000000000000000000000000000aa',
       deadline: 9999999999,
-    },
+    } as unknown as Parameters<typeof createSmartSwapExecutionInstruction>[0]['trade'],
+    allowedSlippage: 50,
+    recipient: '0x00000000000000000000000000000000000000aa',
   })
 }
 

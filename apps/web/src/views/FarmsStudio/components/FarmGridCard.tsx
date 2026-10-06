@@ -548,7 +548,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
             <MetricLabel>Status</MetricLabel>
             <MetricValue
               $tone={
-                farm.status === 'live' ? 'green' : farm.status === 'finished' ? 'muted' : 'muted'
+                farm.status === 'live' ? 'green' : 'muted'
               }
             >
               {statusMetric(farm)}

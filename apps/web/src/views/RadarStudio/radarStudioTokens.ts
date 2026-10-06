@@ -13,6 +13,7 @@ export const radarStudioLayout = {
   columnGap: '20px',
   kpiGap: '14px',
   kpiPadding: '18px',
+  kpiRadius: '14px',
   contractInputHeight: '56px',
   contractInputRadius: '14px',
   contractChainWidth: '190px',

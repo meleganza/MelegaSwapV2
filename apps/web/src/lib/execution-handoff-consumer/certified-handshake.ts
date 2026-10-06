@@ -9,6 +9,7 @@ import { validateCertifiedDryRunHandshake } from './validate-certified-handshake
 
 export type CertifiedHandshakeSuccess = {
   ok: true
+  error?: never
   handshake: 'certified'
   packageId: string
   correlationId: string
@@ -42,7 +43,7 @@ export type CertifiedHandshakeResult = CertifiedHandshakeSuccess | CertifiedHand
  * No adapter dispatch. No wallet interaction. No network communication.
  */
 export function performCertifiedDryRunHandshake(
-  handoffPackage: DryRunHandoffPackage,
+  handoffPackage: unknown,
   context: DryRunGatewayContext = {},
 ): CertifiedHandshakeResult {
   const validation = validateCertifiedDryRunHandshake(handoffPackage)
@@ -51,11 +52,17 @@ export function performCertifiedDryRunHandshake(
       ok: false,
       handshake: 'certified',
       error: validation.error,
-      packageId: handoffPackage?.packageId,
+      packageId:
+        typeof handoffPackage === 'object' && handoffPackage !== null && 'packageId' in handoffPackage
+          ? String(handoffPackage.packageId)
+          : undefined,
     }
   }
 
-  const consumerResult: HandoffConsumerResult = consumeKerlDryRunHandoffPackage(handoffPackage, context)
+  const consumerResult: HandoffConsumerResult = consumeKerlDryRunHandoffPackage(
+    handoffPackage as DryRunHandoffPackage,
+    context,
+  )
 
   if (!consumerResult.ok) {
     return {

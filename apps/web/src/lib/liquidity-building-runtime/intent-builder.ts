@@ -49,7 +49,7 @@ function resolveTreasuryProvenanceReference(input: IntentBuildInput): { ok: true
 }
 
 export type IntentBuildResult =
-  | { ok: true; intent: ExecutionIntentV1Wire; artifact: ExecutionArtifactV1 }
+  | { ok: true; intent: ExecutionIntentV1Wire; artifact: ExecutionArtifactV1; reason?: never }
   | { ok: false; reason: string }
 
 /**

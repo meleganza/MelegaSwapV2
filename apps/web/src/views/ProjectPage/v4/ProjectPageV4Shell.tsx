@@ -570,6 +570,8 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
       'create-farm': 'project-v4-grow-farm',
       'create-pool': 'project-v4-grow-pool',
       'claim-project': 'project-v4-grow-claim',
+      'featured-farm': 'project-v4-grow-featured-farm',
+      'featured-pool': 'project-v4-grow-featured-pool',
     }
     return map[id]
   }
@@ -809,7 +811,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
                   tokenAddress={contract}
                   tokenSymbol={symbol ?? document.identity.displayName}
                   tokenDecimals={tokenDecimals}
-                  tokenLogoURL={logoUrl}
+                  tokenLogo={logoUrl}
                   textOptions={AddToWalletTextOptions.TEXT}
                 />
               ) : null}
@@ -856,7 +858,7 @@ export const ProjectPageV4Shell: React.FC<ProjectPageV4Props> = ({
               ['Holders', dash(market.holders)],
               ['Transactions', dash(market.swaps24h)],
               ['Last update', market.lastUpdate || '—'],
-            ] as [string, string, 'up' | 'down' | 'mute' | undefined?][]
+            ] as [string, string, ('up' | 'down' | 'mute')?][]
           ).map(([label, value, tone]) => (
             <StripCell key={label}>
               <StripLabel>{label}</StripLabel>

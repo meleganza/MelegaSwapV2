@@ -12,6 +12,7 @@ import { buildHopVisualization } from './visualization'
 
 export interface SmartSwapPreviewSuccessResult {
   status: 'ok'
+  failure?: never
   preview: SmartSwapExecutionPreview
 }
 

@@ -118,7 +118,9 @@ export function validatePffFactoryFromOnChain(input: {
   marcoTokenOnChain?: string | null
   pairFactoryOnChain?: string | null
   eligibilitySignerOnChain?: string | null
-}): { ok: true; evidence: PffDeploymentEvidence } | { ok: false; reason: string; evidence: PffDeploymentEvidence } {
+}):
+  | { ok: true; evidence: PffDeploymentEvidence; reason?: never }
+  | { ok: false; reason: string; evidence: PffDeploymentEvidence } {
   const status = receiptStatusOf(input.receipt.status)
   const contractAddress = normalizeAddress(input.receipt.contractAddress ?? null)
   const from = normalizeAddress(input.receipt.from ?? null)

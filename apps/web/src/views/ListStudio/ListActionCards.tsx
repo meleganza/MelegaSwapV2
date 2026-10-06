@@ -29,7 +29,7 @@ type CardDef = {
   cta: string
   accent: Accent
   featured?: boolean
-  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>
+  Icon: typeof ArrowDownToLine
   available: boolean
   disabledCta?: string
 }

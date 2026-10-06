@@ -272,7 +272,7 @@ export const FeaturedProjectPanel: React.FC = () => {
               <Metric key={metric.label}>
                 <PrMetricLabel>{metric.label}</PrMetricLabel>
                 <PrMetricValue
-                  $muted={metric.value === '—' || metric.value === 'Unavailable' || Boolean(metric.muted)}
+                  $muted={metric.value === '—' || metric.value === 'Unavailable'}
                 >
                   {metric.value}
                 </PrMetricValue>

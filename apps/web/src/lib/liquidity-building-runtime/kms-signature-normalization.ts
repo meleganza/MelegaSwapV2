@@ -36,6 +36,8 @@ export type NormalizeErrorCode =
 
 export type NormalizeOk = {
   ok: true
+  code?: never
+  reason?: never
   r: bigint
   s: bigint
   recoveryId: 0 | 1

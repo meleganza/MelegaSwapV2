@@ -119,7 +119,7 @@ export const AIManifestPanel: React.FC = () => {
           </TitleBlock>
           <StatusRow>
             <span style={{ fontFamily: BS_FONT_BODY, fontSize: 12, color: buildStudioColors.label }}>Manifest Status</span>
-            <BsBadge $variant={manifest.status === 'ready' ? 'green' : 'yellow'}>
+            <BsBadge $variant={manifest.status === 'ready' ? 'green' : 'gold'}>
               {manifest.status === 'ready' ? 'Machine Readable' : manifest.status}
             </BsBadge>
           </StatusRow>

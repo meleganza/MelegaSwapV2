@@ -178,7 +178,10 @@ describe('KERL offline RC1 e2e dry-run fixture — UI isolation', () => {
 
   it('fixture module is not imported by pages routes', () => {
     const pagesDir = path.resolve(__dirname, '../../../pages')
-    const entries = fs.readdirSync(pagesDir, { recursive: true }) as string[]
+    const entries = (fs.readdirSync as unknown as (directory: string, options: { recursive: true }) => string[])(
+      pagesDir,
+      { recursive: true },
+    )
     for (const entry of entries) {
       if (!entry.endsWith('.tsx') && !entry.endsWith('.ts')) continue
       const content = fs.readFileSync(path.join(pagesDir, entry), 'utf8')

@@ -22,6 +22,7 @@ export type FarmsExploreSort =
   | 'Highest TVL'
   | 'Highest Sustainable APR'
   | 'Newest'
+  | 'Alphabetical'
 
 export type FarmsExploreAllowanceState = 'Approval required' | 'Approved' | 'Unavailable' | 'Disconnected'
 

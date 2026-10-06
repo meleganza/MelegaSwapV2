@@ -39,7 +39,7 @@ export const BuildStudioPageHeader: React.FC = () => {
               AI Infrastructure Guide
             </MelegaStudioOutlineBtn>
             <MelegaStudioPrimaryBtn
-              as={Link}
+              as="a"
               href="/import-existing-token"
               data-bs-hero-import
               style={{ textDecoration: 'none' }}

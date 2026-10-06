@@ -53,7 +53,7 @@ export type DeploymentBindingCandidate = {
 }
 
 export type BindingResult =
-  | { ok: true; addresses: LiquidityBuildingDeployedAddresses }
+  | { ok: true; addresses: LiquidityBuildingDeployedAddresses; reason?: never }
   | { ok: false; reason: string }
 
 /**

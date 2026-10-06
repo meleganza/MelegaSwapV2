@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { Interface } from '@ethersproject/abi'
-import { readFileSync, existsSync } from 'node:fs'
-import path from 'node:path'
-import { execSync } from 'node:child_process'
+import { readFileSync, existsSync } from 'fs'
+import path from 'path'
+import { execSync } from 'child_process'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_TREASURY_DESTINATION,

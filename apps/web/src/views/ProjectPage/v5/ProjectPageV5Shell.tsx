@@ -618,7 +618,7 @@ export const ProjectPageV5Shell: React.FC<ProjectPageV5Props> = ({
   const shortContract = contract ? `${contract.slice(0, 6)}…${contract.slice(-4)}` : null
   const isFeaturedPlacement = ['mm72', 'eyed', 'young-degens', 'blion', 'marco'].includes(document.slug)
   const isClaimed = Boolean(
-    evidencePack?.claims?.some((c) => /accepted|verified|owned|claimed/i.test(String(c.status ?? c.id ?? ''))),
+    evidencePack?.claims?.some((c) => /accepted|verified|owned|claimed/i.test(String(c.status ?? c.claimType ?? ''))),
   )
   const poolInventoryHint = LIVE_POOL_INVENTORY_BY_CHAIN[chainId]
   const farmCount = chainFarms.length
@@ -685,8 +685,8 @@ export const ProjectPageV5Shell: React.FC<ProjectPageV5Props> = ({
 
   const tokenomicsOk =
     tokenomicsDocument &&
-    ((tokenomicsDocument.allocations?.length ?? 0) > 0 ||
-      (tokenomicsDocument.totalSupply != null && String(tokenomicsDocument.totalSupply) !== ''))
+    ((tokenomicsDocument.allocationCategories?.length ?? 0) > 0 ||
+      (tokenomicsDocument.facts.find((fact) => fact.id === 'total-supply')?.value != null && String(tokenomicsDocument.facts.find((fact) => fact.id === 'total-supply')?.value) !== ''))
   const roadmapOk = Boolean(roadmapDocument?.milestones?.length)
 
   return (
@@ -780,7 +780,7 @@ export const ProjectPageV5Shell: React.FC<ProjectPageV5Props> = ({
                   tokenAddress={contract}
                   tokenSymbol={symbol ?? document.identity.displayName}
                   tokenDecimals={tokenDecimals}
-                  tokenLogoURL={logoUrl}
+                  tokenLogo={logoUrl}
                   textOptions={AddToWalletTextOptions.TEXT}
                 />
               ) : null}
@@ -870,7 +870,7 @@ export const ProjectPageV5Shell: React.FC<ProjectPageV5Props> = ({
               ['FDV', dash(market.fdv)],
               ['Holders', dash(market.holders)],
               ['Transactions', dash(market.swaps24h)],
-            ] as [string, string, 'up' | 'down' | 'mute' | undefined?][]
+            ] as [string, string, ('up' | 'down' | 'mute')?][]
           ).map(([label, value, tone]) => (
             <StripCell key={label}>
               <StripLabel>{label}</StripLabel>
@@ -1012,9 +1012,9 @@ export const ProjectPageV5Shell: React.FC<ProjectPageV5Props> = ({
                   <div style={{ marginTop: 12 }} data-testid="project-v5-tokenomics">
                     <BandMeta style={{ display: 'block', marginBottom: 4 }}>Tokenomics</BandMeta>
                     <Muted style={{ margin: 0 }}>
-                      {tokenomicsDocument?.totalSupply
-                        ? `Supply · ${tokenomicsDocument.totalSupply}`
-                        : `${tokenomicsDocument?.allocations?.length ?? 0} allocations`}
+                      {tokenomicsDocument?.facts.find((fact) => fact.id === 'total-supply')?.value
+                        ? `Supply · ${tokenomicsDocument.facts.find((fact) => fact.id === 'total-supply')?.value}`
+                        : `${tokenomicsDocument?.allocationCategories?.length ?? 0} allocations`}
                     </Muted>
                   </div>
                 ) : null}

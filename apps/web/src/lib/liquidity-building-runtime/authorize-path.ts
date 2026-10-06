@@ -11,6 +11,8 @@ import { signatureNormalizationProductionStatus } from './kms-signature-normaliz
 export type AuthorizePathResult =
   | {
       ok: true
+      code?: never
+      reason?: never
       artifact: ExecutionArtifactV1
       authorityAddress: string
     }

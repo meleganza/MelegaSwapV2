@@ -307,8 +307,8 @@ describe('KERL execution gateway — tracker and report', () => {
     if (result.ok) {
       assertReportDoesNotImplySettlement(result.report)
       for (const field of SETTLEMENT_FORBIDDEN_FIELDS) {
-        expect(field in (result.report as Record<string, unknown>)).toBe(false)
-        expect(field in (result.evidence as Record<string, unknown>)).toBe(false)
+        expect(field in (result.report as unknown as Record<string, unknown>)).toBe(false)
+        expect(field in (result.evidence as unknown as Record<string, unknown>)).toBe(false)
       }
       expect(result.dryRun.settlement).toBeNull()
       expect(result.dryRun.executionSuppressed).toBe(true)

@@ -15,7 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const parsed = querySchema.safeParse(req.query)
-  if (!parsed.success) {
+  if ('error' in parsed) {
     return res.status(400).json({ error: 'Invalid query', details: parsed.error.flatten() })
   }
 

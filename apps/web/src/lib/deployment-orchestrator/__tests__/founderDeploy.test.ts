@@ -19,8 +19,8 @@ import {
 } from 'lib/deployment-orchestrator'
 import { isSubsystemReadyForFounderDeploy } from '../founderSequence'
 import { SUPERSEDED_KMS_AUTHORITY_KEYS, probeProductionAuthority } from '../authority'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const DEPLOYER = AUTHORIZED_MELEGA_DEPLOYER
 const OTHER = '0x1111111111111111111111111111111111111111'

@@ -101,7 +101,7 @@ export const SCHEMA_EXAMPLE_QUEUE_ITEMS: ReviewQueueItem[] = [
   example({
     queueItemId: 'schema://review/queue/audit_report@needs_info',
     submissionId: 'schema://submission/audit_report@example',
-    submissionCategory: 'audit_report',
+    submissionCategory: 'audit_reference',
     created: 'not_indexed',
     status: 'under_review',
     priority: 'high',
@@ -187,7 +187,7 @@ export const SCHEMA_EXAMPLE_QUEUE_ITEMS: ReviewQueueItem[] = [
   example({
     queueItemId: 'schema://review/queue/classification@completed_example',
     submissionId: 'schema://submission/classification@example',
-    submissionCategory: 'classification',
+    submissionCategory: 'category_classification',
     created: 'not_indexed',
     status: 'approved',
     priority: 'normal',
@@ -204,7 +204,7 @@ export const SCHEMA_EXAMPLE_QUEUE_ITEMS: ReviewQueueItem[] = [
   example({
     queueItemId: 'schema://review/queue/social@completed_rejected_example',
     submissionId: 'schema://submission/social@example',
-    submissionCategory: 'social',
+    submissionCategory: 'social_links',
     created: 'not_indexed',
     status: 'rejected',
     priority: 'normal',

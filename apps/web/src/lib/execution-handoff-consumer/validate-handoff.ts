@@ -9,7 +9,7 @@ import {
 } from './constants'
 import type { DryRunHandoffManifest, DryRunHandoffPackage } from './types'
 
-export type HandoffValidateResult = { ok: true } | { ok: false; error: ExecutionError }
+export type HandoffValidateResult = { ok: true; error?: never } | { ok: false; error: ExecutionError }
 
 function handoffError(code: string, message: string): ExecutionError {
   return { code, category: 'adapter_error', message }
@@ -38,7 +38,12 @@ function collectForbiddenViolations(
     }
 
     if (key === 'walletInteraction' && typeof child === 'string') {
-      if (child !== 'none' && HANDOFF_FORBIDDEN_WALLET_VALUES.includes(child)) {
+      if (
+        child !== 'none' &&
+        HANDOFF_FORBIDDEN_WALLET_VALUES.includes(
+          child as (typeof HANDOFF_FORBIDDEN_WALLET_VALUES)[number],
+        )
+      ) {
         violations.push(`${childPath} implies wallet interaction`)
       }
     }

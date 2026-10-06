@@ -7,7 +7,7 @@ import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import TopFarmPool from './TopFarmPool'
 import RowHeading from './RowHeading'
-import { Pool } from '@pancakeswap/uikit/src/widgets/Pool'
+import type { DeserializedPool } from '@pancakeswap/uikit/src/widgets/Pool/types'
 import { Token } from '@pancakeswap/sdk'
 
 const Grid = styled.div`
@@ -59,8 +59,8 @@ const FarmsPoolsRow = () => {
     }
   }, [timer, isLoaded, startTimer, maxLoadingTime])
 
-  const getPoolText = (pool: Pool.DeserializedPool<Token>) => {
-    if (pool.isAutoVault) {
+  const getPoolText = (pool: DeserializedPool<Token>) => {
+    if ((pool as unknown as { isAutoVault?: boolean }).isAutoVault) {
       return t('Auto MARCO')
     }
 

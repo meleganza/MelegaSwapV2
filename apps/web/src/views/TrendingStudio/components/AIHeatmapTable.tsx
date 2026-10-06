@@ -74,7 +74,7 @@ const UnavailableCell = styled.span`
 
 function heatLabel(value: number): React.ReactNode {
   if (value <= 0) return <UnavailableCell>—</UnavailableCell>
-  return <HeatBar $value={value} />
+  return <HeatBar value={value} />
 }
 
 export const AIHeatmapTable: React.FC = () => {

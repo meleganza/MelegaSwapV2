@@ -140,7 +140,12 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
           )}
         </Flex>
       )}
-      {vaultKey && <PerformanceFee userData={userData} performanceFeeAsDecimal={performanceFeeAsDecimal} />}
+      {vaultKey && (
+        <PerformanceFee
+          userData={userData as unknown as React.ComponentProps<typeof PerformanceFee>['userData']}
+          performanceFeeAsDecimal={performanceFeeAsDecimal}
+        />
+      )}
       {/* <Flex mb="2px" justifyContent={alignLinksToRight ? 'flex-end' : 'flex-start'}>
         <LinkExternal href={`/info/token/${earningToken.address}`} bold={false} small>
           {t('See Token Info')}

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
 import { trendingStudioColors } from '../trendingStudioTokens'
-import { TrOutlineBtn, TrPanel, TrSectionTitle } from './trendingStudioPrimitives'
+import { TrGhostBtn as TrOutlineBtn, TrPanel, TrSectionTitle } from './trendingStudioPrimitives'
 
 const Panel = styled(TrPanel)`
   padding: 14px 16px;

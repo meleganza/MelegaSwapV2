@@ -23,6 +23,7 @@ export const buildStudioLayout = {
   validationH: '260px',
   recentBuildsH: '380px',
   btnTransition: premiumStudioLayout.hoverTransition,
+  transition: premiumStudioLayout.hoverTransition,
   cardLift: '0px',
   arrowAnim: '700ms',
   manifestFade: '300ms',

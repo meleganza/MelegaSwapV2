@@ -3,6 +3,7 @@ import type {
   CanonicalEventType,
   CivilizationFabricModuleId,
   CivilizationModuleId,
+  FutureCivilizationModuleId,
   FabricGraphEdge,
   FabricGraphNode,
   FabricNodeRole,
@@ -25,7 +26,7 @@ export const CIVILIZATION_MODULES: CivilizationModuleId[] = [
   'build_studio',
 ]
 
-export const FUTURE_MODULES: CivilizationFabricModuleId[] = [
+export const FUTURE_MODULES: FutureCivilizationModuleId[] = [
   'signal',
   'labs',
   'space',

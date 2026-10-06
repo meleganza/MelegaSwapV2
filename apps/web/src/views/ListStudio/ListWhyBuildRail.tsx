@@ -14,7 +14,7 @@ type Benefit = {
   title: string
   description: string
   accent: Accent
-  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>
+  Icon: typeof Share2
 }
 
 const BENEFITS: Benefit[] = [

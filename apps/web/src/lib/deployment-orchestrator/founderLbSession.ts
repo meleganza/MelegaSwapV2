@@ -489,7 +489,9 @@ export function validateLbStepFromOnChain(input: {
   requireDeployer?: string
   constructorStateOk?: boolean
   expectedContractAddress?: string
-}): { ok: true; record: LbStepBindingRecord; outcome: PostDeployOutcome } | { ok: false; reason: string } {
+}):
+  | { ok: true; record: LbStepBindingRecord; outcome: PostDeployOutcome; reason?: never }
+  | { ok: false; reason: string } {
   const parsed = extractContractAddressFromReceipt(input.receipt)
   if (parsed.receiptStatus !== 'success') {
     return { ok: false, reason: `Receipt not successful (${parsed.receiptStatus})` }

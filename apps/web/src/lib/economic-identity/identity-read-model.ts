@@ -34,7 +34,9 @@ const surfaceStatusFromCount = (count: number, planned = false): IdentitySurface
 }
 
 const buildSection = (
-  section: Omit<IdentityReadModelSection, 'emptyMessage'> & { items: IdentityReadModelSection['items'] },
+  section: Omit<IdentityReadModelSection, 'emptyMessage' | 'indexedCount'> & {
+    items: IdentityReadModelSection['items']
+  },
 ): IdentityReadModelSection => ({
   ...section,
   indexedCount: section.items.length,

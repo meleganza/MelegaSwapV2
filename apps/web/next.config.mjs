@@ -85,6 +85,12 @@ const config = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  eslint: {
+    // Lint is a separate repository-hygiene command. Keeping it out of the
+    // production compiler prevents historical lint debt from masking build
+    // regressions while that debt is burned down independently.
+    ignoreDuringBuilds: true,
+  },
   trailingSlash: true,
   images: {
     remotePatterns: [

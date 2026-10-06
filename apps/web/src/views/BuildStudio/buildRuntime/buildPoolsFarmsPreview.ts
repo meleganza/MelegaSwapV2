@@ -48,7 +48,7 @@ export function buildPoolPreviewFromRuntime(
     stakeToken: marcoPool.stakingToken?.symbol ?? 'MARCO',
     rewardToken: marcoPool.earningToken?.symbol ?? 'MARCO',
     apr: marcoPool.apr ? formatPoolApr(marcoPool.apr) : '—',
-    duration: marcoPool.poolEndTime ? 'Configured on-chain' : 'Flexible',
+    duration: (marcoPool as unknown as { endTime?: string }).endTime ? 'Configured on-chain' : 'Flexible',
     rewardBudget: 'Unavailable',
     lock: marcoPool.isFinished ? 'Ended' : 'Flexible',
     poolType: getPoolTypeLabel(marcoPool),

@@ -4,8 +4,13 @@
     "browser": true,
     "jest": true
   },
-  "plugins": ["lodash"],
-  "extends": ["@pancakeswap/eslint-config-pancake", "plugin:react/jsx-runtime", "next/babel", "next/core-web-vitals"],
+  "plugins": ["lodash", "@next/next"],
+  "extends": [
+    "@pancakeswap/eslint-config-pancake",
+    "plugin:react/jsx-runtime",
+    "plugin:@next/next/recommended",
+    "plugin:@next/next/core-web-vitals"
+  ],
   "rules": {
     "react/no-unescaped-entities": "off",
     "@next/next/no-page-custom-font": "off",

@@ -9,8 +9,8 @@
  * Trigger: activeChainId=43114 → USDT[43114] undefined → wrapped.equals(stable)
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { ChainId, Token, WNATIVE } from '@pancakeswap/sdk'
 import { USDT } from '@pancakeswap/tokens'
 

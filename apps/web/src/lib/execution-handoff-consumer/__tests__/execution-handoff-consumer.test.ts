@@ -283,7 +283,7 @@ describe('KERL dry-run handoff consumer — gateway integration', () => {
         domain: 'liquidity',
         adapter: 'stable-swap',
       },
-    } as DryRunHandoffPackage
+    } as unknown as DryRunHandoffPackage
 
     const result = consumeKerlDryRunHandoffPackage(broken)
     expect(result.ok).toBe(false)
@@ -361,7 +361,7 @@ describe('KERL dry-run handoff consumer — forbidden boundaries', () => {
     expect(result.ok).toBe(true)
     if (result.ok) {
       for (const field of SETTLEMENT_FORBIDDEN_FIELDS) {
-        expect(field in (result.report as Record<string, unknown>)).toBe(false)
+        expect(field in (result.report as unknown as Record<string, unknown>)).toBe(false)
       }
     }
   })

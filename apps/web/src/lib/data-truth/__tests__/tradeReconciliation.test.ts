@@ -8,8 +8,12 @@ const baseCandle = {
   high: 1,
   low: 1,
   close: 1,
+  baseVolume: 0.1,
   quoteVolume: 0.1,
   tradeCount: 1,
+  startBlock: 1,
+  endBlock: 1,
+  lastUpdated: '2026-01-01T00:00:00.000Z',
 }
 
 describe('R786 G2 trade reconciliation', () => {

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { NextPage } from 'next'
 
 /** Legacy /passport → Portfolio Studio at /portfolio. */
-const PassportRedirectPage: NextPage = () => {
+const PassportRedirectPage: NextPage & { chains?: number[] } = () => {
   const router = useRouter()
   useEffect(() => {
     router.replace('/portfolio')

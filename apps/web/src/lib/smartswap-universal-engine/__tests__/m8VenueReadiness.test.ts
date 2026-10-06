@@ -14,7 +14,7 @@ function jsonResponse(body: unknown, status = 200): Response {
     ok: status >= 200 && status < 300,
     status,
     json: async () => body,
-  } as Response
+  } as unknown as Response
 }
 
 function recordFetch(handler: (call: FetchCall, index: number) => Response | Promise<Response> | never): {
@@ -158,7 +158,7 @@ describe('M8-A1 EVM RPC readiness probe', () => {
           json: async () => {
             throw new SyntaxError('Unexpected token')
           },
-        }) as Response,
+        }) as unknown as Response,
     )
 
     const snapshot = await probeEvmRpcReadiness(baseInput({ fetchImpl }))

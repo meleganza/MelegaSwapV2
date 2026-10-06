@@ -1,4 +1,4 @@
-import { ChainId, TradeType } from '@pancakeswap/sdk'
+import { ChainId, TradeType, type Currency } from '@pancakeswap/sdk'
 import { describe, expect, it } from 'vitest'
 import {
   AdapterResolutionError,
@@ -110,11 +110,11 @@ describe('R750 Execution Adapter', () => {
       tradeType: TradeType.EXACT_INPUT,
       preferSmartRouter: true,
       inputAmount: {
-        currency: { isNative: false, symbol: 'USDT', wrapped: { address: USDT } },
+        currency: { isNative: false, symbol: 'USDT', wrapped: { address: USDT } } as unknown as Currency,
         toSignificant: () => '100',
       },
       outputAmount: {
-        currency: { isNative: false, symbol: 'MARCO', wrapped: { address: MARCO_BSC } },
+        currency: { isNative: false, symbol: 'MARCO', wrapped: { address: MARCO_BSC } } as unknown as Currency,
         toSignificant: () => '10',
       },
     })

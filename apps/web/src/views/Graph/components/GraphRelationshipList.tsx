@@ -38,7 +38,7 @@ const GraphRelationshipList: React.FC<GraphRelationshipListProps> = ({ edges, ti
   return (
     <Flex flexDirection="column" style={{ gap: '12px' }}>
       {title && (
-        <Heading as="h3" scale="sm" color="secondary">
+        <Heading as="h3" scale="md" color="secondary">
           {title}
         </Heading>
       )}

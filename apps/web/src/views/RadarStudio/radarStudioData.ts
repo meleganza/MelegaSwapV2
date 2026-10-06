@@ -119,6 +119,7 @@ export interface WhaleRow {
   amount: string
   action: 'buy' | 'sell'
   time: string
+  confidence?: string
 }
 
 export interface WalletAccumulationRow {

@@ -212,7 +212,7 @@ export interface CivilizationFabricProfile {
     definitions: CanonicalEventType[]
     journal: CivilizationRuntimeEvent[]
     producers: Record<LegacyFabricEventType, CivilizationModuleId>
-    consumers: Partial<Record<LegacyFabricEventType, CivilizationModuleId[]>>
+    consumers: Partial<Record<LegacyFabricEventType, readonly CivilizationModuleId[]>>
   }
   dependencies: FabricGraphEdge[]
   runtimeGraph: FabricValidation

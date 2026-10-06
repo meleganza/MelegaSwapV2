@@ -10,6 +10,7 @@ export const importTokenLayout = {
   colRight: '360px',
   heroH: '240px',
   btnTransition: premiumStudioLayout.hoverTransition,
+  transition: premiumStudioLayout.hoverTransition,
   cardLift: '0px',
   arrowAnim: '700ms',
   manifestFade: '300ms',

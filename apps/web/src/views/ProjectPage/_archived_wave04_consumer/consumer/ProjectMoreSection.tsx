@@ -4,7 +4,7 @@ import type { ProjectDeveloperDocument } from 'registry/projects/identity/develo
 import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
 import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
-import { humanEnumLabel } from '../presentation/humanLabels'
+import { humanEnumLabel } from '../../presentation/humanLabels'
 import {
   Accordion,
   AccordionSummary,

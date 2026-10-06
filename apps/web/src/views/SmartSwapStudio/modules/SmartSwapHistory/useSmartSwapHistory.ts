@@ -22,15 +22,15 @@ function toSnapshot(tx: TransactionDetails): SmartSwapHistoryTxSnapshot {
     addedTime: tx.addedTime,
     confirmedTime: tx.confirmedTime,
     receipt: tx.receipt ?? null,
-    settlementHandoffContext: tx.settlementHandoffContext
+    settlementHandoffContext: (tx.settlementHandoffContext
       ? {
           amount: tx.settlementHandoffContext.amount,
           fee: tx.settlementHandoffContext.fee,
           asset: tx.settlementHandoffContext.asset,
-          kerlConstitutional: tx.settlementHandoffContext.kerlConstitutional ?? null,
-          smartRouter: tx.settlementHandoffContext.smartRouter ?? null,
+          kerlConstitutional: tx.settlementHandoffContext.kerlConstitutional ?? undefined,
+          smartRouter: tx.settlementHandoffContext.smartRouter ?? undefined,
         }
-      : null,
+      : null) as SmartSwapHistoryTxSnapshot['settlementHandoffContext'],
     // Gas is not stored on SerializableTransactionReceipt — never estimate.
     gasUsed: null,
   }

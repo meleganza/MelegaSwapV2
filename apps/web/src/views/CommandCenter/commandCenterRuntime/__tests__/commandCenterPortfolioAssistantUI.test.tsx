@@ -257,9 +257,6 @@ describe('R791D.5B commandCenterPortfolioAssistantUI', () => {
     expect(open.getAttribute('href')).toBe('/farms/mm72')
     expect(open.getAttribute('data-nav-kind')).toBe('Open')
     expect(resolveAssistantNavLinks({
-      label: 'Claim rewards',
-      position: 'MM72 Farm',
-      reason: null,
       route: '/farms/mm72',
       enabled: true,
       type: 'CLAIM',

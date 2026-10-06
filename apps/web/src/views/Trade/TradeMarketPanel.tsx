@@ -57,7 +57,7 @@ export const TradeMarketPanel: React.FC<TradeMarketPanelProps> = ({
       <TradePairStats stats={pairStats} />
       <LowerGrid>
         <TradeRecentSwaps rows={recentSwaps} />
-        <TradeWatchlist currentPair={`${inputSymbol} / ${outputSymbol}`} />
+        <TradeWatchlist pairs={[]} emptyLabel={`${inputSymbol} / ${outputSymbol}`} />
       </LowerGrid>
     </Shell>
   )

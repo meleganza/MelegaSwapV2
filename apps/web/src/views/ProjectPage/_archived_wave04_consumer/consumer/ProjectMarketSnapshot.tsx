@@ -1,6 +1,6 @@
 import React from 'react'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
-import { formatRelativeTime, humanChainName, humanEnumLabel } from '../presentation/humanLabels'
+import { formatRelativeTime, humanChainName, humanEnumLabel } from '../../presentation/humanLabels'
 import {
   Card,
   MetricCell,

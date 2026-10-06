@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { existsSync, readFileSync } from 'node:fs'
-import path from 'node:path'
+import { existsSync, readFileSync } from 'fs'
+import path from 'path'
 
 const webRoot = path.resolve(__dirname, '../../../..')
 const read = (relative: string) => readFileSync(path.join(webRoot, relative), 'utf8')

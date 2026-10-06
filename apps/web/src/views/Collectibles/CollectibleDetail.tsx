@@ -147,7 +147,13 @@ const CollectibleDetail: React.FC<CollectibleDetailProps> = ({ record, manifest 
   const { t } = useTranslation()
   const [manifestOpen, setManifestOpen] = useState(false)
   const privileges = privilegeLabels(
-    buildCollectiblePrivileges(record, { status: 'Unknown', transferable: undefined }),
+    buildCollectiblePrivileges(record, {
+      slug: record.slug,
+      balance: 0,
+      status: 'Unavailable',
+      transferable: undefined,
+      tokenIds: [],
+    }),
   )
   const previewUrl = record.metadata.gateway
     ? `${record.metadata.gateway.replace(/\/$/, '')}/1.png`

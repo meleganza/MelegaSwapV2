@@ -9,8 +9,8 @@ import {
 } from 'lib/data-truth/masterChefEmissionMath'
 import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { aggregateKpis, mapFarmToPreviewCard } from 'views/FarmsStudio/farmsRuntime/formatFarmsRuntime'
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'fs'
+import path from 'path'
 
 const WEI_5_MARCO = '5000000000000000000'
 

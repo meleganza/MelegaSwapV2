@@ -2,8 +2,8 @@
  * Multichain wallet chain detection — wagmi useChainId mis-read fix.
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { chains, isChainSupported } from 'utils/wagmi'
 import { parseWalletChainIdHex } from 'hooks/useWalletChainId'
 import { assessAvalancheRouterDeployGates, AUTHORIZED_MELEGA_DEPLOYER } from 'lib/deployment-orchestrator'

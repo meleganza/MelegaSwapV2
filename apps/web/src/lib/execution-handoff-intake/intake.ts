@@ -20,6 +20,8 @@ export type RegistryIntakeFailure = {
 export type RegistryIntakeSuccess = CertifiedHandshakeResult & {
   ok: true
   relativePath: string
+  stage?: never
+  error?: never
 }
 
 export type RegistryIntakeResult = RegistryIntakeSuccess | RegistryIntakeFailure

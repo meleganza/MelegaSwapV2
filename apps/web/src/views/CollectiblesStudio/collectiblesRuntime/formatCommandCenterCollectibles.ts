@@ -29,6 +29,7 @@ export function formatCommandCenterCollectibles(
       title: r.displayName,
       subtitle: owned ? `${membership.tier} · Owned` : membership.tier,
       icon: ICONS[r.category],
+      privileges: [],
     }
   })
 }

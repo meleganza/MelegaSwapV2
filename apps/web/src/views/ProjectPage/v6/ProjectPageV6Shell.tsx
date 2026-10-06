@@ -578,7 +578,7 @@ export const ProjectPageV6Shell: React.FC<ProjectPageV6Props> = ({
 
   const isFeaturedPlacement = ['mm72', 'eyed', 'young-degens', 'blion', 'marco'].includes(document.slug)
   const isClaimed = Boolean(
-    evidencePack?.claims?.some((c) => /accepted|verified|owned|claimed/i.test(String(c.status ?? c.id ?? ''))),
+    evidencePack?.claims?.some((c) => /accepted|verified|owned|claimed/i.test(String(c.status ?? c.claimType ?? ''))),
   )
   const isVerified = Boolean(verified && /verif/i.test(verified))
 
@@ -809,7 +809,7 @@ export const ProjectPageV6Shell: React.FC<ProjectPageV6Props> = ({
               ['FDV', dash(market.fdv)],
               ['Holders', dash(market.holders)],
               ['Transactions', dash(market.swaps24h)],
-            ] as [string, string, 'up' | 'down' | 'mute' | undefined?][]
+            ] as [string, string, ('up' | 'down' | 'mute')?][]
           ).map(([label, value, tone]) => (
             <StripCell key={label}>
               <StripLabel>{label}</StripLabel>
@@ -1009,8 +1009,8 @@ export const ProjectPageV6Shell: React.FC<ProjectPageV6Props> = ({
                 ) : (
                   <Muted>—</Muted>
                 )}
-                {tokenomicsDocument?.totalSupply ? (
-                  <Muted style={{ display: 'block', marginTop: 8 }}>Supply · {String(tokenomicsDocument.totalSupply)}</Muted>
+                {tokenomicsDocument?.facts.find((fact) => fact.id === 'total-supply')?.value ? (
+                  <Muted style={{ display: 'block', marginTop: 8 }}>Supply · {String(tokenomicsDocument.facts.find((fact) => fact.id === 'total-supply')?.value)}</Muted>
                 ) : null}
                 {roadmapDocument?.milestones?.length ? (
                   <Muted style={{ display: 'block', marginTop: 4 }}>

@@ -112,7 +112,7 @@ const AutoHarvestAction: React.FunctionComponent<React.PropsWithChildren<Pool.De
           </Flex>
           <Flex flex="1.3" flexDirection="column" alignSelf="flex-start" alignItems="flex-start">
             {[VaultPosition.Flexible, VaultPosition.None].includes(vaultPosition) && (
-              <UnstakingFeeCountdownRow vaultKey={vaultKey} isTableVariant />
+              <UnstakingFeeCountdownRow isTableVariant />
             )}
             {/* IFO credit here */}
           </Flex>

@@ -7,7 +7,7 @@ import { CLAIM_PROJECT_INTENT } from 'views/ListStudio/claimProjectIntent'
  * Founder URL alias: /claim-project?contract=0x… stays inside the List workspace.
  * Never mounts a second claim runtime.
  */
-const ClaimProjectAliasPage: NextPage = () => {
+const ClaimProjectAliasPage: NextPage & { chains?: number[] } = () => {
   const router = useRouter()
 
   useEffect(() => {

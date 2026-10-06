@@ -43,7 +43,7 @@ export const HomeQuickActions: React.FC = () => (
       {QUICK_ACTIONS.map((action) => (
         <MelegaStudioGhostBtn
           key={action.id}
-          as={Link}
+          as="a"
           href={action.href}
           style={{ width: '100%', textDecoration: 'none' }}
         >

@@ -29,7 +29,7 @@ export type TreasurySettlementEvent = {
 }
 
 export type TreasuryIngestResult =
-  | { ok: true; record: ReconciliationV1 }
+  | { ok: true; record: ReconciliationV1; reason?: never; pendingEvidence?: never }
   | { ok: false; status: TreasuryIngestStatus; reason: string; pendingEvidence?: ReconciliationV1 }
 
 export interface LiquidityBuildingTreasuryIngestor {

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
-import { humanChainName, shortenAddress } from '../presentation/humanLabels'
+import { humanChainName, shortenAddress } from '../../presentation/humanLabels'
 import {
   EmptyState,
   EmptyStateBody,

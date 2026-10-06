@@ -52,7 +52,9 @@ function buildRequestId(routeType: KerlRouteType, amountRaw: string, slippageBps
  */
 export function produceKerlExecutionRequest(
   input: ProduceExecutionRequestInput,
-): { ok: true; request: ExecutionRequest } | { ok: false; code: string; message: string } {
+):
+  | { ok: true; request: ExecutionRequest; code?: never; message?: never }
+  | { ok: false; code: string; message: string } {
   if (input.chainId !== KRMP_TESTNET_REGISTRY.chainId) {
     return { ok: false, code: 'CHAIN_NOT_KRMP', message: 'ExecutionRequest producer is chain 97 only' }
   }

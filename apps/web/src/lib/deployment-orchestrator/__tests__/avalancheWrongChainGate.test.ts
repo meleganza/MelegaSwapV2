@@ -2,8 +2,8 @@
  * MELEGASWAP_V2_AVALANCHE_DEPLOYMENT_WRONG_CHAIN_GATE_FIX
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import {
   isFounderPackageChainMatch,
   resolveFounderDeploymentPackage,

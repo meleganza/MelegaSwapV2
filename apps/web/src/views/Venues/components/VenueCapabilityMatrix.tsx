@@ -33,7 +33,7 @@ const VenueCapabilityMatrix: React.FC<VenueCapabilityMatrixProps> = ({ capabilit
 
   return (
     <Flex flexDirection="column" width="100%">
-      <Heading as="h3" scale="sm" color="secondary" mb="16px">
+      <Heading as="h3" scale="md" color="secondary" mb="16px">
         {t('Venue capability matrix')}
       </Heading>
       <Grid>

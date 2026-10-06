@@ -80,7 +80,7 @@ export const AIManifestSection: React.FC = () => {
     <Panel data-iet-ai-manifest>
       <Header>
         <ItSectionLabel style={{ margin: 0 }}>AI Manifest</ItSectionLabel>
-        <ItBadge $tone={manifest.status === 'ready' ? 'green' : 'yellow'}>{manifest.status}</ItBadge>
+        <ItBadge $variant={manifest.status === 'ready' ? 'green' : 'gold'}>{manifest.status}</ItBadge>
       </Header>
       <ManifestBody data-iet-manifest-preview>{displayText}</ManifestBody>
       {hasMore ? (

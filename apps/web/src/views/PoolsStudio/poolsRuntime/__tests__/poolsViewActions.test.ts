@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { resolvePoolCardActions } from '../poolsViewActions'
 import type { PoolPreviewCard } from '../../poolsStudioData'
 
-const basePool: PoolPreviewCard = {
+const basePool = {
   id: 'pool-1',
   name: 'MARCO Pool',
   tokens: ['MARCO'],
@@ -13,10 +13,11 @@ const basePool: PoolPreviewCard = {
   rewardToken: 'MARCO',
   multiplier: '1x',
   dailyRewards: '100',
+  participants: 'Unavailable',
   status: 'live',
   cta: 'stake',
   poolTypeLabel: 'Flexible',
-}
+} as unknown as PoolPreviewCard
 
 describe('pools view actions', () => {
   it('shows stake + unstake + claim when user has position and rewards', () => {

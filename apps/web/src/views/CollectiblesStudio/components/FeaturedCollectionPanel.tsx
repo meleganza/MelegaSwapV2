@@ -267,7 +267,7 @@ export const FeaturedCollectionPanel: React.FC = () => {
   const handleCoinError = () => {
     if (coinSrc !== '/images/collectibles/hero-civilization-reference.png') {
       setCoinSrc('/images/collectibles/hero-civilization-reference.png')
-    } else if (coinSrc !== '/images/melega.png') {
+    } else {
       setCoinSrc('/images/melega.png')
     }
   }
@@ -315,7 +315,7 @@ export const FeaturedCollectionPanel: React.FC = () => {
           </Metric>
         </Metrics>
         <BtnRow>
-          <ViewBtn href="/collectibles/babymarco-genesis">View Collection</ViewBtn>
+          <ViewBtn as="a" href="/collectibles/babymarco-genesis">View Collection</ViewBtn>
           <LearnBtn as="a" href="/collectibles/babymarco-genesis">Learn More</LearnBtn>
         </BtnRow>
       </Info>

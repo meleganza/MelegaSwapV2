@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from 'react'
 import type { ValidateDiagnostics, RouteAction, WalletAction } from './FounderWrapperValidatePage'
 import {
   VALIDATE_CHAIN_ID,
-  type RouteId,
   type RouteValidationResult,
   type RouteSwapStatus,
   checkAllLiquidity,
@@ -17,6 +16,7 @@ import {
   buildValidationReport,
   type LiquidityStatus,
 } from './wrapperValidateActions'
+import type { RouteId } from './wrapperValidateConfig'
 import { ROUTES } from './wrapperValidateConfig'
 
 const LOG = '[R746E]'

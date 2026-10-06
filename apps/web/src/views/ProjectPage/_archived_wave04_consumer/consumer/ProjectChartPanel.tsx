@@ -5,7 +5,7 @@ import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
-import { formatPrice } from '../presentation/humanLabels'
+import { formatPrice } from '../../presentation/humanLabels'
 import { isChartSupported } from './helpers'
 import { Card, MutedText, SectionTitle } from './theme'
 

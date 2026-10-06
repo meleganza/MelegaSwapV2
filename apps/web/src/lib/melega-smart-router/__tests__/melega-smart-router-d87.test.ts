@@ -1,4 +1,4 @@
-import { TradeType } from '@pancakeswap/sdk'
+import { TradeType, type Currency } from '@pancakeswap/sdk'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   MELEGA_SMART_ROUTER_ARCHITECTURE,
@@ -24,7 +24,8 @@ const mockCurrency = (address?: string, symbol = 'TOKEN', isNative = false) => (
 })
 
 const mockAmount = (value: string, currency: ReturnType<typeof mockCurrency>) => ({
-  currency,
+  currency: currency as unknown as Currency,
+  quotient: { toString: () => value },
   toSignificant: () => value,
 })
 

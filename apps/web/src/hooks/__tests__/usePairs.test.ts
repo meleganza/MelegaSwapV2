@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { ChainId, CurrencyAmount, ERC20Token, Native, Pair } from '@pancakeswap/sdk'
 import { describe, expect, it, vi } from 'vitest'
 import { isCurrentDirectPair, safePairPriceOf } from '../usePairs'
