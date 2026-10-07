@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { MetricCell, MetricLabel, MetricSource, MetricValue } from './theme'
 
 export type MetricProvenance = {

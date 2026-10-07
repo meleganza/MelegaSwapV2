@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components'
 import { PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
-import { ds001Colors, ds001Spacing, ds001TypeRoles } from 'design-system/melega/tokens/ds001'
+import { ds001Spacing, ds001TypeRoles } from 'design-system/melega/tokens/ds001';
 
 export const CANVAS = '#050505'
 export const CARD_BG = '#101010'

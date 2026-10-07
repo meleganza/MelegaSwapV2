@@ -221,19 +221,7 @@ const EmptyActions = styled.div`
   flex-wrap: wrap;
 `
 
-const LinkBtn = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: ${liquidityMyPositions.ctaH};
-  padding: 0 16px;
-  border-radius: ${liquidityMyPositions.ctaRadius};
-  background: ${liquidityMyPositions.gold};
-  color: #111;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-`
+
 
 const ConnectWrap = styled.div`
   display: inline-flex;

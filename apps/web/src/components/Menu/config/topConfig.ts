@@ -1,33 +1,18 @@
-import {
-  MenuItemsType,
-  // DropdownMenuItemType,
-  SwapIcon,
-  SwapFillIcon,
-  EarnFillIcon,
-  EarnIcon,
-  // TrophyIcon,
-  // TrophyFillIcon,
-  // NftIcon,
-  // NftFillIcon,
-  // MoreIcon,
-  DropdownMenuItems,
-  // FarmIcon,
-  InfoIcon,
-  // IfoIcon,
-  ResourcesIcon,
-  TradeIcon,
-  TradeFilledIcon,
-  HomeIcon,
-  CapitalIcon,
-  MultisenderIcon,
-  LaunchPadIcon,
-  // LanguageCurrencyIcon,
-  TokenIcon,
-} from '@pancakeswap/uikit'
+import { MenuItemsType,
+// DropdownMenuItemType,
+SwapIcon,
+// TrophyIcon,
+// TrophyFillIcon,
+// NftIcon,
+// NftFillIcon,
+// MoreIcon,
+DropdownMenuItems,
+// FarmIcon,
+InfoIcon, HomeIcon, CapitalIcon } from '@pancakeswap/uikit';
 import { ContextApi } from '@pancakeswap/localization'
 // import { nftsBaseUrl } from 'views/Nft/market/constants'
 // import { getPerpetualUrl } from 'utils/getPerpetualUrl'
-import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
+import 'config/constants/supportChains';
 
 export type ConfigMenuDropDownItemsType = DropdownMenuItems & { hideSubNav?: boolean }
 export type ConfigMenuItemsType = Omit<MenuItemsType, 'items'> & { hideSubNav?: boolean; image?: string } & {

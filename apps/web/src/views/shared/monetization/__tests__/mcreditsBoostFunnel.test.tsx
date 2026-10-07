@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

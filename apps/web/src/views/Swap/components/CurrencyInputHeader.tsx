@@ -1,20 +1,13 @@
 import { useTranslation } from '@pancakeswap/localization'
 import {
-  // ChartDisableIcon,
-  // ChartIcon,
-  Box,
-  Flex,
-  HistoryIcon,
-  // HotDisableIcon,
-  // HotIcon,
-  IconButton,
-  NotificationDot,
-  Swap,
-  Text,
-  // TooltipText,
-  useModal,
-  // useTooltip,
-} from '@pancakeswap/uikit'
+// ChartDisableIcon,
+// ChartIcon,
+Box, Flex, HistoryIcon,
+// HotDisableIcon,
+// HotIcon,
+IconButton, NotificationDot, Swap,
+// TooltipText,
+useModal } from '@pancakeswap/uikit';
 import TransactionsModal from 'components/App/Transactions/TransactionsModal'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import RefreshIcon from 'components/Svg/RefreshIcon'
@@ -59,7 +52,7 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   title,
   hideTitle = false,
 }) => {
-  const { t } = useTranslation()
+  useTranslation();
   const [mobileTooltipShowOnce, setMobileTooltipShowOnce] = useAtom(mobileShowOnceTokenHighlightAtom)
   const [, setMobileTooltipShow] = useState(false)
   // const { tooltip, tooltipVisible, targetRef } = useTooltip(<Text>{t('Check out the top traded tokens')}</Text>, {
@@ -67,7 +60,7 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   //   trigger: isMobile ? 'focus' : 'hover',
   //   ...(isMobile && { manualVisible: mobileTooltipShow }),
   // })
-  const { setIsChartDisplayed } = useContext(SwapFeaturesContext)
+  useContext(SwapFeaturesContext);
   const [expertMode] = useExpertModeManager()
   // const toggleChartDisplayed = () => {
   //   setIsChartDisplayed((currentIsChartDisplayed) => !currentIsChartDisplayed)

@@ -161,8 +161,7 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
   const impact = preview ? formatImpactLabel(preview.priceImpactPercent, preview.priceImpactSeverity) : '—'
   const impactTone =
     preview?.priceImpactSeverity === 'HIGH' ? 'warn' : preview?.priceImpactSeverity === 'LOW' ? 'ok' : 'neutral'
-  const confidenceTone =
-    preview && preview.confidence >= 70 ? 'ok' : preview && preview.confidence < 40 ? 'warn' : 'neutral'
+
 
   const expected =
     preview?.expectedOutputFormatted != null ? `${preview.expectedOutputFormatted} ${preview.outputToken.symbol}` : '—'

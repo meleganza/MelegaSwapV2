@@ -2,16 +2,7 @@ import { Interface, defaultAbiCoder } from '@ethersproject/abi'
 import { BigNumber } from '@ethersproject/bignumber'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import wrapperAbi from 'lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper.abi.json'
-import {
-  formatEthError,
-  getEthereum,
-  getReadProvider,
-  isBnbTestnetChain,
-  readWalletChain,
-  connectWallet,
-  switchToTestnet,
-  type EthProvider,
-} from '../TestnetWrapperDeploy/wrapperDeployActions'
+import { getReadProvider, isBnbTestnetChain, type EthProvider } from '../TestnetWrapperDeploy/wrapperDeployActions';
 import {
   ADDR,
   ROUTES,

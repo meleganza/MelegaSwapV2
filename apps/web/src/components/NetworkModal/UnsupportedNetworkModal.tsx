@@ -58,7 +58,7 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
                 />
               </Box>
             )
-          })}          
+          })}
         </Flex>
         <Message variant="warning">
           <MessageText>{t('Please switch your network to continue.')}</MessageText>

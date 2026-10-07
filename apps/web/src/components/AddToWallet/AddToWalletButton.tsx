@@ -11,7 +11,7 @@ import {
 } from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
 import { canRegisterToken } from '../../utils/wallet'
-import { BAD_SRCS } from '../Logo/constants'
+import '../Logo/constants';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export enum AddToWalletTextOptions {

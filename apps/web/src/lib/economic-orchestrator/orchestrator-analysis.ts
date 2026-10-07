@@ -51,7 +51,7 @@ export const analyzeEconomicState = (): OrchestratorAnalysisContext => {
   const runtime = resolveLabsRuntimeReadModel()
   const workspace = resolveUserWorkspaceReadModel()
   const launch = resolveUserLaunchReadModel()
-  const execution = resolveSmartExecutionReadModel()
+  resolveSmartExecutionReadModel();
   const identity = resolveEconomicIdentityReadModel()
   const projects = getAllProjects()
   const assets = getAllAssets()

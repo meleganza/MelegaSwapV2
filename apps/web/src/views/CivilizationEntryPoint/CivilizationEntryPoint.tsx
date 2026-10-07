@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { melegaOperational as tokens } from 'ui/tokens'
 import { resolveHomepageBlueprint } from 'lib/homepage-blueprint'
 import { resolveHomepageLiveSections } from 'lib/homepage-live'
-import translations from 'config/localization/translations.json'
+import 'config/localization/translations.json';
 import {
   EconomicPageShell,
   EconomicHeroBanner,
@@ -23,7 +23,7 @@ import {
   HomeLiveSwaps,
 } from 'views/HumanCore'
 
-const t = (key: string) => (translations as Record<string, string>)[key] ?? key
+
 
 const MACHINE_DISCOVERY = [
   { label: 'Surface Map', uri: '/map' },

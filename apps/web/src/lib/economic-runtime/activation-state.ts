@@ -1,10 +1,4 @@
-import {
-  ActivationPipelineReadModel,
-  ActivationStage,
-  ActivationStageId,
-  ActivationStageStatus,
-  ACTIVATION_PIPELINE_STAGES,
-} from 'lib/economic-activation'
+import { ActivationPipelineReadModel, ActivationStage, ActivationStageId, ACTIVATION_PIPELINE_STAGES } from 'lib/economic-activation';
 import { ActivationRuntimeStage } from './runtime-types'
 import { buildStageEvidence } from './activation-evidence'
 

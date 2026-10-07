@@ -417,14 +417,6 @@ function resolveFarmDuration(card: FarmPreviewCard, multiplier: string | null): 
 }
 
 /**
- * Remaining time vs Rewards left are separate fields.
- * MasterChef farms do not expose a certified remaining-budget clock here → —
- */
-function resolveFarmRemaining(): string {
-  return '—'
-}
-
-/**
  * 24H volume / fees for farms come only from certified LP/pair market rows.
  * FarmPreviewCard does not currently carry certified pair volume — never invent from TVL/emissions.
  */

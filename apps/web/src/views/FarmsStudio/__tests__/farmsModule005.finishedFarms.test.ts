@@ -23,7 +23,7 @@ import {
   resolveFinishedFarmStatus,
 } from '../modules/buildFarmsFinishedFarms'
 import type { FarmPreviewCard } from '../farmsStudioData'
-import type { FinishedFarmPosition } from '../modules/farmsFinishedFarmsTypes'
+
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(__dirname, '../../../../../../')

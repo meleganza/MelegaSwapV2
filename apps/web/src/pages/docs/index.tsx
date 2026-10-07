@@ -1,7 +1,7 @@
 /**
  * Melega DEX documentation — factual product descriptions (presentation only).
  */
-import React from 'react'
+
 import Link from 'next/link'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'

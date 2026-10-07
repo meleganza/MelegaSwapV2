@@ -531,7 +531,7 @@ export function useDexTrendingRankings() {
   const wbnbPrice = useBUSDPrice(WBNB[56])
   const cakePrice = useBUSDPrice(CAKE[56])
   const busdPrice = useBUSDPrice(BUSD[56])
-  const { candles, status: candleStatus } = useIndexerCandles(MARCO_WBNB_PAIR_BSC, '1H')
+  const { candles } = useIndexerCandles(MARCO_WBNB_PAIR_BSC, '1H');
   const { transactions, indexerState } = useProtocolTransactionsIndexer()
   const { data: activeTrendBoosts = [] } = useSWR('active-trend-boosts', fetchActiveTrendBoosts, {
     revalidateOnFocus: true,
@@ -549,23 +549,19 @@ export function useDexTrendingRankings() {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
-  const { data: tierMetrics = [], isValidating: tierLoading } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
+  const { data: tierMetrics = [] } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
     revalidateOnFocus: false,
-    dedupingInterval: 120_000,
-  })
+    dedupingInterval: 120000,
+});
   const { data: bnbUsd } = useSWR('dex-trending-bnb-usd', fetchBnbUsdPrice, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
-  const { data: protocolActivity = [], isValidating: activityLoading } = useSWR(
-    'dex-trending-protocol-activity',
-    fetchProtocolActivity,
-    {
-      revalidateOnFocus: false,
-      refreshInterval: 60_000,
-      dedupingInterval: 45_000,
-    },
-  )
+  const { data: protocolActivity = [] } = useSWR('dex-trending-protocol-activity', fetchProtocolActivity, {
+    revalidateOnFocus: false,
+    refreshInterval: 60000,
+    dedupingInterval: 45000,
+});
   const { data: indexerSwaps = [], isValidating: swapsLoading } = useSWR(
     'dex-trending-indexer-swaps',
     fetchIndexerSwapEvents,

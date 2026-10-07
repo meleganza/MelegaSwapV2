@@ -15,8 +15,8 @@ import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWalle
 import { bsc } from 'wagmi/chains'
 import { base, polygon1, ethereum } from '../../../utils/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
-import { ChainId, Token } from '@pancakeswap/sdk'
-import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
+import { Token } from '@pancakeswap/sdk';
+import '@pancakeswap/utils/bigNumber';
 import { memo } from 'react'
 import { useCurrentBlock } from 'state/block/hooks'
 import { useVaultPoolByKey } from 'state/pools/hooks'
@@ -25,7 +25,7 @@ import { getBlockExploreLink } from 'utils'
 import { getAddress, getVaultPoolAddress } from 'utils/addressHelpers'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
 import MaxStakeRow from './MaxStakeRow'
-import { AprInfo, DurationAvg, PerformanceFee, TotalLocked } from './Stat'
+import { PerformanceFee } from './Stat';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface ExpandedFooterProps {
@@ -58,14 +58,9 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
     isFinished,
     userData: poolUserData,
   } = pool
-  const stakedBalance = poolUserData?.stakedBalance ? poolUserData.stakedBalance : BIG_ZERO
+
   const { chainId } = useActiveChainId()
-  const {
-    totalDexTokenInVault,
-    totalLockedAmount,
-    fees: { performanceFeeAsDecimal },
-    userData,
-  } = useVaultPoolByKey(vaultKey ? vaultKey : VaultKey.CakeVault)
+  const { totalDexTokenInVault, fees: { performanceFeeAsDecimal }, userData } = useVaultPoolByKey(vaultKey ? vaultKey : VaultKey.CakeVault);
 
   const tokenAddress = earningToken?.address || ''
   const poolContractAddress = getAddress(contractAddress, chainId)
@@ -171,7 +166,7 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
             isBscScan
             href={`${chainId == 1 ? ethereum.blockExplorers.default.url
               : chainId == 56 ? bsc.blockExplorers.default.url
-              : chainId == 137 ? polygon1.blockExplorers.default.url 
+              : chainId == 137 ? polygon1.blockExplorers.default.url
               : base.blockExplorers.default.url}/address/${vaultKey ? cakeVaultContractAddress : poolContractAddress
               }`}
             bold={false}

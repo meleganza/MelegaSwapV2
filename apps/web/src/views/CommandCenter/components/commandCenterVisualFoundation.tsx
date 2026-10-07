@@ -5,7 +5,13 @@
  * Not a final visual polish — no animations, no global design-system rewrite.
  */
 
-import React, { type ReactNode } from 'react'
+/**
+ * R791D.4F — Command Center premium visual system foundation.
+ *
+ * Defines hierarchy, spacing, information priority, and composition primitives.
+ * Not a final visual polish — no animations, no global design-system rewrite.
+ */
+import { type ReactNode } from 'react';
 import styled from 'styled-components'
 import {
   CC_FONT_BODY,

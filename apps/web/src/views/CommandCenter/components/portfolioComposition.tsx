@@ -5,7 +5,7 @@
  * Premium clarity — no new visual language, no fabricated values.
  */
 
-import React from 'react'
+
 import styled from 'styled-components'
 import type {
   PortfolioPosition,

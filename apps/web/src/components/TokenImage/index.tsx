@@ -4,7 +4,7 @@ import {
   TokenImage as UIKitTokenImage,
   ImageProps,
 } from '@pancakeswap/uikit'
-import { Token, ChainId } from '@pancakeswap/sdk'
+import { Token } from '@pancakeswap/sdk';
 import { SerializedWrappedToken } from '@pancakeswap/token-lists'
 
 interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc' | 'secondarySrc'> {

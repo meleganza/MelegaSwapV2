@@ -93,41 +93,11 @@ const ReviewNowBtn = styled.button`
   }
 `
 
-const Header = styled.div`
-  margin-bottom: 18px;
 
-  @media (max-width: 767px) {
-    margin-bottom: 14px;
-  }
-`
 
-const Title = styled.h2`
-  margin: 0;
-  font-family: Sora, sans-serif;
-  font-size: 22px;
-  line-height: 28px;
-  font-weight: 700;
-  color: #ffffff;
 
-  @media (max-width: 767px) {
-    font-size: 20px;
-    line-height: 26px;
-  }
-`
 
-const Subtitle = styled.p`
-  margin: 6px 0 0;
-  font-family: Inter, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
-  color: #9a9a9a;
 
-  @media (max-width: 767px) {
-    font-size: 12px;
-    line-height: 18px;
-  }
-`
 
 const FeeBlock = styled.div`
   display: none;
@@ -271,94 +241,13 @@ const ProgressTrack = styled.div`
   }
 `
 
-const StepNode = styled.button<{ $active?: boolean; $completed?: boolean }>`
-  appearance: none;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-  padding: 0;
-  color: inherit;
 
-  @media (max-width: 767px) {
-    flex: 0 0 auto;
-    min-width: 56px;
-  }
 
-  &:first-child {
-    @media (max-width: 767px) {
-      min-width: 64px;
-    }
-  }
-`
 
-const StepCircle = styled.div<{ $active?: boolean; $completed?: boolean }>`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  box-sizing: border-box;
-  display: grid;
-  place-items: center;
-  font-family: Inter, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 
-  ${({ $completed, $active }) =>
-    $completed
-      ? css`
-          background: rgba(24, 240, 137, 0.14);
-          border: 1px solid #18f089;
-          color: #18f089;
-        `
-      : $active
-      ? css`
-          background: rgba(244, 196, 48, 0.14);
-          border: 1px solid #f4c430;
-          color: #f4c430;
-        `
-      : css`
-          background: #1d1d1d;
-          border: 1px solid #333333;
-          color: #707070;
-        `}
-`
 
-const StepLabel = styled.span<{ $active?: boolean; $completed?: boolean }>`
-  font-family: Inter, sans-serif;
-  font-size: 12px;
-  line-height: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: ${({ $completed, $active }) => ($completed ? '#18f089' : $active ? '#F4C430' : '#707070')};
-  transition: color 180ms ease;
-`
 
-const Connector = styled.div<{ $filled?: boolean }>`
-  flex: 1;
-  height: 2px;
-  min-width: 12px;
-  margin: 0 4px 18px;
-  background: #2c2c2c;
-  position: relative;
-  overflow: hidden;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: ${({ $filled }) => ($filled ? '#18f089' : 'transparent')};
-    transform: scaleX(${({ $filled }) => ($filled ? 1 : 0)});
-    transform-origin: left center;
-    transition: transform 180ms ease;
-  }
-`
 
 const Body = styled.div`
   display: flex;
@@ -459,10 +348,7 @@ const Field = styled.div`
   }
 `
 
-const FieldTall = styled(Field)`
-  height: auto;
-  min-height: 68px;
-`
+
 
 const Label = styled.span`
   font-family: Inter, sans-serif;
@@ -567,19 +453,7 @@ const SelectBtn = styled.button`
   }
 `
 
-const TokenLogo = styled.span`
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f4c430 0%, #8a7020 100%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  color: #050505;
-  flex-shrink: 0;
-`
+
 
 const Dropdown = styled.div<{ $top: number; $left: number; $width: number }>`
   position: fixed;
@@ -797,38 +671,9 @@ const ReviewRow = styled.div`
   }
 `
 
-const Footer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin-top: 20px;
-  width: 100%;
-  min-width: 0;
-  padding-top: 4px;
 
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    margin-top: 12px;
-    padding-bottom: 96px;
-  }
-`
 
-const FooterNote = styled.p`
-  margin: 0;
-  font-family: Inter, sans-serif;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
-  color: #8c8c8c;
 
-  @media (max-width: 767px) {
-    font-size: 12px;
-    color: #888888;
-  }
-`
 
 type TokenSelectorProps = {
   label: string

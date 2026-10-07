@@ -3,15 +3,7 @@ import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import { melegaOperational as tokens } from 'ui/tokens'
 import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
-import {
-  EconomicPageShell,
-  EconomicHero,
-  EconomicSection,
-  EconomicAiLayer,
-  TECHNICAL_DETAILS_TITLE,
-  MANIFEST_TITLE,
-  EconomicManifestLink,
-} from 'views/EconomicOS/components'
+import { EconomicPageShell, EconomicHero, EconomicSection, EconomicAiLayer, EconomicManifestLink } from 'views/EconomicOS/components';
 import CollectibleCard from './components/CollectibleCard'
 
 const Disclaimer = styled.p`

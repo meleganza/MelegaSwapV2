@@ -809,42 +809,13 @@ const Placeholder = styled.div`
   padding: 16px;
 `
 
-const Chat = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`
 
-const Transcript = styled.div`
-  min-height: 180px;
-  max-height: 320px;
-  overflow: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #141414;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
 
-const Bubble = styled.div<{ $user?: boolean }>`
-  align-self: ${({ $user }) => ($user ? 'flex-end' : 'flex-start')};
-  max-width: 88%;
-  border-radius: 12px;
-  padding: 9px 11px;
-  font-size: 13px;
-  line-height: 18px;
-  background: ${({ $user }) => ($user ? 'rgba(221,185,47,0.12)' : '#1a1a1a')};
-  color: #e4e4e4;
-  border: 1px solid ${({ $user }) => ($user ? 'rgba(221,185,47,0.22)' : 'rgba(255,255,255,0.06)')};
-`
 
-const Chips = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`
+
+
+
+
 
 const Chip = styled.button`
   appearance: none;

@@ -1,12 +1,7 @@
 import { head, put } from '@vercel/blob'
 import { INDEXER_V2_ROOT } from '../v2/paths'
 import { SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
-import {
-  INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
-  classifyLeaseHealth,
-  isLeaseActive,
-  isLeaseHealthy,
-} from './indexerLeaseUtils'
+import { classifyLeaseHealth, isLeaseHealthy } from './indexerLeaseUtils';
 
 export {
   INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,

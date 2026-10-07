@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
+import { LsPanel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives';
 
 const Pair = styled.span`
   font-size: 12px;

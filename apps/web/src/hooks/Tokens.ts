@@ -218,20 +218,16 @@ export function useLPToken(tokenAddress?: string): [string, string, string] | un
   const token0 = data?.[1]?.[0]
   const token1 = data?.[2]?.[0]
 
-  const { data: dataTokens, status: statusTokens } = useSWRImmutable(
-    token0 &&
-      token1 &&
-      chainId &&
-      address &&
-      status === FetchStatus.Fetched && ['fetchTokens', chainId, token0, token1],
-    async () => {
-      const calls = [token0, token1].map((t) => {
-        return { address: t.toString(), name: 'symbol' }
-      })
-
-      return multicall(erc20ABI, calls, chainId)
-    },
-  )
+  const { data: dataTokens } = useSWRImmutable(token0 &&
+    token1 &&
+    chainId &&
+    address &&
+    status === FetchStatus.Fetched && ['fetchTokens', chainId, token0, token1], async () => {
+    const calls = [token0, token1].map((t) => {
+        return { address: t.toString(), name: 'symbol' };
+    });
+    return multicall(erc20ABI, calls, chainId);
+});
 
   const token0_ = dataTokens?.[0]?.[0]
   const token1_ = dataTokens?.[1]?.[0]

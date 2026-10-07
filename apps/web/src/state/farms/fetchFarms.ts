@@ -53,7 +53,7 @@ function farmLpTransformer(farmResult, masterChefResult) {
     const [info, totalRegularAllocPoint] = masterChefResult[index]
     const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
     const poolWeight = totalRegularAllocPoint ? allocPoint.div(new BigNumber(totalRegularAllocPoint)) : BIG_ZERO
-    
+
     return {
       ...farm,
       token: farm.token,

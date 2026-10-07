@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
-import BigNumber from 'bignumber.js'
+import 'bignumber.js';
 import { useCurrentBlock } from 'state/block/hooks'
 import useRefresh from 'hooks/useRefresh'
 import ifoV3Abi from 'config/abi/ifoV3.json'
-import { useIfoV3Contract } from 'hooks/useContract'
+import 'hooks/useContract';
 import { multicallv2 } from 'utils/multicall'
 import { getIfov3Address } from 'utils/addressHelpers'
 // https://github.com/pancakeswap/pancake-contracts/blob/master/projects/ifo/contracts/IFOV2.sol#L431
 // 1,000,000,000 / 100
-const TAX_PRECISION = 10000000000
+
 
 
 
@@ -40,7 +40,7 @@ const useGetPublicIfoData = (): any => {
     paused:true,
     ILOToken:""
   })
-  const currentBlock = useCurrentBlock()
+  useCurrentBlock();
 
  const address=getIfov3Address();
   const fetchIfoData = useCallback(async () => {
@@ -108,10 +108,10 @@ const useGetPublicIfoData = (): any => {
       startPresaleTime,
       endPresaleTime,
       paused,
-      ILOToken 
+      ILOToken
       }))
   },[address])
-    
+
   useEffect(() => {
     fetchIfoData()
   }, [fetchIfoData, fastRefresh])

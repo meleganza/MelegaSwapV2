@@ -81,12 +81,7 @@ const Value = styled.span<{ $muted?: boolean }>`
   color: ${({ $muted }) => ($muted ? buildStudioColors.muted : buildStudioColors.white)};
 `
 
-const Subline = styled.span`
-  font-family: ${BS_FONT_BODY};
-  font-size: 13px;
-  color: ${buildStudioColors.muted};
-  line-height: 1.35;
-`
+
 
 const Delta = styled.span<{ $positive?: boolean }>`
   font-family: ${BS_FONT_BODY};

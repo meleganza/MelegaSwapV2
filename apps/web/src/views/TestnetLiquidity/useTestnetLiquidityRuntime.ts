@@ -76,7 +76,7 @@ export function useTestnetLiquidityRuntime() {
 
   const tokenA = useMemo(() => getTokenOption(tokenAId), [tokenAId])
   const tokenB = useMemo(() => getTokenOption(tokenBId), [tokenBId])
-  const marcoToken = erc20ForOption(getTokenOption('MARCO'))
+  erc20ForOption(getTokenOption('MARCO'));
 
   const tokenAErc20 = erc20ForOption(tokenA)
   const tokenBErc20 = erc20ForOption(tokenB)

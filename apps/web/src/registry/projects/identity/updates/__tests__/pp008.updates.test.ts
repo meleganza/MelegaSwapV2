@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import stringify from 'fast-json-stable-stringify'
 import { resolveProjectBySlug } from '../../resolveProject'
-import { normalizeProjectDocument, toPublicProjectJson, buildProjectJsonLd } from '../../normalizeProject'
+import { toPublicProjectJson, buildProjectJsonLd } from '../../normalizeProject';
 import { loadProjectEvidencePack } from '../../evidence'
 import { loadProjectReadinessDocument } from '../../readiness'
 import { loadProjectMarketsDocument } from '../../markets'

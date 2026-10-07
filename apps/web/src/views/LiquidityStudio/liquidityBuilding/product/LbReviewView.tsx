@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { Clock3, ShieldCheck } from 'lucide-react'
 import { ChainId } from '@pancakeswap/sdk'

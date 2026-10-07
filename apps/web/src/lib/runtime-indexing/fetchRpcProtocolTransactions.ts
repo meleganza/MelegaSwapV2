@@ -1,4 +1,4 @@
-import { Transaction, TransactionType } from 'state/info/types'
+import { Transaction } from 'state/info/types';
 
 export interface RpcSwapIndexerMeta {
   source: 'bsc-rpc-log-indexer'

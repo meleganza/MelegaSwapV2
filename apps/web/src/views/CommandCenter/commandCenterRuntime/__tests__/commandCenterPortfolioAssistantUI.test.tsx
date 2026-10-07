@@ -2,7 +2,7 @@
  * R791D.5B — Command Center AI Portfolio Assistant UI experience.
  */
 
-import React from 'react'
+
 import { describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import {

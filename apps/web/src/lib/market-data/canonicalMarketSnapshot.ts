@@ -148,7 +148,7 @@ function mapFeatured(
   return rows.map((r) => {
     const hasPrice = r.latestPriceUsd != null && r.latestPriceUsd > 0
     const hasLiq = r.liquidityUsd != null && r.liquidityUsd > 0
-    const hasVol = r.volume24hUsd != null && r.volume24hUsd > 0
+
     const hasFdv = r.marketCapUsd != null && r.marketCapUsd > 0
     let unavailableReason: string | undefined
     if (!hasPrice && bnbUsd == null) unavailableReason = 'bnb-usd-unavailable'

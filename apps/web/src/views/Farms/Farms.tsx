@@ -1,20 +1,7 @@
 import { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
-import {
-  Image,
-  Heading,
-  Toggle,
-  Text,
-  Flex,
-  Farm as FarmUI,
-  Loading,
-  SearchInput,
-  Select,
-  OptionProps,
-  FlexLayout,
-  ToggleView,
-} from '@pancakeswap/uikit'
+import { Image, Toggle, Text, Flex, Farm as FarmUI, Loading, SearchInput, Select, OptionProps, FlexLayout, ToggleView } from '@pancakeswap/uikit';
 import styled from 'styled-components'
 import { melegaOperational as tokens } from 'ui/tokens'
 import Page from 'components/Layout/Page'
@@ -167,7 +154,7 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
   const isArchived = pathname.includes('archived')
   const isInactive = pathname.includes('history')
   const isActive = !isInactive && !isArchived
-  
+
   usePollFarmsWithUserData()
 
   // Users with no wallet connected should see 0 as Earned amount
@@ -183,7 +170,7 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
   const activeFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X' && !isArchivedPid(farm.pid))
 
   const inactiveFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier === '0X' && !isArchivedPid(farm.pid))
-  
+
   const archivedFarms = farmsLP.filter((farm) => isArchivedPid(farm.pid))
 
   const stakedOnlyFarms = activeFarms.filter(

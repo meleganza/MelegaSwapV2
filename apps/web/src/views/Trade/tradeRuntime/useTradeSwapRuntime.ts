@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { Currency, Trade, TradeType } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useAtomValue } from 'jotai'
 import { useCurrency } from 'hooks/Tokens'

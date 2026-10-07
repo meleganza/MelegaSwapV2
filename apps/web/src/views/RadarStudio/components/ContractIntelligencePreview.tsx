@@ -127,13 +127,7 @@ const MetricName = styled.div`
   margin-bottom: 6px;
 `
 
-const MetricDesc = styled.div`
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
-  line-height: 16px;
-  color: ${radarStudioColors.secondary};
-  margin-top: 6px;
-`
+
 
 const SummaryCard = styled.div`
   min-height: 170px;

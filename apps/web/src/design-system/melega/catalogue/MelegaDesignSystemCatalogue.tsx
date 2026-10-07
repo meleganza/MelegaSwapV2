@@ -1,29 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { colors, typography, spacing } from '../tokens'
-import {
-  MelegaButton,
-  MelegaCard,
-  MelegaPanel,
-  MelegaBadge,
-  MelegaStatusChip,
-  MelegaSidebarItem,
-  MelegaSidebarSection,
-  MelegaHeader,
-  MelegaSearchBar,
-  MelegaTokenSelector,
-  MelegaInput,
-  MelegaStatCard,
-  MelegaFeedRow,
-  MelegaTimelineRow,
-  MelegaTicker,
-  MelegaCtaCard,
-  MelegaFooter,
-  MelegaBottomNavigation,
-  MelegaSectionTitle,
-  MelegaEmptyState,
-  MelegaLoadingSkeleton,
-} from '../components'
+import { MelegaButton, MelegaCard, MelegaPanel, MelegaBadge, MelegaStatusChip, MelegaSidebarItem, MelegaSidebarSection, MelegaHeader, MelegaSearchBar, MelegaTokenSelector, MelegaInput, MelegaStatCard, MelegaFeedRow, MelegaTimelineRow, MelegaTicker, MelegaCtaCard, MelegaFooter, MelegaSectionTitle, MelegaEmptyState, MelegaLoadingSkeleton } from '../components';
 
 const Page = styled.div`
   min-height: 100vh;

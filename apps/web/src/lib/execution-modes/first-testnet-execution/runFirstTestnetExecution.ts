@@ -1,15 +1,11 @@
 import { createExecutionId } from '../../execution-contract'
 import { buildExecutionReport } from '../../execution-contract/report'
 import { mapTransactionToExecutionEvidence } from '../../execution-contract/evidence'
-import type { ExecutionInstruction } from '../../execution-layer/types'
+
 import { dispatchExecutionInstruction } from '../../execution-ingress/dispatch'
 import type { IngressAdapterHandlers } from '../../execution-ingress/types'
 import { getExecutionTracker } from '../../execution-tracker/tracker'
-import {
-  ACTIVATION_LIFECYCLE_DRY_RUN,
-  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ACTIVE,
-  ACTIVATION_LIFECYCLE_TESTNET_RECEIPT_CAPTURE,
-} from '../activation-lifecycle'
+import { ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ACTIVE, ACTIVATION_LIFECYCLE_TESTNET_RECEIPT_CAPTURE } from '../activation-lifecycle';
 import { rollbackActivationToDryRun } from '../rollback'
 import { setActivationLifecycleForHarness } from '../config'
 import { buildSettlementEventCandidate, type SettlementEventCandidate } from './buildSettlementEventCandidate'

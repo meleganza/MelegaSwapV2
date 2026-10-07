@@ -1,7 +1,7 @@
 // import masterchefABI from 'config/abi/masterchef.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import chunk from 'lodash/chunk'
-import { ChainId } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import BigNumber from 'bignumber.js'
 import { multicallv2 } from 'utils/multicall'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
@@ -22,7 +22,7 @@ export const fetchMasterChefFarmPoolLength = async (chainId?: number) => {
       ],
       chainId,
     })
-    
+
     return new BigNumber(poolLength).toNumber()
   } catch (error) {
     console.error('Fetch MasterChef Farm Pool Length Error: ', error)

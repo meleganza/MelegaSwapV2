@@ -1,47 +1,23 @@
-import {
-  Cake,
-  CakeFlexibleSideVaultV2,
-  CakeVaultV2,
-  Erc20,
-  Erc20Bytes32,
-  Multicall,
-  Multisender,
-  Weth,
-  Zap,
-} from 'config/abi/types'
+import { Cake, Erc20, Erc20Bytes32, Multicall, Weth, Zap } from 'config/abi/types';
 import zapAbi from 'config/abi/zap.json'
 import { useProviderOrSigner } from 'hooks/useProviderOrSigner'
 import { useMemo } from 'react'
-import { getIfov3Address, getMulticallAddress, getZapAddress } from 'utils/addressHelpers'
-import {
-  getBep20Contract,
-  getCakeContract,
-  getChainlinkOracleContract,
-  getIfoV3Contract,
-  getMasterchefContract,
-  getSouschefContract,
-  getBridgeContract,
-  getCakeVaultContract,
-  getCakeFlexibleSideVaultV2Contract,
-  getDNFTContract,
-  getNftMarketContract,
-  getNftStakingContract,
-  getDNFTcraneContract,
-} from 'utils/contractHelpers'
+import { getMulticallAddress, getZapAddress } from 'utils/addressHelpers';
+import { getBep20Contract, getCakeContract, getChainlinkOracleContract, getIfoV3Contract, getMasterchefContract, getSouschefContract, getBridgeContract, getCakeVaultContract, getDNFTContract, getNftMarketContract } from 'utils/contractHelpers';
 import { useSigner } from 'wagmi'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
-import { ChainId, WNATIVE } from '@pancakeswap/sdk'
+import { WNATIVE } from '@pancakeswap/sdk';
 import { CAKE } from '@pancakeswap/tokens'
 import { ERC20_BYTES32_ABI } from 'config/abi/erc20'
 import ERC20_ABI from 'config/abi/erc20.json'
 import IPancakePairABI from 'config/abi/IPancakePair.json'
 import multiCallAbi from 'config/abi/Multicall.json'
-import multisenderAbi from 'config/abi/multisender.json'
+import 'config/abi/multisender.json';
 import WETH_ABI from 'config/abi/weth.json'
 import { getContract } from 'utils'
-import { VaultKey } from 'state/types'
+import 'state/types';
 import { IPancakePair } from 'config/abi/types/IPancakePair'
 import { useActiveChainId } from './useActiveChainId'
 

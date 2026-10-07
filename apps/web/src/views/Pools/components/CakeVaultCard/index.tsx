@@ -5,7 +5,7 @@ import { Box, CardBody, Flex, Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { bscTokens, baseTokens } from '@pancakeswap/tokens'
+import '@pancakeswap/tokens';
 import { useCakeVault1 } from 'state/pools/hooks'
 import { Pool } from 'state/types'
 import { convertSharesToCake, getEarningToken } from 'views/Pools/helpers'
@@ -36,7 +36,7 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
     fees: { performanceFee },
     pricePerFullShare,
   } = useCakeVault1()
-  
+
   const { cakeAsBigNumber } = convertSharesToCake(userShares, pricePerFullShare)
   const accountHasSharesStaked = userShares && userShares.gt(0)
   const isLoading = !pool.userData || isVaultUserDataLoading

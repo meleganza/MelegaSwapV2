@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography } from '../../tokens'
+import { colors } from '../../tokens';
 import { MelegaSectionTitle } from '../SectionTitle'
 
 export interface MelegaSectionCardProps {

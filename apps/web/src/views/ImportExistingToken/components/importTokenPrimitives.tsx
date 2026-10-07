@@ -152,9 +152,7 @@ export const ItManifestPre = styled.pre`
   animation: ${manifestFade} ${importTokenLayout.manifestFade} ease-out both;
 `
 
-const gaugeAnim = keyframes`
-  from { --ring-angle: 0deg; }
-`
+
 
 export const ItGauge = styled.div<{ $score: number }>`
   width: 180px;

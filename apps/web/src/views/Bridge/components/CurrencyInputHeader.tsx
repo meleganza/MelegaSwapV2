@@ -30,7 +30,7 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   onRefreshPrice,
   title,
 }) => {
-  const { t } = useTranslation()
+  useTranslation();
   const [mobileTooltipShowOnce, setMobileTooltipShowOnce] = useAtom(mobileShowOnceTokenHighlightAtom)
   const [, setMobileTooltipShow] = useState(false)
 

@@ -151,28 +151,9 @@ const ViewButton = styled.button<{ $active?: boolean }>`
   cursor: pointer;
 `
 
-const ChipRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`
 
-const Chip = styled.button<{ $active?: boolean }>`
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid ${(p) => (p.$active ? 'rgba(244,196,48,0.55)' : 'rgba(255,255,255,0.12)')};
-  background: ${(p) => (p.$active ? 'rgba(244,196,48,0.12)' : 'rgba(255,255,255,0.03)')};
-  color: ${(p) => (p.$active ? liquidityPoolDiscovery.gold : liquidityPoolDiscovery.muted)};
-  font-size: 12px;
-  font-weight: 650;
-  cursor: pointer;
 
-  &:focus-visible {
-    outline: ${liquidityPoolDiscovery.focusRing};
-    outline-offset: ${liquidityPoolDiscovery.focusOffset};
-  }
-`
+
 
 const SortSelect = styled.select`
   height: 32px;

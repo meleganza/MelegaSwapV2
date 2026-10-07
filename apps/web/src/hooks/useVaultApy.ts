@@ -81,7 +81,7 @@ export function useVaultApy({ duration = MAX_LOCK_DURATION }: { duration?: numbe
       .mulUnsafe(FixedNumber.from(BLOCKS_PER_YEAR))
       .mulUnsafe(cakePoolSharesInSpecialFarms)
   })
-  
+
   const flexibleApy = useMemo(
     () =>
       totalCakePoolEmissionPerYear &&

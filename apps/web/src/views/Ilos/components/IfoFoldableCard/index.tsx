@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
 import styled from 'styled-components'
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  CardRibbon,
-  ExpandableButton,
-  Progress,
-  Button,
-  ChevronUpIcon,
-} from '@pancakeswap/uikit'
-import BigNumber from 'bignumber.js'
+import { Card, CardHeader, CardBody, CardRibbon, Progress } from '@pancakeswap/uikit';
+import 'bignumber.js';
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { PublicIfoData3 } from 'views/Ilos/types'
-import { useERC20 } from 'hooks/useContract'
+import 'hooks/useContract';
 import { useToast } from '@pancakeswap/uikit'
-import { Address } from 'config/constants/types'
+import 'config/constants/types';
 import { useTranslation } from '@pancakeswap/localization'
-import { getAddress } from 'utils/addressHelpers'
-import { bscTokens } from '@pancakeswap/tokens'
-import { getFullDisplayBalance } from 'utils/formatBalance'
-import { EnableStatus } from './types'
+import 'utils/addressHelpers';
+import '@pancakeswap/tokens';
+import 'utils/formatBalance';
+import './types';
 import IfoPoolCard from './IfoPoolCard'
 import Timer from './Timer'
 import Achievement from './Achievement'
@@ -93,22 +83,18 @@ const StyledCardBody = styled(CardBody)`
   }
 `
 
-const StyledCardFooter = styled(CardFooter)`
-  text-align: center;
-  padding: 8px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-`
+
 
 const IfoFoldableCard: React.FC<IfoFoldableCardProps> = ({ publicIfoData }) => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  useWeb3React();
   const ctime = Number((new Date().getTime() / 1000).toFixed(0));
   const countdownToUse = ctime < Number(publicIfoData.startPresaleTime) ? Number(publicIfoData.startPresaleTime) - ctime : ctime < Number(publicIfoData.endPresaleTime) ? ctime - Number(publicIfoData.endPresaleTime) : 0
 
-  const Ribbon = getRibbonComponent(countdownToUse !== 0 && Number(publicIfoData.status) === -1 ? 'cancelled' : ctime < Number(publicIfoData.startPresaleTime) && Number(publicIfoData.status) === 0 ? 'coming soon' : countdownToUse !== 0 && Number(publicIfoData.status) === 0 ? 'live' : countdownToUse !== 0 && Number(publicIfoData.status) === 1 ? "live" : countdownToUse === 0 || Number(publicIfoData.status) === 2 ? "finished" : "", t)
+  getRibbonComponent(countdownToUse !== 0 && Number(publicIfoData.status) === -1 ? 'cancelled' : ctime < Number(publicIfoData.startPresaleTime) && Number(publicIfoData.status) === 0 ? 'coming soon' : countdownToUse !== 0 && Number(publicIfoData.status) === 0 ? 'live' : countdownToUse !== 0 && Number(publicIfoData.status) === 1 ? "live" : countdownToUse === 0 || Number(publicIfoData.status) === 2 ? "finished" : "", t);
   const isActive = publicIfoData.status !== 2 && publicIfoData.status !== -1
 
-  const { toastSuccess } = useToast()
+  useToast();
 
   return (
     <StyledCard >

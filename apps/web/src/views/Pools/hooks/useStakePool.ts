@@ -8,7 +8,7 @@ import { useAppDispatch } from 'state'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { stakeFarm } from 'utils/calls'
 import { updateUserBalance, updateUserStakedBalance } from 'state/pools'
-import { BIG_TEN } from '@pancakeswap/utils/bigNumber'
+import '@pancakeswap/utils/bigNumber';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const options = {

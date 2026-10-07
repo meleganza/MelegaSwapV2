@@ -1,10 +1,10 @@
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTranslation } from '@pancakeswap/localization'
-import { Skeleton, useToast, useModal, Farm as FarmUI } from '@pancakeswap/uikit'
+import { useToast, Farm as FarmUI } from '@pancakeswap/uikit';
 import BigNumber from 'bignumber.js'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import useCatchTxError from 'hooks/useCatchTxError'
-import { useERC20 } from 'hooks/useContract'
+import 'hooks/useContract';
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
 

@@ -4,7 +4,7 @@
  * No scoring / advice / fetch.
  */
 
-import React from 'react'
+
 import styled from 'styled-components'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import type { PortfolioIntelligenceModel } from '../commandCenterRuntime/portfolioIntelligence'

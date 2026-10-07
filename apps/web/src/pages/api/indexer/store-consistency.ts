@@ -1,6 +1,6 @@
 import type { NextApiHandler } from 'next'
 import { FEATURED_PAIR_SLUG, MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
-import { resolveIndexerStorage, resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
+import { resolveIndexerStorage } from 'lib/bsc-indexer/storage';
 import { blobPathForSlug } from 'lib/bsc-indexer/v2/paths'
 
 const handler: NextApiHandler = async (req, res) => {

@@ -11,7 +11,7 @@ import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
-import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
+import 'lib/data-truth/compute24hPriceChange';
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
 import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
 import { derivePoolLifecycle, reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
@@ -25,13 +25,7 @@ import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
 import { useCanonicalMarketSnapshot } from 'lib/market-data'
-import {
-  formatFarmTrendingLabel,
-  formatPoolMetaLabel,
-  formatPoolTickerAccent,
-  formatPoolTrendingLabel,
-  POOL_APR_UNAVAILABLE_REASON,
-} from './formatTrendingLabels'
+import { formatPoolTickerAccent, formatPoolTrendingLabel, POOL_APR_UNAVAILABLE_REASON } from './formatTrendingLabels';
 import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 import {
   countLiveActiveFarmConfigs,
@@ -252,18 +246,20 @@ export const useHomeTradeData = () => {
   }, [recentTransactions])
 
   const dexProjects = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
-  const tradeableAssetCount = useMemo(() => getCanonicalIndexedAssets().length, [])
+  useMemo(() => getCanonicalIndexedAssets().length, []);
 
   const latestProject = useMemo(() => {
     return dexProjects.find((p) => p.slug !== 'melega-dex') ?? dexProjects[0]
   }, [dexProjects])
 
-  const topVolumeSwap = useMemo(() => {
-    if (!recentTransactions.length) return undefined
-    const swaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP && tx.amountUSD > 0)
-    if (!swaps.length) return undefined
-    return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
-  }, [recentTransactions])
+  useMemo(() => {
+    if (!recentTransactions.length)
+        return undefined;
+    const swaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP && tx.amountUSD > 0);
+    if (!swaps.length)
+        return undefined;
+    return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0]);
+}, [recentTransactions]);
 
   // Shared Top Movers snapshot (same instance as global ticker).
   const dexTrending = useTopMoversSnapshot()

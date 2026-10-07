@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import styled, { css } from 'styled-components'
-import { colors, typography, animation } from '../../tokens'
+import { colors, typography } from '../../tokens';
 
 export interface MelegaSidebarItemProps {
   icon?: React.ReactNode

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
-import { Heading, Flex, Image, Text, Link, FlexLayout, Loading, Pool, ViewMode } from '@pancakeswap/uikit'
+import { Flex, Image, Text, FlexLayout, Loading, Pool, ViewMode } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import Page from 'components/Layout/Page'
@@ -31,11 +31,7 @@ const FinishedTextContainer = styled(Flex)`
   }
 `
 
-const FinishedTextLink = styled(Link)`
-  font-weight: 400;
-  white-space: nowrap;
-  text-decoration: underline;
-`
+
 
 const Pools: React.FC<React.PropsWithChildren> = () => {
   const { t } = useTranslation()
@@ -45,7 +41,7 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
 
   usePoolsPageFetch()
   // console.log(pools)
-  
+
   const marcoStakePool = useMemo(
     () =>
       pools?.find(

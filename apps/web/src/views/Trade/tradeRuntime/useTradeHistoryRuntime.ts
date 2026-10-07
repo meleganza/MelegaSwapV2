@@ -8,12 +8,7 @@ import { useAllActiveChainTransactions } from 'state/transactions/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getSettlementReference } from 'lib/treasury-handoff'
 import type { TransactionDetails } from 'state/transactions/reducer'
-import {
-  buildProtocolHistoryRows,
-  buildWalletHistoryRows,
-  mergeTradeHistoryRows,
-  type TradeHistoryRow,
-} from './formatTradeHistory'
+import { buildProtocolHistoryRows, buildWalletHistoryRows, type TradeHistoryRow } from './formatTradeHistory';
 
 export interface TradeHistoryRuntime {
   account?: string

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
 import { LsSectionTitle } from '../components/liquidityStudioPrimitives'

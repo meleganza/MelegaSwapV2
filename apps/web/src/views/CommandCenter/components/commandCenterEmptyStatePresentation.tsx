@@ -4,7 +4,7 @@
  * Runtime status codes stay unchanged — this maps them to user-facing copy only.
  */
 
-import React from 'react'
+
 import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'

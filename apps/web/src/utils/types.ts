@@ -1,4 +1,4 @@
-import { Contract, ContractFunction } from '@ethersproject/contracts'
+import { Contract } from '@ethersproject/contracts';
 
 export type MultiCallResponse<T> = T | null
 

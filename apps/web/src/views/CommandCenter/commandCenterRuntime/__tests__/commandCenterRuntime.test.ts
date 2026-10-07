@@ -3,15 +3,7 @@ import { buildActivityTimeline } from '../buildActivityTimeline'
 import { buildMachineSummary } from '../buildMachineSummary'
 import { mapRecommendations } from '../buildNotifications'
 import { formatSettlementUserLabel } from 'views/Trade/tradeRuntime/formatSettlementStatus'
-import {
-  countPendingActions,
-  formatAssetRows,
-  formatFarmPositionRows,
-  formatLiquidityRows,
-  formatPoolPositionRows,
-  safePortfolioSection,
-  sumPendingRewardsUsd,
-} from '../formatCommandCenterRuntime'
+import { formatAssetRows, formatFarmPositionRows, formatLiquidityRows, formatPoolPositionRows, safePortfolioSection, sumPendingRewardsUsd } from '../formatCommandCenterRuntime';
 import { createCommandCenterError } from '../commandCenterRuntimeErrors'
 import BigNumber from 'bignumber.js'
 import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'

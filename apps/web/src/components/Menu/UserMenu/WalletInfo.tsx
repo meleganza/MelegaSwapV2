@@ -9,9 +9,9 @@ import {
   Text,
   CopyAddress,
 } from '@pancakeswap/uikit'
-import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
-import { ChainId, WNATIVE } from '@pancakeswap/sdk'
-import { FetchStatus } from 'config/constants/types'
+import '@pancakeswap/utils/bigNumber';
+import '@pancakeswap/sdk';
+import 'config/constants/types';
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import useAuth from 'hooks/useAuth'
@@ -42,7 +42,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
   const { t } = useTranslation()
   const { account, chain } = useWeb3React()
   const { chainId } = useActiveChainId()
-  const isBSC = chainId === ChainId.BSC
+
   // const bnbBalance = useBalance({ address: account, chainId: ChainId.BSC })
   const nativeBalance = useBalance({ address: account, chainId })
   const native = useNativeCurrency()

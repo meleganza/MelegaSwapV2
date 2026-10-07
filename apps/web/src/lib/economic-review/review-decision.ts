@@ -1,4 +1,4 @@
-import { ReviewDecisionExample, ReviewDecisionType, ReviewerType } from './review-types'
+import { ReviewDecisionExample, ReviewDecisionType } from './review-types';
 
 export const REVIEW_DECISION_TYPES: ReviewDecisionType[] = [
   'approve',

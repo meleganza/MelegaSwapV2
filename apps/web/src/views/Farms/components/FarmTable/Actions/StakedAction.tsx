@@ -8,13 +8,13 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { useERC20 } from 'hooks/useContract'
 import { useRouter } from 'next/router'
-import { useCallback, useContext, useState, useMemo } from 'react'
+import { useCallback, useMemo } from 'react';
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
 import { useTransactionAdder, useNonBscFarmPendingTransaction } from 'state/transactions/hooks'
 import { FarmTransactionStatus, NonBscFarmStepType } from 'state/transactions/actions'
 import { pickFarmTransactionTx } from 'state/global/actions'
-import { usePriceCakeBusd, useFarmFromPid } from 'state/farms/hooks'
+import { usePriceCakeBusd } from 'state/farms/hooks';
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import BigNumber from 'bignumber.js'
 import useNativeCurrency from 'hooks/useNativeCurrency'
@@ -27,7 +27,7 @@ import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useApproveFarm from '../../../hooks/useApproveFarm'
 import useStakeFarms from '../../../hooks/useStakeFarms'
 import useUnstakeFarms from '../../../hooks/useUnstakeFarms'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import 'hooks/useActiveWeb3React';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface StackedActionProps extends FarmWithStakedValue {
@@ -67,7 +67,7 @@ export function useStakedActions(lpContract, pid) {
 
 export const StakedContainer = ({ children, ...props }) => {
   const { address: account } = useAccount()
-  const { chainId } = useActiveChainId()
+  useActiveChainId();
   const { lpAddress } = props
   const lpContract = useERC20(lpAddress)
   const { onStake, onUnstake, onApprove, onDone } = useStakedActions(lpContract, props.pid)
@@ -111,7 +111,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   isTokenOnly
 }) => {
   const dispatch = useAppDispatch()
-  const native = useNativeCurrency()
+  useNativeCurrency();
   const pendingFarm = useNonBscFarmPendingTransaction(lpAddress)
   const { t } = useTranslation()
   const { toastSuccess } = useToast()
@@ -151,24 +151,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
     }
   }
 
-  const handleNonBscStake = async (amountValue: string) => {
-    const receipt = await fetchTxResponse(() => onStake(amountValue))
-    const amountAsBigNumber = new BigNumber(amountValue).times(DEFAULT_TOKEN_DECIMAL)
-    const amount = formatLpBalance(new BigNumber(amountAsBigNumber), 18)
 
-    if (receipt) {
-      addTransaction(receipt, {
-        type: 'non-bsc-farm',
-        translatableSummary: {
-          text: 'Stake %amount% %lpSymbol% Token',
-          data: { amount, lpSymbol },
-        }
-      })
-
-      dispatch(pickFarmTransactionTx({ tx: receipt.hash, chainId }))
-      onDone()
-    }
-  }
 
   const handleUnstake = async (amount: string) => {
     if (vaultPid) {

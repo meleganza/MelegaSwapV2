@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { ethers, Contract } from 'ethers'
+import { Contract } from 'ethers';
 import BigNumber from 'bignumber.js'
 import { useAppDispatch } from 'state'
 import { updateUserAllowance } from 'state/actions'
@@ -124,6 +124,6 @@ export const useCheckVaultApprovalStatus = (chainId?: number) => {
 
     checkApprovalStatus()
   }, [account, cakeContract, cakeVaultContract, lastUpdated])
-  
+
   return { isVaultApproved, setLastUpdated }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors } from '../../tokens'
+import '../../tokens';
 
 /** Historical width — DS001.2 shell no longer reserves this offset (always 0). */
 const ASIDE_WIDTH = '0px'

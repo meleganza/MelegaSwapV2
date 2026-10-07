@@ -1,7 +1,7 @@
 import { useFarmUser } from 'state/farms/hooks'
 import { Farm as FarmUI, FarmTableFarmTokenInfoProps } from '@pancakeswap/uikit'
 import { TokenImage, TokenPairImage } from 'components/TokenImage'
-import { bscTokens } from '@pancakeswap/tokens'
+import '@pancakeswap/tokens';
 
 const { FarmTokenInfo } = FarmUI.FarmTable
 
@@ -15,7 +15,7 @@ const Farm: React.FunctionComponent<React.PropsWithChildren<FarmTableFarmTokenIn
   isTokenOnly
 }) => {
   const { stakedBalance, proxy } = useFarmUser(pid)
-  
+
   return (
     <FarmTokenInfo
       pid={pid}

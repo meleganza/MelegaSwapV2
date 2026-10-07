@@ -28,15 +28,7 @@ import { logError } from 'utils/sentry'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
 import { LiquidityAddConfirmModal, type AddTxLifecycle } from '../v3/LiquidityAddConfirmModal'
 import { LiquidityRemoveConfirmModal, type RemoveTxLifecycle } from '../v3/LiquidityRemoveConfirmModal'
-import {
-  formatAmount,
-  formatPct,
-  formatPercentShare,
-  formatSlippage,
-  pairLabel,
-  ratioLabels,
-  estimateImpermanentLossPct,
-} from './formatLiquidityRuntime'
+import { formatAmount, formatPercentShare, formatSlippage, pairLabel, ratioLabels, estimateImpermanentLossPct } from './formatLiquidityRuntime';
 import { runtimeErrorFromPhase, type LiquidityRuntimeError } from './liquidityRuntimeErrors'
 import {
   useLiquidityPositionDetails,
@@ -231,7 +223,7 @@ export function useLiquidityMintRuntime({
   const { chainId } = useActiveChainId()
   const { switchNetworkAsync } = useSwitchNetwork()
   const native = useNativeCurrency()
-  const gasPrice = useGasPrice()
+  useGasPrice();
   const [allowedSlippage] = useUserSlippageTolerance()
   const [transactionTtl] = useUserTransactionTTL()
   const addTransaction = useTransactionAdder()
@@ -313,17 +305,7 @@ export function useLiquidityMintRuntime({
   )
 
   const mintInfo = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
-  const {
-    pair,
-    pairState,
-    parsedAmounts,
-    price,
-    noLiquidity,
-    liquidityMinted,
-    poolTokenPercentage,
-    error: mintError,
-    currencies,
-  } = mintInfo
+  const { pair, pairState, parsedAmounts, price, noLiquidity, liquidityMinted, poolTokenPercentage, error: mintError } = mintInfo;
 
   const burnInfo = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
   const lpAprData = useLPApr(pair ?? undefined)

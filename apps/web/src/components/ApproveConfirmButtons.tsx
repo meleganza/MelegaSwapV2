@@ -37,7 +37,7 @@ const Button = styled(UIKitButton)<{ useMinWidth: boolean }>`
   ${({ theme }) => theme.mediaQueries.md} {
     ${({ useMinWidth }) =>
       useMinWidth &&
-      `  
+      `
     min-width: 160px;
   `}
   }

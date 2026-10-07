@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import orderBy from 'lodash/orderBy'
+import 'lodash/orderBy';
 import { useAccount } from 'wagmi'
 import { useAllTransactions } from 'state/transactions/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import type { PoolsActivityRow } from '../poolsStudioData'
-import { getPoolDisplayName } from './formatPoolsRuntime'
+import './formatPoolsRuntime';
 
 const formatTimeAgo = (timestamp: number): string => {
   const seconds = Math.floor(Date.now() / 1000 - timestamp)

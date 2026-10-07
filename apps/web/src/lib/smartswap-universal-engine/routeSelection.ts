@@ -24,15 +24,6 @@ export interface RouteSelectionResult {
   productionActivation: false
 }
 
-function asBigInt(value: string | null | undefined): bigint | null {
-  if (value == null || value === '') return null
-  try {
-    return BigInt(value)
-  } catch {
-    return null
-  }
-}
-
 function impactScore(percent: number | null): number {
   if (percent == null) return 40
   if (percent <= 0.5) return 100

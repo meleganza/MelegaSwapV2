@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from '@pancakeswap/localization'
-import { Flex, Link, PocketWatchIcon, Text, Skeleton } from '@pancakeswap/uikit'
+import { Flex, PocketWatchIcon, Text, Skeleton } from '@pancakeswap/uikit';
 import getTimePeriods from 'utils/getTimePeriods'
 import { PublicIfoData3 } from 'views/Ilos/types'
 
@@ -11,7 +11,7 @@ interface Props {
 const Timer: React.FC<Props> = ({ publicIfoData }) => {
   const { t } = useTranslation()
   const ctime= Number((new Date().getTime()/1000).toFixed(0));
-  
+
   const countdownToUse = ctime<Number(publicIfoData.startPresaleTime) ? Number(publicIfoData.startPresaleTime)-ctime :  ctime<Number(publicIfoData.endPresaleTime)?Number(publicIfoData.endPresaleTime)-ctime:0
   const timeUntil = getTimePeriods(countdownToUse)
   const suffix = ctime<Number(publicIfoData.startPresaleTime) ? t('Start') : countdownToUse!==0 ? t('Finish'):"Finished"
@@ -23,7 +23,7 @@ const Timer: React.FC<Props> = ({ publicIfoData }) => {
         <>
           <PocketWatchIcon width="48px" mr="16px" />
           <Flex alignItems="center">
-            <Text bold mr="16px">        
+            <Text bold mr="16px">
               {suffix}:
             </Text>
             <Text>
@@ -33,7 +33,7 @@ const Timer: React.FC<Props> = ({ publicIfoData }) => {
                 minute: timeUntil.minutes,
               })}
             </Text>
-           
+
           </Flex>
         </>
       )}

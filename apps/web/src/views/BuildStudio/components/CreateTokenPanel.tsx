@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react';
 import styled from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { NAV_COMING_SOON_LABEL } from 'lib/navigation/comingSoon'
@@ -6,7 +6,7 @@ import { SUPPORTED_CHAINS } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { IconCoins } from './buildStudioIcons'
-import { BsBadge, BsBody, BsCardTitle, BsComingSoonBtn, BsComingSoonOutlineBtn, BsPanel, BsPrimaryBtn } from './buildStudioPrimitives'
+import { BsBadge, BsBody, BsCardTitle, BsComingSoonBtn, BsComingSoonOutlineBtn, BsPanel } from './buildStudioPrimitives';
 
 const Inner = styled.div`
   padding: 20px;

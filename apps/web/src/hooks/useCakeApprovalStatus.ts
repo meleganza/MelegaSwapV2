@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi'
 import { useCake } from 'hooks/useContract'
 import { useSWRContract, UseSWRContractKey } from 'hooks/useSWRContract'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@pancakeswap/wagmi'
+import '@pancakeswap/wagmi';
 
 // TODO: refactor as useTokenApprovalStatus for generic use
 

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it, vi } from 'vitest'

@@ -2,19 +2,7 @@ import { useEffect, useState, createElement, useRef } from 'react'
 import styled from 'styled-components'
 import { melegaOperational as tokens } from 'ui/tokens'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
-import {
-  Box,
-  Flex,
-  useMatchBreakpoints,
-  Skeleton,
-  Farm as FarmUI,
-  FarmTableEarnedProps,
-  FarmTableLiquidityProps,
-  FarmTableMultiplierProps,
-  FarmTableFarmTokenInfoProps,
-  MobileColumnSchema,
-  DesktopColumnSchema,
-} from '@pancakeswap/uikit'
+import { Flex, useMatchBreakpoints, Farm as FarmUI, FarmTableEarnedProps, FarmTableLiquidityProps, FarmTableMultiplierProps, FarmTableFarmTokenInfoProps, MobileColumnSchema, DesktopColumnSchema } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import { useFarmUser } from 'state/farms/hooks'
 import { useDelayedUnmount } from '@pancakeswap/hooks'
@@ -83,7 +71,7 @@ const FarmMobileCell = styled.td`
 
 const Row: React.FunctionComponent<React.PropsWithChildren<RowPropsWithLoading>> = (props) => {
   const { details, initialActivity, userDataReady } = props
-  const { stakedBalance, proxy, tokenBalance } = props.details.userData
+
   const hasSetInitialValue = useRef(false)
   const hasStakedAmount = !!useFarmUser(details.pid).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)

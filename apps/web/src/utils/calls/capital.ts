@@ -1,6 +1,6 @@
-import { Contract } from '@ethersproject/contracts'
-import BigNumber from 'bignumber.js'
-import { DEFAULT_TOKEN_DECIMAL, DEFAULT_GAS_LIMIT } from 'config'
+import '@ethersproject/contracts';
+import 'bignumber.js';
+import { DEFAULT_GAS_LIMIT } from 'config';
 
 export const harvestBond = async (bondContract, account, stake, gasPrice, gasLimit?: number) => {
   return bondContract.redeem(account, stake, {

@@ -2,7 +2,7 @@
  * R791D.4G — Command Center premium UI implementation tests.
  */
 
-import React from 'react'
+
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import {

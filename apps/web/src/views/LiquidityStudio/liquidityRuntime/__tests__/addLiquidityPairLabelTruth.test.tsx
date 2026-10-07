@@ -8,7 +8,17 @@
  * (and the transaction) deposited AARON + MARCO. Add surfaces must always derive the pair from
  * the live form currencies; Remove Liquidity keeps the selected wallet LP position truth.
  */
-import React, { useState } from 'react'
+/**
+ * P0-LIQUIDITY-ADD-PAIR-LABEL-TRUTH
+ *
+ * On /liquidity the runtime mode defaults to 'My Positions' while the shell renders the Add
+ * workspace, and a sole wallet LP position is auto-selected. The pair label resolver used to
+ * prefer that selected position outside 'Add Liquidity' mode, so the Add header, Position
+ * Preview → Pair and the Add confirmation → Position could read "MARCO / WBNB" while the form
+ * (and the transaction) deposited AARON + MARCO. Add surfaces must always derive the pair from
+ * the live form currencies; Remove Liquidity keeps the selected wallet LP position truth.
+ */
+import { useState } from 'react';
 import { readFileSync } from 'fs'
 import path from 'path'
 import { afterEach, describe, expect, it } from 'vitest'

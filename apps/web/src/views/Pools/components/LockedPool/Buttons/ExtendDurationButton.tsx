@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { Button, useModal, ButtonProps } from '@pancakeswap/uikit'
-import { ONE_WEEK_DEFAULT, MAX_LOCK_DURATION } from 'config/constants/pools'
+import { ButtonProps } from '@pancakeswap/uikit';
+import 'config/constants/pools';
 
 // import ExtendDurationModal from '../Modals/ExtendDurationModal'
 import { ExtendDurationButtonPropsType } from '../types'
@@ -17,11 +17,8 @@ const ExtendDurationButton: React.FC<React.PropsWithChildren<ExtendDurationButto
   ...rest
 }) => {
   const nowInSeconds = Math.floor(Date.now() / 1000)
-  const currentDuration = useMemo(() => Number(lockEndTime) - Number(lockStartTime), [lockEndTime, lockStartTime])
-  const currentDurationLeft = useMemo(
-    () => Math.max(Number(lockEndTime) - nowInSeconds, 0),
-    [lockEndTime, nowInSeconds],
-  )
+  useMemo(() => Number(lockEndTime) - Number(lockStartTime), [lockEndTime, lockStartTime]);
+  useMemo(() => Math.max(Number(lockEndTime) - nowInSeconds, 0), [lockEndTime, nowInSeconds]);
 
   // const [openExtendDurationModal] = useModal(
   //   <ExtendDurationModal

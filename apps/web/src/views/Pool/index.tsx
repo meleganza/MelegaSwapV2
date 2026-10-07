@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { ThemeProvider } from 'styled-components'
+import 'styled-components';
 import styled from 'styled-components'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Coming1 } from '@pancakeswap/uikit'
+import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@pancakeswap/uikit';
 import Link from 'next/link'
 import { useAccount } from 'wagmi'
 import { useTranslation } from '@pancakeswap/localization'

@@ -8,7 +8,7 @@ import {
   resolvePoolTvlUsd,
   resolvePoolVolumeDisplay,
 } from 'lib/data-truth/yieldMetricHelpers'
-import { METRIC_STATUS } from 'lib/data-policy/metricStatus'
+import 'lib/data-policy/metricStatus';
 
 describe('yieldMetricHelpers — shared TVL formulas', () => {
   it('farm liquidity prefers attached liquidity BigNumber', () => {

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { useToken } from 'hooks/Tokens'
@@ -6,10 +6,10 @@ import { useBurnedBalance } from 'hooks/useTokenBalance'
 import { getMarcoAddress } from 'utils/addressHelpers'
 import { getBalanceNumber, formatLocalisedCompactNumber } from 'utils/formatBalance'
 import { usePriceCakeBusd } from 'state/farms/hooks'
-import { Flex, Text, Heading, Skeleton, Button } from '@pancakeswap/uikit'
+import { Flex, Skeleton, Button } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import BigNumber from 'bignumber.js'
-import Balance from 'components/Balance'
+import 'components/Balance';
 import { useMatchBreakpoints } from '@pancakeswap/uikit'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
@@ -75,10 +75,10 @@ const MaximizeDiv = styled('div')`
   }
 `
 
-const emissionsPerBlock = 0.162118
+
 
 const CakeDataRow = () => {
-  const { t } = useTranslation()
+  useTranslation();
   const { chainId } = useActiveChainId()
   const tokenTotalSupply = new BigNumber(useTotalSupply(useToken(getMarcoAddress(chainId)))?.toFixed(0))
   const totalSupply = tokenTotalSupply ? new BigNumber(tokenTotalSupply.toFixed(0)) : 0
@@ -88,7 +88,7 @@ const CakeDataRow = () => {
   const mcap = cakePriceBusd.times(cakeSupply)
   const mcapString = formatLocalisedCompactNumber(mcap.toNumber())
   const { isMobile } = useMatchBreakpoints()
-  
+
   return (
     <OuterDiv style={{ textAlign: 'center' }}>
       <InnerDiv1 style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid', borderRadius: '1rem' }}>

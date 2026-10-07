@@ -78,19 +78,7 @@ const TokenIconWrap = styled.span<{ $offset?: boolean }>`
   justify-content: center;
 `
 
-const TokenFallback = styled.span`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid ${farmsStudioColors.border};
-  background: ${farmsStudioColors.panelAlt};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  color: ${farmsStudioColors.goldBright};
-`
+
 
 const PairName = styled.span`
   font-size: 18px;

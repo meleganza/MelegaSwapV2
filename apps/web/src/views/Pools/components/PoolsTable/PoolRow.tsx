@@ -10,24 +10,24 @@ import AprCell from './Cells/AprCell'
 import TotalStakedCell from './Cells/TotalStakedCell'
 import EndsInCell from './Cells/EndsInCell'
 import ActionPanel from './ActionPanel/ActionPanel'
-import AutoEarningsCell from './Cells/AutoEarningsCell'
-import AutoAprCell from './Cells/AutoAprCell'
-import StakedCell from './Cells/StakedCell'
+import './Cells/AutoEarningsCell';
+import './Cells/AutoAprCell';
+import './Cells/StakedCell';
 
 export const VaultPoolRow: React.FC<
   React.PropsWithChildren<{ vaultKey: VaultKey; account: string; initialActivity?: boolean }>
 > = memo(({ vaultKey, account, initialActivity }) => {
   const { isLg, isXl, isXxl, isDesktop } = useMatchBreakpoints()
-  const isLargerScreen = isLg || isXl || isXxl
-  const isXLargerScreen = isXl || isXxl
+
+
   const pool = useDeserializedPoolByVaultKey(vaultKey)
   const { totalDexTokenInVault } = useVaultPoolByKey(vaultKey)
 
-  const { stakingToken, totalStaked } = pool
+  const { stakingToken } = pool;
 
-  const totalStakedBalance = useMemo(() => {
-    return getBalanceNumber(totalDexTokenInVault, stakingToken?.decimals)
-  }, [stakingToken?.decimals, totalDexTokenInVault])
+  useMemo(() => {
+    return getBalanceNumber(totalDexTokenInVault, stakingToken?.decimals);
+}, [stakingToken?.decimals, totalDexTokenInVault]);
 
   return (
     <Pool.ExpandRow initialActivity={initialActivity} panel={<ActionPanel account={account} pool={pool} expanded />}>

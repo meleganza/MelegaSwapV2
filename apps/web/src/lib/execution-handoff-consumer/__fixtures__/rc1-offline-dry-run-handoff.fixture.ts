@@ -11,12 +11,7 @@ import {
   EXECUTION_INSTRUCTION_SCHEMA_VERSION,
   INSTRUCTION_SOURCE_KERL_PREVIEW,
 } from 'lib/execution-contract'
-import {
-  COMPATIBILITY_OUTCOME_COMPATIBLE,
-  COMPATIBILITY_OUTCOME_INCOMPATIBLE,
-  COMPATIBILITY_OUTCOME_UNKNOWN,
-  KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED,
-} from '../certification'
+import { COMPATIBILITY_OUTCOME_COMPATIBLE, KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED } from '../certification';
 import { HANDOFF_PACKAGE_VERSION } from '../constants'
 import type { CertifiedDryRunHandoffPackage, DryRunHandoffPackage, Rc1OfflineDryRunHandoffPackage } from '../types'
 import { createBridgeExecutionInstruction } from '../../routing-layer/createSwapExecutionInstruction'

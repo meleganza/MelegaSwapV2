@@ -8,16 +8,7 @@ import {
   CONSTITUTIONAL_CANONICAL_CHAIN,
   CONSTITUTIONAL_CANONICAL_STATUS,
 } from 'registry/presence/presence-constants'
-import {
-  EconomicPageShell,
-  EconomicHero,
-  EconomicSection,
-  EconomicStatusSummary,
-  EconomicAiLayer,
-  TECHNICAL_DETAILS_TITLE,
-  MANIFEST_TITLE,
-  EconomicManifestLink,
-} from 'views/EconomicOS/components'
+import { EconomicPageShell, EconomicHero, EconomicSection, EconomicStatusSummary, EconomicAiLayer, EconomicManifestLink } from 'views/EconomicOS/components';
 import PresenceCard from './components/PresenceCard'
 
 const Disclaimer = styled.p`

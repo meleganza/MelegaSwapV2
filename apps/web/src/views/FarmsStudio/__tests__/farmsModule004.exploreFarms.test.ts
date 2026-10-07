@@ -501,7 +501,7 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       makeCard({ pid: 2, emissionState: 'unavailable', status: 'indexing', cta: 'stake' }),
       { chainId: 56, userDataLoaded: true, chainSupported: true },
     )
-    // indexing + unavailable emission excluded by inclusion when emission unavailable? 
+    // indexing + unavailable emission excluded by inclusion when emission unavailable?
     // emissionState unavailable is allowed through inclusion — aprLabel becomes APR
     if (rawOnly) {
       expect(rawOnly.aprLabel).toBe('APR')

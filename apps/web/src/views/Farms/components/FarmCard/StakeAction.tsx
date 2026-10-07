@@ -2,11 +2,11 @@ import { useTranslation } from '@pancakeswap/localization'
 import { AddIcon, Button, Flex, IconButton, MinusIcon, useModal, useToast, Farm as FarmUI } from '@pancakeswap/uikit'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import useCatchTxError from 'hooks/useCatchTxError'
-import { useCallback, useContext, useState, useMemo } from 'react'
+import { useCallback, useMemo } from 'react';
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useRouter } from 'next/router'
-import { usePriceCakeBusd, useFarmFromPid } from 'state/farms/hooks'
+import { usePriceCakeBusd } from 'state/farms/hooks';
 import { useAppDispatch } from 'state'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { ChainId, WNATIVE, NATIVE } from '@pancakeswap/sdk'
@@ -20,7 +20,7 @@ import { useTransactionAdder, useNonBscFarmPendingTransaction } from 'state/tran
 import { FarmTransactionStatus, NonBscFarmStepType } from 'state/transactions/actions'
 import WalletModal, { WalletView } from 'components/Menu/UserMenu/WalletModal'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import 'hooks/useActiveWeb3React';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface FarmCardActionsProps extends FarmWithStakedValue {
@@ -71,7 +71,7 @@ const StakeAction: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
   const addTransaction = useTransactionAdder()
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
-  const native = useNativeCurrency()
+  useNativeCurrency();
   const { tokenBalance, stakedBalance, allowance } = userData
   const cakePrice = usePriceCakeBusd()
   const router = useRouter()

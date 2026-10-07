@@ -30,7 +30,7 @@ import sousChef from 'config/abi/sousChef.json'
 import iCakeAbi from 'config/abi/iCake.json'
 import bridge from 'config/abi/bridge.json'
 import cakeFlexibleSideVaultV2Abi from 'config/abi/cakeFlexibleSideVaultV2.json'
-import multisender from 'config/abi/multisender.json'
+import 'config/abi/multisender.json';
 import ifoV3Abi from 'config/abi/ifoV3.json'
 import cakeVaultAbi from 'config/abi/cakeVault.json'
 import sousChefBnb from 'config/abi/sousChefBnb.json'
@@ -39,26 +39,10 @@ import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
 import MultiCallAbi from 'config/abi/Multicall.json'
 
 // Types
-import type {
-  ChainlinkOracle,
-  Erc20,
-  Cake,
-  Masterchef,
-  Bridge,
-  LpToken,
-  Multicall,
-  CakeVaultV2,
-  ICake,
-  SousChef,
-  CakeFlexibleSideVaultV2,
-  DNFTcraneAbi,
-  Multisender,
-  Nft,
-  NftMarket,
-  NFTStaking,
-} from 'config/abi/types'
+// Types
+import type { ChainlinkOracle, Erc20, Cake, Masterchef, Bridge, LpToken, Multicall, CakeVaultV2, ICake, SousChef, CakeFlexibleSideVaultV2, DNFTcraneAbi, Nft, NftMarket, NFTStaking } from 'config/abi/types';
 import { ChainId } from '@pancakeswap/sdk'
-import { useActiveChainId } from 'hooks/useActiveChainId'
+import 'hooks/useActiveChainId';
 
 export const getContract = ({
   abi,
@@ -164,7 +148,7 @@ export const getSouschefContract = (id: number, signer?: Signer | Provider, chai
           : chainId === 42161 ? livePools42161
             : chainId === 43114 ? livePools43114
               : poolsConfig
-          
+
   const config = pools.find((pool) => pool.sousId === id)
   const abi = config?.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
   return getContract({ abi, address: getAddress(config?.contractAddress, chainId), signer }) as SousChef

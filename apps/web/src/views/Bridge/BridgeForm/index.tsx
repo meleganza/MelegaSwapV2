@@ -51,8 +51,8 @@ const getPID = (symbol?: string, chainId?: number) => {
 export const BridgeForm: React.FC<Record<string, never>> = () => {
   // const { isAccessTokenSupported } = useContext(SwapFeaturesContext)
   const { t } = useTranslation()
-  const { refreshBlockNumber, isLoading } = useRefreshBlockNumberID()
-  const warningSwapHandler = useWarningImport()
+  const { refreshBlockNumber } = useRefreshBlockNumberID();
+  useWarningImport();
   const tokenMap = useAtomValue(combinedTokenMapFromOfficialsUrlsAtom)
 
   const { account } = useWeb3React()
@@ -234,7 +234,7 @@ export const BridgeForm: React.FC<Record<string, never>> = () => {
   // const allowRecipient = isExpertMode && !showWrap && !smartRouterOn
 
   // const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
-  
+
   const fee = poolInfo?.fee ?? 30
 
   return (

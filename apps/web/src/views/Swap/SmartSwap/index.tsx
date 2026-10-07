@@ -20,7 +20,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { useStableSwapByDefault } from 'state/user/smartRouter'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
-import AccessRisk from 'views/Swap/components/AccessRisk'
+import 'views/Swap/components/AccessRisk';
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import { AutoColumn } from 'components/Layout/Column'
@@ -48,7 +48,7 @@ import SmartSwapCommitButton from './components/SmartSwapCommitButton'
 import { useDerivedSwapInfoWithStableSwap, useIsSmartRouterBetter, useTradeInfo } from './hooks'
 import SettingsModal from '../../../components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import 'hooks/useActiveWeb3React';
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 import { isSmartSwapV2PublicCutoverActive, useSmartSwapV2CtaBinding } from './hooks/useSmartSwapV2CtaBinding'
@@ -59,7 +59,7 @@ export const SmartSwapForm: React.FC<{
   handleOutputSelect: (newCurrencyOutput: Currency) => void
   executionPreview?: React.ReactNode
 }> = ({ handleOutputSelect, executionPreview }) => {
-  const { isAccessTokenSupported } = useContext(SwapFeaturesContext)
+  useContext(SwapFeaturesContext);
   const { t } = useTranslation()
   const { refreshBlockNumber, isLoading } = useRefreshBlockNumberID()
   const warningSwapHandler = useWarningImport()
@@ -71,7 +71,7 @@ export const SmartSwapForm: React.FC<{
   // Chain-scoped BSC V2 public cutover: the SmartSwap CTA owns the single Swap button so a certified V2 plan can
   // execute; the legacy V2-router CTA is still rendered inside it as the pre-submission fallback. Other chains unchanged.
   const bscV2CutoverActive = isSmartSwapV2PublicCutoverActive(chainId)
-  
+
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
 
@@ -98,7 +98,7 @@ export const SmartSwapForm: React.FC<{
     }),
     [inputCurrency, outputCurrency],
   )
-  
+
   const [isStableSwapByDefault] = useStableSwapByDefault()
 
   const { v2Trade, inputError: swapInputError } = useDerivedSwapInfo(

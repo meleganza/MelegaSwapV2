@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { RUNTIME_LOADING_LABEL } from 'lib/runtime-truth'
+import 'lib/runtime-truth';
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { liquidityStudioColors, liquidityStudioLayout, liquidityTypography } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import { colors, typography, animation } from '../../tokens'
+import { colors, animation } from '../../tokens';
 import { media } from '../../theme'
 
 export interface MelegaStatCardProps {

@@ -144,7 +144,7 @@ interface CollectibleDetailProps {
 }
 
 const CollectibleDetail: React.FC<CollectibleDetailProps> = ({ record, manifest }) => {
-  const { t } = useTranslation()
+  useTranslation();
   const [manifestOpen, setManifestOpen] = useState(false)
   const privileges = privilegeLabels(
     buildCollectiblePrivileges(record, {

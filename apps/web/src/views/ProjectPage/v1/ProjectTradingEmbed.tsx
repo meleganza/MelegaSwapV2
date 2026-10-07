@@ -48,12 +48,7 @@ const QuietSwapShell = styled.div`
   }
 `
 
-const SwapSkeleton = styled.div<{ $hero?: boolean }>`
-  min-height: ${({ $hero }) => ($hero ? '200px' : '260px')};
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
-  border: 1px solid ${pp.line};
-`
+
 
 const HeroTradeBand = styled(Band)`
   margin-bottom: 0;

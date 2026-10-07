@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { Clock3, RefreshCw } from 'lucide-react'
 import type { LiquidityBuildingCardState } from '../useLiquidityBuildingCard'

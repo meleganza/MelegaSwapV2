@@ -88,7 +88,7 @@ const TableContainer = styled.div`
 const FarmTable: React.FC<React.PropsWithChildren<ITableProps>> = ({ farms, cakePrice, userDataReady }) => {
   const tableWrapperEl = useRef<HTMLDivElement>(null)
   const { query } = useRouter()
-  
+
   const columns = useMemo(
     () =>
       DesktopColumnSchema.map((column) => ({

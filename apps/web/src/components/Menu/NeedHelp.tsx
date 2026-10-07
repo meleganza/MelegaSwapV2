@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import {
@@ -43,7 +43,7 @@ const NeedHelp = () => {
   const { t } = useTranslation()
   return (
     <Wrapper>
-      
+
       <Flex
         flexGrow={1}
         alignItems="center"
@@ -64,7 +64,7 @@ const NeedHelp = () => {
             <path d="M0 16V0C0 0 3 1 6 1C9 1 16 -2 16 3.5C16 10.5 7.5 16 0 16Z" />
           </Svg>
         </BubbleWrapper>
-       
+
       </Flex>
     </Wrapper>
   )

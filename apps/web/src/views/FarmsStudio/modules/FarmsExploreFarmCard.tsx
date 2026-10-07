@@ -197,12 +197,7 @@ const MetricValue = styled.span`
   text-align: right;
 `
 
-const MetricSupport = styled.span`
-  grid-column: 1 / -1;
-  font-size: 10px;
-  line-height: 12px;
-  color: rgba(255, 255, 255, 0.42);
-`
+
 
 const WalletLine = styled.p`
   margin: 0;
@@ -214,29 +209,9 @@ const WalletLine = styled.p`
   text-overflow: ellipsis;
 `
 
-const ContractLinks = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  min-width: 0;
-`
 
-const ContractLink = styled.a`
-  color: rgba(244, 196, 48, 0.92);
-  font-size: 11px;
-  font-weight: 650;
-  text-decoration: none;
-  white-space: nowrap;
 
-  &:hover {
-    text-decoration: underline;
-  }
 
-  &:focus-visible {
-    outline: ${farmsExplore.focusRing};
-    outline-offset: ${farmsExplore.focusOffset};
-  }
-`
 
 const Actions = styled.div`
   display: flex;
@@ -315,9 +290,7 @@ const ConnectWrap = styled.div`
   }
 `
 
-const ActivityPulse = styled.span<{ $tone: 'live' | 'partial' | 'neutral' }>`
-  display: none;
-`
+
 
 const VisuallyHidden = styled.span`
   position: absolute;

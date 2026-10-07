@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getAssetBySlug } from '../../assets/getAssetBySlug'
+import '../../assets/getAssetBySlug';
 import { getProjectBySlug } from '../../projects/getProjectBySlug'
 import { STATIC_VENUES } from '../venues.data'
 import { getAllVenues } from '../getAllVenues'

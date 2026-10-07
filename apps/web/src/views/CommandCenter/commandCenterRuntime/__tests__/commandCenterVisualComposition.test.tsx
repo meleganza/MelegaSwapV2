@@ -2,7 +2,10 @@
  * R791D.4C — Command Center visual portfolio composition foundation.
  */
 
-import React, { useState } from 'react'
+/**
+ * R791D.4C — Command Center visual portfolio composition foundation.
+ */
+import { useState } from 'react';
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it, vi } from 'vitest'
@@ -16,13 +19,8 @@ import {
   type PortfolioPositionAction,
   type WalletPortfolio,
 } from 'lib/wallet-portfolio/contracts'
-import { resolvePortfolioView } from 'lib/wallet-portfolio/viewEngine'
-import {
-  buildMyPositionsExperience,
-  buildPortfolioViewSelectorModel,
-  groupMyPositionCards,
-  projectMyPositionCard as projectRuntimeCard,
-} from '../commandCenterPortfolioCutover'
+import 'lib/wallet-portfolio/viewEngine';
+import { buildMyPositionsExperience, buildPortfolioViewSelectorModel } from '../commandCenterPortfolioCutover';
 import {
   DashboardSectionBoundary,
   PortfolioDashboard,

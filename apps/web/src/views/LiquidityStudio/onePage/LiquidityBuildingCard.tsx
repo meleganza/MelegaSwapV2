@@ -348,20 +348,7 @@ const Primary = styled.button`
   }
 `
 
-const Field = styled.label`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-  font-size: 11px;
-  font-weight: 650;
-  color: ${liqOne.muted};
-  min-width: 0;
 
-  @media (max-width: 767px) {
-    margin-bottom: 10px;
-  }
-`
 
 const FieldHint = styled.span`
   font-size: 11px;

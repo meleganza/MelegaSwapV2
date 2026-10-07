@@ -10,7 +10,7 @@ export const swapSectionData: SalesSectionProps = {
     text: 'Trade Now',
     external: false,
   },
- 
+
   images: {
     path: '/images/home/trade/',
     attributes: [
@@ -28,7 +28,7 @@ export const earnSectionData: SalesSectionProps = {
     text: 'Explore',
     external: false,
   },
- 
+
   images: {
     path: '/images/home/earn/',
     attributes: [
@@ -49,7 +49,7 @@ export const cakeSectionData: SalesSectionProps = {
     text: 'Buy MARCO',
     external: false,
   },
- 
+
 
   images: {
     path: '/images/home/cake/',

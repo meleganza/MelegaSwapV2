@@ -1,19 +1,6 @@
-import {
-  Skeleton,
-  Text,
-  Flex,
-  Button,
-  CalculateIcon,
-  useModal,
-  useMatchBreakpoints,
-  FlexGap,
-  Balance,
-  Pool,
-  useTooltip,
-  TooltipText,
-} from '@pancakeswap/uikit'
+import { Skeleton, Text, Flex, Button, CalculateIcon, useModal, useMatchBreakpoints, Balance, Pool, useTooltip, TooltipText } from '@pancakeswap/uikit';
 import styled from 'styled-components'
-import EndsInCell from './EndsInCell'
+import './EndsInCell';
 import { useTranslation } from '@pancakeswap/localization'
 import { useVaultApy } from 'hooks/useVaultApy'
 import { useVaultPoolByKey } from 'state/pools/hooks'
@@ -39,7 +26,7 @@ interface AprCellProps {
 
 const AutoAprCell: React.FC<React.PropsWithChildren<AprCellProps>> = ({ pool }) => {
   const { t } = useTranslation()
-  const { isMobile, isDesktop } = useMatchBreakpoints()
+  const { isMobile } = useMatchBreakpoints();
 
   const { userData } = useVaultPoolByKey(pool.vaultKey)
 

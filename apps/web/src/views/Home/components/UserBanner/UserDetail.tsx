@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { NoProfileAvatarIcon, Flex, Heading, Skeleton, Text, Box } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import styled from 'styled-components'

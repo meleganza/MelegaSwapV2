@@ -5,12 +5,7 @@ import {
   SURFACE_MAP_AS_OF,
   SURFACE_MAP_DISCLAIMER,
 } from './surface-groups'
-import {
-  SurfaceGroupId,
-  SurfaceMapReadModel,
-  SurfaceRecord,
-  SurfaceStatus,
-} from './surface-types'
+import { SurfaceGroupId, SurfaceMapReadModel, SurfaceRecord } from './surface-types';
 
 const surface = (record: SurfaceRecord): SurfaceRecord => ({ ...record })
 

@@ -1,22 +1,12 @@
 /**
  * MELEGASWAP_V2_MULTICHAIN_FOUNDATION_AND_BASE_REACTIVATION — mission-scoped gates.
  */
-import { createHash } from 'crypto'
+import 'crypto';
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { ChainId } from '@pancakeswap/sdk'
-import {
-  MELEGA_BASE_FACTORY,
-  MELEGA_BASE_ROUTER,
-  MELEGA_CHAIN_REGISTRY,
-  getMelegaChain,
-  getMelegaFactoryAddress,
-  getMelegaLiveSwitcherChainIds,
-  getMelegaPreparingChains,
-  getMelegaRouterAddress,
-  isMelegaCapabilityEnabled,
-} from 'config/melegaChainRegistry'
+import { MELEGA_BASE_FACTORY, MELEGA_BASE_ROUTER, MELEGA_CHAIN_REGISTRY, getMelegaFactoryAddress, getMelegaLiveSwitcherChainIds, getMelegaPreparingChains, getMelegaRouterAddress, isMelegaCapabilityEnabled } from 'config/melegaChainRegistry';
 import { MELEGA_VISIBLE_SWITCHER_CHAIN_IDS } from 'config/constants/supportChains'
 import { ROUTER_ADDRESS as WEB_ROUTER } from 'config/constants/exchange'
 import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'

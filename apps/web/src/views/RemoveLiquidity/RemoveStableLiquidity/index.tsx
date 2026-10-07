@@ -3,22 +3,7 @@ import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useRouter } from 'next/router'
 import { Currency, Percent, WNATIVE } from '@pancakeswap/sdk'
-import {
-  useToast,
-  Button,
-  Text,
-  AddIcon,
-  ArrowDownIcon,
-  CardBody,
-  Slider,
-  Box,
-  Flex,
-  useModal,
-  useMatchBreakpoints,
-  IconButton,
-  PencilIcon,
-  Coming1,
-} from '@pancakeswap/uikit'
+import { useToast, Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, useMatchBreakpoints, IconButton, PencilIcon } from '@pancakeswap/uikit';
 import { useDebouncedChangeHandler } from '@pancakeswap/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import useNativeCurrency from 'hooks/useNativeCurrency'
@@ -27,7 +12,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
 import { StableConfigContext } from 'views/Swap/StableSwap/hooks/useStableConfig'
 
-import StyledDisableFlex from 'components/StyledDisableFlex'
+import 'components/StyledDisableFlex';
 import { AutoColumn, ColumnCenter } from '../../../components/Layout/Column'
 import CurrencyInputPanel from '../../../components/CurrencyInputPanel'
 import { MinimalPositionCard } from '../../../components/PositionCard'

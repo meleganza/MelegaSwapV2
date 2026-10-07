@@ -2,7 +2,7 @@
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { useTranslation } from '@pancakeswap/localization'
 import { Card, ExpandableSectionButton, Farm as FarmUI, Flex, Skeleton, Text } from '@pancakeswap/uikit'
-import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
+import '@pancakeswap/utils/bigNumber';
 import BigNumber from 'bignumber.js'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { CHAIN_QUERY_NAME } from 'config/chains'
@@ -74,12 +74,12 @@ const FarmCard: React.FC<React.PropsWithChildren<FarmCardProps>> = ({
 
   const liquidity =
     farm?.liquidity && originalLiquidity?.gt(0) ? farm.liquidity.plus(originalLiquidity) : farm.liquidity
-  
+
   const totalValueFormatted =
     liquidity && liquidity?.gt(0)
       ? `$${liquidity.toNumber().toLocaleString(undefined, { maximumFractionDigits: 0 })}`
       : ''
-  
+
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('MARCO + Fees')
 
@@ -91,7 +91,7 @@ const FarmCard: React.FC<React.PropsWithChildren<FarmCardProps>> = ({
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const { lpAddress, stableSwapAddress, stableLpFee } = farm
   const isPromotedFarm = farm.token.symbol === 'MARCO'
-  const { stakedBalance, proxy, tokenBalance } = farm.userData
+
 
   const infoUrl = useMemo(() => {
     if (farm.isStable) {

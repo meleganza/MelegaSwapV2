@@ -1,6 +1,6 @@
 import type { StaticProjectRecord } from 'registry/projects/types'
 import { buildOnChainMetrics } from './onChainMetrics'
-import { buildMarketSources } from './marketSources'
+import './marketSources';
 
 export type HealthTone = 'green' | 'yellow' | 'red'
 

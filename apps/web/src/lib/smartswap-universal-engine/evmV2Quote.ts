@@ -2,7 +2,7 @@ import { Interface } from '@ethersproject/abi'
 import { MELEGA_DEX_VENUE, PANCAKE_SWAP_VENUE, UNISWAP_VENUE, type CertifiedEvmVenue } from './certifiedVenues'
 import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './health'
 import { collectBoundedParallel, type LatencyBudget } from './latency'
-import { SHADOW_QUOTE_KIND, type ShadowQuoteObservation, type ShadowQuoteSource } from './shadowQuoteSource'
+import { SHADOW_QUOTE_KIND, type ShadowQuoteSource } from './shadowQuoteSource';
 
 const V2_ROUTER = new Interface([
   'function getAmountsOut(uint256 amountIn, address[] path) view returns (uint256[] amounts)',

@@ -5,7 +5,7 @@ import Trans from 'components/Trans'
 import { VaultKey } from 'state/types'
 import { bscTokens, baseTokens, polygonTokens, ethereumTokens } from '@pancakeswap/tokens'
 import { PoolCategory } from './types'
-import { useActiveChainId } from 'hooks/useActiveChainId'
+import 'hooks/useActiveChainId';
 
 export const MAX_LOCK_DURATION = 31536000
 export const UNLOCK_FREE_DURATION = 604800

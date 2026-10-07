@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import useSWRImmutable from 'swr/immutable'
-import { ChainId } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { getMasterchefContract } from 'utils/contractHelpers'
 import { getMasterChefAddress } from 'utils/addressHelpers'

@@ -8,7 +8,7 @@ import {
   resolveMasterChefStatus,
 } from 'lib/data-truth/masterChefEmissionMath'
 import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
-import { aggregateKpis, mapFarmToPreviewCard } from 'views/FarmsStudio/farmsRuntime/formatFarmsRuntime'
+import { aggregateKpis } from 'views/FarmsStudio/farmsRuntime/formatFarmsRuntime';
 import fs from 'fs'
 import path from 'path'
 

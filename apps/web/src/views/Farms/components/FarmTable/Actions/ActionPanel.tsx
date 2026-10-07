@@ -12,7 +12,7 @@ import {
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { CHAIN_QUERY_NAME } from 'config/chains'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react';
 import { multiChainPaths } from 'state/info/constant'
 import styled, { css, keyframes } from 'styled-components'
 import { getBlockExploreLink } from 'utils'
@@ -21,8 +21,8 @@ import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import Apr, { AprProps } from '../Apr'
 import { HarvestAction, HarvestActionContainer } from './HarvestAction'
 import StakedAction, { StakedContainer } from './StakedAction'
-import { ActionContainer as ActionContainerSection, ActionContent, ActionTitles } from './styles'
-const { FarmAuctionTag, CoreTag } = FarmUI.Tags
+import './styles';
+const { CoreTag } = FarmUI.Tags;
 
 const { Multiplier, Liquidity } = FarmUI.FarmTable
 
@@ -147,14 +147,14 @@ const ActionPanel: React.FunctionComponent<React.PropsWithChildren<ActionPanelPr
   const { lpAddress } = farm
   const bsc = getBlockExploreLink(lpAddress, 'address', chainId)
   const base = getBlockExploreLink(lpAddress, 'address', chainId)
-  const { stakedBalance, tokenBalance, proxy } = farm.userData
 
-  const infoUrl = useMemo(() => {
+
+  useMemo(() => {
     if (farm.isStable) {
-      return `/info${multiChainPaths[chainId]}/pairs/${stableSwapAddress}?type=stableSwap&chain=${CHAIN_QUERY_NAME[chainId]}`
+        return `/info${multiChainPaths[chainId]}/pairs/${stableSwapAddress}?type=stableSwap&chain=${CHAIN_QUERY_NAME[chainId]}`;
     }
-    return `/info${multiChainPaths[chainId]}/pairs/${lpAddress}?chain=${CHAIN_QUERY_NAME[chainId]}`
-  }, [chainId, farm.isStable, lpAddress, stableSwapAddress])
+    return `/info${multiChainPaths[chainId]}/pairs/${lpAddress}?chain=${CHAIN_QUERY_NAME[chainId]}`;
+}, [chainId, farm.isStable, lpAddress, stableSwapAddress]);
 
   return (
     <Container expanded={expanded}>

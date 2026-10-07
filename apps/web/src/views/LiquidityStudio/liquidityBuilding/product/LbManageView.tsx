@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react';
 import styled from 'styled-components'
 import type { LiquidityBuildingCardState } from '../useLiquidityBuildingCard'
 import { LB_UX } from '../uxCopy'

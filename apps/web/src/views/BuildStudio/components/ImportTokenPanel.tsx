@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
+import '../buildStudioTokens';
 import { BsPanel } from './buildStudioPrimitives'
 import BuildStudioImportWorkflow from './BuildStudioImportWorkflow'
 

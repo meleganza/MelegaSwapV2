@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { Flex, Heading, Text, Link } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'

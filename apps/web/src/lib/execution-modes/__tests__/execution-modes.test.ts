@@ -1,33 +1,9 @@
 import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 
-import { resetExecutionGatewayActivation, setExecutionGatewayEnabled } from 'lib/execution-gateway'
-import {
-  acceptKerlExecutionInstruction,
-  dispatchExecutionInstruction,
-  resetInternalIngressActivation,
-  setInternalIngressEnabled,
-} from 'lib/execution-ingress'
+import { setExecutionGatewayEnabled } from 'lib/execution-gateway';
+import { acceptKerlExecutionInstruction, dispatchExecutionInstruction, setInternalIngressEnabled } from 'lib/execution-ingress';
 import { createSmartSwapExecutionInstruction } from 'lib/routing-layer'
-import {
-  EXECUTION_MODE_DRY_RUN,
-  EXECUTION_MODE_MAINNET_EXECUTION,
-  EXECUTION_MODE_OFF,
-  EXECUTION_MODE_TESTNET_EXECUTION_ONLY,
-  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED,
-  MODE_ERROR_CODES,
-  canPerformDryRun,
-  canPerformLiveExecution,
-  evaluateDryRunGates,
-  evaluateLiveExecutionGates,
-  getConfiguredExecutionMode,
-  resetExecutionModeConfig,
-  resetKerlExecutionHarness,
-  setEnvironmentAuthorizedForHarness,
-  setExecutionModeForHarness,
-  setTestnetExecutionArmedForHarness,
-  setActivationLifecycleForHarness,
-  enableKerlDryRunHarness,
-} from 'lib/execution-modes'
+import { EXECUTION_MODE_MAINNET_EXECUTION, EXECUTION_MODE_OFF, EXECUTION_MODE_TESTNET_EXECUTION_ONLY, ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED, MODE_ERROR_CODES, canPerformDryRun, canPerformLiveExecution, evaluateDryRunGates, evaluateLiveExecutionGates, getConfiguredExecutionMode, resetKerlExecutionHarness, setEnvironmentAuthorizedForHarness, setExecutionModeForHarness, setTestnetExecutionArmedForHarness, setActivationLifecycleForHarness, enableKerlDryRunHarness } from 'lib/execution-modes';
 
 function sampleInstruction() {
   return createSmartSwapExecutionInstruction({

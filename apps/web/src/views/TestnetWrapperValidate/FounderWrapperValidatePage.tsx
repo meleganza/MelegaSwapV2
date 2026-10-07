@@ -1,4 +1,4 @@
-import { Component, ReactNode, useEffect, useRef, useState } from 'react'
+import { Component, ReactNode, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic'
 import {
   ADDR,

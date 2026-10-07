@@ -1,4 +1,4 @@
-import { bsc, mainnet, arbitrum, polygon, optimism, avalanche, fantom } from 'wagmi/chains'
+import { bsc, mainnet } from 'wagmi/chains';
 import { Chain, configureChains, createClient } from 'wagmi'
 import memoize from 'lodash/memoize'
 import { InjectedConnector } from 'wagmi/connectors/injected'
@@ -93,77 +93,11 @@ export const polygon1: Chain = {
   },
 }
 
-const zksync: Chain = {
-  id: 324,
-  name: 'zkSync Era',
-  network: 'zksync',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: { http: ['https://mainnet.era.zksync.io'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
-    default: { name: 'zkSync Era Explorer', url: 'https://era.zksync.network' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 6884829,
-    },
-  },
-}
 
-const pulsechain: Chain = {
-  id: 369,
-  name: 'PulseChain',
-  network: 'pulse',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Pulse',
-    symbol: 'PLS',
-  },
-  rpcUrls: {
-    default: { http: ['https://rpc.pulsechain.com'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
-    default: { name: 'PulseChain Explorer', url: 'https://scan.pulsehotlist.com/#' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 14353601,
-    },
-  },
-}
 
-const cronos: Chain = {
-  id: 25,
-  name: 'Cronos',
-  network: 'cronos',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Cronos',
-    symbol: 'CRO',
-  },
-  rpcUrls: {
-    default: { http: ['https://evm.cronos.org'] },
-  },
-  blockExplorers: {
-    etherscan: { name: 'CronoScan', url: 'https://cronoscan.com' },
-    default: { name: 'CronoScan', url: 'https://cronoscan.com' },
-  },
-  contracts: {
-    multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 1963112,
-    },
-  },
-}
+
+
+
 
 export const base: Chain = {
   id: 8453,

@@ -2,7 +2,7 @@
  * Browser acceptance — Ethereum liquidity position / manage / remove.
  * Mocked wallet + provider. No approval, signature, or broadcast.
  */
-import React from 'react'
+
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { LiquidityRemovePanel } from '../LiquidityRemovePanel'

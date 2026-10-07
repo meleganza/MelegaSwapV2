@@ -129,53 +129,7 @@ const SwapSkeleton = styled.div`
   background: linear-gradient(180deg, rgba(20, 20, 20, 0.55), rgba(10, 10, 10, 0.8));
 `
 
-const ProjectNav = styled.nav`
-  position: sticky;
-  /* The app shell already offsets this transformed page below header + ticker.
-     A second pixel offset displaced the sticky nav over the project identity. */
-  top: 0;
-  z-index: 12;
-  min-height: 44px;
-  margin-bottom: 8px;
-  padding: 5px 8px;
-  border: 1px solid ${pp.line};
-  border-radius: 12px;
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(16px);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  a {
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-    padding: 0 10px;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.68);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 750;
-    white-space: nowrap;
-  }
-  a:first-child {
-    color: ${pp.gold};
-    background: rgba(244, 196, 48, 0.1);
-    margin-right: auto;
-  }
-  a:hover,
-  a:focus-visible {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
-  }
-  @media (max-width: 767px) {
-    top: 0;
-  }
-`
+
 
 const ProjectCharts = dynamic(() => import('../v1/ProjectCharts'), {
   ssr: false,
@@ -543,14 +497,7 @@ const EconomyTitle = styled.div`
   font-weight: 800;
   color: #fff;
 `
-const EconomyMeta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
-  flex: 1;
-`
+
 const DistributionRow = styled.div`
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr);
@@ -760,14 +707,7 @@ const ReactBtn = styled.button<{ $on?: boolean }>`
   font-weight: 700;
   cursor: pointer;
 `
-const AboutGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  @media (min-width: 768px) {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  }
-`
+
 const RelatedRail = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -826,17 +766,7 @@ const MarcoAvailability = styled.div`
     text-transform: uppercase;
   }
 `
-const RelatedGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  article[data-project-card='v3'] {
-    min-height: 0;
-  }
-`
+
 const DenseBand = styled(Band)`
   margin-bottom: 8px;
 `
@@ -975,7 +905,7 @@ export const ProjectPageV7Shell: React.FC<ProjectPageV7Props> = (props) => {
   const unclaimed = isUnclaimed ? props.unclaimed : null
   const claimedProfile = isUnclaimed ? props.claimedProfile ?? null : null
   const hasPublishedProfile = Boolean(claimedProfile)
-  const evidencePack = !isUnclaimed ? props.evidencePack ?? null : null
+
   const readinessDocument = !isUnclaimed ? props.readinessDocument ?? null : null
 
   const deployments = useMemo(() => (document ? buildProjectChainDeployments(document) : []), [document])

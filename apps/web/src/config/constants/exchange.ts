@@ -1,6 +1,6 @@
 import { ChainId, JSBI, Percent, Token, WNATIVE } from '@pancakeswap/sdk'
-import { BigNumber } from '@ethersproject/bignumber'
-import { bscTokens, bscTestnetTokens, USDC, USDT, WBTC_ETH, DAI_ETH, WBTC_ARB, DAI_BASE, DAI_ARB, CAKE, arbitrumTokens, shimmer2Tokens, WBTC_POLYGON, DAI_POLYGON, optimismTokens, baseTokens, zksyncTokens, avaxTokens, fantomTokens, cronosTokens, pulseTokens} from '@pancakeswap/tokens'
+import '@ethersproject/bignumber';
+import { bscTokens, bscTestnetTokens, USDC, USDT, WBTC_ETH, DAI_ETH, WBTC_ARB, DAI_BASE, DAI_ARB, arbitrumTokens, shimmer2Tokens, WBTC_POLYGON, DAI_POLYGON, optimismTokens, baseTokens, zksyncTokens, avaxTokens, fantomTokens, cronosTokens, pulseTokens } from '@pancakeswap/tokens';
 import { ChainMap, ChainTokenList } from './types'
 import { BSC_TESTNET_ADDRESSES } from './bscTestnet'
 

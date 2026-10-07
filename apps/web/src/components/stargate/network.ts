@@ -2,7 +2,7 @@ import { arbitrum, polygon } from 'wagmi/chains'
 
 // Chain Id is defined by Stargate
 const stargateNetowrk = [
-  
+
   {
     chainId: 109,
     name: 'Matic',

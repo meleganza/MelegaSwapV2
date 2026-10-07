@@ -15,7 +15,7 @@ import {
   buildRouteTypeMatrix,
 } from './route-matrix'
 import { getTreasuryRuntimeIntegrationStatus } from './treasury-integration'
-import { CIVILIZATION_ROUTER_SCHEMA, CIVILIZATION_ROUTER_VERSION } from './types'
+import { CIVILIZATION_ROUTER_VERSION } from './types';
 
 export const CIVILIZATION_ROUTER_CONTRACT_SCHEMA = 'melega.civilization-router-contract.v1' as const
 

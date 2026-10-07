@@ -3,7 +3,7 @@
  * No wallet writes. Metrics only when provided factually.
  */
 import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
-import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
+import 'lib/bsc-indexer/pairs/classify';
 import { lookupCanonicalToken } from 'lib/canonical-token-registry'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import { getAllAssets } from 'registry/assets/getAllAssets'

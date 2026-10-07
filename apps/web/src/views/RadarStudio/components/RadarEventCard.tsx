@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Link from 'next/link'
+import 'next/link';
 import styled from 'styled-components'
 import type { RadarEventCard as RadarEventCardType } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'

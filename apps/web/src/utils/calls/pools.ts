@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
-import BigNumber from 'bignumber.js'
-import poolsConfig, { livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
-import sousChefV2 from 'config/abi/sousChefV2.json'
-import chunk from 'lodash/chunk'
-import { multicallv3 } from '../multicall'
-import { getAddress, getMulticallAddress } from '../addressHelpers'
-import multiCallAbi from '../../config/abi/Multicall.json'
+import 'bignumber.js';
+import 'config/constants/pools';
+import 'config/abi/sousChefV2.json';
+import 'lodash/chunk';
+import '../multicall';
+import '../addressHelpers';
+import '../../config/abi/Multicall.json';
 
 /**
  * Returns the total number of pools that were active at a given block

@@ -8,23 +8,7 @@ import styled from 'styled-components'
 import { useAccount } from 'wagmi'
 import { useWalletChainId } from 'hooks/useWalletChainId'
 import { calculateSmartRouterGasProtocolFee } from 'lib/smart-swap-gas-protocol-fee'
-import {
-  AVAX_SEED_DEFAULTS,
-  AVAX_LIVE_SEED_FACTORY,
-  AVAX_LIVE_SEED_MARCO,
-  AVAX_LIVE_SEED_ROUTER,
-  AVAX_LIVE_SEED_WAVAX,
-  avalancheLiveSeedTargets,
-  decodeAddressCallResult,
-  decodeGetAmountsOutFinal,
-  decodeUintCallResult,
-  encodeAddLiquidityAvax,
-  encodeFactoryAllPairsLength,
-  encodeFactoryGetPair,
-  encodeGetAmountsOut,
-  encodeMarcoApprove,
-  encodeSwapExactAvaxForMarco,
-} from 'lib/deployment-orchestrator/founderAvalancheLiveSeed'
+import { AVAX_SEED_DEFAULTS, AVAX_LIVE_SEED_FACTORY, AVAX_LIVE_SEED_MARCO, AVAX_LIVE_SEED_ROUTER, avalancheLiveSeedTargets, decodeAddressCallResult, decodeGetAmountsOutFinal, decodeUintCallResult, encodeAddLiquidityAvax, encodeFactoryAllPairsLength, encodeFactoryGetPair, encodeGetAmountsOut, encodeMarcoApprove, encodeSwapExactAvaxForMarco } from 'lib/deployment-orchestrator/founderAvalancheLiveSeed';
 import { isAuthorizedMelegaDeployer } from 'lib/deployment-orchestrator'
 import {
   isUserRejectedError,

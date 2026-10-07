@@ -35,7 +35,7 @@ export const useActiveHandle = () => {
     /**
      *  backward
      */
-    const address = await getAccount()
+    await getAccount();
     return new Promise((resolve) => {
       handleActive().then(resolve)
     })

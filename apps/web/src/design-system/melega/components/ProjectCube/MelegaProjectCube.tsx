@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors } from '../../tokens'
+import '../../tokens';
 
 const Cube = styled.div`
   width: 72px;

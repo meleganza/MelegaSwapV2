@@ -18,9 +18,9 @@ import styled from 'styled-components'
 import { useListState } from 'state/lists/lists'
 import { useAllLists } from 'state/lists/hooks'
 import { usePreviousValue } from '@pancakeswap/hooks'
-import { TokenList } from '@pancakeswap/token-lists'
+import '@pancakeswap/token-lists';
 import { useTranslation } from '@pancakeswap/localization'
-import { enableList, removeList, useFetchListCallback } from '@pancakeswap/token-lists/react'
+import { useFetchListCallback } from '@pancakeswap/token-lists/react';
 import CurrencySearchBridge from './CurrencySearchBridge'
 // import ImportToken from './ImportToken'
 // import Manage from './Manage'
@@ -96,9 +96,9 @@ export default function CurrencySearchBridgeModal({
 
   const [, dispatch] = useListState()
   const lists = useAllLists()
-  const adding = Boolean(lists[listURL]?.loadingRequestId)
+  Boolean(lists[listURL]?.loadingRequestId);
 
-  const fetchList = useFetchListCallback(dispatch)
+  useFetchListCallback(dispatch);
 
   const [addError, setAddError] = useState<string | null>(null)
 

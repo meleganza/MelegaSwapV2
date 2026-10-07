@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Text } from '@pancakeswap/uikit'
+import '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import { COLLECTIBLE_STATUS_LABELS } from 'registry/collectibles/collectible-constants'
 import { CollectibleStatus, MetadataStorageStatus } from 'registry/collectibles/collectible-types'

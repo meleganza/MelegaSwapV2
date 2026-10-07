@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react';
 import type { V2TradeAndStableSwap } from 'config/constants/types'
 import { useWeb3React } from '@pancakeswap/wagmi'
 

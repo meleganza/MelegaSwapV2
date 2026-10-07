@@ -13,7 +13,7 @@ import {
 import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem, PoolVisibilityStatus } from '../poolsStudioData'
-import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
+import { formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation';
 import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 import {
   resolvePoolChainId,
@@ -209,7 +209,7 @@ export function mapPoolToPreviewCard(
 
   const { apr } = getAprData(pool, performanceFee)
   const tvlUsd = resolvePoolTvlUsd(pool)
-  const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+  getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals);
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   const status = poolStatus(pool, currentBlock)
   const aprDisplay = displayPoolApr(pool, apr, status, currentBlock)
@@ -355,16 +355,15 @@ export function aggregateKpis(
   const lifecycleFields = resolveKpiLifecycleFields(classification ?? { status: 'unavailable' })
   const lifecycleReady = lifecycleFields.lifecycleReady
   const canonicalRewarding = lifecycleFields.rewarding
-  const displayable = listUsablePools(previewCards)
+  listUsablePools(previewCards);
   const rewardingDisplayable = listRewardingPools(previewCards)
   const rewardingCount = lifecycleReady ? canonicalRewarding! : rewardingDisplayable.length
-  let stakerPositions = 0
+
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
     const lc = derivePoolLifecycle(pool, currentBlock)
     totalStakedUsd += resolvePoolTvlUsd(pool)
-    if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
     const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
     if (perBlock.gt(0) && lc.rewarding) {
       const dailyTokens = getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
