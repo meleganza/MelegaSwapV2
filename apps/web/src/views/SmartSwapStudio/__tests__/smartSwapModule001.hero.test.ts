@@ -6,16 +6,16 @@ import { describe, expect, it } from 'vitest'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import {
-  SMART_SWAP_HERO_COPY,
-  SMART_SWAP_HERO_FORBIDDEN_CLAIMS,
-  smartSwapHero,
-} from '../modules/smartSwapHeroTokens'
-import {
   SMART_SWAP_ARCHITECTURE_ID,
   SMART_SWAP_CERTIFIED_BASE,
   SMART_SWAP_DOC_PATHS,
   SMART_SWAP_MODULE_PLAN,
 } from 'lib/smart-swap-architecture/smartSwapArchitecture000Contracts'
+import {
+  SMART_SWAP_HERO_COPY,
+  SMART_SWAP_HERO_FORBIDDEN_CLAIMS,
+  smartSwapHero,
+} from '../modules/smartSwapHeroTokens'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(WEB, '../..')

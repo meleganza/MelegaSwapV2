@@ -17,14 +17,14 @@ import { ApprovalState } from 'hooks/useApproveCallback'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useLiveCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
-import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
-import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
-import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import { getChainId } from 'config/chains'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
+import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 
 const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;

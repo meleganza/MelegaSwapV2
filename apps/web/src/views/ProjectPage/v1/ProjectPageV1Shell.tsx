@@ -20,6 +20,8 @@ import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
+import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { shortenAddress, humanEnumLabel } from '../presentation/humanLabels'
 import {
   Band,
@@ -51,8 +53,6 @@ import {
 import { useProjectLiveMarket } from './useProjectLiveMarket'
 import ProjectTradingEmbed from './ProjectTradingEmbed'
 import ProjectCharts from './ProjectCharts'
-import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
-import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 
 const ProjectMachineSection = dynamic(() => import('../ProjectMachineSection'), {
   ssr: false,

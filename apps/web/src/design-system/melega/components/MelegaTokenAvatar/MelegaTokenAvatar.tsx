@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { colors } from '../../tokens'
 import {
   resolveTokenLogoSources,
   type TokenLogoInput,
 } from 'lib/token-logo/resolveTokenLogoSources'
+import { colors } from '../../tokens'
 
 export interface MelegaTokenAvatarProps extends TokenLogoInput {
   size?: number

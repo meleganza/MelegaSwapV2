@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { createHash } from 'crypto'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
+import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import {
   LIQUIDITY_MODULE_001_002_FREEZE,
   LIQUIDITY_POOL_DISCOVERY_COPY,
@@ -22,7 +23,6 @@ import {
   type DiscoveryPoolCardModel,
 } from '../modules/liquidityPoolDiscoveryModel'
 import { LIQUIDITY_MODULE_PLAN } from '../liquidityArchitecture000Contracts'
-import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const STUDIO = path.resolve(__dirname, '..')

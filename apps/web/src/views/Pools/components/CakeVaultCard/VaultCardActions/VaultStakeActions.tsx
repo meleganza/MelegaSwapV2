@@ -3,11 +3,11 @@ import { Flex, Button, useModal, Skeleton } from '@pancakeswap/uikit'
 import BigNumber from 'bignumber.js'
 import { useTranslation } from '@pancakeswap/localization'
 import { Pool } from 'state/types'
+import { Token } from '@pancakeswap/sdk'
 
 import NotEnoughTokensModal from '../../PoolCard/Modals/NotEnoughTokensModal'
 import VaultStakeModal from '../VaultStakeModal'
 import HasSharesActions from './HasSharesActions'
-import { Token } from '@pancakeswap/sdk'
 
 interface VaultStakeActionsProps {
   pool: Pool.DeserializedPool<Token>

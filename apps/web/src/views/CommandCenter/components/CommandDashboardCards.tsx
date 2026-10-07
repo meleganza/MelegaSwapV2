@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { isMarcoSymbol, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeArray, safePct } from '../commandCenterSafe'
-import { isMarcoSymbol, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import {
   CcCardHeader,

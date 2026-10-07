@@ -7,7 +7,6 @@ import { updateUserAllowance } from 'state/actions'
 import { useTranslation } from '@pancakeswap/localization'
 import { useCake, useSousChef, useCakeVaultContract } from 'hooks/useContract'
 import { useToast } from '@pancakeswap/uikit'
-import useLastUpdated from './useLastUpdated'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { useAccount } from 'wagmi'
@@ -15,6 +14,7 @@ import { ToastDescriptionWithTx } from 'components/Toast'
 import { MaxUint256 } from '@ethersproject/constants'
 import useCakeApprove from 'hooks/useCakeApprove'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import useLastUpdated from './useLastUpdated'
 
 // export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol) => {
 //   const [requestedApproval, setRequestedApproval] = useState(false)

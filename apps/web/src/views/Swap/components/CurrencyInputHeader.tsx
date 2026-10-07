@@ -18,10 +18,10 @@ import { isMobile } from 'react-device-detect'
 import { useExpertModeManager } from 'state/user/hooks'
 // import styled from 'styled-components'
 import atomWithStorageWithErrorCatch from 'utils/atomWithStorageWithErrorCatch'
-import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
-import { SwapFeaturesContext } from '../SwapFeaturesContext'
 import styled from 'styled-components'
 import { melegaOperational as tokens } from 'ui/tokens'
+import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
+import { SwapFeaturesContext } from '../SwapFeaturesContext'
 
 export const HeaderWrapper = styled.div`
   border-bottom: 1px solid ${tokens.border};

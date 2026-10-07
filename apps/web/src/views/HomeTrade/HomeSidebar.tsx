@@ -2,8 +2,8 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { MelegaBrandLockup } from './MelegaBrandLockup'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { MelegaBrandLockup } from './MelegaBrandLockup'
 import { ht } from './homeTradeTokens'
 
 const Sidebar = styled.aside`

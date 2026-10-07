@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { TransactionType } from 'state/info/types'
 import { mapIndexerEventsToTransactions } from '../client/mapIndexerEvents'
 import type { NormalizedIndexerEvent } from '../types'
-import { TransactionType } from 'state/info/types'
 
 describe('mapIndexerEventsToTransactions', () => {
   it('maps swap events and filters by pair', () => {

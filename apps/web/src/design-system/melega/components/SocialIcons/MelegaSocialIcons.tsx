@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors } from '../../tokens'
 import { MELEGA_SOCIAL_LINKS } from 'config/constants/social'
+import { colors } from '../../tokens'
 
 const Row = styled.div`
   display: flex;

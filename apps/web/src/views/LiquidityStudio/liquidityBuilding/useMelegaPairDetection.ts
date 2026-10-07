@@ -4,9 +4,9 @@ import { Currency } from '@pancakeswap/sdk'
 import { bscTokens } from '@pancakeswap/tokens'
 import { usePair, PairState } from 'hooks/usePairs'
 import { useCanonicalMarcoPair } from 'hooks/useCanonicalMarcoPair'
+import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
 import type { QuoteAssetKey } from './strategyPresets'
 import { QUOTE_ASSET_OPTIONS } from './strategyPresets'
-import type { ProjectDexAnalytics } from 'lib/market-data/projectDexAnalytics'
 
 const MELEGA_FACTORY_BSC = '0xb7e5848e1d0cb457f2026670fcb9bbdb7e9e039c'
 

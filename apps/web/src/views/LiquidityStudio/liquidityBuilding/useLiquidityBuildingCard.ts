@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import { useAccount, useNetwork } from 'wagmi'
 import { ChainId, Currency } from '@pancakeswap/sdk'
 import { useLiveCurrencyBalance } from 'state/wallet/hooks'
+import { useContract } from 'hooks/useContract'
+import { useSingleCallResult } from 'state/multicall/hooks'
 import {
   EMPTY_SETUP_DRAFT,
   type EpochSeconds,
@@ -28,8 +30,6 @@ import { useProgramReadModel } from './useProgramReadModel'
 import { useFounderActivateWriter } from './useFounderActivateWriter'
 import { canSubmitFounderWalletActivate, LB_SUCCESS_FEE_BPS } from './founderActivateFlow'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
-import { useContract } from 'hooks/useContract'
-import { useSingleCallResult } from 'state/multicall/hooks'
 import { LB_FACTORY_READ_ABI } from './abi/fragments'
 import { mapStrategyPreset, type LiquidityGoalKey, type QuoteAssetKey, type StrategyPreset } from './strategyPresets'
 import { formatLbTokenAmount } from './formatLbAmount'

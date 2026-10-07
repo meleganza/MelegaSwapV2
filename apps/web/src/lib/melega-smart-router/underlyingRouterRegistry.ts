@@ -1,7 +1,7 @@
 import { ChainId } from '@pancakeswap/sdk'
+import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import { resolveExecutionAdapterForSwap, getV2RouterAddress } from './execution-adapter'
 import type { UnderlyingRouterEntry } from './types'
-import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 
 /** Resolves canonical execution router via AdapterResolver (ExecutionPlan → adapter → router). */
 export function getUnderlyingRouterEntry(chainId: number): UnderlyingRouterEntry {

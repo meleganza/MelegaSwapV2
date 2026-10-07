@@ -1,8 +1,8 @@
+import type { MelegaTickerItem } from 'design-system/melega'
 import {
   evaluateTrendingCandidateReplacement,
   resolveTrendingItemsForDisplay,
 } from '../durableTrendingSnapshot'
-import type { MelegaTickerItem } from 'design-system/melega'
 
 const item = (primary: string): MelegaTickerItem => ({
   id: `trade-asset-${primary.toLowerCase()}`,

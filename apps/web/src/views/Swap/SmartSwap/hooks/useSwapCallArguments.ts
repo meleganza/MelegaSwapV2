@@ -17,8 +17,8 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { useMemo } from 'react'
 import invariant from 'tiny-invariant'
-import { useSmartRouterContract } from '../utils/exchange'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useSmartRouterContract } from '../utils/exchange'
 
 const NATIVE_CURRENCY_ADDRESS = getAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')
 

@@ -18,9 +18,9 @@ import {
   projectMyPositionCard,
   type MyPositionCardModel as LibMyPositionCardModel,
 } from 'lib/wallet-portfolio/myPositionCardModel'
-import { CommandCenterHumanizedEmpty } from './commandCenterEmptyStatePresentation'
 import type { PortfolioPosition } from 'lib/wallet-portfolio/contracts'
 import type { PortfolioViewResult } from 'lib/wallet-portfolio/viewEngine'
+import { CommandCenterHumanizedEmpty } from './commandCenterEmptyStatePresentation'
 import {
   CC_FONT_BODY,
   CC_FONT_DISPLAY,

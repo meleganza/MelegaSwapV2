@@ -5,6 +5,7 @@
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import {
   CommandCenterHumanizedEmpty,
   resolveCommandCenterEmptyPresentation,
@@ -12,7 +13,6 @@ import {
 import { MyPositionsSection } from '../../components/MyPositionsSection'
 import { PortfolioHero } from '../../components/portfolioComposition'
 import { ClaimablesSection, QuickActionsSection } from '../../components/PortfolioDashboard'
-import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import type { MyPositionsGroups } from '../commandCenterPortfolioCutover'
 
 vi.mock('components/ConnectWalletButton', () => ({

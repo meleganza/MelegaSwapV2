@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import type { MelegaTickerItem } from 'design-system/melega'
 import {
   assertIdenticalPrefix,
   buildTopMoversSharedSnapshot,
   homeTopMoversPrefix,
   HOME_TOP_MOVERS_LIMIT,
 } from '../topMoversSharedSnapshot'
-import type { MelegaTickerItem } from 'design-system/melega'
 
 function item(symbol: string, address: string, pct: string, positive = true): MelegaTickerItem {
   return {

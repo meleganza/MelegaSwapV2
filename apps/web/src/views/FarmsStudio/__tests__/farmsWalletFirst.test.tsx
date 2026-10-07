@@ -6,6 +6,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import BigNumber from 'bignumber.js'
+import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import {
   buildFarmsWalletPortfolio,
   selectFarmPortfolioPositions,
@@ -14,7 +15,6 @@ import {
 import { YourFarmsSection } from '../components/YourFarmsSection'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import type { FarmsStakingRuntime } from '../farmsRuntime/useFarmsStakingRuntime'
-import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 

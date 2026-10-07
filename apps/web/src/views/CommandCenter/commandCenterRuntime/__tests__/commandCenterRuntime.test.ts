@@ -1,14 +1,14 @@
-import { buildAiBriefing } from '../buildAiBriefing'
-import { buildActivityTimeline } from '../buildActivityTimeline'
-import { buildMachineSummary } from '../buildMachineSummary'
-import { mapRecommendations } from '../buildNotifications'
 import { formatSettlementUserLabel } from 'views/Trade/tradeRuntime/formatSettlementStatus'
-import { formatAssetRows, formatFarmPositionRows, formatLiquidityRows, formatPoolPositionRows, safePortfolioSection, sumPendingRewardsUsd } from '../formatCommandCenterRuntime';
-import { createCommandCenterError } from '../commandCenterRuntimeErrors'
 import BigNumber from 'bignumber.js'
 import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
 import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
 import type { LiquidityPositionRow } from 'views/LiquidityStudio/liquidityRuntime/useLiquidityPositions'
+import { buildAiBriefing } from '../buildAiBriefing'
+import { buildActivityTimeline } from '../buildActivityTimeline'
+import { buildMachineSummary } from '../buildMachineSummary'
+import { mapRecommendations } from '../buildNotifications'
+import { formatAssetRows, formatFarmPositionRows, formatLiquidityRows, formatPoolPositionRows, safePortfolioSection, sumPendingRewardsUsd } from '../formatCommandCenterRuntime';
+import { createCommandCenterError } from '../commandCenterRuntimeErrors'
 
 describe('commandCenterRuntime', () => {
   it('builds AI briefing for disconnected wallet', () => {

@@ -10,14 +10,13 @@ import {
   getGateClassification,
   gateBlocksActivation,
 } from '../gateClassification'
-import { healthFromDependencies } from '../state-machine'
+import { healthFromDependencies, AutonomousLoopStateMachine } from '../state-machine'
 import { assessLiquidityBuildingRuntimeHealth } from '../readiness'
 import { LocalValidationTreasuryIngestor } from '../treasury-integration'
 import { buildExecutionIntent } from '../intent-builder'
 import { decideLiquidityBuilding } from '../decision-engine'
 import { buildObservation, finalizeObservation, assessFinality } from '../eligible-flow'
 import { LB_SUCCESS_FEE_BPS } from '../types'
-import { AutonomousLoopStateMachine } from '../state-machine'
 
 const ADDR = {
   lbFactory: '0xb7e5848e1d0cb457f2026670fcb9bbdb7e9e039c',

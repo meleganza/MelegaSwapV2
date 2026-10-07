@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, afterEach } from 'vitest'
 import { Interface } from '@ethersproject/abi'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { parseLbLog } from '../parseEvents'
@@ -6,7 +6,6 @@ import { createMemoryLbProgramStore, setLbProgramStoreForTests } from '../store'
 import { getProgramDetail, listProgramsForOwner } from '../inventory'
 import ownerHandler from '../../../pages/api/liquidity-programs/[wallet]'
 import detailHandler from '../../../pages/api/liquidity-program/[address]'
-import { afterEach } from 'vitest'
 
 const OWNER = '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0'
 const PROGRAM = '0xA15aDa28A9b7d4d9f6Ac781407bAf1A2CFB802EB'

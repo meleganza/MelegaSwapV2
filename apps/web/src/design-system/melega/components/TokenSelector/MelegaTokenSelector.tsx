@@ -2,8 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { colors, typography, spacing, radius, animation } from '../../tokens'
 import { focusRing, layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
 import type { SuggestionKind } from 'lib/monetization/sponsorship'
+import type { MelegaLayoutProps } from '../../primitives'
 
 export interface MelegaTokenSelectorProps extends MelegaLayoutProps {
   symbol: string

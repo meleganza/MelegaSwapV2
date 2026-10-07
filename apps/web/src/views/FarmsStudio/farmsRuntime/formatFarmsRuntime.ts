@@ -5,8 +5,6 @@ import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getAddressExplorerUrl } from 'utils/blockExplorer'
 import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { resolveFarmEmissionState, formatTotalDailyEmissionKpi, formatHumanMarcoAmount } from 'lib/data-truth/masterChefEmissionMath'
-import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
-import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 import type { FarmEmissionState } from 'lib/data-truth/masterChefEmissionMath'
 import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 import {
@@ -16,6 +14,8 @@ import {
   resolveFarmLiquidityUsd,
   resolveFarmRewardToken,
 } from 'lib/data-truth/yieldMetricHelpers'
+import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
+import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 
 export const formatUsd = (value?: number | null): string => {
   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {

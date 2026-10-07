@@ -6,11 +6,11 @@ import { CHAIN_EXPLORER_TOKEN_URL } from 'registry/assets/constants'
 import { getAssetBySlug } from 'registry/assets/getAssetBySlug'
 import { CHAIN_LABELS } from 'registry/venues/constants'
 import { StaticVenueRecord } from 'registry/venues/types'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import VenueTypeBadge from './components/VenueTypeBadge'
 import VenueLifecycleBadge from './components/VenueLifecycleBadge'
 import VenueCapabilityMatrix from './components/VenueCapabilityMatrix'
 import VenueEventsSection from './components/VenueEventsSection'
-import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import VenueManifestViewer from './components/VenueManifestViewer'
 
 const Stack = styled(Flex)`

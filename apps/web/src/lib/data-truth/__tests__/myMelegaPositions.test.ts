@@ -4,13 +4,13 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
-import { MY_MELEGA_CHAIN_FILTERS, MY_MELEGA_ROUTES, buildMyMelegaSnapshot } from '../myMelegaPositions'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
 import { GLOBAL_HEADER_NAV } from 'app-shell/config/globalHeaderNav'
 import type { FarmsWalletPosition } from 'views/FarmsStudio/modules/farmsMyFarmsTypes'
 import type { PoolsWalletPosition } from 'views/PoolsStudio/modules/poolsMyPositionsTypes'
 import type { PassportLiquidityPosition } from 'views/PassportStudio/passportLiquidityTypes'
 import type { PortfolioClaimableRow } from 'views/PortfolioStudio/runtime/buildPortfolioViewModel'
+import { MY_MELEGA_CHAIN_FILTERS, MY_MELEGA_ROUTES, buildMyMelegaSnapshot } from '../myMelegaPositions'
 
 const ROOT = path.resolve(__dirname, '../../..')
 

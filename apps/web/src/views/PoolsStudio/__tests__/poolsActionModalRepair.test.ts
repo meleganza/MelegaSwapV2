@@ -4,14 +4,14 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { activeBlocksInWindow, buildPools24hRewards } from '../modules/buildPools24hRewards'
 import {
   describeCreatePoolFee,
   describeCreateFarmFee,
   MELEGA_TREASURY_FEE_DESTINATION,
 } from 'config/constants/feeSchedule'
-import { createDefaultWizardState, deriveDailyRewards } from '../components/createPoolWizardState'
 import BigNumber from 'bignumber.js'
+import { activeBlocksInWindow, buildPools24hRewards } from '../modules/buildPools24hRewards'
+import { createDefaultWizardState, deriveDailyRewards } from '../components/createPoolWizardState'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const STUDIO = path.resolve(__dirname, '..')

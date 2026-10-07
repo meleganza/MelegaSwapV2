@@ -2,12 +2,12 @@ import { describe, expect, it, beforeEach } from 'vitest'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { enrichProject } from 'registry/projects/discovery'
 import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
+import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import { buildAiSummary } from '../buildAiSummary'
 import { buildProjectRating } from '../buildProjectRating'
 import { discoverProjectFromContract } from '../discoverProjectFromContract'
 import { mapPendingToPreviewCard, aggregateKpis } from '../formatProjectsRuntime'
 import { buildOnChainMetrics } from '../onChainMetrics'
-import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import { createProjectsRuntimeError } from '../projectsRuntimeErrors'
 
 describe('projectsRuntime', () => {

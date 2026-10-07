@@ -1,9 +1,9 @@
 import styled from 'styled-components'
-import { useTestnetLiquidityRuntime } from './useTestnetLiquidityRuntime'
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import { getAddressExplorerUrl, getTxExplorerUrl } from 'utils/blockExplorer'
-import { TESTNET_LIQUIDITY_CHAIN_ID } from './testnetLiquidityConfig'
 import { formatUnits } from '@ethersproject/units'
+import { useTestnetLiquidityRuntime } from './useTestnetLiquidityRuntime'
+import { TESTNET_LIQUIDITY_CHAIN_ID } from './testnetLiquidityConfig'
 
 const Page = styled.div`
   min-height: 80vh;

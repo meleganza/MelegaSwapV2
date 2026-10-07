@@ -25,6 +25,7 @@ import { LightCard } from 'components/Card'
 import { ONE_HUNDRED_PERCENT } from 'config/constants/exchange'
 import { formatAmount } from 'utils/formatInfoNumbers'
 import { useStableSwapAPR } from 'hooks/useStableSwapAPR'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 import { AutoColumn, ColumnCenter } from '../../../components/Layout/Column'
 import CurrencyInputPanel from '../../../components/CurrencyInputPanel'
@@ -55,7 +56,6 @@ import { FormattedSlippage } from './components'
 import { warningSeverity } from './utils/slippage'
 import SettingsModal from '../../../components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 export default function AddStableLiquidity({ currencyA, currencyB }) {
   const { account, chainId, isWrongNetwork } = useActiveWeb3React()

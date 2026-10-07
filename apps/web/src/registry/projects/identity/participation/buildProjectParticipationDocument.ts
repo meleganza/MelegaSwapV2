@@ -1,12 +1,11 @@
+import { getVenuesByProjectSlug } from 'registry/venues/getVenueBySlug'
+import type { StaticVenueRecord } from 'registry/venues/types'
 import type { StaticProjectRecord } from '../../types'
 import type { CanonicalProjectDocument } from '../types'
 import { normalizeEvmAddress, toCaip2ChainId } from '../caip'
-import { getVenuesByProjectSlug } from 'registry/venues/getVenueBySlug'
-import type { StaticVenueRecord } from 'registry/venues/types'
 import { resolveProjectBySlug } from '../resolveProject'
 import { normalizeProjectDocument } from '../normalizeProject'
-import { buildMarketId } from '../markets/ids'
-import { addressFromAssetRef as marketAddressFromRef } from '../markets/ids'
+import { buildMarketId, addressFromAssetRef as marketAddressFromRef } from '../markets/ids'
 import {
   buildWalletRelationshipDocument,
   disconnectedObservation,

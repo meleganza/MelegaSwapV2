@@ -2,13 +2,13 @@
  * Certified Public Farm Factory artifact loader — autoload on import, fail closed.
  */
 import { keccak256 } from '@ethersproject/keccak256'
-import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
 import { LB_MELEGA_AMM } from 'config/constants/liquidityBuildingDeployment'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import {
   PUBLIC_FARM_ELIGIBILITY_SIGNER,
   PUBLIC_FARM_FACTORY_FEE_RECIPIENT,
 } from 'config/constants/publicFarmFactoryDeployment'
+import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const certified = require('./artifacts/pff-v1-certified.json') as {

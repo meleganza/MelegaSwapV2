@@ -6,6 +6,7 @@ import { execSync } from 'child_process'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
+import { SMART_SWAP_ARCHITECTURE_ID } from 'lib/smart-swap-architecture/smartSwapArchitecture000Contracts'
 import {
   SMART_SWAP_ROUTE_ENGINE_OWNERSHIP,
   SMART_SWAP_ROUTE_FAILURES,
@@ -16,7 +17,6 @@ import {
   routeFailure,
 } from '../index'
 import type { SmartSwapTradeSnapshot } from '../types'
-import { SMART_SWAP_ARCHITECTURE_ID } from 'lib/smart-swap-architecture/smartSwapArchitecture000Contracts'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(WEB, '../..')

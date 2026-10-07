@@ -7,10 +7,10 @@ import latinise from '@pancakeswap/utils/latinise'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { useRouter } from 'next/router'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { getDisplayApr } from '../getDisplayApr'
 
 import Row, { RowProps } from './Row'
-import { melegaOperational as tokens } from 'ui/tokens'
 
 export interface ITableProps {
   farms: FarmWithStakedValue[]

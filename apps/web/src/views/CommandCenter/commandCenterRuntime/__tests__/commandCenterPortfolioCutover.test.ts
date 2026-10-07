@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { WALLET_PORTFOLIO_SCHEMA } from 'lib/wallet-portfolio/contracts'
+import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
+import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
+import BigNumber from 'bignumber.js'
 import {
   buildCommandCenterWalletPortfolio,
   filterPortfolioPositions,
@@ -7,9 +10,6 @@ import {
   projectLiquidityView,
   projectPoolView,
 } from '../commandCenterPortfolioCutover'
-import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
-import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
-import BigNumber from 'bignumber.js'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 

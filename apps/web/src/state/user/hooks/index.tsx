@@ -13,6 +13,7 @@ import { useWeb3LibraryContext } from '@pancakeswap/wagmi'
 import useSWR from 'swr'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isAddress } from 'utils'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 import { AppState, useAppDispatch } from '../../index'
 import {
@@ -50,7 +51,6 @@ import {
   updateUserBondsViewMode,
 } from '../actions'
 import { GAS_PRICE_GWEI } from '../../types'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 export function useAudioModeManager(): [boolean, () => void] {
   const dispatch = useAppDispatch()

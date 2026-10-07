@@ -4,9 +4,9 @@ import { useMemo } from 'react'
 import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import styled from 'styled-components'
 import { useHttpLocations } from '@pancakeswap/hooks'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { BAD_SRCS } from './constants'
 import getTokenLogoURL, { getTokenLogoPosition } from '../../utils/getTokenLogoURL'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StyledLogo = styled(TokenLogo) <{ size: string }>`
   width: ${({ size }) => size};

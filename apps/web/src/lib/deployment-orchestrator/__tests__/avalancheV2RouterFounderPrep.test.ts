@@ -19,13 +19,13 @@ import {
   AVALANCHE_ACTIVATION_GATES,
   AVALANCHE_STATUS_UNTIL_ACTIVATION,
 } from 'lib/deployment-orchestrator'
+import { MELEGA_CHAIN_REGISTRY } from 'config/melegaChainRegistry'
 import {
   AVAX_ROUTER_INIT_CODE_PAIR_HASH,
   assessAvaxRouterArtifactIntegrity,
   AVAX_ROUTER_CONTRACT,
 } from '../founderAvalancheRouterArtifacts'
 import { createMockEthereum, buildContractCreationRequest, walletSendDeployTransaction } from '../founderWalletTx'
-import { MELEGA_CHAIN_REGISTRY } from 'config/melegaChainRegistry'
 
 const WEB = path.resolve(__dirname, '../../../..')
 const ARTIFACT = path.resolve(__dirname, '../artifacts/avalanche-v2-router-certified.json')

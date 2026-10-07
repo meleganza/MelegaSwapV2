@@ -17,6 +17,18 @@ import { useProjectsIntelligenceRuntime } from 'views/ProjectsStudio/projectsRun
 import { useRadarIntelligenceRuntime } from 'views/RadarStudio/radarRuntime/useRadarIntelligenceRuntime'
 import { useBuildOrchestrationRuntime } from 'views/BuildStudio/buildRuntime/useBuildOrchestrationRuntime'
 import { buildInfrastructureScore } from 'views/BuildStudio/buildRuntime/buildInfrastructureScore'
+import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
+import type {
+  PortfolioSectionStatusCode,
+  WalletPortfolio,
+  WalletPortfolioSectionStatus,
+} from 'lib/wallet-portfolio/contracts'
+import {
+  commandCenterIdentitySummary,
+  formatCommandCenterCollectibles,
+} from 'views/CollectiblesStudio/collectiblesRuntime/formatCommandCenterCollectibles'
+import { useTrendingIntelligenceRuntime } from 'views/TrendingStudio/trendingRuntime/useTrendingIntelligenceRuntime'
+import { useWalletCollectibleOwnership } from 'views/CollectiblesStudio/collectiblesRuntime/useWalletCollectibleOwnership'
 import { buildAiBriefing } from './buildAiBriefing'
 import { buildActivityTimeline } from './buildActivityTimeline'
 import { buildMachineSummary } from './buildMachineSummary'
@@ -42,18 +54,6 @@ import {
   resolveCommandCenterPortfolioViews,
 } from './commandCenterPortfolioCutover'
 import { buildPortfolioViewSelectorModel } from './commandCenterPortfolioCutover'
-import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
-import type {
-  PortfolioSectionStatusCode,
-  WalletPortfolio,
-  WalletPortfolioSectionStatus,
-} from 'lib/wallet-portfolio/contracts'
-import {
-  commandCenterIdentitySummary,
-  formatCommandCenterCollectibles,
-} from 'views/CollectiblesStudio/collectiblesRuntime/formatCommandCenterCollectibles'
-import { useTrendingIntelligenceRuntime } from 'views/TrendingStudio/trendingRuntime/useTrendingIntelligenceRuntime'
-import { useWalletCollectibleOwnership } from 'views/CollectiblesStudio/collectiblesRuntime/useWalletCollectibleOwnership'
 
 export type CommandCenterSectionKey =
   | 'assets'

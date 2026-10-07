@@ -1,5 +1,5 @@
-import type { MelegaNavIcon } from '../icons'
 import { IDENTITY_HUB_NAV_LABEL } from 'registry/collectibles/identity-hub-collections.config'
+import type { MelegaNavIcon } from '../icons'
 
 export interface ShellNavItem {
   id: string

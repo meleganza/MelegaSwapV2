@@ -6,6 +6,8 @@ import type { StaticProjectRecord } from 'registry/projects/types'
 import type { DexAssetRecord } from 'lib/dex-asset-index'
 import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import { FOUNDER_FEATURED_SLUGS } from 'views/HomeTrade/featuredProjectsCatalog'
+import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
+import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 import type {
   MetricTone,
   ProjectPreviewCard,
@@ -21,8 +23,6 @@ import { buildProjectHealth } from './buildProjectHealth'
 import { buildProjectRating } from './buildProjectRating'
 import { buildMarketSources } from './marketSources'
 import { buildOnChainMetrics } from './onChainMetrics'
-import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
-import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 
 const FEATURED_SLUG_SET = new Set<string>(FOUNDER_FEATURED_SLUGS)
 const EMPTY = '—'

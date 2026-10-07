@@ -1,11 +1,11 @@
 import { existsSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
-import { TOKEN_OPTIONS } from '../components/createPoolWizardState'
-import { resolveCreatePoolWizardToken } from '../components/resolveCreatePoolWizardToken'
 import { MARCO_BSC_ADDRESS, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { resolveTokenLogoSources } from 'lib/token-logo/resolveTokenLogoSources'
 import { localBscTokenLogoPath } from 'lib/token-logo/localTokenLogoPath'
+import { TOKEN_OPTIONS } from '../components/createPoolWizardState'
+import { resolveCreatePoolWizardToken } from '../components/resolveCreatePoolWizardToken'
 
 const PUBLIC = path.resolve(__dirname, '../../../../public')
 

@@ -11,11 +11,11 @@ import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
+import { useFeaturedProjectMarkets } from 'views/HomeTrade/useFeaturedProjectMarkets'
+import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 import { formatPrice } from '../presentation/humanLabels'
 import { isChartSupported } from './helpers'
-import { useFeaturedProjectMarkets } from 'views/HomeTrade/useFeaturedProjectMarkets'
 import { Band, BandHead, BandMeta, BandTitle, Muted, pp } from './theme'
-import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 
 const TradeChartPanel = dynamic(() => import('views/Trade/components/TradeChartPanel'), {
   ssr: false,

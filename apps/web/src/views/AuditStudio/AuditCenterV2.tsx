@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { getBlockExploreLink } from 'utils'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 import {
   Band,
   BandHead,
@@ -24,7 +25,6 @@ import {
   computeMelegaScore,
   type OfficialContractRow,
 } from './buildOfficialContracts'
-import { GLOBAL_DATA_TRUTH_PIPELINE } from 'lib/data-truth'
 
 type ReadinessPayload = {
   timestamp?: string

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
-import { ds001Colors, ds001Layout } from '../../tokens/ds001'
 import type { HeaderDropdownItem } from 'app-shell/config/globalHeaderNav'
+import { ds001Colors, ds001Layout } from '../../tokens/ds001'
 import { moreItemIcon } from './HeaderIcons'
 
 const openAnim = keyframes`

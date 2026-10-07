@@ -4,9 +4,9 @@
 import { describe, expect, it } from 'vitest'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
-import { resolveProjectBySlug, getAllResolvableProjectSlugs, loadProjectMachineDocument } from '../index'
 import { runImportAnalysis } from 'views/BuildStudio/buildRuntime/buildImportAnalysis'
 import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
+import { resolveProjectBySlug, getAllResolvableProjectSlugs, loadProjectMachineDocument } from '../index'
 
 const ROOT = path.join(__dirname, '../../../../')
 

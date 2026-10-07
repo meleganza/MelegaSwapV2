@@ -21,14 +21,14 @@ import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/for
 import { Pool } from 'state/types'
 import { getAddress } from 'utils/addressHelpers'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
-import PercentageButton from './PercentageButton'
-import useStakePool from '../../../hooks/useStakePool'
-import useUnstakePool from '../../../hooks/useUnstakePool'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { useAccount } from 'wagmi'
 import { useWalletChainId } from 'hooks/useWalletChainId'
+import PercentageButton from './PercentageButton'
+import useStakePool from '../../../hooks/useStakePool'
+import useUnstakePool from '../../../hooks/useUnstakePool'
 
 interface StakeModalProps {
   isBnbPool: boolean

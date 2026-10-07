@@ -1,5 +1,5 @@
-import { D87_DEX_PRICING_RATIFIED, FSC_01 } from './codex/ratified'
 import { isBuyMarcoByAddress } from 'lib/melega-smart-router/marcoRegistry'
+import { D87_DEX_PRICING_RATIFIED, FSC_01 } from './codex/ratified'
 
 export const D87_PRICING_CODEX_ID = D87_DEX_PRICING_RATIFIED.id
 export const FSC_01_POLICY_REF = FSC_01.policyRef

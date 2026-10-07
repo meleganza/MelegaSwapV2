@@ -1,12 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
+import { NAV_COMING_SOON_LABEL, scrollToElement } from 'lib/navigation/comingSoon'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,
   collectiblesStudioColors,
   collectiblesStudioLayout,
 } from '../collectiblesStudioTokens'
-import { NAV_COMING_SOON_LABEL, scrollToElement } from 'lib/navigation/comingSoon'
 import { CsOutlineBtn, CsPrimaryBtn } from './collectiblesStudioPrimitives'
 
 const Banner = styled.section`

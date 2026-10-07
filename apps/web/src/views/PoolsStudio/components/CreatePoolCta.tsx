@@ -4,9 +4,9 @@ import { useAccount } from 'wagmi'
 import styled, { css, keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { melegaZIndex } from 'design-system/melega/tokens/melegaZIndex'
-import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaAccordionSection } from 'design-system/melega/components/Modal'
+import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import {
   TOKEN_OPTIONS,
   computeEstimatedApr,

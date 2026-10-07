@@ -1,7 +1,6 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
-import { runMarketSanity } from '../sanity'
 import { evaluateTopPoolsAprEligibility, normalizeAprForDisplay } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
 import { wbnbVolumeFromPairSides, WBNB_BSC } from 'lib/market-volume/canonical24hVolume'
 import {
@@ -9,6 +8,7 @@ import {
   MIN_COMPLETE_ABS,
 } from 'lib/trending/durableTrendingSnapshot'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
+import { runMarketSanity } from '../sanity'
 
 const WEB = path.resolve(__dirname, '../../../..')
 const SRC = path.resolve(__dirname, '../../..')

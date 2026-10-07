@@ -13,6 +13,8 @@ import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import BigNumber from 'bignumber.js'
+import { usePollFarmsWithUserData } from 'state/farms/hooks'
 import {
   fetchPoolsPublicDataAsync,
   fetchPoolsUserDataAsync,
@@ -38,8 +40,6 @@ import {
   ifoCeilingSelector,
   makeVaultPoolWithKeySelector,
 } from './selectors'
-import BigNumber from 'bignumber.js'
-import { usePollFarmsWithUserData } from 'state/farms/hooks'
 
 // const lPoolAddresses = livePools56.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 

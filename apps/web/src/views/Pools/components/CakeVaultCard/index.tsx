@@ -9,6 +9,7 @@ import '@pancakeswap/tokens';
 import { useCakeVault1 } from 'state/pools/hooks'
 import { Pool } from 'state/types'
 import { convertSharesToCake, getEarningToken } from 'views/Pools/helpers'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import AprRow from '../PoolCard/AprRow'
 import { StyledCard } from '../PoolCard/StyledCard'
 import CardFooter from '../PoolCard/CardFooter'
@@ -16,7 +17,6 @@ import StyledCardHeader from '../PoolCard/StyledCardHeader'
 import VaultCardActions from './VaultCardActions'
 import UnstakingFeeCountdownRow from './UnstakingFeeCountdownRow'
 import RecentCakeProfitRow from './RecentCakeProfitRow'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StyledCardBody = styled(CardBody)<{ isLoading: boolean }>`
   min-height: ${({ isLoading }) => (isLoading ? '0' : '254px')};

@@ -2,6 +2,7 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { Order } from '@gelatonetwork/limit-orders-lib'
 import { confirmOrderCancellation, confirmOrderSubmission, saveOrder } from 'utils/localStorageOrders'
+import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import {
   addTransaction,
   checkedTransaction,
@@ -13,7 +14,6 @@ import {
   NonBscFarmTransactionType,
   FarmTransactionStatus,
 } from './actions'
-import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import { resetUserState } from '../global/actions'
 
 const now = () => new Date().getTime()

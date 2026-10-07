@@ -3,7 +3,7 @@
  * QUOTE only. EXECUTE is always false. No wallet / signer / approval.
  */
 
-import { evmNative, type CanonicalAssetId } from './assetIdentity'
+import { evmNative, type CanonicalAssetId, evmContract } from './assetIdentity'
 import { capabilityMap } from './capabilities'
 import { EXECUTION_DOMAIN, evmNetwork, isEvmNetwork } from './domain'
 import { PROTOCOL_FEE_STATE, SMARTSWAP_PROTOCOL_FEE_ENFORCEMENT_GAP, emptyFeeFact } from './fee'
@@ -11,7 +11,6 @@ import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './
 import { refuseV2Execution, type SmartSwapVenueAdapter, type VenueIdentity } from './venueAdapter'
 import { computeMinimumReceived, type NormalizedQuote } from './quote';
 import { VENUE_SUPPORT, isQuoteCapable, type CertifiedEvmVenue } from './certifiedVenues'
-import { evmContract } from './assetIdentity'
 import { fetchBestV2PathQuote, v2CandidatePaths, type ShadowQuoteSource } from './shadowQuoteSource'
 
 function pathAddress(asset: CanonicalAssetId, wrappedNative: string | undefined): string {

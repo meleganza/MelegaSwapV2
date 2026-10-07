@@ -12,6 +12,7 @@ import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { useCurrency, useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
 import { isAddress } from 'utils'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
 import {
   EPOCH_OPTIONS,
@@ -28,7 +29,6 @@ import {
   STRATEGY_PRESET_OPTIONS,
 } from '../liquidityBuilding/strategyPresets'
 import { liqOne } from './onePageTokens'
-import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { LbDeployReadinessPanel } from './LbDeployReadinessPanel'
 import { formatLbTokenAmount } from '../liquidityBuilding/formatLbAmount'
 import type { ActivateProgressPhase } from '../liquidityBuilding/founderActivateFlow'

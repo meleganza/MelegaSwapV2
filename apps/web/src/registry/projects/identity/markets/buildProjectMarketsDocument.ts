@@ -1,6 +1,3 @@
-import type { StaticProjectRecord } from '../../types'
-import type { CanonicalProjectDocument } from '../types'
-import { normalizeEvmAddress, toCaip2ChainId } from '../caip'
 import { getVenuesByProjectSlug } from 'registry/venues/getVenueBySlug'
 import type { StaticVenueRecord } from 'registry/venues/types'
 import {
@@ -8,6 +5,9 @@ import {
   getMelegaRouterAddress,
   isMelegaChainLive,
 } from 'config/melegaChainRegistry'
+import type { StaticProjectRecord } from '../../types'
+import type { CanonicalProjectDocument } from '../types'
+import { normalizeEvmAddress, toCaip2ChainId } from '../caip'
 import {
   MARKET_LIMITATIONS,
   MARKET_RESOLVER_REVISION,

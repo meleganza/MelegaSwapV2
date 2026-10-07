@@ -4,13 +4,13 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
+import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import { buildPoolsWalletPositionsViewModel } from '../PoolsStudio/modules/buildPoolsWalletPositions'
 import {
   resolveDiscoverySymbol,
   toDiscoveryCard,
   sortDiscoveryCards,
 } from '../LiquidityStudio/modules/liquidityPoolDiscoveryModel'
-import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import type { PoolPreviewCard } from '../PoolsStudio/poolsStudioData'
 
 /** Mirror of useDexTrendingRankings.isCredibleMoverChange (keep import-free for vitest). */

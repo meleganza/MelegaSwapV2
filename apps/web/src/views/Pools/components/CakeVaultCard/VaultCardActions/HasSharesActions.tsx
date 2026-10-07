@@ -6,10 +6,10 @@ import { Pool } from 'state/types'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useCakeVault1 } from 'state/pools/hooks';
 import Balance from 'components/Balance'
+import { Token } from '@pancakeswap/sdk'
 import NotEnoughTokensModal from '../../PoolCard/Modals/NotEnoughTokensModal'
 import { convertSharesToCake } from '../../../helpers'
 import VaultStakeModal from '../VaultStakeModal'
-import { Token } from '@pancakeswap/sdk'
 
 interface HasStakeActionProps {
   pool: Pool.DeserializedPool<Token>

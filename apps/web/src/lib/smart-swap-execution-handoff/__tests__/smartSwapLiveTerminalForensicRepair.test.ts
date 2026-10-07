@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { SMART_SWAP_ARCHITECTURE_ID } from 'lib/smart-swap-architecture/smartSwapArchitecture000Contracts'
+import { parseSwapExperience } from 'views/Trade/swapExperience'
 import {
   publishSmartSwapHandoffCertification,
   publishSwapExperienceMode,
@@ -14,7 +15,6 @@ import {
   resolveIngressCertifiedHandoff,
   readSmartSwapIngressHandoff,
 } from '../index'
-import { parseSwapExperience } from 'views/Trade/swapExperience'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(WEB, '../..')

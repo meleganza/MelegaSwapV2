@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
   width: 100%;

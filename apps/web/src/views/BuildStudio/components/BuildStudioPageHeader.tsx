@@ -8,9 +8,9 @@ import {
   STUDIO_PAGE_TITLES,
   studioConstitutionLayout,
 } from 'design-system/melega'
+import { DexPricingFeesLink } from 'components/DexPricing/DexPricingFeesLink'
 import { IconBook, IconDownload } from './buildStudioIcons'
 import BuildInfrastructureGuidePanel from './BuildInfrastructureGuidePanel'
-import { DexPricingFeesLink } from 'components/DexPricing/DexPricingFeesLink'
 
 const Meta = styled.div`
   display: flex;

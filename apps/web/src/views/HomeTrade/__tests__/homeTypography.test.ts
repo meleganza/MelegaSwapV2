@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { homeTypography, homeTradeLayout } from '../homeTradeTokens'
 import { tradeTypography } from 'views/Trade/tradeTokens'
+import { homeTypography, homeTradeLayout } from '../homeTradeTokens'
 
 describe('R760 homeTypography', () => {
   it('mirrors Trade numeric surfaces', () => {

@@ -4,12 +4,12 @@ import useSWRImmutable from 'swr/immutable'
 import fetchTopTransactions from 'state/info/queries/protocol/transactions'
 import { checkIsStableSwap } from 'state/info/constant'
 import { useGetChainName } from 'state/info/hooks'
+import { fetchDurableIndexerTransactions } from 'lib/bsc-indexer/client/fetchDurableIndexer'
 import {
   BLOCKED_SUBGRAPH_NOT_DEPLOYED,
   formatSubgraphBlockerReason,
   resolveSubgraphEndpointReport,
 } from './resolveSubgraphEndpoint'
-import { fetchDurableIndexerTransactions } from 'lib/bsc-indexer/client/fetchDurableIndexer'
 
 const SWR_SETTINGS = {
   refreshInterval: 15000,

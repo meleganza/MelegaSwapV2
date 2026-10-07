@@ -2,11 +2,11 @@
  * Certified Create Token Factory artifact loader — autoload on import, fail closed.
  */
 import { keccak256 } from '@ethersproject/keccak256'
-import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
 import {
   CREATE_TOKEN_CREATION_FEE_WEI,
   CREATE_TOKEN_FEE_RECIPIENT,
 } from 'config/constants/createTokenFactoryDeployment'
+import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const certified = require('./artifacts/ct-v1-certified.json') as {

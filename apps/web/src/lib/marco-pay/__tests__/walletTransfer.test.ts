@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { FEATURED_PAYMENT_TOKENS } from 'lib/featured-placement/constants'
 import { buildMarcoPayWalletTransfer, marcoMinorToTokenRaw } from '../walletTransfer'
 import { MARCO_PAY_SETTLEMENT_WALLET } from '../settlement'
-import { FEATURED_PAYMENT_TOKENS } from 'lib/featured-placement/constants'
 
 describe('MARCO Pay wallet transfer', () => {
   it('builds a complete ERC-20 transfer to the Melega treasury before wallet request', () => {

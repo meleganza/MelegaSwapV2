@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import type { TransactionDetails } from 'state/transactions/reducer'
 import {
   buildProtocolHistoryRows,
   buildWalletHistoryRows,
   mergeTradeHistoryRows,
 } from '../formatTradeHistory'
-import type { TransactionDetails } from 'state/transactions/reducer'
 
 describe('trade history runtime', () => {
   it('builds wallet rows from confirmed swaps without fabrication', () => {

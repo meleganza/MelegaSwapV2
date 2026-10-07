@@ -2,9 +2,9 @@
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 import { setMCreditsPassportForTests } from 'lib/mcredits/passportState'
 import { clearMCreditsReceiptsForTests } from 'lib/mcredits/receipt'
+import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 
 vi.mock('wagmi', () => ({
   useAccount: vi.fn(() => ({ address: undefined })),

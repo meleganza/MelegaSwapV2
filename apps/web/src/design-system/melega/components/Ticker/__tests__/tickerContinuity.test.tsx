@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { MelegaTicker } from '../MelegaTicker'
 import { mergeTickerWithPaidPlacements, type PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
 import { TrendingRibbon } from 'views/HomeTrade/TrendingRibbon'
+import { MelegaTicker } from '../MelegaTicker'
 
 const ribbonState = ((globalThis as unknown as { __trendBoostRibbonState?: { items: unknown[]; rankedAssets: unknown[] } }).__trendBoostRibbonState =
   (globalThis as unknown as { __trendBoostRibbonState?: { items: unknown[]; rankedAssets: unknown[] } }).__trendBoostRibbonState ?? {

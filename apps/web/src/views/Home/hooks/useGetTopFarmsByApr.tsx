@@ -1,4 +1,3 @@
-import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 import { useState, useEffect } from 'react'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
@@ -10,6 +9,7 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
+import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',

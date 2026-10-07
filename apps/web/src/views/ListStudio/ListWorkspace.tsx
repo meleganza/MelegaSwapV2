@@ -12,6 +12,12 @@ import { useSwitchNetwork as useMelegaSwitchNetwork } from 'hooks/useSwitchNetwo
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { buildProjectClaimMessage, normalizeClaimMetadata } from 'lib/project-claims/claimMessage'
 import type { ProjectClaimRecord, PublicProjectClaim } from 'lib/project-claims/types'
+import {
+  CREATE_TOKEN_CANONICAL_DEPLOYMENT,
+  CREATE_TOKEN_FACTORY_CHAIN_ID,
+  CREATE_TOKEN_FEE_RECIPIENT,
+} from 'config/constants/createTokenFactoryDeployment'
+import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
@@ -31,14 +37,8 @@ import {
   type CreateTokenDraft,
 } from './createToken/createTokenTx'
 import { MELEGA_TOKEN_FACTORY_ABI } from './createToken/createTokenAbi'
-import {
-  CREATE_TOKEN_CANONICAL_DEPLOYMENT,
-  CREATE_TOKEN_FACTORY_CHAIN_ID,
-  CREATE_TOKEN_FEE_RECIPIENT,
-} from 'config/constants/createTokenFactoryDeployment'
 import { CreateTokenPostCreationFunnel } from './createToken/CreateTokenPostCreationFunnel'
 import { buildCreateTokenSuccessModel, type CreateTokenSuccessModel } from './createToken/createTokenPostCreationTypes'
-import { CommercialCheckoutModal } from 'views/shared/monetization/CommercialCheckoutModal'
 import {
   normalizeClaimChainId,
   normalizeClaimContractInput,

@@ -1,8 +1,8 @@
 /**
  * Portfolio display helpers — symbols, pair labels, status, amounts.
  */
-import { formatLbTokenAmount } from './formatLbAmount'
 import type { LbIndexedLifecycle, LbProgramApiRow } from 'lib/liquidity-builder-indexer/types'
+import { formatLbTokenAmount } from './formatLbAmount'
 
 const KNOWN_SYMBOLS: Record<string, string> = {
   '0x963556de0eb8138e97a85f0a86ee0acd159d210b': 'MARCO',

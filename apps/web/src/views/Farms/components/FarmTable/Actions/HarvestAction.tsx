@@ -14,8 +14,8 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { getBalanceAmount } from '@pancakeswap/utils/formatBalance'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
-import useHarvestFarm from '../../../hooks/useHarvestFarm'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import useHarvestFarm from '../../../hooks/useHarvestFarm'
 
 const { FarmTableHarvestAction } = FarmUI.FarmTable
 

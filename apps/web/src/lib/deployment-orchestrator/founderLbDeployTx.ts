@@ -3,6 +3,7 @@
  */
 import { Interface } from '@ethersproject/abi'
 import { id as keccakId } from '@ethersproject/hash'
+import { LB_MELEGA_AMM } from 'config/constants/liquidityBuildingDeployment'
 import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
 import {
   assessLbArtifactIntegrity,
@@ -11,7 +12,6 @@ import {
   loadCertifiedLbArtifacts,
   type LbArtifactRecord,
 } from './founderLbArtifacts'
-import { LB_MELEGA_AMM } from 'config/constants/liquidityBuildingDeployment'
 
 export type LbHumanField = { label: string; value: string }
 

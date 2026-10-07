@@ -5,6 +5,13 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
 import {
+  MELEGA_BNB_ROUTER,
+  MELEGA_BASE_ROUTER,
+  isMelegaChainLive,
+} from 'config/melegaChainRegistry'
+import { resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
+import { normalizeProjectDocument } from 'registry/projects/identity/normalizeProject'
+import {
   buildProjectChainDeployments,
   defaultSelectedChainId,
   explorerLabelFor,
@@ -12,13 +19,6 @@ import {
   filterParticipationByChain,
   getBuyTokenHref,
 } from '../helpers'
-import {
-  MELEGA_BNB_ROUTER,
-  MELEGA_BASE_ROUTER,
-  isMelegaChainLive,
-} from 'config/melegaChainRegistry'
-import { resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
-import { normalizeProjectDocument } from 'registry/projects/identity/normalizeProject'
 
 const V1 = path.resolve(__dirname, '..')
 const SRC = path.resolve(__dirname, '../../../..')

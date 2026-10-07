@@ -6,10 +6,10 @@
  */
 import React from 'react'
 import styled from 'styled-components'
-import { LiquidityAddModule } from './LiquidityAddModule'
-import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { LiquidityAddModule } from './LiquidityAddModule'
+import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
 import { LIQUIDITY_ACTIONS_COPY, liquidityActions } from './liquidityActionsTokens'
 
 const LB_SUPPORTED_CHAIN_ID = 56
