@@ -13,6 +13,7 @@ import type { ProjectDeveloperDocument } from 'registry/projects/identity/develo
 import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
 import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
+import dynamic from 'next/dynamic'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
@@ -23,7 +24,6 @@ import ProjectDeveloperSection from './ProjectDeveloperSection'
 import ProjectGovernanceSection from './ProjectGovernanceSection'
 import ProjectGrowthSection from './ProjectGrowthSection'
 import ProjectMachineSection from './ProjectMachineSection'
-import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
 const ClientWalletRelationship = dynamic(() => import('./ProjectWalletRelationship'), {

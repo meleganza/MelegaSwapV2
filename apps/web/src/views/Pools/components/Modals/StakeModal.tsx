@@ -12,11 +12,11 @@ import { useERC20 } from 'hooks/useContract'
 import { getDecimalAmount } from '@pancakeswap/utils/formatBalance'
 import { useApprovePool } from 'views/Pools/hooks/useApprove'
 import { usePool } from 'state/pools/hooks'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 
 import useStakePool from '../../hooks/useStakePool'
 import useUnstakePool from '../../hooks/useUnstakePool'
-import { useActiveChainId } from 'hooks/useActiveChainId'
-import { useWalletChainId } from 'hooks/useWalletChainId'
 
 export type PoolTxSuccessPayload = {
   action: 'stake' | 'unstake' | 'claim'

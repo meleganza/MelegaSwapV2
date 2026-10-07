@@ -1,8 +1,8 @@
+import { DEX_ECONOMIC_AUTHORITY, MELEGA_TREASURY_WALLET_LABEL } from 'config/dexEconomicAuthority'
 import { FORBIDDEN_HANDOFF_PAYLOAD_FIELDS } from '../../treasury-handoff/ownership'
 import type { ExecutionManifest } from '../execution-manifest/types'
 import { FSC_01_POLICY_REF, D87_PRICING_REF } from '../types'
 import type { CivilizationRouteType, TreasuryHandoffPreparedEvent } from './types'
-import { DEX_ECONOMIC_AUTHORITY, MELEGA_TREASURY_WALLET_LABEL } from 'config/dexEconomicAuthority'
 
 /** Phase 5 — handoff metadata only. Treasury Runtime is decommissioned. */
 export function buildTreasuryHandoffPrepared(input: {

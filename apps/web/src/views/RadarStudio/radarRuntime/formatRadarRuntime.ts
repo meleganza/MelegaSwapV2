@@ -6,6 +6,7 @@ import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketS
 import { buildOnChainMetrics } from 'views/ProjectsStudio/projectsRuntime/onChainMetrics'
 import { buildProjectHealth } from 'views/ProjectsStudio/projectsRuntime/buildProjectHealth'
 import { buildProjectRating } from 'views/ProjectsStudio/projectsRuntime/buildProjectRating'
+import { buildWhaleFeedMachinePayload } from 'lib/runtime-indexing'
 import type {
   ConfidenceBreakdownItem,
   RadarEventCard,
@@ -22,7 +23,6 @@ import type {
 } from '../radarStudioData'
 import type { RadarLiveEvent } from './buildLiveEvents'
 import { buildOpportunityScore } from './buildOpportunityScore'
-import { buildWhaleFeedMachinePayload } from 'lib/runtime-indexing'
 
 const UNAVAILABLE = 'Unavailable'
 

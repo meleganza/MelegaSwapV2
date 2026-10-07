@@ -13,7 +13,6 @@ import {
   MelegaModalFooterActions,
   MelegaModalFooterMeta,
 } from 'design-system/melega/components/Modal'
-import { MelegaModal } from './BoostCheckoutShell'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { MARCO_BSC_ADDRESS, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import MelegaTokenAvatar from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -49,13 +48,6 @@ import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
-  VISIBILITY_SERVICES,
-  type CommercialCheckoutStep,
-  type CommercialPaymentAsset,
-  type CommercialServiceId,
-} from './commercialCheckoutTypes'
-import { appendMarketingHistory } from './marketingHistory'
-import {
   authorizeMCreditsSpendForOrder,
   mCreditsCheckoutBlocker,
   readMCreditsPassport,
@@ -70,6 +62,14 @@ import {
   readStoredMarcoReferral,
   resolveMarcoReferralForCheckout,
 } from 'lib/marco-referral/client'
+import { MelegaModal } from './BoostCheckoutShell'
+import {
+  VISIBILITY_SERVICES,
+  type CommercialCheckoutStep,
+  type CommercialPaymentAsset,
+  type CommercialServiceId,
+} from './commercialCheckoutTypes'
+import { appendMarketingHistory } from './marketingHistory'
 
 type MarcoPayOrderConfig = {
   orderId: string

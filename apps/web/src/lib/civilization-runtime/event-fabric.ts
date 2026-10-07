@@ -1,4 +1,4 @@
-import { CANONICAL_TO_LEGACY } from './event-catalog'
+import { CANONICAL_TO_LEGACY, resolveCanonicalEventType } from './event-catalog'
 import type {
   CanonicalEventType,
   CivilizationFabricEvent,
@@ -11,7 +11,6 @@ import {
   FABRIC_EVENT_SCHEMA_VERSION,
   FABRIC_RUNTIME_VERSION,
 } from './types'
-import { resolveCanonicalEventType } from './event-catalog'
 import { validateFabricEventSchema } from './fabric-schema'
 
 const MAX_HISTORY = 256

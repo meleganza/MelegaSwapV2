@@ -8,13 +8,20 @@ import Link from 'next/link'
 import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
+import { markProjectNavClick } from 'views/ProjectPage/v5/projectPagePerf'
+import { PlacementLabel } from 'views/shared/monetization/PlacementLabel'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
+import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
+import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
+import type { RotationCandidate } from 'lib/featured-placement'
+import { formatPaidPlacementRemaining } from 'lib/trending/paidTickerPlacements'
 import {
   resolveFeaturedProjectIdentity,
   resolveFounderFeaturedProjects,
   selectFeaturedRotationWindow,
   type FeaturedProjectResolved,
 } from './featuredProjectsCatalog'
-import { markProjectNavClick } from 'views/ProjectPage/v5/projectPagePerf'
 import {
   formatFeaturedChange,
   formatFeaturedLiquidity,
@@ -23,13 +30,6 @@ import {
   formatFeaturedVolume,
   useFeaturedProjectMarkets,
 } from './useFeaturedProjectMarkets'
-import { PlacementLabel } from 'views/shared/monetization/PlacementLabel'
-import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
-import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
-import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
-import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
-import type { RotationCandidate } from 'lib/featured-placement'
-import { formatPaidPlacementRemaining } from 'lib/trending/paidTickerPlacements'
 
 type FeaturedCardEntry = {
   project: FeaturedProjectResolved

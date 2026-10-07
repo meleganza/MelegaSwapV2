@@ -7,9 +7,9 @@ import {
   COLLECTIBLE_STATUS_LABELS,
 } from 'registry/collectibles/collectible-constants'
 import { StaticCollectibleRecord } from 'registry/collectibles/collectible-types'
+import { buildCollectiblePrivileges, privilegeLabels } from 'views/CollectiblesStudio/collectiblesRuntime/buildCollectiblePrivileges'
 import { CollectibleStatusBadge, MetadataStorageBadge } from './components/CollectibleBadges'
 import CollectibleManifestViewer from './components/CollectibleManifestViewer'
-import { buildCollectiblePrivileges, privilegeLabels } from 'views/CollectiblesStudio/collectiblesRuntime/buildCollectiblePrivileges'
 
 const Page = styled.div`
   max-width: 880px;

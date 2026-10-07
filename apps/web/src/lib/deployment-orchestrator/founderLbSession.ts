@@ -4,6 +4,7 @@
  */
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import { sha256 } from '@ethersproject/sha2'
+import { LB_CANONICAL_DEPLOYED_ADDRESSES } from 'config/constants/liquidityBuildingDeployment'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_DEPLOY_CHAIN_ID,
@@ -17,7 +18,6 @@ import {
   validatePostDeployment,
   type PostDeployOutcome,
 } from './founderPostDeploy'
-import { LB_CANONICAL_DEPLOYED_ADDRESSES } from 'config/constants/liquidityBuildingDeployment'
 
 export const FOUNDER_LB_SESSION_STORAGE_KEY = 'melega.dex.v1.founder-lb-session.v1'
 

@@ -1,5 +1,5 @@
-import type { DexAssetRecord } from './types'
 import { localBscTokenLogoPath } from 'lib/token-logo/localTokenLogoPath'
+import type { DexAssetRecord } from './types'
 
 /** Resolve logo URI with explicit fallback — never emit broken relative paths. */
 export function resolveAssetLogo(address?: string, logoURI?: string): { logo?: string; logoFallback: 'initials' | 'generic' } {

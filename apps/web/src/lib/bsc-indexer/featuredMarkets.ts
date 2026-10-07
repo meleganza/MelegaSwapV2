@@ -3,20 +3,20 @@
  * No third-party prices presented as Melega DEX activity.
  */
 import { resolveFounderFeaturedProjects } from 'views/HomeTrade/featuredProjectsCatalog'
+import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
+import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { fetchBnbUsd as fetchBnbUsdShared } from 'lib/market-data/bnbUsd'
 import { resolveOnchainRegistry } from './registry/store'
 import { resolveIndexerStorageForSlug } from './storage'
 import { slugFromPairAddress } from './v2/pairSlug'
 import { FEATURED_PAIR_SLUG } from './v2/paths'
 import { MARCO_WBNB_PAIR_BSC } from './constants'
-import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from './founderWbnbPairs'
 import {
   fullyDilutedValueUsd,
   quoteVolumeToUsd,
   tokenUsdFromWbnbQuote,
 } from './usdValuation'
-import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
-import { fetchBnbUsd as fetchBnbUsdShared } from 'lib/market-data/bnbUsd'
 import { rpcCall } from './rpc/chunkedLogs'
 
 export { FOUNDER_WBNB_PAIR_ADDRESSES }

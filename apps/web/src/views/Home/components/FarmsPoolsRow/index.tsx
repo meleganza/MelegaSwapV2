@@ -5,10 +5,10 @@ import { useTranslation } from '@pancakeswap/localization'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
-import TopFarmPool from './TopFarmPool'
-import RowHeading from './RowHeading'
 import type { DeserializedPool } from '@pancakeswap/uikit/src/widgets/Pool/types'
 import { Token } from '@pancakeswap/sdk'
+import TopFarmPool from './TopFarmPool'
+import RowHeading from './RowHeading'
 
 const Grid = styled.div`
   display: grid;

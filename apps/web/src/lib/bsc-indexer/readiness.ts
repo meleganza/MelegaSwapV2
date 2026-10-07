@@ -1,10 +1,10 @@
+import { MELEGA_SUBGRAPH_URL } from 'config/constants/endpoints'
 import { resolveIndexerStorage, isProductionDurableStorageConfigured, verifyBlobRoundTrip } from './storage'
 import { getBlockNumber } from './rpc/chunkedLogs'
 import { loadRegistryFromDisk, loadRegistryMeta, resolveOnchainRegistry } from './registry/store'
 import { loadTierPairInventory } from './indexer/tierInventory'
 import { INDEXER_SCHEMA_VERSION, FEATURED_PAIR_SLUG } from './constants'
 import { LEGACY_INDEXER_NOTE } from './v2/paths'
-import { MELEGA_SUBGRAPH_URL } from 'config/constants/endpoints'
 
 export type ReadinessComponentStatus =
   | 'READY'

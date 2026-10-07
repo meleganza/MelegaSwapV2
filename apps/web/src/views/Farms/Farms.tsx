@@ -15,9 +15,9 @@ import { useUserFarmStakedOnly, useUserFarmsViewMode } from 'state/user/hooks'
 import { ViewMode } from 'state/user/actions'
 import { useRouter } from 'next/router'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import isArchivedPid from 'utils/farmHelpers'
 import Table from './components/FarmTable/FarmTable'
 import { FarmsContext } from './context'
-import isArchivedPid from 'utils/farmHelpers'
 
 const ControlContainer = styled.div`
   display: flex;

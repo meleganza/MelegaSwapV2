@@ -5,12 +5,12 @@ import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-sys
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
-import { tradeColors, TRADE_TIMEFRAMES, tradeTypography, type TradeTimeframeId } from '../tradeTokens'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
-import TradeChartPanel from './TradeChartPanel'
 import { usePairOhlcv } from 'lib/market-data/usePairOhlcv'
 import { formatCompactPriceNumber, formatFullPriceNumber } from 'utils/formatCompactPrice'
+import { tradeColors, TRADE_TIMEFRAMES, tradeTypography, type TradeTimeframeId } from '../tradeTokens'
+import TradeChartPanel from './TradeChartPanel'
 import { resolveTradeHeaderPrice, selectTradeChartSeries } from './tradeChartPrice'
 
 const fadeIn = keyframes`

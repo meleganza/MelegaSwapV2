@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { resolvePublicFarmFactoryFee, PUBLIC_FARM_FACTORY_FEE_POLICY } from '../modules/publicFarmFactoryFee'
 import { MELEGA_TREASURY_FEE_DESTINATION } from 'config/constants/feeSchedule'
-import { createDefaultPublicFarmFactoryDraft, parseReturnToCreateFarm } from '../modules/publicFarmFactoryDraft'
-import { MARCO_REWARD_REJECTION_MESSAGE } from '../modules/publicFarmEligibility'
-import { PUBLIC_FARM_FACTORY_CAPABILITY } from '../modules/publicFarmFactoryCapability'
 import { dedupeCanonicalFarms, PUBLIC_FARM_CREATED_TOPIC0 } from 'lib/bsc-indexer/indexer/publicFarmFactoryTopics'
 import { readFileSync } from 'fs'
 import path from 'path'
+import { resolvePublicFarmFactoryFee, PUBLIC_FARM_FACTORY_FEE_POLICY } from '../modules/publicFarmFactoryFee'
+import { createDefaultPublicFarmFactoryDraft, parseReturnToCreateFarm } from '../modules/publicFarmFactoryDraft'
+import { MARCO_REWARD_REJECTION_MESSAGE } from '../modules/publicFarmEligibility'
+import { PUBLIC_FARM_FACTORY_CAPABILITY } from '../modules/publicFarmFactoryCapability'
 
 const TREASURY = '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'
 

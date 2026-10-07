@@ -44,8 +44,8 @@ import '../../Vault/VaultStakeButtonGroup';
 import '../../LockedPool/Buttons/ExtendDurationButton';
 // import AfterLockedActions from '../../LockedPool/Common/AfterLockedActions'
 import '../../LockedPool/Common/ConvertToLock';
-import BurningCountDown from '../../LockedPool/Common/BurningCountDown'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import BurningCountDown from '../../LockedPool/Common/BurningCountDown'
 // import LockedStakedModal from '../../LockedPool/Modals/LockedStakeModal'
 
 const IconButtonWrapper = styled.div`

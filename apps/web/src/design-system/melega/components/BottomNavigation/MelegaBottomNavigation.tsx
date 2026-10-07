@@ -3,8 +3,8 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
+import type { MelegaLayoutProps } from '../../primitives'
 
 export interface MelegaBottomNavItem {
   id: string

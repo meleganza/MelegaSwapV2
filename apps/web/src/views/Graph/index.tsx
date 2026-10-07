@@ -5,11 +5,11 @@ import { useTranslation } from '@pancakeswap/localization'
 import Page from 'components/Layout/Page'
 import { resolveEconomicGraph } from 'registry/graph/resolveGraph'
 import { serializeGraphManifest } from 'registry/graph/manifest'
+import PresenceExploreLink from 'views/Presence/components/PresenceExploreLink'
 import GraphNodeCard from './components/GraphNodeCard'
 import GraphRelationshipList from './components/GraphRelationshipList'
 import RegistryGraphSummary from './components/RegistryGraphSummary'
 import MachineGraphManifestViewer from './components/MachineGraphManifestViewer'
-import PresenceExploreLink from 'views/Presence/components/PresenceExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;

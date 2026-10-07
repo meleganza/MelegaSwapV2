@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildDexAssetIndex, buildDexAssetIndexPayload } from '../buildDexAssetIndex'
 import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { buildDexAssetIndex, buildDexAssetIndexPayload } from '../buildDexAssetIndex'
 
 describe('buildDexAssetIndex R730A', () => {
   it('indexes more project-surface assets than the legacy 3-token cap', () => {

@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
-import type { PaidTickerPlacement } from '../paidTickerPlacements'
-import { mapActiveTrendBoostPlacements } from '../activeTrendBoostPlacements'
 import { normalizeEvmAddress } from 'registry/projects/identity/caip'
 import { resolveProjectByContractAddress, resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
 import { loadProjectReadinessDocument } from 'registry/projects/identity/readiness/buildProjectReadinessDocument'
 import { chainIdFromPath, resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
+import type { PaidTickerPlacement } from '../paidTickerPlacements'
+import { mapActiveTrendBoostPlacements } from '../activeTrendBoostPlacements'
 
 const WEB = path.resolve(__dirname, '../../..')
 const load = (rel: string) => readFileSync(path.join(WEB, rel), 'utf8')

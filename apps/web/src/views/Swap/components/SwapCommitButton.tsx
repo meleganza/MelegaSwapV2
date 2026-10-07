@@ -15,7 +15,6 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { routeV2SwapQuote } from 'lib/routing-layer/facade'
 import { useV2SwapExecution } from 'lib/execution-layer'
-import { resolveSwapActionCta } from '../resolveSwapActionCta'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import {
   BIG_INT_ZERO,
@@ -23,6 +22,7 @@ import {
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
 } from 'config/constants/exchange'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
+import { resolveSwapActionCta } from '../resolveSwapActionCta'
 
 import ConfirmSwapModal from './ConfirmSwapModal'
 import { SwapCallbackError } from './styleds'

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import type { CollectionCard } from '../collectiblesStudioData'
 import { STUDIO_KPI_VALUE } from 'design-system/melega'
+import type { CollectionCard } from '../collectiblesStudioData'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,

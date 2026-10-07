@@ -1,10 +1,10 @@
+import type { OnchainRegistry } from 'lib/onchain-registry'
 import {
   MELEGA_CHAIN_ID,
   MELEGA_FACTORY_BSC,
   MELEGA_MASTERCHEF_BSC,
 } from '../constants'
 import { getBlockNumber, rpcCall } from '../rpc/chunkedLogs'
-import type { OnchainRegistry } from 'lib/onchain-registry'
 import { discoverSmartChefOnChain } from './discoverSmartChefOnChain'
 
 const FACTORY = MELEGA_FACTORY_BSC

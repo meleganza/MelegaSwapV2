@@ -7,18 +7,8 @@ import {
   HANDOFF_ERROR_CODES,
   HANDSHAKE_ERROR_CODES,
 } from 'lib/execution-handoff-consumer'
-import { RC1_OFFLINE_FIXTURE_ID } from 'lib/execution-handoff-consumer/__fixtures__/rc1-offline-dry-run-handoff.fixture'
-import { CERTIFIED_DRY_RUN_HANDOFF_FIXTURE } from 'lib/execution-handoff-consumer/__fixtures__/certified-dry-run-handoff.fixture'
-import {
-  buildInvalidRc1FixtureLiveMode,
-  buildInvalidRc1FixtureWithTxHash,
-  buildInvalidRc1FixtureWithWalletData,
-} from 'lib/execution-handoff-consumer/__fixtures__/rc1-offline-dry-run-handoff.fixture'
-import {
-  buildCertifiedFixtureIncompatibleOutcome,
-  buildCertifiedFixtureInvalidVerdict,
-  buildCertifiedFixtureMissingCertification,
-} from 'lib/execution-handoff-consumer/__fixtures__/certified-dry-run-handoff.fixture'
+import { RC1_OFFLINE_FIXTURE_ID, buildInvalidRc1FixtureLiveMode, buildInvalidRc1FixtureWithTxHash, buildInvalidRc1FixtureWithWalletData } from 'lib/execution-handoff-consumer/__fixtures__/rc1-offline-dry-run-handoff.fixture'
+import { CERTIFIED_DRY_RUN_HANDOFF_FIXTURE, buildCertifiedFixtureIncompatibleOutcome, buildCertifiedFixtureInvalidVerdict, buildCertifiedFixtureMissingCertification } from 'lib/execution-handoff-consumer/__fixtures__/certified-dry-run-handoff.fixture'
 import {
   setExecutionGatewayEnabled,
   resetExecutionGatewayActivation,

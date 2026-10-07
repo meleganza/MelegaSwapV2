@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
+import { resolveIndexerStorage, resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
 import { getBlockNumber } from 'lib/bsc-indexer/rpc/chunkedLogs'
 import {
   classifyLeaseHealth,
@@ -11,7 +11,6 @@ import {
 import { buildMarketIndexHealth } from 'lib/bsc-indexer/marketIndexHealth'
 import { resolveOnchainRegistry } from 'lib/bsc-indexer/registry/store'
 import { loadTierPairInventory } from 'lib/bsc-indexer/indexer/tierInventory'
-import { resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import { FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/v2/paths'
 import { slugFromPairAddress } from 'lib/bsc-indexer/v2/pairSlug'

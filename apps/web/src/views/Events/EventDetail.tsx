@@ -4,11 +4,11 @@ import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { CHAIN_LABELS } from 'registry/assets/constants'
 import { StaticEventRecord } from 'registry/events/types'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import EventTypeBadge from './components/EventTypeBadge'
 import EventStatusBadge from './components/EventStatusBadge'
 import EventRelationshipsSection from './components/EventRelationshipsSection'
 import EventManifestViewer from './components/EventManifestViewer'
-import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;

@@ -6,21 +6,21 @@ import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { derivePoolLifecycle, reconcilePoolLifecycle, POOL_HIDDEN_REASON_LABELS } from 'lib/data-truth/poolLifecycle'
-import {
-  resolveKpiLifecycleFields,
-  type PoolClassificationSummary,
-} from './poolClassificationSummary'
 import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
-import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem, PoolVisibilityStatus } from '../poolsStudioData'
-import { formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation';
-import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 import {
   resolvePoolChainId,
   resolvePoolFeesDisplay,
   resolvePoolTvlUsd,
   resolvePoolVolumeDisplay,
 } from 'lib/data-truth/yieldMetricHelpers'
+import {
+  resolveKpiLifecycleFields,
+  type PoolClassificationSummary,
+} from './poolClassificationSummary'
+import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem, PoolVisibilityStatus } from '../poolsStudioData'
+import { formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation';
+import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 
 const BLOCKS_PER_DAY = 28800
 

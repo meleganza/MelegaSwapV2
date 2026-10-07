@@ -9,11 +9,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
 import { render, screen } from '@testing-library/react'
+import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import { YourLiquidityPositionsSection } from '../components/YourLiquidityPositionsSection'
 import { LiquidityStudioPageHeader } from '../components/LiquidityStudioPageHeader'
 import { buildLiquidityWalletPortfolio } from '../liquidityRuntime/buildLiquidityWalletPortfolio'
 import type { LiquidityMintRuntime } from '../liquidityRuntime/useLiquidityMintRuntime'
-import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 
 vi.mock('../liquidityRuntime/LiquidityRuntimeContext', () => ({
   useLiquidityRuntime: () => mockRuntime,

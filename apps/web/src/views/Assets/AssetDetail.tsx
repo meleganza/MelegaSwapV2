@@ -4,6 +4,7 @@ import { Flex, Text, Heading, Link } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { ASSET_TYPE_LABELS, CHAIN_EXPLORER_TOKEN_URL, CHAIN_LABELS } from 'registry/assets/constants'
 import { StaticAssetRecord } from 'registry/assets/types'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import AssetTrustBadge from './components/AssetTrustBadge'
 import AssetLifecycleBadge from './components/AssetLifecycleBadge'
 import AssetCapabilityMatrix from './components/AssetCapabilityMatrix'
@@ -11,7 +12,6 @@ import AssetManifestViewer from './components/AssetManifestViewer'
 import AssetVenuesSection from './components/AssetVenuesSection'
 import AssetEventsSection from './components/AssetEventsSection'
 import AssetPresenceSection from './components/AssetPresenceSection'
-import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;

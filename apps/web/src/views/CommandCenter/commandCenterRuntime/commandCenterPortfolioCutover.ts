@@ -41,10 +41,10 @@ import {
   type WalletPortfolio,
   type WalletPortfolioSectionStatus,
 } from 'lib/wallet-portfolio/contracts'
-import type { LiquidityPosition, FarmPosition, PoolPosition } from '../commandCenterData'
 import type { LiquidityPositionRow } from 'views/LiquidityStudio/liquidityRuntime/useLiquidityPositions'
 import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
 import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
+import type { LiquidityPosition, FarmPosition, PoolPosition } from '../commandCenterData'
 
 export interface CommandCenterPortfolioBuildInput {
   wallet: string | null

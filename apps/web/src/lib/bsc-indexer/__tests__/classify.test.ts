@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { classifyAmmPair, filterDiscoverablePairs } from '../pairs/classify'
 import type { OnchainAmmPair } from 'lib/onchain-registry'
+import { classifyAmmPair, filterDiscoverablePairs } from '../pairs/classify'
 
 const basePair = (overrides: Partial<OnchainAmmPair>): OnchainAmmPair => ({
   pairAddress: '0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e',

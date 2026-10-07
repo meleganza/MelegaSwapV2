@@ -1,9 +1,9 @@
+import { readFileSync, existsSync } from 'fs'
+import path from 'path'
 import { healthFromDependencies } from './state-machine'
 import { assertNoPrivateKeySignerConfig } from './signing-adapter'
 import type { RuntimeHealthReport, RuntimeHealthStatus } from './types'
 import { LB_HEALTH_SCHEMA } from './types'
-import { readFileSync, existsSync } from 'fs'
-import path from 'path'
 
 export type ReadinessDeps = {
   kmsReady?: boolean

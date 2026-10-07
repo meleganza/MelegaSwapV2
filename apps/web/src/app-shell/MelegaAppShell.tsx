@@ -12,6 +12,8 @@ import { ds001Layout } from 'design-system/melega/tokens/ds001'
 import { IconUser } from 'design-system/melega/components/GlobalHeader/HeaderIcons'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
+import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
+import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
@@ -20,8 +22,6 @@ import {
   MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
   MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
 } from './GlobalTrendingBar'
-import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
-import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 
 const MyMelegaDrawer = dynamic(preloadMyMelegaDrawer, { ssr: false, loading: () => null })
 

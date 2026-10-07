@@ -1,7 +1,7 @@
 import useSWR from 'swr'
+import type { PriceChartEntry } from 'state/info/types'
 import { fetchIndexerCandles } from './fetchDurableIndexer'
 import type { OhlcvCandle } from '../types'
-import type { PriceChartEntry } from 'state/info/types'
 
 function candlesToChartEntries(candles: OhlcvCandle[]): PriceChartEntry[] {
   return candles

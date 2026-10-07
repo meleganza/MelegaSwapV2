@@ -11,6 +11,7 @@ import omitBy from 'lodash/omitBy'
 import isEmpty from 'lodash/isEmpty'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import { TransactionDetails } from './reducer'
 import {
   addTransaction,
@@ -19,7 +20,6 @@ import {
   FarmTransactionStatus,
   NonBscFarmStepType,
 } from './actions'
-import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import { AppState, useAppDispatch } from '../index'
 
 // helper that can take a ethers library transaction response and add it to the list of transactions

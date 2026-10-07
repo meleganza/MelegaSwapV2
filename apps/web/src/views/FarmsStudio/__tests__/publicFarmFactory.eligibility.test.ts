@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import {
   MARCO_REWARD_REJECTION_MESSAGE,
   PUBLIC_FARM_MINIMUM_TVL_BNB,
@@ -7,9 +8,8 @@ import {
   estimatePairTvlBnb,
   publicFarmEligibilityAction,
   rejectMarcoReward,
+  WBNB_BSC,
 } from '../modules/publicFarmEligibility'
-import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import { WBNB_BSC } from '../modules/publicFarmEligibility'
 
 const WBNB = WBNB_BSC
 const OTHER = '0x55d398326f99059ff775485246999027b3197955'

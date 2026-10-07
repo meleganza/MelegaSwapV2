@@ -9,6 +9,8 @@ import {
   type WalletPortfolio,
 } from 'lib/wallet-portfolio/contracts'
 import type { PortfolioViewResult, PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
+import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
+import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
 import {
   buildCommandCenterWalletPortfolio,
   resolveCommandCenterPortfolioViews,
@@ -17,8 +19,6 @@ import {
   projectPoolView,
   COMMAND_CENTER_VIEW_TYPES,
 } from '../commandCenterPortfolioCutover'
-import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
-import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 

@@ -15,6 +15,10 @@ import getLpAddress from 'utils/getLpAddress'
 import { multicallv2 } from 'utils/multicall'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { useAccount } from 'wagmi'
+import {
+  resolveSwapDefaultInputCurrencyId,
+  resolveSwapDefaultOutputCurrencyId,
+} from 'views/Trade/hooks/resolveSwapDefaultCurrencies'
 import { AppState, useAppDispatch } from '../index'
 import { useUserSlippageTolerance } from '../user/hooks'
 import { useLiveCurrencyBalance } from '../wallet/hooks'
@@ -31,10 +35,6 @@ import {
 import { derivedPairByDataIdSelector, pairByDataIdSelector } from './selectors'
 import { PairDataTimeWindowEnum } from './types'
 import { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
-import {
-  resolveSwapDefaultInputCurrencyId,
-  resolveSwapDefaultOutputCurrencyId,
-} from 'views/Trade/hooks/resolveSwapDefaultCurrencies'
 
 export { queryParametersToBridgeState, queryParametersToSwapState } from './queryParameters'
 

@@ -7,6 +7,10 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { execSync } from 'child_process'
+import { MELEGA_SMART_ROUTER_ARCHITECTURE } from 'lib/melega-smart-router/types'
+import { D87_DEX_PRICING_RATIFIED, FSC_01 } from 'lib/d87-pricing/codex/ratified'
+import { DEX_HANDOFF_OWNERSHIP, FORBIDDEN_HANDOFF_PAYLOAD_FIELDS } from 'lib/treasury-handoff/ownership'
+import { isKerlRoutingAuthorityEnforced } from 'lib/kerl-constitutional/authority'
 import {
   SMART_SWAP_ARCHITECTURE_ID,
   SMART_SWAP_ARCHITECTURE_PHASE,
@@ -19,10 +23,6 @@ import {
   SMART_SWAP_MUST_ANSWER_BEFORE_EXECUTION,
   SMART_SWAP_SURFACES,
 } from '../smartSwapArchitecture000Contracts'
-import { MELEGA_SMART_ROUTER_ARCHITECTURE } from 'lib/melega-smart-router/types'
-import { D87_DEX_PRICING_RATIFIED, FSC_01 } from 'lib/d87-pricing/codex/ratified'
-import { DEX_HANDOFF_OWNERSHIP, FORBIDDEN_HANDOFF_PAYLOAD_FIELDS } from 'lib/treasury-handoff/ownership'
-import { isKerlRoutingAuthorityEnforced } from 'lib/kerl-constitutional/authority'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(WEB, '../..')

@@ -1,3 +1,7 @@
+import {
+  MELEGA_TREASURY_WALLET_ADDRESS,
+  resolveCanonicalFeeBeneficiary,
+} from 'config/dexEconomicAuthority'
 import type { ResolvedTreasuryCollector } from './types'
 import { readKerlTreasuryCollector } from './kerlRegistry'
 import {
@@ -5,10 +9,6 @@ import {
   readTreasuryRuntimeCollector,
 } from './runtimeRegistry'
 import { FSC_01_POLICY_REF } from '../types'
-import {
-  MELEGA_TREASURY_WALLET_ADDRESS,
-  resolveCanonicalFeeBeneficiary,
-} from 'config/dexEconomicAuthority'
 
 const ENV_KEYS: Record<number, string> = {
   56: 'NEXT_PUBLIC_TREASURY_COLLECTOR_BSC',

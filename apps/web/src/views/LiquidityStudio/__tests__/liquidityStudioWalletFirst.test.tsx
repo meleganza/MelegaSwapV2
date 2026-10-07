@@ -5,6 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import {
   buildLiquidityWalletPortfolio,
   selectLiquidityPortfolioPositions,
@@ -12,7 +13,6 @@ import {
 import { YourLiquidityPositionsSection } from '../components/YourLiquidityPositionsSection'
 import type { LiquidityPositionRow } from '../liquidityRuntime/useLiquidityPositions'
 import type { LiquidityMintRuntime } from '../liquidityRuntime/useLiquidityMintRuntime'
-import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 const PAIR = '0x01db17c476ad6a4c119f559eab2d1ac9e340278e'

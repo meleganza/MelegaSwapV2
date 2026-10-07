@@ -1,4 +1,5 @@
 import { INDEXER_TIER_DEFINITIONS } from 'lib/data-truth/ontology'
+import { LB_PROGRAM_SYNC_MIN_REMAINING_MS, syncLbProgramInventory } from 'lib/liquidity-builder-indexer'
 import { FEATURED_PAIR_SLUG, REORG_SAFETY_BLOCKS } from '../constants'
 import { resolveIndexerStorage } from '../storage'
 import { getBlockNumber } from '../rpc/chunkedLogs'
@@ -22,7 +23,6 @@ import {
   saveTierSchedulerState,
 } from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
-import { LB_PROGRAM_SYNC_MIN_REMAINING_MS, syncLbProgramInventory } from 'lib/liquidity-builder-indexer'
 import { isBootstrapWindowComplete } from './bootstrapWindow'
 import {
   resolveOrchestratorStageMode,

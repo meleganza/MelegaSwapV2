@@ -2,8 +2,8 @@
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
-import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 import { ECOSYSTEM_DESTINATIONS } from 'views/HomeTrade/ecosystemDestinations'
+import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 vi.mock('wagmi', () => ({ useAccount: vi.fn(() => ({address: undefined})), useSigner: vi.fn(() => ({data: undefined})) }))
 vi.mock('components/MarcoWidgets', () => ({ MarcoPay: () => null }))
 vi.mock('components/ConnectWalletButton', () => ({default: (props: any) => <button {...props}>Connect Wallet</button>}))

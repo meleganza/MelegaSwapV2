@@ -1,8 +1,7 @@
 import type { ExecutionReceiptPayload, SwapHandoffContext } from '../treasury-handoff/types'
 import { submitSettlementHandoff } from '../treasury-handoff/submitSettlementHandoff'
 import type { SubmitHandoffDeps } from '../treasury-handoff/submitSettlementHandoff'
-import type { KerlConstitutionalHandoffMeta } from './types'
-import type { KerlSettlementReceipt } from './types'
+import type { KerlConstitutionalHandoffMeta, KerlSettlementReceipt } from './types'
 import { KERL_SETTLEMENT_RECEIPT_SCHEMA } from './types'
 
 export function extractKerlHandoffMeta(

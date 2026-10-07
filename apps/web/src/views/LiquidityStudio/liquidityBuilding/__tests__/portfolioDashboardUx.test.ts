@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
+import type { LbProgramApiRow } from 'lib/liquidity-builder-indexer/types'
 import { LB_UX } from '../uxCopy'
 import {
   formatReserveLabel,
@@ -12,7 +13,6 @@ import {
   statusDisplay,
   symbolForAddress,
 } from '../portfolioDisplay'
-import type { LbProgramApiRow } from 'lib/liquidity-builder-indexer/types'
 
 const ROOT = path.resolve(__dirname, '../..')
 
