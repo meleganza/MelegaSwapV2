@@ -63,20 +63,13 @@ import {
 } from 'lib/mcredits/passportState'
 import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
+import { fetchMarcoPayReadiness, type MarcoPayReadiness } from 'lib/marco-pay/clientReadiness'
 import {
   MARCO_REFERRAL_CHANGE_EVENT,
   getBrowserMarcoReferralStorage,
   readStoredMarcoReferral,
   resolveMarcoReferralForCheckout,
 } from 'lib/marco-referral/client'
-
-type MarcoPayReadiness = {
-  executable: boolean
-  reason: string | null
-  applicationRef: string | null
-  paymentMethods?: { marco?: boolean; mCredits?: boolean }
-  rewards?: { customerBps?: number | null; partnerBps?: number | null; customerLabel?: string }
-}
 
 type MarcoPayOrderConfig = {
   orderId: string
@@ -1350,7 +1343,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const mCreditsPassport = isMCredits ? readMCreditsPassport() : null
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
-    (isMarcoPay && !marcoPayReadiness?.executable
+    (isMarcoPay && marcoPayReadiness !== null && !marcoPayReadiness.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
       ? 'M-Credits are temporarily unavailable.'
@@ -1504,11 +1497,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   useEffect(() => {
     if (!open) return undefined
     const controller = new AbortController()
-    void fetch('/api/marco-pay/readiness', { signal: controller.signal, cache: 'no-store' })
-      .then(async (response) => {
-        const payload = (await response.json()) as MarcoPayReadiness
-        setMarcoPayReadiness(payload)
-      })
+    setMarcoPayReadiness(null)
+    void fetchMarcoPayReadiness(controller.signal)
+      .then(setMarcoPayReadiness)
       .catch((cause) => {
         if (cause instanceof Error && cause.name === 'AbortError') return
         setMarcoPayReadiness({
@@ -1518,7 +1509,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         })
       })
     return () => controller.abort()
-  }, [open])
+  }, [open, step])
 
   useEffect(() => {
     if (!open || pay !== 'M_CREDITS' || !service || !selectedPackage) return
@@ -1747,9 +1738,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }
 
   useEffect(() => {
-    if (!open || step !== 'review' || !isMarcoPay || marcoPayOrderRef.current || status === 'confirmed') return
+    if (
+      !open ||
+      step !== 'review' ||
+      !isMarcoPay ||
+      !marcoPayReadiness?.executable ||
+      marcoPayOrderRef.current ||
+      status === 'confirmed'
+    )
+      return
     void prepareMarcoPayOrder()
-  }, [isMarcoPay, open, prepareMarcoPayOrder, status, step])
+  }, [isMarcoPay, marcoPayReadiness, open, prepareMarcoPayOrder, status, step])
 
   const goBack = () => {
     setError(null)
