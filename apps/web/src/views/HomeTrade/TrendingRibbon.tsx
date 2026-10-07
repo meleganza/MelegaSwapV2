@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaTicker } from 'design-system/melega/components/Ticker'
+import { applyTickerRenderBudget } from 'lib/trending/paidTickerPlacements'
 import { extractAddressFromHref } from 'lib/trending/topMoversSharedSnapshot'
 import useDexTrendingTicker from './useDexTrendingTicker'
 import { useTrendingDisplayLimit } from './useTrendingDisplayLimit'
@@ -46,7 +47,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).slice(0, displayLimit).map((item) => {
+      applyTickerRenderBudget(items ?? [], displayLimit).map((item) => {
         // Identity comes only from the shared snapshot item — never rematch by live rank index.
         const address = extractAddressFromHref(item.href)
         const asset = address ? avatarByAddress.get(address) : undefined
@@ -91,11 +92,15 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarByAddress, displayLimit, iconByAddress],
   )
 
+  const pinnedItems = enrichedItems.filter((item) => item.id.startsWith('paid-boosted-'))
+  const scrollingItems = enrichedItems.filter((item) => !item.id.startsWith('paid-boosted-'))
+
   return (
     <div style={{ width: '100%', minWidth: 0 }} data-top-movers-snapshot-id={snapshot.snapshotId} data-top-movers-surface="ticker">
       <MelegaTicker
         label="TOP MOVERS"
-        items={enrichedItems}
+        pinnedItems={pinnedItems}
+        items={scrollingItems}
         marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
         emptyPrimary={
           isLoading

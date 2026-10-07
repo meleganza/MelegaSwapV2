@@ -37,23 +37,9 @@ import {
   writeDurableTrendingSnapshot,
 } from 'lib/trending/durableTrendingSnapshot'
 import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements'
-import type { PaidTickerPlacement } from 'lib/trending/paidTickerPlacements'
-import { getAllProjects } from 'registry/projects/getAllProjects'
-import { resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { fetchActiveTrendBoostPlacements } from 'lib/trending/activeTrendBoostPlacements'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
-
-type ActiveTrendBoostResponse = {
-  placements?: Array<{
-    orderId: string
-    projectId: string
-    projectSlug: string | null
-    projectContract: string | null
-    chainId: number
-    startsAt: string | null
-    endsAt: string | null
-  }>
-}
 
 const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
   const map = new Map<string, TokenListEntry>()
@@ -64,49 +50,6 @@ const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
   return map
 })()
 
-async function fetchActiveTrendBoosts(): Promise<PaidTickerPlacement[]> {
-  try {
-    const res = await fetch('/api/trend-boost/active')
-    if (!res.ok) return []
-    const body = (await res.json()) as ActiveTrendBoostResponse
-    const projects = getAllProjects()
-    return (body.placements ?? []).flatMap((placement) => {
-      const contract = placement.projectContract?.toLowerCase() ?? null
-      const project = projects.find(
-        (candidate) =>
-          candidate.slug === placement.projectSlug ||
-          candidate.aliases?.includes(placement.projectSlug || '') ||
-          candidate.resources.tokens.some(
-            (token) => token.chainId === placement.chainId && token.address.toLowerCase() === contract,
-          ),
-      )
-      const token =
-        project?.resources.tokens.find((candidate) => candidate.chainId === placement.chainId) ??
-        (contract ? TOKEN_LIST_BY_ADDRESS.get(contract) : undefined)
-      const address = placement.projectContract ?? token?.address ?? null
-      const symbol = token?.symbol
-      if (!symbol) return []
-      return [
-        {
-          id: placement.orderId,
-          kind: 'boosted' as const,
-          symbol,
-          chainId: placement.chainId,
-          address,
-          href: resolveCanonicalProjectHref({
-            slug: project?.slug ?? placement.projectSlug,
-            chainId: placement.chainId,
-            address,
-          }),
-          startsAt: placement.startsAt,
-          endsAt: placement.endsAt,
-        },
-      ]
-    })
-  } catch {
-    return []
-  }
-}
 
 /** Melega Factory / Router — DEX activity index roots (presentation selection only). */
 export const TRENDING_DEX_FACTORY = MELEGA_FACTORY_BSC
@@ -533,10 +476,12 @@ export function useDexTrendingRankings() {
   const busdPrice = useBUSDPrice(BUSD[56])
   const { candles } = useIndexerCandles(MARCO_WBNB_PAIR_BSC, '1H');
   const { transactions, indexerState } = useProtocolTransactionsIndexer()
-  const { data: activeTrendBoosts = [] } = useSWR('active-trend-boosts', fetchActiveTrendBoosts, {
+  const { data: activeTrendBoosts = [] } = useSWR('active-trend-boosts', fetchActiveTrendBoostPlacements, {
     revalidateOnFocus: true,
     refreshInterval: 30_000,
     dedupingInterval: 15_000,
+    keepPreviousData: true,
+    shouldRetryOnError: false,
   })
   const [placementNow, setPlacementNow] = useState(0)
   useEffect(() => {

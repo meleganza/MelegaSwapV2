@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useId, useMemo, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors, typography } from '../../tokens'
 import type { MelegaLayoutProps } from '../../primitives'
@@ -20,6 +20,8 @@ export interface MelegaTickerItem {
 export interface MelegaTickerProps extends MelegaLayoutProps {
   label?: string
   items: MelegaTickerItem[]
+  /** Active paid Trend Boost rows. They stay in view and are not part of the organic marquee. */
+  pinnedItems?: MelegaTickerItem[]
   paused?: boolean
   marqueeMinItems?: number
   emptyPrimary?: string
@@ -59,7 +61,7 @@ const Strip = styled.div<{
 `
 
 const TrackWrap = styled.div<{ $scrollable?: boolean }>`
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
   max-width: 100%;
   overflow-x: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
@@ -103,13 +105,43 @@ const AnchorWrap = styled.div`
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
   padding-left: 18px;
-  padding-right: 16px;
+  padding-right: 8px;
   white-space: nowrap;
 
   @media (min-width: 1024px) {
     padding-left: 28px;
-    padding-right: 24px;
+    padding-right: 12px;
+  }
+`
+
+const PinnedPaid = styled.div`
+  display: inline-flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  a,
+  span {
+    margin-right: 8px;
+  }
+
+  @media (max-width: 767px) {
+    a,
+    span {
+      margin-right: 2px;
+    }
   }
 `
 
@@ -123,31 +155,40 @@ const TrendingAnchor = styled.span`
   text-transform: uppercase;
   color: #f4c542;
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    &[data-has-paid='true'] {
+      display: none;
+    }
+  }
 `
 
 const paidItemStyles = `
-  padding: 7px 15px 7px 10px;
+  padding: 2px 12px 2px 6px;
   border: 1px solid rgba(244, 196, 48, 0.82);
   border-radius: 999px;
   background: linear-gradient(110deg, rgba(244, 196, 48, 0.13), rgba(8, 8, 8, 0.92) 42%);
   box-shadow: 0 0 18px rgba(244, 196, 48, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 `
 
-const RocketMark = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Trend Boost">
-    <defs>
-      <linearGradient id="melegaRocketGold" x1="2" y1="22" x2="21" y2="2" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#9d6d05" />
-        <stop offset="0.48" stopColor="#f4c542" />
-        <stop offset="1" stopColor="#fff1a6" />
-      </linearGradient>
-    </defs>
-    <path
-      fill="url(#melegaRocketGold)"
-      d="M14.6 3.1c2.1-1 4.2-1.1 5.9-1.1 0 1.7-.1 3.8-1.1 5.9l-5.6 7-4.7-4.7 5.5-7.1Zm1.2 4.2a1.7 1.7 0 1 0 2.4-2.4 1.7 1.7 0 0 0-2.4 2.4ZM8 11.4l4.6 4.6-2.2 2.2-1.5-1.5-2.8 3.1.6-4.3-1.5-1.5L8 11.4Zm1-3.2L4.7 9.4 8 10.2l1-2Zm7.8 7.8-.8-3-2.2 2.9 3 0Z"
-    />
-  </svg>
-)
+const RocketMark = () => {
+  const gradientId = `melegaRocketGold-${useId().replace(/:/g, '')}`
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Trend Boost">
+      <defs>
+        <linearGradient id={gradientId} x1="2" y1="22" x2="21" y2="2" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#9d6d05" />
+          <stop offset="0.48" stopColor="#f4c542" />
+          <stop offset="1" stopColor="#fff1a6" />
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        d="M14.6 3.1c2.1-1 4.2-1.1 5.9-1.1 0 1.7-.1 3.8-1.1 5.9l-5.6 7-4.7-4.7 5.5-7.1Zm1.2 4.2a1.7 1.7 0 1 0 2.4-2.4 1.7 1.7 0 0 0-2.4 2.4ZM8 11.4l4.6 4.6-2.2 2.2-1.5-1.5-2.8 3.1.6-4.3-1.5-1.5L8 11.4Zm1-3.2L4.7 9.4 8 10.2l1-2Zm7.8 7.8-.8-3-2.2 2.9 3 0Z"
+      />
+    </svg>
+  )
+}
 
 const ItemLink = styled.a<{ $boosted?: boolean }>`
   display: inline-flex;
@@ -160,6 +201,18 @@ const ItemLink = styled.a<{ $boosted?: boolean }>`
   flex-shrink: 0;
   white-space: nowrap;
   ${({ $boosted }) => ($boosted ? paidItemStyles : '')}
+
+  @media (max-width: 767px) {
+    ${({ $boosted }) =>
+      $boosted
+        ? `
+      gap: 2px;
+      margin-right: 2px;
+      padding: 1px 4px 1px 2px;
+      font-size: 11px;
+    `
+        : ''}
+  }
 `
 
 const ItemSpan = styled.span<{ $boosted?: boolean }>`
@@ -182,6 +235,18 @@ const ItemIcon = styled.span`
   justify-content: center;
   flex-shrink: 0;
 
+  @media (max-width: 767px) {
+    width: 12px !important;
+    height: 12px !important;
+
+    svg,
+    img,
+    span {
+      width: 12px !important;
+      height: 12px !important;
+    }
+  }
+
   @media (min-width: 1024px) {
     width: 22px;
     height: 22px;
@@ -199,6 +264,10 @@ const Primary = styled.span`
   font-weight: 700;
   font-size: 13px;
   color: #ffffff;
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 `
 
 const Secondary = styled.span`
@@ -213,6 +282,10 @@ const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
   font-size: 14px;
   color: ${({ $unavailable, $positive }) =>
     $unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676'};
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+  }
 `
 
 const Dot = styled.span`
@@ -244,6 +317,7 @@ const EmptyMessage = styled.span`
 const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
   label = 'Trending',
   items,
+  pinnedItems,
   paused: pausedProp,
   marqueeMinItems = 6,
   padding,
@@ -257,6 +331,7 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
   const dragRef = useRef(false)
 
   const safeItems = useMemo(() => (Array.isArray(items) ? items : []), [items])
+  const safePinned = useMemo(() => (Array.isArray(pinnedItems) ? pinnedItems : []), [pinnedItems])
   const marqueeEnabled = safeItems.length >= marqueeMinItems
   const scrollItems = useMemo(
     () => marqueeEnabled ? [...safeItems, ...safeItems] : safeItems,
@@ -265,7 +340,41 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
 
   if (disabled) return null
 
-  if (!safeItems.length) {
+  const renderItem = (item: MelegaTickerItem, copy: number) => {
+    const boosted = item.id.startsWith('paid-boosted-')
+    const content = (
+      <>
+        {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
+        {boosted ? (
+          <ItemIcon>
+            <RocketMark />
+          </ItemIcon>
+        ) : null}
+        <Primary>{item.primary}</Primary>
+        {!boosted && item.secondary && <Secondary>{item.secondary}</Secondary>}
+        {item.accent && (
+          <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
+            {item.accent}
+          </Accent>
+        )}
+      </>
+    )
+    return (
+      <React.Fragment key={`${item.id}-${copy}`}>
+        {item.href ? (
+          <ItemLink href={item.href} $boosted={boosted} data-paid-trend-order={boosted ? item.id : undefined}>
+            {content}
+          </ItemLink>
+        ) : (
+          <ItemSpan $boosted={boosted} data-paid-trend-order={boosted ? item.id : undefined}>
+            {content}
+          </ItemSpan>
+        )}
+      </React.Fragment>
+    )
+  }
+
+  if (!safeItems.length && safePinned.length === 0) {
     return (
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
         <AnchorWrap>
@@ -309,7 +418,12 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
       onTouchCancel={() => setDragPaused(false)}
     >
       <AnchorWrap>
-        <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
+        <TrendingAnchor aria-hidden data-has-paid={safePinned.length > 0 ? 'true' : 'false'}>
+          {label}
+        </TrendingAnchor>
+        {safePinned.length > 0 ? (
+          <PinnedPaid data-paid-trend-boost-pin="true">{safePinned.map((item) => renderItem(item, 0))}</PinnedPaid>
+        ) : null}
       </AnchorWrap>
       <TrackWrap
         data-melega-ticker-track
@@ -321,37 +435,7 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
         onPointerCancel={handlePointerUp}
       >
         <Track $paused={paused} $static={!marqueeEnabled} data-ticker-track>
-          {scrollItems.map((item, i) => {
-            const boosted = item.id.startsWith('paid-boosted-')
-            const content = (
-              <>
-                {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
-                {boosted ? (
-                  <ItemIcon>
-                    <RocketMark />
-                  </ItemIcon>
-                ) : null}
-                <Primary>{item.primary}</Primary>
-                {!boosted && item.secondary && <Secondary>{item.secondary}</Secondary>}
-                {item.accent && (
-                  <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
-                    {item.accent}
-                  </Accent>
-                )}
-              </>
-            )
-            return (
-              <React.Fragment key={`${item.id}-${i >= safeItems.length ? 1 : 0}`}>
-                {item.href ? (
-                  <ItemLink href={item.href} $boosted={boosted}>
-                    {content}
-                  </ItemLink>
-                ) : (
-                  <ItemSpan $boosted={boosted}>{content}</ItemSpan>
-                )}
-              </React.Fragment>
-            )
-          })}
+          {scrollItems.map((item, i) => renderItem(item, i >= safeItems.length ? 1 : 0))}
         </Track>
       </TrackWrap>
     </Strip>

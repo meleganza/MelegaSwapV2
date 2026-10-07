@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
+import { applyTickerRenderBudget, mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
 import type { PaidTickerPlacement } from '../paidTickerPlacements'
-import { mapActiveTrendBoostPlacements } from '../activeTrendBoostPlacements'
+import {
+  PAID_TREND_BOOST_NEUTRAL_SYMBOL,
+  mapActiveTrendBoostPlacements,
+  retainActivePaidPlacements,
+} from '../activeTrendBoostPlacements'
+import { lookupCanonicalToken } from 'lib/canonical-token-registry'
 import { normalizeEvmAddress } from 'registry/projects/identity/caip'
 import { resolveProjectByContractAddress, resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
 import { loadProjectReadinessDocument } from 'registry/projects/identity/readiness/buildProjectReadinessDocument'
@@ -200,9 +205,136 @@ describe('paid Trend Boost ticker merge', () => {
     expect(context).not.toContain("from './useDexTrendingRankings'")
     expect(context).not.toContain('setInterval')
     expect(context).toContain('shouldRetryOnError: false')
+    expect(context).toContain('keepPreviousData: true')
+    expect(context).toContain('retainActivePaidPlacements')
     const helper = load('lib/trending/activeTrendBoostPlacements.ts')
     expect(helper).toContain("fetch('/api/trend-boost/active')")
-    expect(helper).toContain('if (!res.ok) return []')
+    expect(helper).toContain('if (!res.ok) throw new Error')
+    expect(helper).not.toContain('if (!res.ok) return []')
+    const activeApi = load('pages/api/trend-boost/active.ts')
+    expect(activeApi).toContain("res.status(503)")
+    expect(activeApi).toContain("Cache-Control', 'no-store'")
+  })
+
+  it('keeps every settled placement when slug metadata is missing', () => {
+    const mapped = mapActiveTrendBoostPlacements([
+      {
+        orderId: 'trend_mm72',
+        projectId: 'mm72',
+        projectSlug: 'mm72',
+        projectContract: MM72_ADDRESS,
+        chainId: 56,
+        startsAt: mm72Active.startsAt ?? null,
+        endsAt: mm72Active.endsAt ?? null,
+      },
+      {
+        orderId: 'trend_m01',
+        projectId: '0x4034875250F797D00b819e9011c5BB9c2e799631',
+        projectSlug: null,
+        projectContract: '0x4034875250F797D00b819e9011c5BB9c2e799631',
+        chainId: 56,
+        startsAt: mm72Active.startsAt ?? null,
+        endsAt: mm72Active.endsAt ?? null,
+      },
+      {
+        orderId: 'trend_babymarco',
+        projectId: '0x7d48423Feac5AA05380Db98a1f24cE17D641754D',
+        projectSlug: null,
+        projectContract: '0x7d48423Feac5AA05380Db98a1f24cE17D641754D',
+        chainId: 56,
+        startsAt: mm72Active.startsAt ?? null,
+        endsAt: mm72Active.endsAt ?? null,
+      },
+    ])
+    const babySymbol = lookupCanonicalToken(56, '0x7d48423Feac5AA05380Db98a1f24cE17D641754D')?.symbol
+    expect(babySymbol).toBeTruthy()
+    expect(mapped.map((row) => row.symbol)).toEqual(['MM72', 'M01', babySymbol])
+    expect(mapped.map((row) => row.address)).toEqual([
+      MM72_ADDRESS,
+      '0x4034875250F797D00b819e9011c5BB9c2e799631',
+      '0x7d48423Feac5AA05380Db98a1f24cE17D641754D',
+    ])
+    const merged = mergeTickerWithPaidPlacements({ organic: [organic[0]], boosted: mapped, nowMs: NOW })
+    expect(merged.slice(0, 3).map((item) => item.primary)).toEqual(['MM72', 'M01', babySymbol])
+    expect(merged.every((item) => !/^0x[a-fA-F0-9]{40}$/.test(item.primary))).toBe(true)
+  })
+
+  it('keeps a placement with a neutral label when metadata is missing', () => {
+    const mapped = mapActiveTrendBoostPlacements([
+      {
+        orderId: 'trend_unknown',
+        projectId: 'unknown',
+        projectSlug: null,
+        projectContract: '0x9999999999999999999999999999999999999999',
+        chainId: 56,
+        startsAt: mm72Active.startsAt ?? null,
+        endsAt: mm72Active.endsAt ?? null,
+      },
+    ])
+    expect(mapped).toHaveLength(1)
+    expect(mapped[0].symbol).toBe(PAID_TREND_BOOST_NEUTRAL_SYMBOL)
+    expect(mapped[0].address).toBe('0x9999999999999999999999999999999999999999')
+    expect(mapped[0].symbol).not.toMatch(/^0x/)
+  })
+
+  it('does not collapse the same symbol or address across chains', () => {
+    const otherChain = { ...mm72Active, id: 'trend_mm72_eth', chainId: 1, href: '/token/eth/mm72' }
+    const merged = mergeTickerWithPaidPlacements({
+      organic: [
+        {
+          id: 'eth-mm72',
+          primary: 'MM72',
+          accent: '+1%',
+          chainId: 1,
+          tokenAddress: MM72_ADDRESS,
+          href: `/swap?outputCurrency=${MM72_ADDRESS}`,
+        },
+        {
+          id: 'bsc-other-mm72',
+          primary: 'MM72',
+          accent: '+2%',
+          chainId: 56,
+          href: '/swap?outputCurrency=0x1111111111111111111111111111111111111111',
+        },
+      ],
+      boosted: [mm72Active, otherChain],
+      nowMs: NOW,
+    })
+    expect(merged.filter((item) => item.secondary === 'Boosted')).toHaveLength(2)
+    expect(merged.find((item) => item.id === 'eth-mm72')).toBeUndefined()
+    expect(merged.find((item) => item.id === 'bsc-other-mm72')).toBeTruthy()
+    expect(merged.filter((item) => item.primary === 'MM72')).toHaveLength(3)
+  })
+
+  it('keeps every paid placement when the organic render budget is full', () => {
+    const organicRows = Array.from({ length: 20 }, (_, index) => ({
+      id: `org-${index}`,
+      primary: `ORG${index}`,
+      accent: '+1%',
+      href: `/swap?outputCurrency=${(index + 1).toString(16).padStart(40, '0')}`,
+    }))
+    const merged = mergeTickerWithPaidPlacements({
+      organic: organicRows,
+      boosted: [mm72Active, aaronActive],
+      nowMs: NOW,
+    })
+    const budgeted = applyTickerRenderBudget(merged, 5)
+    expect(budgeted.filter((item) => item.id.startsWith('paid-boosted-')).map((item) => item.primary)).toEqual([
+      'MM72',
+      'AARON',
+    ])
+    expect(budgeted.filter((item) => !item.id.startsWith('paid-')).map((item) => item.primary)).toEqual([
+      'ORG0',
+      'ORG1',
+      'ORG2',
+    ])
+  })
+
+  it('keeps the last confirmed paid set when a refresh fails, then applies a real expiry', () => {
+    const previous = [mm72Active, aaronActive]
+    expect(retainActivePaidPlacements(previous, undefined, true)).toEqual(previous)
+    expect(retainActivePaidPlacements(previous, [], false)).toEqual([])
+    expect(retainActivePaidPlacements(previous, [mm72Active], false)).toEqual([mm72Active])
   })
 })
 

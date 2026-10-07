@@ -43,7 +43,7 @@ const Inner = styled.div`
   max-width: ${ds001Layout.gridTotalWidth};
   margin: 0 auto;
   height: 100%;
-  padding: 0 16px;
+  padding: 0 8px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -93,10 +93,15 @@ const ActionSlot = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding-left: 10px;
-  margin-left: 8px;
+  padding-left: 6px;
+  margin-left: 4px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    padding-left: 10px;
+    margin-left: 8px;
+  }
 `
 
 export const MELEGA_TRENDING_BAR_DESKTOP_HEIGHT = TRENDING_BAR_DESKTOP_H
