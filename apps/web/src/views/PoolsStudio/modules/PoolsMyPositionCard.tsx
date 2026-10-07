@@ -285,7 +285,12 @@ export const PoolsMyPositionCard: React.FC<{
   const onConfirmSwitch = async () => {
     setSwitching(true)
     try {
-      await switchNetworkAsync?.(position.chainId)
+      const switched = await switchNetworkAsync?.(position.chainId)
+      if (switched === false) {
+        setPendingAction(null)
+        setSwitchOpen(false)
+        return
+      }
       setSwitchOpen(false)
       const next = pendingAction
       setPendingAction(null)

@@ -670,7 +670,10 @@ const LiquidityMyPositionsBody: React.FC<{ embedded?: boolean }> = ({ embedded =
     if (!pendingSwitch) return
     const target = pendingSwitch.row.chainId ?? pendingSwitch.row.pair.token0.chainId
     try {
-      if (target != null) await switchNetworkAsync(target)
+      if (target != null) {
+        const switched = await switchNetworkAsync(target)
+        if (switched === false) return
+      }
       if (pendingSwitch.intent === 'remove') proceedRemove(pendingSwitch.row)
       else proceedManage(pendingSwitch.row)
     } finally {

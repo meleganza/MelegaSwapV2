@@ -17,11 +17,16 @@ let globalSearchRuntimePromise: Promise<GlobalSearchRuntime> | null = null
 
 function loadGlobalSearchRuntime(): Promise<GlobalSearchRuntime> {
   if (!globalSearchRuntimePromise) {
-    globalSearchRuntimePromise = import('lib/global-search').then((runtime) => ({
-      index: runtime.buildGlobalSearchIndex(),
-      search: runtime.searchGlobal,
-      categoryLabel: runtime.globalSearchCategoryLabel,
-    }))
+    globalSearchRuntimePromise = import('lib/global-search')
+      .then((runtime) => ({
+        index: runtime.buildGlobalSearchIndex(),
+        search: runtime.searchGlobal,
+        categoryLabel: runtime.globalSearchCategoryLabel,
+      }))
+      .catch((error: unknown) => {
+        globalSearchRuntimePromise = null
+        throw error
+      })
   }
   return globalSearchRuntimePromise
 }
@@ -188,15 +193,24 @@ const GlobalSearch: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [searchRuntime, setSearchRuntime] = useState<GlobalSearchRuntime | null>(null)
   const [isSearchLoading, setIsSearchLoading] = useState(false)
+  const [searchLoadError, setSearchLoadError] = useState<string | null>(null)
 
   const ensureSearchRuntime = useCallback(() => {
     if (searchRuntime) return Promise.resolve(searchRuntime)
     setIsSearchLoading(true)
-    return loadGlobalSearchRuntime().then((runtime) => {
-      setSearchRuntime(runtime)
-      setIsSearchLoading(false)
-      return runtime
-    })
+    setSearchLoadError(null)
+    return loadGlobalSearchRuntime()
+      .then((runtime) => {
+        setSearchRuntime(runtime)
+        setIsSearchLoading(false)
+        setSearchLoadError(null)
+        return runtime
+      })
+      .catch(() => {
+        setIsSearchLoading(false)
+        setSearchLoadError('Search is unavailable')
+        return null
+      })
   }, [searchRuntime])
 
   const results = useMemo(
@@ -287,6 +301,8 @@ const GlobalSearch: React.FC = () => {
         <Dropdown data-global-search-dropdown role="listbox" aria-label="Search results">
           {isSearchLoading ? (
             <EmptyState data-global-search-loading>Preparing search…</EmptyState>
+          ) : searchLoadError ? (
+            <EmptyState data-global-search-error>{searchLoadError}</EmptyState>
           ) : results.length === 0 ? (
             <EmptyState data-global-search-empty>No results found</EmptyState>
           ) : (

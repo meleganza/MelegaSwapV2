@@ -109,6 +109,22 @@ export async function tryAcquireIndexerLease(params: {
   return { acquired: true, lease, recoveredFromStale }
 }
 
+/**
+ * Interval heartbeats must not surface a rejected write as an unhandled rejection.
+ * The lease TTL remains the safety valve when a write fails.
+ */
+export function settleIndexerLeaseHeartbeat(
+  ownerId: string,
+  heartbeat: (id: string) => Promise<unknown> = heartbeatIndexerLease,
+): Promise<void> {
+  return heartbeat(ownerId).then(
+    () => undefined,
+    (error: unknown) => {
+      console.error('[indexer-lease] heartbeat failed', error instanceof Error ? error.message : error)
+    },
+  )
+}
+
 export async function heartbeatIndexerLease(ownerId: string): Promise<IndexerLease | null> {
   const existing = await readIndexerLease()
   if (!existing || existing.ownerId !== ownerId || !isLeaseHealthy(existing)) return existing

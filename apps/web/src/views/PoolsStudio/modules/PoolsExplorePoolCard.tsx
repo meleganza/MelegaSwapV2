@@ -260,7 +260,12 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
     setSwitching(true)
     pendingActionRef.current = true
     try {
-      await switchNetworkAsync?.(pool.chainId)
+      const switched = await switchNetworkAsync?.(pool.chainId)
+      if (switched === false) {
+        pendingActionRef.current = false
+        setSwitchOpen(false)
+        return
+      }
       setSwitchOpen(false)
       window.setTimeout(() => resumeStake(), 400)
     } catch {

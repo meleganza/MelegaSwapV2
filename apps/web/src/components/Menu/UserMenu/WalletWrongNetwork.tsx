@@ -25,7 +25,8 @@ const WalletWrongNetwork: React.FC<React.PropsWithChildren<WalletWrongNetworkPro
   const targetTitle = headerChainTitle(localChainId)
 
   const handleSwitchNetwork = async (): Promise<void> => {
-    await switchNetworkAsync(localChainId)
+    const switched = await switchNetworkAsync(localChainId)
+    if (switched === false) return
     onDismiss?.()
   }
 
