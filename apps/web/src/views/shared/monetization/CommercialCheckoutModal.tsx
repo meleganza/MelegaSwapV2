@@ -31,6 +31,10 @@ import {
 import { VISIBILITY_RUNTIME, canAcceptMCreditsPayment, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
 import { bindCheckoutTarget } from 'lib/monetization/checkoutTargetBinding'
 import {
+  TOKEN_DETECTION_TIMEOUT_MESSAGE,
+  TOKEN_DETECTION_TIMEOUT_MS,
+} from 'lib/monetization/tokenDetectionBudget'
+import {
   assessPaymentWalletChain,
   resolvePaymentWalletForSettlement,
 } from 'lib/monetization/paymentWalletChain'
@@ -1220,6 +1224,7 @@ type RegistryDetection = {
     slug?: string | null
     tokens?: Array<{ chainId?: number | string; symbol?: string }>
   } | null
+  identitySource?: 'onchain' | 'factory' | 'canonical-registry'
   dex?: {
     listed?: boolean
     projectClaimed?: boolean
@@ -1236,15 +1241,20 @@ function parseDetectedProject(
   contract: string,
   requestedChain: number,
 ): DetectedProject | null {
-  if (
-    !json?.ok ||
-    !json?.onChain ||
-    json.onChain.verifiedDeployment !== true ||
-    !String(json.onChain.name ?? '').trim() ||
-    !String(json.onChain.symbol ?? '').trim()
-  ) {
-    return null
-  }
+  const onChainName = String(json?.onChain?.name ?? '').trim()
+  const onChainSymbol = String(json?.onChain?.symbol ?? '').trim()
+  const dexName = String(json?.dex?.name ?? '').trim()
+  const dexSymbol = String(json?.dex?.symbol ?? '').trim()
+  const onChainVerified =
+    Boolean(json?.ok && json?.onChain) &&
+    json?.onChain?.verifiedDeployment === true &&
+    Boolean(onChainName && onChainSymbol)
+  const registryBacked =
+    Boolean(json?.ok) &&
+    (json?.identitySource === 'factory' || json?.identitySource === 'canonical-registry') &&
+    Boolean(json?.dex?.listed) &&
+    Boolean((dexName || onChainName) && (dexSymbol || onChainSymbol))
+  if (!onChainVerified && !registryBacked) return null
   const canonical = json.tier === 'canonical'
   const project = json.project ?? null
   const dex = json.dex ?? null
@@ -1325,6 +1335,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const lastBuyerRef = useRef<string | null>(null)
   const targetGenerationRef = useRef(0)
   const preparedTargetKeyRef = useRef<string | null>(null)
+  const detectionAbortRef = useRef<AbortController | null>(null)
+  const detectionInflightKeyRef = useRef<string | null>(null)
+  const settledDetectionKeyRef = useRef<string | null>(null)
   marcoPayOrderRef.current = marcoPayOrder
 
   const readBoundTarget = () =>
@@ -1347,6 +1360,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
   const invalidateCheckoutTarget = () => {
     targetGenerationRef.current += 1
+    detectionAbortRef.current?.abort()
+    detectionAbortRef.current = null
+    detectionInflightKeyRef.current = null
+    settledDetectionKeyRef.current = null
     setDetecting(false)
     if (paymentInFlight) return
     preparedTargetKeyRef.current = null
@@ -1436,13 +1453,20 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       setError('Paste a valid EVM token contract address.')
       return
     }
+    detectionAbortRef.current?.abort()
+    const controller = new AbortController()
+    detectionAbortRef.current = controller
     const generation = ++targetGenerationRef.current
+    const inflightKey = `${requestedChain}:${requestedAddress.toLowerCase()}`
+    detectionInflightKeyRef.current = inflightKey
+    const timeout = window.setTimeout(() => controller.abort(), TOKEN_DETECTION_TIMEOUT_MS)
     setDetecting(true)
     setError(null)
     try {
       const response = await fetch('/api/registry/projects/onboard', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({ contract: requestedAddress, chainId: requestedChain }),
       })
       const json = (await response.json()) as RegistryDetection
@@ -1452,18 +1476,35 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       if (!next)
         throw new Error(json.onChain?.reasonUnavailable || 'The token identity could not be verified on-chain.')
       if (generation !== targetGenerationRef.current) return
+      settledDetectionKeyRef.current = inflightKey
       setDetected(next)
     } catch (cause) {
       if (generation !== targetGenerationRef.current) return
       setDetected(null)
-      setError(cause instanceof Error ? cause.message : String(cause))
+      const aborted =
+        typeof cause === 'object' && cause !== null && (cause as { name?: string }).name === 'AbortError'
+      setError(
+        aborted
+          ? TOKEN_DETECTION_TIMEOUT_MESSAGE
+          : cause instanceof Error
+            ? cause.message
+            : String(cause),
+      )
     } finally {
-      if (generation === targetGenerationRef.current) setDetecting(false)
+      window.clearTimeout(timeout)
+      if (generation === targetGenerationRef.current) {
+        if (detectionInflightKeyRef.current === inflightKey) detectionInflightKeyRef.current = null
+        setDetecting(false)
+      }
     }
   }, [contract, identityChain])
 
   useEffect(() => {
     targetGenerationRef.current += 1
+    detectionAbortRef.current?.abort()
+    detectionAbortRef.current = null
+    detectionInflightKeyRef.current = null
+    settledDetectionKeyRef.current = null
     preparedTargetKeyRef.current = null
     if (!open) return
     setService(initialService)
@@ -1617,7 +1658,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
   useEffect(() => {
     if (!open || !/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) return undefined
-    const timer = window.setTimeout(() => void detectProject(), 350)
+    const key = `${identityChain}:${contract.trim().toLowerCase()}`
+    const timer = window.setTimeout(() => {
+      if (detectionInflightKeyRef.current === key || settledDetectionKeyRef.current === key) return
+      void detectProject()
+    }, 350)
     return () => window.clearTimeout(timer)
   }, [open, contract, identityChain, detectProject])
 
@@ -2467,7 +2512,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   }}
                   placeholder="Paste the token address (0x...)"
                 />
-                <PrimaryBtn type="button" disabled={detecting} onClick={() => void detectProject()}>
+                <PrimaryBtn
+                  type="button"
+                  disabled={detecting}
+                  data-testid="commercial-detect-token"
+                  onClick={() => void detectProject()}
+                >
                   {detecting ? 'Detecting…' : 'Detect token'}
                 </PrimaryBtn>
               </DetectRow>
