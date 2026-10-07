@@ -63,20 +63,13 @@ import {
 } from 'lib/mcredits/passportState'
 import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
+import { fetchMarcoPayReadiness, type MarcoPayReadiness } from 'lib/marco-pay/clientReadiness'
 import {
   MARCO_REFERRAL_CHANGE_EVENT,
   getBrowserMarcoReferralStorage,
   readStoredMarcoReferral,
   resolveMarcoReferralForCheckout,
 } from 'lib/marco-referral/client'
-
-type MarcoPayReadiness = {
-  executable: boolean
-  reason: string | null
-  applicationRef: string | null
-  paymentMethods?: { marco?: boolean; mCredits?: boolean }
-  rewards?: { customerBps?: number | null; partnerBps?: number | null; customerLabel?: string }
-}
 
 type MarcoPayOrderConfig = {
   orderId: string
@@ -230,16 +223,12 @@ const Stack = styled.div`
 const ServiceGrid = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 8px;
   @media (min-width: 620px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  @media (min-width: 1080px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  @media (max-width: 639px) {
-    gap: 8px;
+  @media (min-width: 920px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `
 
@@ -251,20 +240,23 @@ const pricePulse = keyframes`
 const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
   appearance: none;
   cursor: pointer;
-  text-align: center;
+  text-align: left;
   min-width: 0;
-  min-height: 164px;
-  padding: 18px 14px 15px;
+  min-height: 86px;
+  padding: 11px 13px;
   border-radius: 14px;
   border: 1px solid ${({ $on }) => ($on ? 'rgba(221,185,47,.62)' : 'rgba(255,255,255,.1)')};
   background: ${({ $on }) => ($on ? 'rgba(221,185,47,.11)' : 'rgba(255,255,255,.025)')};
   color: ${uxRebuildColors.text};
-  opacity: ${({ $live }) => ($live ? 1 : 0.7)};
-  display: flex;
-  flex-direction: column;
+  opacity: ${({ $live }) => ($live ? 1 : 0.72)};
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'icon title price'
+    'icon desc price';
   align-items: center;
-  justify-content: flex-start;
-  gap: 9px;
+  column-gap: 9px;
+  row-gap: 3px;
   transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
   &:hover {
     transform: translateY(-2px);
@@ -274,48 +266,39 @@ const ServiceCard = styled.button<{ $on?: boolean; $live?: boolean }>`
     transition: none;
   }
 
-  @media (max-width: 639px) {
-    min-height: 108px;
-    max-width: 100%;
-    padding: 12px 10px 10px;
-    gap: 6px;
-  }
 `
 
-const ServiceTitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
+const ServiceIcon = styled.div`
+  grid-area: icon;
+  color: ${uxRebuildColors.gold};
+  font-size: 17px;
 `
 
 const STitle = styled.div`
-  font-size: 16px;
+  grid-area: title;
+  font-size: 13px;
   line-height: 1.2;
   font-weight: 780;
 `
 
 const SDesc = styled.div`
-  font-size: 12px;
-  line-height: 1.4;
+  grid-area: desc;
+  font-size: 10px;
+  line-height: 1.35;
   color: ${uxRebuildColors.secondary};
-
-  @media (max-width: 639px) {
-    font-size: 11px;
-    line-height: 1.3;
-  }
 `
 
 const SPrice = styled.div`
-  margin-top: auto;
-  text-align: center;
+  grid-area: price;
+  margin-left: 6px;
+  text-align: right;
   color: ${uxRebuildColors.gold};
   display: inline-flex;
+  flex-direction: column;
   align-items: baseline;
-  justify-content: center;
-  gap: 5px;
-  font-weight: 820;
+  justify-content: flex-end;
+  gap: 1px;
+  font-weight: 760;
   animation: ${pricePulse} 2.8s ease-in-out infinite;
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -323,14 +306,14 @@ const SPrice = styled.div`
 `
 
 const SPricePrefix = styled.span`
-  font-size: 11px;
-  font-weight: 720;
+  font-size: 9px;
+  font-weight: 680;
   color: rgba(221, 185, 47, 0.76);
 `
 
 const SPriceValue = styled.span`
-  font-size: 22px;
-  line-height: 1;
+  font-size: 11px;
+  line-height: 1.2;
 `
 
 const PkgGrid = styled.div`
@@ -1360,7 +1343,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const mCreditsPassport = isMCredits ? readMCreditsPassport() : null
   const checkoutBlocker =
     runtimeCheckoutBlocker ??
-    (isMarcoPay && !marcoPayReadiness?.executable
+    (isMarcoPay && marcoPayReadiness !== null && !marcoPayReadiness.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
       ? 'M-Credits are temporarily unavailable.'
@@ -1514,11 +1497,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   useEffect(() => {
     if (!open) return undefined
     const controller = new AbortController()
-    void fetch('/api/marco-pay/readiness', { signal: controller.signal, cache: 'no-store' })
-      .then(async (response) => {
-        const payload = (await response.json()) as MarcoPayReadiness
-        setMarcoPayReadiness(payload)
-      })
+    setMarcoPayReadiness(null)
+    void fetchMarcoPayReadiness(controller.signal)
+      .then(setMarcoPayReadiness)
       .catch((cause) => {
         if (cause instanceof Error && cause.name === 'AbortError') return
         setMarcoPayReadiness({
@@ -1528,7 +1509,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         })
       })
     return () => controller.abort()
-  }, [open])
+  }, [open, step])
 
   useEffect(() => {
     if (!open || pay !== 'M_CREDITS' || !service || !selectedPackage) return
@@ -1757,9 +1738,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }
 
   useEffect(() => {
-    if (!open || step !== 'review' || !isMarcoPay || marcoPayOrderRef.current || status === 'confirmed') return
+    if (
+      !open ||
+      step !== 'review' ||
+      !isMarcoPay ||
+      !marcoPayReadiness?.executable ||
+      marcoPayOrderRef.current ||
+      status === 'confirmed'
+    )
+      return
     void prepareMarcoPayOrder()
-  }, [isMarcoPay, open, prepareMarcoPayOrder, status, step])
+  }, [isMarcoPay, marcoPayReadiness, open, prepareMarcoPayOrder, status, step])
 
   const goBack = () => {
     setError(null)
@@ -2453,7 +2442,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           {step === 'service' ? (
             <div data-testid="commercial-step-service">
               <Label>Choose service</Label>
-              <ServiceGrid>
+              <ServiceGrid data-testid="commercial-service-grid">
                 {VISIBILITY_SERVICES.map((item) => {
                   const live = Boolean(VISIBILITY_RUNTIME[item.id]?.live)
                   return (
@@ -2470,9 +2459,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       }}
                       data-testid={`commercial-service-${item.id}`}
                     >
-                      <ServiceTitleRow>
-                        <STitle>{item.title}</STitle>
-                      </ServiceTitleRow>
+                      <ServiceIcon aria-hidden="true">{item.icon}</ServiceIcon>
+                      <STitle>{item.title}</STitle>
                       <SDesc>{item.description}{!live ? <><br />Activation pending</> : null}</SDesc>
                       <SPrice>
                         <SPricePrefix>From</SPricePrefix>
