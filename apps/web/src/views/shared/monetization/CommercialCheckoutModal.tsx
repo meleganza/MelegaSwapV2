@@ -29,6 +29,7 @@ import {
   type PlacementPackage,
 } from 'lib/monetization/packages'
 import { VISIBILITY_RUNTIME, canAcceptMCreditsPayment, visibilityCheckoutBlocker } from 'lib/monetization/visibilityRuntime'
+import { bindCheckoutTarget } from 'lib/monetization/checkoutTargetBinding'
 import {
   assessPaymentWalletChain,
   resolvePaymentWalletForSettlement,
@@ -1322,7 +1323,39 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const marcoPayOrderRef = useRef<MarcoPayOrderConfig | null>(null)
   const prepareFlightRef = useRef<Promise<MarcoPayOrderConfig | null> | null>(null)
   const lastBuyerRef = useRef<string | null>(null)
+  const targetGenerationRef = useRef(0)
+  const preparedTargetKeyRef = useRef<string | null>(null)
   marcoPayOrderRef.current = marcoPayOrder
+
+  const readBoundTarget = () =>
+    bindCheckoutTarget({
+      inputAddress: contract,
+      inputChainId: identityChain,
+      detected,
+      projectId,
+      projectSlug,
+      projectContract,
+    })
+
+  const preparedTargetKey = (chainId: number, tokenAddress: string) => `${chainId}:${tokenAddress}`
+
+  const paymentInFlight =
+    status === 'confirmed' ||
+    status === 'submitted' ||
+    status === 'submitted_pending_receipt' ||
+    status === 'marco_pay_pending_verification'
+
+  const invalidateCheckoutTarget = () => {
+    targetGenerationRef.current += 1
+    setDetecting(false)
+    if (paymentInFlight) return
+    preparedTargetKeyRef.current = null
+    prepareFlightRef.current = null
+    marcoPayOrderRef.current = null
+    setMarcoPayOrder(null)
+    setOrderId(null)
+    setQuoteSummary(null)
+  }
 
   const serviceMeta = VISIBILITY_SERVICES.find((item) => item.id === service) ?? null
   const packages = service ? CATALOGS[service] ?? [] : []
@@ -1396,40 +1429,49 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }, [detected, open, service])
 
   const detectProject = useCallback(async () => {
-    if (!/^0x[a-fA-F0-9]{40}$/.test(contract.trim())) {
+    const requestedAddress = contract.trim()
+    const requestedChain = identityChain
+    if (!/^0x[a-fA-F0-9]{40}$/.test(requestedAddress)) {
       setDetected(null)
       setError('Paste a valid EVM token contract address.')
       return
     }
+    const generation = ++targetGenerationRef.current
     setDetecting(true)
     setError(null)
     try {
       const response = await fetch('/api/registry/projects/onboard', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ contract: contract.trim(), chainId: identityChain }),
+        body: JSON.stringify({ contract: requestedAddress, chainId: requestedChain }),
       })
       const json = (await response.json()) as RegistryDetection
+      if (generation !== targetGenerationRef.current) return
       if (!response.ok) throw new Error(json.reason || json.error || 'TOKEN_DETECTION_FAILED')
-      const next = parseDetectedProject(json, contract.trim(), identityChain)
+      const next = parseDetectedProject(json, requestedAddress, requestedChain)
       if (!next)
         throw new Error(json.onChain?.reasonUnavailable || 'The token identity could not be verified on-chain.')
+      if (generation !== targetGenerationRef.current) return
       setDetected(next)
     } catch (cause) {
+      if (generation !== targetGenerationRef.current) return
       setDetected(null)
       setError(cause instanceof Error ? cause.message : String(cause))
     } finally {
-      setDetecting(false)
+      if (generation === targetGenerationRef.current) setDetecting(false)
     }
   }, [contract, identityChain])
 
   useEffect(() => {
+    targetGenerationRef.current += 1
+    preparedTargetKeyRef.current = null
     if (!open) return
     setService(initialService)
     setSelectedPackageId('')
     setIdentityChain(chainId)
     setContract(projectContract ?? '')
     setDetected(null)
+    setDetecting(false)
     setPay('BNB')
     setFarmTarget('')
     setPoolTarget('')
@@ -1513,8 +1555,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
 
   useEffect(() => {
     if (!open || pay !== 'M_CREDITS' || !service || !selectedPackage) return
-    const resolvedProjectId = projectId || detected?.slug || projectSlug || detected?.contract || detected?.symbol
-    if (!resolvedProjectId) return
+    const bound = readBoundTarget()
+    if (!bound) return
+    const resolvedProjectId = bound.tokenAddress
     const receipt = loadMCreditsReceipt({
       projectId: resolvedProjectId,
       serviceId: service,
@@ -1528,12 +1571,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${serviceMeta?.title ?? service}`,
     )
   }, [
-    detected?.contract,
-    detected?.name,
-    detected?.slug,
-    detected?.symbol,
+    contract,
+    detected,
+    identityChain,
     open,
     pay,
+    projectContract,
     projectId,
     projectSlug,
     selectedPackage,
@@ -1591,7 +1634,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   }))
 
   const prepareMarcoPayOrder = useCallback(async (): Promise<MarcoPayOrderConfig | null> => {
-    if (!selectedPackage || !service || !detected) return null
+    const bound = readBoundTarget()
+    if (!selectedPackage || !service || !bound) return null
     if (!VISIBILITY_RUNTIME[service]?.live) return null
     if (!marcoPayReadiness?.executable) {
       setError(marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.')
@@ -1602,21 +1646,22 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       const storage = getBrowserMarcoReferralStorage()
       return storage ? readStoredMarcoReferral(storage) : null
     })()
+    const targetKey = preparedTargetKey(bound.chainId, bound.tokenAddress)
     if (
       marcoPayOrderRef.current?.paymentId &&
       marcoPayOrderRef.current.wallet &&
-      marcoPayOrderRef.current.referralCode === requestedReferralCode
+      marcoPayOrderRef.current.referralCode === requestedReferralCode &&
+      preparedTargetKeyRef.current === targetKey
     ) {
       return marcoPayOrderRef.current
     }
-    if (prepareFlightRef.current) return prepareFlightRef.current
+    if (prepareFlightRef.current && preparedTargetKeyRef.current === targetKey) return prepareFlightRef.current
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       setWalletStage('connect')
       setError(RC_COPY.connectWallet)
       return null
     }
-    const resolvedSlug = detected.slug ?? projectSlug
-    const resolvedProjectId = projectId || resolvedSlug || detected.contract || detected.symbol
+    const generation = targetGenerationRef.current
     setBusy(true)
     const flight = (async () => {
       try {
@@ -1624,10 +1669,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            orderId: marcoPayOrderRef.current?.orderId ?? null,
-            projectId: resolvedProjectId,
-            projectSlug: resolvedSlug,
-            projectContract: detected.contract,
+            orderId: preparedTargetKeyRef.current === targetKey ? marcoPayOrderRef.current?.orderId ?? null : null,
+            projectId: bound.projectId,
+            projectSlug: bound.projectSlug,
+            projectContract: bound.tokenAddress,
             buyerWallet,
             serviceId: service,
             packageId: selectedPackage.id,
@@ -1664,6 +1709,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               ? payload.order.referralDiscountMinor
               : null,
         }
+        if (generation !== targetGenerationRef.current) return null
+        preparedTargetKeyRef.current = targetKey
         marcoPayOrderRef.current = next
         setMarcoPayOrder(next)
         setOrderId(next.orderId)
@@ -1681,10 +1728,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     return flight
   }, [
     buyerWallet,
+    contract,
     detected,
     farmTarget,
+    identityChain,
     marcoPayReadiness,
     poolTarget,
+    projectContract,
     projectId,
     projectSlug,
     referral,
@@ -1696,7 +1746,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const goNext = async () => {
     setError(null)
     if (step === 'project') {
-      if (!detected) {
+      if (!readBoundTarget()) {
         setError('Detect the project before choosing visibility.')
         return
       }
@@ -1839,8 +1889,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             serviceMeta?.title ?? service
           } · ${selectedPackage?.durationLabel ?? 'duration verified'}`,
         )
-        const resolvedSlug = detected?.slug ?? projectSlug
-        appendMarketingHistory(resolvedSlug || projectSlug, {
+        const bound = readBoundTarget()
+        if (bound) appendMarketingHistory(bound.projectSlug || bound.tokenAddress, {
           kind:
             service === 'sponsored-research'
               ? 'sponsored-research'
@@ -1868,12 +1918,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       window.clearInterval(timer)
     }
   }, [
-    detected?.name,
-    detected?.slug,
+    contract,
+    detected,
+    identityChain,
     isMarcoPay,
     marcoPayOrder,
     onHistoryChange,
     open,
+    projectContract,
+    projectId,
     projectSlug,
     selectedPackage,
     service,
@@ -1899,9 +1952,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return
     }
     const paymentAsset = pay as MonetizationAsset
-    const resolvedContract = detected?.contract ?? projectContract
-    const resolvedSlug = detected?.slug ?? projectSlug
-    const resolvedProjectId = projectId || resolvedSlug || resolvedContract || detected?.symbol || 'visibility-project'
+    const bound = readBoundTarget()
+    if (!bound) {
+      setError('Detect the project before choosing visibility.')
+      return
+    }
     setBusy(true)
     try {
       setWalletStage('confirm')
@@ -1915,9 +1970,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            projectId: resolvedProjectId,
-            projectSlug: resolvedSlug,
-            projectContract: resolvedContract,
+            projectId: bound.projectId,
+            projectSlug: bound.projectSlug,
+            projectContract: bound.tokenAddress,
             buyerWallet,
             paymentAsset,
             packageId: selectedPackage.id,
@@ -1949,9 +2004,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             action: 'create',
-            projectId: resolvedProjectId,
-            projectSlug: resolvedSlug,
-            projectContract: resolvedContract,
+            projectId: bound.projectId,
+            projectSlug: bound.projectSlug,
+            projectContract: bound.tokenAddress,
             buyerWallet,
             paymentAsset,
             packageId: selectedPackage.id,
@@ -2063,7 +2118,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           paymentAsset === 'MARCO' ? ` · ${cashbackUserMessage('ELIGIBLE_PENDING')}` : ''
         }`,
       )
-      appendMarketingHistory(resolvedSlug || projectSlug, {
+      appendMarketingHistory(bound.projectSlug || bound.tokenAddress, {
         kind:
           service === 'sponsored-research'
             ? 'sponsored-research'
@@ -2092,8 +2147,10 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     buyerWallet,
     checkoutBlocker,
     connector,
+    contract,
     detected,
     farmTarget,
+    identityChain,
     onHistoryChange,
     isMarcoPay,
     isMCredits,
@@ -2122,8 +2179,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           if (!canAcceptMCreditsPayment(service)) {
             throw new Error(runtimeCheckoutBlocker || 'This service cannot be fulfilled with M-Credits yet.')
           }
-          const resolvedSlug = detected?.slug ?? projectSlug
-          const resolvedProjectId = projectId || resolvedSlug || detected?.contract || detected?.symbol
+          const bound = readBoundTarget()
+          if (!bound) throw new Error('Detect the project before choosing visibility.')
           const mCreditsBuyerWallet =
             (buyerWallet && /^0x[a-fA-F0-9]{40}$/.test(buyerWallet) ? buyerWallet : null) ||
             mCreditsPassport?.walletAddress ||
@@ -2136,7 +2193,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           setWalletStage('confirm')
           setQuoteSummary('Debiting M-Credits through MARCO Passport')
           const identityToken = await authorizeMCreditsSpendForOrder({
-            merchantOrderRef: `${resolvedProjectId}:${service}:${selectedPackage?.id ?? 'default'}`,
+            merchantOrderRef: `${bound.tokenAddress}:${service}:${selectedPackage?.id ?? 'default'}`,
             maxAmountMinor: quote.amountMinor,
           })
           const response = await fetch('/api/mcredits/orders', {
@@ -2146,9 +2203,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               ...(identityToken ? { 'x-marco-passport-session': identityToken } : {}),
             },
             body: JSON.stringify({
-              projectId: resolvedProjectId,
-              projectSlug: resolvedSlug,
-              projectContract: detected?.contract,
+              projectId: bound.projectId,
+              projectSlug: bound.projectSlug,
+              projectContract: bound.tokenAddress,
               buyerWallet: mCreditsBuyerWallet,
               serviceId: service,
               packageId: selectedPackage?.id,
@@ -2170,9 +2227,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             state: 'FULFILLED',
             serviceId: service,
             packageId: String(selectedPackage?.id ?? payload.order.packageId),
-            projectId: String(resolvedProjectId),
+            projectId: bound.tokenAddress,
           })
-          appendMarketingHistory(resolvedSlug || projectSlug, {
+          appendMarketingHistory(bound.projectSlug || bound.tokenAddress, {
             kind: service === 'featured' ? 'featured' : 'trend-boost',
             label: selectedPackage?.label ?? serviceMeta?.title ?? 'M-Credits',
             status: 'Running',
@@ -2261,14 +2318,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     buyerWallet,
     checkoutBlocker,
     connector,
+    contract,
     detected,
     farmTarget,
+    identityChain,
     isMCredits,
     isMarcoPay,
     mCreditsPassport?.walletAddress,
     onHistoryChange,
     poolTarget,
     prepareMarcoPayOrder,
+    projectContract,
     projectId,
     projectSlug,
     runCheckout,
@@ -2386,6 +2446,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                 <Select
                   value={identityChain}
                   onChange={(event) => {
+                    invalidateCheckoutTarget()
                     setIdentityChain(Number(event.target.value))
                     setDetected(null)
                   }}
@@ -2400,6 +2461,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                 <Input
                   value={contract}
                   onChange={(event) => {
+                    invalidateCheckoutTarget()
                     setContract(event.target.value)
                     setDetected(null)
                   }}

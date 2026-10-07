@@ -10,6 +10,7 @@ import {
   updateFeaturedOrder,
 } from 'lib/featured-placement/orderStore'
 import { scheduleFeaturedWindow } from 'lib/featured-placement/eligibility'
+import { canonicalCheckoutTokenAddress } from 'lib/monetization/checkoutTargetBinding'
 import {
   activateVerifiedTrendBoostWindow,
   createTrendBoostOrder,
@@ -209,7 +210,15 @@ export async function updateMarcoPayOrder(
 ): Promise<MarcoPayOrder | null> {
   const current = (await hydrateMarcoPayOrder(orderId)) ?? getMarcoPayOrder(orderId)
   if (!current) return null
-  const next = { ...current, ...patch, orderId: current.orderId, updatedAt: new Date().toISOString() }
+  const next = {
+    ...current,
+    ...patch,
+    orderId: current.orderId,
+    projectId: current.projectId,
+    projectSlug: current.projectSlug,
+    projectContract: current.projectContract,
+    updatedAt: new Date().toISOString(),
+  }
   return persistMarcoPayOrder(next)
 }
 
@@ -236,7 +245,7 @@ export async function createMarcoPayOrder(input: {
   const common = {
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,
-    projectContract: input.projectContract ?? null,
+    projectContract: canonicalCheckoutTokenAddress(input.projectContract),
     buyerWallet,
     paymentAsset: 'MARCO' as const,
     packageId: String(pkg.id),
@@ -266,7 +275,7 @@ export async function createMarcoPayOrder(input: {
     productRef: null,
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,
-    projectContract: input.projectContract ?? null,
+    projectContract: canonicalCheckoutTokenAddress(input.projectContract),
     buyerWallet,
     serviceId: input.serviceId,
     targetId: input.targetId?.trim() || null,
