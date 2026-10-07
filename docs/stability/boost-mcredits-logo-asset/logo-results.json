@@ -1,0 +1,26 @@
+{
+  "desktop-1440x900": {
+    "src": "/images/m-credits-logo.png",
+    "currentSrc": "http://127.0.0.1:3000/images/m-credits-logo.png",
+    "complete": true,
+    "naturalWidth": 256,
+    "naturalHeight": 256,
+    "boxWidth": 50,
+    "boxHeight": 50,
+    "objectFit": "contain",
+    "broken": false,
+    "screenshot": "docs/stability/boost-mcredits-logo-asset/desktop-1440x900.png"
+  },
+  "mobile-390x844": {
+    "src": "/images/m-credits-logo.png",
+    "currentSrc": "http://127.0.0.1:3000/images/m-credits-logo.png",
+    "complete": true,
+    "naturalWidth": 256,
+    "naturalHeight": 256,
+    "boxWidth": 40,
+    "boxHeight": 40,
+    "objectFit": "contain",
+    "broken": false,
+    "screenshot": "docs/stability/boost-mcredits-logo-asset/mobile-390x844.png"
+  }
+}
