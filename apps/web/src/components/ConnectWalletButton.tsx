@@ -33,6 +33,18 @@ export const preloadConnectWalletRuntime = () => {
   return walletRuntimePromise
 }
 
+/** Opens the wallet modal only after preload succeeds. A failed preload stays closed and can be retried. */
+export function settleConnectWalletPreload(preload: Promise<unknown>, onReady?: () => void): Promise<void> {
+  return preload.then(
+    () => {
+      onReady?.()
+    },
+    (error: unknown) => {
+      console.error('Connect wallet runtime failed to load', error)
+    },
+  )
+}
+
 const WalletModalV2 = dynamic<any>(preloadConnectWalletModal, { ssr: false, loading: () => null })
 
 const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
@@ -53,7 +65,7 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
     if (typeof __NEZHA_BRIDGE__ !== 'undefined') {
       handleActive()
     } else {
-      void preloadConnectWalletRuntime().then(() => setOpen(true))
+      settleConnectWalletPreload(preloadConnectWalletRuntime(), () => setOpen(true))
     }
   }
 
@@ -64,11 +76,11 @@ const ConnectWalletButton = ({ children, ...props }: ButtonProps) => {
       <Button
         onClick={handleClick}
         onPointerEnter={(event) => {
-          void preloadConnectWalletRuntime()
+          settleConnectWalletPreload(preloadConnectWalletRuntime())
           onPointerEnter?.(event)
         }}
         onFocus={(event) => {
-          void preloadConnectWalletRuntime()
+          settleConnectWalletPreload(preloadConnectWalletRuntime())
           onFocus?.(event)
         }}
         {...buttonProps}

@@ -16,6 +16,40 @@ function parseChainIdHex(value: unknown): number | null {
   return null
 }
 
+/**
+ * Attaches the wallet chain listener. A rejected provider read resolves to no
+ * subscription so the wagmi fallback remains and the effect cleanup cannot hang
+ * on an unhandled rejection.
+ */
+export async function subscribeWalletChain(
+  getProvider: (() => Promise<unknown>) | undefined,
+  isCancelled: () => boolean,
+  onChainId: (chainId: number) => void,
+): Promise<(() => void) | undefined> {
+  try {
+    const preferred = (await getProvider?.()) as EthereumProvider | undefined
+    const eth = resolveWalletProvider(preferred ?? null)
+    if (!eth || isCancelled()) return undefined
+
+    const onChainChanged = (hex: unknown) => {
+      const id = parseChainIdHex(hex)
+      if (id != null) onChainId(id)
+    }
+    const anyEth = eth as EthereumProvider & {
+      on?: (event: string, handler: (...args: unknown[]) => void) => void
+      removeListener?: (event: string, handler: (...args: unknown[]) => void) => void
+    }
+    anyEth.on?.('chainChanged', onChainChanged)
+    const id = await readProviderChainId(eth)
+    if (!isCancelled() && id != null) onChainId(id)
+    return () => {
+      anyEth.removeListener?.('chainChanged', onChainChanged)
+    }
+  } catch {
+    return undefined
+  }
+}
+
 async function readProviderChainId(eth: EthereumProvider): Promise<number | null> {
   try {
     const hex = await eth.request({ method: 'eth_chainId', params: [] })
@@ -57,37 +91,15 @@ export function useWalletChainId(): number | null {
   useEffect(() => {
     if (typeof window === 'undefined' || !isConnected) return undefined
 
-    let eth: EthereumProvider | null = null
     let cancelled = false
 
-    const attach = async () => {
-      const preferred = (await connector?.getProvider?.()) as EthereumProvider | undefined
-      eth = resolveWalletProvider(preferred ?? null)
-      if (!eth || cancelled) return
-
-      const onChainChanged = (hex: unknown) => {
-        const id = parseChainIdHex(hex)
-        if (id != null) setProviderChainId(id)
-      }
-
-      // EIP-1193
-      const anyEth = eth as EthereumProvider & {
-        on?: (event: string, handler: (...args: unknown[]) => void) => void
-        removeListener?: (event: string, handler: (...args: unknown[]) => void) => void
-      }
-      anyEth.on?.('chainChanged', onChainChanged)
-      void readProviderChainId(eth).then((id) => {
-        if (!cancelled && id != null) setProviderChainId(id)
-      })
-
-      return () => {
-        anyEth.removeListener?.('chainChanged', onChainChanged)
-      }
-    }
-
     let detach: (() => void) | undefined
-    void attach().then((d) => {
-      detach = d
+    subscribeWalletChain(
+      connector?.getProvider ? () => connector.getProvider() : undefined,
+      () => cancelled,
+      (id) => setProviderChainId(id),
+    ).then((next) => {
+      detach = next
     })
 
     return () => {

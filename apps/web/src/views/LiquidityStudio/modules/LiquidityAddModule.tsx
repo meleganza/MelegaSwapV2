@@ -883,7 +883,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
         productLabel="Switch to the network selected for this liquidity action?"
         onCancel={() => setSwitchOpen(false)}
         onConfirm={() => {
-          void switchNetworkAsync(requestedChainId).finally(() => setSwitchOpen(false))
+          switchNetworkAsync(requestedChainId).finally(() => setSwitchOpen(false))
         }}
         busy={switching}
       />

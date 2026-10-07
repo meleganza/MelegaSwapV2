@@ -12,6 +12,7 @@ import {
   buildLeaseOwnerId,
   classifyLeaseHealth,
   heartbeatIndexerLease,
+  settleIndexerLeaseHeartbeat,
   INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
   INDEXER_LEASE_TTL_MS,
   isLeaseActive,
@@ -128,7 +129,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     await heartbeatIndexerLease(ownerId)
     heartbeatTimer = setInterval(() => {
-      void heartbeatIndexerLease(ownerId)
+      settleIndexerLeaseHeartbeat(ownerId)
     }, INDEXER_LEASE_HEARTBEAT_INTERVAL_MS)
     const report = await runIndexerOrchestrator(budgetMs)
     await persistOrchestratorSummary(report)

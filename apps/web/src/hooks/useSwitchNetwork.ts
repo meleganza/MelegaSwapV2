@@ -37,28 +37,32 @@ export function useSwitchNetwork() {
   const isLoading = _isLoading || loading
 
   const switchNetworkAsync = useCallback(
-    async (chainId: number) => {
+    async (chainId: number): Promise<boolean> => {
       if (isConnected && typeof _switchNetworkAsync === 'function') {
-        if (isLoading) return
+        // A switch is already in flight. Resolving false keeps awaiters from
+        // continuing into a transaction on the previous chain.
+        if (isLoading) return false
         setLoading(true)
-        return _switchNetworkAsync(chainId)
-          .then((c) => {
-            // well token pocket
-            if (window.ethereum?.isTokenPocket === true) {
-              switchNetworkLocal(chainId)
-              window.location.reload()
-            }
-            return c
-          })
-          .catch(() => {
-            // TODO: review the error
-            toastError(t('Error connecting, please retry and confirm in wallet!'))
-          })
-          .finally(() => setLoading(false))
+        try {
+          await _switchNetworkAsync(chainId)
+          // well token pocket
+          if (window.ethereum?.isTokenPocket === true) {
+            switchNetworkLocal(chainId)
+            window.location.reload()
+          }
+          return true
+        } catch {
+          // Wallet rejection must not look like success to awaiters.
+          toastError(t('Error connecting, please retry and confirm in wallet!'))
+          return false
+        } finally {
+          setLoading(false)
+        }
       }
-      return new Promise(() => {
-        switchNetworkLocal(chainId)
-      })
+      switchNetworkLocal(chainId)
+      // A connected wallet without a programmatic switch did not change chains.
+      // Disconnected session switching is the whole operation and did complete.
+      return !isConnected
     },
     [isConnected, _switchNetworkAsync, isLoading, setLoading, toastError, t, switchNetworkLocal],
   )

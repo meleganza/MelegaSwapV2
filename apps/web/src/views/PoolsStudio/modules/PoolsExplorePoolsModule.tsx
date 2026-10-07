@@ -509,7 +509,11 @@ function ExploreListRow({ pool }: { pool: PoolsExplorePoolCardModel }) {
   const onConfirmSwitch = async () => {
     setSwitching(true)
     try {
-      await switchNetworkAsync?.(pool.chainId)
+      const switched = await switchNetworkAsync?.(pool.chainId)
+      if (switched === false) {
+        setSwitchOpen(false)
+        return
+      }
       setSwitchOpen(false)
       window.setTimeout(() => requestModal(pool.sourceCard, 'stake'), 400)
     } catch {

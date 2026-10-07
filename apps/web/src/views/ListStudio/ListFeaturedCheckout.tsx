@@ -193,7 +193,13 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       if (chain?.id !== 56) {
         setWalletStage('switch_network')
         if (!canSwitch) throw new Error(RC_COPY.wrongNetwork)
-        await switchNetworkAsync(56)
+        const switched = await switchNetworkAsync(56)
+        if (switched === false) {
+          setStatus('error')
+          setWalletStage('error')
+          setError(RC_COPY.wrongNetwork)
+          return
+        }
       }
 
       let txHash: string

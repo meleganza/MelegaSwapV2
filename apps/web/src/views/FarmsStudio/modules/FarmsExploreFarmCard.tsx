@@ -357,7 +357,12 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
     setSwitching(true)
     pendingActionRef.current = 'stake'
     try {
-      await switchNetworkAsync?.(farm.chainId)
+      const switched = await switchNetworkAsync?.(farm.chainId)
+      if (switched === false) {
+        pendingActionRef.current = null
+        setSwitchOpen(false)
+        return
+      }
       setSwitchOpen(false)
       // Preserve selected farm — reopen stake after switch when wallet lands on target.
       window.setTimeout(() => resumeStake(), 400)
