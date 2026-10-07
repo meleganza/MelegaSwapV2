@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react';
 import { readFileSync } from 'fs'
 import path from 'path'
 import { render, screen, fireEvent } from '@testing-library/react'

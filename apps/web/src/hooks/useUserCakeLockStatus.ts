@@ -2,7 +2,7 @@ import { useAccount } from 'wagmi'
 import { ChainId } from '@pancakeswap/sdk'
 import useSWRImmutable from 'swr/immutable'
 import { useCakeVaultContract } from 'hooks/useContract'
-import { useActiveChainId } from './useActiveChainId'
+import './useActiveChainId';
 
 export const useUserCakeLockStatus = (chainId) => {
   const { address: account } = useAccount()

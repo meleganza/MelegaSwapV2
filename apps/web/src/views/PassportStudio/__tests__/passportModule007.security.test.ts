@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { createHash } from 'crypto'
-import { readFileSync, existsSync, readdirSync } from 'fs'
+import { readFileSync, existsSync } from 'fs';
 import path from 'path'
 import { buildPassportSecurityViewModel } from '../buildPassportSecurityViewModel'
 import type { PassportSecurityRow } from '../passportSecurityTypes'

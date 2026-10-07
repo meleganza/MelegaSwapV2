@@ -5,7 +5,13 @@
  * No local LP scanning. No fake opportunities.
  */
 
-import React, { useMemo } from 'react'
+/**
+ * Your Liquidity Positions — wallet-first primary surface (R791E.2).
+ *
+ * Consumes WalletPortfolio LIQUIDITY positions only.
+ * No local LP scanning. No fake opportunities.
+ */
+import { useMemo } from 'react';
 import styled from 'styled-components'
 import { PositionCard } from 'components/portfolio/PositionCard'
 import { projectMyPositionCard } from 'lib/wallet-portfolio/myPositionCardModel'

@@ -3,7 +3,7 @@
  * Price Impact / Details derive from the certified plan's own winner facts, never from the legacy Melega trade.
  * Fixture mirrors the production observation: legacy Melega 1.98 USDC @ 73.95% impact vs Pancake 7.76 USDC, min ~7.70.
  */
-import React from 'react'
+
 import { render, screen } from '@testing-library/react'
 import { getAddress } from '@ethersproject/address'
 import { CurrencyAmount, Native, Percent, Token, TradeType } from '@pancakeswap/sdk'

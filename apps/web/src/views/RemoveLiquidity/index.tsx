@@ -1,29 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { splitSignature } from '@ethersproject/bytes'
+import '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useRouter } from 'next/router'
 import { Currency, Percent, WNATIVE, ChainId } from '@pancakeswap/sdk'
-import {
-  Button,
-  Text,
-  AddIcon,
-  ArrowDownIcon,
-  CardBody,
-  Slider,
-  Box,
-  Flex,
-  useModal,
-  Checkbox,
-  TooltipText,
-  useTooltip,
-  useToast,
-  useMatchBreakpoints,
-  IconButton,
-  PencilIcon,
-  Coming1,
-} from '@pancakeswap/uikit'
+import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, Checkbox, TooltipText, useTooltip, useToast, useMatchBreakpoints, IconButton, PencilIcon } from '@pancakeswap/uikit';
 import { useDebouncedChangeHandler } from '@pancakeswap/hooks'
 import { useWeb3LibraryContext } from '@pancakeswap/wagmi'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -33,7 +15,7 @@ import useNativeCurrency from 'hooks/useNativeCurrency'
 import { getZapAddress } from 'utils/addressHelpers'
 import { ZapCheckbox } from 'components/CurrencyInputPanel/ZapCheckbox'
 import { CommitButton } from 'components/CommitButton'
-import StyledDisableFlex from 'components/StyledDisableFlex'
+import 'components/StyledDisableFlex';
 import { useTranslation } from '@pancakeswap/localization'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
@@ -200,15 +182,15 @@ export default function RemoveLiquidity({ currencyA, currencyB, currencyIdA, cur
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber(),
     }
-    const data = JSON.stringify({
-      types: {
+    JSON.stringify({
+    types: {
         EIP712Domain,
         Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    })
+    },
+    domain,
+    primaryType: 'Permit',
+    message,
+});
 
     approveCallback()
 

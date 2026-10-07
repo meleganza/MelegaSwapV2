@@ -1,15 +1,15 @@
 import BigNumber from 'bignumber.js'
-import { multicallv2, multicallv3 } from 'utils/multicall'
+import { multicallv2 } from 'utils/multicall';
 import erc20Abi from 'config/abi/erc20.json'
-import cakeAbi from 'config/abi/cake.json'
+import 'config/abi/cake.json';
 import cakeVaultAbi from 'config/abi/cakeVaultV2.json'
 import { getCakeVaultAddress, getCakeFlexibleSideVaultAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
-import { ChainId } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import { CAKE } from '@pancakeswap/tokens'
 import { convertSharesToCake } from '@pancakeswap/uikit/src/widgets/Pool/helpers/getCakeVaultEarnings'
 
-const cakeFlexibleSideVaultV2 = getCakeFlexibleSideVaultAddress()
+getCakeFlexibleSideVaultAddress();
 // export const fetchPublicVaultData = async (cakeVaultAddress = cakeVaultV2) => {
 //   try {
 //     const calls = ['getPricePerFullShare', 'totalShares', 'totalLockedAmount'].map((method) => ({
@@ -62,8 +62,8 @@ export const fetchPublicVaultData = async (chainId: number) => {
     }))
     const [[sharePrice], [shares], [estimatedDexTokenBountyReward], [totalPendingDexTokenHarvest]] = await multicallv2({
       chainId,
-      abi: cakeVaultAbi, 
-      calls 
+      abi: cakeVaultAbi,
+      calls
     })
     const totalSharesAsBigNumber = shares ? new BigNumber(shares.toString()) : BIG_ZERO
     const sharePriceAsBigNumber = sharePrice ? new BigNumber(sharePrice.toString()) : BIG_ZERO
@@ -101,13 +101,13 @@ export const fetchPublicFlexibleSideVaultData = async (chainId: number) => {
 
     const [[sharePrice], [shares]] = await multicallv2({
       chainId,
-      abi: cakeVaultAbi, 
-      calls 
+      abi: cakeVaultAbi,
+      calls
     })
 
     const [[totalDexTokenInVault]] = await multicallv2({
       chainId,
-      abi: erc20Abi, 
+      abi: erc20Abi,
       calls: [cakeBalanceOfCall]
     })
 
@@ -142,7 +142,7 @@ export const fetchVaultFees = async (cakeVaultAddress) => {
     }))
 
     const [[performanceFee], [callFee], [withdrawalFee], [withdrawalFeePeriod]] = await multicallv2({ abi: cakeVaultAbi, calls })
-    
+
     return {
       performanceFee: performanceFee.toNumber(),
       callFee: callFee.toNumber(),

@@ -8,7 +8,7 @@ import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import { melegaOperational as tokens } from 'ui/tokens'
 
 import { useBUSDCurrencyAmount } from 'hooks/useBUSDPrice'
-import { formatNumber } from '@pancakeswap/utils/formatBalance'
+import '@pancakeswap/utils/formatBalance';
 import { StablePair } from 'views/AddLiquidity/AddStableLiquidity/hooks/useStableLPDerivedMintInfo'
 
 import { useAccount } from 'wagmi'
@@ -160,10 +160,7 @@ export default function CurrencyInputPanel({
   const token = pair ? pair.liquidityToken : currency?.isToken ? currency : null
   const tokenAddress = token ? isAddress(token.address) : null
 
-  const amountInDollar = useBUSDCurrencyAmount(
-    showBUSD ? currency : undefined,
-    Number.isFinite(+value) ? +value : undefined,
-  )
+  useBUSDCurrencyAmount(showBUSD ? currency : undefined, Number.isFinite(+value) ? +value : undefined);
 
   const [onPresentCurrencyModal] = useModal(
     <CurrencySearchModal

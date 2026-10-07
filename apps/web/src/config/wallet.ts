@@ -16,7 +16,7 @@ export enum ConnectorNames {
   TrustWallet = 'trustWallet',
 }
 
-const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t))
+
 
 // const createQrCode = (chainId: number, connect: any) => async () => {
 //   connect({ connector: walletConnectNoQrCodeConnector, chainId })

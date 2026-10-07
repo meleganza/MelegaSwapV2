@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCurrentBlock, useInitialBlock } from 'state/block/hooks'
-import { PoolCategory } from 'config/constants/types'
+import 'config/constants/types';
 import { VaultKey } from 'state/types'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { PoolFilterChip, PoolPreviewCard, PoolTab, PoolsSortMode } from '../poolsStudioData'

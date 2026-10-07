@@ -16,7 +16,7 @@ export const PerformanceFee: React.FC<
   )
 
   const isLock = isLocked(userData)
-  const isStake = isStaked(userData)
+  isStaked(userData);
 
   if (!performanceFeeAsDecimal || isLock) {
     return null

@@ -4,17 +4,7 @@ import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import { PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 import { humanEnumLabel, shortenAddress } from '../../presentation/humanLabels'
-import {
-  ActionRow,
-  MetricCell,
-  MetricGrid,
-  MetricLabel,
-  MetricValue,
-  MutedText,
-  PrimaryButton,
-  SecondaryButton,
-  SoftCard,
-} from './theme'
+import { ActionRow, MetricCell, MetricGrid, MetricLabel, MetricValue, PrimaryButton, SecondaryButton, SoftCard } from './theme';
 import {
   getBuyCtaLabel,
   getPrimaryAsset,

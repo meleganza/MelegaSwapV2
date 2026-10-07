@@ -3,7 +3,7 @@ import type { CanonicalProjectDocument } from '../types'
 import type { ProjectEvidencePack } from '../evidence/types'
 import type { EvidenceFreshnessState, EvidenceVerificationLevel } from '../evidence/schema'
 import { resolveProjectBySlug } from '../resolveProject'
-import { normalizeProjectDocument } from '../normalizeProject'
+import '../normalizeProject';
 import { loadProjectEvidencePack } from '../evidence'
 import { fingerprint } from '../evidence/evidenceId'
 import { sanitizePlainText } from '../urlSafety'

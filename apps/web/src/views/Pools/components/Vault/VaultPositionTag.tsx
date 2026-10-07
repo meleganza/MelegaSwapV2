@@ -1,15 +1,4 @@
-import {
-  Tag,
-  TagProps,
-  Text,
-  SplitIcon,
-  LockIcon,
-  UnlockIcon,
-  HotIcon,
-  Box,
-  FlexGap,
-  FlexGapProps,
-} from '@pancakeswap/uikit'
+import { TagProps, SplitIcon, LockIcon, UnlockIcon, HotIcon, FlexGap, FlexGapProps } from '@pancakeswap/uikit';
 import Trans from 'components/Trans'
 import { useTranslation } from '@pancakeswap/localization'
 import { ReactNode, useMemo } from 'react'
@@ -49,19 +38,12 @@ const positionLabel: Record<VaultPosition, ReactNode> = {
   [VaultPosition.AfterBurning]: <Trans>After Burning</Trans>,
 }
 
-const VaultPositionTag: React.FC<React.PropsWithChildren<{ position: VaultPosition }>> = ({ position }) => {
-  return (
-    <Tag {...tagConfig[position]}>
-      <Box as={iconConfig[position]} mr="4px" />
-      {positionLabel[position]}
-    </Tag>
-  )
-}
+
 
 export const VaultPositionTagWithLabel: React.FC<
   React.PropsWithChildren<{ userData: DeserializedLockedVaultUser } & FlexGapProps>
 > = ({ userData, ...props }) => {
-  const { t } = useTranslation()
+  useTranslation();
 
   const position = useMemo(() => getVaultPosition(userData), [userData])
 

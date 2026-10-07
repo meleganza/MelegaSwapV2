@@ -13,7 +13,7 @@ import { CurrencyAmount, Native, Percent, Token, TradeType } from '@pancakeswap/
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
-import { BSC_V2_PUBLIC_CUTOVER_ENABLED, isProductionCutoverAllowed } from '../operatingMode'
+import { isProductionCutoverAllowed } from '../operatingMode';
 import { createPancakeSwapVenueAdapter } from '../pancakeSwapAdapter'
 import type { SmartSwapRequest } from '../quote'
 import { runEvmShadowCompetition } from '../shadowCompetition'

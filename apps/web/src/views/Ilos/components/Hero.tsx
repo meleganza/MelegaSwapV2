@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { Box, Heading, Text } from '@pancakeswap/uikit'
 import Container from 'components/Layout/Container'
@@ -26,7 +26,7 @@ const CurtainBottom = styled.div`
 `
 
 const Hero = ({publicIfoData}) => {
-  const { t } = useTranslation()
+  useTranslation();
 
   return (
     <Box mb="32px">

@@ -2,7 +2,7 @@
  * R791D.4F — Command Center premium visual system foundation tests.
  */
 
-import React from 'react'
+
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'

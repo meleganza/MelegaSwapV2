@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react';
 import { Flex, Text, Skeleton, Link, Button, ArrowForwardIcon } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import useRefresh from 'hooks/useRefresh'
@@ -28,7 +28,7 @@ const LotteryCardContent = () => {
   const [lotteryId, setLotteryId] = useState<string>(null)
   const [currentLotteryPrize, setCurrentLotteryPrize] = useState<BigNumber>(null)
   const cakePriceBusdAsString = usePriceCakeBusd().toFixed(4).toString()
-  
+
   const cakePrizesText = t('%cakePrizeInUsd% in MARCO prizes this round', { cakePrizeInUsd: cakePriceBusdAsString })
   const [pretext, prizesThisRound] = cakePrizesText.split(cakePriceBusdAsString)
   const cakePriceBusd = useMemo(() => {
@@ -57,7 +57,7 @@ const LotteryCardContent = () => {
     // get public data for current lottery
     const fetchCurrentLotteryPrize = async () => {
       const { amountCollectedInDexToken } = await fetchLottery(lotteryId)
-      
+
       const prizeInBusd = cakePriceBusd.times(amountCollectedInDexToken)
       setCurrentLotteryPrize(prizeInBusd)
     }

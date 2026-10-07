@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Link from 'next/link'
+import 'next/link';
 import styled from 'styled-components'
 import {
   MelegaStudioOutlineBtn,

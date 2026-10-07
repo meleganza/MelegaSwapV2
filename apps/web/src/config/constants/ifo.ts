@@ -2,7 +2,7 @@ import { bscTokens } from '@pancakeswap/tokens'
 import farms from '@pancakeswap/farms/constants/56'
 import { Token } from '@pancakeswap/sdk'
 import { Ifo} from './types'
-import { Currency } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 
 const cakeBnbLpToken: Token = new Token(56, farms[1].lpAddress, 18, farms[1].lpSymbol)
 

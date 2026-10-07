@@ -9,8 +9,8 @@ import BigNumber from 'bignumber.js'
 import uniq from 'lodash/uniq'
 import fromPairs from 'lodash/fromPairs'
 import multiCallAbi from 'config/abi/Multicall.json'
-import { ChainId } from '@pancakeswap/sdk'
-import { Masterchef__factory } from 'config/abi/types'
+import '@pancakeswap/sdk';
+import 'config/abi/types';
 
 // const masterChefContract = getMasterchefContract()
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
@@ -61,7 +61,7 @@ export const fetchPoolsAllowance = async (account, chainId) => {
     params: [account, getAddress(pool.contractAddress, chainId)],
   }))
   const allowances = await multicall(erc20ABI, calls, chainId)
-  
+
   return fromPairs(nonNativePools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
 }
 

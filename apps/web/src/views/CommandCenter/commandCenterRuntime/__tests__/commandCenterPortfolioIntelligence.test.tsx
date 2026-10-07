@@ -2,20 +2,12 @@
  * R791D.4E — Command Center Portfolio Intelligence layer.
  */
 
-import React from 'react'
+
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import {
-  PORTFOLIO_POSITION_SCHEMA,
-  WALLET_PORTFOLIO_SCHEMA,
-  createEmptyWalletPortfolio,
-  createNonePortfolioAction,
-  type PortfolioPosition,
-  type PortfolioPositionAction,
-  type WalletPortfolio,
-} from 'lib/wallet-portfolio/contracts'
+import { PORTFOLIO_POSITION_SCHEMA, WALLET_PORTFOLIO_SCHEMA, createEmptyWalletPortfolio, type PortfolioPosition, type PortfolioPositionAction, type WalletPortfolio } from 'lib/wallet-portfolio/contracts';
 import {
   buildMyPositionsExperience,
   buildPortfolioViewSelectorModel,
@@ -176,7 +168,7 @@ describe('R791D.4E Command Center Portfolio Intelligence', () => {
         message: 'Claimables unavailable',
       },
     })
-    // Empty positions → EMPTY state, but health still built for empty path... 
+    // Empty positions → EMPTY state, but health still built for empty path...
     // For UNAVAILABLE with empty positions, generatedState is EMPTY and healthItems still include section.
     const withPos = buildPortfolio(
       [stubPosition({ positionId: 'p1', positionType: 'FARM', title: 'F' })],

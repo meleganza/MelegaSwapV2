@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
+import { BigNumber } from "@ethersproject/bignumber";
 import { useTranslation } from '@pancakeswap/localization'
 import { useToast } from '@pancakeswap/uikit'
 import { TransactionResponse } from '@ethersproject/providers'

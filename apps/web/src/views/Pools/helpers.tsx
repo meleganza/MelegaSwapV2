@@ -6,7 +6,7 @@ import { getBalanceNumber, getFullDisplayBalance, getDecimalAmount } from '@panc
 import memoize from 'lodash/memoize'
 import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
-import { useActiveChainId } from 'hooks/useActiveChainId'
+import 'hooks/useActiveChainId';
 import { baseTokens, bscTokens, ethereumTokens, polygonTokens } from '@pancakeswap/tokens'
 
 // min deposit and withdraw amount
@@ -107,6 +107,6 @@ export const getEarningToken = (chainId: number) => {
   } else {
     earningToken = bscTokens.cake;
   }
-  
+
   return earningToken
 }

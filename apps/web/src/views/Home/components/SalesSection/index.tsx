@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Text, Button, Link, Heading } from '@pancakeswap/uikit'
+import { Flex, Text, Button, Link } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import CompositeImage, { CompositeImageProps } from '../CompositeImage'
 import PurpleWordHeading from '../PurpleWordHeading'

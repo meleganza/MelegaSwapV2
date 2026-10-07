@@ -1,7 +1,7 @@
 import { ERC20Token, Pair, ChainId } from '@pancakeswap/sdk'
 import { isAddress } from 'utils'
 import memoize from 'lodash/memoize'
-import { useActiveChainId } from 'hooks/useActiveChainId'
+import 'hooks/useActiveChainId';
 
 const getLpAddress = memoize(
   (token1: string | ERC20Token, token2: string | ERC20Token, chainId: number = ChainId.BSC) => {

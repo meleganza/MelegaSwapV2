@@ -3,7 +3,7 @@
  */
 import { Interface } from '@ethersproject/abi'
 import { hexDataSlice } from '@ethersproject/bytes'
-import { LB_EVENT_SIGNATURES, topicToLbEventName, type LbEventName } from './topics'
+import { topicToLbEventName, type LbEventName } from './topics';
 import type { LbIndexedEvent, LbIndexedLifecycle, LbIndexedProgram, LbStrategyLabel } from './types'
 import { LB_INDEXER_CHAIN_ID } from './types'
 

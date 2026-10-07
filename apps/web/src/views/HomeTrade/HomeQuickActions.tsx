@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import 'next/link';
 import styled from 'styled-components'
 import { MelegaStudioGhostBtn } from 'design-system/melega'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'

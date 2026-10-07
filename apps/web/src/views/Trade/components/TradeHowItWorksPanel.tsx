@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { tradeColors } from '../tradeTokens'
-import { BsOutlineBtn } from 'views/BuildStudio/components/buildStudioPrimitives'
+import 'views/BuildStudio/components/buildStudioPrimitives';
 
 const Overlay = styled.div`
   position: fixed;

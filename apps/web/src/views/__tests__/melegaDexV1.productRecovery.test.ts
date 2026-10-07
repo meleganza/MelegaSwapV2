@@ -1,7 +1,7 @@
 /**
  * MELEGA_DEX_V1 — cumulative product recovery gates (no redesign).
  */
-import { createHash } from 'crypto'
+import 'crypto';
 import { existsSync, readFileSync, readdirSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'

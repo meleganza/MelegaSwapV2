@@ -927,28 +927,9 @@ const Input = styled.input`
   }
 `
 
-const Textarea = styled.textarea`
-  width: 100%;
-  min-height: 70px;
-  box-sizing: border-box;
-  resize: vertical;
-  border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  background: #171a1e;
-  color: #f4f4f4;
-  padding: 11px 13px;
-  font-size: 13px;
-  outline: none;
-`
 
-const FieldGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
-  @media (min-width: 620px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-`
+
+
 
 const DetectRow = styled.div`
   display: grid;

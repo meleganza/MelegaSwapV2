@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { displayStudioMetric, STUDIO_KPI_VALUE } from 'design-system/melega'
+import { displayStudioMetric } from 'design-system/melega';
 import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import { collectiblesStudioLayout } from '../collectiblesStudioTokens'
 import { KpiIcon } from './collectiblesStudioIcons'

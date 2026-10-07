@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import Link from 'next/link'
+import 'next/link';
 import styled, { keyframes } from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { DETECTED_BABYMARCO_PINATA_GATEWAY } from 'registry/collectibles/collectible-constants'

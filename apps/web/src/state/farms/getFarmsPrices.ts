@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { BIG_ONE, BIG_TWO, BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { filterFarmsByQuoteToken, SerializedFarm } from '@pancakeswap/farms'
 import { ChainId } from '@pancakeswap/sdk'
-import Farm from '@pancakeswap/uikit/src/widgets/Farm/components/FarmTable/FarmTokenInfo'
+import '@pancakeswap/uikit/src/widgets/Farm/components/FarmTable/FarmTokenInfo';
 import { getBalanceAmount } from '@pancakeswap/utils/formatBalance'
 
 const getFarmFromTokenSymbol = (
@@ -12,7 +12,7 @@ const getFarmFromTokenSymbol = (
 ): SerializedFarm => {
   const farmsWithTokenSymbol = farms.filter((farm) => farm.token.symbol === tokenSymbol)
   const filteredFarm = filterFarmsByQuoteToken(farmsWithTokenSymbol, preferredQuoteTokens)
-  
+
   return filteredFarm
 }
 
@@ -125,7 +125,7 @@ const getFarmsPrices = (farms: SerializedFarm[], chainId: number) => {
   if (!nativeStableLpMap[chainId]) {
     throw new Error(`chainId ${chainId} not supported`)
   }
-  
+
   const nativeStableFarm = farms.find(
     (farm) => farm.lpAddress.toLowerCase() === nativeStableLpMap[chainId].address.toLowerCase(),
   )
@@ -136,7 +136,7 @@ const getFarmsPrices = (farms: SerializedFarm[], chainId: number) => {
       farm.quoteToken.symbol !== stable && farm.quoteToken.symbol !== wNative
         ? getFarmFromTokenSymbol(farms, farm.quoteToken.symbol, [wNative, stable])
         : null)
-    
+
     const tokenPriceBusd = farm.isTokenOnly ? new BigNumber(quoteTokenFarm.tokenPriceVsQuote) : getFarmBaseTokenPrice(farm, quoteTokenFarm, nativePriceUSD, wNative, stable)
     const quoteTokenPriceBusd = getFarmQuoteTokenPrice(farm, quoteTokenFarm, nativePriceUSD, wNative, stable)
     const lpTokenPriceBusd = farm.isTokenOnly ? new BigNumber(quoteTokenFarm.tokenPriceVsQuote) : getLpTokenPrice(farm, tokenPriceBusd)

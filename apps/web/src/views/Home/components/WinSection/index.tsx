@@ -1,6 +1,6 @@
-import React from 'react'
+
 import styled from 'styled-components'
-import { Flex, Text, TicketFillIcon, PredictionsIcon } from '@pancakeswap/uikit'
+import { Flex, Text, TicketFillIcon } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import useTheme from 'hooks/useTheme'
 import PurpleWordHeading from '../PurpleWordHeading'
@@ -54,12 +54,7 @@ const TopRightImgWrapper = styled(Flex)`
   }
 `
 
-const PredictionCardData: IconCardData = {
-  icon: <PredictionsIcon width="36px" color="inverseContrast" />,
-  background: 'linear-gradient(180deg, #ffb237 0%, #ffcd51 51.17%, #ffe76a 100%);',
-  borderColor: '#ffb237',
-  rotation: '-2.36deg',
-}
+
 
 const LotteryCardData: IconCardData = {
   icon: <TicketFillIcon color="white" width="36px" />,
@@ -111,7 +106,7 @@ const WinSection = () => {
             {t('Explore on-chain features on Melega DEX.')}
           </Text>
           <Flex m="0 auto" flexDirection={['column', null, null, 'row']} maxWidth="600px">
-            
+
             <Flex flex="1" maxWidth={['275px', null, null, '100%']}>
               <IconCard {...LotteryCardData}>
                 <LotteryCardContent />

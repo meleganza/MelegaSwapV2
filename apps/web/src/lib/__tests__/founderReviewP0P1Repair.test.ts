@@ -2,7 +2,7 @@
  * MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR — structural contracts.
  */
 import { describe, expect, it } from 'vitest'
-import { readFileSync, existsSync } from 'fs'
+import { readFileSync } from 'fs';
 import path from 'path'
 import { defaultSelectedChainId, getBuyTokenHref } from 'views/ProjectPage/v1/helpers'
 import { formatPrice } from 'views/ProjectPage/presentation/humanLabels'

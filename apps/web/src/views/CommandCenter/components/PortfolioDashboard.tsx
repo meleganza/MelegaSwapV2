@@ -5,7 +5,13 @@
  * → My Positions → Claimables / Activity / Quick Actions.
  */
 
-import React, { Component, type ErrorInfo, type ReactNode } from 'react'
+/**
+ * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C–4G + 5B).
+ *
+ * Hierarchy: Hero → Today's Actions → Portfolio Intelligence → AI Portfolio Assistant
+ * → My Positions → Claimables / Activity / Quick Actions.
+ */
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import styled from 'styled-components'
 import type {
   PortfolioActivityItem,

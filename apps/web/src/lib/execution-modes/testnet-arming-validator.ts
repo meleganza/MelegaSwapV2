@@ -17,12 +17,7 @@ import {
   allObservationsSatisfied,
   getCivilizationObservations,
 } from './civilization-observations'
-import {
-  EXECUTION_MODE_DRY_RUN,
-  EXECUTION_MODE_MAINNET_EXECUTION,
-  EXECUTION_MODE_OFF,
-  EXECUTION_MODE_TESTNET_EXECUTION_ONLY,
-} from './constants'
+import { EXECUTION_MODE_MAINNET_EXECUTION, EXECUTION_MODE_OFF, EXECUTION_MODE_TESTNET_EXECUTION_ONLY } from './constants';
 import { getConfiguredExecutionMode, getExecutionModeConfig } from './config'
 
 export interface ArmingValidationCheck {

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing } from '../../tokens'
+import { colors, spacing } from '../../tokens';
 import { media } from '../../theme'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'

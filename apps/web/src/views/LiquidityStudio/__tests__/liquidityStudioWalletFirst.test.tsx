@@ -2,7 +2,7 @@
  * R791E.2 — Liquidity Studio wallet-first UX activation.
  */
 
-import React from 'react'
+
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import {

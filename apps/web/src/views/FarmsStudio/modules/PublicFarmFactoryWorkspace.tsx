@@ -67,34 +67,13 @@ const Section = styled.section`
   }
 `
 
-const Header = styled.div`
-  display: none;
-`
 
-const Title = styled.h2`
-  margin: 0;
-  font-size: 22px;
-  line-height: 28px;
-  font-weight: 750;
-  color: #f5f5f5;
-`
 
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 14px;
-  line-height: 20px;
-  color: rgba(255, 255, 255, 0.58);
-  max-width: 640px;
-`
 
-const StepLabel = styled.p`
-  margin: 0;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(244, 196, 48, 0.85);
-`
+
+
+
+
 
 const ModeRow = styled.div`
   display: flex;

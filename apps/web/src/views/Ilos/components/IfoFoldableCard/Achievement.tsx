@@ -1,14 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Flex, LinkExternal, Image, Text, PrizeIcon, Skeleton, WalletIcon } from '@pancakeswap/uikit'
+import { Flex, LinkExternal, Text } from '@pancakeswap/uikit';
 import { useTranslation } from '@pancakeswap/localization'
 import { PublicIfoData3 } from 'views/Ilos/types'
-import { Ifo } from 'config/constants/types'
-import { BIG_TEN } from 'utils/bigNumber'
-import { getFullDisplayBalance } from 'utils/formatBalance'
-import BigNumber from 'bignumber.js'
+import 'config/constants/types';
+import 'utils/bigNumber';
+import 'utils/formatBalance';
+import 'bignumber.js';
 
-const MIN_DOLLAR_FOR_ACHIEVEMENT = BIG_TEN
+
 
 interface Props {
   publicIfoData: PublicIfoData3

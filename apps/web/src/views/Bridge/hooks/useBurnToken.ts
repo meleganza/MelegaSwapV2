@@ -12,7 +12,7 @@ const useBurnToken = (pid: number, isNative = false) => {
   const handleStake = useCallback(
     async (amount: string) => {
       if (isNative) {
-        return burnETH(bridgeContract, pid, amount, gasPrice)  
+        return burnETH(bridgeContract, pid, amount, gasPrice)
       }
       return burn(bridgeContract, pid, amount, gasPrice)
     },

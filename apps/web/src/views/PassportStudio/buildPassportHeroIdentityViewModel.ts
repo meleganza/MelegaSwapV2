@@ -92,7 +92,7 @@ function buildFromLive(args: {
   const shortenedWallet = address ? shortenWalletAddress(address) : null
 
   // No Passport identity profile product exists — never claim PassportExists.
-  const passportExists = false
+
   const sourceAvailable = !args.sourceUnavailable
 
   if (!sourceAvailable) {

@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Tag, Flex, Heading, Box, Skeleton, Farm as FarmUI } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
-import { bscTokens } from '@pancakeswap/tokens'
+import '@pancakeswap/tokens';
 import { TokenImage, TokenPairImage } from 'components/TokenImage'
 
 const { FarmAuctionTag, CoreTag, StableFarmTag } = FarmUI.Tags

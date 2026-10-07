@@ -1,8 +1,8 @@
 import { useTranslation } from '@pancakeswap/localization'
 import { Flex, Skeleton, Text } from '@pancakeswap/uikit'
-import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
+import '@pancakeswap/utils/bigNumber';
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { useContext } from 'react'
+
 import styled from 'styled-components'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { HarvestActionContainer } from '../FarmTable/Actions/HarvestAction'
@@ -14,12 +14,7 @@ const Action = styled.div`
   padding-top: 16px;
 `
 
-const ActionContainer = styled.div`
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
+
 
 interface FarmCardActionsProps {
   farm: FarmWithStakedValue
@@ -37,10 +32,10 @@ const CardActions: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
   displayApr,
 }) => {
   const { t } = useTranslation()
-  const { pid, token, quoteToken, vaultPid, lpSymbol, lpAddress, isTokenOnly } = farm
+  const { pid, token, quoteToken, vaultPid, lpSymbol, isTokenOnly } = farm;
   const { earnings } = farm.userData || {}
   const isReady = farm.multiplier !== undefined
-  const { stakedBalance, tokenBalance, proxy, allowance} = farm.userData
+
 
   return (
     <Action>

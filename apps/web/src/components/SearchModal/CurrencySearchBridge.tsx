@@ -156,24 +156,20 @@ function CurrencySearchBridge({
   //   fixedList.current?.scrollTo(0)
   // }, [])
 
-  const handleEnter = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        const s = debouncedQuery.toLowerCase().trim()
+  useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+        const s = debouncedQuery.toLowerCase().trim();
         if (s === native.symbol.toLowerCase().trim()) {
-          handleCurrencySelect(native)
-        } else if (filteredSortedTokens.length > 0) {
-          if (
-            filteredSortedTokens[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
-            filteredSortedTokens.length === 1
-          ) {
-            handleCurrencySelect(filteredSortedTokens[0])
-          }
+            handleCurrencySelect(native);
         }
-      }
-    },
-    [debouncedQuery, filteredSortedTokens, handleCurrencySelect, native],
-  )
+        else if (filteredSortedTokens.length > 0) {
+            if (filteredSortedTokens[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
+                filteredSortedTokens.length === 1) {
+                handleCurrencySelect(filteredSortedTokens[0]);
+            }
+        }
+    }
+}, [debouncedQuery, filteredSortedTokens, handleCurrencySelect, native]);
 
   // if no results on main list, show option to expand into inactive
   const filteredInactiveTokens = useSearchInactiveTokenLists(debouncedQuery)

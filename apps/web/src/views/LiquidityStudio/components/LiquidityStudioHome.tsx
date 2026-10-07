@@ -108,28 +108,7 @@ const LiveDot = styled.span<{ $live?: boolean }>`
   background: ${({ $live }) => ($live ? '#22c55e' : '#F59E0B')};
 `
 
-const GhostBtn = styled(Link)`
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid #2a2a2a;
-  background: transparent;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
 
-  &:hover {
-    border-color: #3a3a3a;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #f4c430;
-    outline-offset: 3px;
-  }
-`
 
 const Grid = styled.div`
   display: grid;

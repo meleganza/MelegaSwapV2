@@ -1,37 +1,20 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { ChainId } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import {
-  // Box,
-  Flex,
-  InjectedModalProps,
-  // Link,
-  Modal,
-  ExpertModal,
-  PancakeToggle,
-  QuestionHelper,
-  Text,
-  ThemeSwitcher,
-  Toggle,
-  Link,
-} from '@pancakeswap/uikit'
+// Box,
+Flex, InjectedModalProps,
+// Link,
+Modal, ExpertModal, QuestionHelper, Text, Toggle } from '@pancakeswap/uikit';
 // import { SUPPORT_ZAP } from 'config/constants/supportChains'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import useTheme from 'hooks/useTheme'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react';
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
-import {
-  useAudioModeManager,
-  useExpertModeManager,
-  useSubgraphHealthIndicatorManager,
-  useUserExpertModeAcknowledgementShow,
-  useUserSingleHopOnly,
-  useUserUsernameVisibility,
-  useZapModeManager,
-} from 'state/user/hooks'
+import { useAudioModeManager, useExpertModeManager, useSubgraphHealthIndicatorManager, useUserExpertModeAcknowledgementShow, useUserUsernameVisibility } from 'state/user/hooks';
 import { useUserTokenRisk } from 'state/user/hooks/useUserTokenRisk'
 import { useStableSwapByDefault } from 'state/user/smartRouter'
 import styled from 'styled-components'
-import GasSettings from './GasSettings'
+import './GasSettings';
 import TransactionSettings from './TransactionSettings'
 import { SettingsMode } from './types'
 
@@ -78,12 +61,12 @@ const SettingsModal: React.FC<React.PropsWithChildren<InjectedModalProps>> = ({ 
   const [subgraphHealth, setSubgraphHealth] = useSubgraphHealthIndicatorManager()
   const [userUsernameVisibility, setUserUsernameVisibility] = useUserUsernameVisibility()
   const { onChangeRecipient } = useSwapActionHandlers()
-  const { chainId } = useActiveChainId()
+  useActiveChainId();
   const [isStableSwapByDefault, setIsStableSwapByDefault] = useStableSwapByDefault()
   const [tokenRisk, setTokenRisk] = useUserTokenRisk()
 
   const { t } = useTranslation()
-  const { isDark, setTheme } = useTheme()
+  useTheme();
 
   if (showConfirmExpertModal) {
     return (

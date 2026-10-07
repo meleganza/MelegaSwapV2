@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Flex, Skeleton } from '@pancakeswap/uikit'
 
 export const SkeletonCardActions = () => {

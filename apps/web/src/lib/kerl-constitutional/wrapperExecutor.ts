@@ -5,7 +5,7 @@ import wrapperAbi from 'lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper
 import type { ExecutionRequest } from './types'
 import { resolveWrapperExecutionParams } from './consumer'
 
-const WRAPPER_IFACE = new Interface(wrapperAbi as readonly unknown[])
+
 const ERC20_IFACE = new Interface([
   'function allowance(address owner, address spender) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)',

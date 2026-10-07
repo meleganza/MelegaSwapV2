@@ -1,13 +1,13 @@
 import { Currency, JSBI } from '@pancakeswap/sdk'
-import { AddIcon, Button, ChevronDownIcon, Text, useModal, NextLinkFromReactRouter, Coming1 } from '@pancakeswap/uikit'
+import { AddIcon, Button, ChevronDownIcon, Text, useModal, NextLinkFromReactRouter } from '@pancakeswap/uikit';
 import { useAccount } from 'wagmi'
 import { useTranslation } from '@pancakeswap/localization'
-import { shimmer2Tokens } from '@pancakeswap/tokens'
+import '@pancakeswap/tokens';
 import { BIG_INT_ZERO } from 'config/constants/exchange'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import StyledDisableFlex from 'components/StyledDisableFlex'
+import 'components/StyledDisableFlex';
 import { AppBody, AppHeader } from '../../components/App'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'

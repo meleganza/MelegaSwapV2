@@ -4,7 +4,7 @@ import {
   performCertifiedDryRunHandshake,
   type CertifiedHandshakeResult,
 } from '../execution-handoff-consumer'
-import { REGISTRY_INTAKE_ERROR_CODES } from './constants'
+import './constants';
 import { readLocalRegistryHandoffJson, readSeedRegistryHandoffJson } from './load-local-registry'
 import { validateRegistryHandoffJson } from './validate-registry-json'
 

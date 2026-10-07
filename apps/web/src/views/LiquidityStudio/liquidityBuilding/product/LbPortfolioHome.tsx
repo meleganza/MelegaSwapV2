@@ -1,7 +1,7 @@
 /**
  * AI Liquidity Portfolio — home inventory + empty state.
  */
-import React from 'react'
+
 import Link from 'next/link'
 import styled from 'styled-components'
 import type { LbProgramApiRow } from 'lib/liquidity-builder-indexer/types'

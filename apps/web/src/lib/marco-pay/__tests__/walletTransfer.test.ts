@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest';
 import { buildMarcoPayWalletTransfer, marcoMinorToTokenRaw } from '../walletTransfer'
 import { MARCO_PAY_SETTLEMENT_WALLET } from '../settlement'
 import { FEATURED_PAYMENT_TOKENS } from 'lib/featured-placement/constants'

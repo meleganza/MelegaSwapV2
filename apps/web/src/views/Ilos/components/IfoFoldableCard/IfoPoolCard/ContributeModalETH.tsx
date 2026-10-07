@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
-import { Modal, ModalBody, Text, Image, Button, BalanceInput, Flex } from '@pancakeswap/uikit'
-import { PoolIds, Ifo } from 'config/constants/types'
-import { WalletIfoData, PublicIfoData3 } from 'views/Ilos/types'
+import 'ethers';
+import { Modal, ModalBody, Text, Button, BalanceInput, Flex } from '@pancakeswap/uikit';
+import 'config/constants/types';
+import { PublicIfoData3 } from 'views/Ilos/types';
 import { useTranslation } from '@pancakeswap/localization'
-import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from 'utils/formatBalance'
-import { getAddress, getIfov3Address } from 'utils/addressHelpers'
-import useApproveConfirmTransaction from 'hooks/useApproveConfirmTransaction'
+import { getDecimalAmount, getFullDisplayBalance } from 'utils/formatBalance';
+import { getIfov3Address } from 'utils/addressHelpers';
+import 'hooks/useApproveConfirmTransaction';
 import { DEFAULT_TOKEN_DECIMAL } from 'config'
 import { useERC20, useIfoV3Contract } from 'hooks/useContract'
 import { BIG_NINE, BIG_TEN } from 'utils/bigNumber'
 import { bscTokens } from '@pancakeswap/tokens'
-import { getContract } from 'utils'
-import { useGetBnbBalance, useGetETHBalance } from 'hooks/useTokenBalance'
+import 'utils';
+import { useGetETHBalance } from 'hooks/useTokenBalance';
 import { useToast } from '@pancakeswap/uikit'
 
 interface Props {
@@ -26,7 +26,7 @@ interface Props {
 const multiplierValues = [0.1, 0.25, 0.5, 0.75, 1]
 
 // Default value for transaction setting, tweak based on BSC network congestion.
-const gasPrice = BIG_TEN.times(BIG_TEN.pow(BIG_NINE)).toString()
+BIG_TEN.times(BIG_TEN.pow(BIG_NINE)).toString();
 
 const ContributeModalETH: React.FC<Props> = ({
   publicIfoData,
@@ -35,13 +35,13 @@ const ContributeModalETH: React.FC<Props> = ({
 }) => {
 
   const [value, setValue] = useState('')
-  const { account } = useWeb3React()
+  useWeb3React();
   const { balance: userCurrencyBalance } = useGetETHBalance()
   const { toastError, toastSuccess } = useToast()
   const contract = useIfoV3Contract(getIfov3Address());
   const currencyETH = useERC20(bscTokens.eth.address);
   const { t } = useTranslation()
-  const valueWithTokenDecimals = new BigNumber(value).times(DEFAULT_TOKEN_DECIMAL)
+  new BigNumber(value).times(DEFAULT_TOKEN_DECIMAL);
   const [isDisable, setIsDisable] = useState(false)
   const [steps, setSteps] = useState(1);
   const [allownce, setAllownce] = useState(0);

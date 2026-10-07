@@ -161,7 +161,7 @@ export interface DeserializedLockedCakeVault extends Omit<DeserializedCakeVault,
 export interface SerializedLockedCakeVault extends Omit<SerializedCakeVault, 'userData'> {
   totalLockedAmount?: SerializedBigNumber
   userData?: SerializedVaultUser
-  
+
 }
 
 export interface SerializedCakeVault {

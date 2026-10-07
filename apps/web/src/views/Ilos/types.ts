@@ -47,7 +47,7 @@ export interface PublicIfoData3 {
     startPresaleTime:number
     endPresaleTime:number
     paused:boolean
-    ILOToken:BigNumber 
+    ILOToken:BigNumber
 }
 
 // User specific pool characteristics

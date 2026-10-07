@@ -6,7 +6,14 @@
  * Ended owned positions remain visible.
  */
 
-import React, { useMemo } from 'react'
+/**
+ * Your Pool Positions — wallet-first primary surface (R791E.4 / R791E.7).
+ *
+ * Consumes WalletPortfolio POOL positions via View Engine.
+ * No local pool scanning. No fake opportunities first.
+ * Ended owned positions remain visible.
+ */
+import { useMemo } from 'react';
 import styled from 'styled-components'
 import { PositionCard } from 'components/portfolio/PositionCard'
 import { projectMyPositionCard } from 'lib/wallet-portfolio/myPositionCardModel'

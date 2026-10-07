@@ -6,18 +6,7 @@ import type { FarmsWalletPosition } from 'views/FarmsStudio/modules/farmsMyFarms
 import type { PoolsWalletPosition } from 'views/PoolsStudio/modules/poolsMyPositionsTypes'
 import type { PassportProjectCardModel } from 'views/PassportStudio/passportProjectsTypes'
 import type { PassportHeroIdentityViewModel } from 'views/PassportStudio/passportHeroIdentityTypes'
-import {
-  FARMS_HREF,
-  LIQUIDITY_MANAGE_HREF,
-  LIQUIDITY_REMOVE_HREF,
-  LIST_CLAIM_PROJECT_HREF,
-  LIST_CREATE_PROJECT_HREF,
-  POOLS_HREF,
-  explorerAddressUrl,
-  formatUsd,
-  parseUsdLoose,
-  shortenAddress,
-} from './helpers'
+import { FARMS_HREF, LIQUIDITY_MANAGE_HREF, LIQUIDITY_REMOVE_HREF, LIST_CLAIM_PROJECT_HREF, LIST_CREATE_PROJECT_HREF, POOLS_HREF, explorerAddressUrl, formatUsd, parseUsdLoose } from './helpers';
 import {
   resolvePassportSurfaceState,
   type PassportSurfaceState,

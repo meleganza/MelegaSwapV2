@@ -4,7 +4,7 @@
  * Presentation labels only. Runtime modes (MY_POOLS / ALL) unchanged.
  */
 
-import React from 'react'
+
 import { describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'

@@ -8,7 +8,7 @@ import {
   SETTLEMENT_FORBIDDEN_FIELDS,
   assertReportDoesNotImplySettlement,
 } from 'lib/execution-contract'
-import type { BridgeExecutionInstruction, SwapExecutionInstruction } from 'lib/execution-layer/types'
+import type { SwapExecutionInstruction } from 'lib/execution-layer/types';
 import { ExecutionTracker } from 'lib/execution-tracker/tracker'
 import {
   createBridgeExecutionInstruction,
@@ -16,25 +16,7 @@ import {
   createV2SwapExecutionInstruction,
 } from 'lib/routing-layer'
 import * as executionModes from 'lib/execution-modes'
-import {
-  INGRESS_ERROR_CODES,
-  INGRESS_FORBIDDEN_KERL_IMPORTS,
-  INGRESS_FORBIDDEN_ROUTING_IMPORTS,
-  INGRESS_FORBIDDEN_SETTLEMENT_FIELDS,
-  INGRESS_FORBIDDEN_TREASURY_IMPORTS,
-  INGRESS_OWNERSHIP,
-  acceptKerlExecutionInstruction,
-  dispatchExecutionInstruction,
-  isInternalIngressEnabled,
-  isCanonicalIngressEnabled,
-  resetInternalIngressActivation,
-  setCanonicalIngressEnabledForHarness,
-  resolveInstructionType,
-  setInternalIngressEnabled,
-  setExecutionGatewayEnabled,
-  resetExecutionGatewayActivation,
-  validateExecutionInstruction,
-} from 'lib/execution-ingress'
+import { INGRESS_ERROR_CODES, INGRESS_FORBIDDEN_KERL_IMPORTS, INGRESS_FORBIDDEN_ROUTING_IMPORTS, INGRESS_FORBIDDEN_SETTLEMENT_FIELDS, INGRESS_FORBIDDEN_TREASURY_IMPORTS, INGRESS_OWNERSHIP, acceptKerlExecutionInstruction, dispatchExecutionInstruction, isInternalIngressEnabled, resetInternalIngressActivation, setCanonicalIngressEnabledForHarness, resolveInstructionType, setInternalIngressEnabled, setExecutionGatewayEnabled, resetExecutionGatewayActivation, validateExecutionInstruction } from 'lib/execution-ingress';
 
 const INGRESS_DIR = path.resolve(__dirname, '..')
 const EXECUTION_LAYER_DIR = path.resolve(__dirname, '../../execution-layer')

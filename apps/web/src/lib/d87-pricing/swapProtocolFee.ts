@@ -1,12 +1,6 @@
 import { Currency, CurrencyAmount, Fraction, TradeType } from '@pancakeswap/sdk'
 import type { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
-import {
-  FSC_01_POLICY_REF,
-  D87_PRICING_CODEX_ID,
-  getSwapProtocolFeeBps,
-  getSwapProtocolFeeRate,
-  isBuyMarcoSwap,
-} from './d87PricingCodex'
+import { FSC_01_POLICY_REF, D87_PRICING_CODEX_ID, getSwapProtocolFeeBps, isBuyMarcoSwap } from './d87PricingCodex';
 
 export type SwapProtocolFeeContext = {
   codexId: typeof D87_PRICING_CODEX_ID

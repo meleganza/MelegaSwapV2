@@ -1,7 +1,7 @@
 import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
 import { Currency, CurrencyAmount, Token } from '@pancakeswap/sdk'
 import { Text, QuestionHelper } from '@pancakeswap/uikit'
-import { shimmer2Tokens } from '@pancakeswap/tokens'
+import '@pancakeswap/tokens';
 import styled from 'styled-components'
 import { FixedSizeList } from 'react-window'
 import { wrappedCurrency } from 'utils/wrappedCurrency'

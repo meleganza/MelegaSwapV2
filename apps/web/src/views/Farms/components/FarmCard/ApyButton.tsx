@@ -1,7 +1,7 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react';
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
-import { Text, TooltipText, useModal, useTooltip, Farm as FarmUI, RoiCalculatorModal } from '@pancakeswap/uikit'
+import { Text, useModal, useTooltip, Farm as FarmUI, RoiCalculatorModal } from '@pancakeswap/uikit';
 import BigNumber from 'bignumber.js'
 import _toNumber from 'lodash/toNumber'
 import { useFarmFromPid, useFarmUser } from 'state/farms/hooks'
@@ -51,7 +51,7 @@ const ApyButton: React.FC<React.PropsWithChildren<ApyButtonProps>> = ({
   const { account } = useWeb3React()
   const [bCakeMultiplier, setBCakeMultiplier] = useState<number | null>(() => null)
   const { tokenBalance, stakedBalance, proxy } = useFarmUser(pid)
-  const { lpTokenStakedAmount } = useFarmFromPid(pid)
+  useFarmFromPid(pid);
 
   const userBalanceInFarm = stakedBalance.plus(tokenBalance).gt(0)
     ? stakedBalance.plus(tokenBalance)

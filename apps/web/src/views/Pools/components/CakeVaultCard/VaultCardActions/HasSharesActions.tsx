@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { Pool } from 'state/types'
 import { usePriceCakeBusd } from 'state/farms/hooks'
-import { useCakeVault, useCakeVault1 } from 'state/pools/hooks'
+import { useCakeVault1 } from 'state/pools/hooks';
 import Balance from 'components/Balance'
 import NotEnoughTokensModal from '../../PoolCard/Modals/NotEnoughTokensModal'
 import { convertSharesToCake } from '../../../helpers'

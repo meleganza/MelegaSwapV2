@@ -5,20 +5,8 @@ import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { ChainId } from '@pancakeswap/sdk'
-import {
-  MELEGA_POLYGON_FACTORY,
-  MELEGA_POLYGON_ROUTER,
-  MELEGA_POLYGON_MASTER_BUILDER,
-  MELEGA_POLYGON_VAULT,
-  MELEGA_CHAIN_REGISTRY,
-  getMelegaLiveSwitcherChainIds,
-  getMelegaPreparingChains,
-  getMelegaRouterAddress,
-  getMelegaFactoryAddress,
-  isMelegaCapabilityEnabled,
-  isMelegaChainLive,
-} from 'config/melegaChainRegistry'
-import { MELEGA_VISIBLE_SWITCHER_CHAIN_IDS } from 'config/constants/supportChains'
+import { MELEGA_POLYGON_FACTORY, MELEGA_POLYGON_ROUTER, MELEGA_POLYGON_MASTER_BUILDER, MELEGA_POLYGON_VAULT, MELEGA_CHAIN_REGISTRY, getMelegaRouterAddress, getMelegaFactoryAddress, isMelegaCapabilityEnabled, isMelegaChainLive } from 'config/melegaChainRegistry';
+import 'config/constants/supportChains';
 import { ROUTER_ADDRESS as WEB_ROUTER } from 'config/constants/exchange'
 import { getV2RouterAddress } from 'lib/melega-smart-router/execution-adapter/adapters'
 import { calculateSmartRouterGasProtocolFee } from 'lib/smart-swap-gas-protocol-fee'

@@ -1,14 +1,7 @@
 import { ChainId } from '@pancakeswap/sdk'
 import { TokenAddressMap as TTokenAddressMap, WrappedTokenInfo, TokenList, TokenInfo } from '@pancakeswap/token-lists'
 import { ListsState } from '@pancakeswap/token-lists/react'
-import {
-  DEFAULT_LIST_OF_LISTS,
-  OFFICIAL_LISTS,
-  UNSUPPORTED_LIST_URLS,
-  WARNING_LIST_URLS,
-  ETH_URLS,
-  BSC_URLS,
-} from 'config/constants/lists'
+import { DEFAULT_LIST_OF_LISTS, OFFICIAL_LISTS, UNSUPPORTED_LIST_URLS, WARNING_LIST_URLS, ETH_URLS } from 'config/constants/lists';
 import { atom, useAtomValue } from 'jotai'
 import mapValues from 'lodash/mapValues'
 import groupBy from 'lodash/groupBy'

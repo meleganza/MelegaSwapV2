@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Fraction, TradeType } from '@pancakeswap/sdk'
+import { Currency, TradeType } from '@pancakeswap/sdk';
 import { TradeWithStableSwap } from '@pancakeswap/smart-router/evm'
 import { computeGrossProtocolFeeAmount as computeD87GrossFee } from 'lib/d87-pricing/swapProtocolFee'
 import {

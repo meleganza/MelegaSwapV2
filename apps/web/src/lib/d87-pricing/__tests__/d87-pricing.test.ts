@@ -1,17 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  D87_PRICING_CODEX_ID,
-  FSC_01_POLICY_REF,
-  SRD_01_POLICY_REF,
-  formatServicePricingRows,
-  getBuildStudioPricingSummary,
-  getD87PricingCodex,
-  getFsc01Constitution,
-  getServicePriceLabel,
-  getSwapProtocolFeeBps,
-  isBuyMarcoSwap,
-  resolveSwapProtocolFeeContextFromFields,
-} from 'lib/d87-pricing'
+import { D87_PRICING_CODEX_ID, FSC_01_POLICY_REF, formatServicePricingRows, getBuildStudioPricingSummary, getD87PricingCodex, getFsc01Constitution, getServicePriceLabel, getSwapProtocolFeeBps, isBuyMarcoSwap, resolveSwapProtocolFeeContextFromFields } from 'lib/d87-pricing';
 
 describe('D87 pricing codex consumption', () => {
   it('loads ratified codex id and service SKUs without hardcoded drift', () => {

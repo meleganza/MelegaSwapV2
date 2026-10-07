@@ -20,7 +20,7 @@ export const getPoolApr = (
   totalStaked: number,
   tokenPerBlock: number,
 ): number => {
-  
+
   const totalRewardPricePerYear = new BigNumber(rewardTokenPrice).times(tokenPerBlock).times(BLOCKS_PER_YEAR)
   const totalStakingTokenInPool = new BigNumber(stakingTokenPrice).times(totalStaked)
   const apr = totalRewardPricePerYear.div(totalStakingTokenInPool).times(100)
@@ -46,7 +46,7 @@ export const getFarmApr = (
   const yearlyCakeRewardAllocation = poolWeight
     ? poolWeight.times((chainId === ChainId.ETHEREUM ? (86400 / 12) * 365 : BLOCKS_PER_YEAR) * regularCakePerBlock)
     : new BigNumber(NaN)
-  
+
   const cakeRewardsApr = yearlyCakeRewardAllocation.times(cakePriceUsd).div(poolLiquidityUsd).times(100)
   let cakeRewardsAprAsNumber = null
   if (!cakeRewardsApr.isNaN() && cakeRewardsApr.isFinite()) {

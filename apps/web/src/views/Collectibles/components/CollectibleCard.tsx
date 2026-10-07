@@ -2,10 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import {
-  COLLECTIBLE_CATEGORY_LABELS,
-  COLLECTIBLE_STATUS_LABELS,
-} from 'registry/collectibles/collectible-constants'
+import { COLLECTIBLE_CATEGORY_LABELS } from 'registry/collectibles/collectible-constants';
 import { StaticCollectibleRecord } from 'registry/collectibles/collectible-types'
 import { CollectibleStatusBadge, MetadataStorageBadge } from './CollectibleBadges'
 

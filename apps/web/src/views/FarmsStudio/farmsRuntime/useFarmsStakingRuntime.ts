@@ -12,14 +12,7 @@ import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import type { FarmFilterChip, FarmPreviewCard } from '../farmsStudioData'
 import { displayFarmMetric, isUnavailableFarmMetric, stripTokenSymbol } from '../farmsStudioDisplay'
-import {
-  aggregateKpis,
-  buildAprSparkline,
-  formatUsd,
-  listRewardingFarms,
-  mapFarmToPreviewCard,
-  selectFeaturedFarm,
-} from './formatFarmsRuntime'
+import { aggregateKpis, buildAprSparkline, listRewardingFarms, mapFarmToPreviewCard, selectFeaturedFarm } from './formatFarmsRuntime';
 import { buildFarmsWalletPortfolio, type FarmsPortfolioViewMode } from './buildFarmsWalletPortfolio'
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
 import { useFarmsTerminalData } from './useFarmsTerminalData'

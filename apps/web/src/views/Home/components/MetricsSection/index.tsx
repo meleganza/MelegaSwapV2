@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Heading, Flex, Text, Skeleton, ChartIcon, CommunityIcon, SwapIcon } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useGetStats } from 'hooks/api'

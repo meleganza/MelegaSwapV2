@@ -1,6 +1,6 @@
 import type { Pool } from '@pancakeswap/uikit'
 import type { Token } from '@pancakeswap/sdk'
-import { formatApr, formatUsd } from 'views/FarmsStudio/farmsRuntime/formatFarmsRuntime'
+import { formatApr } from 'views/FarmsStudio/farmsRuntime/formatFarmsRuntime';
 import { getPoolTypeLabel, formatApr as formatPoolApr } from 'views/PoolsStudio/poolsRuntime/formatPoolsRuntime'
 import { createBuildRuntimeError } from './buildRuntimeErrors'
 
@@ -80,7 +80,7 @@ export function buildFarmPreviewFromRuntime(
   }
 
   const apr = (live.apr ?? 0) + (live.lpRewardsApr ?? 0)
-  const tvl = live.liquidity?.toNumber()
+  live.liquidity?.toNumber();
 
   return {
     lp: live.lpSymbol ?? 'LP',

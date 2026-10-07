@@ -14,13 +14,7 @@ import {
   isFinishedWalletOwnership,
   resolveFinishedStatus,
 } from '../modules/buildPoolsFinishedPools'
-import {
-  POOLS_MODULE_001_FREEZE_SHA256,
-  POOLS_MODULE_002_FREEZE_SHA256,
-  POOLS_MODULE_003_FREEZE_SHA256,
-  POOLS_MODULE_004_FREEZE_SHA256,
-  poolsFinished,
-} from '../modules/poolsFinishedPoolsTokens'
+import { POOLS_MODULE_002_FREEZE_SHA256, POOLS_MODULE_004_FREEZE_SHA256, poolsFinished } from '../modules/poolsFinishedPoolsTokens';
 import { POOLS_FOUNDER_MOCKUP } from '../poolsArchitecture000Contracts'
 import type { PoolPreviewCard } from '../poolsStudioData'
 

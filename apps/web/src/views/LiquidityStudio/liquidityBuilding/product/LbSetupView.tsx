@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react';
 import styled from 'styled-components'
 import { ArrowRight, Check, ChevronDown, CircleAlert, Info, ShieldCheck } from 'lucide-react'
 import type { Currency } from '@pancakeswap/sdk'

@@ -3,7 +3,7 @@
  * With a certified V2_EXECUTE decision the single Swap CTA must not ask for legacy router approval,
  * and legacy-only noRoute / swapCallbackError / approval state must not block it.
  */
-import React from 'react'
+
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApprovalState } from 'hooks/useApproveCallback'

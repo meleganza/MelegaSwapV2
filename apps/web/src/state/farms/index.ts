@@ -1,6 +1,6 @@
 import { getFarmConfig } from '@pancakeswap/farms/constants'
 import { createFarmFetcher, SerializedFarm, SerializedFarmsState } from '@pancakeswap/farms'
-import { ChainId } from '@pancakeswap/sdk'
+import '@pancakeswap/sdk';
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import type {
   UnknownAsyncThunkFulfilledAction,
@@ -16,10 +16,10 @@ import type { AppState } from 'state'
 // import { useBUSDCakeAmount, useCakeBusdPrice } from 'hooks/useBUSDPrice'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getBalanceAmount } from '@pancakeswap/utils/formatBalance'
-import multicall, { multicallv2 } from 'utils/multicall'
+import { multicallv2 } from 'utils/multicall';
 import { chains } from 'utils/wagmi'
 import isArchivedPid from 'utils/farmHelpers'
-import { verifyBscNetwork } from 'utils/verifyBscNetwork'
+import 'utils/verifyBscNetwork';
 import { resetUserState } from '../global/actions'
 import fetchFarms from './fetchFarms'
 import {
@@ -57,7 +57,7 @@ const fetchFarmPublicDataOld = async ({ pids, chainId }): Promise<[SerializedFar
   )
   const farms = await fetchFarms(farmsCanFetch, chainId)
   const farmsWithPrices = farms.length > 0 ? getFarmsPrices(farms, chainId) : []
-  
+
   return [farmsWithPrices, poolLengthAsBigNumber.toNumber(), regularCakePerBlock.toNumber()]
 }
 

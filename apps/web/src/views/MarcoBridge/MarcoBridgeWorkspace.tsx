@@ -516,7 +516,7 @@ const networkEntries = Object.values(MARCO_WAVE1_NETWORKS)
 const short = (value?: string) => (value ? `${value.slice(0, 7)}…${value.slice(-5)}` : 'Not connected')
 
 export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
-  const { address, isConnected } = useAccount()
+  const { address } = useAccount();
   const { data: signer } = useSigner()
   const { chain } = useNetwork()
   const { switchNetworkAsync, canSwitch } = useSwitchNetwork()

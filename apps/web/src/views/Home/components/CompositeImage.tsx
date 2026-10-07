@@ -11,7 +11,7 @@ const floatingAnim = (x: string, y: string) => keyframes`
   }
   to {
     transform: translate(0, 0px);
-  }  
+  }
 `
 
 const Wrapper = styled(Box)<{ maxHeight: string }>`
@@ -23,7 +23,7 @@ const Wrapper = styled(Box)<{ maxHeight: string }>`
     animation-delay: 1s;
   }
 
- 
+
 `
 
 const DummyImg = styled.img<{ maxHeight: string }>`
@@ -66,8 +66,8 @@ export const getImageUrl = (base: string, imageSrc: string, resolution?: Resolut
   `${base}${imageSrc}${resolution ? `@${resolution}.png` : '.png'}`
 
 export const getSrcSet = (base: string, imageSrc: string) => {
-  return `${getImageUrl(base, imageSrc)} 512w, 
-  ${getImageUrl(base, imageSrc, Resolution.MD)} 768w, 
+  return `${getImageUrl(base, imageSrc)} 512w,
+  ${getImageUrl(base, imageSrc, Resolution.MD)} 768w,
   ${getImageUrl(base, imageSrc, Resolution.LG)} 1024w,`
 }
 

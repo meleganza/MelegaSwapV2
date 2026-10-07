@@ -1,5 +1,5 @@
 import { put, head } from '@vercel/blob'
-import { MELEGA_CHAIN_ID, MELEGA_MASTERCHEF_BSC, MAX_BLOCKS_PER_SYNC } from '../constants'
+import { MELEGA_CHAIN_ID, MELEGA_MASTERCHEF_BSC } from '../constants';
 import { getBlockNumber, getLogsChunked, getBlockTimestamp } from '../rpc/chunkedLogs'
 import { resolveIndexerStorage } from '../storage'
 import type { NormalizedIndexerEvent } from '../types'
@@ -10,12 +10,7 @@ export { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
 /** Minimum remaining orchestrator budget before protocol activity starts. */
 export const PROTOCOL_ACTIVITY_MIN_REMAINING_MS = 12_000
 
-import {
-  MASTERCHEF_ACTIVITY_TOPICS,
-  MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC,
-  MASTERCHEF_DEPOSIT_TOPIC,
-  MASTERCHEF_WITHDRAW_TOPIC,
-} from './masterchefTopics'
+import { MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC, MASTERCHEF_DEPOSIT_TOPIC, MASTERCHEF_WITHDRAW_TOPIC } from './masterchefTopics';
 const ACTIVITY_KEY = 'melega-indexer/v2/protocol-activity/events.json'
 const CURSOR_KEY = 'melega-indexer/v2/protocol-activity/cursor.json'
 

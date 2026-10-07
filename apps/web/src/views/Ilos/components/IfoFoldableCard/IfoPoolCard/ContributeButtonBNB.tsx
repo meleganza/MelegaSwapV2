@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { Button, useModal } from '@pancakeswap/uikit'
-import { getBalanceNumber } from 'utils/formatBalance'
-import { WalletIfoData, PublicIfoData3 } from 'views/Ilos/types'
+import 'utils/formatBalance';
+import { PublicIfoData3 } from 'views/Ilos/types';
 import { useTranslation } from '@pancakeswap/localization'
-import useTokenBalance, { useGetBnbBalance } from 'hooks/useTokenBalance'
-import { getAddress, getIfov3Address } from 'utils/addressHelpers'
+import { useGetBnbBalance } from 'hooks/useTokenBalance';
+import { getIfov3Address } from 'utils/addressHelpers';
 import { useToast } from '@pancakeswap/uikit'
-import {Address} from 'config/constants/types'
+import 'config/constants/types';
 import { bscTokens } from '@pancakeswap/tokens'
 import { useIfoV3Contract } from 'hooks/useContract'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import GetLpModal from './GetLpModal'
-import ContributeModal from './ContributeModalETH'
+import './ContributeModalETH';
 import ContributeModalBNB from './ContributeModalBNB'
 
 
@@ -20,7 +20,7 @@ interface Props {
   publicIfoData: PublicIfoData3
 }
 const ContributeButtonBNB: React.FC<Props> = ({ publicIfoData }) => {
-  const limitPerUserInLP  = publicIfoData.maxUserAmount
+
   const { t } = useTranslation()
   const { toastSuccess } = useToast()
   const { balance: userCurrencyBalance } = useGetBnbBalance()
@@ -29,18 +29,18 @@ const ContributeButtonBNB: React.FC<Props> = ({ publicIfoData }) => {
   const [iswhite, setIswhite] = useState(false);
   const ctime= Number((new Date().getTime()/1000).toFixed(0));
   const countdownToUse = ctime<Number(publicIfoData.startPresaleTime) ? Number(publicIfoData.startPresaleTime)-ctime :  ctime<Number(publicIfoData.endPresaleTime)?Number(publicIfoData.endPresaleTime)-ctime:0
-      
+
   useEffect(()=>{
     async function loadData() {
-      
+
       if(publicIfoData.isWhitelistOn[0])
       {
         const tx = await contract.isInList(account);
         if(tx.toString()==="true")
           setIswhite(true);
       }
-          
-      
+
+
     }
     if(account)
     loadData();
@@ -48,7 +48,7 @@ const ContributeButtonBNB: React.FC<Props> = ({ publicIfoData }) => {
 
   // Refetch all the data, and display a message when fetching is done
   const handleContributeSuccess = async (amount: BigNumber) => {
-  
+
     toastSuccess(
       t('Success!'),
       t('You have contributed to this IFO!'),
@@ -80,7 +80,7 @@ if((ctime>Number(publicIfoData.startPresaleTime)&&countdownToUse>0)&&(!publicIfo
     <div style={{textAlign:"center"}}>Coming soon</div>
   )
   }
-  
+
   return (
     <div style={{textAlign:"center"}}>Sorry you are not whitelisted.</div>
   )

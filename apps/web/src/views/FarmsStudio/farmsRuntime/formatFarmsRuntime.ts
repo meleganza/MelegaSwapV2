@@ -179,7 +179,7 @@ export function aggregateKpis(
     if (apr > highestApr) highestApr = apr
   })
 
-  const perBlock = emission.perBlock
+
   const emissionValue = formatTotalDailyEmissionKpi(emission)
 
   return [

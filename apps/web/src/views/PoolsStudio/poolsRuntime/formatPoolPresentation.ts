@@ -4,9 +4,9 @@ import { Pool } from '@pancakeswap/uikit'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
-import { getPoolBlockInfo } from 'views/Pools/helpers'
+import 'views/Pools/helpers';
 import type { PoolPreviewCard } from '../poolsStudioData'
-import { formatDisplayAprText, isForbiddenAprDisplay, normalizeAprForDisplay as normalizeAprByVisual } from './poolsAprRules'
+import { formatDisplayAprText, normalizeAprForDisplay as normalizeAprByVisual } from './poolsAprRules';
 import { getAddress } from 'utils/addressHelpers'
 import {
   getAddressExplorerUrl,
@@ -186,7 +186,7 @@ export function getEstimatedDailyReward(pool: Pool.DeserializedPool<Token>): str
 
 export function getWeeklyMonthlyRewards(pool: Pool.DeserializedPool<Token>): { weekly: string; monthly: string } {
   const daily = getDailyRewardTokens(pool)
-  const sym = pool.earningToken?.symbol ?? ''
+
   const price = pool.earningTokenPrice || pool.stakingTokenPrice || 0
   if (daily <= 0) return { weekly: '—', monthly: '—' }
   const weeklyUsd = daily * 7 * price

@@ -174,7 +174,7 @@ export const useCakeVaultUserData = (chainId) => {
 
 export const useCakeVaultPublicData = () => {
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  useWeb3React();
   const { chainId } = useActiveChainId()
   useFastRefreshEffect(() => {
     dispatch(fetchCakeVaultPublicData({ chainId }))

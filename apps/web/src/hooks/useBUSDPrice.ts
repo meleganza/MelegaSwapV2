@@ -16,7 +16,7 @@ import { useMemo } from 'react'
 import useSWR from 'swr'
 import getLpAddress from 'utils/getLpAddress'
 import { multiplyPriceByAmount } from 'utils/prices'
-import { isChainTestnet } from 'utils/wagmi'
+import 'utils/wagmi';
 import { useProvider } from 'wagmi'
 import { usePairContract } from './useContract'
 import { PairState, usePairs } from './usePairs'
@@ -190,7 +190,7 @@ export const useBNBBusdPrice = (
   { forceMainnet } = { forceMainnet: false },
 ): Price<ERC20Token, ERC20Token> | undefined => {
   const { chainId } = useActiveChainId()
-  const isTestnet = !forceMainnet && isChainTestnet(chainId)
+
   // Return bsc testnet wbnb if chain is testnet
   const wbnb: Token = WBNB[ChainId.BSC]
   return usePriceByPairs(BUSD[wbnb.chainId], wbnb)

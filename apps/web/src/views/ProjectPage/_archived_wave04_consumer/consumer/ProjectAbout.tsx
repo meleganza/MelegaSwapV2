@@ -1,6 +1,6 @@
 import React from 'react'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
-import { BodyText, EmptyState, EmptyStateBody, EmptyStateTitle, MutedText, Section, SectionTitle } from './theme'
+import { BodyText, EmptyState, EmptyStateBody, EmptyStateTitle, Section, SectionTitle } from './theme';
 
 interface Props {
   document: CanonicalProjectDocument

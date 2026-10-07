@@ -5,11 +5,11 @@ import { Modal, Text, Flex, Button, HelpIcon, AutoRenewIcon, useTooltip, useToas
 import { useTranslation } from "@pancakeswap/localization";
 import { getBalanceNumber } from "utils/formatBalance";
 import { useCakeVaultContract } from "hooks/useContract";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import "hooks/useActiveWeb3React";
 import ConnectWalletButton from "components/ConnectWalletButton";
 import Balance from "components/Balance";
 import { usePriceCakeBusd } from "state/farms/hooks";
-import { useCakeVault, useCakeVault1 } from "state/pools/hooks";
+import { useCakeVault1 } from "state/pools/hooks";
 import { useWeb3React } from "@pancakeswap/wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
@@ -29,7 +29,7 @@ const BountyModal: React.FC<BountyModalProps> = ({ onDismiss, TooltipComponent }
   const { t } = useTranslation();
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
-  const theme = useTheme();
+  useTheme();
   const { toastError, toastSuccess } = useToast();
   const cakeVaultContract = useCakeVaultContract(undefined, chainId);
   const [pendingTx, setPendingTx] = useState(false);

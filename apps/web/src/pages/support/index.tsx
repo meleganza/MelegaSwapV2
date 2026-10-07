@@ -1,7 +1,7 @@
 /**
  * Support — factual contact destinations (no fabricated ticketing infrastructure).
  */
-import React from 'react'
+
 import Link from 'next/link'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'

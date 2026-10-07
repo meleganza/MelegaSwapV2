@@ -5,7 +5,13 @@
  * No local farm scanning. No fake opportunities first.
  */
 
-import React, { useMemo } from 'react'
+/**
+ * Your Farms — wallet-first primary surface (R791E.3).
+ *
+ * Consumes WalletPortfolio FARM positions via View Engine.
+ * No local farm scanning. No fake opportunities first.
+ */
+import { useMemo } from 'react';
 import styled from 'styled-components'
 import { PositionCard } from 'components/portfolio/PositionCard'
 import { projectMyPositionCard } from 'lib/wallet-portfolio/myPositionCardModel'

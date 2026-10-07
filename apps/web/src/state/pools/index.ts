@@ -1,19 +1,10 @@
-import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, { getPoolsConfigForChain } from 'config/constants/pools'
-import {
-  PoolsState,
-  SerializedPool,
-  SerializedVaultFees,
-  SerializedCakeVault,
-  PublicIfoData,
-  SerializedVaultUser,
-  SerializedLockedCakeVault,
-  AppThunk,
-} from 'state/types'
+import { getPoolsConfigForChain } from 'config/constants/pools';
+import { PoolsState, SerializedPool, SerializedVaultFees, SerializedCakeVault, PublicIfoData, SerializedVaultUser, SerializedLockedCakeVault } from 'state/types';
 import { getPoolApr } from 'utils/apr'
-import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
+import '@pancakeswap/utils/bigNumber';
 import cakeAbi from 'config/abi/cake.json'
 import { getCakeVaultAddress, getCakeFlexibleSideVaultAddress } from 'utils/addressHelpers'
 import { multicallv2 } from 'utils/multicall'
@@ -138,7 +129,7 @@ export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
       const pools = getPoolsConfigForChain(chainId)
-      
+
       const [blockLimits, totalStakings, rewardPerBlocks, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
@@ -150,7 +141,7 @@ export const fetchPoolsPublicDataAsync =
               : chainId === 137 ? polygonRpcProvider.getBlockNumber()
                 : baseRpcProvider.getBlockNumber(),
       ])
-      
+
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
       const totalStakingsSousIdMap = keyBy(totalStakings, 'sousId')
       const rewardPerBlockSousIdMap = keyBy(rewardPerBlocks, 'sousId')
@@ -182,7 +173,7 @@ export const fetchPoolsPublicDataAsync =
           : chainId == 56 ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
             : chainId == 137 ? farmsData.find((farm) => farm.token.symbol === 'USDT' && farm.quoteToken.symbol === 'WMATIC')
               : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
-      
+
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
@@ -278,7 +269,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserPendingRewards(account, chainId),
     ])
     const pools = getPoolsConfigForChain(chainId)
-            
+
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],
@@ -417,7 +408,7 @@ export const PoolsSlice = createSlice({
     },
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
-      const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
+      keyBy(livePoolsData, 'sousId');
 
       state.data = livePoolsData;
 

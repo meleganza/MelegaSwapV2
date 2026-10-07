@@ -12,7 +12,7 @@ import ProjectDetectedCard from 'views/ImportExistingToken/components/ProjectDet
 import ImportExistingTokenGlobalStyle from 'views/ImportExistingToken/ImportExistingTokenGlobalStyle'
 import { useImportRuntime } from 'views/ImportExistingToken/importExistingTokenRuntime/ImportRuntimeContext'
 import { importTokenLayout } from 'views/ImportExistingToken/importTokenTokens'
-import { buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
+import { buildStudioColors } from '../buildStudioTokens';
 import { BsLabel } from './buildStudioPrimitives'
 
 const Shell = styled.section`

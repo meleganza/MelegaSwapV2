@@ -7,7 +7,7 @@ import {
   LaunchCapability,
   LaunchCapabilityStatus,
 } from 'lib/user-launch'
-import translations from 'config/localization/translations.json'
+import 'config/localization/translations.json';
 import {
   EconomicPageShell,
   EconomicHero,
@@ -23,7 +23,7 @@ import {
 import { HumanListingCta, HumanIntentGrid } from 'views/HumanCore'
 import { CREATE_INTENTS, MARCO_STAKING_INTENTS } from './create-intents'
 
-const t = (key: string) => (translations as Record<string, string>)[key] ?? key
+
 
 const Meta = styled.p`
   margin: 0;

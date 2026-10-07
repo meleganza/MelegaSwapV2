@@ -16,7 +16,7 @@ import {
 } from '@pancakeswap/uikit'
 import { logError } from 'utils/sentry'
 import { useTranslation } from '@pancakeswap/localization'
-import { useWeb3React } from '@pancakeswap/wagmi'
+import '@pancakeswap/wagmi';
 import { CommitButton } from 'components/CommitButton'
 // import StyledDisableFlex from 'components/StyledDisableFlex'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'

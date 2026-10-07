@@ -262,11 +262,11 @@ export default function BridgeCommitButton({
             disabled={!isValid || !approved || pendingTx}
           >
             {
-              pendingTx ? 
+              pendingTx ?
                 <AutoRow gap="6px" justify="center">
                   {t('Bridging')} <CircleLoader stroke="white" />
-                </AutoRow> 
-              : 
+                </AutoRow>
+              :
                 t('Bridge')
             }
           </CommitButton>
@@ -289,11 +289,11 @@ export default function BridgeCommitButton({
         disabled={!isValid || !approved || pendingTx}
       >
         {swapInputError ||
-          (pendingTx ? 
+          (pendingTx ?
             <AutoRow gap="6px" justify="center">
               {t('Bridging')} <CircleLoader stroke="white" />
             </AutoRow>
-          : 
+          :
           t('Bridge'))}
       </CommitButton>
 

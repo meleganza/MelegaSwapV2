@@ -10,10 +10,7 @@ const ENV_MARCO_KEYS: Record<number, string> = {
   97: 'NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET',
 }
 
-const ENV_COLLECTOR_KEYS: Record<number, string> = {
-  56: 'NEXT_PUBLIC_TREASURY_COLLECTOR_BSC',
-  97: 'NEXT_PUBLIC_TREASURY_COLLECTOR_BSC_TESTNET',
-}
+
 
 function readEnvAddress(key: string | undefined): string | null {
   if (!key) return null

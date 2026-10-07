@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react';
 import { Token } from '@pancakeswap/sdk'
-import { useModal } from '@pancakeswap/uikit'
+import '@pancakeswap/uikit';
 
 import { useRouter } from 'next/router'
 
 import shouldShowSwapWarning from 'utils/shouldShowSwapWarning'
 
-import { useCurrency, useAllTokens, useCurrencyBridge } from 'hooks/Tokens'
+import { useAllTokens, useCurrencyBridge } from 'hooks/Tokens';
 import { useDefaultsFromURLSearchBridge } from 'state/swap/hooks'
 // import ImportTokenWarningModal from 'components/ImportTokenWarningModal'
-import { useWeb3React } from '@pancakeswap/wagmi'
-import { isAddress } from 'utils'
+import '@pancakeswap/wagmi';
+import 'utils';
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 // import SwapWarningModal from '../components/SwapWarningModal'
 
 export default function useWarningImport() {
-  const router = useRouter()
+  useRouter();
   const loadedUrlParams = useDefaultsFromURLSearchBridge()
   const { chainId, isWrongNetwork } = useActiveWeb3React()
 
@@ -38,14 +38,7 @@ export default function useWarningImport() {
 
   const defaultTokens = useAllTokens()
 
-  const importTokensNotInDefault =
-    !isWrongNetwork && urlLoadedTokens
-      ? urlLoadedTokens.filter((token: Token) => {
-          const checksummedAddress = isAddress(token.address) || ''
 
-          return !(checksummedAddress in defaultTokens || token.address === "0x144F6D1945DC54a8198D4a54D4b346a2170126c6") && token.chainId === chainId
-        })
-      : []
 
   // const [onPresentSwapWarningModal] = useModal(<SwapWarningModal swapCurrency={swapWarningCurrency} />, false)
   // const [onPresentImportTokenWarningModal] = useModal(

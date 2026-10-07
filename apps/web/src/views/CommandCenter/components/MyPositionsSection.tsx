@@ -5,7 +5,13 @@
  * No product-specific cards. No local ownership filtering.
  */
 
-import React, { Component, type ErrorInfo, type ReactNode } from 'react'
+/**
+ * Command Center My Positions experience composition (R791D.3H).
+ *
+ * Consumes runtime My Positions foundation + universal PositionCard.
+ * No product-specific cards. No local ownership filtering.
+ */
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import styled from 'styled-components'
 import { PositionCard } from 'components/portfolio/PositionCard'
 import {

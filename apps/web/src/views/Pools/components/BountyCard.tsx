@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react';
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import {
@@ -19,7 +19,7 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import Balance from 'components/Balance'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePriceCakeBusd } from 'state/farms/hooks'
-import { useCakeVault, useCakeVault1 } from 'state/pools/hooks'
+import { useCakeVault1 } from 'state/pools/hooks';
 import BountyModal from './BountyModal'
 
 const StyledCard = styled(Card)`
@@ -48,10 +48,10 @@ const BountyCard = () => {
     return new BigNumber(estimatedDexTokenBountyReward).multipliedBy(cakePriceBusd)
   }, [cakePriceBusd, estimatedDexTokenBountyReward])
   const hasFetchedDollarBounty = estimatedDollarBountyReward.gte(0)
-  
+
   const hasFetchedCakeBounty = estimatedDexTokenBountyReward ? estimatedDexTokenBountyReward.gte(0) : false
   const dollarBountyToDisplay = hasFetchedDollarBounty ? getBalanceNumber(estimatedDollarBountyReward, 18) : 0
-  
+
   const cakeBountyToDisplay = hasFetchedCakeBounty ? getBalanceNumber(estimatedDexTokenBountyReward, 18) : 0
   const TooltipComponent = ({ fee }: { fee: number }) => (
     <>

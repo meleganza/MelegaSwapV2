@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { displayStudioMetric, isStudioMetricUnavailable, STUDIO_KPI_VALUE } from 'design-system/melega'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
-import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
-import { KpiSparkline } from './radarStudioPrimitives'
+import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens';
+import './radarStudioPrimitives';
 
 const Row = styled.div`
   display: grid;

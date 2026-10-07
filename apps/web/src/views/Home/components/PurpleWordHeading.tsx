@@ -7,14 +7,14 @@ interface HeadingProps extends TextProps {
 }
 
 const PurpleWordHeading: React.FC<HeadingProps> = ({ text, ...props }) => {
-  const { theme } = useTheme()
- 
+  useTheme();
+
   const firstWord = text.substring(0,6)
   const remainingWords = text.substring(6)
   return (
     <Heading scale="xl" mb="10px" {...props}>
       {firstWord}<span style={{ color: "#ddd" }}>{remainingWords}</span>
-      
+
     </Heading>
   )
 }

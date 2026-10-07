@@ -22,7 +22,7 @@ import { useIsTransactionUnsupported, useIsTransactionWarning } from 'hooks/Trad
 import { useTranslation } from '@pancakeswap/localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import { useZapContract } from 'hooks/useContract'
-import { useWeb3React } from '@pancakeswap/wagmi'
+import '@pancakeswap/wagmi';
 import { getZapAddress } from 'utils/addressHelpers'
 import { CommitButton } from 'components/CommitButton'
 // import StyledDisableFlex from 'components/StyledDisableFlex'

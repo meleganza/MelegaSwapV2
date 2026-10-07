@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { ArrowLeft, ChartNoAxesCombined } from 'lucide-react'

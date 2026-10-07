@@ -39,11 +39,11 @@ import NotEnoughTokensModal from '../../Modals/NotEnoughTokensModal'
 import StakeModal from '../../Modals/StakeModal'
 // import { ProfileRequirementWarning } from '../../ProfileRequirementWarning'
 import { ActionContainer, ActionContent, ActionTitles } from './styles'
-import { VaultStakeButtonGroup } from '../../Vault/VaultStakeButtonGroup'
+import '../../Vault/VaultStakeButtonGroup';
 // import AddCakeButton from '../../LockedPool/Buttons/AddCakeButton'
-import ExtendButton from '../../LockedPool/Buttons/ExtendDurationButton'
+import '../../LockedPool/Buttons/ExtendDurationButton';
 // import AfterLockedActions from '../../LockedPool/Common/AfterLockedActions'
-import ConvertToLock from '../../LockedPool/Common/ConvertToLock'
+import '../../LockedPool/Common/ConvertToLock';
 import BurningCountDown from '../../LockedPool/Common/BurningCountDown'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 // import LockedStakedModal from '../../LockedPool/Modals/LockedStakeModal'
@@ -57,19 +57,7 @@ interface StackedActionProps {
 }
 
 const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps>> = ({ pool }) => {
-  const {
-    sousId,
-    stakingToken,
-    earningToken,
-    stakingLimit,
-    isFinished,
-    poolCategory,
-    userData,
-    stakingTokenPrice,
-    vaultKey,
-    profileRequirement,
-    userDataLoaded,
-  } = pool
+  const { sousId, stakingToken, earningToken, stakingLimit, isFinished, poolCategory, userData, stakingTokenPrice, vaultKey, userDataLoaded } = pool;
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()

@@ -1,5 +1,5 @@
 import { createGlobalStyle, keyframes } from 'styled-components'
-import { collectiblesStudioColors, collectiblesStudioLayout } from './collectiblesStudioTokens'
+import { collectiblesStudioColors } from './collectiblesStudioTokens';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(8px); }

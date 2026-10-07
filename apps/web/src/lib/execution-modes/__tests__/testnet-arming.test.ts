@@ -1,36 +1,9 @@
 import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 
-import { resetExecutionGatewayActivation, setExecutionGatewayEnabled } from 'lib/execution-gateway'
-import {
-  acceptKerlExecutionInstruction,
-  dispatchExecutionInstruction,
-  resetInternalIngressActivation,
-  setInternalIngressEnabled,
-} from 'lib/execution-ingress'
+import { setExecutionGatewayEnabled } from 'lib/execution-gateway';
+import { acceptKerlExecutionInstruction, dispatchExecutionInstruction, setInternalIngressEnabled } from 'lib/execution-ingress';
 import { createSmartSwapExecutionInstruction } from 'lib/routing-layer'
-import {
-  ACTIVATION_LIFECYCLE_TESTNET_ARMED,
-  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED,
-  EXECUTION_MODE_MAINNET_EXECUTION,
-  EXECUTION_MODE_OFF,
-  EXECUTION_MODE_TESTNET_EXECUTION_ONLY,
-  armTestnetLifecycleForHarness,
-  canPerformLiveExecution,
-  canTransitionLifecycle,
-  evaluateLiveExecutionGates,
-  getExecutionModeConfig,
-  lifecyclePermitsWalletSubmission,
-  listRequiredLiveGateIds,
-  resetKerlExecutionHarness,
-  rollbackActivationToDryRun,
-  runTestnetArmingValidation,
-  setActivationLifecycleForHarness,
-  setCivilizationAuthorizationForHarness,
-  setCivilizationObservationsForHarness,
-  setEnvironmentAuthorizedForHarness,
-  setExecutionModeForHarness,
-  setTestnetExecutionArmedForHarness,
-} from 'lib/execution-modes'
+import { ACTIVATION_LIFECYCLE_TESTNET_ARMED, ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED, EXECUTION_MODE_MAINNET_EXECUTION, EXECUTION_MODE_TESTNET_EXECUTION_ONLY, armTestnetLifecycleForHarness, canPerformLiveExecution, canTransitionLifecycle, evaluateLiveExecutionGates, getExecutionModeConfig, lifecyclePermitsWalletSubmission, listRequiredLiveGateIds, resetKerlExecutionHarness, rollbackActivationToDryRun, runTestnetArmingValidation, setActivationLifecycleForHarness, setCivilizationAuthorizationForHarness, setCivilizationObservationsForHarness, setEnvironmentAuthorizedForHarness, setExecutionModeForHarness, setTestnetExecutionArmedForHarness } from 'lib/execution-modes';
 
 function sampleInstruction() {
   return createSmartSwapExecutionInstruction({

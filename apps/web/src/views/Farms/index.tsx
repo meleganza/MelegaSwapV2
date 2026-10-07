@@ -1,6 +1,6 @@
 import { useTranslation } from '@pancakeswap/localization'
 import { Flex, ModalV2, LinkExternal } from '@pancakeswap/uikit'
-import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
+import 'react-router-dom';
 import DisclaimerModal from 'components/DisclaimerModal'
 import { ConnectorNames, getDocLink } from 'config/wallet'
 import { ExtendEthereum } from 'global'

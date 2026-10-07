@@ -5,7 +5,7 @@
  * Not a chatbot. Not financial advice. No LLM. No autonomous execution.
  */
 
-import React from 'react'
+
 import styled from 'styled-components'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import type {

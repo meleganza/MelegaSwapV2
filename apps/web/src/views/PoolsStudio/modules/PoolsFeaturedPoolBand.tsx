@@ -143,12 +143,7 @@ const ConnectBtn = styled(ConnectWalletButton)`
   box-shadow: none;
 `
 
-const Empty = styled.p`
-  grid-column: 1 / -1;
-  margin: 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
-`
+
 
 export const PoolsFeaturedPoolBand: React.FC = () => {
   const { account, featured, requestModal } = usePoolsRuntime()

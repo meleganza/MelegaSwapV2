@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Field } from 'state/swap/actions'
+import 'state/swap/actions';
 import { useSwapState } from 'state/swap/hooks'
 import { tradeColors } from '../tradeTokens'
 import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'

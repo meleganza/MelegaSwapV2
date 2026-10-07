@@ -20,7 +20,7 @@ export const makeBusdPriceFromPidSelector = (pid: number) =>
 export const makeUserFarmFromPidSelector = (pid: number) =>
   createSelector([selectFarmByKey('pid', pid)], (farm) => {
     const { allowance, tokenBalance, stakedBalance, earnings, proxy } = deserializeFarmUserData(farm)
-    
+
     return {
       allowance,
       tokenBalance,
@@ -66,7 +66,7 @@ export const farmSelector = (chainId: number) =>
     (farms) => {
       const deserializedFarmsData = farms?.data.map(deserializeFarm).filter((farm) => farm.token.chainId === chainId)
       const { loadArchivedFarmsData, userDataLoaded, poolLength, regularCakePerBlock } = farms
-      
+
 
       return {
         loadArchivedFarmsData,
