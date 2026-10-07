@@ -19,6 +19,7 @@ import { truthDash } from 'lib/data-truth'
 import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
 import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
+import type { PublicProjectClaim } from 'lib/project-claims/types'
 import type { ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
@@ -47,7 +48,6 @@ import { buildProjectRating } from './buildProjectRating'
 import { buildMarketSources } from './marketSources'
 import type { ProjectsRuntimeError } from './projectsRuntimeErrors'
 import useProjectsTerminalData from './useProjectsTerminalData'
-import type { PublicProjectClaim } from 'lib/project-claims/types'
 
 export type ProjectsRuntimePhase = 'idle' | 'loading' | 'ready' | 'error'
 

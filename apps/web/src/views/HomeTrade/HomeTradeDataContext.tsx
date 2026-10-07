@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import React, { createContext, useContext, startTransition, useEffect, useState } from 'react'
-import type useHomeTradeData from './useHomeTradeData'
+import type { useHomeTradeData } from './useHomeTradeData'
 
 export type HomeCriticalData = Pick<
   ReturnType<typeof useHomeTradeData>,

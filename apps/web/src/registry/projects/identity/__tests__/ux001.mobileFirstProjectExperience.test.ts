@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
+import { humanChainName, humanEnumLabel, looksLikeMachineId } from 'views/ProjectPage/presentation/humanLabels'
 import {
   findCrossProjectContractCollisions,
   loadProjectMachineDocument,
@@ -14,7 +15,6 @@ import {
 import { buildProjectTokenomicsDocument } from '../tokenomics/buildProjectTokenomicsDocument'
 import { buildProjectRoadmapDocument } from '../roadmap/buildProjectRoadmapDocument'
 import { loadProjectMarketsDocument } from '../markets'
-import { humanChainName, humanEnumLabel, looksLikeMachineId } from 'views/ProjectPage/presentation/humanLabels'
 
 const ROOT = path.join(__dirname, '../../../../')
 const CONSUMER = path.join(ROOT, 'views/ProjectPage/v1')

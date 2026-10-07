@@ -5,8 +5,8 @@ import { Dispatch, useMemo, memo, SetStateAction, useCallback } from 'react'
 import styled from 'styled-components'
 import { getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { getFullDecimalMultiplier } from '@pancakeswap/utils/getFullDecimalMultiplier'
-import { useUserEnoughCakeValidator } from '../hooks/useUserEnoughCakeValidator'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useUserEnoughCakeValidator } from '../hooks/useUserEnoughCakeValidator'
 
 const StyledButton = styled(Button)`
   flex-grow: 1;

@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import styled from 'styled-components'
 import { ArrowRight, Check, ChevronDown, CircleAlert, Info, ShieldCheck } from 'lucide-react'
 import type { Currency } from '@pancakeswap/sdk'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import type { LiquidityBuildingCardState } from '../useLiquidityBuildingCard'
 import { DECISION_FREQUENCY_OPTIONS, LB_UX } from '../uxCopy'
 import { lb } from './lbProductTokens'
-import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
 const Layout = styled.div`
   display: grid;

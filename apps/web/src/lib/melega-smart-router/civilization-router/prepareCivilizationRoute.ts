@@ -1,7 +1,7 @@
 import { TradeType } from '@pancakeswap/sdk'
-import { buildExecutionManifestFromBlocked } from '../execution-manifest'
 import { produceKerlExecutionRequest } from 'lib/kerl-constitutional/producer'
 import { KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional/registry'
+import { buildExecutionManifestFromBlocked } from '../execution-manifest'
 import { prepareMelegaSmartRouterSwap } from '../smartRouterAdapter'
 import { MELEGA_SMART_ROUTER_ARCHITECTURE } from '../types'
 import { buildTreasuryHandoffPrepared } from './treasury-integration'

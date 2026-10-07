@@ -4,10 +4,10 @@ import { AutoColumn } from 'components/Layout/Column'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import { CurrencyLogo } from 'components/Logo'
 import { useCallback } from 'react'
+import { V2_GAS_ESTIMATE_STATE } from 'lib/smartswap-universal-engine/v2GasEstimate'
 import { AdvancedSwapDetails } from '../../components/AdvancedSwapDetails'
 import { TruncatedText } from '../../components/styleds'
 import type { SmartSwapV2ExecutionDisplay } from '../utils/v2ExecutionDisplay'
-import { V2_GAS_ESTIMATE_STATE } from 'lib/smartswap-universal-engine/v2GasEstimate'
 
 /**
  * BSC SmartSwap V2 confirmation body (inside the existing ConfirmSwapModal shell).

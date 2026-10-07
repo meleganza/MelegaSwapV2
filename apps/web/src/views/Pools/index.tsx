@@ -10,6 +10,7 @@ import { HumanEarnChrome } from 'views/HumanCore'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { Token } from '@pancakeswap/sdk'
 import { TokenPairImage } from 'components/TokenImage'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import CardActions from './components/PoolCard/CardActions'
 import AprRow from './components/PoolCard/AprRow'
 import CardFooter from './components/PoolCard/CardFooter'
@@ -17,7 +18,6 @@ import CakeVaultCard from './components/CakeVaultCard'
 import PoolControls from './components/PoolControls'
 import PoolRow, { VaultPoolRow } from './components/PoolsTable/PoolRow'
 import BountyCard from './components/BountyCard'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const CardLayout = styled(FlexLayout)`
   justify-content: center;

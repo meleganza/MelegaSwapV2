@@ -6,11 +6,11 @@ import { Token } from '@pancakeswap/sdk'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
-import { formatHomeActivityRows } from './formatHomeActivity'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
+import { formatHomeActivityRows } from './formatHomeActivity'
 import 'lib/data-truth/compute24hPriceChange';
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
 import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
@@ -25,8 +25,6 @@ import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
 import { useCanonicalMarketSnapshot } from 'lib/market-data'
-import { formatPoolTickerAccent, formatPoolTrendingLabel, POOL_APR_UNAVAILABLE_REASON } from './formatTrendingLabels';
-import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 import {
   countLiveActiveFarmConfigs,
   countLivePoolConfigs,
@@ -48,6 +46,8 @@ import {
   resolvePoolTvlUsd,
   resolvePoolVolumeDisplay,
 } from 'lib/data-truth/yieldMetricHelpers'
+import { formatPoolTickerAccent, formatPoolTrendingLabel, POOL_APR_UNAVAILABLE_REASON } from './formatTrendingLabels';
+import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 
 export interface RibbonItem {
   id: string

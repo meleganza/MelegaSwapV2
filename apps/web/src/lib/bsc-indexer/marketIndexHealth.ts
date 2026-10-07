@@ -1,7 +1,6 @@
 import type { IndexerCheckpoint, IndexerHealthSnapshot } from './types'
-import { MELEGA_FACTORY_BSC, MELEGA_CHAIN_ID } from './constants'
+import { MELEGA_FACTORY_BSC, MELEGA_CHAIN_ID, REORG_SAFETY_BLOCKS } from './constants'
 import { bootstrapWindowSummary } from './indexer/coverageRanges'
-import { REORG_SAFETY_BLOCKS } from './constants'
 
 export type MarketIndexCanonicalStatus =
   | 'CONNECTED'

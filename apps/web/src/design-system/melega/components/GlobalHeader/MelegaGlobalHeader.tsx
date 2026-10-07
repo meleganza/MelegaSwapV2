@@ -4,9 +4,6 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { MarcoConnect } from 'components/MarcoWidgets'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
-import { MELEGA_LOGO_URI } from '../../constants/brand'
-import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
-import { uxRebuildColors } from '../../tokens/uxRebuild'
 import {
   ANALYTICS_MORE_ITEM,
   GLOBAL_HEADER_NAV,
@@ -15,10 +12,13 @@ import {
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
-import HeaderNavDropdown from './HeaderNavDropdown'
 import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
-import { IconChevronDown, IconUser } from './HeaderIcons'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
+import { MELEGA_LOGO_URI } from '../../constants/brand'
+import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
+import { uxRebuildColors } from '../../tokens/uxRebuild'
+import HeaderNavDropdown from './HeaderNavDropdown'
+import { IconChevronDown, IconUser } from './HeaderIcons'
 
 const Bar = styled.header`
   display: none;

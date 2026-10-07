@@ -13,9 +13,9 @@ import {
 } from '@pancakeswap/uikit'
 import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
 import { bsc } from 'wagmi/chains'
-import { base, polygon1, ethereum } from '../../../utils/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import { Token } from '@pancakeswap/sdk';
+import { base, polygon1, ethereum } from '../../../utils/wagmi'
 import '@pancakeswap/utils/bigNumber';
 import { memo } from 'react'
 import { useCurrentBlock } from 'state/block/hooks'
@@ -24,9 +24,9 @@ import { VaultKey } from 'state/types'
 import { getBlockExploreLink } from 'utils'
 import { getAddress, getVaultPoolAddress } from 'utils/addressHelpers'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import MaxStakeRow from './MaxStakeRow'
 import { PerformanceFee } from './Stat';
-import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface ExpandedFooterProps {
   pool: Pool.DeserializedPool<Token>

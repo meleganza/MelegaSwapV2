@@ -1,9 +1,9 @@
-import type { ProjectRatingTier } from '../projectsStudioData'
 import type { StaticProjectRecord } from 'registry/projects/types'
 import {
   computeCapabilityCompleteness,
   computeIdentityCompleteness,
 } from 'registry/projects/intelligence'
+import type { ProjectRatingTier } from '../projectsStudioData'
 import { countAvailableSources, buildMarketSources } from './marketSources'
 
 export interface ProjectRatingResult {

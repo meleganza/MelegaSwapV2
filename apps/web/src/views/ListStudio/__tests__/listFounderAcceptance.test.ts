@@ -4,9 +4,9 @@
 import { describe, expect, it } from 'vitest'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
+import { FEATURED_OFFER } from 'lib/featured-placement/constants'
 import { LIST_HERO_BNB_LOGO, LIST_HERO_USDT_LOGO } from '../ListPageHero'
 import { CREATE_TOKEN_READINESS } from '../createTokenReadiness'
-import { FEATURED_OFFER } from 'lib/featured-placement/constants'
 import { deleteListDraft, loadListDraft, saveListDraft } from '../listDraftPersistence'
 
 const ROOT = path.resolve(__dirname, '..')

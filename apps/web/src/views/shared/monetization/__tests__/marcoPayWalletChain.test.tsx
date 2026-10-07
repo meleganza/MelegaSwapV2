@@ -2,9 +2,9 @@
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 import { RC_COPY } from 'lib/monetization/copy'
 import { assessPaymentWalletChain, resolvePaymentWalletForSettlement } from 'lib/monetization/paymentWalletChain'
+import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 
 vi.mock('wagmi', () => ({
   useAccount: vi.fn(() => ({ address: undefined })),

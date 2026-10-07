@@ -19,6 +19,9 @@ import {
   useTradeInfo,
 } from 'views/Swap/SmartSwap/hooks'
 import { SMART_ROUTER_ADDRESS } from 'views/Swap/SmartSwap/utils/exchange'
+import type { TradeSettlementMachineMetadata } from 'lib/treasury-handoff'
+import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gravity/radarConsumption'
+import { routeSmartSwapQuoteFromTrade, routeV2SwapQuote } from 'lib/routing-layer/facade'
 import {
   chainLabel,
   compareOutputDelta,
@@ -32,9 +35,6 @@ import {
 } from './formatTradeRuntime'
 import { runtimeErrorFromPhase, type TradeRuntimeError } from './tradeRuntimeErrors'
 import { useTradeSettlementMetadata } from './useTradeSettlementMetadata'
-import type { TradeSettlementMachineMetadata } from 'lib/treasury-handoff'
-import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gravity/radarConsumption'
-import { routeSmartSwapQuoteFromTrade, routeV2SwapQuote } from 'lib/routing-layer/facade'
 
 export type TradeRuntimePhase =
   | 'idle'

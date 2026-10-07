@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import CollectiblesStudioGlobalStyle from './CollectiblesStudioGlobalStyle'
+import { studioConstitutionLayout } from 'design-system/melega'
 import { CollectiblesRuntimeProvider } from './collectiblesRuntime/CollectiblesRuntimeContext'
 import AICollectionAdvisorPanel from './components/AICollectionAdvisorPanel'
 import CollectiblesBottomCta from './components/CollectiblesBottomCta'
@@ -12,7 +13,6 @@ import CollectiblesRightSidebar from './components/CollectiblesRightSidebar'
 import CollectiblesStudioPageHeader from './components/CollectiblesStudioPageHeader'
 import FeaturedCollectionPanel from './components/FeaturedCollectionPanel'
 import { CS_FONT_BODY, collectiblesStudioColors, collectiblesStudioLayout } from './collectiblesStudioTokens'
-import { studioConstitutionLayout } from 'design-system/melega'
 
 const Root = styled.div`
   color: ${collectiblesStudioColors.white};

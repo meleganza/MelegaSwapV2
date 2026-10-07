@@ -1,7 +1,7 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
+import { buildOpportunityScore } from 'views/RadarStudio/radarRuntime/buildOpportunityScore'
 import { buildInfrastructureScore } from './buildInfrastructureScore'
 import { buildInfrastructureSuggestions } from './buildInfrastructureSuggestions'
-import { buildOpportunityScore } from 'views/RadarStudio/radarRuntime/buildOpportunityScore'
 
 export interface BuildAdvisorData {
   confidence: number

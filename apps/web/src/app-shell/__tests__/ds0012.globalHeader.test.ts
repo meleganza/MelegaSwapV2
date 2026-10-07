@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
+import { ds001Layout } from 'design-system/melega/tokens/ds001'
 import {
   FARMS_DROPDOWN_ITEMS,
   GLOBAL_HEADER_NAV,
@@ -8,7 +9,6 @@ import {
   MORE_DROPDOWN_ITEMS,
   POOLS_DROPDOWN_ITEMS,
 } from '../config/globalHeaderNav'
-import { ds001Layout } from 'design-system/melega/tokens/ds001'
 
 const ROOT = path.resolve(__dirname, '../..')
 

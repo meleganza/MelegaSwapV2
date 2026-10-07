@@ -11,6 +11,8 @@ import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import { useAudioModeManager } from 'state/user/hooks'
 import { isAddress } from 'utils'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { SponsoredSuggestionsStrip } from 'views/shared/monetization/SponsoredSuggestionsStrip'
+import { RC_COPY } from 'lib/monetization/copy'
 import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
@@ -21,8 +23,6 @@ import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
 import ImportRow from './ImportRow'
-import { SponsoredSuggestionsStrip } from 'views/shared/monetization/SponsoredSuggestionsStrip'
-import { RC_COPY } from 'lib/monetization/copy'
 
 interface CurrencySearchProps {
   selectedCurrency?: Currency | null

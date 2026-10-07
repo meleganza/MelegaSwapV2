@@ -2,15 +2,16 @@ import { createHash } from 'crypto'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
+import { Interface } from '@ethersproject/abi'
 import {
   CANONICAL_EXAMPLE_ASSETS,
   assetIdentityKey,
   assetsEqual,
+  solanaMint,
 } from '../assetIdentity'
 import { capabilityMap } from '../capabilities'
 import { PANCAKE_SWAP_VENUE, UNISWAP_VENUE, VENUE_SUPPORT } from '../certifiedVenues'
 import { EXECUTION_DOMAIN, evmNetwork, solanaNetwork } from '../domain'
-import { Interface } from '@ethersproject/abi'
 import { runAuthorizedEvmShadowCompetition } from '../authorizedShadowRun'
 import { encodeGetAmountsOut } from '../evmV2Quote'
 import { buildEvmShadowVenueRegistry } from '../evmShadowRegistry'
@@ -63,7 +64,6 @@ import { FEE_ENFORCEMENT_POSSIBILITY, VENUE_FEE_ENFORCEMENT_FUTURE } from '../ve
 import { VENUE_FEE_SEMANTICS, VENUE_FEE_SEMANTICS_BY_ID } from '../venueFeeSemantics'
 import { assertNoExternalVenueEnabled, buildVenueRegistry } from '../venueRegistry'
 import { bindAuthorizedHostSession, engineMustNotOwnUx, hostMustNotOwnRouting } from '../widget'
-import { solanaMint } from '../assetIdentity'
 
 const WEB = path.resolve(__dirname, '../../../..')
 const ENGINE = path.join(WEB, 'src/lib/smartswap-universal-engine')

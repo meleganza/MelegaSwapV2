@@ -36,6 +36,7 @@ import { currencyId } from 'utils/currencyId'
 
 import { useAtomValue } from 'jotai'
 import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown } from 'utils/exchange'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { combinedTokenMapFromOfficialsUrlsAtom } from '../../../state/lists/hooks'
 import { isAddress } from '../../../utils'
 import useRefreshBlockNumberID from '../hooks/useRefreshBlockNumber'
@@ -49,7 +50,6 @@ import { ArrowWrapper, Wrapper } from './styleds'
 import SwapCommitButton from './SwapCommitButton'
 import SettingsModal from '../../../components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export default function SwapForm() {
   const { isAccessTokenSupported } = useContext(SwapFeaturesContext)

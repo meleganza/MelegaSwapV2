@@ -5,14 +5,14 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import 'views/Pools/helpers';
-import type { PoolPreviewCard } from '../poolsStudioData'
-import { formatDisplayAprText, normalizeAprForDisplay as normalizeAprByVisual } from './poolsAprRules';
 import { getAddress } from 'utils/addressHelpers'
 import {
   getAddressExplorerUrl,
   getBlockExplorerBaseUrl,
   getTokenExplorerUrl as buildTokenExplorerUrl,
 } from 'utils/blockExplorer'
+import type { PoolPreviewCard } from '../poolsStudioData'
+import { formatDisplayAprText, normalizeAprForDisplay as normalizeAprByVisual } from './poolsAprRules';
 
 const BLOCKS_PER_DAY = 28800
 export const MAX_DISPLAY_APR = 50

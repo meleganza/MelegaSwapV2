@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { applyTickerRenderBudget, mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
-import type { PaidTickerPlacement } from '../paidTickerPlacements'
+import { normalizeEvmAddress } from 'registry/projects/identity/caip'
+import { resolveProjectByContractAddress, resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
+import { loadProjectReadinessDocument } from 'registry/projects/identity/readiness/buildProjectReadinessDocument'
+import { lookupCanonicalToken } from 'lib/canonical-token-registry'
+import { chainIdFromPath, resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
 import {
   PAID_TREND_BOOST_NEUTRAL_SYMBOL,
   mapActiveTrendBoostPlacements,
   retainActivePaidPlacements,
 } from '../activeTrendBoostPlacements'
-import { lookupCanonicalToken } from 'lib/canonical-token-registry'
-import { normalizeEvmAddress } from 'registry/projects/identity/caip'
-import { resolveProjectByContractAddress, resolveProjectBySlug } from 'registry/projects/identity/resolveProject'
-import { loadProjectReadinessDocument } from 'registry/projects/identity/readiness/buildProjectReadinessDocument'
-import { chainIdFromPath, resolveCanonicalProjectHref } from 'lib/projects/canonicalProjectHref'
+import { applyTickerRenderBudget, mergeTickerWithPaidPlacements, tickerItemIsEligible } from '../paidTickerPlacements'
+import type { PaidTickerPlacement } from '../paidTickerPlacements'
 
 const WEB = path.resolve(__dirname, '../../..')
 const load = (rel: string) => readFileSync(path.join(WEB, rel), 'utf8')

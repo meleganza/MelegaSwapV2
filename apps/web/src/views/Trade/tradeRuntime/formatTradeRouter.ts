@@ -1,5 +1,4 @@
-import type { TradeRouteEntry } from './useTradeSwapRuntime'
-import type { TradeRuntimePhase } from './useTradeSwapRuntime'
+import type { TradeRouteEntry, TradeRuntimePhase } from './useTradeSwapRuntime'
 
 export type RouterLineStatus = 'available' | 'unavailable' | 'insufficient_data'
 

@@ -1,15 +1,13 @@
-import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 import { useState, useEffect, useMemo } from 'react'
 import { useAppDispatch } from 'state'
 import { VaultKey } from 'state/types'
 import { fetchCakeVaultFees, fetchPoolsPublicDataAsync, fetchCakeVaultPublicData } from 'state/pools'
 import { fetchFarmsPublicDataAsync } from 'state/farms'
 import { usePoolsWithVault } from 'state/pools/hooks'
-import { useInitialBlock } from 'state/block/hooks'
+import { useInitialBlock, useCurrentBlock } from 'state/block/hooks'
 import { FetchStatus } from 'config/constants/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
-import { useCurrentBlock } from 'state/block/hooks'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
 import { livePools1, livePools56, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
 import { derivePoolLifecycle } from 'lib/data-truth/poolLifecycle'
@@ -17,6 +15,7 @@ import {
   resolvePoolAprPercent,
   resolvePoolTvlUsd,
 } from 'lib/data-truth/yieldMetricHelpers'
+import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
 
 function livePoolEarnAddresses(chainId: number): string[] {
   const cfg =

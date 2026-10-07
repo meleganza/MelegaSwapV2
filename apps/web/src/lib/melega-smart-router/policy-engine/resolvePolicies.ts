@@ -4,9 +4,8 @@ import { getTreasuryCollectorEntry } from '../treasuryCollectorRegistry'
 import { getUnderlyingRouterEntry } from '../underlyingRouterRegistry'
 import { MELEGA_SMART_ROUTER_ARCHITECTURE, MELEGA_SMART_ROUTER_PHASE } from '../types'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
-import { getSmartRouterRegistryVersion } from '../registry/smartRouterRegistry'
+import { getSmartRouterRegistryVersion, readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 import { getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'
-import { readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 import {
   POLICY_ENGINE_SCHEMA,
   POLICY_ENGINE_VERSION,

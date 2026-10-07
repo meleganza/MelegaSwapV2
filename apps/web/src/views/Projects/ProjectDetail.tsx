@@ -4,6 +4,7 @@ import { Flex } from '@pancakeswap/uikit'
 import Page from 'components/Layout/Page'
 import { StaticProjectRecord } from 'registry/projects/types'
 import { computeHealthMetrics } from 'registry/projects/intelligence'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import ProjectHero from './components/ProjectHero'
 import ProjectIntelligenceCard from './components/ProjectIntelligenceCard'
 import ProjectExecutiveIntelligence from './components/ProjectExecutiveIntelligence'
@@ -16,7 +17,6 @@ import ProjectVenuesSection from './components/ProjectVenuesSection'
 import ProjectEventsSection from './components/ProjectEventsSection'
 import ProjectResourceLinks from './components/ProjectResourceLinks'
 import ProjectDisclaimer from './components/ProjectDisclaimer'
-import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;

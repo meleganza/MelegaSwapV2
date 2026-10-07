@@ -9,13 +9,13 @@ import {
   type PortfolioPositionAction,
   type WalletPortfolio,
 } from 'lib/wallet-portfolio/contracts'
+import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
+import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
 import {
   buildCommandCenterWalletPortfolio,
   buildMyPositionsExperience,
   projectMyPositionCard,
 } from '../commandCenterPortfolioCutover'
-import type { FarmPreviewCard } from 'views/FarmsStudio/farmsStudioData'
-import type { PoolPreviewCard } from 'views/PoolsStudio/poolsStudioData'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 

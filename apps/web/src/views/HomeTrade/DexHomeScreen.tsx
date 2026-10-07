@@ -10,12 +10,7 @@ import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { TrendingUp, Sprout, Droplets, Sparkles, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
-import HomeSwapPanel from './HomeSwapPanel'
-import { HomeTradeDataProvider, useHomeCriticalData } from './HomeTradeDataContext'
-import { buildHomeNewListings } from './buildHomeNewListings'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
-import { FeaturedProjectsRail } from './FeaturedProjectsRail'
-import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import {
@@ -27,6 +22,11 @@ import {
   uxRebuildRadius,
   uxRebuildShadow,
 } from 'design-system/melega/tokens/uxRebuild'
+import HomeSwapPanel from './HomeSwapPanel'
+import { HomeTradeDataProvider, useHomeCriticalData } from './HomeTradeDataContext'
+import { buildHomeNewListings } from './buildHomeNewListings'
+import { FeaturedProjectsRail } from './FeaturedProjectsRail'
+import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 
 const ambientDrift = keyframes`
   0%, 100% { opacity: 0.45; transform: translate3d(0, 0, 0) scale(1); }

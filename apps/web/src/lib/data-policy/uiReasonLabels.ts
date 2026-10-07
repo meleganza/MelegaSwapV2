@@ -1,5 +1,5 @@
-import type { DataReasonCode } from './dataReasonCodes'
 import type { ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
+import type { DataReasonCode } from './dataReasonCodes'
 import { METRIC_STATUS, type MetricStatusLabel } from './metricStatus'
 
 /**

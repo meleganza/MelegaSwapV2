@@ -1,8 +1,8 @@
 import fs from 'fs'
 import path from 'path'
+import type { OnchainRegistry } from 'lib/onchain-registry'
 import { MELEGA_CHAIN_ID, MELEGA_MASTERCHEF_BSC, MELEGA_SMARTCHEF_FACTORY_BSC } from '../constants'
 import { rpcCall } from '../rpc/chunkedLogs'
-import type { OnchainRegistry } from 'lib/onchain-registry'
 
 const MASTERCHEF = MELEGA_MASTERCHEF_BSC.toLowerCase()
 

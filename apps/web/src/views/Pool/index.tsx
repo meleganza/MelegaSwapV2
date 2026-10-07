@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useAccount } from 'wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import { useLPTokensWithBalanceByAccount } from 'views/Swap/StableSwap/hooks/useStableConfig'
+import { melegaOperational as tokens } from 'ui/tokens'
 import FullPositionCard, { StableFullPositionCard } from '../../components/PositionCard'
 import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
 import { usePairs, PairState } from '../../hooks/usePairs'
@@ -14,7 +15,6 @@ import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
 import { HumanLiquidityChrome } from '../HumanCore'
-import { melegaOperational as tokens } from 'ui/tokens'
 
 const Body = styled(CardBody)`
   background-color: ${tokens.surface};

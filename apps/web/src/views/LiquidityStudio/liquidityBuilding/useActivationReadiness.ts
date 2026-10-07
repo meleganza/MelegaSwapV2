@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import type { ProductActivationStatus } from 'lib/liquidity-building-runtime/activationGateConsumer'
 import type { ActivationGateSummary } from './programStatus'
 import { BLOCKED_ACTIVATION_GATES } from './programStatus'
-import type { ProductActivationStatus } from 'lib/liquidity-building-runtime/activationGateConsumer'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
 
 export type ReadinessPill = 'Ready' | 'Pending'

@@ -22,6 +22,7 @@ import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import { getFeaturedPackage } from 'lib/monetization/packages'
+import { METRIC_STATUS, APR_UNAVAILABLE_LABEL } from 'lib/data-policy/metricStatus'
 import { humanEnumLabel } from '../presentation/humanLabels'
 import {
   Band,
@@ -35,7 +36,6 @@ import {
   pp,
 } from '../v1/theme'
 import { Metric, indexed, UNAVAILABLE } from '../v1/Metric'
-import { METRIC_STATUS, APR_UNAVAILABLE_LABEL } from 'lib/data-policy/metricStatus'
 import {
   buildProjectChainDeployments,
   defaultSelectedChainId,

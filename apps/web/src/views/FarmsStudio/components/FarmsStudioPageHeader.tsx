@@ -6,8 +6,8 @@ import {
   MelegaStudioPageHeader,
   STUDIO_PAGE_TITLES,
 } from 'design-system/melega'
-import { FARMS_STUDIO_PREVIEW_LABEL } from '../farmsStudioTokens'
 import { DexPricingFeesLink } from 'components/DexPricing/DexPricingFeesLink'
+import { FARMS_STUDIO_PREVIEW_LABEL } from '../farmsStudioTokens'
 
 const Meta = styled.div`
   display: flex;

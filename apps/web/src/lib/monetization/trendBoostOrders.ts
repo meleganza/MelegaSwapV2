@@ -7,6 +7,7 @@ import path from 'path'
 import { randomBytes } from 'crypto'
 import { get, list, put } from '@vercel/blob'
 import { FEATURED_PAYMENT_TOKENS, FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
+import { canonicalCheckoutTokenAddress } from 'lib/monetization/checkoutTargetBinding'
 import { isQuoteExpired } from 'lib/featured-placement/quote'
 import {
   getVisibilityPackage,
@@ -221,7 +222,7 @@ export function createTrendBoostOrder(input: {
     state: 'DRAFT',
     projectId: input.projectId,
     projectSlug: input.projectSlug ?? null,
-    projectContract: input.projectContract ?? null,
+    projectContract: canonicalCheckoutTokenAddress(input.projectContract),
     buyerWallet: input.buyerWallet.toLowerCase(),
     serviceId,
     targetId: input.targetId?.trim() || null,
@@ -252,7 +253,17 @@ export function createTrendBoostOrder(input: {
 export function updateTrendBoostOrder(orderId: string, patch: Partial<TrendBoostOrder>): TrendBoostOrder | null {
   const current = getTrendBoostOrder(orderId)
   if (!current) return null
-  const next = { ...current, ...patch, updatedAt: new Date().toISOString() }
+  const next: TrendBoostOrder = {
+    ...current,
+    ...patch,
+    orderId: current.orderId,
+    schema: current.schema,
+    projectId: current.projectId,
+    projectSlug: current.projectSlug,
+    projectContract: current.projectContract,
+    chainId: current.chainId,
+    updatedAt: new Date().toISOString(),
+  }
   persist(next)
   return next
 }

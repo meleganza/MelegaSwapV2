@@ -17,10 +17,10 @@ import {
   validatePostDeployment,
   weiToBnb,
 } from 'lib/deployment-orchestrator'
-import { isSubsystemReadyForFounderDeploy } from '../founderSequence'
-import { SUPERSEDED_KMS_AUTHORITY_KEYS, probeProductionAuthority } from '../authority'
 import { readFileSync } from 'fs'
 import path from 'path'
+import { isSubsystemReadyForFounderDeploy } from '../founderSequence'
+import { SUPERSEDED_KMS_AUTHORITY_KEYS, probeProductionAuthority } from '../authority'
 
 const DEPLOYER = AUTHORIZED_MELEGA_DEPLOYER
 const OTHER = '0x1111111111111111111111111111111111111111'

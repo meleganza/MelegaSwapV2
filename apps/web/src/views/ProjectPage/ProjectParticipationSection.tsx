@@ -3,10 +3,10 @@ import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
 import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
-import ProjectParticipationPositions from './ProjectParticipationPositions'
-import ProjectLiquidityBuildingSection from './ProjectLiquidityBuildingSection'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
+import ProjectParticipationPositions from './ProjectParticipationPositions'
+import ProjectLiquidityBuildingSection from './ProjectLiquidityBuildingSection'
 
 const Stack = styled(Flex)`
   flex-direction: column;

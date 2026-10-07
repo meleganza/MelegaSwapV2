@@ -6,6 +6,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import BigNumber from 'bignumber.js'
+import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import {
   buildPoolsWalletPortfolio,
   selectHistoricalPoolPortfolioPositions,
@@ -15,7 +16,6 @@ import {
 import { YourPoolsSection } from '../components/YourPoolsSection'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import type { PoolsStakingRuntime } from '../poolsRuntime/usePoolsStakingRuntime'
-import { createEmptyWalletPortfolio } from 'lib/wallet-portfolio/contracts'
 
 const WALLET = '0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513'
 

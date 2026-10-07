@@ -8,10 +8,10 @@ import { supportedChainId } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { auditFarmProvenance } from 'lib/data-truth/yieldProvenanceAudit'
+import { resolveFarmLiquidityUsd } from 'lib/data-truth/yieldMetricHelpers'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import { formatUsd } from '../farmsRuntime/formatFarmsRuntime'
-import { resolveFarmLiquidityUsd } from 'lib/data-truth/yieldMetricHelpers'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type {
   ExploreFarmViewModel,

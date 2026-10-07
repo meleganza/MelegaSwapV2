@@ -1,6 +1,6 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
-import type { RecentBuildRow } from '../buildStudioData'
 import { buildLiveEvents } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
+import type { RecentBuildRow } from '../buildStudioData'
 
 export function buildRecentBuilds(projects: EnrichedProjectRecord[]): RecentBuildRow[] {
   const rows: RecentBuildRow[] = []

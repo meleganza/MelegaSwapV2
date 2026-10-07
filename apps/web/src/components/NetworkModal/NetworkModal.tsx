@@ -11,9 +11,9 @@ import {
   isBridgeOnlyWalletOnBridgePage,
   shouldOpenUnsupportedNetworkModal,
 } from 'config/publicNetworkSwitchCapabilities'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { UnsupportedNetworkModal } from './UnsupportedNetworkModal'
 import { WrongNetworkModal } from './WrongNetworkModal'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 export const hideWrongNetworkModalAtom = atom(false)
 

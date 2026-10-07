@@ -2,9 +2,9 @@
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 import { setMCreditsPassportForTests } from 'lib/mcredits/passportState'
 import { clearMCreditsReceiptsForTests } from 'lib/mcredits/receipt'
+import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 
 vi.mock('wagmi', () => ({
   useAccount: vi.fn(() => ({ address: undefined })),
@@ -99,8 +99,12 @@ describe('M-Credits Boost funnel', () => {
 
   it('settles a mocked Trend Boost debit once and activates fulfillment', async () => {
     await openTrend()
-    fireEvent.click(screen.getByTestId('commercial-pay-M_CREDITS'))
+    // The payment card and review action stay disabled until MARCO Pay readiness resolves.
+    const credits = screen.getByTestId('commercial-pay-M_CREDITS')
+    await waitFor(() => expect(credits.hasAttribute('disabled')).toBe(false))
+    fireEvent.click(credits)
     fireEvent.click(screen.getByTestId('commercial-checkout-next'))
+    await waitFor(() => expect(screen.getByTestId('commercial-checkout-pay').hasAttribute('disabled')).toBe(false))
     fireEvent.click(screen.getByTestId('commercial-checkout-pay'))
     await waitFor(() => expect(screen.getByTestId('commercial-checkout-success')).toBeTruthy())
     const calls = (global.fetch as any).mock.calls.filter((call: any[]) => String(call[0]).includes('/api/mcredits/orders'))

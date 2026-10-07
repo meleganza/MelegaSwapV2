@@ -34,6 +34,7 @@ import { ContractMethodName } from 'utils/types'
 import { transactionErrorToUserReadableMessage } from 'utils/transactionErrorToUserReadableMessage'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
 import { useLPApr } from 'state/swap/useLPApr'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -73,7 +74,6 @@ import { useCurrencySelectRoute } from './useCurrencySelectRoute'
 import { CommonBasesType } from '../../components/SearchModal/types'
 import SettingsModal from '../../components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from '../../components/Menu/GlobalSettings/types'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 enum Steps {
   Choose,

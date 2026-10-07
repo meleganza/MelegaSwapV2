@@ -1,3 +1,4 @@
+import { checkoutTokenAddressesMatch } from 'lib/monetization/checkoutTargetBinding'
 import { VISIBILITY_RUNTIME } from 'lib/monetization/visibilityRuntime'
 import type { NextApiHandler } from 'next'
 import { getMarcoPayApplicationRef, getMarcoPayMerchantApiKey } from 'lib/marco-pay/contract'
@@ -145,6 +146,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const existingOrderId = body.orderId ? String(body.orderId).trim() : ''
     const existing = existingOrderId ? await hydrateMarcoPayOrder(existingOrderId) : null
+    const requestedContract = body.projectContract ? String(body.projectContract) : null
     const order =
       existing &&
       existing.buyerWallet === buyerWallet.toLowerCase() &&
@@ -154,6 +156,7 @@ const handler: NextApiHandler = async (req, res) => {
       existing.referralCatalogRef === referralCatalogRef &&
       existing.referralDestinationRef === referralDestinationRef &&
       existing.referralCampaignRef === referralCampaignRef &&
+      checkoutTokenAddressesMatch(existing.projectContract, requestedContract) &&
       OPEN_STATES.has(existing.state)
         ? existing
         : await createMarcoPayOrder({

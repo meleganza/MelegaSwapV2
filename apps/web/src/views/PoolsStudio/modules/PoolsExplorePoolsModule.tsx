@@ -9,15 +9,15 @@ import { typography } from 'design-system/melega'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { truthDash } from 'lib/data-truth'
+import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { poolsExplore, POOLS_EXPLORE_SORTS } from './poolsExplorePoolsTokens'
 import { usePoolsExplorePools } from './usePoolsExplorePools'
 import { PoolsExplorePoolCard } from './PoolsExplorePoolCard'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import type { PoolsExploreFilter, PoolsExplorePoolCardModel, PoolsExploreSort } from './poolsExplorePoolsTypes'
-import { truthDash } from 'lib/data-truth'
-import { ChainSwitchConfirmDialog, chainDisplayName } from 'components/ChainSwitchConfirmDialog'
-import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 
 const pulse = keyframes`
   0% { opacity: 0.45; }

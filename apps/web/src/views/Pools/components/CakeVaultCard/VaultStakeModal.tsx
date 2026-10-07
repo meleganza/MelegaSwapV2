@@ -10,6 +10,7 @@ import {
   AutoRenewIcon,
   CalculateIcon,
   IconButton,
+  useToast,
 } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -22,19 +23,18 @@ import useTheme from 'hooks/useTheme'
 import useWithdrawalFeeTimer from 'views/Pools/hooks/useWithdrawalFeeTimer'
 import BigNumber from 'bignumber.js'
 import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/formatBalance'
-import { useToast } from '@pancakeswap/uikit'
 import { fetchCakeVaultUserData } from 'state/pools'
 import { Pool } from 'state/types'
 import { getAddress } from 'utils/addressHelpers'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
-import { convertCakeToShares, convertSharesToCake } from '../../helpers'
-import FeeSummary from './FeeSummary'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import type { PoolTxSuccessPayload } from '../Modals/CollectModal'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { useWalletChainId } from 'hooks/useWalletChainId'
+import { convertCakeToShares, convertSharesToCake } from '../../helpers'
+import FeeSummary from './FeeSummary'
+import type { PoolTxSuccessPayload } from '../Modals/CollectModal'
 
 interface VaultStakeModalProps {
   pool: Pool.DeserializedPool<Token>

@@ -7,6 +7,7 @@ import { buildProjectRating } from 'views/ProjectsStudio/projectsRuntime/buildPr
 import { buildHeatmapRow } from 'views/RadarStudio/radarRuntime/buildHeatmap'
 import type { RadarLiveEvent } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
 import { buildOpportunityScore } from 'views/RadarStudio/radarRuntime/buildOpportunityScore'
+import type { TierRankedAsset } from 'lib/trending/tierTrendingModel'
 import type {
   AIDiscoveryRow,
   AIWarningRow,
@@ -15,7 +16,6 @@ import type {
   TrendingKpiItem,
   TrendingProjectCard,
 } from '../trendingStudioData'
-import type { TierRankedAsset } from 'lib/trending/tierTrendingModel'
 
 const UNAVAILABLE = 'Unavailable'
 const EM_DASH = '—'

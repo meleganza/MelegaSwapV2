@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import TradeTechnicalDetails from './TradeTechnicalDetails'
-import { formatCompactPriceUsd } from 'utils/formatCompactPrice'
 
 const Area = styled.div`
   height: ${tradeLayout.chartAreaHeight};

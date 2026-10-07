@@ -1,8 +1,8 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
-import type { ValidationCheck } from '../buildStudioData'
-import { buildInfrastructureScore } from './buildInfrastructureScore'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
 import { buildOnChainMetrics } from 'views/ProjectsStudio/projectsRuntime/onChainMetrics'
+import type { ValidationCheck } from '../buildStudioData'
+import { buildInfrastructureScore } from './buildInfrastructureScore'
 
 export function buildValidationChecks(project?: EnrichedProjectRecord): ValidationCheck[] {
   if (!project) {

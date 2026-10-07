@@ -9,10 +9,10 @@ import { BUYBACK_FEE, LP_HOLDERS_FEE, TOTAL_FEE, TREASURY_FEE } from 'config/con
 import { useState } from 'react'
 import styled from 'styled-components'
 import { Field } from 'state/swap/actions'
+import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import { RouterViewer } from './RouterViewer'
 import SwapRoute from './SwapRoute'
-import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
 
 const DetailsColumn = styled(AutoColumn)`
   width: 100%;
