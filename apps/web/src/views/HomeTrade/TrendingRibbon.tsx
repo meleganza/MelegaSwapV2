@@ -92,15 +92,11 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarByAddress, displayLimit, iconByAddress],
   )
 
-  const pinnedItems = enrichedItems.filter((item) => item.id.startsWith('paid-boosted-'))
-  const scrollingItems = enrichedItems.filter((item) => !item.id.startsWith('paid-boosted-'))
-
   return (
     <div style={{ width: '100%', minWidth: 0 }} data-top-movers-snapshot-id={snapshot.snapshotId} data-top-movers-surface="ticker">
       <MelegaTicker
         label="TOP MOVERS"
-        pinnedItems={pinnedItems}
-        items={scrollingItems}
+        items={enrichedItems}
         marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
         emptyPrimary={
           isLoading

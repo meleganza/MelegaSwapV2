@@ -35,8 +35,7 @@ const Trigger = styled.button`
   }
 
   @media (max-width: 767px) {
-    width: 26px;
-    height: 26px;
+    width: 30px;
     padding: 0;
     font-size: 0;
 
