@@ -1,12 +1,13 @@
 import type { NextApiHandler } from 'next'
 import {
-  fetchErc20OnChainIdentity,
   getCanonicalPromotionRule,
   getPendingProjectRegistry,
   resolveProjectRegistryLookup,
   serializePendingProjectProfile,
   serializePendingRegistryIndex,
 } from 'registry/projects/pending'
+import { fetchErc20OnChainIdentity } from 'registry/projects/pending/fetchErc20OnChainIdentity'
+import { resolveListedTokenFallback } from 'registry/projects/pending/listedTokenIdentityFallback'
 import { enrichProject } from 'registry/projects/discovery'
 import { serializeProjectManifest } from 'registry/projects/intelligence'
 import { buildDexAssetIndex } from 'lib/dex-asset-index/buildDexAssetIndex'
@@ -68,6 +69,22 @@ function resolveDexListing(contract: string, chainId: number) {
   }
 }
 
+const CLAIM_LOOKUP_MS = 2_000
+
+async function claimWithin<T>(work: Promise<T>): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      work.catch(() => null),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), CLAIM_LOOKUP_MS)
+      }),
+    ])
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
+}
+
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === 'GET') {
     const registry = getPendingProjectRegistry()
@@ -99,14 +116,15 @@ const handler: NextApiHandler = async (req, res) => {
         }
       : undefined
 
-  // Always attempt on-chain identity for verified discovery honesty.
+  // Always attempt on-chain identity for verified discovery honesty. The read is bounded
+  // so a stalled endpoint cannot hold the Boost "Detecting…" state open.
   const onChainIdentity = await fetchErc20OnChainIdentity(chainId, contract)
   const onChain = {
     name: bodyOnChain?.name ?? onChainIdentity.name,
     symbol: bodyOnChain?.symbol ?? onChainIdentity.symbol,
   }
   const detectedDex = resolveDexListing(contract, chainId)
-  const publishedClaim = await getProjectClaimByContract(chainId, contract)
+  const publishedClaim = await claimWithin(getProjectClaimByContract(chainId, contract))
   const publicClaim = publishedClaim ? toPublicProjectClaim(publishedClaim) : null
   const dex = {
     ...detectedDex,
@@ -117,17 +135,43 @@ const handler: NextApiHandler = async (req, res) => {
     logo: publishedClaim?.metadata.logo ?? detectedDex.logo,
   }
 
+  let identitySource: 'onchain' | 'factory' | 'canonical-registry' = 'onchain'
+  let fallbackDecimals: number | null = null
   if (!onChainIdentity.verifiedDeployment || !onChain.name?.trim() || !onChain.symbol?.trim()) {
-    return res.status(422).json({
-      ok: false,
-      machine_code: 'TOKEN_IDENTITY_UNVERIFIED',
-      reason:
-        onChainIdentity.reasonUnavailable ??
-        'The selected chain did not return verifiable ERC-20 name and symbol metadata for this contract.',
-      onChain: onChainIdentity,
-      dex,
-      claim: publicClaim,
+    const fallback = resolveListedTokenFallback(chainId, contract, {
+      listed: dex.listed,
+      name: dex.name,
+      symbol: dex.symbol,
+      logo: dex.logo,
     })
+    if (!fallback) {
+      return res.status(422).json({
+        ok: false,
+        machine_code: 'TOKEN_IDENTITY_UNVERIFIED',
+        reason:
+          onChainIdentity.reasonUnavailable ??
+          'The selected chain did not return verifiable ERC-20 name and symbol metadata for this contract.',
+        onChain: onChainIdentity,
+        dex,
+        claim: publicClaim,
+      })
+    }
+    identitySource = fallback.source
+    onChain.name = fallback.name
+    onChain.symbol = fallback.symbol
+    fallbackDecimals = fallback.decimals
+    dex.listed = dex.listed || fallback.listed
+    dex.name = dex.name ?? fallback.name
+    dex.symbol = dex.symbol ?? fallback.symbol
+    dex.logo = dex.logo ?? fallback.logo
+  }
+
+  const identityOnChain = {
+    ...onChainIdentity,
+    name: onChain.name,
+    symbol: onChain.symbol,
+    decimals: onChainIdentity.decimals ?? fallbackDecimals,
+    reasonUnavailable: identitySource === 'onchain' ? onChainIdentity.reasonUnavailable : null,
   }
 
   const lookup = resolveProjectRegistryLookup(contract, chainId, onChain)
@@ -141,11 +185,8 @@ const handler: NextApiHandler = async (req, res) => {
       project: lookup.canonical,
       machine: serializeProjectManifest(lookup.canonical),
       enriched,
-      onChain: {
-        ...onChainIdentity,
-        name: onChain.name,
-        symbol: onChain.symbol,
-      },
+      onChain: identityOnChain,
+      identitySource,
       dex,
       claim: publicClaim,
       promotion: getCanonicalPromotionRule(),
@@ -154,10 +195,12 @@ const handler: NextApiHandler = async (req, res) => {
 
   if (lookup.tier === 'pending' && lookup.pending) {
     const reason =
-      onChainIdentity.reasonUnavailable ??
-      (!lookup.pending.name.available && !lookup.pending.symbol.available
-        ? 'On-chain ERC-20 metadata was not available; pending profile created without a display name.'
-        : null)
+      identitySource === 'onchain'
+        ? onChainIdentity.reasonUnavailable ??
+          (!lookup.pending.name.available && !lookup.pending.symbol.available
+            ? 'On-chain ERC-20 metadata was not available; pending profile created without a display name.'
+            : null)
+        : null
     return res.status(lookup.pendingCreated ? 201 : 200).json({
       ok: true,
       tier: 'pending',
@@ -166,11 +209,8 @@ const handler: NextApiHandler = async (req, res) => {
       profile: lookup.pending,
       machine: lookup.machine ?? serializePendingProjectProfile(lookup.pending),
       summary: lookup.summary,
-      onChain: {
-        ...onChainIdentity,
-        name: onChain.name ?? dex.name,
-        symbol: onChain.symbol ?? dex.symbol,
-      },
+      onChain: identityOnChain,
+      identitySource,
       dex,
       claim: publicClaim,
       discoveryReason: reason,
