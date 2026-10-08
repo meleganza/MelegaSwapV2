@@ -128,8 +128,15 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(400).json({ error: 'PROJECT_AND_WALLET_REQUIRED' })
   }
   if (!SERVICES.has(serviceId)) return res.status(400).json({ error: 'SERVICE_UNSUPPORTED' })
-  if (rawReferralCode && !referralCode) return res.status(400).json({ error: 'REFERRAL_CODE_INVALID' })
-  if (referralCode && !referralCatalogRef) return res.status(409).json({ error: 'REFERRAL_CATALOG_UNAVAILABLE' })
+  if (rawReferralCode && !referralCode) {
+    return res.status(400).json({ error: 'REFERRAL_CODE_INVALID', message: 'This referral code cannot be used.' })
+  }
+  if (referralCode && !referralCatalogRef) {
+    return res.status(409).json({
+      error: 'REFERRAL_CATALOG_UNAVAILABLE',
+      message: 'This package is not in the Passport PRO catalogue.',
+    })
+  }
   if (referralCode) {
     const authorityQuote = await quoteMarcoReferralForCheckout({
       code: referralCode,
@@ -137,7 +144,12 @@ const handler: NextApiHandler = async (req, res) => {
       destinationRef: referralDestinationRef,
       campaignRef: referralCampaignRef,
     })
-    if (!authorityQuote) return res.status(422).json({ error: 'REFERRAL_NOT_VERIFIED' })
+    if (!authorityQuote) {
+      return res.status(422).json({
+        error: 'REFERRAL_NOT_VERIFIED',
+        message: 'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+      })
+    }
   }
   if (!VISIBILITY_RUNTIME[serviceId]?.live) return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
   if ((serviceId === 'featured-farm' || serviceId === 'featured-pool') && !targetId) {
