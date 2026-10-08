@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useId, useMemo, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors, typography } from '../../tokens'
 import type { MelegaLayoutProps } from '../../primitives'
@@ -133,21 +133,24 @@ const paidItemStyles = `
   box-shadow: 0 0 18px rgba(244, 196, 48, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 `
 
-const RocketMark = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Trend Boost">
-    <defs>
-      <linearGradient id="melegaRocketGold" x1="2" y1="22" x2="21" y2="2" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#9d6d05" />
-        <stop offset="0.48" stopColor="#f4c542" />
-        <stop offset="1" stopColor="#fff1a6" />
-      </linearGradient>
-    </defs>
-    <path
-      fill="url(#melegaRocketGold)"
-      d="M14.6 3.1c2.1-1 4.2-1.1 5.9-1.1 0 1.7-.1 3.8-1.1 5.9l-5.6 7-4.7-4.7 5.5-7.1Zm1.2 4.2a1.7 1.7 0 1 0 2.4-2.4 1.7 1.7 0 0 0-2.4 2.4ZM8 11.4l4.6 4.6-2.2 2.2-1.5-1.5-2.8 3.1.6-4.3-1.5-1.5L8 11.4Zm1-3.2L4.7 9.4 8 10.2l1-2Zm7.8 7.8-.8-3-2.2 2.9 3 0Z"
-    />
-  </svg>
-)
+const RocketMark = () => {
+  const gradientId = `melegaRocketGold-${useId().replace(/:/g, '')}`
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Trend Boost">
+      <defs>
+        <linearGradient id={gradientId} x1="2" y1="22" x2="21" y2="2" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#9d6d05" />
+          <stop offset="0.48" stopColor="#f4c542" />
+          <stop offset="1" stopColor="#fff1a6" />
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        d="M14.6 3.1c2.1-1 4.2-1.1 5.9-1.1 0 1.7-.1 3.8-1.1 5.9l-5.6 7-4.7-4.7 5.5-7.1Zm1.2 4.2a1.7 1.7 0 1 0 2.4-2.4 1.7 1.7 0 0 0-2.4 2.4ZM8 11.4l4.6 4.6-2.2 2.2-1.5-1.5-2.8 3.1.6-4.3-1.5-1.5L8 11.4Zm1-3.2L4.7 9.4 8 10.2l1-2Zm7.8 7.8-.8-3-2.2 2.9 3 0Z"
+      />
+    </svg>
+  )
+}
 
 const ItemLink = styled.a<{ $boosted?: boolean }>`
   display: inline-flex;
@@ -265,6 +268,40 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
 
   if (disabled) return null
 
+  const renderItem = (item: MelegaTickerItem, copy: number) => {
+    const boosted = item.id.startsWith('paid-boosted-')
+    const content = (
+      <>
+        {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
+        {boosted ? (
+          <ItemIcon>
+            <RocketMark />
+          </ItemIcon>
+        ) : null}
+        <Primary>{item.primary}</Primary>
+        {!boosted && item.secondary && <Secondary>{item.secondary}</Secondary>}
+        {item.accent && (
+          <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
+            {item.accent}
+          </Accent>
+        )}
+      </>
+    )
+    return (
+      <React.Fragment key={`${item.id}-${copy}`}>
+        {item.href ? (
+          <ItemLink href={item.href} $boosted={boosted} data-paid-trend-order={boosted ? item.id : undefined}>
+            {content}
+          </ItemLink>
+        ) : (
+          <ItemSpan $boosted={boosted} data-paid-trend-order={boosted ? item.id : undefined}>
+            {content}
+          </ItemSpan>
+        )}
+      </React.Fragment>
+    )
+  }
+
   if (!safeItems.length) {
     return (
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
@@ -321,37 +358,7 @@ const MelegaTickerComponent: React.FC<MelegaTickerProps> = ({
         onPointerCancel={handlePointerUp}
       >
         <Track $paused={paused} $static={!marqueeEnabled} data-ticker-track>
-          {scrollItems.map((item, i) => {
-            const boosted = item.id.startsWith('paid-boosted-')
-            const content = (
-              <>
-                {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
-                {boosted ? (
-                  <ItemIcon>
-                    <RocketMark />
-                  </ItemIcon>
-                ) : null}
-                <Primary>{item.primary}</Primary>
-                {!boosted && item.secondary && <Secondary>{item.secondary}</Secondary>}
-                {item.accent && (
-                  <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
-                    {item.accent}
-                  </Accent>
-                )}
-              </>
-            )
-            return (
-              <React.Fragment key={`${item.id}-${i >= safeItems.length ? 1 : 0}`}>
-                {item.href ? (
-                  <ItemLink href={item.href} $boosted={boosted}>
-                    {content}
-                  </ItemLink>
-                ) : (
-                  <ItemSpan $boosted={boosted}>{content}</ItemSpan>
-                )}
-              </React.Fragment>
-            )
-          })}
+          {scrollItems.map((item, i) => renderItem(item, i >= safeItems.length ? 1 : 0))}
         </Track>
       </TrackWrap>
     </Strip>

@@ -8,7 +8,18 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  await listTrendBoostOrdersDurably()
+  try {
+    await listTrendBoostOrdersDurably()
+  } catch {
+    res.setHeader('Cache-Control', 'no-store')
+    return res.status(503).json({
+      schema: 'melega.trend-boost-active.v1',
+      error: 'TREND_BOOST_ACTIVE_UNAVAILABLE',
+      generatedAt: new Date().toISOString(),
+      count: 0,
+      placements: [],
+    })
+  }
   const placements = listActiveTrendBoostOrders().map((order) => ({
     orderId: order.orderId,
     projectId: order.projectId,

@@ -134,5 +134,6 @@ export function entriesToTickerItems(entries: TopMoverEntry[]): MelegaTickerItem
     accent: e.changeLabel || undefined,
     accentPositive: e.accentPositive,
     href: e.href,
+    ...(e.chainId != null ? { chainId: e.chainId } : {}),
   }))
 }

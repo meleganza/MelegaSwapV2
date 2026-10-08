@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaTicker } from 'design-system/melega/components/Ticker'
+import { applyTickerRenderBudget } from 'lib/trending/paidTickerPlacements'
 import { extractAddressFromHref } from 'lib/trending/topMoversSharedSnapshot'
 import useDexTrendingTicker from './useDexTrendingTicker'
 import { useTrendingDisplayLimit } from './useTrendingDisplayLimit'
@@ -46,7 +47,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).slice(0, displayLimit).map((item) => {
+      applyTickerRenderBudget(items ?? [], displayLimit).map((item) => {
         // Identity comes only from the shared snapshot item — never rematch by live rank index.
         const address = extractAddressFromHref(item.href)
         const asset = address ? avatarByAddress.get(address) : undefined

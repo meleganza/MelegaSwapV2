@@ -82,18 +82,14 @@ function tickerSymbolKey(primary: string): string {
   return primary.replace(/^🚀\s+/, '').replace(/\s+·\s+(Boosted|Featured)$/i, '').trim().toUpperCase()
 }
 
-function paidIdentityKeys(placement: PaidTickerPlacement): string[] {
-  const keys = [`sym:${placement.symbol.trim().toUpperCase()}`]
-  const address = normalizePaidAddress(placement.address)
-  if (address) keys.push(`addr:${address}`)
-  return keys
-}
-
-function organicMatchesPaid(item: MelegaTickerItem, paidKeys: Set<string>): boolean {
-  const address = tickerItemAddress(item)
-  if (address && paidKeys.has(`addr:${address}`)) return true
+function samePaidToken(item: MelegaTickerItem, placement: PaidTickerPlacement): boolean {
+  if (item.chainId != null && item.chainId !== placement.chainId) return false
+  const itemAddress = tickerItemAddress(item) ?? normalizePaidAddress(item.tokenAddress)
+  const paidAddress = normalizePaidAddress(placement.address)
+  if (itemAddress && paidAddress) return itemAddress === paidAddress
+  if (itemAddress && !paidAddress) return false
   const symbol = tickerSymbolKey(item.primary || '')
-  return Boolean(symbol) && paidKeys.has(`sym:${symbol}`)
+  return Boolean(symbol) && symbol === placement.symbol.trim().toUpperCase()
 }
 
 /**
@@ -111,13 +107,24 @@ export function mergeTickerWithPaidPlacements(input: {
   const featuredPlacements = (input.featured ?? []).filter((placement) => isPaidPlacementActive(placement, now))
   const boosted = boostedPlacements.map((placement) => paidPlacementToTickerItem(placement, now))
   const featured = featuredPlacements.map((placement) => paidPlacementToTickerItem(placement, now))
-  const paidKeys = new Set<string>()
-  for (const placement of [...boostedPlacements, ...featuredPlacements]) {
-    for (const key of paidIdentityKeys(placement)) paidKeys.add(key)
-  }
+  const activePaid = [...boostedPlacements, ...featuredPlacements]
   const organic =
-    paidKeys.size === 0 ? input.organic : input.organic.filter((item) => !organicMatchesPaid(item, paidKeys))
+    activePaid.length === 0
+      ? input.organic
+      : input.organic.filter((item) => !activePaid.some((placement) => samePaidToken(item, placement)))
   return [...boosted, ...organic, ...featured]
+}
+
+/**
+ * Paid Trend Boost / Featured rows stay in the bar when the organic budget is full.
+ * Unrelated organic rows keep their relative order in the remaining slots.
+ */
+export function applyTickerRenderBudget(items: MelegaTickerItem[], limit: number): MelegaTickerItem[] {
+  const boosted = items.filter((item) => item.id.startsWith('paid-boosted-'))
+  const featured = items.filter((item) => item.id.startsWith('paid-featured-'))
+  const organic = items.filter((item) => !item.id.startsWith('paid-'))
+  const organicSlots = Math.max(0, limit - boosted.length - featured.length)
+  return [...boosted, ...organic.slice(0, organicSlots), ...featured]
 }
 
 /** Eligibility gate: every ticker row must have measured move OR disclosed paid label. */

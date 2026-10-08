@@ -2,7 +2,7 @@
  * Single lightweight Top Movers consumer for ticker, Home and Projects.
  * Expensive indexer aggregation runs server-side once per cache window.
  */
-import React, { createContext, startTransition, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, startTransition, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
@@ -12,7 +12,7 @@ import {
   writeDurableTrendingSnapshot,
 } from 'lib/trending/durableTrendingSnapshot'
 import type { TierRankedAsset } from 'lib/trending/tierTrendingModel'
-import { fetchActiveTrendBoostPlacements } from 'lib/trending/activeTrendBoostPlacements'
+import { fetchActiveTrendBoostPlacements, retainActivePaidPlacements } from 'lib/trending/activeTrendBoostPlacements'
 import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements'
 import {
   HOME_TOP_MOVERS_LIMIT,
@@ -99,18 +99,21 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
       keepPreviousData: true,
     },
   )
-  const { data: paidPlacements = [] } = useSWR(
-    clientReady ? '/api/trend-boost/active' : null,
-    fetchActiveTrendBoostPlacements,
-    {
-      revalidateOnFocus: false,
-      refreshWhenHidden: false,
-      refreshInterval: TICKER_REFRESH_MS,
-      dedupingInterval: 55_000,
-      keepPreviousData: true,
-      shouldRetryOnError: false,
-    },
-  )
+  const lastGoodPaidRef = useRef<Awaited<ReturnType<typeof fetchActiveTrendBoostPlacements>>>([])
+  const {
+    data: paidPlacementData,
+    error: paidPlacementError,
+  } = useSWR(clientReady ? '/api/trend-boost/active' : null, fetchActiveTrendBoostPlacements, {
+    revalidateOnFocus: false,
+    refreshWhenHidden: false,
+    refreshInterval: TICKER_REFRESH_MS,
+    dedupingInterval: 55_000,
+    keepPreviousData: true,
+    shouldRetryOnError: false,
+  })
+  const paidRequestFailed = Boolean(paidPlacementError) && paidPlacementData == null
+  const paidPlacements = retainActivePaidPlacements(lastGoodPaidRef.current, paidPlacementData, paidRequestFailed)
+  if (!paidRequestFailed && paidPlacementData) lastGoodPaidRef.current = paidPlacementData
 
   useEffect(() => {
     const durable = readDurableTrendingSnapshot()

@@ -75,9 +75,19 @@ function hydrate(order: TrendBoostOrder | null): TrendBoostOrder | null {
   return order
 }
 
+export class TrendBoostOrderReadError extends Error {
+  constructor(message = 'TREND_BOOST_ORDER_READ_FAILED') {
+    super(message)
+    this.name = 'TrendBoostOrderReadError'
+  }
+}
+
 async function readBlobOrder(pathname: string, token: string): Promise<TrendBoostOrder | null> {
   const result = await get(pathname, { access: 'private', token, useCache: false })
-  if (!result || result.statusCode !== 200) return null
+  if (!result) return null
+  if (result.statusCode !== 200) {
+    throw new TrendBoostOrderReadError(`TREND_BOOST_ORDER_READ_FAILED:${result.statusCode}`)
+  }
   return hydrate((await new Response(result.stream).json()) as TrendBoostOrder)
 }
 
@@ -159,18 +169,11 @@ export async function listTrendBoostOrdersDurably(): Promise<TrendBoostOrder[]> 
       blobs.push(...page.blobs)
       cursor = page.hasMore ? page.cursor : undefined
     } while (cursor)
-    const orders = await Promise.all(
-      blobs.map(async (blob) => {
-        try {
-          return await readBlobOrder(blob.pathname, token)
-        } catch {
-          return null
-        }
-      }),
-    )
+    const orders = await Promise.all(blobs.map((blob) => readBlobOrder(blob.pathname, token)))
     return orders.filter((order): order is TrendBoostOrder => Boolean(order))
-  } catch {
-    return []
+  } catch (error) {
+    if (error instanceof TrendBoostOrderReadError) throw error
+    throw new TrendBoostOrderReadError(error instanceof Error ? error.message : 'TREND_BOOST_ORDER_READ_FAILED')
   }
 }
 
