@@ -59,6 +59,7 @@ import {
   refreshMCreditsQuote,
 } from 'lib/mcredits/passportState'
 import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
+import { isMarcoPayPreparedOrderCurrent, marcoPayReviewErrorMessage } from 'lib/marco-pay/preparedCheckout'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
 import { fetchMarcoPayReadiness, type MarcoPayReadiness } from 'lib/marco-pay/clientReadiness'
 import {
@@ -90,6 +91,11 @@ type MarcoPayOrderConfig = {
   referralApplied: boolean
   referralCode: string | null
   referralDiscountMinor: string | null
+  packageId: string
+  serviceId: string
+  buyerWallet: string
+  targetKey: string
+  quotedAt: number
 }
 
 const IDENTITY_CHAINS = [
@@ -1332,6 +1338,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
   const marcoPayOrderRef = useRef<MarcoPayOrderConfig | null>(null)
   const prepareFlightRef = useRef<Promise<MarcoPayOrderConfig | null> | null>(null)
+  const prepareFlightBindingRef = useRef<string | null>(null)
   const lastBuyerRef = useRef<string | null>(null)
   const targetGenerationRef = useRef(0)
   const preparedTargetKeyRef = useRef<string | null>(null)
@@ -1368,6 +1375,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     if (paymentInFlight) return
     preparedTargetKeyRef.current = null
     prepareFlightRef.current = null
+    prepareFlightBindingRef.current = null
     marcoPayOrderRef.current = null
     setMarcoPayOrder(null)
     setOrderId(null)
@@ -1584,7 +1592,8 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     void fetchMarcoPayReadiness(controller.signal)
       .then(setMarcoPayReadiness)
       .catch((cause) => {
-        if (cause instanceof Error && cause.name === 'AbortError') return
+        const name = typeof cause === 'object' && cause !== null ? (cause as { name?: string }).name : ''
+        if (name === 'AbortError') return
         setMarcoPayReadiness({
           executable: false,
           reason: 'MARCO Pay is temporarily unavailable.',
@@ -1682,8 +1691,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const bound = readBoundTarget()
     if (!selectedPackage || !service || !bound) return null
     if (!VISIBILITY_RUNTIME[service]?.live) return null
-    if (!marcoPayReadiness?.executable) {
-      setError(marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.')
+    if (marcoPayReadiness === null) return null
+    if (!marcoPayReadiness.executable) {
+      setError(marcoPayReadiness.reason ?? 'MARCO Pay is temporarily unavailable.')
       return null
     }
     const requestedReferralCode = referral && referralCatalogRef ? referral : null
@@ -1692,15 +1702,32 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return storage ? readStoredMarcoReferral(storage) : null
     })()
     const targetKey = preparedTargetKey(bound.chainId, bound.tokenAddress)
-    if (
-      marcoPayOrderRef.current?.paymentId &&
-      marcoPayOrderRef.current.wallet &&
-      marcoPayOrderRef.current.referralCode === requestedReferralCode &&
-      preparedTargetKeyRef.current === targetKey
-    ) {
-      return marcoPayOrderRef.current
+    const packageId = String(selectedPackage.id)
+    const requestedBinding = {
+      referralCode: requestedReferralCode,
+      packageId,
+      serviceId: service,
+      buyerWallet: buyerWallet ?? '',
+      targetKey,
+      now: Date.now(),
     }
-    if (prepareFlightRef.current && preparedTargetKeyRef.current === targetKey) return prepareFlightRef.current
+    const currentOrder = marcoPayOrderRef.current
+    if (
+      currentOrder?.paymentId &&
+      currentOrder.wallet &&
+      isMarcoPayPreparedOrderCurrent(currentOrder, requestedBinding)
+    ) {
+      setError(null)
+      return currentOrder
+    }
+    const bindingKey = [
+      requestedBinding.buyerWallet.toLowerCase(),
+      requestedBinding.targetKey,
+      requestedBinding.serviceId,
+      requestedBinding.packageId,
+      requestedBinding.referralCode ?? '',
+    ].join('|')
+    if (prepareFlightRef.current && prepareFlightBindingRef.current === bindingKey) return prepareFlightRef.current
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       setWalletStage('connect')
       setError(RC_COPY.connectWallet)
@@ -1708,13 +1735,16 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
     const generation = targetGenerationRef.current
     setBusy(true)
-    const flight = (async () => {
+    setError(null)
+    prepareFlightBindingRef.current = bindingKey
+    let flight!: Promise<MarcoPayOrderConfig | null>
+    flight = (async () => {
       try {
         const response = await fetch('/api/marco-pay/orders', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            orderId: preparedTargetKeyRef.current === targetKey ? marcoPayOrderRef.current?.orderId ?? null : null,
+            orderId: null,
             projectId: bound.projectId,
             projectSlug: bound.projectSlug,
             projectContract: bound.tokenAddress,
@@ -1728,7 +1758,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           }),
         })
         const payload = await response.json()
-        if (!response.ok) throw new Error(payload.message || 'MARCO Pay is temporarily unavailable.')
+        if (!response.ok) throw new Error(marcoPayReviewErrorMessage(payload))
         const session = readMarcoPayHandoffSession(payload)
         if (!session) throw new Error('MARCO Pay is temporarily unavailable.')
         const wallet = payload.wallet as MarcoPayWalletTransfer | null
@@ -1753,20 +1783,31 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             typeof payload.order.referralDiscountMinor === 'string'
               ? payload.order.referralDiscountMinor
               : null,
+          packageId,
+          serviceId: service,
+          buyerWallet: buyerWallet.toLowerCase(),
+          targetKey,
+          quotedAt: Date.now(),
         }
-        if (generation !== targetGenerationRef.current) return null
+        if (generation !== targetGenerationRef.current || prepareFlightBindingRef.current !== bindingKey) return null
         preparedTargetKeyRef.current = targetKey
         marcoPayOrderRef.current = next
         setMarcoPayOrder(next)
         setOrderId(next.orderId)
+        setError(null)
         setQuoteSummary(`Order ${next.orderId} · awaiting canonical MARCO Pay settlement`)
         return next
       } catch (cause) {
-        setError(cause instanceof Error ? cause.message : 'MARCO Pay is temporarily unavailable.')
+        if (generation === targetGenerationRef.current && prepareFlightBindingRef.current === bindingKey) {
+          setError(cause instanceof Error ? cause.message : 'MARCO Pay is temporarily unavailable.')
+        }
         return null
       } finally {
-        setBusy(false)
-        prepareFlightRef.current = null
+        if (prepareFlightRef.current === flight) {
+          prepareFlightRef.current = null
+          prepareFlightBindingRef.current = null
+          setBusy(false)
+        }
       }
     })()
     prepareFlightRef.current = flight
@@ -1838,7 +1879,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       step !== 'review' ||
       !isMarcoPay ||
       !marcoPayReadiness?.executable ||
-      marcoPayOrderRef.current ||
       status === 'confirmed'
     )
       return
@@ -2305,11 +2345,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       beginMarcoPayIsolation()
       await runMarcoPaySingleFlight(async () => {
         setBusy(true)
-        setWalletStage('confirm')
         try {
-          const order = marcoPayOrderRef.current ?? (await prepareMarcoPayOrder())
+          const order = await prepareMarcoPayOrder()
           const wallet = order?.wallet
-          if (!order || !wallet) throw new Error('MARCO Pay is temporarily unavailable.')
+          if (!order || !wallet) return
+          setWalletStage('confirm')
           const preferredProvider = (await connector?.getProvider?.()) ?? null
           const paymentWallet = await resolvePaymentWalletForSettlement({
             preferredProvider,
@@ -2430,7 +2470,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           <SecurePrimaryBtn
             type="button"
             onClick={() => void reviewAndPay()}
-            disabled={busy || detecting || Boolean(checkoutBlocker) || isMarcoPayWalletFlightActive()}
+            disabled={
+              busy ||
+              detecting ||
+              Boolean(checkoutBlocker) ||
+              (isMarcoPay && marcoPayReadiness === null) ||
+              isMarcoPayWalletFlightActive()
+            }
             data-testid="commercial-checkout-pay"
           >
             {busy ? 'Processing…' : isMarcoPay && marcoPayOrder ? 'PAY WITH MARCO' : 'Review and pay'}
@@ -2681,7 +2727,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               <Label>Choose payment</Label>
               <PaymentGrid>
                 {(['BNB', 'USDT', 'USDC', 'MARCO_PAY', 'M_CREDITS'] as CommercialPaymentAsset[]).map((asset) => {
+                  const marcoPayPending = asset === 'MARCO_PAY' && marcoPayReadiness === null
                   const disabled =
+                    marcoPayPending ||
                     (asset === 'MARCO_PAY' && !marcoPayReadiness?.executable) ||
                     (asset === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits)
                   const meta = PAYMENT_ASSET_META[asset]
@@ -2692,7 +2740,9 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       $on={pay === asset}
                       disabled={disabled}
                       title={
-                        asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
+                        marcoPayPending
+                          ? 'Checking MARCO Pay…'
+                          : asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
                           ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
                           : asset === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits
                           ? marcoPayReadiness?.reason ?? 'M-Credits are temporarily unavailable.'
