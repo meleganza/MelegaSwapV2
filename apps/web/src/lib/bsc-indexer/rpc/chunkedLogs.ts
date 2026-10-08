@@ -7,9 +7,10 @@ import {
   SYNC_TOPIC,
   MAX_EVENTS_PER_SYNC,
 } from '../constants'
+import { ammPairEventTopicsOrFilter } from '../eventTopics'
 import { assertIndexerEventTopicsValid } from '../eventTopicIntegrity'
 import type { NormalizedIndexerEvent } from '../types'
-import { toBlockQuantity, blockQuantityVariants } from './blockQuantity'
+import { toBlockQuantity } from './blockQuantity'
 import {
   getProviderHealthSnapshot,
   isProviderQuarantined,
@@ -83,6 +84,13 @@ function classifyRpcFailure(error: unknown, httpStatus?: number): string {
   return msg
 }
 
+/** Existing limit-string classification — skip same-URL retry multiplication. */
+export function isDeterministicProviderLimitError(error: unknown): boolean {
+  const msg = (error instanceof Error ? error.message : String(error)).toLowerCase()
+  if (msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('429')) return false
+  return msg.includes('limit')
+}
+
 async function postRpc<T>(
   url: string,
   method: string,
@@ -128,8 +136,8 @@ export async function rpcCallWithFailover<T>(
       } catch (e) {
         lastError = e instanceof Error ? e : new Error(String(e))
         if (isProviderQuarantined(url)) break
-        const msg = lastError.message.toLowerCase()
-        const delay = msg.includes('limit') ? 800 * 2 ** attempt : 250 * 2 ** attempt
+        if (isDeterministicProviderLimitError(lastError)) break
+        const delay = 250 * 2 ** attempt
         if (attempt < 2) await new Promise((r) => setTimeout(r, delay))
       }
     }
@@ -169,40 +177,7 @@ export interface RawLog {
   logIndex: string
 }
 
-async function fetchLogsForBlock(params: {
-  blockNumber: number
-  address: string
-  topic: string
-  logRpcUrls: string[]
-}): Promise<{ logs: RawLog[]; url: string }> {
-  ensureEventTopicsValid()
-  const variants = blockQuantityVariants(params.blockNumber)
-  let lastError: Error | undefined
-  for (const url of params.logRpcUrls) {
-    if (isProviderQuarantined(url)) continue
-    for (const quantity of variants) {
-      try {
-        const { result, url: used } = await rpcCallWithFailover<RawLog[]>(
-          'eth_getLogs',
-          [
-            {
-              fromBlock: quantity,
-              toBlock: quantity,
-              address: params.address.toLowerCase(),
-              topics: [params.topic],
-            },
-          ],
-          [url],
-        )
-        return { logs: result, url: used }
-      } catch (e) {
-        lastError = e instanceof Error ? e : new Error(String(e))
-      }
-    }
-  }
-  throw lastError ?? new Error(`eth_getLogs failed for block ${params.blockNumber}`)
-}
-
+/** Collapsed head scan: one chunked OR-filter range instead of per-block × per-topic walks. */
 export async function scanPairEventsFromHead(params: {
   address: string
   maxBlocks: number
@@ -218,38 +193,34 @@ export async function scanPairEventsFromHead(params: {
 
   type BlockHeader = { hash: string; number: string; parentHash: string; timestamp: string }
   const startHex = params.startBlock !== undefined ? toBlockQuantity(params.startBlock) : 'latest'
-  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', [startHex, false], headRpcUrls)
-  const logs: RawLog[] = []
-  const blockTimestamps = new Map<number, number>()
-  let scanned = 0
-  let providerUsed = logRpcUrls[0]
+  const headBlock = await rpcCall<BlockHeader>('eth_getBlockByNumber', [startHex, false], headRpcUrls)
+  const headNumber = parseInt(headBlock.number, 16)
   const stopBefore = params.stopBeforeBlock ?? 0
-  const topics = [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC]
+  const fromBlock = Math.max(stopBefore + 1, headNumber - params.maxBlocks + 1)
+  const blockTimestamps = new Map<number, number>()
+  blockTimestamps.set(headNumber, parseInt(headBlock.timestamp, 16))
 
-  while (scanned < params.maxBlocks && logs.length < (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) {
-    const blockNumber = parseInt(block.number, 16)
-    if (blockNumber <= stopBefore) break
-    blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
-
-    for (const topic of topics) {
-      const batch = await fetchLogsForBlock({
-        blockNumber,
-        address: params.address,
-        topic,
-        logRpcUrls,
-      })
-      providerUsed = batch.url
-      logs.push(...batch.logs)
-      if (logs.length >= (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) break
-      await new Promise((r) => setTimeout(r, 40))
-    }
-    scanned += 1
-
-    if (!block.parentHash || /^0x0+$/i.test(block.parentHash)) break
-    block = await rpcCall<BlockHeader>('eth_getBlockByHash', [block.parentHash, false], headRpcUrls)
+  if (fromBlock > headNumber) {
+    return { logs: [], blockTimestamps, lastScannedBlock: headNumber, providerUsed: logRpcUrls[0] }
   }
 
-  return { logs, blockTimestamps, lastScannedBlock: parseInt(block.number, 16), providerUsed }
+  const { logs } = await getLogsChunked({
+    address: params.address,
+    topics: ammPairEventTopicsOrFilter(),
+    fromBlock,
+    toBlock: headNumber,
+    rpcUrls: logRpcUrls,
+  })
+  const cap = params.maxLogs ?? MAX_EVENTS_PER_SYNC
+  const sliced = logs.slice(0, cap)
+  for (const log of sliced) {
+    const bn = parseInt(log.blockNumber, 16)
+    if (!blockTimestamps.has(bn)) {
+      blockTimestamps.set(bn, await getBlockTimestamp(bn))
+    }
+  }
+
+  return { logs: sliced, blockTimestamps, lastScannedBlock: fromBlock, providerUsed: logRpcUrls[0] }
 }
 
 export async function scanSwapLogsFromHead(params: {
@@ -352,7 +323,7 @@ export async function getLogsChunked(params: {
       cursor = end + 1
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      if (!msg.toLowerCase().includes('limit') && !msg.toLowerCase().includes('hex')) throw e
+      if (!isDeterministicProviderLimitError(e) && !msg.toLowerCase().includes('hex')) throw e
       if (chunk > MIN_CHUNK_SIZE) {
         chunk = Math.max(MIN_CHUNK_SIZE, Math.floor(chunk / 2))
         continue
