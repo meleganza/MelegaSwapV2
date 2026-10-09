@@ -1,0 +1,50 @@
+VIEWPORT 1440
+NAVIGATED 1440
+MODAL 1440
+MEASURING 1440
+VIEWPORT 1280
+NAVIGATED 1280
+MODAL 1280
+MEASURING 1280
+VIEWPORT 390
+NAVIGATED 390
+MODAL 390
+MEASURING 390
+{
+  "phase": "before",
+  "viewports": [
+    {
+      "width": 1440,
+      "selector": 125.984375,
+      "minCard": 99.984375,
+      "searchPosition": "static",
+      "cta": true
+    },
+    {
+      "width": 1280,
+      "selector": 125.984375,
+      "minCard": 99.984375,
+      "searchPosition": "static",
+      "cta": true
+    },
+    {
+      "width": 390,
+      "selector": 334,
+      "minCard": 308,
+      "searchPosition": "static",
+      "cta": true
+    }
+  ],
+  "failures": [
+    "1440x900: search contained",
+    "1440x900: search/list/status separated",
+    "1440x900: all LP rows fit horizontally",
+    "1440x900: no horizontal overflow",
+    "1440x900: desktop selector/cards minimum widths",
+    "1280x800: search contained",
+    "1280x800: search/list/status separated",
+    "1280x800: all LP rows fit horizontally",
+    "1280x800: no horizontal overflow",
+    "1280x800: desktop selector/cards minimum widths"
+  ]
+}

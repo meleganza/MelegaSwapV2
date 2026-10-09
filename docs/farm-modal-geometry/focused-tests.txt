@@ -1,0 +1,11 @@
+RUN  v0.27.2 /private/tmp/melega-pool-public-truth/apps/web
+
+ ✓ src/views/FarmsStudio/__tests__/publicFarmFactory.feesAndHandoffs.test.ts  (10 tests) 3ms
+ ✓ src/views/FarmsStudio/__tests__/createFarmUxSimplification.test.ts  (5 tests) 1ms
+ ✓ src/views/FarmsStudio/__tests__/publicFarmFactory.uiLock.test.ts  (4 tests) 1ms
+ ✓ src/views/FarmsStudio/__tests__/createFarmPairSearchLayout.test.ts  (2 tests)
+
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+   Start at  11:09:34
+   Duration  549ms (transform 120ms, setup 61ms, collect 32ms, tests 5ms)
