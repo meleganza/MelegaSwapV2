@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   MARCO_PAY_PREPARED_QUOTE_TTL_MS,
   MARCO_PAY_PROVIDER_UNAVAILABLE,
+  MARCO_PAY_WALLET_COPY,
   isMarcoPayPreparedOrderCurrent,
   marcoPayReviewErrorMessage,
+  marcoPayWalletErrorMessage,
   type MarcoPayPreparedBinding,
 } from '../preparedCheckout'
 
@@ -88,5 +90,39 @@ describe('MARCO Pay prepared checkout binding', () => {
       'Quote rejected.',
     )
     expect(marcoPayReviewErrorMessage({})).toBe(MARCO_PAY_PROVIDER_UNAVAILABLE)
+  })
+})
+
+describe('marcoPayWalletErrorMessage', () => {
+  it('maps wallet rejection, including EIP-1193 4001 and ethers ACTION_REJECTED', () => {
+    expect(marcoPayWalletErrorMessage({ code: 4001, message: 'User rejected the request.' }).kind).toBe('cancelled')
+    expect(marcoPayWalletErrorMessage({ code: 'ACTION_REJECTED', message: 'user rejected transaction' }).kind).toBe('cancelled')
+  })
+
+  it('maps the production insufficient-MARCO estimateGas failure', () => {
+    const result = marcoPayWalletErrorMessage({
+      code: 'UNPREDICTABLE_GAS_LIMIT',
+      message:
+        'cannot estimate gas; transaction may fail or may require manual gas limit [ See: https://links.ethers.org/v5-errors-UNPREDICTABLE_GAS_LIMIT ] (reason="execution reverted: ERC20: transfer amount exceeds balance")',
+    })
+    expect(result).toEqual({ kind: 'insufficientMarco', message: MARCO_PAY_WALLET_COPY.insufficientMarco })
+  })
+
+  it('maps missing BNB gas, reverts and RPC timeouts without calling them a MARCO Pay outage', () => {
+    expect(marcoPayWalletErrorMessage({ code: 'INSUFFICIENT_FUNDS', message: 'insufficient funds for intrinsic transaction cost' }).kind).toBe(
+      'insufficientGas',
+    )
+    expect(marcoPayWalletErrorMessage({ code: 'CALL_EXCEPTION', message: 'execution reverted' }).kind).toBe('reverted')
+    const timeout = marcoPayWalletErrorMessage({ code: 'TIMEOUT', message: 'timeout' })
+    expect(timeout.kind).toBe('rpcUnavailable')
+    expect(timeout.message).not.toMatch(/not charged/)
+    for (const kind of ['cancelled', 'insufficientMarco', 'insufficientGas', 'reverted', 'rpcUnavailable'] as const) {
+      expect(MARCO_PAY_WALLET_COPY[kind]).not.toBe(MARCO_PAY_PROVIDER_UNAVAILABLE)
+    }
+  })
+
+  it('keeps only the first sentence of unknown wallet errors and never invents a cause', () => {
+    expect(marcoPayWalletErrorMessage(new Error('Ledger device locked (reason="x")')).message).toBe('Ledger device locked')
+    expect(marcoPayWalletErrorMessage({}).message).toBe(MARCO_PAY_WALLET_COPY.notSent)
   })
 })
