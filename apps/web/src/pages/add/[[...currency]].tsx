@@ -14,7 +14,8 @@ const AddLiquidityPage = () => {
     params.set('view', 'add')
     if (token0) params.set('token0', token0)
     if (token1) params.set('token1', token1)
-    void router.replace(`/liquidity?${params.toString()}`)
+    // chain, pair, and symbol query values already travel in location.search.
+    void router.replace(`/liquidity?${params.toString()}#liquidity-add`)
   }, [router])
 
   return null

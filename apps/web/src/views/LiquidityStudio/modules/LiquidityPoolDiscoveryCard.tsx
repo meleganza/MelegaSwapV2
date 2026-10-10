@@ -111,6 +111,30 @@ const MetricValue = styled.dd`
   text-overflow: ellipsis;
 `
 
+const ExplorerLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 32px;
+  margin-top: 2px;
+  color: ${liquidityPoolDiscovery.gold};
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: ${liquidityPoolDiscovery.goldHover};
+  }
+
+  &:focus-visible {
+    outline: ${liquidityPoolDiscovery.focusRing};
+    outline-offset: ${liquidityPoolDiscovery.focusOffset};
+  }
+`
+
 const Cta = styled(NextLink)`
   margin-top: auto;
   display: inline-flex;
@@ -170,6 +194,17 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
         <Status $active={card.active} data-testid="liquidity-pool-discovery-status" title={card.statusReason}>
           {getMelegaChain(card.chainId)?.shortLabel ?? `Chain ${card.chainId}`} · {card.status}
         </Status>
+        {card.explorerHref ? (
+          <ExplorerLink
+            href={card.explorerHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="liquidity-pool-discovery-explorer"
+            aria-label={`View ${card.pairName} LP pair contract`}
+          >
+            View contract
+          </ExplorerLink>
+        ) : null}
       </PairMeta>
     </PairRow>
 
@@ -184,7 +219,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       </Metric>
     </Metrics>
 
-    <Cta href={card.addHref} data-testid="liquidity-pool-discovery-cta">
+    <Cta href={card.addHref} data-testid="liquidity-pool-discovery-cta" data-add-href={card.addHref}>
       {LIQUIDITY_POOL_DISCOVERY_COPY.cta}
     </Cta>
   </Card>
