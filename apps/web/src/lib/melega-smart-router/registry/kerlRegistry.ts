@@ -1,7 +1,7 @@
 import marcoBsc from '../../../../public/registry/assets/marco.json'
 import marcoBscTestnet from '../../../../public/registry/assets/marco-bsc-testnet.json'
 import marcoEth from '../../../../public/registry/assets/marco-ethereum.json'
-import marcoPolygon from '../../../../public/registry/assets/marco-polygon.json'
+import marcoPolygon from '../../../../public/registry/assets/marco-polygon-canonical.json'
 import marcoBase from '../../../../public/registry/assets/marco-base.json'
 import kerlIndex from '../../../../public/registry/kerl/index.json'
 import type { RegistryStatus } from '../types'

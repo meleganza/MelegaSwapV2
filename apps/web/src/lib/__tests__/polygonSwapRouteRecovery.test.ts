@@ -5,7 +5,7 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
-import { ChainId, Native, Pair, WNATIVE } from '@pancakeswap/sdk'
+import { ChainId, Native, Pair, Token, WNATIVE } from '@pancakeswap/sdk'
 import { CAKE, USDT } from '@pancakeswap/tokens'
 import { Field } from 'state/swap/actions'
 import { queryParametersToSwapState } from 'state/swap/queryParameters'
@@ -19,6 +19,7 @@ import { isChainSupported } from 'utils/wagmi'
 import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { MELEGA_POLYGON_ROUTER, isMelegaCapabilityEnabled } from 'config/melegaChainRegistry'
+import { POLYGON_CANONICAL_MARCO_ADDRESS } from 'lib/melega-smart-router/marcoRegistry'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
 
 const WEB = path.resolve(__dirname, '../..')
@@ -43,8 +44,18 @@ describe('P0 Polygon swap route recovery', () => {
     const outputId = resolveSwapDefaultOutputCurrencyId(ChainId.POLYGON)
     const parsed = queryParametersToSwapState({ chain: 'polygon' }, inputId, outputId)
     expect(parsed[Field.INPUT].currencyId).toBe('POL')
-    expect(parsed[Field.OUTPUT].currencyId?.toLowerCase()).toBe(POLYGON_MARCO.toLowerCase())
+    expect(parsed[Field.OUTPUT].currencyId?.toLowerCase()).toBe(POLYGON_CANONICAL_MARCO_ADDRESS.toLowerCase())
+    expect(parsed[Field.OUTPUT].currencyId?.toLowerCase()).not.toBe(POLYGON_MARCO.toLowerCase())
     expect(parsed[Field.OUTPUT].currencyId?.toLowerCase()).not.toBe(MARCO_BSC_ADDRESS.toLowerCase())
+  })
+
+  it('keeps an explicit legacy Polygon output address on the archived token', () => {
+    const parsed = queryParametersToSwapState(
+      { chain: 'polygon', outputCurrency: POLYGON_MARCO },
+      'POL',
+      POLYGON_CANONICAL_MARCO_ADDRESS,
+    )
+    expect(parsed[Field.OUTPUT].currencyId?.toLowerCase()).toBe(POLYGON_MARCO.toLowerCase())
   })
 
   it('treats POL and MATIC as Polygon native and does not treat WMATIC as native', () => {
@@ -90,6 +101,8 @@ describe('P0 Polygon swap route recovery', () => {
     expect(marco).toBeTruthy()
     const addr = Pair.getAddress(wmatic, marco)
     expect(addr).toMatch(/^0x[a-fA-F0-9]{40}$/)
+    const canonical = new Token(ChainId.POLYGON, POLYGON_CANONICAL_MARCO_ADDRESS, 18, 'MARCO', 'MELEGA')
+    expect(Pair.getAddress(wmatic, canonical).toLowerCase()).not.toBe(addr.toLowerCase())
   })
 
   it('trade URL binder and swap page stay chain-aware and isolate market crashes', () => {

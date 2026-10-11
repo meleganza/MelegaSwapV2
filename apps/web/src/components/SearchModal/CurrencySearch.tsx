@@ -18,7 +18,8 @@ import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
-import { createFilterToken, useSortedTokensByQuery } from './filtering'
+import { createFilterToken, includePolygonMarcoSearchResult, useSortedTokensByQuery } from './filtering'
+import { isExplicitLegacyMarcoLookup, POLYGON_LEGACY_MARCO_ADDRESS } from 'lib/melega-smart-router/marcoRegistry'
 import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
@@ -122,8 +123,20 @@ function CurrencySearch({
 
   const filteredTokens: Token[] = useMemo(() => {
     const filterToken = createFilterToken(debouncedQuery)
-    return Object.values(tokensToShow || allTokens).filter(filterToken)
-  }, [tokensToShow, allTokens, debouncedQuery])
+    const visible = Object.values(tokensToShow || allTokens).filter(
+      (token) => filterToken(token) && includePolygonMarcoSearchResult(token.chainId, token.address, debouncedQuery),
+    )
+    if (chainId && isExplicitLegacyMarcoLookup(debouncedQuery)) {
+      const already = visible.some(
+        (token) => token.address.toLowerCase() === POLYGON_LEGACY_MARCO_ADDRESS.toLowerCase(),
+      )
+      if (!already && includePolygonMarcoSearchResult(chainId, POLYGON_LEGACY_MARCO_ADDRESS, debouncedQuery)) {
+        const archived = new Token(chainId, POLYGON_LEGACY_MARCO_ADDRESS, 18, 'MARCO', 'MARCO Legacy')
+        if (filterToken(archived)) visible.push(archived)
+      }
+    }
+    return visible
+  }, [tokensToShow, allTokens, debouncedQuery, chainId])
 
   const filteredQueryTokens = useSortedTokensByQuery(filteredTokens, debouncedQuery)
 
@@ -182,7 +195,8 @@ function CurrencySearch({
   const hasFilteredInactiveTokens = Boolean(filteredInactiveTokens?.length)
 
   const getCurrencyListRows = useCallback(() => {
-    if (searchToken && !searchTokenIsAdded && !hasFilteredInactiveTokens) {
+    const legacyLookup = Boolean(chainId && isExplicitLegacyMarcoLookup(debouncedQuery))
+    if (searchToken && !searchTokenIsAdded && !hasFilteredInactiveTokens && !legacyLookup) {
       return (
         <Column style={{ padding: '20px 0', height: '100%' }}>
           <ImportRow
@@ -229,6 +243,8 @@ function CurrencySearch({
     otherSelectedCurrency,
     searchToken,
     searchTokenIsAdded,
+    chainId,
+    debouncedQuery,
     selectedCurrency,
     setImportToken,
     showNative,

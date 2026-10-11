@@ -17,6 +17,14 @@ const MARCO_ETH = {
 
 const MARCO_POLYGON = {
   chainId: 137,
+  address: '0xF31A621A0e75d90fdA320EeE52956D718Fa34615',
+  symbol: 'MARCO',
+  ref: 'token://137/0xF31A621A0e75d90fdA320EeE52956D718Fa34615',
+} as const
+
+/** Archived Polygon ERC-20. Kept for history. Not a primary or official MARCO identity. */
+const MARCO_POLYGON_LEGACY = {
+  chainId: 137,
   address: '0xD3e28c74177B812d1543A406aD1A97ee3C398AC2',
   symbol: 'MARCO',
   ref: 'token://137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2',
@@ -77,7 +85,7 @@ const marco: StaticProjectRecord = {
     { type: 'instagram', url: 'https://www.instagram.com/melega.finance/' },
   ],
   resources: {
-    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_BASE, MARCO_ARB, MARCO_AVAX],
+    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_POLYGON_LEGACY, MARCO_BASE, MARCO_ARB, MARCO_AVAX],
     liquidityPools: [],
     farms: [],
     stakingPools: [],

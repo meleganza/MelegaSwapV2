@@ -4,11 +4,11 @@
   "legacy_ref": "token://137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
   "slug": "marco-polygon",
   "asset_type": "fungible",
-  "lifecycle": "observed",
+  "lifecycle": "archived",
   "project_binding": {
     "project_upi": "upi://melega/project/marco@1",
     "project_slug": "marco",
-    "is_primary": true,
+    "is_primary": false,
     "binding_source": "legacy_import",
     "bound_at": "2026-06-26"
   },
@@ -16,36 +16,36 @@
   "contract_address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
   "symbol": "MARCO",
   "decimals": 18,
-  "name": "MARCO (Polygon)",
-  "description": "MARCO coordination token on Polygon \u2014 primary asset of the MARCO project.",
+  "name": "MARCO Legacy (Polygon)",
+  "description": "Archived Polygon ERC-20 previously used for Melega DEX liquidity and farms. Not the official Polygon MARCO. Existing positions remain withdrawable.",
   "tags": [
-    "native",
-    "coordination",
+    "archived",
+    "deprecated",
     "fungible"
   ],
   "trust": {
     "badges": [
-      "canonical",
+      "deprecated",
       "observed"
     ],
     "verification_status": "observed"
   },
   "capabilities": {
     "tradable": {
-      "status": "live",
-      "notes": "MARCO on legacy default token lists"
+      "status": "partial",
+      "notes": "Archived ERC-20. Existing balances and withdrawals remain. Not the official Polygon MARCO."
     },
     "liquidity": {
-      "status": "live",
-      "notes": "Platform liquidity routes via /liquidity"
+      "status": "partial",
+      "notes": "Historical Melega LP only. Reserves stay in this token and are not canonical OFT liquidity."
     },
     "farm": {
-      "status": "live",
-      "notes": "Legacy MasterChef farms via /farms"
+      "status": "partial",
+      "notes": "Existing MasterChef positions withdraw against this token."
     },
     "pool": {
-      "status": "live",
-      "notes": "MARCO staking pools via /pools"
+      "status": "partial",
+      "notes": "Existing SmartChef positions withdraw against this token."
     },
     "lock": {
       "status": "planned",

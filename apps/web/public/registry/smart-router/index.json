@@ -132,7 +132,7 @@
       "status": "planned",
       "executionRouter": { "address": null, "status": "planned" },
       "wrapper": { "address": null, "status": "planned" },
-      "marco": { "assetRef": "/registry/assets/marco-polygon.json", "status": "observed" },
+      "marco": { "assetRef": "/registry/assets/marco-polygon-canonical.json", "status": "observed" },
       "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
       "supportedAssets": ["MARCO"],
       "policyRef": "FSC-01",

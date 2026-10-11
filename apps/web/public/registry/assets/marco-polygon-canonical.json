@@ -1,0 +1,92 @@
+{
+  "$schema": "https://melega.finance/schemas/asset/v1",
+  "uai": "uai://melega/asset/fungible/137/0xF31A621A0e75d90fdA320EeE52956D718Fa34615@1",
+  "legacy_ref": "token://137/0xF31A621A0e75d90fdA320EeE52956D718Fa34615",
+  "slug": "marco-polygon-canonical",
+  "asset_type": "fungible",
+  "lifecycle": "observed",
+  "project_binding": {
+    "project_upi": "upi://melega/project/marco@1",
+    "project_slug": "marco",
+    "is_primary": true,
+    "binding_source": "legacy_import",
+    "bound_at": "2026-10-11"
+  },
+  "chain_id": 137,
+  "contract_address": "0xF31A621A0e75d90fdA320EeE52956D718Fa34615",
+  "symbol": "MARCO",
+  "decimals": 18,
+  "name": "MARCO (Polygon)",
+  "description": "Official Polygon MARCO. Canonical OFT identity used for new discovery and buy-MARCO classification. No Melega pair is registered for this token.",
+  "tags": [
+    "native",
+    "coordination",
+    "fungible"
+  ],
+  "trust": {
+    "badges": [
+      "canonical",
+      "observed"
+    ],
+    "verification_status": "observed"
+  },
+  "capabilities": {
+    "tradable": {
+      "status": "partial",
+      "notes": "Official identity. No Melega Polygon pair is registered, so a quote is unavailable."
+    },
+    "liquidity": {
+      "status": "none",
+      "notes": "No Melega Polygon pair for this token."
+    },
+    "farm": {
+      "status": "none",
+      "notes": "Farms remain on the archived ERC-20."
+    },
+    "pool": {
+      "status": "none",
+      "notes": "Pools remain on the archived ERC-20."
+    },
+    "lock": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "governance": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "smartdrop": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "radar": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "space": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "labs": {
+      "status": "none",
+      "notes": "Not indexed."
+    },
+    "treasury": {
+      "status": "partial",
+      "notes": "Buy-MARCO classification uses this address on Polygon."
+    }
+  },
+  "relationships": {
+    "liquidity_pools": [],
+    "markets": [],
+    "locks": [],
+    "campaigns": [],
+    "treasury_skus": [],
+    "relationship_status": "not_indexed",
+    "relationship_notes": "No Melega pair is indexed for the canonical OFT."
+  },
+  "mvp_static": true,
+  "data_source": "asset-registry-static",
+  "as_of": "2026-10-11",
+  "disclaimer": "Listed ≠ audited. Identity is the canonical OFT. Market availability is not live."
+}

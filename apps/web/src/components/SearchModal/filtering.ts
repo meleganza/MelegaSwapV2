@@ -2,6 +2,18 @@ import { useMemo } from 'react'
 import { TokenInfo } from '@pancakeswap/token-lists'
 import { Token } from '@pancakeswap/sdk'
 import { isAddress } from 'utils'
+import { isExplicitLegacyMarcoLookup, isPolygonLegacyMarco } from 'lib/melega-smart-router/marcoRegistry'
+
+/** Archived Polygon MARCO stays out of a plain MARCO search. Address or "legacy" still reaches it. */
+export function includePolygonMarcoSearchResult(
+  chainId: number | undefined,
+  address: string,
+  search: string,
+): boolean {
+  const id = chainId
+  if (id == null || !isPolygonLegacyMarco(id, address)) return true
+  return isExplicitLegacyMarcoLookup(search)
+}
 
 export function filterTokens(tokens: Token[], search: string): Token[] {
   if (search.length === 0) return tokens

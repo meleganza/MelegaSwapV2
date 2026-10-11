@@ -21,9 +21,23 @@ describe('assets.data', () => {
 
   it('uses honest observed lifecycle — no fake verified', () => {
     STATIC_ASSETS.forEach((asset) => {
-      expect(asset.lifecycle).toBe('observed')
       expect(asset.trust.verificationStatus).toBe('observed')
       expect(asset.trust.badges).not.toContain('verified')
+      if (asset.slug === 'marco-polygon') {
+        expect(asset.lifecycle).toBe('archived')
+        expect(asset.projectBinding.isPrimary).toBe(false)
+        expect(asset.trust.badges).toContain('deprecated')
+        expect(asset.trust.badges).not.toContain('canonical')
+        expect(asset.capabilities.tradable.status).not.toBe('live')
+      } else if (asset.slug === 'marco-polygon-canonical') {
+        expect(asset.lifecycle).toBe('observed')
+        expect(asset.projectBinding.isPrimary).toBe(true)
+        expect(asset.trust.badges).toContain('canonical')
+        expect(asset.capabilities.tradable.status).not.toBe('live')
+        expect(asset.capabilities.liquidity.status).toBe('none')
+      } else {
+        expect(asset.lifecycle).toBe('observed')
+      }
     })
   })
 
@@ -68,7 +82,9 @@ describe('manifest', () => {
 
 describe('getAssetsByProjectSlug', () => {
   it('returns all MARCO assets for marco project', () => {
-    expect(getAssetsByProjectSlug('marco')).toHaveLength(4)
+    expect(getAssetsByProjectSlug('marco')).toHaveLength(7)
+    const polygon = getAssetsByProjectSlug('marco').filter((asset) => asset.chainId === 137)
+    expect(polygon.map((asset) => asset.slug)).toEqual(['marco-polygon-canonical', 'marco-polygon'])
     expect(getAssetsByProjectSlug('melega-dex')).toHaveLength(0)
   })
 })

@@ -33,11 +33,22 @@
       "slug": "marco-polygon",
       "symbol": "MARCO",
       "asset_type": "fungible",
-      "lifecycle": "observed",
+      "lifecycle": "archived",
       "project_upi": "upi://melega/project/melega-dex@1",
       "project_slug": "melega-dex",
       "chain_id": 137,
       "manifest_url": "/registry/assets/marco-polygon.json"
+    },
+    {
+      "uai": "uai://melega/asset/fungible/137/0xF31A621A0e75d90fdA320EeE52956D718Fa34615@1",
+      "slug": "marco-polygon-canonical",
+      "symbol": "MARCO",
+      "asset_type": "fungible",
+      "lifecycle": "observed",
+      "project_upi": "upi://melega/project/marco@1",
+      "project_slug": "marco",
+      "chain_id": 137,
+      "manifest_url": "/registry/assets/marco-polygon-canonical.json"
     },
     {
       "uai": "uai://melega/asset/fungible/97/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",

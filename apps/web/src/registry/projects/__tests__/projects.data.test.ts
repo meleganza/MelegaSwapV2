@@ -15,7 +15,14 @@ describe('projects.data', () => {
     expect(project?.isCanonical).toBe(true)
     // Token contracts live on the MARCO project identity to avoid cross-project collisions.
     expect(project?.resources.tokens).toHaveLength(0)
-    expect(marco?.resources.tokens).toHaveLength(4)
+    expect(marco?.resources.tokens).toHaveLength(7)
+    const polygon = marco?.resources.tokens.filter((token) => token.chainId === 137) ?? []
+    expect(polygon.map((token) => token.address.toLowerCase())).toEqual([
+      '0xf31a621a0e75d90fda320eee52956d718fa34615',
+      '0xd3e28c74177b812d1543a406ad1a97ee3c398ac2',
+    ])
+    expect(marco?.primaryTokenRefs).toContain('token://137/0xF31A621A0e75d90fdA320EeE52956D718Fa34615')
+    expect(marco?.primaryTokenRefs).not.toContain('token://137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2')
     expect(project?.trustBadges).toContain('canonical')
     expect(project?.trustBadges).toContain('observed')
     expect(project?.trustBadges).not.toContain('unverified')

@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
 import { useTranslation } from '@pancakeswap/localization'
 import { BAD_SRCS } from '../Logo/constants'
+import { isPolygonLegacyMarco } from 'lib/melega-smart-router/marcoRegistry'
 
 const TokenSection = styled.div<{ dim?: boolean }>`
   padding: 4px 20px;
@@ -88,6 +89,7 @@ export default function ImportRow({
               {token.symbol}
             </Text>
             <Text ellipsis color="textDisabled" fontSize="12px">
+              {isPolygonLegacyMarco(token.chainId, token.address) ? `${t('Archived')} • ` : ''}
               {token.name}
             </Text>
           </NameOverflow>

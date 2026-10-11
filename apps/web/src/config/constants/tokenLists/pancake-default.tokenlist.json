@@ -1,10 +1,10 @@
 {
   "name": "Uniswap Labs Default",
-  "timestamp": "2023-11-13T15:59:22.657Z",
+  "timestamp": "2026-10-11T06:43:00.000Z",
   "version": {
     "major": 11,
     "minor": 9,
-    "patch": 0
+    "patch": 1
   },
   "tags": {},
   "logoURI": "ipfs://QmNa8mQkrNKp1WEEeGjFezDmDeodkWRevGFN8JCV7b4Xir",
@@ -1936,7 +1936,7 @@
     {
       "name": "MELEGA",
       "symbol": "MARCO",
-      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "address": "0xF31A621A0e75d90fdA320EeE52956D718Fa34615",
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://www.melega.finance/images/melega.png"

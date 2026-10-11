@@ -18,6 +18,7 @@ import { RowFixed, RowBetween } from '../Layout/Row'
 import { CurrencyLogo } from '../Logo'
 import CircleLoader from '../Loader/CircleLoader'
 import { isTokenOnList } from '../../utils'
+import { isPolygonCanonicalMarco, isPolygonLegacyMarco } from 'lib/melega-smart-router/marcoRegistry'
 import ImportRow from './ImportRow'
 
 function currencyKey(currency: Currency): string {
@@ -91,6 +92,8 @@ function CurrencyRow({
       <Column>
         <Text bold>{currency.symbol}</Text>
         <Text color="textSubtle" small ellipsis maxWidth="200px">
+          {currency.isToken && isPolygonCanonicalMarco(currency.chainId, currency.address) ? `${t('Canonical')} • ` : ''}
+          {currency.isToken && isPolygonLegacyMarco(currency.chainId, currency.address) ? `${t('Archived')} • ` : ''}
           {!isOnSelectedList && customAdded && `${t('Added by user')} •`} {currency.name}
         </Text>
       </Column>

@@ -15,11 +15,14 @@ export type D87ServiceKey =
   | 'staking_pool_creation'
   | 'launchpad_integration'
 
+/**
+ * Chainless fallback. Polygon is intentionally absent: a missing chainId must not
+ * grant the Polygon buy-MARCO rate to either the legacy ERC-20 or the canonical OFT.
+ */
 const MARCO_ADDRESSES = new Set(
   [
     '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
     '0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76',
-    '0xD3e28c74177B812d1543A406aD1A97ee3C398AC2',
     '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
   ].map((a) => a.toLowerCase()),
 )
