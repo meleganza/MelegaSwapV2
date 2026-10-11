@@ -119,7 +119,7 @@ describe('MARCO Pay merchant session', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(2)
   })
 
-  it('binds a PRO referral in the signed body and trusts only MARCO for the discounted amount', async () => {
+  it('signs the quoted net and refuses a session that changes the payable amount', async () => {
     const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
       if (String(url).includes('/api/public/pay/state')) {
         return jsonResponse({
@@ -132,7 +132,7 @@ describe('MARCO Pay merchant session', () => {
       expect(JSON.parse(String(init?.body))).toEqual({
         application_ref: applicationRef,
         merchant_order_ref: 'mp_referral_order_1',
-        amount_minor: '2900',
+        amount_minor: '2610',
         currency: 'USD',
         item: 'trend-boost',
         referral_code: 'founder-1',
@@ -149,13 +149,15 @@ describe('MARCO Pay merchant session', () => {
           listed_price_minor: '2900',
           discount_minor: '290',
           net_paid_minor: '2610',
+          commission_amount_base: '783',
+          commission_asset: 'MARCO',
         },
       })
     })
     const session = await createMarcoPayPaymentSession({
       applicationRef,
       merchantOrderRef: 'mp_referral_order_1',
-      amountMinor: '2900',
+      amountMinor: '2610',
       currency: 'USD',
       item: 'trend-boost',
       referralCode: 'founder-1',
@@ -166,6 +168,7 @@ describe('MARCO Pay merchant session', () => {
       fetchImpl: fetchImpl as unknown as typeof fetch,
     })
     expect(session.referenceAmountMinor).toBe('2610')
+    expect(session.chainId).toBe(56)
     expect(session.referral).toEqual({
       referralCode: 'founder-1',
       catalogRef: 'mpp_ref_dex_trend_6h',
@@ -173,6 +176,51 @@ describe('MARCO Pay merchant session', () => {
       discountMinor: '290',
       netPaidMinor: '2610',
     })
+
+    const rewritten = vi.fn(async () =>
+      jsonResponse({
+        ok: true,
+        payment_id: 'pay_rewritten',
+        amount_minor: '2900',
+        marco_amount_minor: '25000000',
+      }),
+    )
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_referral_order_1',
+        amountMinor: '2610',
+        currency: 'USD',
+        secret,
+        merchantApiKey,
+        nowSeconds: now,
+        fetchImpl: rewritten as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'AMOUNT_MISMATCH' })
+  })
+
+  it('refuses a prepared chain instead of settling it as BNB', async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({
+        ok: true,
+        payment_id: 'pay_base',
+        marco_amount_minor: '25000000',
+        chain_id: 8453,
+        receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      }),
+    )
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_probe_intent_1',
+        amountMinor: '900',
+        currency: 'USD',
+        secret,
+        merchantApiKey,
+        nowSeconds: now,
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'CHAIN_NOT_EXECUTABLE' })
   })
 
   it('builds approval_url from payment_id when MARCO omits it', async () => {

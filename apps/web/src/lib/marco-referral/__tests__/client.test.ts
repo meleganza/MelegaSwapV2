@@ -141,6 +141,48 @@ describe('MARCO Passport PRO referral transport', () => {
     ).resolves.toMatchObject({ code: 'founder-1', status: 'VERIFIED' })
   })
 
+  it('uses the authority canonical code and commission base when they match the 10/30 rule', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+      ok: true,
+      canonical_code: 'Founder-1',
+      referral_code: 'founder-1',
+      catalog_ref: 'mpp_ref_dex_trend_6h',
+      listed_price_minor: '2900',
+      discount_minor: '290',
+      net_paid_minor: '2610',
+      commission_amount_base: '783',
+      commission_asset: 'MARCO',
+    })))
+    await expect(quoteMarcoReferralForCheckout({
+      code: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })).resolves.toMatchObject({
+      referral_code: 'founder-1',
+      net_paid_minor: '2610',
+      commission_amount_minor: '783',
+      commission_asset: 'MARCO',
+    })
+  })
+
+  it('rejects a quote that is not 10% off, not 30% of net, or paid in M-Credits', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+      ok: true,
+      referral_code: 'founder-1',
+      catalog_ref: 'mpp_ref_dex_trend_6h',
+      listed_price_minor: '2900',
+      discount_minor: '290',
+      net_paid_minor: '2610',
+      commission_amount_base: '783',
+      commission_asset: 'M-CREDITS',
+    })))
+    await expect(quoteMarcoReferralForCheckout({
+      code: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })).resolves.toBeNull()
+  })
+
   it('maps every currently live DEX visibility package to an authoritative catalogue ref', () => {
     for (const packageId of [
       'featured_24h',

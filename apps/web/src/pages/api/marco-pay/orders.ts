@@ -15,6 +15,7 @@ import {
 } from 'lib/marco-pay/orders'
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
 import { buildMarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
+import { assertPassportProEconomics } from 'lib/marco-pay/economics'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
 import { normalizeMarcoReferralCode, quoteMarcoReferralForCheckout } from 'lib/marco-referral/client'
 
@@ -60,6 +61,10 @@ function publicOrder(order: MarcoPayOrder) {
     referralApplied: Boolean(order.referralCode && order.referralCatalogRef),
     referralCode: order.referralCode,
     referralDiscountMinor: order.referralDiscountMinor,
+    listedPriceMinor: order.listedPriceMinor,
+    commissionAmountMinor: order.commissionAmountMinor,
+    commissionAsset: order.commissionAsset,
+    mcreditsCashbackSeparate: true,
     referralDestinationRef: order.referralDestinationRef,
     referralCampaignRef: order.referralCampaignRef,
   }
@@ -137,6 +142,8 @@ const handler: NextApiHandler = async (req, res) => {
       message: 'This package is not in the Passport PRO catalogue.',
     })
   }
+  let referralQuote: ReturnType<typeof assertPassportProEconomics> | null = null
+  let canonicalReferralCode = referralCode
   if (referralCode) {
     const authorityQuote = await quoteMarcoReferralForCheckout({
       code: referralCode,
@@ -147,6 +154,15 @@ const handler: NextApiHandler = async (req, res) => {
     if (!authorityQuote) {
       return res.status(422).json({
         error: 'REFERRAL_NOT_VERIFIED',
+        message: 'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+      })
+    }
+    try {
+      referralQuote = assertPassportProEconomics(authorityQuote)
+      canonicalReferralCode = authorityQuote.referral_code
+    } catch (cause) {
+      return res.status(422).json({
+        error: cause instanceof Error ? cause.message : 'REFERRAL_ECONOMICS_INVALID',
         message: 'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
       })
     }
@@ -164,8 +180,9 @@ const handler: NextApiHandler = async (req, res) => {
       existing.buyerWallet === buyerWallet.toLowerCase() &&
       existing.serviceId === serviceId &&
       existing.packageId === packageId &&
-      existing.referralCode === referralCode &&
+      existing.referralCode === canonicalReferralCode &&
       existing.referralCatalogRef === referralCatalogRef &&
+      (!referralQuote || existing.referenceAmountMinor === referralQuote.netPaidMinor) &&
       existing.referralDestinationRef === referralDestinationRef &&
       existing.referralCampaignRef === referralCampaignRef &&
       checkoutTokenAddressesMatch(existing.projectContract, requestedContract) &&
@@ -180,10 +197,11 @@ const handler: NextApiHandler = async (req, res) => {
             serviceId,
             packageId,
             targetId,
-            referralCode,
+            referralCode: canonicalReferralCode,
             referralCatalogRef,
             referralDestinationRef,
             referralCampaignRef,
+            referralQuote,
           })
     const secret = await resolveMarcoPayWebhookSecret()
     const merchantApiKey = getMarcoPayMerchantApiKey()
@@ -224,8 +242,29 @@ const handler: NextApiHandler = async (req, res) => {
           destinationRef: order.referralDestinationRef,
           campaignRef: order.referralCampaignRef,
         })
+        if (session.referenceAmountMinor !== order.referenceAmountMinor || session.chainId == null) {
+          return res.status(409).json({
+            error: session.chainId == null ? 'CHAIN_MISMATCH' : 'AMOUNT_MISMATCH',
+            message: 'MARCO Pay did not confirm the server-owned amount and chain.',
+          })
+        }
+        if (order.referralCode) {
+          const echoed = session.referral
+          if (
+            !echoed ||
+            echoed.referralCode !== order.referralCode ||
+            echoed.netPaidMinor !== order.referenceAmountMinor ||
+            echoed.discountMinor !== order.referralDiscountMinor ||
+            echoed.catalogRef !== order.referralCatalogRef
+          ) {
+            return res.status(409).json({
+              error: 'AMOUNT_MISMATCH',
+              message: 'MARCO Pay did not confirm the Passport PRO price.',
+            })
+          }
+        }
         quote = {
-          reference_amount_minor: session.referenceAmountMinor,
+          reference_amount_minor: order.referenceAmountMinor,
           reference_currency: order.referenceCurrency,
           marco_amount_minor: session.marcoAmountMinor,
           destination: session.destinationWallet,
@@ -237,16 +276,22 @@ const handler: NextApiHandler = async (req, res) => {
             paymentRef: session.paymentId,
             intentRef: session.intentId,
             approvalUrl: session.approvalUrl,
-            referenceAmountMinor: session.referenceAmountMinor,
-            referralDiscountMinor: session.referral?.discountMinor ?? null,
+            referralDiscountMinor: order.referralDiscountMinor,
             marcoAmountMinor: session.marcoAmountMinor,
             destinationWallet: session.destinationWallet,
-            chainId: session.chainId ?? 56,
+            chainId: session.chainId,
           })) ?? order
       } catch (cause) {
         const code = cause instanceof MarcoPayGatewayError ? cause.code : 'MARCO_PAY_INTENT_UNAVAILABLE'
         const message = cause instanceof Error ? cause.message : 'MARCO Pay could not create this payment.'
-        return res.status(503).json({ error: code, message })
+        const clientFault = new Set([
+          'AMOUNT_MISMATCH',
+          'REFERRAL_NOT_VERIFIED',
+          'REFERRAL_ECONOMICS_INVALID',
+          'CHAIN_NOT_EXECUTABLE',
+          'CHAIN_MISMATCH',
+        ])
+        return res.status(clientFault.has(code) ? 409 : 503).json({ error: code, message })
       }
     }
     if (!bound.paymentRef || !bound.approvalUrl) {

@@ -2835,9 +2835,15 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       <ReviewRow>
                         <span>Passport PRO</span>
                         <strong>
-                          Referral recognised · −$
+                          {marcoPayOrder.referralCode} · −$
                           {formatApproxNumber(Number(marcoPayOrder.referralDiscountMinor ?? '0') / 100, 2)}
                         </strong>
+                      </ReviewRow>
+                    ) : null}
+                    {isMarcoPay ? (
+                      <ReviewRow>
+                        <span>M-Credits</span>
+                        <strong>Separate cashback · not taken from this total</strong>
                       </ReviewRow>
                     ) : null}
                   </ReviewRows>

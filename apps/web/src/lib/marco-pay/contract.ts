@@ -29,6 +29,16 @@ export const MARCO_PAY_HEADERS = {
   signatureVersion: 'marco-signature-version',
 } as const
 
+export type MarcoPayReferralFact = {
+  referral_code: string
+  catalog_ref: string
+  listed_price_minor: string
+  discount_minor: string
+  net_paid_minor: string
+  commission_amount_base: string
+  commission_asset: string | null
+}
+
 export type MarcoPayCompletedEvent = {
   event_id: string
   event_type: 'payment.completed'
@@ -45,6 +55,7 @@ export type MarcoPayCompletedEvent = {
   status: 'COMPLETED'
   test_mode: boolean
   receipt_ref: string | null
+  referral?: MarcoPayReferralFact | null
 }
 
 export type MarcoPayLifecycleEvent = {
@@ -162,6 +173,25 @@ export function parseMarcoPayCompletedEvent(rawBody: Buffer): MarcoPayCompletedE
     status: 'COMPLETED',
     test_mode: body.test_mode,
     receipt_ref: nullableString(body.receipt_ref, 'receipt_ref'),
+    referral: parseReferralFact(body.referral),
+  }
+}
+
+function parseReferralFact(value: unknown): MarcoPayReferralFact | null {
+  if (value == null) return null
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new MarcoPayVerificationError('SCHEMA_INVALID', 'referral must be an object.')
+  }
+  const referral = value as Record<string, unknown>
+  const commission = referral.commission_amount_base ?? referral.commission_amount_minor
+  return {
+    referral_code: requireString(referral.referral_code, 'referral.referral_code'),
+    catalog_ref: requireString(referral.catalog_ref, 'referral.catalog_ref'),
+    listed_price_minor: requireMinorUnits(referral.listed_price_minor, 'referral.listed_price_minor'),
+    discount_minor: requireMinorUnits(referral.discount_minor, 'referral.discount_minor'),
+    net_paid_minor: requireMinorUnits(referral.net_paid_minor, 'referral.net_paid_minor'),
+    commission_amount_base: requireMinorUnits(commission, 'referral.commission_amount_base'),
+    commission_asset: referral.commission_asset == null ? null : requireString(referral.commission_asset, 'referral.commission_asset'),
   }
 }
 

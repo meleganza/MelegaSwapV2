@@ -1,4 +1,5 @@
 import { FEATURED_PAYMENT_TOKENS } from 'lib/featured-placement/constants'
+import { assertObservedPayChain } from './merchantRails'
 import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET } from './settlement'
 
 export const MARCO_PAY_CHAIN_ID = 56 as const
@@ -43,9 +44,7 @@ export function buildMarcoPayWalletTransfer(input: {
   if (!isCanonicalMarcoPaySettlementWallet(destination)) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (input.chainId != null && input.chainId !== MARCO_PAY_CHAIN_ID) {
-    throw new Error('CHAIN_MISMATCH')
-  }
+  if (input.chainId != null) assertObservedPayChain(input.chainId, false)
   const token = FEATURED_PAYMENT_TOKENS.MARCO
   const expected = token.address
   if (!expected) throw new Error('MARCO_TOKEN_MISSING')

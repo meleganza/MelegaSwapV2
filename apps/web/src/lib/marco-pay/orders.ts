@@ -26,9 +26,12 @@ import {
 } from 'lib/monetization/packages'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
+import { assertPassportProEconomics, type PassportProEconomics } from './economics'
+import { assertObservedPayChain, isAuthoritativeMarcoPaidStatus } from './merchantRails'
 import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET, usdCopiedToMarco } from './settlement'
 import { MARCO_PAY_CHAIN_ID } from './walletTransfer'
 import { readMarcoPaySettlementState, type MarcoPaySettlementState } from './gateway'
+import { normalizeMarcoReferralCode } from 'lib/marco-referral/client'
 
 export type MarcoPayOrderState =
   | 'CREATED'
@@ -62,6 +65,9 @@ export type MarcoPayOrder = {
   referralCode: string | null
   referralCatalogRef: string | null
   referralDiscountMinor: string | null
+  listedPriceMinor: string | null
+  commissionAmountMinor: string | null
+  commissionAsset: 'MARCO' | null
   referralDestinationRef?: string | null
   referralCampaignRef?: string | null
   legacyOrderId: string
@@ -125,6 +131,9 @@ function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
     referralCode: order.referralCode ?? null,
     referralCatalogRef: order.referralCatalogRef ?? null,
     referralDiscountMinor: order.referralDiscountMinor ?? null,
+    listedPriceMinor: order.listedPriceMinor ?? null,
+    commissionAmountMinor: order.commissionAmountMinor ?? null,
+    commissionAsset: order.commissionAsset ?? null,
     referralDestinationRef: order.referralDestinationRef ?? null,
     referralCampaignRef: order.referralCampaignRef ?? null,
   }
@@ -235,11 +244,17 @@ export async function createMarcoPayOrder(input: {
   referralCatalogRef?: string | null
   referralDestinationRef?: string | null
   referralCampaignRef?: string | null
+  referralQuote?: PassportProEconomics | null
 }): Promise<MarcoPayOrder> {
   const pkg =
     input.serviceId === 'featured'
       ? getFeaturedPackage(input.packageId)
       : getVisibilityPackage(input.serviceId as VisibilityProductId, input.packageId)
+  const listedMinor = String(Math.round(pkg.usdPrice * 100))
+  const quote = input.referralQuote ? assertPassportProEconomics(input.referralQuote) : null
+  if (quote && quote.listedPriceMinor !== listedMinor) throw new Error('REFERRAL_PRICE_MISMATCH')
+  const canonicalCode = quote ? normalizeMarcoReferralCode(input.referralCode) : input.referralCode ?? null
+  if (quote && !canonicalCode) throw new Error('REFERRAL_CODE_INVALID')
   const now = new Date().toISOString()
   const buyerWallet = input.buyerWallet.toLowerCase()
   const common = {
@@ -282,10 +297,13 @@ export async function createMarcoPayOrder(input: {
     packageId: String(pkg.id),
     durationMs: pkg.durationMs,
     referenceCurrency: 'USD',
-    referenceAmountMinor: String(Math.round(pkg.usdPrice * 100)),
-    referralCode: input.referralCode ?? null,
+    referenceAmountMinor: quote ? quote.netPaidMinor : listedMinor,
+    referralCode: canonicalCode,
     referralCatalogRef: input.referralCatalogRef ?? null,
-    referralDiscountMinor: null,
+    referralDiscountMinor: quote?.discountMinor ?? null,
+    listedPriceMinor: quote?.listedPriceMinor ?? listedMinor,
+    commissionAmountMinor: quote?.commissionAmountMinor ?? null,
+    commissionAsset: quote?.commissionAsset ?? null,
     referralDestinationRef: input.referralDestinationRef ?? null,
     referralCampaignRef: input.referralCampaignRef ?? null,
     legacyOrderId,
@@ -349,6 +367,27 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
   ) {
     throw new Error('MARCO_CONVERSION_INVALID')
   }
+  if (order.referralCode) {
+    const referral = event.referral
+    if (!referral) throw new Error('REFERRAL_REQUIRED')
+    if (normalizeMarcoReferralCode(referral.referral_code) !== order.referralCode) throw new Error('REFERRAL_CODE_MISMATCH')
+    if (referral.catalog_ref !== order.referralCatalogRef) throw new Error('REFERRAL_CATALOG_MISMATCH')
+    if (referral.net_paid_minor !== order.referenceAmountMinor) throw new Error('ORDER_AMOUNT_MISMATCH')
+    const economics = assertPassportProEconomics({
+      listedPriceMinor: referral.listed_price_minor,
+      discountMinor: referral.discount_minor,
+      netPaidMinor: referral.net_paid_minor,
+      commissionAmountMinor: referral.commission_amount_base,
+      commissionAsset: referral.commission_asset,
+    })
+    if (order.listedPriceMinor && economics.listedPriceMinor !== order.listedPriceMinor) throw new Error('REFERRAL_PRICE_MISMATCH')
+    if (order.referralDiscountMinor && economics.discountMinor !== order.referralDiscountMinor) {
+      throw new Error('ORDER_AMOUNT_MISMATCH')
+    }
+    if (order.commissionAmountMinor && economics.commissionAmountMinor !== order.commissionAmountMinor) {
+      throw new Error('COMMISSION_MISMATCH')
+    }
+  }
 }
 
 function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
@@ -357,7 +396,7 @@ function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
   if (order.destinationWallet && !isCanonicalMarcoPaySettlementWallet(order.destinationWallet)) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (order.chainId != null && order.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  if (order.chainId != null) assertObservedPayChain(order.chainId, false)
   if (
     order.marcoAmountMinor &&
     usdCopiedToMarco({ usdMinor: order.referenceAmountMinor, marcoMinor: order.marcoAmountMinor })
@@ -422,7 +461,11 @@ export async function fulfilPaidBoostOrder(orderRef: string): Promise<MarcoPayOr
   if (order.state === 'ACTIVE') return order
   assertLiveFulfilmentPreconditions(order)
   if (!order.paymentRef || !order.receiptRef) throw new Error('RECEIPT_REQUIRED')
-  await claimOnce('fulfilment', order.orderId)
+  const claimed = await claimOnce('fulfilment', order.orderId)
+  if (!claimed) {
+    const current = (await hydrateMarcoPayOrder(order.orderId)) ?? order
+    return current
+  }
   const latest = (await hydrateMarcoPayOrder(order.orderId)) ?? order
   if (latest.state === 'ACTIVE') return latest
   await updateMarcoPayOrder(latest.orderId, { state: 'ACTIVATING', lastError: null })
@@ -436,9 +479,10 @@ export async function fulfilPaidBoostOrder(orderRef: string): Promise<MarcoPayOr
 
 function settlementIsPaid(state: MarcoPaySettlementState): boolean {
   if (state.testMode) return false
-  if (state.completed === true) return true
-  const status = (state.status || '').toUpperCase()
-  return status === 'COMPLETED' || status === 'PAID' || status === 'SETTLED'
+  if (!state.receiptRef) return false
+  if (!isAuthoritativeMarcoPaidStatus(state.status)) return false
+  if (state.completed === false) return false
+  return true
 }
 
 export async function reconcileMarcoPayOrder(orderRef: string): Promise<MarcoPayOrder | null> {
@@ -464,7 +508,7 @@ export async function reconcileMarcoPayOrder(orderRef: string): Promise<MarcoPay
   if (state.destinationWallet && !isCanonicalMarcoPaySettlementWallet(state.destinationWallet)) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (state.chainId != null && state.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  if (state.chainId != null) assertObservedPayChain(state.chainId, false)
   if (!state.receiptRef && !order.receiptRef) throw new Error('RECEIPT_REQUIRED')
   const confirmed = await updateMarcoPayOrder(order.orderId, {
     state: 'PAYMENT_CONFIRMED',

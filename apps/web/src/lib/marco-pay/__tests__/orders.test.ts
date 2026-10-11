@@ -342,6 +342,50 @@ describe('MARCO Pay fulfilment', () => {
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 
+  it('charges the quoted net and refuses a completed event that drops the referral', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+      referralCode: 'founder-1',
+      referralCatalogRef: 'mpp_ref_dex_trend_1h',
+      referralQuote: {
+        listedPriceMinor: '900',
+        discountMinor: '90',
+        netPaidMinor: '810',
+        commissionAmountMinor: '243',
+        commissionAsset: 'MARCO',
+      },
+    })
+    expect(order.referenceAmountMinor).toBe('810')
+    expect(order.referralCode).toBe('founder-1')
+    expect(order.commissionAsset).toBe('MARCO')
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { reference_amount_minor: '810', test_mode: false })),
+    ).rejects.toThrow('REFERRAL_REQUIRED')
+    const paid = eventFor(order.orderId, {
+      reference_amount_minor: '810',
+      test_mode: false,
+      referral: {
+        referral_code: 'founder-1',
+        catalog_ref: 'mpp_ref_dex_trend_1h',
+        listed_price_minor: '900',
+        discount_minor: '90',
+        net_paid_minor: '810',
+        commission_amount_base: '243',
+        commission_asset: 'MARCO',
+      },
+    })
+    const result = await processMarcoPayCompletedEvent(paid)
+    expect(result.order?.state).toBe('ACTIVE')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
+    const replay = await processMarcoPayCompletedEvent(paid)
+    expect(replay.duplicate).toBe(true)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
+  })
+
   it('recovers a paid-but-unfulfilled historical order exactly once', async () => {
     const order = await createMarcoPayOrder({
       applicationRef,
