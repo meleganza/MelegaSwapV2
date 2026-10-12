@@ -1,7 +1,7 @@
 /**
- * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Swap · Liquidity · Farms · Pools · List
- * Portfolio is secondary via My Melega → View Full Portfolio (/portfolio kept).
+ * Public navigation is four destinations: Trade, Earn, Portfolio, Explore.
+ * Trade opens Swap. Earn groups Farms, Pools, and Liquidity Yield.
+ * Technical and commercial tools live in the Advanced Console, outside this list.
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -22,6 +22,9 @@ export type HeaderNavItem =
       badge?: 'NEW'
       match: (pathname: string) => boolean
       compactHide?: boolean
+      /** Grouped destinations. The label still navigates to `href`. */
+      items?: HeaderDropdownItem[]
+      menuWidth?: number
     }
   | {
       id: string
@@ -157,63 +160,82 @@ export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   match: (p) => p === '/radar',
 }
 
-/** Canonical primary navigation — flat links matching approved mockup. */
+const isTradePath = (p: string) =>
+  p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/') || p === '/bridge' || p.startsWith('/bridge/')
+
+const isEarnPath = (p: string) =>
+  p.startsWith('/farms') || p.startsWith('/pools') || p === '/liquidity' || p.startsWith('/liquidity/') || p.startsWith('/liquidity-studio')
+
+const isPortfolioPath = (p: string) =>
+  p === '/portfolio' ||
+  p.startsWith('/portfolio/') ||
+  p === '/passport' ||
+  p.startsWith('/passport/') ||
+  p === '/command-center' ||
+  p.startsWith('/command-center/')
+
+const isExplorePath = (p: string) =>
+  p === '/projects' ||
+  p.startsWith('/projects/') ||
+  p === '/explore' ||
+  p.startsWith('/explore/') ||
+  p.startsWith('/@') ||
+  p.startsWith('/project-hq')
+
+/** Public primary navigation — maximum four. */
 export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
   {
-    id: 'home',
-    label: 'Home',
-    kind: 'link',
-    href: '/',
-    // Home owns Discover only — Swap / Project Pages must not highlight Home.
-    match: (p) => p === '/',
-  },
-  {
-    id: 'swap',
-    label: 'Swap',
+    id: 'trade',
+    label: 'Trade',
     kind: 'link',
     href: '/swap',
-    match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+    menuWidth: 220,
+    match: isTradePath,
+    items: [
+      {
+        id: 'swap',
+        label: 'Swap',
+        href: '/swap',
+        match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+      },
+      {
+        id: 'bridge-marco',
+        label: 'Bridge MARCO',
+        href: '/bridge',
+        match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
+      },
+    ],
   },
   {
-    id: 'bridge',
-    label: 'Bridge',
-    kind: 'link',
-    href: '/bridge',
-    match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
-    compactHide: true,
-  },
-  {
-    id: 'liquidity',
-    label: 'Liquidity',
-    kind: 'link',
-    href: '/liquidity',
-    match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
-  },
-  {
-    id: 'farms',
-    label: 'Farms',
+    id: 'earn',
+    label: 'Earn',
     kind: 'link',
     href: '/farms',
-    match: (p) => p.startsWith('/farms'),
+    menuWidth: 240,
+    match: isEarnPath,
+    items: [
+      { id: 'farms', label: 'Farms', href: '/farms', match: (p) => p.startsWith('/farms') },
+      { id: 'pools', label: 'Pools', href: '/pools', match: (p) => p.startsWith('/pools') },
+      {
+        id: 'liquidity-yield',
+        label: 'Liquidity Yield',
+        href: '/liquidity',
+        match: (p) => p === '/liquidity' || p.startsWith('/liquidity/') || p.startsWith('/liquidity-studio'),
+      },
+    ],
   },
   {
-    id: 'pools',
-    label: 'Pools',
+    id: 'portfolio',
+    label: 'Portfolio',
     kind: 'link',
-    href: '/pools',
-    match: (p) => p.startsWith('/pools'),
+    href: '/portfolio',
+    match: isPortfolioPath,
   },
   {
-    id: 'list',
-    label: 'List',
+    id: 'explore',
+    label: 'Explore',
     kind: 'link',
-    href: '/list',
-    badge: 'NEW',
-    match: (p) =>
-      p === '/list' ||
-      p === '/import-existing-token' ||
-      p === '/launch' ||
-      p === '/new-project' ||
-      p.startsWith('/build-studio'),
+    href: '/projects',
+    match: isExplorePath,
   },
 ]

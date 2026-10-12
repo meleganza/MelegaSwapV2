@@ -14,6 +14,7 @@ import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRe
 import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
 import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
+import { AdvancedConsoleMenu } from './components/AdvancedConsoleMenu'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
@@ -187,6 +188,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         label: item.label,
         href: item.href,
         icon: <ShellNavIcon name={item.icon} />,
+        menu: item.menu,
       })),
     [],
   )
@@ -202,6 +204,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
 
       <MobileHeader data-melega-mobile-header>
         <MelegaBrandLockup size="mobile" iconOnly />
+        <AdvancedConsoleMenu placement="mobile" />
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>

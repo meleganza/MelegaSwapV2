@@ -28,19 +28,20 @@ export const BABYMARCO_NFT_ROUTE = '/nft/'
 export const COLLECTIBLES_ROUTE = '/collectibles'
 export const IDENTITY_CONSOLE_ROUTE = '/identity'
 
+export interface ShellBottomMenuItem {
+  id: string
+  label: string
+  href: string
+}
+
 export const shellNavigation: ShellNavSection[] = [
   {
-    label: 'HOME',
-    visibleCount: 1,
-    items: [{ id: 'overview', label: 'Overview', href: '/', icon: 'swap', match: (p) => p === '/' }],
-  },
-  {
     label: 'TRADE',
-    visibleCount: 3,
+    visibleCount: 2,
     items: [
       {
-        id: 'trade',
-        label: 'Trade',
+        id: 'swap',
+        label: 'Swap',
         href: '/swap',
         icon: 'swap',
         match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
@@ -52,36 +53,127 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'swap',
         match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
       },
-      {
-        id: 'liquidity-studio',
-        label: 'Liquidity Studio',
-        href: '/liquidity',
-        icon: 'drop',
-        match: (p) => p === '/liquidity' || p.startsWith('/liquidity-studio'),
-      },
     ],
   },
   {
     label: 'EARN',
-    visibleCount: 2,
+    visibleCount: 3,
     items: [
       { id: 'farms', label: 'Farms', href: '/farms', icon: 'coins', match: (p) => p.startsWith('/farms') },
       { id: 'pools', label: 'Pools', href: '/pools', icon: 'coins', match: (p) => p.startsWith('/pools') },
+      {
+        id: 'liquidity-yield',
+        label: 'Liquidity Yield',
+        href: '/liquidity',
+        icon: 'drop',
+        match: (p) => p === '/liquidity' || p.startsWith('/liquidity/') || p.startsWith('/liquidity-studio'),
+      },
     ],
   },
   {
-    label: 'FIND',
-    visibleCount: 5,
+    label: 'PORTFOLIO',
+    visibleCount: 1,
     items: [
       {
-        id: 'trending',
-        label: 'Trending',
-        href: '/projects?sort=trending',
-        icon: 'star',
-        match: (p) => p === '/projects' || p.startsWith('/projects'),
+        id: 'portfolio',
+        label: 'Portfolio',
+        href: '/portfolio',
+        icon: 'wallet',
+        match: (p) =>
+          p === '/portfolio' ||
+          p.startsWith('/portfolio/') ||
+          p === '/passport' ||
+          p.startsWith('/passport/') ||
+          p === '/command-center' ||
+          p.startsWith('/command-center/'),
       },
-      { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
-      { id: 'radar', label: 'DEX Intelligence', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
+    ],
+  },
+  {
+    label: 'EXPLORE',
+    visibleCount: 1,
+    items: [
+      {
+        id: 'explore',
+        label: 'Explore',
+        href: '/projects',
+        icon: 'folder',
+        match: (p) => p === '/projects' || p.startsWith('/projects/') || p.startsWith('/@') || p.startsWith('/project-hq'),
+      },
+    ],
+  },
+  {
+    label: 'WITHDRAW',
+    visibleCount: 3,
+    items: [
+      {
+        id: 'withdraw-lp',
+        label: 'Remove liquidity',
+        href: '/liquidity-studio?view=remove',
+        icon: 'drop',
+        match: (p) => p.startsWith('/remove') || p.startsWith('/liquidity-studio'),
+      },
+      {
+        id: 'withdraw-farms',
+        label: 'Farm positions',
+        href: '/farms?view=my',
+        icon: 'coins',
+        match: (p) => p.startsWith('/farms'),
+      },
+      {
+        id: 'withdraw-pools',
+        label: 'Pool positions',
+        href: '/pools?view=positions',
+        icon: 'coins',
+        match: (p) => p.startsWith('/pools'),
+      },
+    ],
+  },
+  {
+    label: 'ADVANCED',
+    visibleCount: 4,
+    items: [
+      {
+        id: 'create-token',
+        label: 'Create Token',
+        href: '/list?intent=create-token',
+        icon: 'rocket',
+        match: (p) => p.startsWith('/list'),
+      },
+      {
+        id: 'create-farm',
+        label: 'Create Farm',
+        href: '/farms?create=1',
+        icon: 'coins',
+        match: (p) => p.startsWith('/farms'),
+      },
+      {
+        id: 'create-pool',
+        label: 'Create Pool',
+        href: '/pools',
+        icon: 'drop',
+        hidden: true,
+        disabled: true,
+        disabledReason: 'Create Pool is unavailable',
+        match: () => false,
+      },
+      {
+        id: 'trend-boost',
+        label: 'Trend Boost',
+        href: '/list#trend-boost',
+        icon: 'star',
+        match: (p) => p.startsWith('/list'),
+      },
+      {
+        id: 'fees',
+        label: 'Fees & Treasury',
+        href: '/pricing-fees',
+        icon: 'command',
+        match: (p) => p.startsWith('/pricing-fees'),
+      },
+      { id: 'list', label: 'List a project', href: '/list', icon: 'rocket', match: (p) => p.startsWith('/list') },
+      { id: 'docs', label: 'Docs', href: '/docs', icon: 'folder', match: (p) => p.startsWith('/docs') },
+      { id: 'audit', label: 'Audit', href: '/audit', icon: 'brain', match: (p) => p === '/audit' },
       {
         id: 'collectibles',
         label: IDENTITY_HUB_NAV_LABEL,
@@ -98,92 +190,62 @@ export const shellNavigation: ShellNavSection[] = [
       },
     ],
   },
-  {
-    label: 'BUILD',
-    visibleCount: 1,
-    items: [
-      {
-        id: 'build-studio',
-        label: 'Build Studio',
-        href: '/build-studio',
-        icon: 'sparkle',
-        match: (p) => p.startsWith('/build-studio'),
-      },
-      {
-        id: 'list',
-        label: 'Import Existing Token',
-        href: '/import-existing-token',
-        icon: 'rocket',
-        hidden: true,
-        match: (p) => p === '/import-existing-token' || p === '/launch',
-      },
-    ],
-  },
-  {
-    label: 'OWN',
-    visibleCount: 1,
-    items: [
-      {
-        id: 'command-center',
-        label: 'Portfolio',
-        href: '/portfolio',
-        icon: 'command',
-        match: (p) =>
-          p === '/portfolio' ||
-          p.startsWith('/portfolio/') ||
-          p === '/passport' ||
-          p.startsWith('/passport/') ||
-          p === '/command-center' ||
-          p.startsWith('/command-center/'),
-      },
-      {
-        id: 'portfolio-overview',
-        label: 'Overview',
-        href: '/portfolio',
-        icon: 'wallet',
-        hidden: true,
-        match: (p) => p === '/portfolio' || p.startsWith('/portfolio/'),
-      },
-    ],
-  },
 ]
 
-/** Mobile bottom rail — core DEX funnels, each reachable in one tap. */
-export const shellBottomNavItems = [
+/** Mobile bottom rail — the same four public destinations as the header. */
+export const shellBottomNavItems: Array<{
+  id: string
+  label: string
+  href: string
+  icon: MelegaNavIcon
+  match: (pathname: string) => boolean
+  menu?: ShellBottomMenuItem[]
+}> = [
   {
-    id: 'home',
-    label: 'Home',
-    href: '/',
-    icon: 'swap' as MelegaNavIcon,
-    // Home owns Discover only — Swap / Project Pages must not highlight Home.
-    match: (p: string) => p === '/',
-  },
-  {
-    id: 'swap',
-    label: 'Swap',
+    id: 'trade',
+    label: 'Trade',
     href: '/swap',
-    icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+    icon: 'swap',
+    match: (p) =>
+      p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/') || p === '/bridge' || p.startsWith('/bridge/'),
   },
   {
-    id: 'liquidity',
-    label: 'Liquidity',
-    href: '/liquidity',
-    icon: 'drop' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/liquidity-studio') || p === '/liquidity',
-  },
-  {
-    id: 'farms',
-    label: 'Farms',
+    id: 'earn',
+    label: 'Earn',
     href: '/farms',
-    icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/farms'),
+    icon: 'coins',
+    match: (p) =>
+      p.startsWith('/farms') || p.startsWith('/pools') || p === '/liquidity' || p.startsWith('/liquidity-studio'),
+    menu: [
+      { id: 'farms', label: 'Farms', href: '/farms' },
+      { id: 'pools', label: 'Pools', href: '/pools' },
+      { id: 'liquidity-yield', label: 'Liquidity Yield', href: '/liquidity' },
+    ],
   },
   {
-    id: 'pools',
-    label: 'Pools',
-    href: '/pools',
-    icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/pools'),
+    id: 'portfolio',
+    label: 'Portfolio',
+    href: '/portfolio',
+    icon: 'wallet',
+    match: (p) =>
+      p === '/portfolio' ||
+      p.startsWith('/portfolio/') ||
+      p === '/passport' ||
+      p.startsWith('/passport/') ||
+      p === '/command-center' ||
+      p.startsWith('/command-center/'),
+  },
+  {
+    id: 'explore',
+    label: 'Explore',
+    href: '/projects',
+    icon: 'folder',
+    match: (p) =>
+      p === '/projects' ||
+      p.startsWith('/projects/') ||
+      p === '/explore' ||
+      p.startsWith('/explore/') ||
+      p.startsWith('/@') ||
+      p.startsWith('/project-hq'),
   },
 ]

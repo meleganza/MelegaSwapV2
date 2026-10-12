@@ -131,9 +131,11 @@ describe('My Melega positions drawer — shell contracts', () => {
     expect(header).toMatch(/title="My Melega"/)
   })
 
-  it('removes Portfolio from primary desktop header nav', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
+  it('places Portfolio in the four-item public header', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
+    const portfolio = GLOBAL_HEADER_NAV.find((i) => i.id === 'portfolio')
+    expect(portfolio?.kind).toBe('link')
+    if (portfolio?.kind === 'link') expect(portfolio.href).toBe('/portfolio')
   })
 
   it('shell wires provider + drawer + mobile trigger', () => {

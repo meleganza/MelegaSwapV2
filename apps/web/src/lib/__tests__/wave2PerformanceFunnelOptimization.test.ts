@@ -270,12 +270,23 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
     expect(tradeWarning).not.toContain('ImportTokenWarningModal')
   })
 
-  it('keeps every core DEX funnel one click away on desktop and mobile', () => {
-    expect(GLOBAL_HEADER_NAV.find((item) => item.id === 'swap')).toMatchObject({ href: '/swap' })
-    expect(GLOBAL_HEADER_NAV.find((item) => item.id === 'liquidity')).toMatchObject({ href: '/liquidity' })
-    expect(shellBottomNavItems.map((item) => item.id)).toEqual(['home', 'swap', 'liquidity', 'farms', 'pools'])
-    expect(shellBottomNavItems.find((item) => item.id === 'swap')?.href).toBe('/swap')
-    expect(shellBottomNavItems.find((item) => item.id === 'liquidity')?.href).toBe('/liquidity')
+  it('keeps Swap one click away and Earn grouped without new routes', () => {
+    const trade = GLOBAL_HEADER_NAV.find((item) => item.id === 'trade')
+    expect(trade?.kind).toBe('link')
+    if (trade?.kind === 'link') {
+      expect(trade.href).toBe('/swap')
+      expect(trade.items?.find((item) => item.id === 'liquidity-yield')?.href).toBeUndefined()
+    }
+    const earn = GLOBAL_HEADER_NAV.find((item) => item.id === 'earn')
+    expect(earn?.kind).toBe('link')
+    if (earn?.kind === 'link') {
+      expect(earn.items?.find((item) => item.id === 'liquidity-yield')?.href).toBe('/liquidity')
+    }
+    expect(shellBottomNavItems.map((item) => item.id)).toEqual(['trade', 'earn', 'portfolio', 'explore'])
+    expect(shellBottomNavItems.find((item) => item.id === 'trade')?.href).toBe('/swap')
+    expect(shellBottomNavItems.find((item) => item.id === 'earn')?.menu?.find((item) => item.id === 'liquidity-yield')?.href).toBe(
+      '/liquidity',
+    )
   })
 
   it('keeps the Swap terminal above the fold with compact premium rhythm', () => {

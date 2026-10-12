@@ -214,6 +214,22 @@ const config = {
         destination: '/swap/:path*',
         permanent: false,
       },
+      // /explore was a 404. Projects is the market discovery surface.
+      {
+        source: '/explore',
+        destination: '/projects',
+        permanent: false,
+      },
+      {
+        source: '/explore/',
+        destination: '/projects',
+        permanent: false,
+      },
+      {
+        source: '/explore/:path*',
+        destination: '/projects',
+        permanent: false,
+      },
       // Trending is a ranking layer inside Projects (honest public destination).
       {
         source: '/trending',
