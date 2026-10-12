@@ -859,6 +859,19 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     line-height: 18px !important;
   }
 
+  @media (max-width: 1023px) {
+    .home-swap-cockpit button[aria-label='Edit slippage tolerance'] {
+      position: relative;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .home-swap-cockpit input,
+    .home-swap-cockpit textarea {
+      scroll-margin-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .home-trade-swap .pancake-button--primary,
     .home-trade-swap button[id='swap-button'],

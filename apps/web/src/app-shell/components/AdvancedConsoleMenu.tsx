@@ -48,6 +48,16 @@ const Panel = styled.div`
   right: 0;
   width: min(280px, calc(100vw - 24px));
   padding: 8px;
+
+  @media (max-width: 1023px) {
+    position: fixed;
+    top: calc(56px + env(safe-area-inset-top, 0px) + 8px);
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100dvh - 140px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    overflow: auto;
+  }
   border-radius: 14px;
   background: rgba(12, 12, 12, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -74,6 +84,10 @@ const ItemLink = styled.a`
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
+
+  @media (max-width: 1023px) {
+    min-height: 36px;
+  }
 
   &:hover,
   &:focus-visible {
@@ -102,6 +116,10 @@ const Unavailable = styled.button`
   font-weight: 600;
   text-align: left;
   cursor: not-allowed;
+
+  @media (max-width: 1023px) {
+    min-height: 36px;
+  }
 `
 
 const Reason = styled.span`

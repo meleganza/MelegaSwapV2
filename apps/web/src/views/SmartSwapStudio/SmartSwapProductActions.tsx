@@ -61,6 +61,16 @@ const Tab = styled.button<{ $active: boolean }>`
   @media (max-width: 430px) {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 380px) {
+    padding: 0 8px;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
   }
 
   .smart-swap-tab-new {
@@ -76,6 +86,12 @@ const Tab = styled.button<{ $active: boolean }>`
     font-weight: 900;
     letter-spacing: 0.03em;
     vertical-align: middle;
+  }
+
+  @media (max-width: 380px) {
+    .smart-swap-tab-new {
+      display: none;
+    }
   }
 `
 

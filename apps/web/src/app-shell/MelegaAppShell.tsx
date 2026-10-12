@@ -100,6 +100,12 @@ const MobileHeader = styled.div`
   z-index: 95;
   box-sizing: border-box;
 
+  a,
+  button,
+  .melega-shell-mobile-connect {
+    min-height: 44px;
+  }
+
   @media (min-width: 1024px) {
     display: none;
   }
@@ -114,12 +120,17 @@ const MobileNetwork = styled.div`
 
   /* Keep chain control tappable on 390px — icon-only UserMenu must remain a hit target. */
   [data-testid='network-switcher-root'] {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+  }
+
+  button,
+  a {
+    min-height: 44px;
   }
 `
 
