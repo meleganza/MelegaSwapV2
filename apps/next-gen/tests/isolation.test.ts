@@ -1,0 +1,81 @@
+import assert from 'assert'
+import { readdirSync, readFileSync, statSync } from 'fs'
+import path from 'path'
+import { test } from 'node:test'
+
+const root = process.cwd()
+
+const SOURCE_DIRS = ['pages', 'components', 'modules', 'lib', 'styles']
+
+const FORBIDDEN = [
+  /@pancakeswap/,
+  /\bwagmi\b/,
+  /\bethers\b/,
+  /\bswr\b/,
+  /setInterval\s*\(/,
+  /setTimeout\s*\(/,
+  /\bfetch\s*\(/,
+  /WebSocket/,
+  /eth_call/,
+  /eth_chainId/,
+  /\/api\/indexer/,
+  /masterchef/i,
+  /sendTransaction/,
+  /window\.ethereum/,
+  /styled-components/,
+  /react-redux/,
+]
+
+function filesIn(dir: string): string[] {
+  const absolute = path.join(root, dir)
+  return readdirSync(absolute).flatMap((entry: string) => {
+    const full = path.join(absolute, entry)
+    if (statSync(full).isDirectory()) return filesIn(path.relative(root, full))
+    return [full]
+  })
+}
+
+test('beta source does not import the live DEX stack or open a network client', () => {
+  const files = [
+    ...SOURCE_DIRS.flatMap((dir) => filesIn(dir)),
+    path.join(root, 'middleware.ts'),
+    path.join(root, 'next.config.mjs'),
+  ]
+  files.forEach((file) => {
+    const source = readFileSync(file, 'utf8')
+    FORBIDDEN.forEach((pattern) => {
+      assert.equal(pattern.test(source), false, `${path.relative(root, file)} matched ${pattern}`)
+    })
+  })
+  const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
+  assert.equal(home.includes('modules/tools'), false)
+  assert.equal(home.includes('apps/web'), false)
+})
+
+test('beta host has no cron and production indexer crons stay on the live config', () => {
+  const beta = JSON.parse(readFileSync(path.join(root, 'vercel.json'), 'utf8')) as { crons?: unknown }
+  assert.equal(beta.crons, undefined)
+  assert.equal(JSON.stringify(beta).includes('indexer'), false)
+
+  const liveCronPaths = ['/api/indexer/run/', '/api/indexer/registry/refresh/']
+  const rootVercel = JSON.parse(readFileSync(path.resolve(root, '../../vercel.json'), 'utf8')) as {
+    crons: Array<{ path: string }>
+  }
+  const webVercel = JSON.parse(readFileSync(path.resolve(root, '../web/vercel.json'), 'utf8')) as {
+    crons: Array<{ path: string }>
+  }
+  assert.deepEqual(
+    rootVercel.crons.map((cron) => cron.path),
+    liveCronPaths,
+  )
+  assert.deepEqual(
+    webVercel.crons.map((cron) => cron.path),
+    liveCronPaths,
+  )
+})
+
+test('the example env does not carry a secret', () => {
+  const example = readFileSync(path.join(root, '.env.example'), 'utf8')
+  assert.match(example, /^BETA_ACCESS_TOKEN=\s*$/m)
+  assert.equal(example.includes('NEXT_PUBLIC_'), false)
+})

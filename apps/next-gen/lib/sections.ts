@@ -1,0 +1,76 @@
+export type SectionId = 'swap' | 'bridge' | 'earn' | 'portfolio' | 'tools'
+
+export interface SectionCopy {
+  id: SectionId
+  title: string
+  navLabel: string
+  href: string
+  primary: boolean
+  statements: string[]
+}
+
+export const SECTIONS: SectionCopy[] = [
+  {
+    id: 'swap',
+    title: 'Swap',
+    navLabel: 'Swap',
+    href: '/',
+    primary: true,
+    statements: [
+      'This beta does not request a quote, a wallet signature, or a transaction.',
+      'Multichain swap execution is not claimed.',
+      'A Melega fee is not quoted or collected here.',
+    ],
+  },
+  {
+    id: 'bridge',
+    title: 'MARCO Bridge',
+    navLabel: 'MARCO Bridge',
+    href: '/bridge',
+    primary: true,
+    statements: [
+      'This beta does not build or send a bridge transfer.',
+      'Bridge route status is not claimed from this screen.',
+    ],
+  },
+  {
+    id: 'earn',
+    title: 'Earn',
+    navLabel: 'Earn',
+    href: '/earn',
+    primary: true,
+    statements: [
+      'No yield is shown, because this beta does not read farms, pools, or external protocols.',
+      'BNB farms and pools remain on the live DEX.',
+      'Public Create Farm and Create Pool are not offered.',
+      'Wallet withdrawal remains on the live DEX.',
+    ],
+  },
+  {
+    id: 'portfolio',
+    title: 'Portfolio',
+    navLabel: 'Portfolio',
+    href: '/portfolio',
+    primary: false,
+    statements: ['Balances and positions are not read.', 'Wallet withdrawal remains on the live DEX.'],
+  },
+  {
+    id: 'tools',
+    title: 'Tools',
+    navLabel: 'Tools',
+    href: '/tools',
+    primary: false,
+    statements: [
+      'Commercial tools load only after you open them.',
+      'Public Create Farm and Create Pool are not offered. Custom work is not accepted here.',
+    ],
+  },
+]
+
+export function sectionById(id: SectionId): SectionCopy {
+  const found = SECTIONS.find((section) => section.id === id)
+  if (!found) throw new Error(`Unknown section ${id}`)
+  return found
+}
+
+export const PRIMARY_SECTIONS = SECTIONS.filter((section) => section.primary)
