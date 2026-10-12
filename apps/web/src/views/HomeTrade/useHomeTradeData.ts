@@ -5,7 +5,7 @@ import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
-import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
+import type { CanonicalProtocolActivityRow } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
@@ -15,9 +15,8 @@ import 'lib/data-truth/compute24hPriceChange';
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
 import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
 import { derivePoolLifecycle, reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
-import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
 import { useCurrentBlock } from 'state/block/hooks'
-import { usePriceCakeBusd, useFarms, usePollFarmsWithUserData } from 'state/farms/hooks'
+import { usePriceCakeBusd, useFarms } from 'state/farms/hooks'
 import { usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { FetchStatus } from 'config/constants/types'
@@ -48,6 +47,7 @@ import {
 } from 'lib/data-truth/yieldMetricHelpers'
 import { formatPoolTickerAccent, formatPoolTrendingLabel, POOL_APR_UNAVAILABLE_REASON } from './formatTrendingLabels';
 import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
+import { useHomeYieldVisibility } from './homeYieldVisibility'
 
 export interface RibbonItem {
   id: string
@@ -174,36 +174,46 @@ const poolTvl = (pool: Pool.DeserializedPool<Token>, hints?: { marcoUsd?: number
 const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => resolvePoolAprPercent(pool)
 
 export const useHomeTradeData = () => {
-  const {
-    rows: protocolRows,
-    totalCount,
-    ammCount,
-    masterchefCount,
-    smartchefCount,
-    newestTimestamp,
-    oldestTimestamp,
-    duplicatesRemoved,
-    mergeStats,
-    indexerState,
-    isLoading: protocolActivityLoading,
-    isError: protocolActivityError,
-    protocolError,
-  } = useProtocolActivityFeed()
+  // Dex Home does not render the activity feed. amountUSD on those rows was hardcoded
+  // to 0, so the feed could not contribute volume. Skip the indexer/protocol requests.
+  const protocolRows: CanonicalProtocolActivityRow[] = []
+  const totalCount = 0
+  const ammCount = 0
+  const masterchefCount = 0
+  const smartchefCount = 0
+  const newestTimestamp = undefined
+  const oldestTimestamp = undefined
+  const duplicatesRemoved = 0
+  const mergeStats = { total: 0, within24h: 0, amm: 0, masterchef: 0, smartchef: 0 }
+  const indexerState: {
+    status: 'loading' | 'ready' | 'error' | 'unavailable'
+    source: string
+    indexer: string
+    lastAttempt: string
+    reason?: string
+  } = {
+    status: 'unavailable',
+    source: 'canonical-market-snapshot',
+    indexer: 'not-requested',
+    lastAttempt: '',
+  }
+  const protocolActivityLoading = false
+  const protocolActivityError = false
+  const protocolError = undefined
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { chainId } = useActiveChainId()
-  usePollFarmsWithUserData()
+  const yieldVisibility = useHomeYieldVisibility()
   const { data: allFarms = [] } = useFarms()
   const { pools: allPools = [] } = usePoolsWithVault(chainId)
-  const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
-  const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
-  const { total: liquidPairCount, pairs: tradeablePairs } = useAmmPairRegistry({
-    classification: 'tradeable',
-    pageSize: 24,
-  })
+  const yieldSectionNear = yieldVisibility.kpiNear || yieldVisibility.discoveryNear
+  // Top Farms rows wait for that card. Active Pools is a visible KPI, so pool data starts with the rail.
+  const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(yieldVisibility.discoveryNear)
+  const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(yieldSectionNear)
   const currentBlock = useCurrentBlock()
-  /** Certified protocol volume — do not independently re-sum tier-metrics on Home. */
+  /** Certified protocol volume and market count — do not re-fetch the pairs page on Home. */
   const marketSnapshot = useCanonicalMarketSnapshot()
+  const liquidPairCount = typeof marketSnapshot.markets === 'number' ? marketSnapshot.markets : 0
 
   const indexedTransactions = useMemo(
     () =>
@@ -435,28 +445,12 @@ export const useHomeTradeData = () => {
       })
     }
 
-    const topLiquidityPair = [...tradeablePairs].sort((a, b) => {
-      const scoreA = BigInt(a.reserve0 ?? '0') + BigInt(a.reserve1 ?? '0')
-      const scoreB = BigInt(b.reserve0 ?? '0') + BigInt(b.reserve1 ?? '0')
-      return scoreB > scoreA ? 1 : scoreB < scoreA ? -1 : 0
-    })[0]
-
-    if (topLiquidityPair?.symbol0 && topLiquidityPair?.symbol1) {
-      cards.push({
-        id: 'highest-liquidity',
-        label: 'Highest Liquidity Pair',
-        value: `${topLiquidityPair.symbol0} / ${topLiquidityPair.symbol1}`,
-        href: '/swap',
-      })
-    }
-
     return cards.slice(0, 5)
   }, [
     farms,
     allFarms,
     allPools,
     currentBlock,
-    tradeablePairs,
     recentTransactions,
     marketSnapshot.volume24hUsd,
     marketSnapshot.status,

@@ -24,6 +24,7 @@ import {
 } from 'design-system/melega/tokens/uxRebuild'
 import HomeSwapPanel from './HomeSwapPanel'
 import { HomeTradeDataProvider, useHomeCriticalData } from './HomeTradeDataContext'
+import { HomeYieldVisibilityProvider } from './homeYieldVisibility'
 import { buildHomeNewListings } from './buildHomeNewListings'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
@@ -808,9 +809,11 @@ const DexHomeScreenContent: React.FC = () => {
 }
 
 export const DexHomeScreen: React.FC = () => (
-  <HomeTradeDataProvider>
-    <DexHomeScreenContent />
-  </HomeTradeDataProvider>
+  <HomeYieldVisibilityProvider>
+    <HomeTradeDataProvider>
+      <DexHomeScreenContent />
+    </HomeTradeDataProvider>
+  </HomeYieldVisibilityProvider>
 )
 
 export default DexHomeScreen
