@@ -18,6 +18,4 @@ Measured after `next build` on this mission: home first-load files in the build 
 
 Headless Chrome at 320, 390, 430, and 1440, walking Swap, MARCO Bridge, Earn, Tools, and Create Token, made 74 requests. Every request stayed on the beta host. None were RPC or indexer calls. With no access token, a browser `GET /` returned 307 to `/access`, and a non-HTML `GET /` returned 401.
 
-## What this budget does not cover
-
-NG002 may add one user-initiated canonical read. That call is outside this budget and stays off until that mission changes the runtime flag and remeasures.
+NG002 remeasured the same script after `next build` and `next start`. Gzip is again 106,915 bytes. Next’s table again reports 76 kB for `/`. The ceiling stays 184,320 bytes. No canonical read was added. `BETA_RUNTIME` stays dark.

@@ -155,6 +155,7 @@ await call('Network.setCookie', { name: cookieName, value: cookieValue, url: bas
 const routes = ['/', '/bridge', '/earn', '/tools', '/tools/create-token']
 
 for (const width of widths) {
+  const widthStart = requestUrls.length
   const height = width >= 1440 ? 900 : 844
   await call('Emulation.setDeviceMetricsOverride', {
     width,
@@ -192,6 +193,12 @@ for (const width of widths) {
     const shot = await call('Page.captureScreenshot', { format: 'png' })
     writeFileSync(`${outDir}/shell-${width}.png`, Buffer.from(shot.data, 'base64'))
   }
+  const slice = requestUrls.slice(widthStart)
+  const widthHosts = [...new Set(slice.map((url) => new URL(url).host))]
+  const paths = slice.map((url) => new URL(url).pathname)
+  console.log(
+    `${width} requests ${slice.length}; hosts ${widthHosts.join(',') || 'none'}; paths ${paths.join(' ')}`,
+  )
 }
 
 const banned = requestUrls.filter((url) => /publicnode|quicknode|nodereal|\/api\/indexer|ethereum|wallet|rpc/i.test(url))
