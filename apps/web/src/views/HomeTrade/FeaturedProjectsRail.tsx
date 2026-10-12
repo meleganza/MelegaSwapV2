@@ -2,7 +2,7 @@
  * Home Featured Projects — four compact equal premium cards on ONE desktop row.
  * Soft ambient gold glow only (no yellow border). Human-formatted prices.
  */
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 import styled, { keyframes, css } from 'styled-components'
@@ -330,10 +330,11 @@ const SparkUnavailable = styled.span`
 `
 
 /** Real indexed sparkline only — never invents points. */
-const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) => {
+const FeaturedMiniSpark: React.FC<{ pairAddress?: string; enabled: boolean }> = ({ pairAddress, enabled }) => {
   const { chartEntries, status } = useIndexerCandles(
     pairAddress && /^0x[a-fA-F0-9]{40}$/.test(pairAddress) ? pairAddress : undefined,
     '1H',
+    enabled,
   )
   const points = useMemo(
     () =>
@@ -355,6 +356,8 @@ const FeaturedMiniSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) 
 const EMPTY_ROTATION_CANDIDATES: RotationCandidate[] = []
 
 export const FeaturedProjectsRail: React.FC = () => {
+  const shellRef = useRef<HTMLElement>(null)
+  const [chartsEnabled, setChartsEnabled] = useState(false)
   const fallbackCards = useMemo(() => resolveFounderFeaturedProjects(), [])
   const { data: rotation } = useSWR('/api/featured/rotation-candidates', async (url: string) => {
     const response = await fetch(url)
@@ -378,8 +381,27 @@ export const FeaturedProjectsRail: React.FC = () => {
   )
   const { rowsBySlug } = useFeaturedProjectMarkets()
 
+  useEffect(() => {
+    const node = shellRef.current
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setChartsEnabled(true)
+      return undefined
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.2)) {
+          setChartsEnabled(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: [0, 0.2, 0.5] },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <Shell data-testid="dex-home-featured-projects" data-home-section="featured-projects">
+    <Shell ref={shellRef} data-testid="dex-home-featured-projects" data-home-section="featured-projects">
       <Grid>
         {cards.map(({ project: p, placement }) => {
           const market = rowsBySlug[p.slug]
@@ -437,7 +459,10 @@ export const FeaturedProjectsRail: React.FC = () => {
                 ) : null}
               </Metrics>
               <SparkRow data-testid={`featured-spark-${p.slug}`}>
-                <FeaturedMiniSpark pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]} />
+                <FeaturedMiniSpark
+                  pairAddress={market?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[p.slug]}
+                  enabled={chartsEnabled}
+                />
               </SparkRow>
               <StatGrid>
                 <Stat>
