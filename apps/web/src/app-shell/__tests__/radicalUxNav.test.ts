@@ -82,6 +82,16 @@ describe('M003 radical navigation', () => {
     expect(home).not.toContain('useHomeTradeData')
     expect(home).not.toContain('FeaturedProjectsRail')
     expect(home).not.toContain('useAmmPairRegistry')
+    const preview = readFileSync(
+      path.join(WEB, 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx'),
+      'utf8',
+    )
+    expect(preview).toContain('{!compact || !idle ? <SmartSwapCompactMetrics items={metrics} /> : null}')
+    const document = readFileSync(path.join(WEB, 'pages/_document.tsx'), 'utf8')
+    expect(document).toContain('/fonts/inter/inter-v12-latin-regular.woff2')
+    expect(document).not.toContain('rel="preload"\n            href="/fonts/relative/relative-book-pro.woff2"')
+    const footer = readFileSync(path.join(WEB, 'views/HomeTrade/MelegaDexFooter.tsx'), 'utf8')
+    expect(footer).toContain('isQuietPrimaryRoute')
     expect(home).not.toContain('useFarms')
     expect(home).not.toContain('usePools')
   })

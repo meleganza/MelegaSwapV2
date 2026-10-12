@@ -109,16 +109,12 @@ class MyDocument extends Document {
           <meta name="twitter:url" content="https://melega.finance" />
 
           {/* Typography is served locally from /public/fonts to avoid render-blocking third-party requests. */}
+          {/* Inter is the product UI face (regular woff2 is 16.7KB). Melega Relative
+              stays available via @font-face for display headings and is not preloaded:
+              its woff2 is 60.8KB and the phone swap does not use it. */}
           <link
             rel="preload"
             href="/fonts/inter/inter-v12-latin-regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
-          <link
-            rel="preload"
-            href="/fonts/relative/relative-book-pro.woff2"
             as="font"
             type="font/woff2"
             crossOrigin="anonymous"

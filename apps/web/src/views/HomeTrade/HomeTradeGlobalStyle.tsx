@@ -302,7 +302,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap-execution-value.is-slippage {
-    color: #f4c542;
+    color: #f2f2f2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .home-swap-cockpit,
+  .home-swap-cockpit input {
+    font-variant-numeric: tabular-nums;
   }
 
   .home-trade-swap.is-disconnected [class*='ConnectWallet'],
@@ -318,13 +324,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
-    color: #050505 !important;
-    font-weight: 700 !important;
+    background: #f4f4f4 !important;
+    color: #111111 !important;
+    font-weight: 650 !important;
     font-size: 16px !important;
     border: none !important;
     box-shadow: none !important;
-    opacity: 0.72 !important;
+    opacity: 1 !important;
     pointer-events: auto !important;
     transition: filter 150ms ease, transform 150ms ease, opacity 150ms ease !important;
   }
@@ -749,8 +755,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
-    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
-    color: #050505 !important;
+    background: #f4f4f4 !important;
+    color: #111111 !important;
     font-weight: 700 !important;
     font-size: 16px !important;
     border: none !important;
