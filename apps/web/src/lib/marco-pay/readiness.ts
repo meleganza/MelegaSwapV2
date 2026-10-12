@@ -196,7 +196,7 @@ export async function resolveMarcoPayReadiness() {
       chainId: rail.chainId,
       family: rail.family,
       token: rail.token,
-      status: rail.executable && executable ? 'executable' : rail.status === 'executable' ? 'prepared' : rail.status,
+      status: rail.executable && executable ? 'configured' : 'prepared',
       checkout: Boolean(rail.executable && executable),
       reason: rail.executable ? (executable ? null : reason) : rail.reason,
       detail: rail.detail,

@@ -1,15 +1,28 @@
 /**
  * Merchant settlement rails for MARCO Pay.
  *
- * BNB is the only executable checkout rail: the canonical MARCO token is live
- * and the Melega treasury is the verified receiving wallet. Base, Polygon,
- * Robinhood, Arc, and Solana are prepared from the public MARCO token registry.
- * A prepared rail is refused for checkout until a verified merchant wallet and
- * a settlement proof path exist for that chain. This module never broadcasts
- * a transaction.
+ * Token identities come from the existing Wave-1 registry. Pay-rail authority
+ * status is not inferred from bridge pause flags and is not marked LIVE here.
+ * Lead meleganza/melega-civ-passport#23 marks Polygon and Arc COMING_SOON.
+ * This consumer previously marked Base COMING_SOON instead
+ * (BASE_AUTHORITY_COMING_SOON) and treated Polygon and Arc as wallet gaps.
+ *
+ * The verified EVM merchant address is shared only with chain ids listed in
+ * MARCO_PAY_EVM_CONSENTED_CHAIN_IDS. When that variable is unset, only chain 56
+ * is consented, because that is the network already bound to the treasury
+ * constant. Solana uses MARCO_PAY_SOLANA_MERCHANT_PUBKEY and never that EVM address.
+ * This module does not broadcast a transaction.
  */
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
-import { MARCO_PAY_SETTLEMENT_WALLET } from './settlement'
+import { resolveMarcoPaySettlementWallet } from './settlement'
+
+export const MARCO_PAY_CONSUMER_CONTRACT = {
+  schemaId: 'https://marco.melega.ai/schemas/marco-pay-payment-completed.v1.json',
+  schemaVersion: '1',
+  machineInterface: 'MP103_MACHINE_INTERFACE_V1',
+  machineInterfaceVersion: '1',
+  leadGateway: 'meleganza/melega-civ-passport#23',
+} as const
 
 export type MerchantRailId = 'bnb' | 'base' | 'polygon' | 'robinhood' | 'arc' | 'solana'
 
@@ -19,27 +32,31 @@ export type MerchantPayRail = {
   chainId: number | null
   family: 'evm' | 'solana'
   token: string
+  tokenDecimals: number
   executable: boolean
-  status: 'executable' | 'prepared'
+  status: 'configured' | 'prepared'
   reason: string | null
   detail: string
   settlementWallet: string | null
 }
 
-const TREASURY = MARCO_PAY_SETTLEMENT_WALLET
+type RailSpec = Omit<MerchantPayRail, 'executable' | 'status' | 'reason' | 'detail' | 'settlementWallet'>
 
-export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
+/**
+ * Authority disablement taken from the lead pay registry, not from a local LIVE flag.
+ * polygon and arc: COMING_SOON on meleganza/melega-civ-passport#23.
+ * base: not COMING_SOON on that lead; the previous consumer reason was BASE_AUTHORITY_COMING_SOON.
+ */
+const AUTHORITY_COMING_SOON = new Set<MerchantRailId>(['polygon', 'arc'])
+
+const RAIL_SPECS: readonly RailSpec[] = [
   {
     id: 'bnb',
     label: 'BNB Smart Chain',
     chainId: MARCO_WAVE1_NETWORKS.bnb.chainId,
     family: 'evm',
     token: MARCO_WAVE1_NETWORKS.bnb.marcoIdentity,
-    executable: true,
-    status: 'executable',
-    reason: null,
-    detail: 'Canonical MARCO on BNB and the verified Melega merchant wallet can settle and be proven.',
-    settlementWallet: TREASURY,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.bnb.tokenDecimals,
   },
   {
     id: 'base',
@@ -47,11 +64,7 @@ export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
     chainId: MARCO_WAVE1_NETWORKS.base.chainId,
     family: 'evm',
     token: MARCO_WAVE1_NETWORKS.base.marcoIdentity,
-    executable: false,
-    status: 'prepared',
-    reason: 'BASE_AUTHORITY_COMING_SOON',
-    detail: 'MARCO publishes Base as coming soon. Checkout stays closed on this rail.',
-    settlementWallet: null,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.base.tokenDecimals,
   },
   {
     id: 'polygon',
@@ -59,11 +72,7 @@ export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
     chainId: MARCO_WAVE1_NETWORKS.polygon.chainId,
     family: 'evm',
     token: MARCO_WAVE1_NETWORKS.polygon.marcoIdentity,
-    executable: false,
-    status: 'prepared',
-    reason: 'MERCHANT_WALLET_NOT_VERIFIED_FOR_CHAIN',
-    detail: 'Canonical MARCO on Polygon is live. The verified merchant wallet is bound on BNB only.',
-    settlementWallet: null,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.polygon.tokenDecimals,
   },
   {
     id: 'robinhood',
@@ -71,11 +80,7 @@ export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
     chainId: MARCO_WAVE1_NETWORKS.robinhood.chainId,
     family: 'evm',
     token: MARCO_WAVE1_NETWORKS.robinhood.marcoIdentity,
-    executable: false,
-    status: 'prepared',
-    reason: 'MERCHANT_WALLET_NOT_VERIFIED_FOR_CHAIN',
-    detail: 'Canonical MARCO on Robinhood is live. The verified merchant wallet is bound on BNB only.',
-    settlementWallet: null,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.robinhood.tokenDecimals,
   },
   {
     id: 'arc',
@@ -83,11 +88,7 @@ export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
     chainId: MARCO_WAVE1_NETWORKS.arc.chainId,
     family: 'evm',
     token: MARCO_WAVE1_NETWORKS.arc.marcoIdentity,
-    executable: false,
-    status: 'prepared',
-    reason: 'MERCHANT_WALLET_NOT_VERIFIED_FOR_CHAIN',
-    detail: 'Canonical MARCO on Arc is live. The verified merchant wallet is bound on BNB only.',
-    settlementWallet: null,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.arc.tokenDecimals,
   },
   {
     id: 'solana',
@@ -95,44 +96,148 @@ export const MERCHANT_PAY_RAILS: readonly MerchantPayRail[] = [
     chainId: null,
     family: 'solana',
     token: MARCO_WAVE1_NETWORKS.solana.marcoIdentity,
-    executable: false,
-    status: 'prepared',
-    reason: 'SOLANA_MERCHANT_WALLET_UNVERIFIED',
-    detail: 'The canonical SPL mint is live. No verified Solana merchant wallet is registered, so checkout cannot settle or prove payment.',
-    settlementWallet: null,
+    tokenDecimals: MARCO_WAVE1_NETWORKS.solana.tokenDecimals,
   },
 ]
 
-export function listMerchantPayRails(): readonly MerchantPayRail[] {
-  return MERCHANT_PAY_RAILS
+export function readEvmConsentedChainIds(env: NodeJS.ProcessEnv = process.env): ReadonlySet<number> {
+  const raw = env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS?.trim() || ''
+  if (!raw) return new Set([56])
+  const ids = new Set<number>()
+  for (const part of raw.split(',')) {
+    const trimmed = part.trim()
+    if (!/^\d+$/.test(trimmed)) continue
+    ids.add(Number(trimmed))
+  }
+  return ids
 }
 
-export function merchantRailForChain(chainId: number | null | undefined): MerchantPayRail | null {
+export function readSolanaMerchantPubkey(env: NodeJS.ProcessEnv = process.env): string | null {
+  const value = env.MARCO_PAY_SOLANA_MERCHANT_PUBKEY?.trim() || ''
+  return value || null
+}
+
+export function merchantRailForChain(chainId: number | null | undefined): RailSpec | null {
   if (chainId == null) return null
-  return MERCHANT_PAY_RAILS.find((rail) => rail.chainId === chainId) ?? null
+  return RAIL_SPECS.find((rail) => rail.chainId === chainId) ?? null
 }
 
-export function executableMerchantRail(): MerchantPayRail {
-  const rail = MERCHANT_PAY_RAILS.find((item) => item.executable)
-  if (!rail?.settlementWallet || rail.chainId == null) throw new Error('SETTLEMENT_RAIL_UNAVAILABLE')
+export function merchantRailForNetwork(networkId: string | null | undefined): RailSpec | null {
+  if (!networkId) return null
+  return RAIL_SPECS.find((rail) => rail.id === networkId) ?? null
+}
+
+export function resolveMerchantPayRail(input: {
+  chainId?: number | null
+  networkId?: string | null
+  env?: NodeJS.ProcessEnv
+}): MerchantPayRail {
+  const env = input.env ?? process.env
+  const byNetwork = input.networkId ? merchantRailForNetwork(input.networkId) : null
+  const byChain = input.chainId != null ? merchantRailForChain(input.chainId) : null
+  if (input.networkId && !byNetwork) throw new Error('CHAIN_MISMATCH')
+  if (input.chainId != null && !byChain) throw new Error('CHAIN_MISMATCH')
+  if (byNetwork && byChain && byNetwork.id !== byChain.id) throw new Error('CHAIN_MISMATCH')
+  const spec = byNetwork ?? byChain
+  if (!spec) throw new Error('CHAIN_MISMATCH')
+  if (AUTHORITY_COMING_SOON.has(spec.id)) throw new Error('RAIL_COMING_SOON')
+  if (spec.family === 'solana') {
+    const pubkey = readSolanaMerchantPubkey(env)
+    if (!pubkey) throw new Error('SOLANA_MERCHANT_PUBKEY_UNCONFIGURED')
+    return {
+      ...spec,
+      executable: true,
+      status: 'configured',
+      reason: null,
+      detail: 'Solana checkout uses the configured merchant pubkey. This is not a settlement attestation.',
+      settlementWallet: pubkey,
+    }
+  }
+  if (spec.chainId == null || !readEvmConsentedChainIds(env).has(spec.chainId)) {
+    throw new Error('MERCHANT_NETWORK_NOT_CONFIGURED')
+  }
+  const wallet = resolveMarcoPaySettlementWallet()
+  if (!wallet.ok || !wallet.wallet) throw new Error(wallet.reason || 'SETTLEMENT_WALLET_INVALID')
+  return {
+    ...spec,
+    executable: true,
+    status: 'configured',
+    reason: null,
+    detail: 'EVM checkout may use the verified merchant address because this chain id is consented. This is not a settlement attestation.',
+    settlementWallet: wallet.wallet,
+  }
+}
+
+function preparedRail(spec: RailSpec, reason: string): MerchantPayRail {
+  const detail =
+    reason === 'RAIL_COMING_SOON'
+      ? 'Lead pay registry meleganza/melega-civ-passport#23 marks this rail COMING_SOON.'
+      : reason === 'SOLANA_MERCHANT_PUBKEY_UNCONFIGURED'
+        ? 'Solana stays closed until MARCO_PAY_SOLANA_MERCHANT_PUBKEY is configured. The EVM treasury is not used.'
+        : reason === 'MERCHANT_NETWORK_NOT_CONFIGURED'
+          ? 'The verified EVM merchant address is not consented for this chain.'
+          : 'This rail is not available for checkout.'
+  return {
+    ...spec,
+    executable: false,
+    status: 'prepared',
+    reason,
+    detail,
+    settlementWallet: null,
+  }
+}
+
+export function listMerchantPayRails(env: NodeJS.ProcessEnv = process.env): readonly MerchantPayRail[] {
+  return RAIL_SPECS.map((spec) => {
+    try {
+      return resolveMerchantPayRail(spec.family === 'solana' ? { networkId: spec.id, env } : { chainId: spec.chainId, env })
+    } catch (cause) {
+      const reason = cause instanceof Error ? cause.message : 'CHAIN_NOT_EXECUTABLE'
+      return preparedRail(spec, reason)
+    }
+  })
+}
+
+export function assertObservedPayChain(chainId: number | null, invalidChainToken = false, env: NodeJS.ProcessEnv = process.env): number {
+  if (invalidChainToken) throw new Error('CHAIN_MISMATCH')
+  const resolved = resolveMerchantPayRail({ chainId: chainId ?? 56, env })
+  if (resolved.chainId == null) throw new Error('CHAIN_MISMATCH')
+  return resolved.chainId
+}
+
+export function assertPaySettlementBinding(input: {
+  chainId?: number | null
+  networkId?: string | null
+  token?: string | null
+  recipient?: string | null
+  env?: NodeJS.ProcessEnv
+}): MerchantPayRail {
+  const rail = resolveMerchantPayRail({
+    chainId: input.networkId === 'solana' ? null : input.chainId ?? 56,
+    networkId: input.networkId === 'solana' ? 'solana' : input.networkId && input.chainId == null ? input.networkId : null,
+    env: input.env,
+  })
+  if (input.token && !settlementAssetMatches(rail, input.token)) throw new Error('TOKEN_MISMATCH')
+  if (input.recipient && rail.settlementWallet) {
+    const same =
+      rail.family === 'evm'
+        ? input.recipient.trim().toLowerCase() === rail.settlementWallet.toLowerCase()
+        : input.recipient.trim() === rail.settlementWallet
+    if (!same) throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+  }
   return rail
 }
 
-/**
- * Bind a MARCO-reported chain to a merchant rail.
- * A missing chain stays on the executable BNB rail. An unknown chain, a
- * non-numeric chain token, or a prepared rail is refused.
- */
-export function assertObservedPayChain(chainId: number | null, invalidChainToken = false): number {
-  if (invalidChainToken) throw new Error('CHAIN_MISMATCH')
-  const resolved = chainId ?? executableMerchantRail().chainId!
-  const rail = merchantRailForChain(resolved)
-  if (!rail) throw new Error('CHAIN_MISMATCH')
-  if (!rail.executable || !rail.settlementWallet) throw new Error('CHAIN_NOT_EXECUTABLE')
-  return resolved
+export function settlementAssetMatches(rail: Pick<MerchantPayRail, 'family' | 'token'>, asset: string | null | undefined): boolean {
+  if (!asset) return false
+  return rail.family === 'evm' ? asset.trim().toLowerCase() === rail.token.toLowerCase() : asset.trim() === rail.token
 }
 
 /** Public status strings that must never fulfill a service. PAID is intermediate. */
 export function isAuthoritativeMarcoPaidStatus(status: string | null | undefined): boolean {
   return (status || '').trim().toUpperCase() === 'COMPLETED'
+}
+
+export function payRailCatalog(): readonly RailSpec[] {
+  return RAIL_SPECS.map((spec) => ({ ...spec }))
 }

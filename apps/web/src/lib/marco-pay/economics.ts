@@ -44,6 +44,25 @@ export function isSameAssetProCommission(asset: string | null | undefined): bool
   return asset.trim().toUpperCase() === PASSPORT_PRO_COMMISSION_ASSET
 }
 
+/** Passport quote wire fields. Mapped here so callers do not pass the quote object through. */
+export type ReferralQuoteWire = {
+  listed_price_minor: string
+  discount_minor: string
+  net_paid_minor: string
+  commission_amount_minor: string
+  commission_asset?: string | null
+}
+
+export function passportProEconomicsFromReferralQuote(quote: ReferralQuoteWire): PassportProEconomics {
+  return assertPassportProEconomics({
+    listedPriceMinor: quote.listed_price_minor,
+    discountMinor: quote.discount_minor,
+    netPaidMinor: quote.net_paid_minor,
+    commissionAmountMinor: quote.commission_amount_minor,
+    commissionAsset: quote.commission_asset,
+  })
+}
+
 export function assertPassportProEconomics(input: {
   listedPriceMinor: string
   discountMinor: string

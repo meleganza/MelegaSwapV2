@@ -27,6 +27,8 @@ describe('MARCO Pay merchant session', () => {
     vi.unstubAllGlobals()
     delete process.env.MARCO_DEX_RECEIVING_WALLET
     delete process.env.MARCO_TREASURY_SETTLEMENT_WALLET
+    delete process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS
+    delete process.env.MARCO_PAY_SOLANA_MERCHANT_PUBKEY
   })
 
   it('owns amount, merchant_order_ref and merchant identifier in the signed body', () => {
@@ -199,11 +201,70 @@ describe('MARCO Pay merchant session', () => {
     ).rejects.toMatchObject({ code: 'AMOUNT_MISMATCH' })
   })
 
-  it('refuses a prepared chain instead of settling it as BNB', async () => {
-    const fetchImpl = vi.fn(async () =>
-      jsonResponse({
+  it('keeps a consented chain and rejects a lead-disabled rail or a chain the customer did not select', async () => {
+    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56,8453,137'
+    const baseToken = '0xa2c8b941542AE0599774D1661CB7B773BC0e79C7'
+    const accepted = vi.fn(async (url: string) => {
+      if (String(url).includes('/api/public/pay/state')) {
+        return jsonResponse({
+          ok: true,
+          marco_amount_minor: '25000000',
+          receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+          chain_id: 8453,
+          token_address: baseToken,
+        })
+      }
+      return jsonResponse({
         ok: true,
         payment_id: 'pay_base',
+        marco_amount_minor: '25000000',
+        chain_id: 8453,
+        token_address: baseToken,
+        receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      })
+    })
+    const session = await createMarcoPayPaymentSession({
+      applicationRef,
+      merchantOrderRef: 'mp_probe_intent_1',
+      amountMinor: '900',
+      currency: 'USD',
+      expectedChainId: 8453,
+      expectedToken: baseToken,
+      secret,
+      merchantApiKey,
+      nowSeconds: now,
+      fetchImpl: accepted as unknown as typeof fetch,
+    })
+    expect(session.chainId).toBe(8453)
+
+    const polygon = vi.fn(async () =>
+      jsonResponse({
+        ok: true,
+        payment_id: 'pay_polygon',
+        marco_amount_minor: '25000000',
+        chain_id: 137,
+        receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      }),
+    )
+    await expect(
+      createMarcoPayPaymentSession({
+        applicationRef,
+        merchantOrderRef: 'mp_probe_intent_1',
+        amountMinor: '900',
+        currency: 'USD',
+        expectedChainId: 137,
+        secret,
+        merchantApiKey,
+        nowSeconds: now,
+        fetchImpl: polygon as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({ code: 'RAIL_COMING_SOON' })
+
+    delete process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS
+    const unconfigured = vi.fn(async () =>
+      jsonResponse({
+        ok: true,
+        payment_id: 'pay_base_closed',
         marco_amount_minor: '25000000',
         chain_id: 8453,
         receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
@@ -215,12 +276,13 @@ describe('MARCO Pay merchant session', () => {
         merchantOrderRef: 'mp_probe_intent_1',
         amountMinor: '900',
         currency: 'USD',
+        expectedChainId: 8453,
         secret,
         merchantApiKey,
         nowSeconds: now,
-        fetchImpl: fetchImpl as unknown as typeof fetch,
+        fetchImpl: unconfigured as unknown as typeof fetch,
       }),
-    ).rejects.toMatchObject({ code: 'CHAIN_NOT_EXECUTABLE' })
+    ).rejects.toMatchObject({ code: 'MERCHANT_NETWORK_NOT_CONFIGURED' })
   })
 
   it('builds approval_url from payment_id when MARCO omits it', async () => {

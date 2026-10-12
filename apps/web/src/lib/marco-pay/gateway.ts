@@ -1,7 +1,7 @@
 import { createHmac } from 'crypto'
 import { MARCO_PAY_BASE_URL, MARCO_PAY_SIGNATURE_VERSION } from './contract'
 import { assertPassportProEconomics } from './economics'
-import { assertObservedPayChain, isAuthoritativeMarcoPaidStatus } from './merchantRails'
+import { assertObservedPayChain, isAuthoritativeMarcoPaidStatus, settlementAssetMatches, merchantRailForChain, merchantRailForNetwork } from './merchantRails'
 import {
   assertLiveMarcoConversion,
   assertMarcoPaySettlementWallet,
@@ -66,6 +66,10 @@ type GatewayResponse = {
   chain_id?: number | string
   chainId?: number | string
   chain?: number | string | { id?: number | string; chain_id?: number | string }
+  token_address?: string
+  tokenAddress?: string
+  mint?: string
+  marco_token?: string
   quote?: {
     marco_amount_minor?: string
     marcoAmountMinor?: string
@@ -375,6 +379,8 @@ export async function createMarcoPayPaymentSession(input: {
   catalogRef?: string | null
   destinationRef?: string | null
   campaignRef?: string | null
+  expectedChainId?: number | null
+  expectedToken?: string | null
   secret: string
   merchantApiKey?: string | null
   nowSeconds?: number
@@ -439,11 +445,25 @@ export async function createMarcoPayPaymentSession(input: {
       throw new MarcoPayGatewayError('REFERRAL_NOT_VERIFIED', 'This Passport PRO referral could not be verified. MARCO Pay was not charged.')
     }
   }
-  let chainId: number
+  let chainId: number | null
   try {
     if (state.chainInvalid && created.chainId == null) throw new Error('CHAIN_MISMATCH')
     if (state.chainId != null && created.chainId != null && state.chainId !== created.chainId) throw new Error('CHAIN_MISMATCH')
-    chainId = assertObservedPayChain(created.chainId ?? state.chainId, false)
+    const requested = input.expectedChainId === undefined ? 56 : input.expectedChainId
+    if (requested == null) {
+      if (created.chainId != null || state.chainId != null) throw new Error('CHAIN_MISMATCH')
+      chainId = null
+    } else {
+      const railChain = assertObservedPayChain(requested, false)
+      const observed = created.chainId ?? state.chainId
+      if (observed != null && observed !== railChain) throw new Error('CHAIN_MISMATCH')
+      if (observed == null && requested !== 56) throw new Error('CHAIN_MISMATCH')
+      chainId = observed ?? railChain
+    }
+    const reportedToken = readSettlementAsset(session.payload) || state.settlementToken
+    if (input.expectedToken && reportedToken && !tokenMatchesExpected(input.expectedToken, reportedToken, requested)) {
+      throw new Error('TOKEN_MISMATCH')
+    }
   } catch (cause) {
     throw new MarcoPayGatewayError(
       cause instanceof Error ? cause.message : 'CHAIN_MISMATCH',
@@ -458,11 +478,23 @@ export async function createMarcoPayPaymentSession(input: {
   }
 }
 
+function readSettlementAsset(payload: GatewayResponse): string | null {
+  const value = payload.token_address || payload.tokenAddress || payload.mint || payload.marco_token || ''
+  const trimmed = value.trim()
+  return trimmed || null
+}
+
+function tokenMatchesExpected(expected: string, reported: string, chainId: number | null): boolean {
+  const rail = chainId == null ? merchantRailForNetwork('solana') : merchantRailForChain(chainId)
+  if (!rail) return reported.toLowerCase() === expected.toLowerCase()
+  return settlementAssetMatches(rail, reported) && settlementAssetMatches(rail, expected)
+}
+
 export async function readMarcoPayPublicState(input: {
   applicationRef: string
   paymentId: string
   fetchImpl?: typeof fetch
-}): Promise<{ marcoAmountMinor: string | null; destinationWallet: string | null; chainId: number | null; chainInvalid: boolean }> {
+}): Promise<{ marcoAmountMinor: string | null; destinationWallet: string | null; chainId: number | null; chainInvalid: boolean; settlementToken: string | null }> {
   const fetchImpl = input.fetchImpl ?? fetch
   try {
     const response = await fetchImpl(`${MARCO_PAY_BASE_URL}/api/public/pay/state`, {
@@ -475,7 +507,7 @@ export async function readMarcoPayPublicState(input: {
       signal: typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8_000) : undefined,
     })
     if (!response.ok) {
-      return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false }
+      return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false, settlementToken: null }
     }
     const payload = parseGatewayPayload(await response.text())
     const observed = readChainId(payload)
@@ -484,9 +516,10 @@ export async function readMarcoPayPublicState(input: {
       destinationWallet: readDestination(payload),
       chainId: observed.chainId,
       chainInvalid: observed.invalid,
+      settlementToken: readSettlementAsset(payload),
     }
   } catch {
-    return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false }
+    return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false, settlementToken: null }
   }
 }
 
@@ -500,6 +533,7 @@ export type MarcoPaySettlementState = {
   marcoAmountMinor: string | null
   destinationWallet: string | null
   chainId: number | null
+  settlementToken: string | null
   txHash: string | null
 }
 
@@ -529,6 +563,7 @@ export async function readMarcoPaySettlementState(input: {
     marcoAmountMinor: null,
     destinationWallet: null,
     chainId: null,
+    settlementToken: null,
     txHash: null,
   }
   try {
@@ -557,6 +592,7 @@ export async function readMarcoPaySettlementState(input: {
       marcoAmountMinor: readMarcoAmountMinor(payload),
       destinationWallet: readDestination(payload),
       chainId: readChainId(payload).chainId,
+      settlementToken: readStringField(payload, ['token_address', 'tokenAddress', 'mint', 'marco_token', 'contract_address']),
       txHash: readStringField(payload, ['tx_hash', 'transaction_hash', 'transactionHash']),
     }
   } catch {

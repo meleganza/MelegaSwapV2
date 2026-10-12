@@ -1,13 +1,11 @@
-import { FEATURED_PAYMENT_TOKENS } from 'lib/featured-placement/constants'
-import { assertObservedPayChain } from './merchantRails'
-import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET } from './settlement'
+import { resolveMerchantPayRail } from './merchantRails'
 
 export const MARCO_PAY_CHAIN_ID = 56 as const
 const ERC20_TRANSFER_SELECTOR = '0xa9059cbb'
 const MARCO_AMOUNT_DECIMALS = 2
 
 export type MarcoPayWalletTransfer = {
-  chainId: typeof MARCO_PAY_CHAIN_ID
+  chainId: number
   tokenAddress: string
   destination: string
   marcoAmountMinor: string
@@ -40,27 +38,27 @@ export function buildMarcoPayWalletTransfer(input: {
   chainId?: number | null
   tokenAddress?: string | null
 }): MarcoPayWalletTransfer {
-  const destination = (input.destinationWallet || MARCO_PAY_SETTLEMENT_WALLET).trim()
-  if (!isCanonicalMarcoPaySettlementWallet(destination)) {
+  const rail = resolveMerchantPayRail({ chainId: input.chainId ?? MARCO_PAY_CHAIN_ID })
+  if (rail.family !== 'evm' || rail.chainId == null || !rail.settlementWallet) throw new Error('CHAIN_NOT_EXECUTABLE')
+  const destination = (input.destinationWallet || rail.settlementWallet).trim()
+  if (destination.toLowerCase() !== rail.settlementWallet.toLowerCase()) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (input.chainId != null) assertObservedPayChain(input.chainId, false)
-  const token = FEATURED_PAYMENT_TOKENS.MARCO
-  const expected = token.address
+  const expected = rail.token
   if (!expected) throw new Error('MARCO_TOKEN_MISSING')
   const provided = input.tokenAddress?.trim()
   if (provided && provided.toLowerCase() !== expected.toLowerCase()) {
     throw new Error('MARCO_TOKEN_MISMATCH')
   }
-  const tokenAmountRaw = marcoMinorToTokenRaw(input.marcoAmountMinor, token.decimals)
+  const tokenAmountRaw = marcoMinorToTokenRaw(input.marcoAmountMinor, rail.tokenDecimals)
   return {
-    chainId: MARCO_PAY_CHAIN_ID,
+    chainId: rail.chainId,
     tokenAddress: expected,
-    destination: MARCO_PAY_SETTLEMENT_WALLET,
+    destination: rail.settlementWallet,
     marcoAmountMinor: input.marcoAmountMinor.trim(),
     tokenAmountRaw,
     to: expected,
-    data: `${ERC20_TRANSFER_SELECTOR}${padAddress(MARCO_PAY_SETTLEMENT_WALLET)}${padUint256(tokenAmountRaw)}`,
+    data: `${ERC20_TRANSFER_SELECTOR}${padAddress(rail.settlementWallet)}${padUint256(tokenAmountRaw)}`,
     value: '0x0',
   }
 }
