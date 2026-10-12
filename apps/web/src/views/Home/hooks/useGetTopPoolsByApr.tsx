@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useAppDispatch } from 'state'
 import { VaultKey } from 'state/types'
 import { fetchCakeVaultFees, fetchPoolsPublicDataAsync, fetchCakeVaultPublicData } from 'state/pools'
@@ -16,6 +16,7 @@ import {
   resolvePoolTvlUsd,
 } from 'lib/data-truth/yieldMetricHelpers'
 import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
+import { shouldCommitHomeChainFetch, shouldStartHomeChainFetch } from 'app-shell/idleHomeChainPolicy'
 
 function livePoolEarnAddresses(chainId: number): string[] {
   const cfg =
@@ -78,34 +79,42 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const { pools } = usePoolsWithVault(chainId)
   const cakePriceBusd = usePriceCakeBusd({ forceMainnet: true })
   const marcoUsd = cakePriceBusd?.toNumber?.()
+  const chainRef = useRef(chainId)
+  chainRef.current = chainId
 
   useEffect(() => {
     setFetchStatus(FetchStatus.Idle)
   }, [chainId])
 
   useEffect(() => {
+    const startedChainId = chainId
     const fetchPoolsPublicData = async () => {
+      if (!shouldStartHomeChainFetch(startedChainId)) return
       setFetchStatus(FetchStatus.Fetching)
       try {
         // 1) Farm prices first — same earn-token expansion as Pools Studio getActiveFarms.
-        const pids = await resolvePriceHelperFarmPids(chainId, livePoolEarnAddresses(chainId))
+        const pids = await resolvePriceHelperFarmPids(startedChainId, livePoolEarnAddresses(startedChainId))
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         if (pids.length > 0) {
-          await dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: 'pkg' }))
+          await dispatch(fetchFarmsPublicDataAsync({ pids, chainId: startedChainId, flag: 'pkg' }))
         }
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         // 2) Then pools + vault (same order as useFetchPublicPoolsData).
         await Promise.all([
-          dispatch(fetchCakeVaultFees({ chainId })),
-          dispatch(fetchCakeVaultPublicData({ chainId })),
-          dispatch(fetchPoolsPublicDataAsync(initialBlock, chainId)),
+          dispatch(fetchCakeVaultFees({ chainId: startedChainId })),
+          dispatch(fetchCakeVaultPublicData({ chainId: startedChainId })),
+          dispatch(fetchPoolsPublicDataAsync(initialBlock, startedChainId)),
         ])
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         setFetchStatus(FetchStatus.Fetched)
       } catch (e) {
         console.error(e)
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         setFetchStatus(FetchStatus.Failed)
       }
     }
 
-    if (isIntersecting && fetchStatus === FetchStatus.Idle && initialBlock > 0) {
+    if (isIntersecting && fetchStatus === FetchStatus.Idle && initialBlock > 0 && shouldStartHomeChainFetch(chainId)) {
       fetchPoolsPublicData()
     }
   }, [dispatch, fetchStatus, isIntersecting, initialBlock, chainId])

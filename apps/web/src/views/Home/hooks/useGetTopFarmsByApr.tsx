@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
 import { fetchFarmsPublicDataAsync } from 'state/farms'
@@ -10,6 +10,7 @@ import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
 import { meetsHomeTopYieldTvl } from './homeTopYieldEligibility'
+import { shouldCommitHomeChainFetch, shouldStartHomeChainFetch } from 'app-shell/idleHomeChainPolicy'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -25,6 +26,8 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [topFarms, setTopFarms] = useState<FarmWithStakedValue[]>([])
   const cakePriceBusd = usePriceCakeBusd()
+  const chainRef = useRef(chainId)
+  chainRef.current = chainId
 
   useEffect(() => {
     setFetchStatus(FetchStatus.NOT_FETCHED)
@@ -32,15 +35,19 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
   }, [chainId])
 
   useEffect(() => {
+    const startedChainId = chainId
     const fetchFarmData = async () => {
-      if (!chainId || !getMasterChefAddress(chainId)) {
-        setFetchStatus(FetchStatus.SUCCESS)
-        setTopFarms([])
+      if (!shouldStartHomeChainFetch(startedChainId) || !getMasterChefAddress(startedChainId)) {
+        if (shouldCommitHomeChainFetch(startedChainId ?? -1, chainRef.current)) {
+          setFetchStatus(FetchStatus.SUCCESS)
+          setTopFarms([])
+        }
         return
       }
       setFetchStatus(FetchStatus.FETCHING)
       try {
-        const farmsConfig = await getFarmConfig(chainId)
+        const farmsConfig = await getFarmConfig(startedChainId)
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         const activeFarms = (farmsConfig ?? []).filter(
           (farm) =>
             farm.pid !== 0 &&
@@ -55,13 +62,15 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         await dispatch(
           fetchFarmsPublicDataAsync({
             pids: activeFarms.map((farm) => farm.pid),
-            chainId,
+            chainId: startedChainId,
             flag: 'pkg',
           }),
         )
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         setFetchStatus(FetchStatus.SUCCESS)
       } catch (e) {
         console.error(e)
+        if (!shouldCommitHomeChainFetch(startedChainId, chainRef.current)) return
         setFetchStatus(FetchStatus.FAILED)
       }
     }
