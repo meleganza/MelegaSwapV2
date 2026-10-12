@@ -158,17 +158,17 @@ export const AdvancedConsoleMenu: React.FC<{ placement: 'header' | 'mobile' }> =
     <Root ref={rootRef} data-advanced-placement={placement}>
       <Trigger
         type="button"
-        aria-label="Advanced Console"
+        aria-label="Tools"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="melega-advanced-console"
         onClick={() => setOpen((value) => !value)}
       >
-        Advanced
+        Tools
       </Trigger>
       {open ? (
-        <Panel id={panelId} role="menu" aria-label="Advanced Console" data-testid="melega-advanced-console-menu">
+        <Panel id={panelId} role="menu" aria-label="Tools" data-testid="melega-advanced-console-menu">
           {ADVANCED_CONSOLE_GROUPS.map((group) => (
             <div key={group}>
               <GroupLabel>{group}</GroupLabel>

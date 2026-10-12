@@ -15,7 +15,7 @@ import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'comp
 import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
 import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 import { AdvancedConsoleMenu } from './components/AdvancedConsoleMenu'
-import { shellBottomNavItems } from './config/navigation'
+import { isQuietPrimaryRoute, shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
 import {
@@ -29,10 +29,11 @@ const MyMelegaDrawer = dynamic(preloadMyMelegaDrawer, { ssr: false, loading: () 
 const MOBILE_HEADER_H = '56px'
 const MOBILE_BOTTOM_NAV_H = '64px'
 
-const DesktopMain = styled.main`
+const DesktopMain = styled.main<{ $quiet?: boolean }>`
   margin-left: 0;
   /* Mobile sticky stack: mobile header + trending bar */
-  padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${MELEGA_TRENDING_BAR_MOBILE_HEIGHT}) 16px
+  padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${({ $quiet }) =>
+    $quiet ? '0px' : MELEGA_TRENDING_BAR_MOBILE_HEIGHT}) 16px
     calc(${MOBILE_BOTTOM_NAV_H} + env(safe-area-inset-bottom, 0px));
   background: ${uxRebuildColors.pageBg};
   min-height: 100dvh;
@@ -43,8 +44,8 @@ const DesktopMain = styled.main`
   @media (min-width: 1024px) {
     margin-left: 0;
     /* Desktop sticky stack: 72 header + 44 trending — content begins below stack */
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${MELEGA_TRENDING_BAR_DESKTOP_HEIGHT}) ${ds001Layout.pagePaddingX}
-      ${ds001Layout.pagePaddingBottom};
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${({ $quiet }) => ($quiet ? '0px' : MELEGA_TRENDING_BAR_DESKTOP_HEIGHT)})
+      ${ds001Layout.pagePaddingX} ${ds001Layout.pagePaddingBottom};
   }
 
   @media (min-width: 1024px) and (max-width: 1279px) {
@@ -188,7 +189,7 @@ const MobileMyMelegaButton: React.FC = () => {
  * Desktop: 72px global header + 44px Trending Bar, no permanent left sidebar.
  * Mobile (<1024): compact mobile header + 36px Trending Bar + bottom navigation.
  */
-const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
+const MelegaAppShellInner: React.FC<MelegaAppShellProps & { quiet?: boolean }> = ({ children, quiet = false }) => {
   const { pathname } = useRouter()
   const { open: isMyMelegaOpen } = useMyMelegaDrawer()
 
@@ -211,7 +212,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
       <AppShellUIKitNeutralizer />
 
       <MelegaGlobalHeader />
-      <GlobalTrendingBar />
+      {quiet ? null : <GlobalTrendingBar />}
 
       <MobileHeader data-melega-mobile-header>
         <MelegaBrandLockup size="mobile" iconOnly />
@@ -223,7 +224,7 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         <MobileMyMelegaButton />
       </MobileHeader>
 
-      <DesktopMain data-melega-shell-main>
+      <DesktopMain $quiet={quiet} data-melega-shell-main data-quiet-primary={quiet ? 'true' : 'false'}>
         <Content>
           {children}
           <FooterSlot data-testid="melega-global-footer">
@@ -238,12 +239,18 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   )
 }
 
-const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => (
-  <TopMoversSnapshotProvider>
+const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
+  const { pathname } = useRouter()
+  const quiet = isQuietPrimaryRoute(pathname)
+  const tree = (
     <MyMelegaProvider>
-      <MelegaAppShellInner>{children}</MelegaAppShellInner>
+      <MelegaAppShellInner quiet={quiet}>{children}</MelegaAppShellInner>
     </MyMelegaProvider>
-  </TopMoversSnapshotProvider>
-)
+  )
+  // Home, Swap, Bridge, and Earn do not mount the ticker fetch. Paid Boost
+  // still merges into the ticker on discovery routes such as Melega Space.
+  if (quiet) return tree
+  return <TopMoversSnapshotProvider>{tree}</TopMoversSnapshotProvider>
+}
 
 export default MelegaAppShell

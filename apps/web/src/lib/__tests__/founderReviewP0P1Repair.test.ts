@@ -109,15 +109,15 @@ describe('MELEGASWAP_V2_FOUNDER_REVIEW_P0_P1_REPAIR', () => {
   })
 
   it('P1 Trade nav is Swap and does not claim project pages', () => {
-    const trade = GLOBAL_HEADER_NAV.find((n) => n.id === 'trade')
-    expect(trade?.kind).toBe('link')
-    if (trade?.kind === 'link') {
-      expect(trade.href).toBe('/swap')
-      expect(trade.match('/')).toBe(false)
-      expect(trade.match('/swap')).toBe(true)
-      expect(trade.match('/project-hq/marco')).toBe(false)
-      expect(trade.match('/@marco')).toBe(false)
-      expect(trade.match('/trade')).toBe(true)
+    const swap = GLOBAL_HEADER_NAV.find((n) => n.id === 'swap')
+    expect(swap?.kind).toBe('link')
+    if (swap?.kind === 'link') {
+      expect(swap.href).toBe('/')
+      expect(swap.match('/')).toBe(true)
+      expect(swap.match('/swap')).toBe(true)
+      expect(swap.match('/project-hq/marco')).toBe(false)
+      expect(swap.match('/@marco')).toBe(false)
+      expect(swap.match('/trade')).toBe(true)
     }
   })
 

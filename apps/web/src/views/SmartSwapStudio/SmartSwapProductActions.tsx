@@ -65,7 +65,7 @@ const Tab = styled.button<{ $active: boolean }>`
     text-overflow: ellipsis;
   }
 
-  @media (max-width: 380px) {
+  @media (max-width: 430px) {
     padding: 0 8px;
     font-size: 11px;
     overflow: hidden;
@@ -88,7 +88,7 @@ const Tab = styled.button<{ $active: boolean }>`
     vertical-align: middle;
   }
 
-  @media (max-width: 380px) {
+  @media (max-width: 430px) {
     .smart-swap-tab-new {
       display: none;
     }

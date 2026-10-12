@@ -145,7 +145,10 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Create Farm',
         href: '/farms?create=1',
         icon: 'coins',
-        match: (p) => p.startsWith('/farms'),
+        hidden: true,
+        disabled: true,
+        disabledReason: 'Create Farm is not a public action',
+        match: () => false,
       },
       {
         id: 'create-pool',
@@ -192,7 +195,19 @@ export const shellNavigation: ShellNavSection[] = [
   },
 ]
 
-/** Mobile bottom rail — the same four public destinations as the header. */
+/** Routes where the trending bar would crowd the three primary actions. */
+export const isQuietPrimaryRoute = (pathname: string) =>
+  pathname === '/' ||
+  pathname === '/swap' ||
+  pathname.startsWith('/swap/') ||
+  pathname === '/trade' ||
+  pathname.startsWith('/trade/') ||
+  pathname === '/bridge' ||
+  pathname.startsWith('/bridge/') ||
+  pathname === '/earn' ||
+  pathname.startsWith('/earn/')
+
+/** Phone actions — one tap each. Portfolio and Tools are not in this rail. */
 export const shellBottomNavItems: Array<{
   id: string
   label: string
@@ -202,50 +217,30 @@ export const shellBottomNavItems: Array<{
   menu?: ShellBottomMenuItem[]
 }> = [
   {
-    id: 'trade',
-    label: 'Trade',
-    href: '/swap',
+    id: 'swap',
+    label: 'Swap',
+    href: '/',
     icon: 'swap',
-    match: (p) =>
-      p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/') || p === '/bridge' || p.startsWith('/bridge/'),
+    match: (p) => p === '/' || p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+  },
+  {
+    id: 'bridge',
+    label: 'Bridge',
+    href: '/bridge',
+    icon: 'swap',
+    match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
   },
   {
     id: 'earn',
     label: 'Earn',
-    href: '/farms',
+    href: '/earn',
     icon: 'coins',
     match: (p) =>
-      p.startsWith('/farms') || p.startsWith('/pools') || p === '/liquidity' || p.startsWith('/liquidity-studio'),
-    menu: [
-      { id: 'farms', label: 'Farms', href: '/farms' },
-      { id: 'pools', label: 'Pools', href: '/pools' },
-      { id: 'liquidity-yield', label: 'Liquidity Yield', href: '/liquidity' },
-    ],
-  },
-  {
-    id: 'portfolio',
-    label: 'Portfolio',
-    href: '/portfolio',
-    icon: 'wallet',
-    match: (p) =>
-      p === '/portfolio' ||
-      p.startsWith('/portfolio/') ||
-      p === '/passport' ||
-      p.startsWith('/passport/') ||
-      p === '/command-center' ||
-      p.startsWith('/command-center/'),
-  },
-  {
-    id: 'explore',
-    label: 'Explore',
-    href: '/projects',
-    icon: 'folder',
-    match: (p) =>
-      p === '/projects' ||
-      p.startsWith('/projects/') ||
-      p === '/explore' ||
-      p.startsWith('/explore/') ||
-      p.startsWith('/@') ||
-      p.startsWith('/project-hq'),
+      p === '/earn' ||
+      p.startsWith('/earn/') ||
+      p.startsWith('/farms') ||
+      p.startsWith('/pools') ||
+      p === '/liquidity' ||
+      p.startsWith('/liquidity-studio'),
   },
 ]

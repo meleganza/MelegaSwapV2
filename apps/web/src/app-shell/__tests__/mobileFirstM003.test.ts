@@ -40,7 +40,7 @@ describe('M003 mobile-first phone acceptance', () => {
     const menu = read('app-shell/components/AdvancedConsoleMenu.tsx')
     expect(menu).toContain('position: fixed')
     expect(menu).toContain('left: 12px')
-    expect(menu).toContain('aria-label="Advanced Console"')
+    expect(menu).toContain('aria-label="Tools"')
     const bottom = read('design-system/melega/components/BottomNavigation/MelegaBottomNavigation.tsx')
     expect(bottom).toContain('min-height: 48px')
     expect(bottom).toContain('min-width: 48px')

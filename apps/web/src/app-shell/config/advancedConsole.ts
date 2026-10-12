@@ -1,10 +1,10 @@
 /**
- * Advanced Console — existing technical and commercial tools.
- * Not part of the four public destinations.
- * Create Pool stays unavailable; the public pools page does not open a creator.
+ * Secondary Tools. Not a primary action.
+ * Create Farm and Create Pool are not public self-service.
+ * Paid Boost stays reachable here; it is not mounted on Home.
  */
 
-export type AdvancedConsoleGroup = 'Create' | 'Commercial' | 'Technical'
+export type AdvancedConsoleGroup = 'You' | 'Discover' | 'Account'
 
 export interface AdvancedConsoleItem {
   id: string
@@ -16,23 +16,17 @@ export interface AdvancedConsoleItem {
 }
 
 export const ADVANCED_CONSOLE_ITEMS: AdvancedConsoleItem[] = [
-  { id: 'create-token', group: 'Create', label: 'Create Token', href: '/list?intent=create-token' },
-  { id: 'create-farm', group: 'Create', label: 'Create Farm', href: '/farms?create=1' },
-  {
-    id: 'create-pool',
-    group: 'Create',
-    label: 'Create Pool',
-    unavailable: true,
-    reason: 'Create Pool is unavailable',
-  },
-  { id: 'trend-boost', group: 'Commercial', label: 'Trend Boost', href: '/list#trend-boost' },
-  { id: 'list', group: 'Commercial', label: 'List a project', href: '/list' },
-  { id: 'fees', group: 'Technical', label: 'Fees & Treasury', href: '/pricing-fees' },
-  { id: 'docs', group: 'Technical', label: 'Docs', href: '/docs' },
-  { id: 'audit', group: 'Technical', label: 'Audit', href: '/audit' },
-  { id: 'radar', group: 'Technical', label: 'DEX Intelligence', href: '/radar' },
-  { id: 'collectibles', group: 'Technical', label: 'Collectibles', href: '/collectibles' },
-  { id: 'identity-console', group: 'Technical', label: 'Identity Console', href: '/identity' },
+  { id: 'portfolio', group: 'You', label: 'Portfolio', href: '/portfolio' },
+  { id: 'withdraw-lp', group: 'You', label: 'Remove liquidity', href: '/liquidity-studio?view=remove' },
+  { id: 'withdraw-farms', group: 'You', label: 'Farm positions', href: '/farms?view=my' },
+  { id: 'withdraw-pools', group: 'You', label: 'Pool positions', href: '/pools?view=positions' },
+  { id: 'melega-space', group: 'Discover', label: 'Melega Space', href: '/projects' },
+  { id: 'trend-boost', group: 'Discover', label: 'Trend Boost', href: '/list#trend-boost' },
+  { id: 'list', group: 'Discover', label: 'List a project', href: '/list' },
+  { id: 'create-token', group: 'Discover', label: 'Create Token', href: '/list?intent=create-token' },
+  { id: 'fees', group: 'Account', label: 'Fees & Treasury', href: '/pricing-fees' },
+  { id: 'docs', group: 'Account', label: 'Docs', href: '/docs' },
+  { id: 'audit', group: 'Account', label: 'Audit', href: '/audit' },
 ]
 
-export const ADVANCED_CONSOLE_GROUPS: AdvancedConsoleGroup[] = ['Create', 'Commercial', 'Technical']
+export const ADVANCED_CONSOLE_GROUPS: AdvancedConsoleGroup[] = ['You', 'Discover', 'Account']

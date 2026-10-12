@@ -10,45 +10,40 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header is Trade, Earn, Portfolio, and Explore', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
-    const trade = GLOBAL_HEADER_NAV.find((i) => i.id === 'trade')
-    expect(trade?.kind).toBe('link')
-    if (trade?.kind === 'link') expect(trade.href).toBe('/swap')
-    const explore = GLOBAL_HEADER_NAV.find((i) => i.id === 'explore')
-    expect(explore?.kind).toBe('link')
-    if (explore?.kind === 'link') expect(explore.href).toBe('/projects')
+  it('primary header is Swap, MARCO Bridge, and Earn', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Swap', 'MARCO Bridge', 'Earn'])
+    const swap = GLOBAL_HEADER_NAV.find((i) => i.id === 'swap')
+    const bridge = GLOBAL_HEADER_NAV.find((i) => i.id === 'bridge')
+    expect(swap?.kind).toBe('link')
+    expect(bridge?.kind).toBe('link')
+    if (swap?.kind === 'link') expect(swap.href).toBe('/')
+    if (bridge?.kind === 'link') expect(bridge.href).toBe('/bridge')
   })
 
   it('mobile bottom nav exposes the four public destinations', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
-    expect(shellBottomNavItems.find((i) => i.id === 'trade')?.href).toBe('/swap')
-    expect(shellBottomNavItems.find((i) => i.id === 'earn')?.menu?.map((item) => item.href)).toEqual([
-      '/farms',
-      '/pools',
-      '/liquidity',
-    ])
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Swap', 'Bridge', 'Earn'])
+    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/')
+    expect(shellBottomNavItems.find((i) => i.id === 'bridge')?.href).toBe('/bridge')
+    expect(shellBottomNavItems.find((i) => i.id === 'earn')?.href).toBe('/earn')
   })
 
-  it('Trade is Swap-only for the home route, and Explore owns project pages', () => {
-    const trade = GLOBAL_HEADER_NAV.find((i) => i.id === 'trade')
-    const explore = GLOBAL_HEADER_NAV.find((i) => i.id === 'explore')
-    expect(trade?.kind).toBe('link')
-    expect(explore?.kind).toBe('link')
-    if (trade?.kind !== 'link' || explore?.kind !== 'link') return
-    expect(trade.match('/')).toBe(false)
-    expect(trade.match('/swap')).toBe(true)
-    expect(trade.match('/project-hq/marco')).toBe(false)
-    expect(trade.match('/@marco')).toBe(false)
-    expect(explore.match('/projects')).toBe(true)
-    expect(explore.match('/@marco')).toBe(true)
-    expect(explore.match('/project-hq/marco')).toBe(true)
-    expect(explore.match('/swap')).toBe(false)
+  it('Swap owns home and the swap route; Bridge does not own project pages', () => {
+    const swap = GLOBAL_HEADER_NAV.find((i) => i.id === 'swap')
+    const bridge = GLOBAL_HEADER_NAV.find((i) => i.id === 'bridge')
+    expect(swap?.kind).toBe('link')
+    expect(bridge?.kind).toBe('link')
+    if (swap?.kind !== 'link' || bridge?.kind !== 'link') return
+    expect(swap.match('/')).toBe(true)
+    expect(swap.match('/swap')).toBe(true)
+    expect(swap.match('/project-hq/marco')).toBe(false)
+    expect(swap.match('/@marco')).toBe(false)
+    expect(bridge.match('/bridge')).toBe(true)
+    expect(bridge.match('/projects')).toBe(false)
 
-    const bottomTrade = shellBottomNavItems.find((i) => i.id === 'trade')
-    expect(bottomTrade?.match('/swap')).toBe(true)
-    expect(bottomTrade?.match('/')).toBe(false)
-    expect(bottomTrade?.match('/@marco/')).toBe(false)
+    const bottomSwap = shellBottomNavItems.find((i) => i.id === 'swap')
+    expect(bottomSwap?.match('/swap')).toBe(true)
+    expect(bottomSwap?.match('/')).toBe(true)
+    expect(bottomSwap?.match('/@marco/')).toBe(false)
   })
 
   it('Liquidity Building deep links remain available', () => {

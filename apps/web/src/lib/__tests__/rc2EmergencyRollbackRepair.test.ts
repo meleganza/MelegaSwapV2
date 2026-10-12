@@ -45,12 +45,12 @@ describe('RC2 emergency — journey UI removed', () => {
 
 describe('RC2 emergency — header / bottom nav', () => {
   it('header remains the four public destinations', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Swap', 'MARCO Bridge', 'Earn'])
     expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Journey')).toBe(false)
   })
 
   it('bottom nav stays on the four public destinations', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Swap', 'Bridge', 'Earn'])
   })
 
   it('app preserves the page tree across soft navigation and recovers stale chunks', () => {

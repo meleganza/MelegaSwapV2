@@ -88,7 +88,7 @@ const Header = styled.div`
   }
 
   /* 320px phones: tabs take the full row so Swap and MARCO Bridge stay readable. */
-  @media (max-width: 380px) {
+  @media (max-width: 430px) {
     flex-direction: column;
     align-items: stretch;
   }
@@ -100,7 +100,7 @@ const Left = styled.div`
   min-width: 0;
   flex: 1;
 
-  @media (max-width: 380px) {
+  @media (max-width: 430px) {
     width: 100%;
     flex: none;
   }
@@ -132,7 +132,7 @@ const Right = styled.div`
     flex-wrap: wrap;
   }
 
-  @media (max-width: 380px) {
+  @media (max-width: 430px) {
     width: 100%;
     justify-content: flex-end;
   }

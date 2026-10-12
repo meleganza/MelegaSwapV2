@@ -11,90 +11,73 @@ import { ADVANCED_CONSOLE_ITEMS } from '../config/advancedConsole'
 const WEB = path.resolve(__dirname, '../..')
 
 describe('M003 radical navigation', () => {
-  it('public header is exactly Trade, Earn, Portfolio, Explore', () => {
-    expect(GLOBAL_HEADER_NAV.map((item) => item.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
-    expect(GLOBAL_HEADER_NAV).toHaveLength(4)
-    const trade = GLOBAL_HEADER_NAV.find((item) => item.id === 'trade')
+  it('immediate actions are Swap, MARCO Bridge, and Earn', () => {
+    expect(GLOBAL_HEADER_NAV.map((item) => item.label)).toEqual(['Swap', 'MARCO Bridge', 'Earn'])
+    expect(GLOBAL_HEADER_NAV).toHaveLength(3)
+    const swap = GLOBAL_HEADER_NAV.find((item) => item.id === 'swap')
+    const bridge = GLOBAL_HEADER_NAV.find((item) => item.id === 'bridge')
     const earn = GLOBAL_HEADER_NAV.find((item) => item.id === 'earn')
-    expect(trade?.kind).toBe('link')
+    expect(swap?.kind).toBe('link')
+    expect(bridge?.kind).toBe('link')
     expect(earn?.kind).toBe('link')
-    if (trade?.kind === 'link') {
-      expect(trade.href).toBe('/swap')
-      expect(trade.items?.map((item) => item.label)).toEqual(['Swap', 'Bridge MARCO'])
-      expect(trade.items?.find((item) => item.id === 'bridge-marco')?.href).toBe('/bridge')
-      expect(trade.match('/swap')).toBe(true)
-      expect(trade.match('/bridge')).toBe(true)
-      expect(trade.match('/')).toBe(false)
-      expect(trade.match('/projects')).toBe(false)
+    if (swap?.kind === 'link') {
+      expect(swap.href).toBe('/')
+      expect(swap.match('/')).toBe(true)
+      expect(swap.match('/swap')).toBe(true)
+      expect(swap.match('/projects')).toBe(false)
     }
+    if (bridge?.kind === 'link') expect(bridge.href).toBe('/bridge')
     if (earn?.kind === 'link') {
-      expect(earn.href).toBe('/farms')
-      expect(earn.items?.map((item) => [item.label, item.href])).toEqual([
-        ['Farms', '/farms'],
-        ['Pools', '/pools'],
-        ['Liquidity Yield', '/liquidity'],
-      ])
+      expect(earn.href).toBe('/earn')
       expect(earn.match('/farms')).toBe(true)
       expect(earn.match('/pools')).toBe(true)
       expect(earn.match('/liquidity')).toBe(true)
-      expect(earn.match('/liquidity-studio')).toBe(true)
-      expect(earn.match('/swap')).toBe(false)
     }
-    const portfolio = GLOBAL_HEADER_NAV.find((item) => item.id === 'portfolio')
-    const explore = GLOBAL_HEADER_NAV.find((item) => item.id === 'explore')
-    expect(portfolio?.kind === 'link' && portfolio.href).toBe('/portfolio')
-    expect(explore?.kind === 'link' && explore.href).toBe('/projects')
-    if (explore?.kind === 'link') {
-      expect(explore.match('/projects')).toBe(true)
-      expect(explore.match('/@marco')).toBe(true)
-      expect(explore.match('/explore')).toBe(true)
-      expect(explore.match('/swap')).toBe(false)
-    }
+    expect(GLOBAL_HEADER_NAV.some((item) => item.label === 'Portfolio')).toBe(false)
+    expect(GLOBAL_HEADER_NAV.some((item) => item.label === 'Explore')).toBe(false)
   })
 
-  it('mobile bottom navigation uses the same four labels and groups Earn', () => {
-    expect(shellBottomNavItems.map((item) => item.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
-    expect(shellBottomNavItems.find((item) => item.id === 'trade')?.href).toBe('/swap')
-    expect(shellBottomNavItems.find((item) => item.id === 'earn')?.menu?.map((item) => item.href)).toEqual([
-      '/farms',
-      '/pools',
-      '/liquidity',
-    ])
-    expect(shellBottomNavItems.find((item) => item.id === 'explore')?.href).toBe('/projects')
+  it('mobile bottom navigation is Swap, Bridge, and Earn in one tap', () => {
+    expect(shellBottomNavItems.map((item) => item.label)).toEqual(['Swap', 'Bridge', 'Earn'])
+    expect(shellBottomNavItems.find((item) => item.id === 'swap')?.href).toBe('/')
+    expect(shellBottomNavItems.find((item) => item.id === 'bridge')?.href).toBe('/bridge')
+    expect(shellBottomNavItems.find((item) => item.id === 'earn')?.href).toBe('/earn')
+    expect(shellBottomNavItems.every((item) => !item.menu?.length)).toBe(true)
   })
 
-  it('Advanced Console keeps Create Pool unavailable and links existing tools', () => {
-    const pool = ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'create-pool')
-    expect(pool?.unavailable).toBe(true)
-    expect(pool?.href).toBeUndefined()
-    expect(pool?.reason).toMatch(/unavailable/i)
-    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'create-token')?.href).toBe('/list?intent=create-token')
-    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'create-farm')?.href).toBe('/farms?create=1')
+  it('Tools keeps Boost and positions, and does not offer Create Farm or Create Pool', () => {
+    expect(ADVANCED_CONSOLE_ITEMS.some((item) => item.id === 'create-pool' || item.id === 'create-farm')).toBe(false)
     expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'trend-boost')?.href).toBe('/list#trend-boost')
-    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'fees')?.href).toBe('/pricing-fees')
+    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'melega-space')?.href).toBe('/projects')
+    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'portfolio')?.href).toBe('/portfolio')
+    expect(ADVANCED_CONSOLE_ITEMS.find((item) => item.id === 'withdraw-farms')?.href).toBe('/farms?view=my')
     const menu = readFileSync(path.join(WEB, 'app-shell/components/AdvancedConsoleMenu.tsx'), 'utf8')
-    expect(menu).toContain('aria-label="Advanced Console"')
+    expect(menu).toContain('aria-label="Tools"')
     expect(menu).toContain('aria-haspopup="menu"')
-    expect(menu).toContain('data-disabled-reason')
+    expect(menu).not.toContain('Create Farm')
+    expect(menu).not.toContain('Create Pool')
     expect(menu).not.toContain('href="#"')
-    expect(menu).not.toContain('href="/pools?create=1"')
   })
 
-  it('homepage keeps Swap primary and does not start hidden farm, pool, or indexer producers', () => {
+  it('homepage is only the swap panel and does not start hidden farm, pool, or indexer producers', () => {
     const page = readFileSync(path.join(WEB, 'pages/index.tsx'), 'utf8')
     const home = readFileSync(path.join(WEB, 'views/HomeTrade/RadicalHomeScreen.tsx'), 'utf8')
+    const earn = readFileSync(path.join(WEB, 'views/Earn/SimpleEarn.tsx'), 'utf8')
     expect(page).toContain('RadicalHomeScreen')
     expect(page).not.toContain('HomeTradeScreen')
     expect(home).toContain('<HomeSwapPanel />')
     expect(home).toContain('data-testid="dex-home-instant-swap"')
-    expect(home).toContain('href="/bridge"')
-    expect(home).toContain('href="/liquidity"')
-    expect(home).toContain('href="/list#trend-boost"')
-    expect(home).toContain('href="/list"')
-    expect(home).toContain('href="/projects"')
-    expect(home).toContain('href="/liquidity-studio?view=remove"')
-    expect(home).toContain('href="/farms?view=my"')
-    expect(home).toContain('href="/pools?view=positions"')
+    expect(home).not.toContain('href="/bridge"')
+    expect(home).not.toContain('href="/list#trend-boost"')
+    expect(home).not.toContain('FeaturedProjectsRail')
+    expect(home).not.toContain('Top Farms')
+    expect(earn).toContain('href="/liquidity"')
+    expect(earn).toContain('href="/pools"')
+    expect(earn).toContain('href="/farms"')
+    expect(earn).toContain('href="/liquidity-studio?view=remove"')
+    expect(earn).toContain('href="/farms?view=my"')
+    expect(earn).toContain('href="/pools?view=positions"')
+    expect(earn).toContain('External opportunities are not available yet')
     expect(home).not.toContain('HomeTradeDataProvider')
     expect(home).not.toContain('useHomeTradeData')
     expect(home).not.toContain('FeaturedProjectsRail')
@@ -123,6 +106,7 @@ describe('M003 radical navigation', () => {
       'pages/list/index.tsx',
       'pages/explore/index.tsx',
       'pages/remove/[[...currency]].tsx',
+      'pages/earn/index.tsx',
       'pages/pricing-fees/index.tsx',
     ]
     for (const rel of pages) {
