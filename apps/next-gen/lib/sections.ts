@@ -40,8 +40,8 @@ export const SECTIONS: SectionCopy[] = [
     href: '/earn',
     primary: true,
     statements: [
-      'No yield is shown, because this beta does not read farms, pools, or external protocols.',
-      'BNB farms and pools remain on the live DEX.',
+      'One BNB farm row is read only after you open Earn.',
+      'Yield figures are omitted unless that read returns them.',
       'Public Create Farm and Create Pool are not offered.',
       'Wallet withdrawal remains on the live DEX.',
     ],

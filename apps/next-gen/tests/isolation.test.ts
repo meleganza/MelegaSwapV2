@@ -40,6 +40,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/trade/BnbQuotePreview.tsx'),
   path.join(root, 'lib/portfolioRpc.ts'),
   path.join(root, 'modules/portfolio/PortfolioLookup.tsx'),
+  path.join(root, 'lib/earnRpc.ts'),
+  path.join(root, 'modules/earn/EarnRead.tsx'),
 ])
 
 test('beta source does not import the live DEX stack or open a network client', () => {
@@ -66,6 +68,8 @@ test('beta source does not import the live DEX stack or open a network client', 
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)
   assert.equal(home.includes('modules/portfolio'), false)
+  assert.equal(home.includes('modules/earn'), false)
+  assert.equal(home.includes('/api/earn'), false)
   assert.equal(home.includes('apps/web'), false)
   const lookup = readFileSync(path.join(root, 'modules/portfolio/PortfolioLookup.tsx'), 'utf8')
   assert.match(lookup, /fetch\('\/api\/portfolio'/)
