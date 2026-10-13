@@ -27,18 +27,14 @@ describe('MARCO Pay merchant rails', () => {
     expect(assertObservedPayChain(56, false)).toBe(56)
   })
 
-  it('follows the lead COMING_SOON rails and does not treat an unconsented chain as BNB', () => {
-    expect(listMerchantPayRails().find((rail) => rail.id === 'base')?.reason).toBe('MERCHANT_NETWORK_NOT_CONFIGURED')
-    expect(listMerchantPayRails().find((rail) => rail.id === 'polygon')?.reason).toBe('RAIL_COMING_SOON')
-    expect(listMerchantPayRails().find((rail) => rail.id === 'arc')?.reason).toBe('RAIL_COMING_SOON')
+  it('opens every registry EVM chain on the verified merchant address and still honors an explicit consent list', () => {
+    for (const chainId of [56, 8453, 137, 4663, 5042]) {
+      expect(resolveMerchantPayRail({ chainId }).settlementWallet).toBe(MARCO_PAY_SETTLEMENT_WALLET)
+    }
+    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56'
+    expect(resolveMerchantPayRail({ chainId: 56 }).chainId).toBe(56)
     expect(() => resolveMerchantPayRail({ chainId: 8453 })).toThrow('MERCHANT_NETWORK_NOT_CONFIGURED')
-    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56,8453,4663,137,5042'
-    const base = resolveMerchantPayRail({ chainId: 8453 })
-    expect(base.chainId).toBe(8453)
-    expect(base.settlementWallet).toBe(MARCO_PAY_SETTLEMENT_WALLET)
-    expect(resolveMerchantPayRail({ chainId: 4663 }).chainId).toBe(4663)
-    expect(() => resolveMerchantPayRail({ chainId: 137 })).toThrow('RAIL_COMING_SOON')
-    expect(() => resolveMerchantPayRail({ chainId: 5042 })).toThrow('RAIL_COMING_SOON')
+    expect(() => resolveMerchantPayRail({ chainId: 137 })).toThrow('MERCHANT_NETWORK_NOT_CONFIGURED')
     expect(() => assertObservedPayChain(1, false)).toThrow('CHAIN_MISMATCH')
     expect(() => assertObservedPayChain(null, true)).toThrow('CHAIN_MISMATCH')
   })

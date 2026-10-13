@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MarcoPayCompletedEvent } from '../contract'
+import { payRailCatalog } from '../merchantRails'
 
 vi.mock('@vercel/blob', () => ({ get: vi.fn(), head: vi.fn(), put: vi.fn() }))
 vi.mock('lib/featured-placement/eligibility', () => ({
@@ -84,7 +85,7 @@ function eventFor(
   orderId: string,
   overrides: Partial<MarcoPayCompletedEvent> = {},
 ): MarcoPayCompletedEvent {
-  return {
+  const event: MarcoPayCompletedEvent = {
     event_id: '00000000-0000-4000-8000-000000000010',
     event_type: 'payment.completed',
     event_version: '1',
@@ -102,6 +103,17 @@ function eventFor(
     receipt_ref: 'receipt_order_test_1',
     ...overrides,
   }
+  if (!event.test_mode && event.settlement === undefined) {
+    const bnb = payRailCatalog().find((rail) => rail.id === 'bnb')
+    event.settlement = {
+      family: 'evm',
+      chain_id: 56,
+      token_address: bnb?.token ?? '',
+      tx_hash: `0x${'ab'.repeat(32)}`,
+      proven: true,
+    }
+  }
+  return event
 }
 
 describe('MARCO Pay fulfilment', () => {
@@ -147,6 +159,20 @@ describe('MARCO Pay fulfilment', () => {
     expect(order.productRef).toBeNull()
     expect(result.testMode).toBe(true)
     expect(result.order?.state).toBe('TEST_VERIFIED')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('does not activate a live event that has no gateway chain proof', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { test_mode: false, settlement: null })),
+    ).rejects.toThrow('SETTLEMENT_UNPROVEN')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 

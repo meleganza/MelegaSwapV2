@@ -39,6 +39,15 @@ export type MarcoPayReferralFact = {
   commission_asset: string | null
 }
 
+/** Gateway CHAIN_OBSERVER proof. Absent means the payment is not chain-proven. */
+export type MarcoPayChainSettlement = {
+  family: 'evm' | 'solana'
+  chain_id: number | null
+  token_address: string
+  tx_hash: string
+  proven: true
+}
+
 export type MarcoPayCompletedEvent = {
   event_id: string
   event_type: 'payment.completed'
@@ -56,6 +65,7 @@ export type MarcoPayCompletedEvent = {
   test_mode: boolean
   receipt_ref: string | null
   referral?: MarcoPayReferralFact | null
+  settlement?: MarcoPayChainSettlement | null
 }
 
 export type MarcoPayLifecycleEvent = {
@@ -174,6 +184,39 @@ export function parseMarcoPayCompletedEvent(rawBody: Buffer): MarcoPayCompletedE
     test_mode: body.test_mode,
     receipt_ref: nullableString(body.receipt_ref, 'receipt_ref'),
     referral: parseReferralFact(body.referral),
+    settlement: parseChainSettlement(body.settlement),
+  }
+}
+
+function parseChainSettlement(value: unknown): MarcoPayChainSettlement | null {
+  if (value == null) return null
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    throw new MarcoPayVerificationError('SCHEMA_INVALID', 'settlement must be an object.')
+  }
+  const row = value as Record<string, unknown>
+  const family = requireString(row.family, 'settlement.family')
+  if (family !== 'evm' && family !== 'solana') {
+    throw new MarcoPayVerificationError('SCHEMA_INVALID', 'settlement.family must be evm or solana.')
+  }
+  if (row.proven !== true) {
+    throw new MarcoPayVerificationError('SETTLEMENT_UNPROVEN', 'A live chain settlement must be proven by the gateway.')
+  }
+  let chainId: number | null = null
+  if (family === 'solana') {
+    if (row.chain_id != null) {
+      throw new MarcoPayVerificationError('SCHEMA_INVALID', 'Solana settlement chain_id must be null.')
+    }
+  } else if (typeof row.chain_id !== 'number' || !Number.isInteger(row.chain_id)) {
+    throw new MarcoPayVerificationError('SCHEMA_INVALID', 'EVM settlement chain_id must be an integer.')
+  } else {
+    chainId = row.chain_id
+  }
+  return {
+    family,
+    chain_id: chainId,
+    token_address: requireString(row.token_address, 'settlement.token_address'),
+    tx_hash: requireString(row.tx_hash, 'settlement.tx_hash'),
+    proven: true,
   }
 }
 

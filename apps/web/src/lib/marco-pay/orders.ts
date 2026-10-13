@@ -27,7 +27,7 @@ import {
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
 import { assertPassportProEconomics, type PassportProEconomics } from './economics'
-import { assertPaySettlementBinding, isAuthoritativeMarcoPaidStatus } from './merchantRails'
+import { assertPaySettlementBinding, assertProvenGatewaySettlement } from './merchantRails'
 import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET, usdCopiedToMarco } from './settlement'
 import { MARCO_PAY_CHAIN_ID } from './walletTransfer'
 import { readMarcoPaySettlementState, type MarcoPaySettlementState } from './gateway'
@@ -397,6 +397,17 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
       throw new Error('COMMISSION_MISMATCH')
     }
   }
+  if (!event.test_mode) {
+    const proof = event.settlement
+    if (!proof?.proven) throw new Error('SETTLEMENT_UNPROVEN')
+    assertProvenGatewaySettlement({
+      family: proof.family,
+      chainId: proof.chain_id,
+      tokenAddress: proof.token_address,
+      orderChainId: order.chainId,
+      orderNetworkId: order.networkId,
+    })
+  }
 }
 
 function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
@@ -492,12 +503,9 @@ export async function fulfilPaidBoostOrder(orderRef: string): Promise<MarcoPayOr
   }))!
 }
 
-function settlementIsPaid(state: MarcoPaySettlementState): boolean {
-  if (state.testMode) return false
-  if (!state.receiptRef) return false
-  if (!isAuthoritativeMarcoPaidStatus(state.status)) return false
-  if (state.completed === false) return false
-  return true
+function settlementIsPaid(_state: MarcoPaySettlementState): boolean {
+  // Public status, including COMPLETED and PAID, is not the signed gateway proof.
+  return false
 }
 
 export async function reconcileMarcoPayOrder(orderRef: string): Promise<MarcoPayOrder | null> {
@@ -622,8 +630,11 @@ export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEven
     intentRef: event.intent_ref,
     receiptRef: event.receipt_ref,
     marcoAmountMinor: event.marco_amount_minor,
-    destinationWallet: order.destinationWallet || (order.networkId === 'solana' ? null : MARCO_PAY_SETTLEMENT_WALLET),
-    chainId: order.chainId,
+    destinationWallet: order.destinationWallet || (event.settlement?.family === 'solana' ? null : MARCO_PAY_SETTLEMENT_WALLET),
+    chainId: event.settlement?.chain_id ?? order.chainId,
+    networkId: event.settlement?.family === 'solana' ? 'solana' : order.networkId,
+    settlementToken: event.settlement?.token_address ?? order.settlementToken,
+    txHash: event.settlement?.tx_hash ?? order.txHash,
     testMode: false,
   })
   if (!confirmed) throw new Error('ORDER_NOT_FOUND')

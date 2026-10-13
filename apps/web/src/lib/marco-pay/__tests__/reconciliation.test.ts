@@ -116,7 +116,7 @@ describe('MARCO Pay reconciliation', () => {
     clearTrendBoostOrdersForTests()
   })
 
-  it('fulfils once after a lost callback when MARCO reports paid settlement', async () => {
+  it('does not fulfil from a public COMPLETED poll without the signed gateway event', async () => {
     const order = await createMarcoPayOrder({
       applicationRef: 'app_sedafoqw6qlxyxb9l8ds',
       projectId: 'mm72',
@@ -134,9 +134,9 @@ describe('MARCO Pay reconciliation', () => {
     })
     const first = await reconcileMarcoPayOrder(order.orderId)
     const second = await reconcileMarcoPayOrder(order.orderId)
-    expect(first?.state).toBe('ACTIVE')
-    expect(second?.activatedAt).toBe(first?.activatedAt)
-    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
+    expect(first?.state).not.toBe('ACTIVE')
+    expect(second?.state).not.toBe('ACTIVE')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 
   it('does not fulfil when MARCO only reports the intermediate PAID status', async () => {

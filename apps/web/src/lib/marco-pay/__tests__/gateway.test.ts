@@ -237,30 +237,32 @@ describe('MARCO Pay merchant session', () => {
     })
     expect(session.chainId).toBe(8453)
 
+    const polygonToken = '0xF31A621A0e75d90fdA320EeE52956D718Fa34615'
     const polygon = vi.fn(async () =>
       jsonResponse({
         ok: true,
         payment_id: 'pay_polygon',
         marco_amount_minor: '25000000',
         chain_id: 137,
+        token_address: polygonToken,
         receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
       }),
     )
-    await expect(
-      createMarcoPayPaymentSession({
-        applicationRef,
-        merchantOrderRef: 'mp_probe_intent_1',
-        amountMinor: '900',
-        currency: 'USD',
-        expectedChainId: 137,
-        secret,
-        merchantApiKey,
-        nowSeconds: now,
-        fetchImpl: polygon as unknown as typeof fetch,
-      }),
-    ).rejects.toMatchObject({ code: 'RAIL_COMING_SOON' })
+    const polygonSession = await createMarcoPayPaymentSession({
+      applicationRef,
+      merchantOrderRef: 'mp_probe_intent_polygon',
+      amountMinor: '900',
+      currency: 'USD',
+      expectedChainId: 137,
+      expectedToken: polygonToken,
+      secret,
+      merchantApiKey,
+      nowSeconds: now,
+      fetchImpl: polygon as unknown as typeof fetch,
+    })
+    expect(polygonSession.chainId).toBe(137)
 
-    delete process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS
+    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56'
     const unconfigured = vi.fn(async () =>
       jsonResponse({
         ok: true,

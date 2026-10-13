@@ -3,14 +3,11 @@
  *
  * Token identities come from the existing Wave-1 registry. Pay-rail authority
  * status is not inferred from bridge pause flags and is not marked LIVE here.
- * Lead meleganza/melega-civ-passport#23 marks Polygon and Arc COMING_SOON.
- * This consumer previously marked Base COMING_SOON instead
- * (BASE_AUTHORITY_COMING_SOON) and treated Polygon and Arc as wallet gaps.
- *
- * The verified EVM merchant address is shared only with chain ids listed in
- * MARCO_PAY_EVM_CONSENTED_CHAIN_IDS. When that variable is unset, only chain 56
- * is consented, because that is the network already bound to the treasury
- * constant. Solana uses MARCO_PAY_SOLANA_MERCHANT_PUBKEY and never that EVM address.
+ * Checkout chains are the Wave-1 registry. The canonical Passport gateway proves
+ * a live payment with settlement.family, chain_id, token_address, tx_hash and
+ * proven=true. When MARCO_PAY_EVM_CONSENTED_CHAIN_IDS is unset, every registry
+ * EVM chain may use the verified Melega merchant address. An explicit list
+ * restricts that set. Solana uses MARCO_PAY_SOLANA_MERCHANT_PUBKEY only.
  * This module does not broadcast a transaction.
  */
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
@@ -41,13 +38,6 @@ export type MerchantPayRail = {
 }
 
 type RailSpec = Omit<MerchantPayRail, 'executable' | 'status' | 'reason' | 'detail' | 'settlementWallet'>
-
-/**
- * Authority disablement taken from the lead pay registry, not from a local LIVE flag.
- * polygon and arc: COMING_SOON on meleganza/melega-civ-passport#23.
- * base: not COMING_SOON on that lead; the previous consumer reason was BASE_AUTHORITY_COMING_SOON.
- */
-const AUTHORITY_COMING_SOON = new Set<MerchantRailId>(['polygon', 'arc'])
 
 const RAIL_SPECS: readonly RailSpec[] = [
   {
@@ -102,7 +92,11 @@ const RAIL_SPECS: readonly RailSpec[] = [
 
 export function readEvmConsentedChainIds(env: NodeJS.ProcessEnv = process.env): ReadonlySet<number> {
   const raw = env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS?.trim() || ''
-  if (!raw) return new Set([56])
+  if (!raw) {
+    return new Set(
+      RAIL_SPECS.flatMap((rail) => (rail.family === 'evm' && rail.chainId != null ? [rail.chainId] : [])),
+    )
+  }
   const ids = new Set<number>()
   for (const part of raw.split(',')) {
     const trimmed = part.trim()
@@ -140,7 +134,6 @@ export function resolveMerchantPayRail(input: {
   if (byNetwork && byChain && byNetwork.id !== byChain.id) throw new Error('CHAIN_MISMATCH')
   const spec = byNetwork ?? byChain
   if (!spec) throw new Error('CHAIN_MISMATCH')
-  if (AUTHORITY_COMING_SOON.has(spec.id)) throw new Error('RAIL_COMING_SOON')
   if (spec.family === 'solana') {
     const pubkey = readSolanaMerchantPubkey(env)
     if (!pubkey) throw new Error('SOLANA_MERCHANT_PUBKEY_UNCONFIGURED')
@@ -170,9 +163,7 @@ export function resolveMerchantPayRail(input: {
 
 function preparedRail(spec: RailSpec, reason: string): MerchantPayRail {
   const detail =
-    reason === 'RAIL_COMING_SOON'
-      ? 'Lead pay registry meleganza/melega-civ-passport#23 marks this rail COMING_SOON.'
-      : reason === 'SOLANA_MERCHANT_PUBKEY_UNCONFIGURED'
+    reason === 'SOLANA_MERCHANT_PUBKEY_UNCONFIGURED'
         ? 'Solana stays closed until MARCO_PAY_SOLANA_MERCHANT_PUBKEY is configured. The EVM treasury is not used.'
         : reason === 'MERCHANT_NETWORK_NOT_CONFIGURED'
           ? 'The verified EVM merchant address is not consented for this chain.'
@@ -225,6 +216,30 @@ export function assertPaySettlementBinding(input: {
         : input.recipient.trim() === rail.settlementWallet
     if (!same) throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
+  return rail
+}
+
+export function assertProvenGatewaySettlement(input: {
+  family: 'evm' | 'solana'
+  chainId: number | null
+  tokenAddress: string
+  orderChainId: number | null
+  orderNetworkId: string | null
+  env?: NodeJS.ProcessEnv
+}): MerchantPayRail {
+  if (input.family === 'solana') {
+    if (input.chainId != null || (input.orderNetworkId != null && input.orderNetworkId !== 'solana') || input.orderChainId != null) {
+      throw new Error('CHAIN_MISMATCH')
+    }
+    const rail = resolveMerchantPayRail({ networkId: 'solana', env: input.env })
+    if (!settlementAssetMatches(rail, input.tokenAddress)) throw new Error('TOKEN_MISMATCH')
+    return rail
+  }
+  if (input.chainId == null) throw new Error('CHAIN_MISMATCH')
+  const rail = resolveMerchantPayRail({ chainId: input.chainId, env: input.env })
+  if (rail.family !== 'evm' || !settlementAssetMatches(rail, input.tokenAddress)) throw new Error('TOKEN_MISMATCH')
+  if (input.orderChainId != null && input.orderChainId !== input.chainId) throw new Error('CHAIN_MISMATCH')
+  if (input.orderNetworkId === 'solana') throw new Error('CHAIN_MISMATCH')
   return rail
 }
 
