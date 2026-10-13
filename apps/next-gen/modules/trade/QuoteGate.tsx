@@ -10,10 +10,11 @@ export default function QuoteGate() {
       {open ? (
         <BnbQuotePreview />
       ) : (
-        <button type="button" onClick={() => setOpen(true)}>
-          Load BNB quote preview
+        <button className="primary-action" type="button" onClick={() => setOpen(true)}>
+          Open read-only quote
         </button>
       )}
+      {!open ? <p className="action-hint">No wallet, signature, approval, or transaction.</p> : null}
     </div>
   )
 }

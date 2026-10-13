@@ -5,7 +5,7 @@ import { LIVE_WITHDRAWAL_LINKS, type PortfolioRead } from '../../lib/portfolioRe
 export function PortfolioResult({ result }: { result: PortfolioRead }) {
   if (!result.ok && result.assets.length === 0) {
     return (
-      <p className="status" role="status" data-executable="false">
+      <p className="inline-alert" role="status" data-executable="false">
         {result.code === 'ADDRESS_REJECTED'
           ? 'That address was not accepted. No balance was read.'
           : result.code === 'CHAIN_MISMATCH'
@@ -18,10 +18,10 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
   }
   return (
     <div data-executable="false" data-custody="false" data-chain="56">
-      <p className="status" role="status">
+      <p className="inline-alert" role="status">
         BNB balances, read-only
       </p>
-      <ul className="facts">
+      <ul className="result-list">
         {result.assets.map((asset) => (
           <li key={asset.symbol}>
             {asset.symbol}: {asset.status === 'ok' ? asset.display : 'unavailable'}
@@ -34,7 +34,7 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
         <li>LP positions are not scanned. Farm positions are not scanned.</li>
         <li>This beta cannot withdraw, approve, or sign.</li>
       </ul>
-      <ul className="facts">
+      <ul className="result-links">
         {LIVE_WITHDRAWAL_LINKS.map((link) => (
           <li key={link.href}>
             <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
@@ -83,8 +83,8 @@ export default function PortfolioLookup() {
 
   return (
     <section className="quote-panel" aria-labelledby="portfolio-title">
-      <h2 id="portfolio-title">Public address lookup</h2>
-      <p className="footnote">No wallet is connected. Melega does not take custody of this address.</p>
+      <div className="panel-title"><div><p className="section-kicker">Read-only lookup</p><h2 id="portfolio-title">Public address</h2></div><span className="quiet-chip">BNB Chain</span></div>
+      <p className="muted-copy">No wallet is connected. Melega does not take custody of this address.</p>
       <label htmlFor="portfolio-address">
         Address
         <input
@@ -95,7 +95,7 @@ export default function PortfolioLookup() {
           onChange={(event) => setAddress(event.target.value)}
         />
       </label>
-      <button type="button" onClick={onRead} disabled={pending}>
+      <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
         {pending ? 'Reading balances' : 'Read BNB balances'}
       </button>
       {result ? <PortfolioResult result={result} /> : null}

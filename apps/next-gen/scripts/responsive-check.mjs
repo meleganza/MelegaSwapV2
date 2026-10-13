@@ -8,7 +8,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 const base = process.env.BETA_BASE_URL || 'http://127.0.0.1:4317'
 const chromeBin = process.env.CHROME_PATH
 const outDir = process.env.BETA_SCREENSHOT_DIR || ''
-const widths = [320, 390, 430, 1440]
+const widths = [320, 390, 430, 768, 1440]
 
 if (!chromeBin) {
   console.error('CHROME_PATH is required')
@@ -160,7 +160,7 @@ for (const width of widths) {
         operational: document.querySelector('[data-operational="false"]') ? 'false' : 'missing',
         inputs: document.querySelectorAll('input').length,
         h1: document.querySelector('h1') ? document.querySelector('h1').textContent : '',
-        actions: ['Swap', 'MARCO Bridge', 'Earn'].every((label) => document.body.innerText.includes(label))
+        actions: ['Trade', 'Earn', 'Portfolio', 'Explore'].every((label) => document.body.innerText.includes(label))
       })`,
       returnByValue: true,
     })

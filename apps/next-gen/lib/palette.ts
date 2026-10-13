@@ -1,12 +1,12 @@
 /** Pearl-gray sheet on a graphite ink. Hex values are asserted against globals.css. */
 export const palette = {
-  canvas: '#e4e1db',
-  sheet: '#f4f2ee',
-  ink: '#1c1c1c',
-  muted: '#5e5a55',
-  line: '#ddd9d2',
-  inverse: '#f4f2ee',
-  graphite: '#1c1c1c',
+  canvas: '#e8e5de',
+  sheet: '#f8f6f1',
+  ink: '#171816',
+  muted: '#66645e',
+  line: '#d9d5cc',
+  inverse: '#f8f6f1',
+  graphite: '#171816',
 } as const
 
 export type PaletteName = keyof typeof palette
