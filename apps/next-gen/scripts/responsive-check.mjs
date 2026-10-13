@@ -160,7 +160,21 @@ for (const width of widths) {
         operational: document.querySelector('[data-operational="false"]') ? 'false' : 'missing',
         inputs: document.querySelectorAll('input').length,
         h1: document.querySelector('h1') ? document.querySelector('h1').textContent : '',
-        actions: ['Trade', 'Earn', 'Portfolio', 'Explore'].every((label) => document.body.innerText.includes(label))
+        actions: ['Trade', 'Earn', 'Portfolio', 'Explore'].every((label) => document.body.innerText.includes(label)),
+        cta: (() => {
+          const node = document.querySelector('.quote-slot > button')
+          return node ? node.getBoundingClientRect().toJSON() : null
+        })(),
+        mobileNav: (() => {
+          const node = document.querySelector('.mobile-nav')
+          return node && getComputedStyle(node).display !== 'none' ? node.getBoundingClientRect().toJSON() : null
+        })(),
+        pageHeight: document.documentElement.scrollHeight,
+        viewportHeight: document.documentElement.clientHeight,
+        nestedScroll: [...document.querySelectorAll('.app-stage, .main, .trade-layout, .trade-surface')].some((node) => {
+          const style = getComputedStyle(node)
+          return /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1
+        })
       })`,
       returnByValue: true,
     })
@@ -171,7 +185,16 @@ for (const width of widths) {
     if (measured.operational !== 'false' || measured.inputs !== 0 || !measured.actions) {
       throw new Error(`${route} at ${width} failed shell checks ${result.value}`)
     }
-    console.log(`${width} ${route}: overflow 0, h1 ${measured.h1}`)
+    if (width <= 430 && (!measured.cta || !measured.mobileNav || measured.cta.bottom > measured.mobileNav.top)) {
+      throw new Error(`${route} at ${width} does not keep the full Swap CTA above bottom navigation ${result.value}`)
+    }
+    if (width >= 1440 && measured.pageHeight > measured.viewportHeight + 1) {
+      throw new Error(`${route} at ${width} has avoidable desktop scrolling ${result.value}`)
+    }
+    if (measured.nestedScroll) throw new Error(`${route} at ${width} has nested vertical scrolling ${result.value}`)
+    console.log(
+      `${width} ${route}: overflow 0, h1 ${measured.h1}, CTA ${measured.cta?.bottom ?? 'n/a'}, nav ${measured.mobileNav?.top ?? 'desktop'}, height ${measured.pageHeight}/${measured.viewportHeight}`,
+    )
   }
   if (outDir) {
     const shot = await call('Page.captureScreenshot', { format: 'png' })

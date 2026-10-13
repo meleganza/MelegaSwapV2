@@ -21,6 +21,6 @@ const EXPLORE_SECTION: UxSectionCopy = {
 export function uxSectionById(id: UxSectionId): UxSectionCopy {
   if (id === 'explore') return EXPLORE_SECTION
   const section = sectionById(id)
-  if (id === 'tools') return { ...section, title: 'Advanced Console', navLabel: 'Advanced' }
+  if (id === 'tools') return { ...section, title: 'Tools', navLabel: 'Tools' }
   return section
 }

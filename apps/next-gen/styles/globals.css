@@ -64,29 +64,22 @@ a { color: inherit; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
   min-height: 48px;
   color: inherit;
   text-decoration: none;
 }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 13px;
-  background: var(--accent);
-  color: var(--graphite);
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  box-shadow: inset 0 -2px 0 rgba(23, 24, 22, 0.14);
+  width: 44px;
+  height: 44px;
+  display: block;
+  object-fit: contain;
 }
 
-.brand-copy { display: flex; flex-direction: column; gap: 1px; }
-.brand-copy strong { font-size: 0.94rem; letter-spacing: 0.08em; }
-.brand-copy small { color: #aaa99f; font-size: 0.64rem; letter-spacing: 0.12em; }
+.brand-copy { display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.brand-copy strong { font-size: 0.92rem; letter-spacing: -0.035em; }
+.brand-copy em { color: var(--accent); font-family: Georgia, "Times New Roman", serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -0.07em; line-height: 1; transform: skew(-9deg); }
 
 .desktop-nav { display: grid; gap: 6px; margin-top: 52px; }
 .desktop-nav a,
@@ -150,8 +143,14 @@ a { color: inherit; }
 .mobile-header,
 .mobile-nav { display: none; }
 
+.trend-boost-strip { min-height: 34px; padding: 0 clamp(24px, 4vw, 64px); display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); background: var(--graphite); color: var(--inverse); overflow: hidden; }
+.trend-boost-strip strong { flex: 0 0 auto; color: var(--accent); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.trend-boost-strip > div { min-width: 0; display: flex; gap: 18px; overflow: hidden; }
+.trend-boost-strip span { flex: 0 0 auto; font-size: 0.7rem; white-space: nowrap; }
+
 .main { width: min(1180px, 100%); margin: 0 auto; padding: clamp(32px, 5vw, 72px) clamp(24px, 5vw, 72px) 40px; }
 .page-intro { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+.swap-accessibility { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 .eyebrow,
 .section-kicker { margin: 0 0 8px; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 h1,
@@ -285,6 +284,9 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .product-footer { margin-top: 72px; padding-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid rgba(23, 24, 22, 0.1); }
 .product-footer p { max-width: 680px; margin: 0; color: var(--muted); font-size: 0.7rem; line-height: 1.5; }
 .product-footer a { color: var(--ink); }
+.footer-links { display: flex; align-items: center; gap: 16px; }
+.footer-links a { color: var(--muted); font-size: 0.7rem; text-decoration: none; }
+.footer-links a:hover { color: var(--ink); }
 .leave { margin: 0; }
 .leave button { min-height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }
 
@@ -298,10 +300,11 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .sidebar,
   .topbar { display: none; }
   .app-stage { min-height: 100dvh; }
-  .mobile-header { height: 68px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(23, 24, 22, 0.08); background: rgba(248, 246, 241, 0.86); backdrop-filter: blur(18px); }
-  .mobile-header .brand-mark { width: 36px; height: 36px; border-radius: 12px; }
-  .mobile-console { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); }
-  .main { padding: 30px 18px 116px; }
+  .mobile-header { height: 58px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(23, 24, 22, 0.08); background: rgba(248, 246, 241, 0.9); backdrop-filter: blur(18px); }
+  .mobile-header .brand-mark { width: 38px; height: 38px; }
+  .mobile-console { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); }
+  .trend-boost-strip { min-height: 30px; padding-inline: 14px; }
+  .main { padding: 22px 18px 108px; }
   .mobile-nav { position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); min-height: 64px; padding: 5px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 21px; background: rgba(23, 24, 22, 0.96); box-shadow: 0 16px 48px rgba(23, 24, 22, 0.26); backdrop-filter: blur(18px); z-index: 10; }
   .mobile-nav a { min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 16px; color: #9c9c94; text-decoration: none; font-size: 0.61rem; }
   .mobile-nav a .app-icon { width: 19px; height: 19px; }
@@ -325,6 +328,22 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .portfolio-summary,
   .lookup-surface,
   .tool-surface { padding: 16px; }
+  .app-shell[data-section='swap'] .main { padding: 10px 12px 104px; }
+  .app-shell[data-section='swap'] .trade-surface { padding: 12px; }
+  .app-shell[data-section='swap'] .asset-field { min-height: 94px; margin-top: 10px; padding: 11px 13px; gap: 2px 10px; border-radius: 16px; }
+  .app-shell[data-section='swap'] .asset-field-output { margin-top: 6px; }
+  .app-shell[data-section='swap'] .asset-field strong { font-size: 1.72rem; }
+  .app-shell[data-section='swap'] .asset-field small { font-size: 0.66rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .app-shell[data-section='swap'] .field-label { font-size: 0.68rem; }
+  .app-shell[data-section='swap'] .token-chip { min-height: 36px; padding-inline: 11px; font-size: 0.77rem; }
+  .app-shell[data-section='swap'] .swap-direction { width: 34px; height: 34px; margin-block: -14px; border-width: 3px; border-radius: 10px; }
+  .app-shell[data-section='swap'] .quote-slot { margin-top: 9px; }
+  .app-shell[data-section='swap'] .quote-slot > button { min-height: 46px; }
+  .app-shell[data-section='swap'] .action-hint,
+  .app-shell[data-section='swap'] .route-note { display: none; }
+  .app-shell[data-section='swap'] .next-actions { margin-top: 20px; }
+  .app-shell[data-section='swap'] .trust-row { margin-top: 18px; }
+  .app-shell[data-section='swap'] .product-footer { margin-top: 28px; }
   .network-chip { padding: 0 9px; }
   .asset-field { min-height: 116px; padding: 15px; }
   .asset-field strong { font-size: 1.9rem; }
@@ -340,13 +359,15 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .tools { grid-template-columns: 1fr; }
   .tool-link { min-height: 104px; }
   .product-footer { margin-top: 48px; display: block; }
+  .footer-links { margin-top: 12px; flex-wrap: wrap; }
   .leave { margin-top: 14px; }
 }
 
 @media (max-width: 359px) {
   .main { padding-inline: 12px; }
   .mobile-header { padding-inline: 12px; }
-  .brand-copy small { font-size: 0.58rem; }
+  .brand-copy strong { font-size: 0.84rem; }
+  .brand-copy em { font-size: 1.28rem; }
   .surface-head { align-items: flex-start; }
   .network-chip { font-size: 0; padding: 0 7px; }
   .network-chip .network-dot { margin: 0; }
@@ -355,6 +376,13 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .token-chip { font-size: 0.76rem; }
   .portfolio-metrics > div { align-items: flex-start; flex-direction: column; gap: 4px; }
   .portfolio-metrics strong { text-align: left; }
+}
+
+@media (min-width: 961px) and (min-height: 760px) {
+  .app-shell[data-section='swap'] .main { padding-top: 30px; padding-bottom: 22px; }
+  .app-shell[data-section='swap'] .asset-field { min-height: 112px; margin-top: 16px; padding-block: 14px; }
+  .app-shell[data-section='swap'] .route-note { margin-top: 12px; }
+  .app-shell[data-section='swap'] .product-footer { margin-top: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
