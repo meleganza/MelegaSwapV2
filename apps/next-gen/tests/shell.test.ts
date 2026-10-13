@@ -3,7 +3,6 @@ import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ProductPage } from '../components/ProductPage'
-import AccessPage from '../pages/access'
 import ToolsPage from '../pages/tools/index'
 import { SECTIONS } from '../lib/sections'
 
@@ -21,6 +20,9 @@ test('primary screens are non-operational and do not pretend to swap', () => {
     assert.match(html, />Swap</)
     assert.match(html, />MARCO Bridge</)
     assert.match(html, />Earn</)
+    assert.match(html, /Beta — read-only/)
+    assert.equal(html.includes('Leave beta'), false)
+    assert.equal(html.includes('Access token'), false)
     BANNED.forEach((phrase) => assert.equal(html.includes(phrase), false, phrase))
   })
 })
@@ -45,15 +47,9 @@ test('tools index lists commercial placeholders and no farm or pool factory', ()
   assert.match(html, /Not operational/)
 })
 
-test('access page is a gate, not the product shell', () => {
-  const openHtml = renderToStaticMarkup(React.createElement(AccessPage, { configured: true, denied: false }))
-  assert.match(openHtml, /Access token/)
-  assert.match(openHtml, /<h1>Melega Next Gen beta<\/h1>/)
-  assert.equal(openHtml.includes('Not operational'), false)
-  assert.equal(openHtml.includes('aria-label="Primary"'), false)
-  const denied = renderToStaticMarkup(React.createElement(AccessPage, { configured: true, denied: true }))
-  assert.match(denied, /That token was not accepted/)
-  const closed = renderToStaticMarkup(React.createElement(AccessPage, { configured: false, denied: false }))
-  assert.match(closed, /shell stays closed/)
-  assert.equal(closed.includes('<form'), false)
+test('the shell does not mint a login or a leave control', () => {
+  const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS[0] }))
+  assert.equal(html.includes('/api/access'), false)
+  assert.equal(html.includes('/api/leave'), false)
+  assert.equal(html.includes('type="password"'), false)
 })

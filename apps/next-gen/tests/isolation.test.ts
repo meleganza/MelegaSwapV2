@@ -100,6 +100,6 @@ test('beta host has no cron and production indexer crons stay on the live config
 
 test('the example env does not carry a secret', () => {
   const example = readFileSync(path.join(root, '.env.example'), 'utf8')
-  assert.match(example, /^BETA_ACCESS_TOKEN=\s*$/m)
+  assert.equal(example.includes('BETA_ACCESS_TOKEN'), false)
   assert.equal(example.includes('NEXT_PUBLIC_'), false)
 })

@@ -20,9 +20,7 @@ The beta host is a separate Vercel project whose root directory is `apps/next-ge
 
 Access fails closed:
 
-- `BETA_ACCESS_TOKEN` is a server-only secret of at least 16 characters. A missing or short value closes every product route. Browsers land on `/access` with the closed message. Other clients receive an empty `401`, because Next.js 13.0.7 middleware cannot return a body.
-- The middleware names `process.env.BETA_ACCESS_TOKEN` directly so Next.js 13 records it for the edge sandbox. The value is read at runtime and is not a browser-exposed variable.
-- Browsers without a session are redirected to `/access`. The access page has no product navigation.
+- NG005 removed the app password. A link opens the read-only shell. `/access` redirects home. The old login routes answer 410. Responses stay `noindex` and `private, no-store`. This app does not read an access token. A separate platform lock on the host, if still enabled, is outside this code.
 - A matching token sets an HttpOnly, SameSite=Strict cookie containing the SHA-256 of the token, not the token.
 - `/robots.txt` disallows the whole host. Responses send `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` and `Cache-Control: private, no-store`.
 - Vercel Deployment Protection on the new project is an additional required gate. The app gate is what this repo can enforce.

@@ -15,7 +15,7 @@ export function BetaShell({ section, children }: { section: SectionId; children:
       <header className="header">
         <a className="brand" href="/">
           <strong>Melega</strong>
-          <span>Next Gen beta</span>
+          <span>Beta — read-only</span>
         </a>
         <nav className="secondary" aria-label="Secondary">
           <a href="/portfolio" aria-current={section === 'portfolio' ? 'page' : undefined}>
@@ -36,9 +36,6 @@ export function BetaShell({ section, children }: { section: SectionId; children:
           stays in production. This beta does not replace it and does not move funds. Existing BNB markets, the router,
           LPs, and wallet withdrawal remain on the live app.
         </p>
-        <form className="leave" method="post" action="/api/leave">
-          <button type="submit">Leave beta</button>
-        </form>
       </main>
       <nav className="tabbar" aria-label="Primary">
         {PRIMARY_SECTIONS.map((item) => (

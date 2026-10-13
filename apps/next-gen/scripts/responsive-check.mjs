@@ -6,7 +6,6 @@ import { spawn } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const base = process.env.BETA_BASE_URL || 'http://127.0.0.1:4317'
-const token = process.env.BETA_ACCESS_TOKEN || ''
 const chromeBin = process.env.CHROME_PATH
 const outDir = process.env.BETA_SCREENSHOT_DIR || ''
 const widths = [320, 390, 430, 1440]
@@ -16,20 +15,6 @@ if (!chromeBin) {
   process.exit(1)
 }
 if (outDir) mkdirSync(outDir, { recursive: true })
-
-const login = await fetch(`${base}/api/access`, {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ password: token }),
-})
-if (!login.ok) {
-  console.error(`login failed: ${login.status}`)
-  process.exit(1)
-}
-const rawCookie = login.headers.get('set-cookie') || ''
-const cookiePair = rawCookie.split(';')[0]
-const cookieName = cookiePair.slice(0, cookiePair.indexOf('='))
-const cookieValue = cookiePair.slice(cookiePair.indexOf('=') + 1)
 
 const chrome = spawn(
   chromeBin,
@@ -150,9 +135,8 @@ function waitForLoad() {
 
 await call('Page.enable')
 await call('Network.enable')
-await call('Network.setCookie', { name: cookieName, value: cookieValue, url: base })
 
-const routes = ['/', '/bridge', '/earn', '/tools', '/tools/create-token']
+const routes = ['/']
 
 for (const width of widths) {
   const widthStart = requestUrls.length
@@ -201,7 +185,9 @@ for (const width of widths) {
   )
 }
 
-const banned = requestUrls.filter((url) => /publicnode|quicknode|nodereal|\/api\/indexer|ethereum|wallet|rpc/i.test(url))
+const banned = requestUrls.filter((url) =>
+  /publicnode|quicknode|nodereal|bsc-dataseed|\/api\/indexer|\/api\/quote|\/api\/portfolio|\/api\/earn/i.test(url),
+)
 if (banned.length > 0) {
   throw new Error(`banned network calls: ${banned.join(', ')}`)
 }

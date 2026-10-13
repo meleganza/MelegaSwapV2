@@ -17,4 +17,4 @@ yarn workspace @melega/next-gen build
 yarn workspace @melega/next-gen budget
 ```
 
-Set `BETA_ACCESS_TOKEN` (16+ characters) only on the beta host. If it is missing, product routes stay closed.
+Open the beta from its link. There is no app password. Reads stay on demand, and the app does not sign or send transactions. A platform lock on the host, if one is still enabled outside this app, is separate from this code.
