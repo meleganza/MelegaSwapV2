@@ -248,6 +248,7 @@ h1 {
 
 .quote-grid select,
 .quote-grid input,
+.quote-panel input,
 .quote-slot button,
 .quote-panel button {
   min-height: 48px;
@@ -265,6 +266,13 @@ h1 {
   margin-top: 8px;
   background: var(--graphite);
   color: var(--inverse);
+}
+
+.quote-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
 }
 
 @media (max-width: 359px) {

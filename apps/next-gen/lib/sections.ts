@@ -52,7 +52,11 @@ export const SECTIONS: SectionCopy[] = [
     navLabel: 'Portfolio',
     href: '/portfolio',
     primary: false,
-    statements: ['Balances and positions are not read.', 'Wallet withdrawal remains on the live DEX.'],
+    statements: [
+      'A BNB balance read runs only after you submit a public address.',
+      'This beta does not connect a wallet and cannot sign or withdraw.',
+      'LP and farm positions are not scanned here. Withdrawal stays on the live DEX.',
+    ],
   },
   {
     id: 'tools',

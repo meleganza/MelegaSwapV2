@@ -75,6 +75,10 @@ test('unconfigured product routes close, and a browser is sent to the access pag
     decideBetaRequest({ method: 'POST', pathname: '/api/quote', configured: true, authenticated: false, acceptsHtml: false }),
     { type: 'deny' },
   )
+  assert.deepEqual(
+    decideBetaRequest({ method: 'POST', pathname: '/api/portfolio', configured: true, authenticated: false, acceptsHtml: false }),
+    { type: 'deny' },
+  )
 })
 
 test('session cookie is httpOnly and not the raw token', async () => {
