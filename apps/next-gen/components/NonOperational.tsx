@@ -1,18 +1,17 @@
 import React from 'react'
-import type { SectionCopy } from '../lib/sections'
+import type { UxSectionCopy } from '../lib/uxSections'
 
-export function NonOperational({ section }: { section: SectionCopy }) {
+export function NonOperational({ section }: { section: UxSectionCopy }) {
   return (
-    <section aria-labelledby="section-title">
-      <h1 id="section-title">{section.title}</h1>
+    <section className="page-intro" aria-labelledby="section-title">
+      <div>
+        <p className="eyebrow">Melega Next Gen</p>
+        <h1 id="section-title">{section.title}</h1>
+        <p className="intro-copy">{section.statements[0]}</p>
+      </div>
       <p className="status" role="status" data-operational="false">
-        Not operational
+        <span aria-hidden="true" /> <span className="sr-only">Not operational. </span>Preview only
       </p>
-      <ul className="facts">
-        {section.statements.map((statement) => (
-          <li key={statement}>{statement}</li>
-        ))}
-      </ul>
     </section>
   )
 }

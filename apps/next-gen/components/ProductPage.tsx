@@ -1,13 +1,14 @@
 import React from 'react'
 import { BetaShell } from './BetaShell'
 import { NonOperational } from './NonOperational'
-import type { SectionCopy } from '../lib/sections'
+import { PremiumExperience } from './PremiumExperience'
+import type { UxSectionCopy } from '../lib/uxSections'
 
-export function ProductPage({ section, children }: { section: SectionCopy; children?: React.ReactNode }) {
+export function ProductPage({ section, children }: { section: UxSectionCopy; children?: React.ReactNode }) {
   return (
     <BetaShell section={section.id}>
       <NonOperational section={section} />
-      {children}
+      <PremiumExperience section={section}>{children}</PremiumExperience>
     </BetaShell>
   )
 }

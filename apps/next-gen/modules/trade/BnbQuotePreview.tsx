@@ -4,7 +4,7 @@ import { BNB_QUOTE_TOKENS, formatUnits, quoteIsStale, type BnbQuoteResult } from
 export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; nowMs: number }) {
   if (!result.ok) {
     return (
-      <p className="status" role="status" data-operational="false" data-executable="false">
+      <p className="inline-alert" role="status" data-operational="false" data-executable="false">
         {result.code === 'QUOTE_TIMEOUT'
           ? 'The quote read timed out. No number is shown.'
           : result.code === 'CHAIN_MISMATCH'
@@ -16,10 +16,10 @@ export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; now
   const stale = quoteIsStale(result.quotedAt, nowMs, result.staleAfterMs)
   return (
     <div data-operational="false" data-executable="false" data-quote="factual">
-      <p className="status" role="status">
+      <p className="inline-alert" role="status">
         {stale ? 'Stale preview' : 'Read-only preview'}
       </p>
-      <ul className="facts">
+      <ul className="result-list">
         <li>Venue: {result.venueLabel}</li>
         <li>
           Output: {formatUnits(result.amountOutRaw, 18)} {result.buy}
@@ -69,7 +69,7 @@ export default function BnbQuotePreview() {
 
   return (
     <section className="quote-panel" aria-labelledby="quote-title">
-      <h2 id="quote-title">BNB quote preview</h2>
+      <div className="panel-title"><div><p className="section-kicker">Read-only route</p><h2 id="quote-title">BNB quote preview</h2></div><span className="quiet-chip">No execution</span></div>
       <div className="quote-grid">
         <label htmlFor="quote-sell">
           Sell
@@ -96,7 +96,7 @@ export default function BnbQuotePreview() {
           <input id="quote-amount" inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} />
         </label>
       </div>
-      <button type="button" onClick={onPreview} disabled={pending}>
+      <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>
         {pending ? 'Reading quote' : 'Preview quote'}
       </button>
       {result ? <QuoteResultView result={result} nowMs={Date.now()} /> : null}

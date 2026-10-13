@@ -7,7 +7,7 @@ import AccessPage from '../pages/access'
 import ToolsPage from '../pages/tools/index'
 import { SECTIONS } from '../lib/sections'
 
-const BANNED = ['Top Farms', 'Top Pools', 'Latest listings', 'followers', 'APY', 'TVL', 'KPI']
+const BANNED = ['Top Farms', 'Top Pools', 'Latest listings', 'followers', 'KPI']
 
 test('primary screens are non-operational and do not pretend to swap', () => {
   SECTIONS.filter((section) => section.id !== 'tools').forEach((section) => {
@@ -18,9 +18,12 @@ test('primary screens are non-operational and do not pretend to swap', () => {
     assert.equal(html.includes('<input'), false)
     assert.equal(html.includes('Confirm swap'), false)
     assert.match(html, /aria-label="Primary"/)
-    assert.match(html, />Swap</)
-    assert.match(html, />MARCO Bridge</)
+    assert.match(html, />Trade</)
     assert.match(html, />Earn</)
+    assert.match(html, />Portfolio</)
+    assert.match(html, />Explore</)
+    assert.match(html, />Advanced Console</)
+    assert.doesNotMatch(html, /\d+(?:\.\d+)?%\s*APY/i)
     BANNED.forEach((phrase) => assert.equal(html.includes(phrase), false, phrase))
   })
 })

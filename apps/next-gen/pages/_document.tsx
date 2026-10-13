@@ -7,7 +7,7 @@ export default class BetaDocument extends Document {
       <Html lang="en">
         <Head>
           <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
-          <meta name="theme-color" content="#e4e1db" />
+          <meta name="theme-color" content="#171816" />
         </Head>
         <body>
           <Main />

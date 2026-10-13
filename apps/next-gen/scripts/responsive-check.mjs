@@ -9,7 +9,7 @@ const base = process.env.BETA_BASE_URL || 'http://127.0.0.1:4317'
 const token = process.env.BETA_ACCESS_TOKEN || ''
 const chromeBin = process.env.CHROME_PATH
 const outDir = process.env.BETA_SCREENSHOT_DIR || ''
-const widths = [320, 390, 430, 1440]
+const widths = [320, 390, 430, 768, 1440]
 
 if (!chromeBin) {
   console.error('CHROME_PATH is required')
@@ -152,7 +152,7 @@ await call('Page.enable')
 await call('Network.enable')
 await call('Network.setCookie', { name: cookieName, value: cookieValue, url: base })
 
-const routes = ['/', '/bridge', '/earn', '/tools', '/tools/create-token']
+const routes = ['/', '/bridge', '/earn', '/portfolio', '/explore', '/tools', '/tools/create-token']
 
 for (const width of widths) {
   const widthStart = requestUrls.length
@@ -176,7 +176,7 @@ for (const width of widths) {
         operational: document.querySelector('[data-operational="false"]') ? 'false' : 'missing',
         inputs: document.querySelectorAll('input').length,
         h1: document.querySelector('h1') ? document.querySelector('h1').textContent : '',
-        actions: ['Swap', 'MARCO Bridge', 'Earn'].every((label) => document.body.innerText.includes(label))
+        actions: ['Trade', 'Earn', 'Portfolio', 'Explore'].every((label) => document.body.innerText.includes(label))
       })`,
       returnByValue: true,
     })
