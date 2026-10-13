@@ -18,4 +18,4 @@ Measured after `next build` on this mission: home first-load files in the build 
 
 Headless Chrome at 320, 390, 430, and 1440, walking Swap, MARCO Bridge, Earn, Tools, and Create Token, made 74 requests. Every request stayed on the beta host. None were RPC or indexer calls. With no access token, a browser `GET /` returned 307 to `/access`, and a non-HTML `GET /` returned 401.
 
-NG002 remeasured the same script after `next build` and `next start`. Gzip is again 106,915 bytes. Next’s table again reports 76 kB for `/`. The ceiling stays 184,320 bytes. No canonical read was added. `BETA_RUNTIME` stays dark.
+NG002 remeasured the same script after `next build` and `next start`. Gzip was 106,915 bytes before the quote preview. After the preview loader, home gzip is **108,567** bytes and Next’s table reports **77.7 kB** for `/`. The ceiling stays 184,320 bytes. The quote module and `eth_call` stay out of that first load. A quote runs only after the preview is opened.

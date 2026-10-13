@@ -229,6 +229,44 @@ h1 {
   outline-offset: 2px;
 }
 
+.quote-slot,
+.quote-panel {
+  margin-top: 16px;
+}
+
+.quote-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.quote-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.quote-grid select,
+.quote-grid input,
+.quote-slot button,
+.quote-panel button {
+  min-height: 48px;
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0 12px;
+}
+
+.quote-slot button,
+.quote-panel button {
+  margin-top: 8px;
+  background: var(--graphite);
+  color: var(--inverse);
+}
+
 @media (max-width: 359px) {
   h1 {
     font-size: 1.5rem;

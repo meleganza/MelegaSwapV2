@@ -11,7 +11,7 @@ test('beta runtime keeps schedulers, polling, reads, and execution off', () => {
   assert.equal(BETA_RUNTIME.canonicalReads, 'disabled')
   assert.equal(BETA_RUNTIME.rpc, 'disabled')
   assert.equal(BETA_RUNTIME.wallet, 'disabled')
-  assert.equal(BETA_RUNTIME.quotes, 'disabled')
+  assert.equal(BETA_RUNTIME.quotes, 'read-only-on-request')
   assert.equal(BETA_RUNTIME.transactions, 'disabled')
   assert.equal(BETA_RUNTIME.feeCollection, 'disabled')
 })

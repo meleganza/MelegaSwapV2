@@ -9,7 +9,7 @@ export const BETA_RUNTIME = {
   canonicalReads: 'disabled',
   rpc: 'disabled',
   wallet: 'disabled',
-  quotes: 'disabled',
+  quotes: 'read-only-on-request',
   transactions: 'disabled',
   feeCollection: 'disabled',
 } as const
@@ -19,6 +19,7 @@ export type BetaFlag = keyof typeof BETA_RUNTIME
 export function assertBetaDark(): void {
   const offenders = (Object.keys(BETA_RUNTIME) as BetaFlag[]).filter((key) => {
     if (key === 'surface') return BETA_RUNTIME[key] !== 'next-gen-beta'
+    if (key === 'quotes') return BETA_RUNTIME[key] !== 'read-only-on-request'
     return BETA_RUNTIME[key] !== 'disabled'
   })
   if (offenders.length > 0) {

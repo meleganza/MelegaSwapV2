@@ -17,9 +17,9 @@ export const SECTIONS: SectionCopy[] = [
     href: '/',
     primary: true,
     statements: [
-      'This beta does not request a quote, a wallet signature, or a transaction.',
+      'A BNB quote preview runs only after you ask. It does not sign or send a transaction.',
       'Multichain swap execution is not claimed.',
-      'A Melega fee is not quoted or collected here.',
+      'A Melega protocol fee is not certified as collected, and this preview does not collect one.',
     ],
   },
   {

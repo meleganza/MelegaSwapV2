@@ -35,6 +35,11 @@ function filesIn(dir: string): string[] {
   })
 }
 
+const QUOTE_EXCEPTIONS = new Set([
+  path.join(root, 'lib/bscQuoteRpc.ts'),
+  path.join(root, 'modules/trade/BnbQuotePreview.tsx'),
+])
+
 test('beta source does not import the live DEX stack or open a network client', () => {
   const files = [
     ...SOURCE_DIRS.flatMap((dir) => filesIn(dir)),
@@ -43,10 +48,19 @@ test('beta source does not import the live DEX stack or open a network client', 
   ]
   files.forEach((file) => {
     const source = readFileSync(file, 'utf8')
-    FORBIDDEN.forEach((pattern) => {
+    const patterns = QUOTE_EXCEPTIONS.has(file)
+      ? FORBIDDEN.filter((pattern) => pattern.source !== '\\bfetch\\s*\\(' && pattern.source !== 'eth_call' && pattern.source !== 'eth_chainId')
+      : FORBIDDEN
+    patterns.forEach((pattern) => {
       assert.equal(pattern.test(source), false, `${path.relative(root, file)} matched ${pattern}`)
     })
   })
+  const preview = readFileSync(path.join(root, 'modules/trade/BnbQuotePreview.tsx'), 'utf8')
+  assert.match(preview, /fetch\('\/api\/quote'/)
+  const rpc = readFileSync(path.join(root, 'lib/bscQuoteRpc.ts'), 'utf8')
+  assert.equal(rpc.includes('eth_getLogs'), false)
+  assert.equal(rpc.includes('eth_sendRawTransaction'), false)
+  assert.equal(rpc.includes('sendTransaction'), false)
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)
   assert.equal(home.includes('apps/web'), false)
