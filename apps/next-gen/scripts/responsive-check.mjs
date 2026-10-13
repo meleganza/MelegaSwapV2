@@ -209,7 +209,7 @@ for (const width of widths) {
 }
 
 const banned = requestUrls.filter((url) =>
-  /publicnode|quicknode|nodereal|bsc-dataseed|\/api\/indexer|\/api\/quote|\/api\/portfolio|\/api\/earn/i.test(url),
+  /publicnode|quicknode|nodereal|bsc-dataseed|\/api\/indexer|\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/shadow-readiness/i.test(url),
 )
 if (banned.length > 0) {
   throw new Error(`banned network calls: ${banned.join(', ')}`)

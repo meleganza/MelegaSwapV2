@@ -44,6 +44,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/earn/EarnRead.tsx'),
   path.join(root, 'components/TrendBoostStrip.tsx'),
   path.join(root, 'pages/api/trend-boost-active.ts'),
+  path.join(root, 'lib/shadowReadinessRpc.ts'),
+  path.join(root, 'modules/trade/ShadowReadiness.tsx'),
 ])
 
 test('beta source does not import the live DEX stack or open a network client', () => {
@@ -67,6 +69,12 @@ test('beta source does not import the live DEX stack or open a network client', 
   assert.equal(rpc.includes('eth_getLogs'), false)
   assert.equal(rpc.includes('eth_sendRawTransaction'), false)
   assert.equal(rpc.includes('sendTransaction'), false)
+  const shadowRpc = readFileSync(path.join(root, 'lib/shadowReadinessRpc.ts'), 'utf8')
+  assert.equal(shadowRpc.includes('eth_sendRawTransaction'), false)
+  assert.equal(shadowRpc.includes('eth_estimateGas'), false)
+  assert.equal(shadowRpc.includes('sendTransaction'), false)
+  assert.equal(shadowRpc.includes('@ethersproject'), false)
+  assert.match(readFileSync(path.join(root, 'modules/trade/ShadowReadiness.tsx'), 'utf8'), /fetch\('\/api\/shadow-readiness'/)
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)
   assert.equal(home.includes('modules/portfolio'), false)

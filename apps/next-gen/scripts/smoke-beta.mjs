@@ -18,11 +18,11 @@ assert(home.response.status === 200, `anonymous home status ${home.response.stat
 assert((home.response.headers.get('x-robots-tag') || '').includes('noindex'), 'missing noindex')
 assert((home.response.headers.get('cache-control') || '').includes('no-store'), 'missing no-store')
 assert(!(home.response.headers.get('set-cookie') || '').includes('ng_beta='), 'home minted a login cookie')
-assert(home.body.includes('Beta · Read only'), 'missing read-only label')
+assert(home.body.includes('Protected Beta'), 'missing protected beta label')
 assert(home.body.includes('>Trade<') && home.body.includes('>Earn<') && home.body.includes('>Portfolio<') && home.body.includes('>Explore<'), 'primary actions missing')
 assert(!home.body.includes('Leave beta'), 'leave control remains')
 assert(!home.body.includes('Access token'), 'password form remains')
-assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn/.test(home.body), 'home html calls a read api')
+assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/shadow-readiness/.test(home.body), 'home html calls a read api')
 
 const pages = ['/bridge', '/earn', '/portfolio', '/tools']
 for (const pathname of pages) {
@@ -72,5 +72,15 @@ assert(earnBody.code === 'CHAIN_MISMATCH' && earnBody.aprPercent === null && ear
 
 const method = await request('/api/quote', { method: 'GET' })
 assert(method.response.status === 405, `quote GET status ${method.response.status}`)
+
+const shadow = await request('/api/shadow-readiness', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ chainId: 1, address: '0x0000000000000000000000000000000000000001' }),
+})
+assert(shadow.response.status === 422, `bad shadow status ${shadow.response.status}`)
+const shadowBody = JSON.parse(shadow.body)
+assert(shadowBody.code === 'CHAIN_MISMATCH' && shadowBody.rpcCalls === 0, 'wrong chain reached a shadow read')
+assert(shadowBody.executable === false && shadowBody.unsignedTx === null && shadowBody.feeCollected === false, 'shadow flags changed')
 
 console.log('smoke-beta: anonymous read-only shell passed')

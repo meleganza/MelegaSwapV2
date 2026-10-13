@@ -1,5 +1,6 @@
 import React from 'react'
-import { BNB_QUOTE_TOKENS, formatUnits, quoteIsStale, type BnbQuoteResult } from '../../lib/bscQuote'
+import { BNB_QUOTE_TOKENS, formatUnits, quoteIsStale, type BnbQuoteResult, type FactualBnbQuote } from '../../lib/bscQuote'
+import ShadowReadinessPanel from './ShadowReadiness'
 
 export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; nowMs: number }) {
   if (!result.ok) {
@@ -40,6 +41,7 @@ export default function BnbQuotePreview() {
   const [amount, setAmount] = React.useState('0.01')
   const [result, setResult] = React.useState<BnbQuoteResult | null>(null)
   const [pending, setPending] = React.useState(false)
+  const [shadow, setShadow] = React.useState(false)
 
   async function onPreview() {
     setPending(true)
@@ -100,6 +102,12 @@ export default function BnbQuotePreview() {
         {pending ? 'Reading quote' : 'Preview quote'}
       </button>
       {result ? <QuoteResultView result={result} nowMs={Date.now()} /> : null}
+      {result?.ok && !shadow ? (
+        <button className="primary-action" type="button" onClick={() => setShadow(true)}>
+          Open shadow readiness
+        </button>
+      ) : null}
+      {result?.ok && shadow ? <ShadowReadinessPanel quote={result as FactualBnbQuote} amount={amount} /> : null}
     </section>
   )
 }
