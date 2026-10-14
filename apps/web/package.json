@@ -69,6 +69,7 @@
     "@pancakeswap/ui-wallets": "*",
     "@pancakeswap/uikit": "*",
     "@pancakeswap/utils": "*",
+    "@melega/smartswap-v2-prepare": "*",
     "@pancakeswap/wagmi": "*",
     "@reduxjs/toolkit": "^1.9.1",
     "@sentry/nextjs": "^7.9.0",
