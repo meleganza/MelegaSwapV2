@@ -42,6 +42,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/portfolio/PortfolioLookup.tsx'),
   path.join(root, 'lib/earnRpc.ts'),
   path.join(root, 'modules/earn/EarnRead.tsx'),
+  path.join(root, 'lib/earnCatalogRpc.ts'),
+  path.join(root, 'modules/earn/EarnCatalog.tsx'),
   path.join(root, 'pages/api/trend-boost-active.ts'),
   path.join(root, 'lib/shadowReadinessRpc.ts'),
   path.join(root, 'modules/trade/ShadowReadiness.tsx'),
@@ -79,6 +81,7 @@ test('beta source does not import the live DEX stack or open a network client', 
   assert.equal(home.includes('modules/portfolio'), false)
   assert.equal(home.includes('modules/earn'), false)
   assert.equal(home.includes('/api/earn'), false)
+  assert.equal(home.includes('/api/earn-catalog'), false)
   assert.equal(home.includes('apps/web'), false)
   const lookup = readFileSync(path.join(root, 'modules/portfolio/PortfolioLookup.tsx'), 'utf8')
   assert.match(lookup, /fetch\('\/api\/portfolio'/)

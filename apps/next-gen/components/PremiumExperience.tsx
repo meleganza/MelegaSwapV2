@@ -102,7 +102,7 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
       <div className="surface-head">
         <div><p className="section-kicker">Opportunities</p><h2>Yield, with the facts first</h2></div>
-        <span className="quiet-chip">{children ? 'One BNB row' : 'No verified data loaded'}</span>
+        <span className="quiet-chip">{children ? 'BNB reads' : 'No verified data loaded'}</span>
       </div>
       {children ? (
         children

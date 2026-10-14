@@ -262,7 +262,18 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .quote-grid select,
 .quote-grid input,
 .quote-panel input { width: 100%; min-height: 48px; padding: 0 13px; border: 1px solid var(--line); border-radius: 12px; background: #faf9f6; color: var(--ink); font-size: 16px; }
+.catalog-filters { margin-top: 12px; display: grid; gap: 8px; }
+.catalog-filters label { display: grid; gap: 4px; color: var(--muted); font-size: 0.72rem; }
+.earn-catalog { margin-top: 14px; display: grid; gap: 10px; }
+.earn-card { padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: #faf9f6; }
+.earn-card h3 { margin: 0; font-size: 1rem; }
+.earn-card a { color: inherit; font-size: 0.78rem; }
 .quote-panel > button { margin-top: 12px; }
+.catalog-filters { margin-top: 12px; display: grid; gap: 8px; }
+.earn-catalog { margin-top: 14px; display: grid; gap: 10px; }
+.earn-card { padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: #faf9f6; }
+.earn-card h3 { margin: 0; font-size: 1rem; }
+.earn-card a { color: inherit; font-size: 0.78rem; }
 .inline-alert { margin: 16px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); color: #5c4c0d; font-size: 0.76rem; line-height: 1.45; }
 .result-list,
 .result-links,
