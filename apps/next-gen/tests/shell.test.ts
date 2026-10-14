@@ -1,4 +1,6 @@
 import assert from 'assert'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -21,7 +23,8 @@ test('primary screens are non-operational and do not pretend to swap', () => {
     assert.match(html, />Earn</)
     assert.match(html, />Portfolio</)
     assert.match(html, />Explore</)
-    assert.match(html, /Protected Beta/)
+    assert.match(html, /Beta — read-only/)
+    assert.equal(html.includes('Protected Beta'), false)
     assert.equal(html.includes('Leave beta'), false)
     assert.equal(html.includes('Access token'), false)
     assert.doesNotMatch(html, /\d+(?:\.\d+)?%\s*APY/i)
@@ -54,6 +57,21 @@ test('the shell does not mint a login or a leave control', () => {
   assert.equal(html.includes('/api/access'), false)
   assert.equal(html.includes('/api/leave'), false)
   assert.equal(html.includes('type="password"'), false)
+})
+
+test('idle home does not mount the trend boost feed', () => {
+  const shell = readFileSync(path.join(process.cwd(), 'components/BetaShell.tsx'), 'utf8')
+  assert.equal(shell.includes('TrendBoostStrip'), false)
+  assert.equal(shell.includes('/api/trend-boost-active'), false)
+  assert.equal(/useEffect\s*\(/.test(shell), false)
+})
+
+test('the visible shell states read-only beta without a password', () => {
+  const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS[0] }))
+  assert.match(html, /Beta — read-only/)
+  assert.equal(html.includes('Protected Beta'), false)
+  assert.equal(html.includes('type="password"'), false)
+  assert.equal(html.includes('Access token'), false)
 })
 
 test('the shell carries MelegaDex Evo branding, Tools, and canonical resource links', () => {

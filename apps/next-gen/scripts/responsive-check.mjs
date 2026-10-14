@@ -1,9 +1,11 @@
 /**
- * Opens the authed shell in headless Chrome at 320, 390, 430, and 1440.
- * Checks overflow, the non-operational flag, and the three primary actions.
+ * LOCAL guest shell. Fresh temporary profile, no cookies or auth headers.
+ * Widths 320, 390, 430, 768, and 1440. Idle window is 3 seconds after load.
  */
 import { spawn } from 'node:child_process'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 const base = process.env.BETA_BASE_URL || 'http://127.0.0.1:4317'
 const chromeBin = process.env.CHROME_PATH
@@ -16,6 +18,7 @@ if (!chromeBin) {
 }
 if (outDir) mkdirSync(outDir, { recursive: true })
 
+const guestProfile = mkdtempSync(join(tmpdir(), 'ng009-guest-'))
 const chrome = spawn(
   chromeBin,
   [
@@ -24,7 +27,7 @@ const chrome = spawn(
     '--no-sandbox',
     '--remote-debugging-port=9223',
     '--remote-allow-origins=*',
-    `--user-data-dir=${process.env.BETA_CHROME_PROFILE || '/tmp/ng001-chrome-profile'}`,
+    `--user-data-dir=${guestProfile}`,
     'about:blank',
   ],
   { stdio: 'ignore' },
@@ -93,6 +96,7 @@ await new Promise((resolve, reject) => {
 const pagePending = new Map()
 const pageEvents = []
 const requestUrls = []
+const requestNotes = []
 page.addEventListener('message', (event) => {
   const message = JSON.parse(event.data)
   if (message.id && pagePending.has(message.id)) {
@@ -101,7 +105,9 @@ page.addEventListener('message', (event) => {
   } else if (message.method) {
     pageEvents.push(message)
     if (message.method === 'Network.requestWillBeSent' && message.params?.request?.url) {
-      requestUrls.push(message.params.request.url)
+      const request = message.params.request
+      requestUrls.push(request.url)
+      requestNotes.push({ url: request.url, method: request.method, postData: request.postData || '' })
     }
   }
 })
@@ -135,6 +141,8 @@ function waitForLoad() {
 
 await call('Page.enable')
 await call('Network.enable')
+await call('Network.clearBrowserCookies')
+await call('Network.clearBrowserCache')
 
 const routes = ['/']
 
@@ -151,20 +159,33 @@ for (const width of widths) {
     const loaded = waitForLoad()
     await call('Page.navigate', { url: `${base}${route}` })
     await loaded
-    await sleep(150)
+    await sleep(3000)
     const { result } = await call('Runtime.evaluate', {
       expression: `JSON.stringify({
         scroll: document.documentElement.scrollWidth,
         client: document.documentElement.clientWidth,
         text: document.body.innerText,
+        readOnly: document.body.innerText.includes('Beta — read-only'),
         operational: document.querySelector('[data-operational="false"]') ? 'false' : 'missing',
         inputs: document.querySelectorAll('input').length,
         h1: document.querySelector('h1') ? document.querySelector('h1').textContent : '',
         actions: ['Trade', 'Earn', 'Portfolio', 'Explore'].every((label) => document.body.innerText.includes(label)),
         cta: (() => {
           const node = document.querySelector('.quote-slot > button')
-          return node ? node.getBoundingClientRect().toJSON() : null
+          if (!node) return null
+          const box = node.getBoundingClientRect()
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+          return { ...box.toJSON(), clear: hit === node || node.contains(hit) }
         })(),
+        primaryClear: [...document.querySelectorAll('.mobile-nav a, .desktop-nav a')].filter((node) => {
+          const style = getComputedStyle(node)
+          const box = node.getBoundingClientRect()
+          return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0
+        }).every((node) => {
+          const box = node.getBoundingClientRect()
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+          return hit === node || node.contains(hit)
+        }),
         mobileNav: (() => {
           const node = document.querySelector('.mobile-nav')
           return node && getComputedStyle(node).display !== 'none' ? node.getBoundingClientRect().toJSON() : null
@@ -182,10 +203,10 @@ for (const width of widths) {
     if (measured.scroll > measured.client + 1) {
       throw new Error(`${route} at ${width} overflows ${measured.scroll} > ${measured.client}`)
     }
-    if (measured.operational !== 'false' || measured.inputs !== 0 || !measured.actions) {
+    if (measured.operational !== 'false' || measured.inputs !== 0 || !measured.actions || !measured.readOnly || !measured.primaryClear) {
       throw new Error(`${route} at ${width} failed shell checks ${result.value}`)
     }
-    if (width <= 430 && (!measured.cta || !measured.mobileNav || measured.cta.bottom > measured.mobileNav.top)) {
+    if (width <= 430 && (!measured.cta || !measured.cta.clear || !measured.mobileNav || measured.cta.bottom > measured.mobileNav.top)) {
       throw new Error(`${route} at ${width} does not keep the full Swap CTA above bottom navigation ${result.value}`)
     }
     if (width >= 1440 && measured.pageHeight > measured.viewportHeight + 1) {
@@ -208,14 +229,28 @@ for (const width of widths) {
   )
 }
 
-const banned = requestUrls.filter((url) =>
-  /publicnode|quicknode|nodereal|bsc-dataseed|\/api\/indexer|\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/shadow-readiness/i.test(url),
-)
+const pageHost = new URL(base).host
+const banned = requestNotes.filter((note) => {
+  const url = new URL(note.url)
+  const api = url.pathname.startsWith('/api/')
+  const foreign = url.host !== pageHost
+  const rpc = /jsonrpc|eth_call|eth_chainId|eth_send|bsc-dataseed|publicnode|quicknode|nodereal|melega\.finance/i.test(
+    `${note.url}\n${note.postData}`,
+  )
+  return api || foreign || rpc
+})
 if (banned.length > 0) {
-  throw new Error(`banned network calls: ${banned.join(', ')}`)
+  throw new Error(`banned network calls: ${banned.map((note) => note.url).join(', ')}`)
 }
 const hosts = [...new Set(requestUrls.map((url) => new URL(url).host))]
-console.log(`requests ${requestUrls.length}; hosts ${hosts.join(', ') || 'none'}`)
+const apiCount = requestUrls.filter((url) => new URL(url).pathname.startsWith('/api/')).length
+console.log(`LOCAL requests ${requestUrls.length}; api ${apiCount}; hosts ${hosts.join(', ') || 'none'}`)
+if (outDir) {
+  writeFileSync(
+    `${outDir}/LOCAL-requests.json`,
+    JSON.stringify({ label: 'LOCAL', profile: 'fresh-temporary-guest', idleMs: 3000, apiCount, hosts, urls: requestUrls }, null, 2),
+  )
+}
 page.close()
 chrome.kill()
 console.log('responsive-check passed')

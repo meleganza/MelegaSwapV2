@@ -4,7 +4,7 @@ This repository change does not deploy and does not change production DNS. `www.
 
 ## Access
 
-The app does not ask for a password. Anonymous visitors get the read-only shell. `/access` redirects to `/`. The retired login routes answer 410. Responses stay `noindex` and `private, no-store`.
+The app does not ask for a password. The visible label is “Beta — read-only”. Anonymous visitors get that shell. `/access` redirects to `/`. The retired login routes answer 410. Responses stay `noindex` and `private, no-store`. Idle Home does not request `/api/*`, including the Trend Boost feed.
 
 Do not put an access token, RPC key, or wallet key in this app. Do not run a command that publishes source or logs. If the host still has a separate platform lock, this code does not remove it and does not bypass it.
 

@@ -7,7 +7,7 @@ export function NonOperational({ section }: { section: UxSectionCopy }) {
       <section className="swap-accessibility" aria-labelledby="section-title">
         <h1 id="section-title">Swap</h1>
         <p className="status" role="status" data-operational="false">
-          <span className="sr-only">Not operational. Protected Beta. No transaction execution.</span>
+          <span className="sr-only">Not operational. Beta — read-only. No transaction execution.</span>
         </p>
       </section>
     )
@@ -19,7 +19,7 @@ export function NonOperational({ section }: { section: UxSectionCopy }) {
         <p className="intro-copy">{section.statements[0]}</p>
       </div>
       <p className="status" role="status" data-operational="false">
-        <span aria-hidden="true" /> <span className="sr-only">Not operational. </span>Protected Beta
+        <span aria-hidden="true" /> <span className="sr-only">Not operational. </span>Beta — read-only
       </p>
     </section>
   )

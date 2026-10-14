@@ -42,7 +42,6 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/portfolio/PortfolioLookup.tsx'),
   path.join(root, 'lib/earnRpc.ts'),
   path.join(root, 'modules/earn/EarnRead.tsx'),
-  path.join(root, 'components/TrendBoostStrip.tsx'),
   path.join(root, 'pages/api/trend-boost-active.ts'),
   path.join(root, 'lib/shadowReadinessRpc.ts'),
   path.join(root, 'modules/trade/ShadowReadiness.tsx'),
@@ -84,9 +83,10 @@ test('beta source does not import the live DEX stack or open a network client', 
   const lookup = readFileSync(path.join(root, 'modules/portfolio/PortfolioLookup.tsx'), 'utf8')
   assert.match(lookup, /fetch\('\/api\/portfolio'/)
   assert.equal(lookup.includes('window.ethereum'), false)
-  const boostStrip = readFileSync(path.join(root, 'components/TrendBoostStrip.tsx'), 'utf8')
-  assert.match(boostStrip, /fetch\('\/api\/trend-boost-active'/)
-  assert.equal(boostStrip.includes('setInterval'), false)
+  const shellSource = readFileSync(path.join(root, 'components/BetaShell.tsx'), 'utf8')
+  assert.equal(shellSource.includes('TrendBoostStrip'), false)
+  assert.equal(shellSource.includes('/api/trend-boost-active'), false)
+  assert.equal(shellSource.includes('useEffect'), false)
   const boostApi = readFileSync(path.join(root, 'pages/api/trend-boost-active.ts'), 'utf8')
   assert.match(boostApi, /\/api\/trend-boost\/active/)
   assert.equal(boostApi.includes('POST'), false)

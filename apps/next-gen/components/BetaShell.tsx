@@ -1,7 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
 import { AppIcon, type AppIconName } from './AppIcon'
-import { TrendBoostStrip } from './TrendBoostStrip'
 import { uxSectionById, type UxSectionId } from '../lib/uxSections'
 
 const NAV_ITEMS: Array<{ label: string; href: string; icon: AppIconName; sections: UxSectionId[] }> = [
@@ -61,7 +60,7 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
           <div className="protected-note">
             <AppIcon name="shield" />
             <span>
-              <strong>Protected Beta</strong>
+              <strong>Beta — read-only</strong>
             </span>
           </div>
         </div>
@@ -74,13 +73,13 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
             <AppIcon name="advanced" />
           </a>
         </header>
+        <p className="mobile-readonly">Beta — read-only</p>
         <header className="topbar">
           <p>MelegaDex Evo</p>
           <span className="environment-pill">
-            <span aria-hidden="true" /> Protected Beta
+            <span aria-hidden="true" /> Beta — read-only
           </span>
         </header>
-        <TrendBoostStrip />
 
         <main className="main" id="content">
           {children}
