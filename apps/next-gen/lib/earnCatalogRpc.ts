@@ -8,8 +8,9 @@ type FetchLike = (url: string, init: { method: string; headers: Record<string, s
 }>
 
 export async function readEarnCatalog(
-  deps: { fetchImpl?: FetchLike; now?: () => number; timeoutMs?: number } = {},
+  deps: { fetchImpl?: FetchLike; now?: () => number; timeoutMs?: number; chainId?: number } = {},
 ): Promise<EarnCatalog> {
+  if (deps.chainId !== undefined && deps.chainId !== 56) return emptyCatalog('CHAIN_MISMATCH')
   const now = deps.now ?? Date.now
   const timeoutMs = deps.timeoutMs ?? EARN_CATALOG_TIMEOUT_MS
   const fetchImpl = deps.fetchImpl ?? (fetch as unknown as FetchLike)

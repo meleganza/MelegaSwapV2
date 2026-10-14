@@ -40,8 +40,12 @@ export interface EarnOpportunity {
   fetchedAt: string
   stale: boolean
   href: string
+  receiptAddress: string | null
+  receiptDecimals: number | null
   sourceRisk: SourceRisk | null
   feeNote: string
+  /** Beefy does not return a net-of-fee yield. This stays null. */
+  netYield: null
   withdrawalNote: 'This source did not return withdrawal conditions.'
   executable: false
   deposit: false
@@ -50,7 +54,7 @@ export interface EarnOpportunity {
 
 export interface EarnCatalog {
   ok: boolean
-  code?: 'TIMEOUT' | 'UNAVAILABLE'
+  code?: 'TIMEOUT' | 'UNAVAILABLE' | 'CHAIN_MISMATCH'
   schema: 'melega.next-gen.earn-catalog.v1'
   chainId: 56
   source: typeof EARN_CATALOG_SOURCE
@@ -108,6 +112,15 @@ function sourceRisk(value: unknown): SourceRisk | null {
   }
 }
 
+function receiptOf(vault: Record<string, unknown>): { address: string | null; decimals: number | null } {
+  const address = typeof vault.earnedTokenAddress === 'string' && /^0x[0-9a-fA-F]{40}$/.test(vault.earnedTokenAddress) ? vault.earnedTokenAddress : null
+  const decimals =
+    typeof vault.tokenDecimals === 'number' && Number.isInteger(vault.tokenDecimals) && vault.tokenDecimals >= 0 && vault.tokenDecimals <= 36
+      ? vault.tokenDecimals
+      : null
+  return { address, decimals }
+}
+
 function feeNote(vault: Record<string, unknown>): string {
   const fee = vault.withdrawalFee
   if (typeof fee === 'number' && Number.isFinite(fee)) return `Beefy withdrawalFee ${fee}`
@@ -140,6 +153,7 @@ export function buildEarnCatalog(input: {
     const assets = Array.isArray(vault.assets) ? vault.assets.filter((asset): asset is string => typeof asset === 'string' && asset.length > 0) : []
     if (assets.length === 0) return
     const name = typeof vault.name === 'string' && vault.name.length > 0 ? vault.name : assets.join(' / ')
+    const receipt = receiptOf(vault)
     rows.push({
       id: vault.id,
       name,
@@ -153,8 +167,11 @@ export function buildEarnCatalog(input: {
       fetchedAt: input.fetchedAt,
       stale,
       href,
+      receiptAddress: receipt.address,
+      receiptDecimals: receipt.decimals,
       sourceRisk: sourceRisk(vault.risks),
       feeNote: feeNote(vault),
+      netYield: null,
       withdrawalNote: 'This source did not return withdrawal conditions.',
       executable: false,
       deposit: false,

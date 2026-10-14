@@ -34,26 +34,28 @@ export function EarnCatalogView({ catalog, asset, protocol }: { catalog: EarnCat
               APY {formatReportedApy(opportunity.apyDecimal) ?? 'unavailable'} · TVL{' '}
               {formatReportedTvl(opportunity.tvlUsd) === null ? 'unavailable' : `${formatReportedTvl(opportunity.tvlUsd)} USD`}
             </p>
-            <ul className="facts">
-              <li>Protocol: {opportunity.protocol}</li>
-              <li>Chain: {opportunity.chainId}</li>
-              <li>Source: {opportunity.source}</li>
-              <li>APY updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
-              <li>{opportunity.stale ? 'This fetch is older than 15 minutes.' : 'Fetched with this page view.'}</li>
-              <li>
-                {opportunity.sourceRisk
-                  ? `Beefy flags raised: ${opportunity.sourceRisk.raised.length > 0 ? opportunity.sourceRisk.raised.join(', ') : 'none'}. Risk record ${opportunity.sourceRisk.updatedAt ?? 'time not provided'}.`
-                  : 'Risk flags were not returned by this source.'}
-              </li>
-              <li>Fee: {opportunity.feeNote}</li>
-              <li>{opportunity.withdrawalNote}</li>
-            </ul>
+            <p className="muted-copy">Net yield is not provided by this source. {opportunity.feeNote}</p>
             <p className="muted-copy">
-              Leaves this beta. Deposit, manage, and withdraw use your wallet on Beefy for {opportunity.assets.join(' / ')} on BNB. Melega does not custody this vault or send the transaction.
+              Leaves this beta. Deposit, manage, and withdraw use your wallet on Beefy for {opportunity.assets.join(' / ')} on BNB chain {opportunity.chainId}. Melega does not custody this vault or send the transaction.
             </p>
             <a href={opportunity.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
               Continue on Beefy
             </a>
+            <details>
+              <summary>Source and risk</summary>
+              <ul className="facts">
+                <li>Protocol: {opportunity.protocol}</li>
+                <li>Source: {opportunity.source}</li>
+                <li>APY updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
+                <li>{opportunity.stale ? 'This fetch is older than 15 minutes.' : 'Fetched with this page view.'}</li>
+                <li>
+                  {opportunity.sourceRisk
+                    ? `Beefy flags raised: ${opportunity.sourceRisk.raised.length > 0 ? opportunity.sourceRisk.raised.join(', ') : 'none'}. Risk record ${opportunity.sourceRisk.updatedAt ?? 'time not provided'}.`
+                    : 'Risk flags were not returned by this source.'}
+                </li>
+                <li>{opportunity.withdrawalNote}</li>
+              </ul>
+            </details>
           </article>
         ))}
       </div>
@@ -65,6 +67,8 @@ export default function EarnCatalogPanel() {
   const [catalog, setCatalog] = React.useState<EarnCatalog | null>(null)
   const [asset, setAsset] = React.useState('')
   const [protocol, setProtocol] = React.useState('')
+  const assets = catalog?.ok ? [...new Set(catalog.opportunities.flatMap((row) => row.assets))].sort() : []
+  const protocols = catalog?.ok ? [...new Set(catalog.opportunities.map((row) => row.protocol))] : []
 
   React.useEffect(() => {
     const controller = new AbortController()
@@ -100,15 +104,25 @@ export default function EarnCatalogPanel() {
         <span className="quiet-chip">Read only</span>
       </div>
       <p className="muted-copy">Active PancakeSwap vaults listed by Beefy. This beta does not deposit, approve, or sign.</p>
-      <div className="catalog-filters">
-        <label htmlFor="earn-asset">
-          Asset
-          <input id="earn-asset" value={asset} onChange={(event) => setAsset(event.target.value)} />
-        </label>
-        <label htmlFor="earn-protocol">
-          Protocol
-          <input id="earn-protocol" value={protocol} onChange={(event) => setProtocol(event.target.value)} />
-        </label>
+      <div className="filter-row" aria-label="Asset filter">
+        <button type="button" className={asset === '' ? 'selected' : undefined} onClick={() => setAsset('')}>
+          All assets
+        </button>
+        {assets.map((item) => (
+          <button key={item} type="button" className={asset === item ? 'selected' : undefined} onClick={() => setAsset(asset === item ? '' : item)}>
+            {item}
+          </button>
+        ))}
+      </div>
+      <div className="filter-row" aria-label="Protocol filter">
+        <button type="button" className={protocol === '' ? 'selected' : undefined} onClick={() => setProtocol('')}>
+          All protocols
+        </button>
+        {protocols.map((item) => (
+          <button key={item} type="button" className={protocol === item ? 'selected' : undefined} onClick={() => setProtocol(protocol === item ? '' : item)}>
+            {item}
+          </button>
+        ))}
       </div>
       {catalog ? <EarnCatalogView catalog={catalog} asset={asset} protocol={protocol} /> : <p className="footnote">Reading the Beefy BNB catalog.</p>}
     </section>

@@ -44,6 +44,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/earn/EarnRead.tsx'),
   path.join(root, 'lib/earnCatalogRpc.ts'),
   path.join(root, 'modules/earn/EarnCatalog.tsx'),
+  path.join(root, 'lib/earnPositionsRpc.ts'),
+  path.join(root, 'modules/earn/EarnPositions.tsx'),
   path.join(root, 'pages/api/trend-boost-active.ts'),
   path.join(root, 'lib/shadowReadinessRpc.ts'),
   path.join(root, 'modules/trade/ShadowReadiness.tsx'),

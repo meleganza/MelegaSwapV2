@@ -104,6 +104,40 @@ test('a failed catalog read returns no opportunities', async () => {
   assert.deepEqual(bad.opportunities, emptyCatalog('UNAVAILABLE', FRESH).opportunities)
 })
 
+test('a vault id that is not a Beefy slug never becomes a link', () => {
+  const catalog = buildEarnCatalog({
+    vaults: [vault('https://evil.example/phish'), vault('Not A Vault'), vault('ok-vault', { assets: ['CAKE'] })],
+    apy: {},
+    tvl: { '56': {} },
+    fetchedAt: FRESH,
+    nowMs: NOW,
+  })
+  assert.deepEqual(catalog.opportunities.map((row) => row.href), ['https://app.beefy.com/vault/ok-vault'])
+  assert.equal(catalog.opportunities[0].netYield, null)
+  assert.equal(catalog.opportunities[0].receiptAddress, null)
+})
+
+test('the wrong chain never calls Beefy, and a missing APY feed stays null', async () => {
+  let calls = 0
+  const fetchImpl = async (url: string) => {
+    calls += 1
+    if (url.endsWith('/apy')) return { ok: false, json: async () => ({}) }
+    if (url.endsWith('/tvl')) return { ok: true, json: async () => ({ '56': {} }) }
+    return {
+      ok: true,
+      json: async () => [vault('ok-vault', { assets: ['CAKE'], earnedTokenAddress: '0x1111111111111111111111111111111111111111', tokenDecimals: 18 })],
+    }
+  }
+  const wrong = await readEarnCatalog({ chainId: 1, fetchImpl: fetchImpl as never, now: () => NOW })
+  assert.equal(wrong.ok, false)
+  if (!wrong.ok) assert.equal(wrong.code, 'CHAIN_MISMATCH')
+  assert.equal(calls, 0)
+  const partial = await readEarnCatalog({ chainId: 56, fetchImpl: fetchImpl as never, now: () => NOW })
+  assert.equal(partial.ok, true)
+  assert.equal(partial.opportunities[0].apyDecimal, null)
+  assert.equal(partial.opportunities[0].receiptAddress, '0x1111111111111111111111111111111111111111')
+})
+
 test('the catalog view has no deposit or signature control', () => {
   const html = renderToStaticMarkup(
     React.createElement(EarnCatalogView, {
