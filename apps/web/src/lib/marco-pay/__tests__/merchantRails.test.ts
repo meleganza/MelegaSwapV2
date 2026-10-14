@@ -27,19 +27,20 @@ describe('MARCO Pay merchant rails', () => {
     expect(assertObservedPayChain(56, false)).toBe(56)
   })
 
-  it('opens every registry EVM chain on the verified merchant address and still honors an explicit consent list', () => {
-    for (const chainId of [56, 8453, 137, 4663, 5042]) {
-      expect(resolveMerchantPayRail({ chainId }).settlementWallet).toBe(MARCO_PAY_SETTLEMENT_WALLET)
+  it('keeps non-BNB rails closed until the canonical gateway enables them', () => {
+    expect(resolveMerchantPayRail({ chainId: 56 }).settlementWallet).toBe(MARCO_PAY_SETTLEMENT_WALLET)
+    for (const chainId of [8453, 137, 4663, 5042]) {
+      expect(() => resolveMerchantPayRail({ chainId })).toThrow('GATEWAY_CHAIN_NOT_ENABLED')
     }
-    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56'
-    expect(resolveMerchantPayRail({ chainId: 56 }).chainId).toBe(56)
-    expect(() => resolveMerchantPayRail({ chainId: 8453 })).toThrow('MERCHANT_NETWORK_NOT_CONFIGURED')
-    expect(() => resolveMerchantPayRail({ chainId: 137 })).toThrow('MERCHANT_NETWORK_NOT_CONFIGURED')
+    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56,8453,137,4663,5042'
+    process.env.MARCO_PAY_SOLANA_MERCHANT_PUBKEY = 'ConfiguredMerchantPubkey111111111111111111111'
+    expect(() => resolveMerchantPayRail({ chainId: 8453 })).toThrow('GATEWAY_CHAIN_NOT_ENABLED')
+    expect(() => resolveMerchantPayRail({ networkId: 'solana' })).toThrow('GATEWAY_CHAIN_NOT_ENABLED')
     expect(() => assertObservedPayChain(1, false)).toThrow('CHAIN_MISMATCH')
     expect(() => assertObservedPayChain(null, true)).toThrow('CHAIN_MISMATCH')
   })
 
-  it('rejects a mismatched token or recipient and keeps Solana on its own pubkey', () => {
+  it('rejects a mismatched BNB token or recipient and keeps Solana closed', () => {
     expect(() =>
       assertPaySettlementBinding({
         chainId: 56,
@@ -53,12 +54,7 @@ describe('MARCO Pay merchant rails', () => {
         recipient: '0x000000000000000000000000000000000000dead',
       }),
     ).toThrow('SETTLEMENT_WALLET_NOT_TREASURY')
-    expect(() => resolveMerchantPayRail({ networkId: 'solana' })).toThrow('SOLANA_MERCHANT_PUBKEY_UNCONFIGURED')
-    process.env.MARCO_PAY_SOLANA_MERCHANT_PUBKEY = '6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF'
-    const solana = resolveMerchantPayRail({ networkId: 'solana' })
-    expect(solana.chainId).toBeNull()
-    expect(solana.settlementWallet).not.toBe(MARCO_PAY_SETTLEMENT_WALLET)
-    expect(solana.token).toBe('6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF')
+    expect(() => resolveMerchantPayRail({ networkId: 'solana' })).toThrow('GATEWAY_CHAIN_NOT_ENABLED')
     expect(isAuthoritativeMarcoPaidStatus('COMPLETED')).toBe(true)
     expect(isAuthoritativeMarcoPaidStatus('PAID')).toBe(false)
     expect(isAuthoritativeMarcoPaidStatus('SETTLED')).toBe(false)

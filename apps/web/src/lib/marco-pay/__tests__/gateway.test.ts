@@ -201,69 +201,9 @@ describe('MARCO Pay merchant session', () => {
     ).rejects.toMatchObject({ code: 'AMOUNT_MISMATCH' })
   })
 
-  it('keeps a consented chain and rejects a lead-disabled rail or a chain the customer did not select', async () => {
-    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56,8453,137'
-    const baseToken = '0xa2c8b941542AE0599774D1661CB7B773BC0e79C7'
-    const accepted = vi.fn(async (url: string) => {
-      if (String(url).includes('/api/public/pay/state')) {
-        return jsonResponse({
-          ok: true,
-          marco_amount_minor: '25000000',
-          receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
-          chain_id: 8453,
-          token_address: baseToken,
-        })
-      }
-      return jsonResponse({
-        ok: true,
-        payment_id: 'pay_base',
-        marco_amount_minor: '25000000',
-        chain_id: 8453,
-        token_address: baseToken,
-        receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
-      })
-    })
-    const session = await createMarcoPayPaymentSession({
-      applicationRef,
-      merchantOrderRef: 'mp_probe_intent_1',
-      amountMinor: '900',
-      currency: 'USD',
-      expectedChainId: 8453,
-      expectedToken: baseToken,
-      secret,
-      merchantApiKey,
-      nowSeconds: now,
-      fetchImpl: accepted as unknown as typeof fetch,
-    })
-    expect(session.chainId).toBe(8453)
-
-    const polygonToken = '0xF31A621A0e75d90fdA320EeE52956D718Fa34615'
-    const polygon = vi.fn(async () =>
-      jsonResponse({
-        ok: true,
-        payment_id: 'pay_polygon',
-        marco_amount_minor: '25000000',
-        chain_id: 137,
-        token_address: polygonToken,
-        receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
-      }),
-    )
-    const polygonSession = await createMarcoPayPaymentSession({
-      applicationRef,
-      merchantOrderRef: 'mp_probe_intent_polygon',
-      amountMinor: '900',
-      currency: 'USD',
-      expectedChainId: 137,
-      expectedToken: polygonToken,
-      secret,
-      merchantApiKey,
-      nowSeconds: now,
-      fetchImpl: polygon as unknown as typeof fetch,
-    })
-    expect(polygonSession.chainId).toBe(137)
-
-    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56'
-    const unconfigured = vi.fn(async () =>
+  it('rejects chains the canonical gateway has not enabled', async () => {
+    process.env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS = '56,8453,137,4663,5042'
+    const closed = vi.fn(async () =>
       jsonResponse({
         ok: true,
         payment_id: 'pay_base_closed',
@@ -282,9 +222,9 @@ describe('MARCO Pay merchant session', () => {
         secret,
         merchantApiKey,
         nowSeconds: now,
-        fetchImpl: unconfigured as unknown as typeof fetch,
+        fetchImpl: closed as unknown as typeof fetch,
       }),
-    ).rejects.toMatchObject({ code: 'MERCHANT_NETWORK_NOT_CONFIGURED' })
+    ).rejects.toMatchObject({ code: 'GATEWAY_CHAIN_NOT_ENABLED' })
   })
 
   it('builds approval_url from payment_id when MARCO omits it', async () => {

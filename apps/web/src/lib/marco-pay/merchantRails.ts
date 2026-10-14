@@ -3,11 +3,10 @@
  *
  * Token identities come from the existing Wave-1 registry. Pay-rail authority
  * status is not inferred from bridge pause flags and is not marked LIVE here.
- * Checkout chains are the Wave-1 registry. The canonical Passport gateway proves
- * a live payment with settlement.family, chain_id, token_address, tx_hash and
- * proven=true. When MARCO_PAY_EVM_CONSENTED_CHAIN_IDS is unset, every registry
- * EVM chain may use the verified Melega merchant address. An explicit list
- * restricts that set. Solana uses MARCO_PAY_SOLANA_MERCHANT_PUBKEY only.
+ * The public Passport pay contract proves a payment with settlement.proven.
+ * It does not publish Base, Polygon, Robinhood, Arc, or Solana as enabled
+ * pay rails. Those stay closed until that contract names them. BNB (56) is
+ * the verified merchant checkout and uses the existing treasury address.
  * This module does not broadcast a transaction.
  */
 import { MARCO_WAVE1_NETWORKS } from 'lib/marco-bridge/wave1Registry'
@@ -38,6 +37,9 @@ export type MerchantPayRail = {
 }
 
 type RailSpec = Omit<MerchantPayRail, 'executable' | 'status' | 'reason' | 'detail' | 'settlementWallet'>
+
+/** Chains named by the current public Passport pay/token contract. */
+export const GATEWAY_ENABLED_EVM_CHAIN_IDS = [56] as const
 
 const RAIL_SPECS: readonly RailSpec[] = [
   {
@@ -92,11 +94,7 @@ const RAIL_SPECS: readonly RailSpec[] = [
 
 export function readEvmConsentedChainIds(env: NodeJS.ProcessEnv = process.env): ReadonlySet<number> {
   const raw = env.MARCO_PAY_EVM_CONSENTED_CHAIN_IDS?.trim() || ''
-  if (!raw) {
-    return new Set(
-      RAIL_SPECS.flatMap((rail) => (rail.family === 'evm' && rail.chainId != null ? [rail.chainId] : [])),
-    )
-  }
+  if (!raw) return new Set<number>(GATEWAY_ENABLED_EVM_CHAIN_IDS)
   const ids = new Set<number>()
   for (const part of raw.split(',')) {
     const trimmed = part.trim()
@@ -104,6 +102,10 @@ export function readEvmConsentedChainIds(env: NodeJS.ProcessEnv = process.env): 
     ids.add(Number(trimmed))
   }
   return ids
+}
+
+export function gatewayEnablesChain(chainId: number | null | undefined): boolean {
+  return typeof chainId === 'number' && GATEWAY_ENABLED_EVM_CHAIN_IDS.some((enabled) => enabled === chainId)
 }
 
 export function readSolanaMerchantPubkey(env: NodeJS.ProcessEnv = process.env): string | null {
@@ -134,19 +136,10 @@ export function resolveMerchantPayRail(input: {
   if (byNetwork && byChain && byNetwork.id !== byChain.id) throw new Error('CHAIN_MISMATCH')
   const spec = byNetwork ?? byChain
   if (!spec) throw new Error('CHAIN_MISMATCH')
-  if (spec.family === 'solana') {
-    const pubkey = readSolanaMerchantPubkey(env)
-    if (!pubkey) throw new Error('SOLANA_MERCHANT_PUBKEY_UNCONFIGURED')
-    return {
-      ...spec,
-      executable: true,
-      status: 'configured',
-      reason: null,
-      detail: 'Solana checkout uses the configured merchant pubkey. This is not a settlement attestation.',
-      settlementWallet: pubkey,
-    }
+  if (spec.family !== 'evm' || spec.chainId == null || !gatewayEnablesChain(spec.chainId)) {
+    throw new Error('GATEWAY_CHAIN_NOT_ENABLED')
   }
-  if (spec.chainId == null || !readEvmConsentedChainIds(env).has(spec.chainId)) {
+  if (!readEvmConsentedChainIds(env).has(spec.chainId)) {
     throw new Error('MERCHANT_NETWORK_NOT_CONFIGURED')
   }
   const wallet = resolveMarcoPaySettlementWallet()
@@ -163,11 +156,11 @@ export function resolveMerchantPayRail(input: {
 
 function preparedRail(spec: RailSpec, reason: string): MerchantPayRail {
   const detail =
-    reason === 'SOLANA_MERCHANT_PUBKEY_UNCONFIGURED'
-        ? 'Solana stays closed until MARCO_PAY_SOLANA_MERCHANT_PUBKEY is configured. The EVM treasury is not used.'
-        : reason === 'MERCHANT_NETWORK_NOT_CONFIGURED'
-          ? 'The verified EVM merchant address is not consented for this chain.'
-          : 'This rail is not available for checkout.'
+    reason === 'GATEWAY_CHAIN_NOT_ENABLED'
+      ? 'The canonical Passport pay contract has not enabled this chain.'
+      : reason === 'MERCHANT_NETWORK_NOT_CONFIGURED'
+        ? 'The verified EVM merchant address is not consented for this chain.'
+        : 'This rail is not available for checkout.'
   return {
     ...spec,
     executable: false,

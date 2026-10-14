@@ -1,5 +1,6 @@
+import { createHmac } from 'crypto'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { MarcoPayCompletedEvent } from '../contract'
+import { verifyMarcoPaySignedEvent, type MarcoPayCompletedEvent } from '../contract'
 import { payRailCatalog } from '../merchantRails'
 
 vi.mock('@vercel/blob', () => ({ get: vi.fn(), head: vi.fn(), put: vi.fn() }))
@@ -160,6 +161,48 @@ describe('MARCO Pay fulfilment', () => {
     expect(result.testMode).toBe(true)
     expect(result.order?.state).toBe('TEST_VERIFIED')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('fulfills the paid DEX service once from a signed gateway settlement without moving funds', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      projectSlug: 'mm72',
+      projectContract: '0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    const event = eventFor(order.orderId, { test_mode: false })
+    const rawBody = Buffer.from(JSON.stringify(event))
+    const secret = 'merchant_webhook_secret_not_a_payment'
+    const timestamp = '1786770000'
+    const signature = `v1=${createHmac('sha256', secret).update(`v1.${timestamp}.${rawBody.toString('utf8')}`).digest('hex')}`
+    const signed = verifyMarcoPaySignedEvent({
+      rawBody,
+      secret,
+      expectedApplicationRef: applicationRef,
+      nowSeconds: 1_786_770_000,
+      headers: {
+        eventId: event.event_id,
+        eventType: event.event_type,
+        timestamp,
+        signature,
+        signatureVersion: 'v1',
+      },
+    })
+    const result = await processMarcoPaySignedEvent(signed)
+    expect(result.testMode).toBe(false)
+    expect(result.activated).toBe(true)
+    expect(result.order?.state).toBe('ACTIVE')
+    expect(result.order?.chainId).toBe(56)
+    expect(result.order?.txHash).toBe(event.settlement?.tx_hash)
+    const placed = getTrendBoostOrder(order.legacyOrderId)
+    expect(placed?.state).toBe('ACTIVE')
+    expect(placed?.receiptVerified).toBe(true)
+    const replay = await processMarcoPaySignedEvent(signed)
+    expect(replay.duplicate).toBe(true)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.scheduledEnd).toBe(placed?.scheduledEnd)
   })
 
   it('does not activate a live event that has no gateway chain proof', async () => {
