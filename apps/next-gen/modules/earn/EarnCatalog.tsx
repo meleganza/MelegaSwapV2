@@ -30,18 +30,29 @@ export function EarnCatalogView({ catalog, asset, protocol }: { catalog: EarnCat
         {visible.map((opportunity) => (
           <article className="earn-card" key={opportunity.id}>
             <h3>{opportunity.assets.join(' / ')}</h3>
+            <p className="earn-compare">
+              APY {formatReportedApy(opportunity.apyDecimal) ?? 'unavailable'} · TVL{' '}
+              {formatReportedTvl(opportunity.tvlUsd) === null ? 'unavailable' : `${formatReportedTvl(opportunity.tvlUsd)} USD`}
+            </p>
             <ul className="facts">
               <li>Protocol: {opportunity.protocol}</li>
               <li>Chain: {opportunity.chainId}</li>
-              <li>APY: {formatReportedApy(opportunity.apyDecimal) ?? 'unavailable'}</li>
-              <li>TVL: {formatReportedTvl(opportunity.tvlUsd) === null ? 'unavailable' : `${formatReportedTvl(opportunity.tvlUsd)} USD, as reported`}</li>
               <li>Source: {opportunity.source}</li>
-              <li>Updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
+              <li>APY updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
               <li>{opportunity.stale ? 'This fetch is older than 15 minutes.' : 'Fetched with this page view.'}</li>
+              <li>
+                {opportunity.sourceRisk
+                  ? `Beefy flags raised: ${opportunity.sourceRisk.raised.length > 0 ? opportunity.sourceRisk.raised.join(', ') : 'none'}. Risk record ${opportunity.sourceRisk.updatedAt ?? 'time not provided'}.`
+                  : 'Risk flags were not returned by this source.'}
+              </li>
+              <li>Fee: {opportunity.feeNote}</li>
               <li>{opportunity.withdrawalNote}</li>
             </ul>
-            <a href={opportunity.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
-              Open on Beefy
+            <p className="muted-copy">
+              Leaves this beta. Deposit, manage, and withdraw use your wallet on Beefy for {opportunity.assets.join(' / ')} on BNB. Melega does not custody this vault or send the transaction.
+            </p>
+            <a href={opportunity.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+              Continue on Beefy
             </a>
           </article>
         ))}

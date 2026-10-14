@@ -41,9 +41,26 @@ test('a missing or non-numeric APY stays null and is not replaced', () => {
   assert.equal(second?.tvlUsd, null)
   assert.equal(first?.updatedAt, null)
   assert.equal(first?.withdrawalNote, 'This source did not return withdrawal conditions.')
+  assert.equal(first?.feeNote, 'This source did not return a fee.')
+  assert.equal(first?.sourceRisk, null)
   assert.equal(first?.href, 'https://app.beefy.com/vault/pancake-cow-bsc-wbnb-usdt-vault')
   assert.equal(first?.deposit, false)
-  assert.equal(JSON.stringify(catalog).includes('risk'), false)
+  assert.equal(JSON.stringify(catalog).toLowerCase().includes('guaranteed'), false)
+})
+
+test('only true Beefy risk flags are copied', () => {
+  const catalog = buildEarnCatalog({
+    vaults: [vault('pancake-cow-bsc-cake-wbnb-vault', { assets: ['CAKE', 'WBNB'], risks: { updatedAt: 1765557014, complex: true, notCorrelated: false, notAudited: true }, withdrawalFee: 0.1 })],
+    apy: { 'pancake-cow-bsc-cake-wbnb-vault': 0.05 },
+    tvl: { '56': {} },
+    fetchedAt: FRESH,
+    nowMs: NOW,
+  })
+  const row = catalog.opportunities[0]
+  assert.deepEqual(row.sourceRisk?.raised, ['complex', 'notAudited'])
+  assert.equal(row.sourceRisk?.updatedAt, '2025-12-12T16:30:14.000Z')
+  assert.equal(row.feeNote, 'Beefy withdrawalFee 0.1')
+  assert.equal(row.apyDecimal, 0.05)
 })
 
 test('retired, non-BNB, and stale rows do not invent a fresh number', () => {
@@ -101,8 +118,10 @@ test('the catalog view has no deposit or signature control', () => {
       }),
     }),
   )
-  assert.match(html, /APY: unavailable/)
-  assert.match(html, /Open on Beefy/)
+  assert.match(html, /APY unavailable/)
+  assert.match(html, /Leaves this beta/)
+  assert.match(html, /Continue on Beefy/)
+  assert.match(html, /https:\/\/app\.beefy\.com\/vault\/pancake-cow-bsc-wbnb-usdt-vault/)
   assert.equal(html.includes('>Deposit<'), false)
   assert.equal(html.includes('>Approve<'), false)
   assert.equal(html.includes('>Sign<'), false)

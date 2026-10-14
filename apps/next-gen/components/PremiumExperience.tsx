@@ -69,7 +69,7 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
         </a>
         <a href="/explore">
           <span className="action-icon"><AppIcon name="explore" /></span>
-          <span><strong>Discover with context</strong><small>Projects and tokens, never invented rankings</small></span>
+          <span><strong>Discover with context</strong><small>Unavailable until a verified feed is connected</small></span>
           <AppIcon name="arrow" />
         </a>
       </aside>

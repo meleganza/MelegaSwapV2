@@ -11,6 +11,22 @@ export const EARN_CATALOG_TIMEOUT_MS = 8_000
 
 const VAULT_ID = /^[a-z0-9-]{1,80}$/
 
+const RISK_FLAGS = [
+  'complex',
+  'curated',
+  'notAudited',
+  'notBattleTested',
+  'notCorrelated',
+  'notTimelocked',
+  'notVerified',
+  'synthAsset',
+] as const
+
+export interface SourceRisk {
+  updatedAt: string | null
+  raised: string[]
+}
+
 export interface EarnOpportunity {
   id: string
   name: string
@@ -24,6 +40,8 @@ export interface EarnOpportunity {
   fetchedAt: string
   stale: boolean
   href: string
+  sourceRisk: SourceRisk | null
+  feeNote: string
   withdrawalNote: 'This source did not return withdrawal conditions.'
   executable: false
   deposit: false
@@ -77,6 +95,26 @@ function officialHref(id: string): string | null {
   return `https://app.beefy.com/vault/${id}`
 }
 
+function sourceRisk(value: unknown): SourceRisk | null {
+  if (!value || typeof value !== 'object') return null
+  const risks = value as Record<string, unknown>
+  const updatedAt =
+    typeof risks.updatedAt === 'number' && Number.isFinite(risks.updatedAt)
+      ? new Date(risks.updatedAt * 1000).toISOString()
+      : null
+  return {
+    updatedAt,
+    raised: RISK_FLAGS.filter((flag) => risks[flag] === true),
+  }
+}
+
+function feeNote(vault: Record<string, unknown>): string {
+  const fee = vault.withdrawalFee
+  if (typeof fee === 'number' && Number.isFinite(fee)) return `Beefy withdrawalFee ${fee}`
+  if (typeof fee === 'string' && fee.trim().length > 0) return `Beefy withdrawalFee ${fee.trim()}`
+  return 'This source did not return a fee.'
+}
+
 export function buildEarnCatalog(input: {
   vaults: unknown
   apy: unknown
@@ -115,6 +153,8 @@ export function buildEarnCatalog(input: {
       fetchedAt: input.fetchedAt,
       stale,
       href,
+      sourceRisk: sourceRisk(vault.risks),
+      feeNote: feeNote(vault),
       withdrawalNote: 'This source did not return withdrawal conditions.',
       executable: false,
       deposit: false,
