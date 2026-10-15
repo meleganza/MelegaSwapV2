@@ -43,10 +43,12 @@ test('the wrong chain is refused before the preparer runs', async () => {
   assert.equal(result.unsignedTx, null)
 })
 
-test('the wallet module does not sign and the Beefy handoff fee is zero', () => {
+test('the wallet sends only from a click and the Beefy handoff fee is zero', () => {
   const wallet = readFileSync(path.join(process.cwd(), 'modules/trade/BnbWalletPrepare.tsx'), 'utf8')
   assert.equal(wallet.includes('eth_sendRawTransaction'), false)
   assert.equal(wallet.includes('eth_signTransaction'), false)
+  assert.equal(/useEffect\s*\(/.test(wallet), false)
+  assert.match(wallet, /eth_sendTransaction/)
   assert.equal(MELEGA_BEEFY_HANDOFF_FEE, 0)
   const catalog = readFileSync(path.join(process.cwd(), 'lib/earnCatalog.ts'), 'utf8')
   assert.match(catalog, /https:\/\/app\.beefy\.com\/vault\/\$\{id\}/)

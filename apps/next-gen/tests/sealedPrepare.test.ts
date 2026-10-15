@@ -84,12 +84,17 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
   assert.equal(short.code, 'ALLOWANCE_SHORT')
   assert.equal(short.unsignedTx, null)
   assert.equal(short.approved, false)
+  assert.match(short.approvalTx?.data ?? '', /^0x095ea7b3/i)
+  assert.equal(short.broadcast, false)
+  assert.equal(short.signed, false)
 })
 
 test('the adapter source does not sign or recompute a fee schedule', () => {
   const source = readFileSync(path.join(process.cwd(), 'lib/sealedPrepare.ts'), 'utf8')
   assert.match(source, /runAuthorizedEvmShadowCompetition/)
   assert.equal(source.includes('eth_sendRawTransaction'), false)
+  assert.equal(source.includes('eth_sendTransaction'), false)
   assert.equal(source.includes('eth_sign'), false)
   assert.equal(source.includes('feeBps ='), false)
+  assert.match(source, /buildV2UserExecutionPlan/)
 })

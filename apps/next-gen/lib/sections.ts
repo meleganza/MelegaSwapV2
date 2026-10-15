@@ -17,7 +17,7 @@ export const SECTIONS: SectionCopy[] = [
     href: '/',
     primary: true,
     statements: [
-      'A BNB quote preview runs only after you ask. It does not sign or send a transaction.',
+      'A BNB quote preview runs only after you ask. A swap is sent only after you confirm it in your wallet.',
       'Multichain swap execution is not claimed.',
       'A Melega protocol fee is not certified as collected, and this preview does not collect one.',
     ],

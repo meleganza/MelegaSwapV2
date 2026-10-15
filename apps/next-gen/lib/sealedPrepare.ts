@@ -4,11 +4,7 @@
  */
 import { evmContract } from '@melega/smartswap-v2-prepare/src/assetIdentity'
 import { evmNetwork } from '@melega/smartswap-v2-prepare/src/domain'
-import {
-  assertSealedShadowCandidate,
-  prepareV2UserTransactions,
-  RAW_QUOTE_NOT_SEALED_CANDIDATE,
-} from '@melega/smartswap-v2-prepare'
+import { assertSealedShadowCandidate, RAW_QUOTE_NOT_SEALED_CANDIDATE } from '@melega/smartswap-v2-prepare'
 import { quoteIsStale, type SmartSwapRequest } from '@melega/smartswap-v2-prepare/src/quote'
 import type { ShadowCandidate } from '@melega/smartswap-v2-prepare/src/shadowCandidate'
 import { bindAuthorizedHostSession } from '../../web/src/lib/smartswap-universal-engine/widget'
@@ -22,8 +18,16 @@ import {
 } from './bscQuote'
 import { decodeQuantity, isPublicAddress } from './portfolioRead'
 import { encodeAllowance } from './shadowReadiness'
+import type { PublicUserTx } from './userSwapFlow'
+import {
+  buildV2UserExecutionPlan,
+  currentRequestKeyOf,
+  V2_CTA_DECISION,
+} from '../../web/src/lib/smartswap-universal-engine/v2UserExecutionPlan'
+import { BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS } from '../../web/src/lib/smartswap-universal-engine/v2ExecutionRuntimeConfig'
 
-const CERTIFIED_BSC_EXECUTOR = '0x7c07082839edd5797737640bba6af47992b9861e'
+const CERTIFIED_BSC_EXECUTOR = BSC_SMARTSWAP_EXECUTOR_V2_ADDRESS
+const APPROVE_SELECTOR = '095ea7b3'
 
 export interface SealedPreparation {
   ok: boolean
@@ -37,7 +41,13 @@ export interface SealedPreparation {
   feeAmountRaw: string | null
   gasUnits: string | null
   allowanceRaw: string | null
-  unsignedTx: { to: string; data: string; value: string; chainId: number } | null
+  venueLabel: string | null
+  amountInRaw: string | null
+  amountOutRaw: string | null
+  slippageBps: number | null
+  destination: string | null
+  approvalTx: PublicUserTx | null
+  unsignedTx: PublicUserTx | null
 }
 
 function closed(code: string, extra: Partial<SealedPreparation> = {}): SealedPreparation {
@@ -53,9 +63,22 @@ function closed(code: string, extra: Partial<SealedPreparation> = {}): SealedPre
     feeAmountRaw: null,
     gasUnits: null,
     allowanceRaw: null,
+    venueLabel: null,
+    amountInRaw: null,
+    amountOutRaw: null,
+    slippageBps: null,
+    destination: null,
+    approvalTx: null,
     unsignedTx: null,
     ...extra,
   }
+}
+
+function publicCall(tx: { to?: string; data?: string; value?: string; chainId?: number } | null | undefined): PublicUserTx | null {
+  if (!tx || tx.chainId !== 56 || tx.value !== '0x0') return null
+  if (typeof tx.to !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(tx.to)) return null
+  if (typeof tx.data !== 'string' || !/^0x[0-9a-fA-F]+$/.test(tx.data) || tx.data.length < 10) return null
+  return { to: tx.to, data: tx.data, value: '0x0', chainId: 56 }
 }
 
 export function acceptSealedWinner(winner: unknown, nowIso: string): { ok: false; code: string } | { ok: true; winner: ShadowCandidate } {
@@ -133,23 +156,14 @@ export async function prepareSealedBnbSwap(
   const winner = accepted.winner
   const allowanceRaw = deps.allowanceRaw === undefined ? await readAllowance(input.user as string, sell.address) : deps.allowanceRaw
   if (allowanceRaw === null) return closed('ALLOWANCE_UNREAD', { feeBps: winner.smartSwapFeeBps, feeAmountRaw: winner.sealedFee?.feeAmountRaw ?? null })
-  if (BigInt(allowanceRaw) < BigInt(winner.originalInputAmountRaw ?? amountInRaw)) {
-    return closed('ALLOWANCE_SHORT', {
-      allowanceRaw,
-      feeBps: winner.smartSwapFeeBps,
-      feeAmountRaw: winner.sealedFee?.feeAmountRaw ?? null,
-    })
-  }
   const token = winner.quote?.inputAsset.location.kind === 'contract' ? winner.quote.inputAsset.location.address : sell.address
-  const prepared = prepareV2UserTransactions({
+  const requestKey = currentRequestKeyOf(request)
+  const plan = buildV2UserExecutionPlan({
+    user: input.user,
+    walletChainId: 56,
     request,
-    winner,
-    user: input.user as string,
-    deadline: Math.floor(now().getTime() / 1000) + 120,
-    nonce: '0',
-    nowIso,
-    currentChainId: 56,
-    executorAddress: CERTIFIED_BSC_EXECUTOR,
+    requestKey,
+    shadow: { status: 'ready', requestKey, winner, v2Available: true },
     observedAllowance: {
       chainId: 56,
       token,
@@ -157,9 +171,37 @@ export async function prepareSealedBnbSwap(
       spender: CERTIFIED_BSC_EXECUTOR,
       amountRaw: allowanceRaw,
     },
+    allowanceReadStatus: 'ok',
+    nowIso,
+    deadline: Math.floor(now().getTime() / 1000) + 120,
   })
-  if (prepared.approvalTransactions.length > 0) return closed('APPROVAL_NOT_SENT', { allowanceRaw })
-  const gasUnits = winner.quote?.estimatedGasUnits && /^\d+$/.test(winner.quote.estimatedGasUnits) ? winner.quote.estimatedGasUnits : null
+  const summary = {
+    allowanceRaw,
+    feeBps: winner.smartSwapFeeBps,
+    feeAmountRaw: winner.sealedFee?.feeAmountRaw ?? null,
+    gasUnits: winner.quote?.estimatedGasUnits && /^\d+$/.test(winner.quote.estimatedGasUnits) ? winner.quote.estimatedGasUnits : null,
+    venueLabel: winner.quote?.venueLabel ?? winner.venueId,
+    amountInRaw: winner.originalInputAmountRaw,
+    amountOutRaw: winner.quote?.netUserOutputRaw ?? winner.quote?.grossOutputRaw ?? null,
+    slippageBps: request.slippageBps,
+    destination: plan.preparation?.swapTransaction.to ?? plan.executorAddress,
+  }
+  if (!plan.ok || !plan.productionCutoverAllowed || plan.decision !== V2_CTA_DECISION.V2_PRODUCTION_READY || !plan.preparation) {
+    return closed(plan.reason || 'PLAN_NOT_READY', summary)
+  }
+  const approval = plan.preparation.approvalTransactions[0]
+  if (approval) {
+    const approvalTx = publicCall(approval)
+    if (!approvalTx || !approvalTx.data.toLowerCase().startsWith(`0x${APPROVE_SELECTOR}`)) {
+      return closed('APPROVAL_UNAVAILABLE', summary)
+    }
+    return closed('ALLOWANCE_SHORT', { ...summary, approvalTx, destination: approvalTx.to })
+  }
+  const unsignedTx = publicCall(plan.preparation.swapTransaction)
+  if (!unsignedTx || unsignedTx.to.toLowerCase() !== CERTIFIED_BSC_EXECUTOR.toLowerCase()) {
+    return closed('SWAP_UNAVAILABLE', summary)
+  }
+  if (!summary.gasUnits) return closed('GAS_UNAVAILABLE', { ...summary, destination: unsignedTx.to })
   return {
     ok: true,
     chainId: 56,
@@ -167,16 +209,10 @@ export async function prepareSealedBnbSwap(
     signed: false,
     approved: false,
     executable: false,
-    feeBps: winner.smartSwapFeeBps,
-    feeAmountRaw: winner.sealedFee?.feeAmountRaw ?? null,
-    gasUnits,
-    allowanceRaw,
-    unsignedTx: {
-      to: prepared.swapTransaction.to,
-      data: prepared.swapTransaction.data,
-      value: prepared.swapTransaction.value,
-      chainId: prepared.swapTransaction.chainId,
-    },
+    ...summary,
+    destination: unsignedTx.to,
+    approvalTx: null,
+    unsignedTx,
   }
 }
 

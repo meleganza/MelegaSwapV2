@@ -65,7 +65,10 @@ test('beta source does not import the live DEX stack or open a network client', 
     const patterns = (QUOTE_EXCEPTIONS.has(file)
       ? FORBIDDEN.filter((pattern) => pattern.source !== '\\bfetch\\s*\\(' && pattern.source !== 'eth_call' && pattern.source !== 'eth_chainId')
       : FORBIDDEN
-    ).filter((pattern) => file !== path.join(root, 'modules/trade/BnbWalletPrepare.tsx') || pattern.source !== 'window\\.ethereum')
+    ).filter((pattern) => {
+      if (file !== path.join(root, 'modules/trade/BnbWalletPrepare.tsx')) return true
+      return !['window\\.ethereum', 'sendTransaction', 'setTimeout\\s*\\(', 'eth_chainId'].includes(pattern.source)
+    })
     patterns.forEach((pattern) => {
       assert.equal(pattern.test(source), false, `${path.relative(root, file)} matched ${pattern}`)
     })
@@ -84,10 +87,13 @@ test('beta source does not import the live DEX stack or open a network client', 
   assert.match(readFileSync(path.join(root, 'modules/trade/ShadowReadiness.tsx'), 'utf8'), /fetch\('\/api\/shadow-readiness'/)
   const wallet = readFileSync(path.join(root, 'modules/trade/BnbWalletPrepare.tsx'), 'utf8')
   assert.equal(wallet.includes('eth_sendRawTransaction'), false)
-  assert.equal(wallet.includes('eth_sign'), false)
+  assert.equal(wallet.includes('eth_signTransaction'), false)
   assert.equal(wallet.includes('personal_sign'), false)
+  assert.equal(/useEffect\s*\(/.test(wallet), false)
   assert.match(wallet, /eth_requestAccounts/)
   assert.match(wallet, /eth_chainId/)
+  assert.match(wallet, /eth_sendTransaction/)
+  assert.match(wallet, /if \(busy\.current\) return/)
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)
   assert.equal(home.includes('modules/portfolio'), false)
