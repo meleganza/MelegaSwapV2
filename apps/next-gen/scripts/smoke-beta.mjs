@@ -24,7 +24,7 @@ assert(home.body.includes('>Trade<') && home.body.includes('>Earn<') && home.bod
 assert(!home.body.includes('Leave beta'), 'leave control remains')
 assert(!home.body.includes('Access token'), 'password form remains')
 assert(!home.body.includes('type="password"'), 'password field remains')
-assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/earn-catalog|\/api\/shadow-readiness|\/api\/trend-boost-active/.test(home.body), 'home html calls a read api')
+assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/earn-catalog|\/api\/shadow-readiness|\/api\/trend-boost-active|\/api\/sealed-prepare/.test(home.body), 'home html calls a read api')
 
 const pages = ['/bridge', '/earn', '/portfolio', '/tools']
 for (const pathname of pages) {

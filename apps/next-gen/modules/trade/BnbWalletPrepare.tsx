@@ -1,5 +1,4 @@
 import React from 'react'
-import { prepareUnsignedFromSealed } from '../../lib/prepareUnsigned'
 
 type EthereumProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
@@ -11,7 +10,7 @@ function provider(): EthereumProvider | null {
   return ethereum
 }
 
-export function BnbWalletPrepare({ quote }: { quote: unknown }) {
+export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: string; amount: string }) {
   const [account, setAccount] = React.useState<string | null>(null)
   const [chainId, setChainId] = React.useState<number | null>(null)
   const [status, setStatus] = React.useState<string | null>(null)
@@ -45,15 +44,17 @@ export function BnbWalletPrepare({ quote }: { quote: unknown }) {
     }
     setPending(true)
     try {
-      const prepared = await prepareUnsignedFromSealed(quote, {
-        request: quote,
-        user: account,
-        deadline: Math.floor(Date.now() / 1000) + 60,
-        nonce: '0',
-        nowIso: new Date().toISOString(),
-        currentChainId: chainId,
+      const response = await fetch('/api/sealed-prepare', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ chainId, sell, buy, amount, user: account, slippageBps: 50 }),
       })
-      setStatus(prepared.ok ? 'PREPARED_UNSIGNED' : prepared.code ?? 'UNAVAILABLE')
+      const prepared = (await response.json()) as { ok?: boolean; code?: string; feeBps?: number | null; gasUnits?: string | null }
+      if (prepared.ok) {
+        setStatus(`PREPARED_UNSIGNED feeBps ${prepared.feeBps ?? 'unavailable'} gas ${prepared.gasUnits ?? 'not returned'}`)
+      } else {
+        setStatus(prepared.code ?? 'UNAVAILABLE')
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'UNAVAILABLE')
     } finally {
