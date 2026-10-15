@@ -107,7 +107,7 @@ test('the position view has no transaction control', () => {
     }),
   )
   assert.match(html, /Manage on Beefy/)
-  assert.match(html, /not a USD position/)
+  assert.match(html, /Receipt token balances/)
   assert.equal(html.includes('>Deposit<'), false)
   assert.equal(html.includes('>Approve<'), false)
   assert.equal(html.includes('>Sign<'), false)

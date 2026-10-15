@@ -8,7 +8,7 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
       <div data-executable="false">
         <p className="inline-alert" role="status">
           {result.code === 'ADDRESS_REJECTED'
-            ? 'That address was not accepted. No balance was read.'
+            ? 'Enter a valid public BNB address.'
             : result.code === 'CHAIN_MISMATCH'
               ? 'The chain did not match BNB. No balance was read.'
               : result.code === 'QUOTE_TIMEOUT'
@@ -30,7 +30,7 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
   return (
     <div data-executable="false" data-custody="false" data-chain="56">
       <p className="inline-alert" role="status">
-        BNB balances, read-only
+        Assets · BNB Chain
       </p>
       <ul className="result-list">
         {result.assets.map((asset) => (
@@ -41,19 +41,8 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
               : ''}
           </li>
         ))}
-        <li>USD valuation is not shown.</li>
-        <li>LP positions are not scanned. Farm positions are not scanned.</li>
-        <li>This beta cannot withdraw, approve, or sign.</li>
       </ul>
-      <ul className="result-links">
-        {LIVE_WITHDRAWAL_LINKS.map((link) => (
-          <li key={link.href}>
-            <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <p className="footnote">Token balances only. USD total and legacy positions are not included.</p>
     </div>
   )
 }
@@ -94,8 +83,7 @@ export default function PortfolioLookup() {
 
   return (
     <section className="quote-panel" aria-labelledby="portfolio-title">
-      <div className="panel-title"><div><p className="section-kicker">Read-only lookup</p><h2 id="portfolio-title">Public address</h2></div><span className="quiet-chip">BNB Chain</span></div>
-      <p className="muted-copy">No wallet is connected. Melega does not take custody of this address.</p>
+      <h3 id="portfolio-title">Public address</h3>
       <label htmlFor="portfolio-address">
         Address
         <input
@@ -107,19 +95,8 @@ export default function PortfolioLookup() {
         />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
-        {pending ? 'Reading balances' : 'Read BNB balances'}
+        {pending ? 'Reading balances' : 'Show balances'}
       </button>
-      {result ? null : (
-        <ul className="result-links">
-          {LIVE_WITHDRAWAL_LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
       {result ? <PortfolioResult result={result} /> : null}
     </section>
   )

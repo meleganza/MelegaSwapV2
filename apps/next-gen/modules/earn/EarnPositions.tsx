@@ -1,5 +1,5 @@
 import React from 'react'
-import type { EarnPositions } from '../../lib/earnPositions'
+import { emptyPositions, type EarnPositions } from '../../lib/earnPositions'
 
 export function EarnPositionView({ result }: { result: EarnPositions }) {
   if (!result.ok) {
@@ -9,14 +9,14 @@ export function EarnPositionView({ result }: { result: EarnPositions }) {
           ? 'That address was not accepted. No receipt balance was read.'
           : result.code === 'CHAIN_MISMATCH'
             ? 'The chain did not match BNB. No receipt balance was read.'
-            : 'Listed receipt balances are unavailable. No position is shown.'}
+            : 'Beefy positions are unavailable. No position is shown.'}
       </p>
     )
   }
   return (
     <div data-executable="false" data-deposit="false" data-positions="listed">
       <ul className="facts">
-        {result.rows.map((row) => (
+        {[...result.rows].sort((a, b) => Number(BigInt(b.raw ?? '0') > BigInt(0)) - Number(BigInt(a.raw ?? '0') > BigInt(0))).map((row) => (
           <li key={row.id}>
             {row.assets.join(' / ')}:{' '}
             {row.status === 'balance'
@@ -30,7 +30,7 @@ export function EarnPositionView({ result }: { result: EarnPositions }) {
           </li>
         ))}
       </ul>
-      <p className="muted-copy">A receipt balance is not a USD position. Withdrawal stays on Beefy.</p>
+      <p className="muted-copy">Receipt token balances · Withdraw on Beefy ↗</p>
     </div>
   )
 }
@@ -50,7 +50,7 @@ export default function EarnPositionPanel() {
       })
       setResult((await response.json()) as EarnPositions)
     } catch {
-      setResult(null)
+      setResult(emptyPositions('UNAVAILABLE'))
     } finally {
       setPending(false)
     }
@@ -58,14 +58,14 @@ export default function EarnPositionPanel() {
 
   return (
     <section className="quote-panel" id="beefy-positions" aria-labelledby="earn-positions-title">
-      <h2 id="earn-positions-title">Listed receipt balances</h2>
-      <p className="muted-copy">Enter a public address. Only the vaults on this page are read. No wallet is connected.</p>
+      <h2 id="earn-positions-title">Beefy positions</h2>
+      <p className="muted-copy">Public address · Listed BNB vaults only</p>
       <label htmlFor="earn-position-address">
         Public address
         <input id="earn-position-address" value={address} autoComplete="off" spellCheck={false} onChange={(event) => setAddress(event.target.value)} />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
-        {pending ? 'Reading receipts' : 'Read listed receipts'}
+        {pending ? 'Loading positions…' : 'Find positions'}
       </button>
       {result ? <EarnPositionView result={result} /> : null}
     </section>

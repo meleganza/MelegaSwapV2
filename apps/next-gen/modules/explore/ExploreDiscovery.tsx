@@ -34,16 +34,16 @@ export default function ExploreDiscovery() {
 
   return (
     <div data-boost-feed={state}>
-      <h2>Paid Boost</h2>
-      {state === 'loading' ? <p className="muted-copy">Reading the canonical active feed.</p> : null}
+      <div className="panel-title"><h2>Boost</h2><span className="quiet-chip">Sponsored</span></div>
+      {state === 'loading' ? <p className="muted-copy">Loading Boost…</p> : null}
       {state === 'unavailable' ? (
         <p className="muted-copy" role="status">
-          The Boost feed did not return a verified list. No placement is shown.
+          Boost is temporarily unavailable.
         </p>
       ) : null}
       {state === 'empty' ? (
         <p className="muted-copy" role="status">
-          No active paid Boost placements.
+          No active Boost placements.
         </p>
       ) : null}
       {state === 'rows' ? (
@@ -53,10 +53,6 @@ export default function ExploreDiscovery() {
               <a href={row.projectHref} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
                 {row.projectSlug}
               </a>
-              {' · chain '}
-              {row.chainId}
-              {row.startsAt ? ` · ${row.startsAt}` : ''}
-              {row.endsAt ? ` to ${row.endsAt}` : ''}
               {row.tokenHref ? (
                 <>
                   {' · '}
@@ -65,7 +61,7 @@ export default function ExploreDiscovery() {
                   </a>
                 </>
               ) : null}
-              <span> Paid placement from the live feed. Leaves this beta.</span>
+              <span> Sponsored</span>
             </li>
           ))}
         </ul>

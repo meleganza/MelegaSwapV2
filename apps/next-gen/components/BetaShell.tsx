@@ -60,7 +60,7 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
           <div className="protected-note">
             <AppIcon name="shield" />
             <span>
-              <strong>Beta — read-only</strong>
+              <strong>Beta</strong>
             </span>
           </div>
         </div>
@@ -73,11 +73,11 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
             <AppIcon name="advanced" />
           </a>
         </header>
-        <p className="mobile-readonly">Beta — read-only</p>
+        <p className="mobile-readonly">Beta</p>
         <header className="topbar">
           <p>MelegaDex Evo</p>
           <span className="environment-pill">
-            <span aria-hidden="true" /> Beta — read-only
+            <span aria-hidden="true" /> Beta
           </span>
         </header>
 

@@ -399,3 +399,49 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+
+/* Founder premium refinement: compact factual cards, canonical MARCO, flat surfaces. */
+.marco-intro { align-items: center; min-height: 174px; margin-bottom: 24px; }
+.marco-intro > div { flex: 1; min-width: 0; }
+.marco-pose { width: 160px; height: 174px; object-fit: contain; object-position: bottom; flex: 0 0 auto; }
+.marco-intro .intro-copy { max-width: 24em; }
+.discovery-surface, .lookup-surface { box-shadow: none; }
+.catalog-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 20px 0 12px; }
+.catalog-filters label { min-width: 0; display: grid; gap: 6px; color: var(--muted); font-size: .75rem; }
+.catalog-filters select { min-width: 0; width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 12px; padding: 0 10px; background: var(--surface); color: var(--ink); font-size: 16px; }
+.earn-catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.earn-card { padding: 18px; background: var(--surface); border-radius: 16px; min-width: 0; }
+.vault-heading { display: flex; align-items: center; gap: 10px; }
+.vault-heading > div { min-width: 0; }
+.vault-heading h3 { font-size: .9rem; }
+.asset-monogram { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border-radius: 50%; background: var(--accent-soft); color: var(--ink); font-weight: 700; }
+.vault-metrics { display: grid; grid-template-columns: 1fr 1.2fr; gap: 8px; margin: 20px 0 16px; }
+.vault-metrics dt { font-size: .7rem; color: var(--muted); }
+.vault-metrics dd { margin: 5px 0 0; font-size: 1.15rem; font-weight: 650; overflow-wrap: anywhere; }
+.vault-action { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 10px; background: var(--graphite); color: var(--inverse) !important; text-decoration: none; font-weight: 600; }
+.earn-card details { margin-top: 10px; }
+summary { cursor: pointer; padding-block: 12px; font-size: .76rem; color: var(--muted); min-height: 44px; }
+.secondary-disclosure, .position-group { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+.position-group .muted-copy, .portfolio-gate > .muted-copy { margin: 8px 0 14px; }
+.portfolio-gate .quote-panel { margin-top: 18px; }
+.secondary-action { min-height: 48px; padding: 0 18px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; font-weight: 600; cursor: pointer; }
+.legacy-links { display: flex; gap: 10px; flex-wrap: wrap; list-style: none; padding: 0; }
+.legacy-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; text-decoration: none; font-size: .8rem; }
+.explore-categories { margin-top: 0; }
+[data-boost-feed] { padding-top: 22px; margin-top: 22px; border-top: 1px solid var(--line); }
+[data-boost-feed] > .muted-copy { margin-top: 12px; }
+.product-footer { margin-top: 32px; }
+.mobile-readonly { display: none; }
+@media (max-width: 640px) {
+  .marco-intro { display: flex; min-height: 132px; gap: 10px; margin-bottom: 18px; }
+  .marco-pose { width: 110px; height: 132px; }
+  .marco-intro .intro-copy { margin-top: 9px; font-size: .8rem; }
+  .marco-intro h1 { font-size: 1.85rem; }
+  .marco-intro .section-kicker { font-size: .6rem; letter-spacing: .07em; }
+  .earn-catalog { grid-template-columns: minmax(0, 1fr); }
+  .earn-card { padding: 16px; }
+  .vault-metrics { margin-block: 16px 12px; }
+  .explore-categories { gap: 8px; }
+  .explore-categories > a { min-height: 88px; }
+}
+.footnote { margin: 12px 0; color: var(--muted); font-size: .72rem; line-height: 1.5; }

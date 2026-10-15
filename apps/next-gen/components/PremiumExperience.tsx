@@ -109,61 +109,28 @@ function BridgeExperience() {
 }
 
 function EarnExperience({ children }: { children?: React.ReactNode }) {
-  return (
-    <section className="surface discovery-surface" aria-label="Earn opportunities preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Opportunities</p><h2>Yield, with the facts first</h2></div>
-        <span className="quiet-chip">{children ? 'BNB reads' : 'No verified data loaded'}</span>
-      </div>
-      {children ? (
-        children
-      ) : (
-        <div className="empty-state" data-operational="false">
-          <span className="empty-symbol"><AppIcon name="earn" /></span>
-          <h3>Verified opportunities will appear here</h3>
-          <p>APY and TVL stay hidden until a factual source is available.</p>
-        </div>
-      )}
-    </section>
-  )
+  return <section className="surface discovery-surface" aria-label="Earn opportunities">{children}</section>
 }
 
 function PortfolioExperience({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="portfolio-layout">
-      <section className="surface portfolio-summary" aria-label="Portfolio summary">
-        <p className="section-kicker">Total portfolio value</p>
-        <p className="unavailable-value">—</p>
-        <p className="muted-copy">Enter a public BNB address to read supported balances. No wallet connection is requested.</p>
-        <div className="portfolio-metrics">
-          <div><small>Assets</small><strong>Not loaded</strong></div>
-          <div><small>Networks</small><strong>BNB read available</strong></div>
-          <div><small>Rewards</small><strong>Not scanned</strong></div>
-        </div>
-      </section>
-      <section className="surface lookup-surface" aria-label="Portfolio lookup">{children}</section>
-    </div>
-  )
+  return <section className="surface lookup-surface" aria-label="Portfolio">{children}</section>
 }
 
 function ExploreExperience({ children }: { children?: React.ReactNode }) {
   return (
-    <section className="surface discovery-surface" aria-label="Explore preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Discovery</p><h2>Find signal, not noise</h2></div>
-        <span className="quiet-chip">Live DEX handoff</span>
-      </div>
+    <section className="surface discovery-surface" aria-label="Explore">
       <div className="explore-categories">
         <a href={LIVE_DEX_LINKS.projects} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="explore" /></span><strong>Projects</strong><small>Live project directory. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="explore" /></span><strong>Projects ↗</strong><small>Explore the ecosystem</small>
         </a>
         <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>Same directory, trending sort. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending ↗</strong><small>See what is moving</small>
         </a>
         <a href={LIVE_DEX_LINKS.tokensBnb} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Live info for BNB Smart Chain. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="earn" /></span><strong>Tokens ↗</strong><small>Browse BNB Chain</small>
         </a>
       </div>
+      <p className="footnote">Directories open on the live DEX.</p>
       {children}
     </section>
   )
@@ -177,7 +144,7 @@ export function PremiumExperience({ section, children }: { section: UxSectionCop
       {section.id === 'earn' ? <EarnExperience>{children}</EarnExperience> : null}
       {section.id === 'portfolio' ? <PortfolioExperience>{children}</PortfolioExperience> : null}
       {section.id === 'explore' ? <ExploreExperience>{children}</ExploreExperience> : null}
-      <TrustRow statements={section.statements} />
+      {['earn', 'portfolio', 'explore'].includes(section.id) ? null : <TrustRow statements={section.statements} />}
     </>
   )
 }

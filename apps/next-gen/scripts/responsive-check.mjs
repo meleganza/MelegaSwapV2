@@ -38,7 +38,7 @@ function sleep(ms) {
 }
 
 let version
-for (let attempt = 0; attempt < 40; attempt += 1) {
+for (let attempt = 0; attempt < 120; attempt += 1) {
   try {
     const response = await fetch('http://127.0.0.1:9223/json/version')
     if (response.ok) {
