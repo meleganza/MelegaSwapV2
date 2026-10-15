@@ -36,6 +36,9 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   const [pending, setPending] = React.useState(false)
   const [review, setReview] = React.useState<SwapReview | null>(null)
   const busy = React.useRef(false)
+  // A broadcast remains locked even if receipt polling times out or throws.
+  const submitted = React.useRef<string | null>(null)
+  const [submittedHash, setSubmittedHash] = React.useState<string | null>(null)
 
   async function readChain(ethereum: EthereumProvider): Promise<number | null> {
     try {
@@ -53,6 +56,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
       return
     }
     if (busy.current) return
+    if (submitted.current) return
     busy.current = true
     setPending(true)
     try {
@@ -79,7 +83,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   }
 
   async function onReview() {
-    if (!account || chainId !== 56 || busy.current) {
+    if (!account || chainId !== 56 || busy.current || submitted.current) {
       setStatus(chainId == null ? 'WALLET_REQUIRED' : 'CHAIN_MISMATCH')
       return
     }
@@ -115,7 +119,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   }
 
   async function onApprove() {
-    if (!account || !review?.approvalTx || review.unsignedTx || busy.current) return
+    if (!account || !review?.approvalTx || review.unsignedTx || busy.current || submitted.current) return
     busy.current = true
     setPending(true)
     try {
@@ -127,6 +131,9 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
         return
       }
       const hash = await sendUserTx(shown)
+      submitted.current = hash
+      setSubmittedHash(hash)
+      setReview(null)
       const outcome = await waitForReceipt(provider() as EthereumProvider, hash)
       if (outcome !== 'confirmed') {
         setStatus(outcome === 'failed' ? 'FAILED_RECEIPT' : 'RECEIPT_PENDING')
@@ -138,6 +145,8 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
         setStatus('ALLOWANCE_RACE')
         return
       }
+      submitted.current = null
+      setSubmittedHash(null)
       setStatus(again?.code ?? (again?.ok ? 'READY_FOR_WALLET' : 'UNAVAILABLE'))
     } catch (error) {
       setStatus(signatureRejected(error) ? 'SIGNATURE_REJECTED' : error instanceof Error ? error.message : 'UNAVAILABLE')
@@ -148,7 +157,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   }
 
   async function onConfirm() {
-    if (!account || !review?.unsignedTx || review.approvalTx || busy.current) return
+    if (!account || !review?.unsignedTx || review.approvalTx || busy.current || submitted.current) return
     if (reviewAction(review) !== 'confirm') {
       setStatus('GAS_UNAVAILABLE')
       return
@@ -164,6 +173,9 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
         return
       }
       const hash = await sendUserTx(shown)
+      submitted.current = hash
+      setSubmittedHash(hash)
+      setReview(null)
       const outcome = await waitForReceipt(provider() as EthereumProvider, hash)
       setStatus(outcome === 'confirmed' ? `SUBMITTED ${hash}` : outcome === 'failed' ? 'FAILED_RECEIPT' : 'RECEIPT_PENDING')
     } catch (error) {
@@ -179,10 +191,10 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     <section className="quote-panel" aria-labelledby="wallet-prepare-title">
       <h2 id="wallet-prepare-title">BNB wallet</h2>
       <p className="muted-copy">Nothing is signed until you press Approve or Sign and send. This page does not sign by itself.</p>
-      <button className="primary-action" type="button" onClick={onConnect} disabled={pending}>
+      <button className="primary-action" type="button" onClick={onConnect} disabled={pending || Boolean(submittedHash)}>
         {account ? 'Refresh BNB wallet' : 'Connect BNB wallet'}
       </button>
-      <button className="primary-action" type="button" onClick={onReview} disabled={pending || !account || chainId !== 56}>
+      <button className="primary-action" type="button" onClick={onReview} disabled={pending || Boolean(submittedHash) || !account || chainId !== 56}>
         Review BNB swap
       </button>
       {review ? (
@@ -197,15 +209,16 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
         </ul>
       ) : null}
       {action === 'approve' ? (
-        <button className="primary-action" type="button" onClick={onApprove} disabled={pending}>
+        <button className="primary-action" type="button" onClick={onApprove} disabled={pending || Boolean(submittedHash)}>
           Approve token in wallet
         </button>
       ) : null}
       {action === 'confirm' ? (
-        <button className="primary-action" type="button" onClick={onConfirm} disabled={pending}>
+        <button className="primary-action" type="button" onClick={onConfirm} disabled={pending || Boolean(submittedHash)}>
           Sign and send swap
         </button>
       ) : null}
+      {submittedHash ? <p role="status">Transaction: <a href={`https://bscscan.com/tx/${submittedHash}`} target="_blank" rel="noreferrer noopener">{submittedHash}</a>. Follow the receipt before starting another swap.</p> : null}
       {status ? (
         <p className="inline-alert" role="status" data-broadcast="false" data-signed="false">
           {status}

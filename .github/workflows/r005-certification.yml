@@ -1,0 +1,35 @@
+name: R005 isolated certification
+on:
+  push:
+    branches: ['cert/r005-20261015']
+  pull_request:
+    paths: ['apps/next-gen/**', '.github/workflows/r005-certification.yml']
+permissions:
+  contents: read
+jobs:
+  next-gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile --ignore-scripts
+      - name: Mock wallet duplicate regression
+        run: |
+          npm install --prefix "$RUNNER_TEMP/r005-mock" --ignore-scripts --legacy-peer-deps react-test-renderer@18.2.0
+          ln -s "$GITHUB_WORKSPACE/node_modules/react" "$RUNNER_TEMP/r005-mock/node_modules/react"
+          NODE_PATH="$RUNNER_TEMP/r005-mock/node_modules" node --import tsx docs/stability/r005-certification/click-cert.tsx
+      - name: Unit tests
+        run: yarn workspace @melega/next-gen test
+      - name: Typecheck
+        if: success() || failure()
+        run: yarn workspace @melega/next-gen typecheck
+      - name: Build
+        if: success() || failure()
+        run: yarn workspace @melega/next-gen build
+      - name: Home budget
+        if: success() || failure()
+        run: yarn workspace @melega/next-gen budget
