@@ -1,3 +1,5 @@
+import { assertPassportProEconomics, PASSPORT_PRO_COMMISSION_ASSET } from 'lib/marco-pay/economics'
+
 /**
  * MARCO Passport PRO referral transport for Melega DEX.
  *
@@ -40,6 +42,20 @@ type ReferralResolvePayload = {
 export function normalizeMarcoReferralCode(value: unknown): string | null {
   const code = typeof value === 'string' ? value.trim().toLowerCase() : ''
   return CODE_PATTERN.test(code) ? code : null
+}
+
+/** Authority code wins only when it is the same referral the customer presented. */
+export function canonicalReferralCode(
+  body: { canonical_code?: unknown; referral_code?: unknown; code?: unknown },
+  requested: string,
+): string | null {
+  const expected = normalizeMarcoReferralCode(requested)
+  if (!expected) return null
+  for (const candidate of [body.canonical_code, body.referral_code, body.code]) {
+    const canonical = normalizeMarcoReferralCode(candidate)
+    if (canonical && canonical === expected) return canonical
+  }
+  return null
 }
 
 function normalizeAnalyticsContext(value: unknown): string | null {
@@ -188,6 +204,7 @@ export type MarcoReferralQuote = {
   discount_minor: string
   net_paid_minor: string
   commission_amount_minor: string
+  commission_asset: typeof PASSPORT_PRO_COMMISSION_ASSET
 }
 
 /** Server-side pre-payment quote. Exact integer facts come only from Passport. */
@@ -211,13 +228,57 @@ export async function quoteMarcoReferralForCheckout(input: {
         ? AbortSignal.timeout(6_000)
         : undefined,
     })
-    const body = await response.json() as Partial<MarcoReferralQuote> & { ok?: boolean }
-    const integer = (value: unknown): value is string => typeof value === 'string' && /^\d+$/.test(value)
-    if (!response.ok || body.ok !== true || body.referral_code !== input.code || body.catalog_ref !== input.catalogRef
-      || !integer(body.listed_price_minor) || !integer(body.discount_minor) || !integer(body.net_paid_minor)
-      || !integer(body.commission_amount_minor)
-      || BigInt(body.listed_price_minor) - BigInt(body.discount_minor) !== BigInt(body.net_paid_minor)) return null
-    return body as MarcoReferralQuote
+    const body = (await response.json()) as Partial<MarcoReferralQuote> & {
+      ok?: boolean
+      canonical_code?: string
+      code?: string
+      commission_amount_base?: string
+      commission_asset?: string
+    }
+    const canonical = canonicalReferralCode(body, input.code)
+    const commissionAmountMinor =
+      typeof body.commission_amount_base === 'string' && /^\d+$/.test(body.commission_amount_base)
+        ? body.commission_amount_base
+        : body.commission_amount_minor
+    if (
+      !response.ok ||
+      body.ok !== true ||
+      !canonical ||
+      body.catalog_ref !== input.catalogRef ||
+      typeof body.listed_price_minor !== 'string' ||
+      typeof body.discount_minor !== 'string' ||
+      typeof body.net_paid_minor !== 'string' ||
+      typeof commissionAmountMinor !== 'string'
+    ) {
+      return null
+    }
+    if (
+      typeof body.commission_amount_base === 'string' &&
+      typeof body.commission_amount_minor === 'string' &&
+      body.commission_amount_base !== body.commission_amount_minor
+    ) {
+      return null
+    }
+    try {
+      const economics = assertPassportProEconomics({
+        listedPriceMinor: body.listed_price_minor,
+        discountMinor: body.discount_minor,
+        netPaidMinor: body.net_paid_minor,
+        commissionAmountMinor,
+        commissionAsset: body.commission_asset,
+      })
+      return {
+        referral_code: canonical,
+        catalog_ref: input.catalogRef,
+        listed_price_minor: economics.listedPriceMinor,
+        discount_minor: economics.discountMinor,
+        net_paid_minor: economics.netPaidMinor,
+        commission_amount_minor: economics.commissionAmountMinor,
+        commission_asset: economics.commissionAsset,
+      }
+    } catch {
+      return null
+    }
   } catch {
     return null
   }
