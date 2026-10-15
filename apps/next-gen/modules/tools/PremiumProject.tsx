@@ -1,11 +1,8 @@
 import React from 'react'
-import { ToolBody } from './ToolBody'
+import { commercialTool } from '../../lib/tools'
+import { ExternalService } from './ExternalService'
 
 export default function PremiumProject() {
-  return (
-    <ToolBody
-      title="Premium Project Page"
-      detail="Premium Project Page is not operational. This screen does not publish a project page."
-    />
-  )
+  const tool = commercialTool('premium-project')
+  return <ExternalService title={tool.label} detail={tool.detail} href={tool.href} />
 }

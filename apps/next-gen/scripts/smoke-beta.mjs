@@ -26,13 +26,36 @@ assert(!home.body.includes('Access token'), 'password form remains')
 assert(!home.body.includes('type="password"'), 'password field remains')
 assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/earn-catalog|\/api\/shadow-readiness|\/api\/trend-boost-active|\/api\/sealed-prepare/.test(home.body), 'home html calls a read api')
 
-const pages = ['/bridge', '/earn', '/portfolio', '/tools']
+const pages = ['/bridge', '/earn', '/portfolio', '/tools', '/explore']
 for (const pathname of pages) {
   const page = await request(pathname, { headers: { accept: 'text/html' } })
   assert(page.response.status === 200, `${pathname} status ${page.response.status}`)
   assert(page.body.includes('Not operational'), `${pathname} must say it is not operational`)
   assert(!(page.response.headers.get('set-cookie') || '').includes('ng_beta='), `${pathname} minted a cookie`)
 }
+
+const bridge = await request('/bridge', { headers: { accept: 'text/html' } })
+assert(bridge.body.includes('https://www.melega.finance/bridge'), 'bridge handoff missing')
+assert(bridge.body.includes('Polygon') && bridge.body.includes('(137)') && bridge.body.includes('Solana') && bridge.body.includes('Arc'), 'bridge pairs missing')
+assert(!bridge.body.includes('Base'), 'bridge invented a Base pair')
+assert(bridge.body.includes('Bridge execution is disabled'), 'bridge execution was enabled')
+
+const createToken = await request('/tools/create-token', { headers: { accept: 'text/html' } })
+assert(createToken.response.status === 200, `create-token status ${createToken.response.status}`)
+assert(createToken.body.includes('https://www.melega.finance/list?intent=create-token'), 'create token handoff missing')
+assert(!createToken.body.includes('Get Featured'), 'tool page invented a checkout')
+
+const featured = await request('/tools/featured-project', { headers: { accept: 'text/html' } })
+assert(featured.body.includes('list?intent=create-project#featured'), 'featured handoff missing')
+const boost = await request('/tools/trend-boost', { headers: { accept: 'text/html' } })
+assert(boost.body.includes('list?intent=create-project#trend-boost'), 'trend boost handoff missing')
+const premium = await request('/tools/premium-project', { headers: { accept: 'text/html' } })
+assert(premium.body.includes('https://www.melega.finance/list?intent=create-project'), 'premium handoff missing')
+assert(!premium.body.includes('javascript:'), 'tool page has a script link')
+
+const explore = await request('/explore', { headers: { accept: 'text/html' } })
+assert(explore.body.includes('https://www.melega.finance/projects'), 'explore projects link missing')
+assert(!explore.body.includes('/api/trend-boost-active'), 'explore html prefetches boost')
 
 const access = await request('/access', { headers: { accept: 'text/html' } })
 assert(access.response.status === 307, `access status ${access.response.status}`)

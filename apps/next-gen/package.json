@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 4317",
     "typecheck": "tsc --noEmit --pretty false",
-    "test": "node --import tsx --test tests/betaGate.test.ts tests/betaRuntime.test.ts tests/shell.test.ts tests/isolation.test.ts tests/a11y.test.ts tests/bscQuote.test.ts tests/portfolio.test.ts tests/earn.test.ts tests/earnCatalog.test.ts tests/earnPositions.test.ts tests/shadowReadiness.test.ts tests/prepareUnsigned.test.ts tests/sealedPrepare.test.ts",
+    "test": "node --import tsx --test tests/betaGate.test.ts tests/betaRuntime.test.ts tests/shell.test.ts tests/isolation.test.ts tests/a11y.test.ts tests/bscQuote.test.ts tests/portfolio.test.ts tests/earn.test.ts tests/earnCatalog.test.ts tests/earnPositions.test.ts tests/shadowReadiness.test.ts tests/prepareUnsigned.test.ts tests/sealedPrepare.test.ts tests/legacyServices.test.ts",
     "budget": "node scripts/assert-budget.mjs"
   },
   "dependencies": {

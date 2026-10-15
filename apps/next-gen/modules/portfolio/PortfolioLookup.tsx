@@ -5,15 +5,26 @@ import { LIVE_WITHDRAWAL_LINKS, type PortfolioRead } from '../../lib/portfolioRe
 export function PortfolioResult({ result }: { result: PortfolioRead }) {
   if (!result.ok && result.assets.length === 0) {
     return (
-      <p className="inline-alert" role="status" data-executable="false">
-        {result.code === 'ADDRESS_REJECTED'
-          ? 'That address was not accepted. No balance was read.'
-          : result.code === 'CHAIN_MISMATCH'
-            ? 'The chain did not match BNB. No balance was read.'
-            : result.code === 'QUOTE_TIMEOUT'
-              ? 'The balance read timed out. No number is shown.'
-              : 'No balance was returned.'}
-      </p>
+      <div data-executable="false">
+        <p className="inline-alert" role="status">
+          {result.code === 'ADDRESS_REJECTED'
+            ? 'That address was not accepted. No balance was read.'
+            : result.code === 'CHAIN_MISMATCH'
+              ? 'The chain did not match BNB. No balance was read.'
+              : result.code === 'QUOTE_TIMEOUT'
+                ? 'The balance read timed out. No number is shown.'
+                : 'No balance was returned.'}
+        </p>
+        <ul className="result-links">
+          {LIVE_WITHDRAWAL_LINKS.map((link) => (
+            <li key={link.href}>
+              <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     )
   }
   return (
@@ -98,6 +109,17 @@ export default function PortfolioLookup() {
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
         {pending ? 'Reading balances' : 'Read BNB balances'}
       </button>
+      {result ? null : (
+        <ul className="result-links">
+          {LIVE_WITHDRAWAL_LINKS.map((link) => (
+            <li key={link.href}>
+              <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
       {result ? <PortfolioResult result={result} /> : null}
     </section>
   )

@@ -1,23 +1,33 @@
+import { LIVE_DEX_LINKS } from './legacyServices'
+
 export const COMMERCIAL_TOOLS = [
   {
     id: 'create-token',
     label: 'Create Token',
-    summary: 'Not operational. No chain is certified for token creation in this beta.',
+    summary: 'Opens List on the live DEX for BNB Smart Chain. This beta does not deploy a token.',
+    href: LIVE_DEX_LINKS.createToken,
+    detail: 'Create Token is the live List studio at intent create-token, chain 56. The live readiness endpoint reported the factory bound. This beta does not submit that transaction.',
   },
   {
     id: 'trend-boost',
     label: 'Trend Boost',
-    summary: 'Not operational. No checkout and no placement.',
+    summary: 'Opens Trend Boost on the live List studio. This beta does not take payment.',
+    href: LIVE_DEX_LINKS.trendBoost,
+    detail: 'Trend Boost checkout stays on the live List studio for a project you identify there. This beta does not create an order.',
   },
   {
     id: 'featured-project',
     label: 'Featured Project',
-    summary: 'Not operational. No featured placement is sold or shown.',
+    summary: 'Opens Featured checkout on the live List studio. This beta does not take payment.',
+    href: LIVE_DEX_LINKS.featured,
+    detail: 'Featured checkout stays on the live List studio for a project you identify there. This beta does not sell a placement.',
   },
   {
     id: 'premium-project',
     label: 'Premium Project Page',
-    summary: 'Not operational. No project page is published from this beta.',
+    summary: 'Opens project publishing on the live List studio. This beta does not publish a page.',
+    href: LIVE_DEX_LINKS.premiumProject,
+    detail: 'A project page is published from the live List studio, then served at /@handle. This beta does not publish one.',
   },
 ] as const
 

@@ -1,11 +1,8 @@
 import React from 'react'
-import { ToolBody } from './ToolBody'
+import { commercialTool } from '../../lib/tools'
+import { ExternalService } from './ExternalService'
 
 export default function FeaturedProject() {
-  return (
-    <ToolBody
-      title="Featured Project"
-      detail="Featured Project is not operational. This screen does not sell or show a featured placement."
-    />
-  )
+  const tool = commercialTool('featured-project')
+  return <ExternalService title={tool.label} detail={tool.detail} href={tool.href} />
 }

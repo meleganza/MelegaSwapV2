@@ -13,7 +13,7 @@ const EXPLORE_SECTION: UxSectionCopy = {
   href: '/explore',
   primary: true,
   statements: [
-    'Projects, tokens, and opportunities appear only when verified discovery data is available.',
+    'Project and token discovery opens on the live DEX. Paid Boost rows appear only from the canonical active feed.',
     'Paid Boost visibility remains clearly identified and never changes canonical project identity.',
   ],
 }

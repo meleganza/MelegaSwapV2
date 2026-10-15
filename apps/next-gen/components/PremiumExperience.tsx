@@ -1,5 +1,6 @@
 import React from 'react'
 import { AppIcon } from './AppIcon'
+import { LIVE_DEX_LINKS, marcoPublicPairs } from '../lib/legacyServices'
 import type { UxSectionCopy } from '../lib/uxSections'
 
 function TrustRow({ statements }: { statements: string[] }) {
@@ -69,7 +70,7 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
         </a>
         <a href="/explore">
           <span className="action-icon"><AppIcon name="explore" /></span>
-          <span><strong>Discover with context</strong><small>Unavailable until a verified feed is connected</small></span>
+          <span><strong>Discover with context</strong><small>Projects, tokens, and paid Boost</small></span>
           <AppIcon name="arrow" />
         </a>
       </aside>
@@ -85,13 +86,23 @@ function BridgeExperience() {
           <a href="/">Swap</a>
           <a href="/bridge" aria-current="page">Bridge</a>
         </div>
-        <span className="quiet-chip">Route unavailable</span>
+        <span className="quiet-chip">Live DEX handoff</span>
       </div>
-      <div className="bridge-route">
-        <div className="chain-panel"><small>From</small><strong>Choose origin</strong><span>No wallet connected</span></div>
-        <span className="route-line" aria-hidden="true">→</span>
-        <div className="chain-panel"><small>To</small><strong>Choose destination</strong><span>No route requested</span></div>
-      </div>
+      <ul className="facts">
+        {marcoPublicPairs().map((pair) => (
+          <li key={`${pair.fromId}-${pair.toId}`}>
+            {pair.fromLabel}
+            {pair.fromChainId === null ? '' : ` (${pair.fromChainId})`} → {pair.toLabel}
+            {pair.toChainId === null ? '' : ` (${pair.toChainId})`}
+          </li>
+        ))}
+      </ul>
+      <p className="muted-copy">
+        Leaves this beta. These pairs are the public MARCO routes. Bridge execution stays on the live DEX.
+      </p>
+      <a href={LIVE_DEX_LINKS.bridge} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+        Continue on the live MARCO bridge
+      </a>
       <div className="empty-action" data-operational="false">Bridge execution is disabled in this protected beta</div>
     </section>
   )
@@ -135,22 +146,25 @@ function PortfolioExperience({ children }: { children?: React.ReactNode }) {
   )
 }
 
-function ExploreExperience() {
+function ExploreExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Explore preview">
       <div className="surface-head">
         <div><p className="section-kicker">Discovery</p><h2>Find signal, not noise</h2></div>
-        <span className="quiet-chip">Verified sources only</span>
+        <span className="quiet-chip">Live DEX handoff</span>
       </div>
       <div className="explore-categories">
-        <div><span className="action-icon"><AppIcon name="explore" /></span><strong>Projects</strong><small>Canonical identity and clear context</small></div>
-        <div><span className="action-icon"><AppIcon name="trade" /></span><strong>Tokens</strong><small>Factual market availability only</small></div>
-        <div><span className="action-icon"><AppIcon name="earn" /></span><strong>Opportunities</strong><small>Verified earning paths</small></div>
+        <a href={LIVE_DEX_LINKS.projects} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+          <span className="action-icon"><AppIcon name="explore" /></span><strong>Projects</strong><small>Live project directory. Leaves this beta.</small>
+        </a>
+        <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>Same directory, trending sort. Leaves this beta.</small>
+        </a>
+        <a href={LIVE_DEX_LINKS.tokensBnb} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Live info for BNB Smart Chain. Leaves this beta.</small>
+        </a>
       </div>
-      <div className="empty-state compact" data-operational="false">
-        <h3>No discovery feed connected</h3>
-        <p>Trending and paid Boost placements will remain clearly labelled when canonical data becomes available.</p>
-      </div>
+      {children}
     </section>
   )
 }
@@ -162,7 +176,7 @@ export function PremiumExperience({ section, children }: { section: UxSectionCop
       {section.id === 'bridge' ? <BridgeExperience /> : null}
       {section.id === 'earn' ? <EarnExperience>{children}</EarnExperience> : null}
       {section.id === 'portfolio' ? <PortfolioExperience>{children}</PortfolioExperience> : null}
-      {section.id === 'explore' ? <ExploreExperience /> : null}
+      {section.id === 'explore' ? <ExploreExperience>{children}</ExploreExperience> : null}
       <TrustRow statements={section.statements} />
     </>
   )

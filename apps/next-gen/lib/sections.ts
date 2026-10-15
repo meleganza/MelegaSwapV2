@@ -30,7 +30,7 @@ export const SECTIONS: SectionCopy[] = [
     primary: true,
     statements: [
       'This beta does not build or send a bridge transfer.',
-      'Bridge route status is not claimed from this screen.',
+      'Public MARCO pairs are listed from the live activation table. The transfer opens on the live DEX.',
     ],
   },
   {
