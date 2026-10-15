@@ -448,7 +448,9 @@ describe('SmartSwap V2 local winner execution binding', () => {
   })
 
   it('17/18: V2 builder does not import V1 intent/signer or wallet send', () => {
-    const src = readFileSync(path.join(ENGINE, 'v2ExecutionBinding.ts'), 'utf8')
+    const src = readFileSync(path.resolve(WEB, '../../packages/smartswap-v2-prepare/src/prepare.ts'), 'utf8')
+    const facade = readFileSync(path.join(ENGINE, 'v2ExecutionBinding.ts'), 'utf8')
+    expect(facade).toContain("export * from '@melega/smartswap-v2-prepare/src/prepare'")
     expect(src).not.toMatch(/from ['"]\.\/executionIntent['"]/)
     expect(src).not.toContain('INTENT_VERSION = 1')
     expect(src).not.toContain('sendTransaction')

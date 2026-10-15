@@ -22,8 +22,9 @@ import { VENUE_HEALTH_STATE, healthSnapshot, type VenueHealthSnapshot } from './
 import { refuseV2Execution, type SmartSwapVenueAdapter, type VenueIdentity } from './venueAdapter'
 import { computeMinimumReceived, type NormalizedQuote, type QuoteHop, type SmartSwapRequest } from './quote'
 import { fetchBestV2PathQuote, v2CandidatePaths, type ShadowQuoteSource } from './shadowQuoteSource'
+import { MELEGA_DEX_VENUE_ID } from '@melega/smartswap-v2-prepare/src/melegaAddresses'
 
-export const MELEGA_DEX_VENUE_ID = 'melega-dex' as const
+export { MELEGA_DEX_VENUE_ID }
 export const MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE = 'MELEGA_DEX_NET_INPUT_QUOTE_UNAVAILABLE' as const
 export const MELEGA_DEX_FOT_UNPROVEN = 'MELEGA_DEX_FOT_UNPROVEN' as const
 export const MELEGA_DEX_EXACT_QUOTE_ROUTER_MISSING = 'MELEGA_DEX_EXACT_QUOTE_ROUTER_MISSING' as const

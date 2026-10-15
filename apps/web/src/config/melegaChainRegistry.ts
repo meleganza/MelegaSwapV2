@@ -3,6 +3,7 @@
  * Missing addresses ⇒ capability stays disabled. No cross-chain address fallbacks.
  */
 import { ChainId } from '@pancakeswap/sdk'
+export { MELEGA_BNB_FACTORY } from '@melega/smartswap-v2-prepare/src/melegaAddresses'
 
 export type MelegaChainStatus = 'LIVE' | 'PREPARING' | 'DISABLED'
 
@@ -51,7 +52,6 @@ export const MELEGA_BASE_VAULT = '0xFF8EBf8edf1C533A02d066f852788773BdCD631C'
 export const MELEGA_BASE_POOL_DEPLOY = '0x9f421c4DEDD3B5C24EFff0FCB5AD2BEa0a577E83'
 
 export const MELEGA_BNB_ROUTER = '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3'
-export const MELEGA_BNB_FACTORY = '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C'
 
 /** Canonical Melega V2 on Polygon — router.factory() verified on-chain */
 export const MELEGA_POLYGON_ROUTER = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
