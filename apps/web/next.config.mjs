@@ -58,6 +58,7 @@ const config = {
       '@pancakeswap/multicall',
       '@pancakeswap/token-lists',
       '@pancakeswap/utils',
+      '@melega/smartswap-v2-prepare',
       '@pancakeswap/tokens',
       '@pancakeswap/smart-router',
       '@wagmi',

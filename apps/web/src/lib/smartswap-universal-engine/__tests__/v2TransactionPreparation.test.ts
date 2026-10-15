@@ -411,13 +411,17 @@ describe('SmartSwap V2 unsigned transaction preparation', () => {
     expect('signature' in prepared.swapTransaction).toBe(false)
     expect('intentSigner' in prepared).toBe(false)
     expect(JSON.stringify(prepared)).not.toMatch(/engineSeal|intentSigner|"signature"/)
-    const src = readFileSync(path.join(ENGINE, 'v2ExecutionBinding.ts'), 'utf8')
+    const src = readFileSync(path.join(REPO, 'packages/smartswap-v2-prepare/src/prepare.ts'), 'utf8')
     expect(src).toContain('prepareV2UserTransactions')
     expect(src).toMatch(/buildV2ExecutionBinding\(\{/)
     expect(src).not.toContain('from \'./executionIntent\'')
     expect(src).not.toContain('Permit2')
     expect(src).not.toContain('window.ethereum')
     expect(src).not.toContain('sendTransaction')
+    const facade = readFileSync(path.join(ENGINE, 'v2ExecutionBinding.ts'), 'utf8')
+    expect(facade).toContain("export * from '@melega/smartswap-v2-prepare/src/prepare'")
+    expect(facade).not.toContain('window.ethereum')
+    expect(facade).not.toContain('sendTransaction')
   })
 
   it('9: large integers keep floor rounding and no Number precision loss', async () => {

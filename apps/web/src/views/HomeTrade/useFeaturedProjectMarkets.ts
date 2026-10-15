@@ -34,6 +34,12 @@ function featuredFromCanonical(row: CanonicalFeaturedObservation): FeaturedMarke
   }
 }
 
+/** Fallback only after the canonical snapshot settles without featured rows. */
+export function featuredMarketsFallbackKey(snapshot: { isLoading: boolean; featuredCount: number }): string | null {
+  if (snapshot.isLoading || snapshot.featuredCount > 0) return null
+  return '/api/indexer/featured-markets/'
+}
+
 /**
  * Featured Project market rows — prefer certified canonical snapshot; fall back to
  * featured-markets API. Preserves last-good factual rows across transient failures.
@@ -45,7 +51,10 @@ export function useFeaturedProjectMarkets(): {
   const marketSnapshot = useCanonicalMarketSnapshot()
   const lastGood = useRef<Record<string, FeaturedMarketRow>>({})
   const { data: fallback, isLoading: fallbackLoading } = useSWR<FeaturedMarketsResponse>(
-    marketSnapshot.featured.length ? null : '/api/indexer/featured-markets/',
+    featuredMarketsFallbackKey({
+      isLoading: marketSnapshot.isLoading,
+      featuredCount: marketSnapshot.featured.length,
+    }),
     async (url: string) => {
       const res = await fetch(url)
       if (!res.ok) throw new Error(`Featured markets unavailable (${res.status})`)

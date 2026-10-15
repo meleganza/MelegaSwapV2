@@ -1,6 +1,8 @@
 import React, { memo, startTransition, useEffect, useMemo } from 'react'
 import useHomeTradeData from './useHomeTradeData'
 import type { HomeCriticalData } from './HomeTradeDataContext'
+import HomeFarmPoll from './HomeFarmPoll'
+import { useHomeYieldVisibility } from './homeYieldVisibility'
 
 export interface HomeTradeDataRuntimeProps {
   onData: React.Dispatch<React.SetStateAction<HomeCriticalData>>
@@ -8,6 +10,7 @@ export interface HomeTradeDataRuntimeProps {
 
 /** Heavy Home market/yield producer, excluded from the critical route chunk. */
 export const HomeTradeDataRuntime: React.FC<HomeTradeDataRuntimeProps> = ({ onData }) => {
+  const yieldVisibility = useHomeYieldVisibility()
   const data = useHomeTradeData()
   const criticalData = useMemo<HomeCriticalData>(
     () => ({
@@ -36,7 +39,7 @@ export const HomeTradeDataRuntime: React.FC<HomeTradeDataRuntimeProps> = ({ onDa
     startTransition(() => onData(criticalData))
   }, [criticalData, onData])
 
-  return null
+  return <HomeFarmPoll enabled={yieldVisibility.kpiNear || yieldVisibility.discoveryNear} />
 }
 
 export default memo(HomeTradeDataRuntime)

@@ -7,8 +7,8 @@ import { PROTOCOL_FEE_STATE } from './fee'
 import { DEFAULT_LATENCY_BUDGET, collectBoundedParallel, type LatencyBudget } from './latency'
 import { computeStructuralRouteCost } from './costTaxonomy'
 import { computeNetVenueInput, evaluateRevenuePolicy } from './evaluateRevenuePolicy'
-import { computeNetUserOutput, type NetExecutionResult } from './netExecution'
-import { FEE_ASSET_SOURCE, sealSmartSwapFee, type SealedSmartSwapFee } from './quoteFee'
+import { computeNetUserOutput } from './netExecution'
+import { FEE_ASSET_SOURCE, sealSmartSwapFee } from './quoteFee'
 import { selectBestNetRoute } from './routeSelection'
 import { quoteIfCapable, type SmartSwapVenueAdapter } from './venueAdapter'
 import { quoteIsStale, type NormalizedQuote, type SmartSwapRequest } from './quote'
@@ -16,36 +16,20 @@ import { isQuoteEligible, type VenueHealthSnapshot, type VenueHealthState } from
 import { isEvmNetwork } from './domain'
 import { assetsEqual, type CanonicalAssetId } from './assetIdentity'
 import { HEALTH_EVENT, ScopedVenueHealth, classifyAdapterError, healthScopeKey } from './scopedHealth'
-import { VENUE_FEE_SEMANTICS_BY_ID, VENUE_STRUCTURAL_FEE_BPS, type VenueFeeSemantics } from './venueFeeSemantics'
+import { VENUE_FEE_SEMANTICS_BY_ID, VENUE_STRUCTURAL_FEE_BPS } from './venueFeeSemantics'
 import { cloneProductionQuote } from './productionIsolation'
-import type { RevenuePolicyAssessment } from './evaluateRevenuePolicy'
 import { MELEGA_DEX_VENUE_ID } from './melegaDexAdapter'
 import { PANCAKESWAP_VENUE_ID, UNISWAP_VENUE_ID } from './certifiedVenues'
 import { isLegacyProductionAuthoritative, isProductionCutoverAllowed } from './operatingMode'
+import { assertSingleVenueRoute, SPLIT_ROUTE_FORBIDDEN } from '@melega/smartswap-v2-prepare/src/singleVenueRoute'
+import type { ShadowCandidate } from '@melega/smartswap-v2-prepare/src/shadowCandidate'
+
+export { assertSingleVenueRoute, SPLIT_ROUTE_FORBIDDEN }
+export type { ShadowCandidate }
 
 export const CROSS_CHAIN_FORBIDDEN = 'CROSS_CHAIN_FORBIDDEN' as const
-export const SPLIT_ROUTE_FORBIDDEN = 'SPLIT_ROUTE_FORBIDDEN' as const
 export const VENUE_NET_INPUT_QUOTE_MISMATCH = 'VENUE_NET_INPUT_QUOTE_MISMATCH' as const
 export const VENUE_ROUTE_COST_UNCERTIFIED = 'VENUE_ROUTE_COST_UNCERTIFIED' as const
-
-export interface ShadowCandidate {
-  venueId: string
-  status: 'ok' | 'timeout' | 'error' | 'no_route' | 'unsupported' | 'stale' | 'skipped'
-  quote: NormalizedQuote | null
-  durationMs: number
-  originalInputAmountRaw: string | null
-  netVenueInputRaw: string | null
-  structuralRouteCostBps: number | null
-  smartSwapFeeBps: number | null
-  feeBand: string | null
-  feeEnforcementState: string
-  venueFeeSemantics: VenueFeeSemantics | null
-  sealedFee: SealedSmartSwapFee | null
-  net: NetExecutionResult | null
-  assessment: RevenuePolicyAssessment | null
-  error: string | null
-  kind: 'SYNTHETIC' | 'FACTUAL' | 'LEGACY_MELEGA' | null
-}
 
 export interface ShadowProgressiveReadiness {
   ready: boolean
@@ -161,12 +145,6 @@ function assertSameChainRequest(request: SmartSwapRequest): void {
   }
   if (request.network.chainId !== request.inputAsset.network.chainId) throw new Error(CROSS_CHAIN_FORBIDDEN)
   if (request.inputAsset.network.chainId !== request.outputAsset.network.chainId) throw new Error(CROSS_CHAIN_FORBIDDEN)
-}
-
-export function assertSingleVenueRoute(quote: NormalizedQuote): void {
-  const venues = new Set(quote.hops.map((hop) => hop.venueId))
-  if (venues.size > 1) throw new Error(SPLIT_ROUTE_FORBIDDEN)
-  if (quote.hops.some((hop) => hop.venueId !== quote.venueId)) throw new Error(SPLIT_ROUTE_FORBIDDEN)
 }
 
 function resolveVenueShadowEconomics(venueId: string, originalInputAmountRaw: string) {
