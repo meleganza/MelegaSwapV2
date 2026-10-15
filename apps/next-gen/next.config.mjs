@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    transpilePackages: ['@melega/smartswap-v2-prepare'],
+  },
   swcMinify: true,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,

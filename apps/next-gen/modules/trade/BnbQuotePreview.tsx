@@ -42,6 +42,7 @@ export default function BnbQuotePreview() {
   const [result, setResult] = React.useState<BnbQuoteResult | null>(null)
   const [pending, setPending] = React.useState(false)
   const [shadow, setShadow] = React.useState(false)
+  const [WalletPanel, setWalletPanel] = React.useState<React.ComponentType<{ quote: unknown }> | null>(null)
 
   async function onPreview() {
     setPending(true)
@@ -108,6 +109,18 @@ export default function BnbQuotePreview() {
         </button>
       ) : null}
       {result?.ok && shadow ? <ShadowReadinessPanel quote={result as FactualBnbQuote} amount={amount} /> : null}
+      {result?.ok && !WalletPanel ? (
+        <button
+          className="primary-action"
+          type="button"
+          onClick={() => {
+            void import('./BnbWalletPrepare').then((mod) => setWalletPanel(() => mod.BnbWalletPrepare))
+          }}
+        >
+          Connect BNB wallet
+        </button>
+      ) : null}
+      {result?.ok && WalletPanel ? <WalletPanel quote={result} /> : null}
     </section>
   )
 }

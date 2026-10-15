@@ -49,6 +49,7 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'pages/api/trend-boost-active.ts'),
   path.join(root, 'lib/shadowReadinessRpc.ts'),
   path.join(root, 'modules/trade/ShadowReadiness.tsx'),
+  path.join(root, 'modules/trade/BnbWalletPrepare.tsx'),
 ])
 
 test('beta source does not import the live DEX stack or open a network client', () => {
@@ -59,9 +60,10 @@ test('beta source does not import the live DEX stack or open a network client', 
   ]
   files.forEach((file) => {
     const source = readFileSync(file, 'utf8')
-    const patterns = QUOTE_EXCEPTIONS.has(file)
+    const patterns = (QUOTE_EXCEPTIONS.has(file)
       ? FORBIDDEN.filter((pattern) => pattern.source !== '\\bfetch\\s*\\(' && pattern.source !== 'eth_call' && pattern.source !== 'eth_chainId')
       : FORBIDDEN
+    ).filter((pattern) => file !== path.join(root, 'modules/trade/BnbWalletPrepare.tsx') || pattern.source !== 'window\\.ethereum')
     patterns.forEach((pattern) => {
       assert.equal(pattern.test(source), false, `${path.relative(root, file)} matched ${pattern}`)
     })
@@ -78,6 +80,12 @@ test('beta source does not import the live DEX stack or open a network client', 
   assert.equal(shadowRpc.includes('sendTransaction'), false)
   assert.equal(shadowRpc.includes('@ethersproject'), false)
   assert.match(readFileSync(path.join(root, 'modules/trade/ShadowReadiness.tsx'), 'utf8'), /fetch\('\/api\/shadow-readiness'/)
+  const wallet = readFileSync(path.join(root, 'modules/trade/BnbWalletPrepare.tsx'), 'utf8')
+  assert.equal(wallet.includes('eth_sendRawTransaction'), false)
+  assert.equal(wallet.includes('eth_sign'), false)
+  assert.equal(wallet.includes('personal_sign'), false)
+  assert.match(wallet, /eth_requestAccounts/)
+  assert.match(wallet, /eth_chainId/)
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)
   assert.equal(home.includes('modules/portfolio'), false)

@@ -4,6 +4,8 @@
  */
 
 export const EARN_CATALOG_SOURCE = 'https://api.beefy.finance'
+/** Beefy handoff URLs carry no referral. A native swap fee belongs in @melega/smartswap-v2-prepare sealedFee, not here. */
+export const MELEGA_BEEFY_HANDOFF_FEE = 0
 export const EARN_CATALOG_CHAIN_ID = 56
 export const EARN_CATALOG_LIMIT = 12
 export const EARN_CATALOG_STALE_MS = 15 * 60 * 1000

@@ -34,7 +34,9 @@ export function EarnCatalogView({ catalog, asset, protocol }: { catalog: EarnCat
               APY {formatReportedApy(opportunity.apyDecimal) ?? 'unavailable'} · TVL{' '}
               {formatReportedTvl(opportunity.tvlUsd) === null ? 'unavailable' : `${formatReportedTvl(opportunity.tvlUsd)} USD`}
             </p>
-            <p className="muted-copy">Net yield is not provided by this source. {opportunity.feeNote}</p>
+            <p className="muted-copy">
+              Melega fee: 0. This link has no referral or revenue-share parameter. Third-party: {opportunity.feeNote} Net APY is unknown.
+            </p>
             <p className="muted-copy">
               Leaves this beta. Deposit, manage, and withdraw use your wallet on Beefy for {opportunity.assets.join(' / ')} on BNB chain {opportunity.chainId}. Melega does not custody this vault or send the transaction.
             </p>
