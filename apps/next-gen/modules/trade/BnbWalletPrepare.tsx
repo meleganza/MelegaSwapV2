@@ -73,11 +73,11 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     }
   }
 
-  async function loadReview(user: string): Promise<SwapReview | null> {
+  async function loadReview(user: string, binding?: SwapReview): Promise<SwapReview | null> {
     const response = await fetch('/api/sealed-prepare', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ chainId: 56, sell, buy, amount, user, slippageBps: 50 }),
+      body: JSON.stringify({ chainId: 56, sell, buy, amount, user, slippageBps: 50, nonce: binding?.nonce ?? undefined, deadline: binding?.deadline ?? undefined }),
     })
     return (await response.json()) as SwapReview
   }
@@ -124,7 +124,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     setPending(true)
     try {
       const shown = review.approvalTx
-      const fresh = await loadReview(account)
+      const fresh = await loadReview(account, review)
       if (!fresh || !sameUserTx(shown, fresh.approvalTx) || fresh.unsignedTx) {
         setReview(fresh)
         setStatus('REPLACED')
@@ -166,7 +166,7 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     setPending(true)
     try {
       const shown = review.unsignedTx
-      const fresh = await loadReview(account)
+      const fresh = await loadReview(account, review)
       if (!fresh?.ok || !sameUserTx(shown, fresh.unsignedTx) || fresh.approvalTx || reviewAction(fresh) !== 'confirm') {
         setReview(fresh)
         setStatus(fresh?.code === 'QUOTE_STALE' || fresh?.code === 'QUOTE_EXPIRED' ? fresh.code : 'REPLACED')

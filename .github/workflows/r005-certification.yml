@@ -33,3 +33,14 @@ jobs:
       - name: Home budget
         if: success() || failure()
         run: yarn workspace @melega/next-gen budget
+      - name: Responsive Home and zero idle RPC
+        if: success()
+        run: |
+          yarn workspace @melega/next-gen start > "$RUNNER_TEMP/r005-next.log" 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:4317/ >/dev/null && break || sleep 1; done
+          CHROME_PATH="$(command -v google-chrome)" BETA_SCREENSHOT_DIR="$RUNNER_TEMP/r005-shots" node apps/next-gen/scripts/responsive-check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r005-responsive-evidence
+          path: ${{ runner.temp }}/r005-shots

@@ -17,9 +17,13 @@ export default async function sealedPrepare(req: NextApiRequest, res: NextApiRes
     buy?: unknown
     amount?: unknown
     user?: unknown
+    nonce?: unknown
+    deadline?: unknown
     slippageBps?: unknown
   }
   const result = await prepareSealedBnbSwap({
+    nonce: typeof body?.nonce === 'string' ? body.nonce : undefined,
+    deadline: typeof body?.deadline === 'number' ? body.deadline : undefined,
     chainId: typeof body?.chainId === 'number' ? body.chainId : undefined,
     sell: typeof body?.sell === 'string' ? body.sell : undefined,
     buy: typeof body?.buy === 'string' ? body.buy : undefined,

@@ -40,6 +40,8 @@ export interface SealedPreparation {
   feeBps: number | null
   feeAmountRaw: string | null
   gasUnits: string | null
+  nonce?: string | null
+  deadline?: number | null
   allowanceRaw: string | null
   venueLabel: string | null
   amountInRaw: string | null
@@ -122,7 +124,7 @@ async function defaultCompete(input: { request: SmartSwapRequest; user: string; 
 }
 
 export async function prepareSealedBnbSwap(
-  input: { chainId?: number; sell?: string; buy?: string; amount?: string; user?: string; slippageBps?: number },
+  input: { chainId?: number; sell?: string; buy?: string; amount?: string; user?: string; slippageBps?: number; nonce?: string; deadline?: number },
   deps: { now?: () => Date; compete?: Compete; allowanceRaw?: string | null } = {},
 ): Promise<SealedPreparation> {
   if (input.chainId !== 56) return closed('CHAIN_MISMATCH')
@@ -136,6 +138,10 @@ export async function prepareSealedBnbSwap(
   }
   const now = deps.now ?? (() => new Date())
   const nowIso = now().toISOString()
+  const nowSeconds = Math.floor(Date.parse(nowIso) / 1000)
+  const deadline = input.deadline ?? nowSeconds + 120
+  if (!Number.isSafeInteger(deadline) || deadline <= nowSeconds || deadline > nowSeconds + 120) return closed('QUOTE_EXPIRED')
+  if (input.nonce !== undefined && (!/^\d{1,78}$/.test(input.nonce) || BigInt(input.nonce) > (BigInt(1) << BigInt(256)) - BigInt(1))) return closed('NONCE_REJECTED')
   const request: SmartSwapRequest = {
     requestId: `next-gen:${sell.symbol}:${buy.symbol}:${amountInRaw}`,
     network: evmNetwork(56),
@@ -173,9 +179,12 @@ export async function prepareSealedBnbSwap(
     },
     allowanceReadStatus: 'ok',
     nowIso,
-    deadline: Math.floor(now().getTime() / 1000) + 120,
+    deadline,
+    nonce: input.nonce,
   })
   const summary = {
+    nonce: plan.nonce,
+    deadline,
     allowanceRaw,
     feeBps: winner.smartSwapFeeBps,
     feeAmountRaw: winner.sealedFee?.feeAmountRaw ?? null,

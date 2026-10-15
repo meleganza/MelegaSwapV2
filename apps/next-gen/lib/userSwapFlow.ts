@@ -15,6 +15,8 @@ export interface SwapReview {
   code?: string
   feeBps: number | null
   feeAmountRaw: string | null
+  nonce?: string | null
+  deadline?: number | null
   gasUnits: string | null
   venueLabel: string | null
   amountInRaw: string | null

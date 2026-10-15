@@ -98,3 +98,21 @@ test('the adapter source does not sign or recompute a fee schedule', () => {
   assert.equal(source.includes('feeBps ='), false)
   assert.match(source, /buildV2UserExecutionPlan/)
 })
+
+
+test('revalidation retains reviewed nonce and deadline across time without weakening quote checks', async () => {
+  const winner = await sealedWinner()
+  const input = {chainId:56, sell:'WBNB', buy:'USDC', amount:'0.000000000001',user:USER,slippageBps:50}
+  const deps = {compete:async()=>({shadowWinner:winner}),allowanceRaw:winner?.originalInputAmountRaw ?? '0'}
+  const initial = await prepareSealedBnbSwap(input,{...deps,now:()=>new Date(NOW)})
+  const pinned = {...input,nonce:initial.nonce ?? undefined,deadline:initial.deadline ?? undefined}
+  const later = await prepareSealedBnbSwap(pinned,{...deps,now:()=>new Date(Date.parse(NOW)+2000)})
+  assert.equal(initial.ok,true)
+  assert.equal(later.ok,true)
+  assert.equal(initial.unsignedTx?.data,later.unsignedTx?.data)
+  const expired = await prepareSealedBnbSwap(pinned,{...deps,now:()=>new Date(Date.parse(NOW)+121000)})
+  assert.equal(expired.code,'QUOTE_EXPIRED')
+  assert.equal(expired.unsignedTx,null)
+  const invalid = await prepareSealedBnbSwap({...input,nonce:'-1'},{...deps,now:()=>new Date(NOW)})
+  assert.equal(invalid.code,'NONCE_REJECTED')
+})

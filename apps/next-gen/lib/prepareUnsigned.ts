@@ -2,6 +2,7 @@
  * On-demand call into the shared preparer.
  * A getAmountsOut quote is not a sealed candidate and must fail closed.
  */
+import { assertSealedShadowCandidate, prepareV2UserTransactions } from '@melega/smartswap-v2-prepare'
 import type { PrepareV2UserTransactionsInput, ShadowCandidate } from '@melega/smartswap-v2-prepare'
 
 export interface UnsignedPreparation {
@@ -30,8 +31,7 @@ export async function prepareUnsignedFromSealed(
   if (rest.currentChainId !== 56) {
     return { ok: false, code: 'CHAIN_MISMATCH', unsignedTx: null, broadcast: false, signed: false, approved: false }
   }
-  const preparer = await import('@melega/smartswap-v2-prepare')
-  const assertSealed: (value: unknown) => asserts value is ShadowCandidate = preparer.assertSealedShadowCandidate
+  const assertSealed: (value: unknown) => asserts value is ShadowCandidate = assertSealedShadowCandidate
   try {
     assertSealed(candidate)
   } catch (error) {
@@ -44,7 +44,7 @@ export async function prepareUnsignedFromSealed(
       approved: false,
     }
   }
-  const unsignedTx = preparer.prepareV2UserTransactions({
+  const unsignedTx = prepareV2UserTransactions({
     request: rest.request as PrepareV2UserTransactionsInput['request'],
     winner: candidate,
     user: rest.user,
