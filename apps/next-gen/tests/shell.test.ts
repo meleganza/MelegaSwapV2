@@ -14,9 +14,18 @@ test('primary screens are non-operational and do not pretend to swap', () => {
   SECTIONS.filter((section) => section.id !== 'tools').forEach((section) => {
     const html = renderToStaticMarkup(React.createElement(ProductPage, { section }))
     assert.match(html, new RegExp(`<h1[^>]*>${section.title}</h1>`))
-    if (section.id === 'swap') assert.match(html, /confirm a swap in your wallet/)
-    else assert.match(html, /Not operational/)
-    assert.match(html, /data-operational="false"/)
+    if (section.id === 'swap') {
+      assert.match(html, /wallet confirmation/)
+      assert.match(html, /marco-trade\.webp/)
+      assert.match(html, /marco-welcome\.webp/)
+      assert.match(html, /marco-chat-campaign\.webp/)
+      assert.match(html, /No active sponsored placements/)
+      assert.match(html, /apps\.apple\.com\/app\/marco-chat\/id6810583763/)
+      assert.match(html, /play\.google\.com\/store\/apps\/details\?id=ai\.melega\.marcochat/)
+    }
+    else if (section.id === 'bridge') assert.match(html, /Not operational/)
+    else assert.match(html, /marco-pose/)
+    if (section.id === 'swap' || section.id === 'bridge') assert.match(html, /data-operational="false"/)
     assert.equal(html.includes('Sign and send swap'), false)
     assert.equal(html.includes('<input'), false)
     assert.equal(html.includes('Confirm swap'), false)
@@ -25,7 +34,7 @@ test('primary screens are non-operational and do not pretend to swap', () => {
     assert.match(html, />Earn</)
     assert.match(html, />Portfolio</)
     assert.match(html, />Explore</)
-    assert.match(html, /Beta — read-only/)
+    assert.match(html, /Beta/)
     assert.equal(html.includes('Protected Beta'), false)
     assert.equal(html.includes('Leave beta'), false)
     assert.equal(html.includes('Access token'), false)
@@ -37,8 +46,7 @@ test('primary screens are non-operational and do not pretend to swap', () => {
 test('earn keeps withdrawal on the live DEX and does not offer create actions', () => {
   const earn = SECTIONS.find((section) => section.id === 'earn')
   const html = renderToStaticMarkup(React.createElement(ProductPage, { section: earn! }))
-  assert.match(html, /Wallet withdrawal remains on the live DEX/)
-  assert.match(html, /Public Create Farm and Create Pool are not offered/)
+  assert.match(html, /Put your assets to work/)
   assert.equal(html.includes('href="/farms'), false)
   assert.equal(html.includes('href="/pools'), false)
 })
@@ -68,9 +76,9 @@ test('idle home does not mount the trend boost feed', () => {
   assert.equal(/useEffect\s*\(/.test(shell), false)
 })
 
-test('the visible shell states read-only beta without a password', () => {
+test('the visible shell states protected beta without a password', () => {
   const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS[0] }))
-  assert.match(html, /Beta — read-only/)
+  assert.match(html, /Protected beta/)
   assert.equal(html.includes('Protected Beta'), false)
   assert.equal(html.includes('type="password"'), false)
   assert.equal(html.includes('Access token'), false)
@@ -87,4 +95,15 @@ test('the shell carries MelegaDex Evo branding, Tools, and canonical resource li
   assert.match(html, /https:\/\/docs\.melega\.finance\//)
   assert.match(html, /https:\/\/x\.com\/meleganews/)
   assert.match(html, /https:\/\/t\.me\/melegacommunity/)
+})
+
+test('refined product screens use one lazy canonical mascot and concise copy', () => {
+  for (const id of ['earn', 'portfolio'] as const) {
+    const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS.find((item) => item.id === id)! }))
+    assert.equal(html.match(/class="marco-pose"/g)?.length, 1)
+    assert.match(html, /loading="lazy"/)
+    assert.match(html, /decoding="async"/)
+    assert.match(html, /aria-hidden="true" width="300" height="320"/)
+    for (const phrase of ['allocPoint', 'Farm pid', 'Chain 56', 'Total portfolio value', 'Not loaded']) assert.equal(html.includes(phrase), false)
+  }
 })

@@ -18,19 +18,20 @@ export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; now
   return (
     <div data-operational="false" data-executable="false" data-quote="factual">
       <p className="inline-alert" role="status">
-        {stale ? 'Stale preview' : 'Read-only preview'}
+        {stale ? 'Quote expired — refresh to continue' : 'Quote ready'}
       </p>
       <ul className="result-list">
         <li>Venue: {result.venueLabel}</li>
         <li>
           Output: {formatUnits(result.amountOutRaw, 18)} {result.buy}
         </li>
-        <li>Raw output: {result.amountOutRaw}</li>
-        <li>Quoted at {result.quotedAt}. A preview older than {result.staleAfterMs / 1000} seconds is stale.</li>
-        <li>Price impact and gas are omitted because this read did not return them.</li>
-        <li>Melega protocol fee collection is not certified. This preview does not collect a fee.</li>
-        <li>Not executable. No wallet, approval, or signature.</li>
       </ul>
+      <details className="quote-details"><summary>Quote details &amp; conditions</summary><ul className="result-list">
+        <li>Raw output: {result.amountOutRaw}</li>
+        <li>Quoted at {result.quotedAt}. Refresh after {result.staleAfterMs / 1000} seconds.</li>
+        <li>Price impact and gas are unavailable when the route does not return them.</li>
+        <li>This preview does not add a Melega protocol fee.</li>
+      </ul></details>
     </div>
   )
 }
@@ -72,7 +73,7 @@ export default function BnbQuotePreview() {
 
   return (
     <section className="quote-panel" aria-labelledby="quote-title">
-      <div className="panel-title"><div><p className="section-kicker">Read-only route</p><h2 id="quote-title">BNB quote preview</h2></div><span className="quiet-chip">No execution</span></div>
+      <div className="panel-title"><div><p className="section-kicker">Review route</p><h2 id="quote-title">Swap quote</h2></div><span className="quiet-chip">BNB Chain</span></div>
       <div className="quote-grid">
         <label htmlFor="quote-sell">
           Sell
@@ -100,7 +101,7 @@ export default function BnbQuotePreview() {
         </label>
       </div>
       <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>
-        {pending ? 'Reading quote' : 'Preview quote'}
+        {pending ? 'Finding route' : 'Get quote'}
       </button>
       {result ? <QuoteResultView result={result} nowMs={Date.now()} /> : null}
       {result?.ok && !shadow ? (
@@ -117,7 +118,7 @@ export default function BnbQuotePreview() {
             void import('./BnbWalletPrepare').then((mod) => setWalletPanel(() => mod.BnbWalletPrepare))
           }}
         >
-          Connect BNB wallet
+          Connect Wallet
         </button>
       ) : null}
       {result?.ok && WalletPanel ? <WalletPanel sell={sell} buy={buy} amount={amount} /> : null}

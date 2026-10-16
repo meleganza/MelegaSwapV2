@@ -1,0 +1,209 @@
+{
+  "report": [
+    {
+      "route": "/",
+      "width": 320,
+      "scroll": 320,
+      "mascots": 0,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nSwap\n\nBeta — read-only until you confirm a swap in your wallet.\n\nSwap\nBridge\nBNB Chain\nYou pay\n0.00\nBNB\nBalance unavailable in read-only mode\n↓\nYou receive\n0.00\nSelect token\nBest factual net output appears after a quote\nOpen read-only quote\n\nYOUR NEXT MOVE\n\nPut assets to work\nReview verified yield opportunities\nUnderstand your holdings\nRead balances without connecting a wallet\nDiscover with context\nProjects, tokens, and paid Boost\n✓\nMultichain swap execution is not claimed.\n✓\nA Melega protocol fee is not certified as collected, and this preview does not collect one.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/earn",
+      "width": 320,
+      "scroll": 320,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nEarn\n\nPut your assets to work.\n\nEarn opportunities\nBNB Chain\nAsset\nAll assets\nBTCB\nCAKE\nDOGE\nETH\nSOL\nUSDC\nUSDT\nWBNB\nXVS\nslisBNB\nProtocol\nAll protocols\nPancakeSwap\n\nBNB Chain · Vaults by Beefy · Manage funds on Beefy ↗\n\ns\nslisBNB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n0.02%\nTVL\n$117,773.25\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n17.64%\nTVL\n$99,853.91\nOpen on Beefy ↗\nFees, source & conditions\nW\nWBNB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n17.13%\nTVL\n$82,609.12\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / USDT\n\nBeefy · PancakeSwap\n\nAPY\n22.65%\nTVL\n$80,561.12\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n8.57%\nTVL\n$57,964.35\nOpen on Beefy ↗\nFees, source & conditions\nE\nETH / USDT\n\nBeefy · PancakeSwap\n\nAPY\n33.92%\nTVL\n$52,601.86\nOpen on Beefy ↗\nFees, source & conditions\nD\nDOGE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n3.71%\nTVL\n$47,632.6\nOpen on Beefy ↗\nFees, source & conditions\nS\nSOL / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n14.39%\nTVL\n$44,666.14\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n6.39%\nTVL\n$24,636.54\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDC / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n15.10%\nTVL\n$23,161.85\nOpen on Beefy ↗\nFees, source & conditions\nX\nXVS / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n9.88%\nTVL\n$20,011.33\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDT / USDC\n\nBeefy · PancakeSwap\n\nAPY\n7.85%\nTVL\n$15,214.51\nOpen on Beefy ↗\nFees, source & conditions\nFind my Beefy positions\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/earn-catalog"
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "width": 320,
+      "scroll": 320,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nPortfolio\n\nYour assets. One clear view.\n\nYour assets\n\nView supported BNB balances by public address.\n\nView balances\n\nWallet connection is available in Trade. Portfolio uses public address lookup.\n\nEarn positions\n\nCheck balances for the listed Beefy vaults.\n\nFind Beefy positions\nLegacy positions\n\nManage and withdraw on the live DEX ↗\n\nLiquidity ↗\nFarms ↗\nPools ↗\nCoverage & valuation\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/explore",
+      "width": 320,
+      "scroll": 320,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nExplore\n\nDiscover your next move.\n\nProjects ↗\nExplore the ecosystem\nTrending ↗\nSee what is moving\nTokens ↗\nBrowse BNB Chain\n\nDirectories open on the live DEX.\n\nBoost\nSponsored\n\nNo active Boost placements.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/trend-boost-active"
+      ]
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "scroll": 390,
+      "mascots": 0,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nSwap\n\nBeta — read-only until you confirm a swap in your wallet.\n\nSwap\nBridge\nBNB Chain\nYou pay\n0.00\nBNB\nBalance unavailable in read-only mode\n↓\nYou receive\n0.00\nSelect token\nBest factual net output appears after a quote\nOpen read-only quote\n\nYOUR NEXT MOVE\n\nPut assets to work\nReview verified yield opportunities\nUnderstand your holdings\nRead balances without connecting a wallet\nDiscover with context\nProjects, tokens, and paid Boost\n✓\nMultichain swap execution is not claimed.\n✓\nA Melega protocol fee is not certified as collected, and this preview does not collect one.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/earn",
+      "width": 390,
+      "scroll": 390,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nEarn\n\nPut your assets to work.\n\nEarn opportunities\nBNB Chain\nAsset\nAll assets\nBTCB\nCAKE\nDOGE\nETH\nSOL\nUSDC\nUSDT\nWBNB\nXVS\nslisBNB\nProtocol\nAll protocols\nPancakeSwap\n\nBNB Chain · Vaults by Beefy · Manage funds on Beefy ↗\n\ns\nslisBNB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n0.02%\nTVL\n$117,773.25\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n17.66%\nTVL\n$99,853.91\nOpen on Beefy ↗\nFees, source & conditions\nW\nWBNB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n17.18%\nTVL\n$82,609.12\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / USDT\n\nBeefy · PancakeSwap\n\nAPY\n22.56%\nTVL\n$80,561.12\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n8.56%\nTVL\n$57,964.35\nOpen on Beefy ↗\nFees, source & conditions\nE\nETH / USDT\n\nBeefy · PancakeSwap\n\nAPY\n33.94%\nTVL\n$52,601.86\nOpen on Beefy ↗\nFees, source & conditions\nD\nDOGE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n3.71%\nTVL\n$47,632.6\nOpen on Beefy ↗\nFees, source & conditions\nS\nSOL / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n14.44%\nTVL\n$44,666.14\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n6.39%\nTVL\n$24,636.54\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDC / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n15.14%\nTVL\n$23,161.85\nOpen on Beefy ↗\nFees, source & conditions\nX\nXVS / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n9.88%\nTVL\n$20,011.33\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDT / USDC\n\nBeefy · PancakeSwap\n\nAPY\n7.87%\nTVL\n$15,214.51\nOpen on Beefy ↗\nFees, source & conditions\nFind my Beefy positions\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/earn-catalog"
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "width": 390,
+      "scroll": 390,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nPortfolio\n\nYour assets. One clear view.\n\nYour assets\n\nView supported BNB balances by public address.\n\nView balances\n\nWallet connection is available in Trade. Portfolio uses public address lookup.\n\nEarn positions\n\nCheck balances for the listed Beefy vaults.\n\nFind Beefy positions\nLegacy positions\n\nManage and withdraw on the live DEX ↗\n\nLiquidity ↗\nFarms ↗\nPools ↗\nCoverage & valuation\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/explore",
+      "width": 390,
+      "scroll": 390,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nExplore\n\nDiscover your next move.\n\nProjects ↗\nExplore the ecosystem\nTrending ↗\nSee what is moving\nTokens ↗\nBrowse BNB Chain\n\nDirectories open on the live DEX.\n\nBoost\nSponsored\n\nNo active Boost placements.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/trend-boost-active",
+        "http://127.0.0.1:4323/api/trend-boost-active"
+      ]
+    },
+    {
+      "route": "/",
+      "width": 430,
+      "scroll": 430,
+      "mascots": 0,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nSwap\n\nBeta — read-only until you confirm a swap in your wallet.\n\nSwap\nBridge\nBNB Chain\nYou pay\n0.00\nBNB\nBalance unavailable in read-only mode\n↓\nYou receive\n0.00\nSelect token\nBest factual net output appears after a quote\nOpen read-only quote\n\nYOUR NEXT MOVE\n\nPut assets to work\nReview verified yield opportunities\nUnderstand your holdings\nRead balances without connecting a wallet\nDiscover with context\nProjects, tokens, and paid Boost\n✓\nMultichain swap execution is not claimed.\n✓\nA Melega protocol fee is not certified as collected, and this preview does not collect one.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/earn",
+      "width": 430,
+      "scroll": 430,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nEarn\n\nPut your assets to work.\n\nEarn opportunities\nBNB Chain\nAsset\nAll assets\nBTCB\nCAKE\nDOGE\nETH\nSOL\nUSDC\nUSDT\nWBNB\nXVS\nslisBNB\nProtocol\nAll protocols\nPancakeSwap\n\nBNB Chain · Vaults by Beefy · Manage funds on Beefy ↗\n\ns\nslisBNB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n0.02%\nTVL\n$117,773.25\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n17.66%\nTVL\n$99,853.91\nOpen on Beefy ↗\nFees, source & conditions\nW\nWBNB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n17.18%\nTVL\n$82,609.12\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / USDT\n\nBeefy · PancakeSwap\n\nAPY\n22.56%\nTVL\n$80,561.12\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n8.56%\nTVL\n$57,964.35\nOpen on Beefy ↗\nFees, source & conditions\nE\nETH / USDT\n\nBeefy · PancakeSwap\n\nAPY\n33.94%\nTVL\n$52,601.86\nOpen on Beefy ↗\nFees, source & conditions\nD\nDOGE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n3.71%\nTVL\n$47,632.6\nOpen on Beefy ↗\nFees, source & conditions\nS\nSOL / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n14.44%\nTVL\n$44,666.14\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n6.39%\nTVL\n$24,636.54\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDC / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n15.14%\nTVL\n$23,161.85\nOpen on Beefy ↗\nFees, source & conditions\nX\nXVS / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n9.88%\nTVL\n$20,011.33\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDT / USDC\n\nBeefy · PancakeSwap\n\nAPY\n7.87%\nTVL\n$15,214.51\nOpen on Beefy ↗\nFees, source & conditions\nFind my Beefy positions\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/earn-catalog"
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "width": 430,
+      "scroll": 430,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nPortfolio\n\nYour assets. One clear view.\n\nYour assets\n\nView supported BNB balances by public address.\n\nView balances\n\nWallet connection is available in Trade. Portfolio uses public address lookup.\n\nEarn positions\n\nCheck balances for the listed Beefy vaults.\n\nFind Beefy positions\nLegacy positions\n\nManage and withdraw on the live DEX ↗\n\nLiquidity ↗\nFarms ↗\nPools ↗\nCoverage & valuation\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/explore",
+      "width": 430,
+      "scroll": 430,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nExplore\n\nDiscover your next move.\n\nProjects ↗\nExplore the ecosystem\nTrending ↗\nSee what is moving\nTokens ↗\nBrowse BNB Chain\n\nDirectories open on the live DEX.\n\nBoost\nSponsored\n\nNo active Boost placements.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/trend-boost-active",
+        "http://127.0.0.1:4323/api/trend-boost-active"
+      ]
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "scroll": 768,
+      "mascots": 0,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nSwap\n\nBeta — read-only until you confirm a swap in your wallet.\n\nSwap\nBridge\nBNB Chain\nYou pay\n0.00\nBNB\nBalance unavailable in read-only mode\n↓\nYou receive\n0.00\nSelect token\nBest factual net output appears after a quote\nOpen read-only quote\n\nNo wallet, signature, approval, or transaction.\n\nSmartSwap clarity\nVenue, impact, gas, and slippage appear only when factual.\n\nYOUR NEXT MOVE\n\nPut assets to work\nReview verified yield opportunities\nUnderstand your holdings\nRead balances without connecting a wallet\nDiscover with context\nProjects, tokens, and paid Boost\n✓\nMultichain swap execution is not claimed.\n✓\nA Melega protocol fee is not certified as collected, and this preview does not collect one.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/earn",
+      "width": 768,
+      "scroll": 768,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nEarn\n\nPut your assets to work.\n\nEarn opportunities\nBNB Chain\nAsset\nAll assets\nBTCB\nCAKE\nDOGE\nETH\nSOL\nUSDC\nUSDT\nWBNB\nXVS\nslisBNB\nProtocol\nAll protocols\nPancakeSwap\n\nBNB Chain · Vaults by Beefy · Manage funds on Beefy ↗\n\ns\nslisBNB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n0.02%\nTVL\n$117,773.25\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n17.66%\nTVL\n$99,853.91\nOpen on Beefy ↗\nFees, source & conditions\nW\nWBNB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n17.18%\nTVL\n$82,609.12\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / USDT\n\nBeefy · PancakeSwap\n\nAPY\n22.56%\nTVL\n$80,561.12\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n8.56%\nTVL\n$57,964.35\nOpen on Beefy ↗\nFees, source & conditions\nE\nETH / USDT\n\nBeefy · PancakeSwap\n\nAPY\n33.94%\nTVL\n$52,601.86\nOpen on Beefy ↗\nFees, source & conditions\nD\nDOGE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n3.71%\nTVL\n$47,632.6\nOpen on Beefy ↗\nFees, source & conditions\nS\nSOL / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n14.44%\nTVL\n$44,666.14\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n6.39%\nTVL\n$24,636.54\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDC / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n15.14%\nTVL\n$23,161.85\nOpen on Beefy ↗\nFees, source & conditions\nX\nXVS / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n9.88%\nTVL\n$20,011.33\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDT / USDC\n\nBeefy · PancakeSwap\n\nAPY\n7.87%\nTVL\n$15,214.51\nOpen on Beefy ↗\nFees, source & conditions\nFind my Beefy positions\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/earn-catalog"
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "width": 768,
+      "scroll": 768,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nPortfolio\n\nYour assets. One clear view.\n\nYour assets\n\nView supported BNB balances by public address.\n\nView balances\n\nWallet connection is available in Trade. Portfolio uses public address lookup.\n\nEarn positions\n\nCheck balances for the listed Beefy vaults.\n\nFind Beefy positions\nLegacy positions\n\nManage and withdraw on the live DEX ↗\n\nLiquidity ↗\nFarms ↗\nPools ↗\nCoverage & valuation\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": []
+    },
+    {
+      "route": "/explore",
+      "width": 768,
+      "scroll": 768,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\n\nMELEGADEX EVO\n\nExplore\n\nDiscover your next move.\n\nProjects ↗\nExplore the ecosystem\nTrending ↗\nSee what is moving\nTokens ↗\nBrowse BNB Chain\n\nDirectories open on the live DEX.\n\nBoost\nSponsored\n\nNo active Boost placements.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTrade\nEarn\nPortfolio\nExplore\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/trend-boost-active",
+        "http://127.0.0.1:4323/api/trend-boost-active"
+      ]
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "scroll": 1440,
+      "mascots": 0,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nTrade\nEarn\nPortfolio\nExplore\nTools\nBeta\n\nMelegaDex Evo\n\nBeta\nSwap\n\nBeta — read-only until you confirm a swap in your wallet.\n\nSwap\nBridge\nBNB Chain\nYou pay\n0.00\nBNB\nBalance unavailable in read-only mode\n↓\nYou receive\n0.00\nSelect token\nBest factual net output appears after a quote\nOpen read-only quote\n\nNo wallet, signature, approval, or transaction.\n\nSmartSwap clarity\nVenue, impact, gas, and slippage appear only when factual.\n\nYOUR NEXT MOVE\n\nPut assets to work\nReview verified yield opportunities\nUnderstand your holdings\nRead balances without connecting a wallet\nDiscover with context\nProjects, tokens, and paid Boost\n✓\nMultichain swap execution is not claimed.\n✓\nA Melega protocol fee is not certified as collected, and this preview does not collect one.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTools",
+      "api": []
+    },
+    {
+      "route": "/earn",
+      "width": 1440,
+      "scroll": 1440,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nTrade\nEarn\nPortfolio\nExplore\nTools\nBeta\n\nMelegaDex Evo\n\nBeta\n\nMELEGADEX EVO\n\nEarn\n\nPut your assets to work.\n\nEarn opportunities\nBNB Chain\nAsset\nAll assets\nBTCB\nCAKE\nDOGE\nETH\nSOL\nUSDC\nUSDT\nWBNB\nXVS\nslisBNB\nProtocol\nAll protocols\nPancakeSwap\n\nBNB Chain · Vaults by Beefy · Manage funds on Beefy ↗\n\ns\nslisBNB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n0.02%\nTVL\n$117,773.25\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n17.64%\nTVL\n$99,853.91\nOpen on Beefy ↗\nFees, source & conditions\nW\nWBNB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n17.13%\nTVL\n$82,609.12\nOpen on Beefy ↗\nFees, source & conditions\nC\nCAKE / USDT\n\nBeefy · PancakeSwap\n\nAPY\n22.65%\nTVL\n$80,561.12\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / USDT\n\nBeefy · PancakeSwap\n\nAPY\n8.57%\nTVL\n$57,964.35\nOpen on Beefy ↗\nFees, source & conditions\nE\nETH / USDT\n\nBeefy · PancakeSwap\n\nAPY\n33.92%\nTVL\n$52,601.86\nOpen on Beefy ↗\nFees, source & conditions\nD\nDOGE / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n3.71%\nTVL\n$47,632.6\nOpen on Beefy ↗\nFees, source & conditions\nS\nSOL / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n14.39%\nTVL\n$44,666.14\nOpen on Beefy ↗\nFees, source & conditions\nB\nBTCB / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n6.39%\nTVL\n$24,636.54\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDC / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n15.10%\nTVL\n$23,161.85\nOpen on Beefy ↗\nFees, source & conditions\nX\nXVS / WBNB\n\nBeefy · PancakeSwap\n\nAPY\n9.88%\nTVL\n$20,011.33\nOpen on Beefy ↗\nFees, source & conditions\nU\nUSDT / USDC\n\nBeefy · PancakeSwap\n\nAPY\n7.85%\nTVL\n$15,214.51\nOpen on Beefy ↗\nFees, source & conditions\nFind my Beefy positions\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/earn-catalog"
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "width": 1440,
+      "scroll": 1440,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nTrade\nEarn\nPortfolio\nExplore\nTools\nBeta\n\nMelegaDex Evo\n\nBeta\n\nMELEGADEX EVO\n\nPortfolio\n\nYour assets. One clear view.\n\nYour assets\n\nView supported BNB balances by public address.\n\nView balances\n\nWallet connection is available in Trade. Portfolio uses public address lookup.\n\nEarn positions\n\nCheck balances for the listed Beefy vaults.\n\nFind Beefy positions\nLegacy positions\n\nManage and withdraw on the live DEX ↗\n\nLiquidity ↗\nFarms ↗\nPools ↗\nCoverage & valuation\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTools",
+      "api": []
+    },
+    {
+      "route": "/explore",
+      "width": 1440,
+      "scroll": 1440,
+      "mascots": 1,
+      "loaded": true,
+      "text": "Skip to content\nMelegaDex\nEvo\nTrade\nEarn\nPortfolio\nExplore\nTools\nBeta\n\nMelegaDex Evo\n\nBeta\n\nMELEGADEX EVO\n\nExplore\n\nDiscover your next move.\n\nProjects ↗\nExplore the ecosystem\nTrending ↗\nSee what is moving\nTokens ↗\nBrowse BNB Chain\n\nDirectories open on the live DEX.\n\nBoost\nSponsored\n\nNo active Boost placements.\n\n© Melega Finance\n\nDocs\nX\nTelegram\nLive DEX\nTools",
+      "api": [
+        "http://127.0.0.1:4323/api/trend-boost-active",
+        "http://127.0.0.1:4323/api/trend-boost-active"
+      ]
+    }
+  ],
+  "errors": []
+}

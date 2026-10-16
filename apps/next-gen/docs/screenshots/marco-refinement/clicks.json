@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "earn": 12,
+      "filters": true,
+      "disclosure": true
+    },
+    {
+      "portfolioInvalid": true
+    },
+    {
+      "beefyInvalid": true
+    },
+    {
+      "exploreLinks": [
+        "https://www.melega.finance/projects",
+        "https://www.melega.finance/projects?sort=trending",
+        "https://www.melega.finance/info/bsc"
+      ]
+    },
+    {
+      "tradeCtaAboveNav": true
+    }
+  ],
+  "errors": []
+}

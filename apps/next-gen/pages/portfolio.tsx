@@ -8,13 +8,6 @@ export default function PortfolioPage() {
   return (
     <ProductPage section={sectionById('portfolio')}>
       <PortfolioGate />
-      <section className="quote-panel" aria-labelledby="portfolio-beefy-title">
-        <h2 id="portfolio-beefy-title">Beefy receipts</h2>
-        <p className="muted-copy">
-          This page does not scan Beefy. Listed BNB receipt balances are read on Earn after you submit a public address. No position is assumed.
-        </p>
-        <a href="/earn#beefy-positions">Read listed Beefy receipts on Earn</a>
-      </section>
     </ProductPage>
   )
 }
