@@ -51,3 +51,52 @@ export function marcoPayReviewErrorMessage(payload: { error?: unknown; message?:
   if (message) return message
   return MARCO_PAY_PROVIDER_UNAVAILABLE
 }
+
+export const MARCO_PAY_WALLET_COPY = {
+  cancelled: 'Payment cancelled — you can continue.',
+  insufficientMarco: 'This wallet does not hold enough MARCO on BNB Smart Chain for this order. MARCO Pay was not charged.',
+  insufficientGas: 'This wallet does not hold enough BNB to pay the network fee. MARCO Pay was not charged.',
+  reverted: 'The MARCO transfer would fail on BNB Smart Chain. MARCO Pay was not charged.',
+  rpcUnavailable: 'BNB Smart Chain did not respond. Check your wallet activity before paying again.',
+  notSent: 'The wallet did not confirm the MARCO transfer. Check your wallet activity before paying again.',
+} as const
+
+function walletErrorText(cause: unknown): { code: unknown; text: string } {
+  if (cause && typeof cause === 'object') {
+    const record = cause as { code?: unknown; message?: unknown; reason?: unknown; error?: { message?: unknown } }
+    const parts = [record.message, record.reason, record.error?.message].filter(
+      (part): part is string => typeof part === 'string',
+    )
+    return { code: record.code, text: parts.join(' ') }
+  }
+  return { code: undefined, text: typeof cause === 'string' ? cause : '' }
+}
+
+/**
+ * Wallet-side failures while sending the MARCO transfer. None of these is a
+ * MARCO Pay outage. Only failures that happen before broadcast (rejection,
+ * balance, gas, simulated revert) state that nothing was charged.
+ */
+export function marcoPayWalletErrorMessage(cause: unknown): {
+  kind: keyof typeof MARCO_PAY_WALLET_COPY | 'other'
+  message: string
+} {
+  const { code, text } = walletErrorText(cause)
+  if (code === 4001 || code === 'ACTION_REJECTED' || /reject|denied|cancel/i.test(text)) {
+    return { kind: 'cancelled', message: MARCO_PAY_WALLET_COPY.cancelled }
+  }
+  if (/transfer amount exceeds balance|exceeds balance|insufficient balance/i.test(text)) {
+    return { kind: 'insufficientMarco', message: MARCO_PAY_WALLET_COPY.insufficientMarco }
+  }
+  if (code === 'INSUFFICIENT_FUNDS' || /insufficient funds/i.test(text)) {
+    return { kind: 'insufficientGas', message: MARCO_PAY_WALLET_COPY.insufficientGas }
+  }
+  if (code === 'UNPREDICTABLE_GAS_LIMIT' || code === 'CALL_EXCEPTION' || /execution reverted/i.test(text)) {
+    return { kind: 'reverted', message: MARCO_PAY_WALLET_COPY.reverted }
+  }
+  if (code === 'TIMEOUT' || code === 'NETWORK_ERROR' || code === 'SERVER_ERROR' || /timeout|timed out|failed to fetch|network error/i.test(text)) {
+    return { kind: 'rpcUnavailable', message: MARCO_PAY_WALLET_COPY.rpcUnavailable }
+  }
+  const firstSentence = text.split(/\s\[\s*See:|\s\(reason=|\s\(error=/)[0].trim()
+  return { kind: 'other', message: firstSentence || MARCO_PAY_WALLET_COPY.notSent }
+}

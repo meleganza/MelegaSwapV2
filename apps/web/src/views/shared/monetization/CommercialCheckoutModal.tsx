@@ -59,7 +59,11 @@ import {
   refreshMCreditsQuote,
 } from 'lib/mcredits/passportState'
 import { loadMCreditsReceipt, saveMCreditsReceipt } from 'lib/mcredits/receipt'
-import { isMarcoPayPreparedOrderCurrent, marcoPayReviewErrorMessage } from 'lib/marco-pay/preparedCheckout'
+import {
+  isMarcoPayPreparedOrderCurrent,
+  marcoPayReviewErrorMessage,
+  marcoPayWalletErrorMessage,
+} from 'lib/marco-pay/preparedCheckout'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
 import { fetchMarcoPayReadiness, type MarcoPayReadiness } from 'lib/marco-pay/clientReadiness'
 import {
@@ -2373,19 +2377,20 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           setSubmittedTxHash(transaction.hash)
           setQuoteSummary(`Transaction submitted · ${transaction.hash} · verifying MARCO settlement`)
         } catch (cause) {
-          const message = cause instanceof Error ? cause.message : String(cause)
-          if (/reject|denied|cancel/i.test(message)) {
+          const raw = cause instanceof Error ? cause.message : String(cause)
+          if (raw === RC_COPY.wrongNetwork) {
+            setWalletStage('switch_network')
+            setError(raw)
+            return
+          }
+          const classified = raw === RC_COPY.walletUnavailable ? null : marcoPayWalletErrorMessage(cause)
+          if (classified?.kind === 'cancelled') {
             setStatus('cancelled')
             setWalletStage('cancelled')
             setError(RC_COPY.paymentCancelled)
             return
           }
-          if (message === RC_COPY.wrongNetwork) {
-            setWalletStage('switch_network')
-            setError(message)
-            return
-          }
-          setError(message)
+          setError(classified ? classified.message : raw)
           setWalletStage('error')
           const order = marcoPayOrderRef.current
           if (order?.paymentId && order.approvalUrl && !signer) {
@@ -2464,7 +2469,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             Cancel
           </GhostBtn>
         )}
-        {step === 'review' && hidePaymentAction ? null : step === 'review' && !buyerWallet && !isMarcoPay && !isMCredits ? (
+        {step === 'review' && hidePaymentAction ? null : step === 'review' && !buyerWallet && !isMCredits ? (
           <CheckoutConnectBtn data-testid="commercial-checkout-connect">Connect Wallet</CheckoutConnectBtn>
         ) : step === 'review' ? (
           <SecurePrimaryBtn
