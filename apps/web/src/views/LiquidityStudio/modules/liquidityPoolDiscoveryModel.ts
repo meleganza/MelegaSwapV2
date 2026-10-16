@@ -9,6 +9,7 @@ import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import { getAllAssets } from 'registry/assets/getAllAssets'
 import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
 import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
+import { buildExplorePoolAddHref, explorePoolContractUrl } from './explorePoolClick'
 
 const ASSET_SYMBOL_BY_ADDRESS: Map<string, string> = (() => {
   const map = new Map<string, string>()
@@ -96,6 +97,8 @@ export type DiscoveryPoolCardModel = {
   metricSourceNote?: string
   lastVerified?: string
   addHref: string
+  /** Canonical chain explorer address page for this LP pair. Null when the chain or pair is not real. */
+  explorerHref: string | null
   classification: ClassifiedAmmPair['classification']
   qualityScore: number
 }
@@ -179,7 +182,17 @@ export function isPoolActive(pair: ClassifiedAmmPair, metrics?: DiscoveryPoolMet
   return resolveDiscoveryStatus(pair, metrics).active
 }
 
-export function buildAddLiquidityHref(token0?: string, token1?: string): string {
+export function buildAddLiquidityHref(
+  token0?: string,
+  token1?: string,
+  chainId?: number,
+  pairAddress?: string,
+  symbol0?: string,
+  symbol1?: string,
+): string {
+  if (chainId != null) {
+    return buildExplorePoolAddHref({ chainId, pairAddress, token0, token1, symbol0, symbol1 })
+  }
   if (token0 && token1 && token0.length === 42 && token1.length === 42) {
     return `/add/${token0}/${token1}`
   }
@@ -272,7 +285,15 @@ export function toDiscoveryCard(
         .filter(Boolean)
         .join(' · ') || undefined,
     lastVerified: pair.lastVerified,
-    addHref: buildAddLiquidityHref(pair.token0, pair.token1),
+    addHref: buildExplorePoolAddHref({
+      chainId,
+      pairAddress: pair.pairAddress,
+      token0: pair.token0,
+      token1: pair.token1,
+      symbol0,
+      symbol1,
+    }),
+    explorerHref: explorePoolContractUrl(chainId, pair.pairAddress),
     classification: pair.classification,
     qualityScore,
   }
