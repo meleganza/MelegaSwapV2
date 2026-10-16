@@ -12,6 +12,7 @@ import {
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
+import { AdvancedConsoleMenu } from 'app-shell/components/AdvancedConsoleMenu'
 import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
@@ -394,6 +395,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           {GLOBAL_HEADER_NAV.map((item) => {
             const active = isNavActive(item, resolvedPath)
             if (item.kind === 'link') {
+              const open = openMenu === item.id
               return (
                 <NavItemWrap key={item.id}>
                   <NavLink
@@ -413,6 +415,32 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                     {item.label}
                     {item.badge === 'NEW' ? <NewBadge aria-label="New">NEW</NewBadge> : null}
                   </NavLink>
+                  {item.items?.length ? (
+                    <NavTrigger
+                      type="button"
+                      $active={active}
+                      $open={open}
+                      aria-label={`Open ${item.label} menu`}
+                      aria-haspopup="menu"
+                      aria-expanded={open}
+                      data-testid={`melega-header-nav-${item.id}-menu`}
+                      onClick={() => setOpenMenu(open ? null : item.id)}
+                    >
+                      <Chevron $open={open}>
+                        <IconChevronDown />
+                      </Chevron>
+                    </NavTrigger>
+                  ) : null}
+                  {open && item.items?.length ? (
+                    <HeaderNavDropdown
+                      items={item.items}
+                      width={item.menuWidth ?? 220}
+                      pathname={resolvedPath}
+                      query={query}
+                      onClose={closeMenus}
+                      onNavigate={closeMenus}
+                    />
+                  ) : null}
                 </NavItemWrap>
               )
             }
@@ -456,6 +484,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
         </SearchRegion>
 
         <RightCluster data-testid="melega-header-actions">
+          <AdvancedConsoleMenu placement="header" />
           <div className="melega-shell-network" data-testid="melega-header-chain">
             <NetworkSwitcher />
           </div>
