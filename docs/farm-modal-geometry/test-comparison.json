@@ -1,0 +1,32 @@
+{
+  "baselinePassed": 161,
+  "baselineFailed": 22,
+  "afterPassed": 161,
+  "afterFailed": 22,
+  "newFailures": [],
+  "sameFailureIdentities": true,
+  "failures": [
+    "src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > archives Founder mockup with recorded SHA-256 and dimensions",
+    "src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > freezes current /farms mount as LEGACY_IMPLEMENTATION without cutover",
+    "src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > locks canonical farm status vocabulary and user actions",
+    "src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > validates ownership map, runtime boundaries, dependencies, and report",
+    "src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > keeps Architecture 000 Founder mockup byte-identical",
+    "src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > ownership map records Module 001 file assignment",
+    "src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > keeps Architecture 000 mockup and Module 001 Hero sources byte-frozen",
+    "src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > ownership map records Module 002 file assignment",
+    "src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts > FARMS_MODULE_003 My Farms > locks mockup and prior module source hashes",
+    "src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > freezes Architecture tip, Founder mockup, and Modules 001\u2013003 sources",
+    "src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable",
+    "src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > freezes Architecture tip, Founder mockup, and Modules 001\u2013004 sources",
+    "src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > ships no production mock positions and keeps Explore frozen",
+    "src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Architecture 000 mockup SHA and certified tips",
+    "src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Modules 001\u2013005 sources byte-identically",
+    "src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Architecture 000 mockup SHA and certified tips",
+    "src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Modules 001\u2013006 sources byte-identically",
+    "src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Architecture 000 mockup SHA and certified tips",
+    "src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Modules 001\u2013007 sources byte-identically",
+    "src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > evidence pack path exists for certification artifacts",
+    "src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > freezes Modules 001\u2013008 + shared screen byte-identically",
+    "src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > locks Founder mockup SHA + Architecture tip"
+  ]
+}
