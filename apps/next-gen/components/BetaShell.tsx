@@ -77,17 +77,26 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
         <p className="mobile-readonly">Beta</p>
         <header className="topbar">
           {section === 'swap' ? (
-            <div className="desktop-trending" aria-label="Trending and Boost status">
-              <strong>Trending</strong>
-              <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-                Live market ↗
+            <div className="desktop-trending">
+              <a className="trending-link" href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+                Trending <span aria-hidden="true">↗</span>
               </a>
-              <span><b>Boost</b> No active sponsored placements</span>
             </div>
           ) : <p>MelegaDex Evo</p>}
-          <span className="environment-pill">
-            <span aria-hidden="true" /> Beta
-          </span>
+          <div className="topbar-actions">
+            {section === 'swap' ? (
+              <a className="boost-link" href="/tools/trend-boost">Boost Your Project</a>
+            ) : null}
+            <span className="chain-selector" aria-label="Selected network: BNB Chain">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m12 2.5 3 3-3 3-3-3 3-3Zm-5.5 5.5 3 3-3 3-3-3 3-3Zm11 0 3 3-3 3-3-3 3-3ZM12 13.5l3 3-3 3-3-3 3-3Zm0-6 3.5 3.5-3.5 3.5L8.5 11 12 7.5Zm-5.5 7 3 3-3 3-3-3 3-3Zm11 0 3 3-3 3-3-3 3-3Z" />
+              </svg>
+              <span>BNB Chain</span>
+            </span>
+            <span className="wallet-button" aria-label="Wallet">
+              <AppIcon name="wallet" />
+            </span>
+          </div>
         </header>
 
         <main className="main" id="content">
