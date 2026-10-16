@@ -1,18 +1,17 @@
 import React from 'react'
 import { AppIcon } from './AppIcon'
+import { MarcoPose } from './MarcoPose'
 import { LIVE_DEX_LINKS, marcoPublicPairs } from '../lib/legacyServices'
 import type { UxSectionCopy } from '../lib/uxSections'
 
 function TrustRow({ statements }: { statements: string[] }) {
   return (
-    <ul className="trust-row" aria-label="Product safeguards">
-      {statements.slice(1).map((statement) => (
-        <li key={statement}>
-          <span aria-hidden="true">✓</span>
-          {statement}
-        </li>
-      ))}
-    </ul>
+    <details className="safety-disclosure">
+      <summary>Fees &amp; safety</summary>
+      <ul className="trust-row" aria-label="Product safeguards">
+        {statements.slice(1).map((statement) => <li key={statement}>{statement}</li>)}
+      </ul>
+    </details>
   )
 }
 
@@ -20,6 +19,9 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
   return (
     <div className="trade-layout">
       <section className="surface trade-surface" aria-label="Trade preview">
+        <div className="trade-marco-mobile" aria-hidden="true">
+          <MarcoPose pose="trade" />
+        </div>
         <div className="surface-head">
           <div className="segment" aria-label="Trade mode">
             <a href="/" aria-current="page">
@@ -35,7 +37,7 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
           <span className="field-label">You pay</span>
           <strong>0.00</strong>
           <span className="token-chip">BNB</span>
-          <small>Balance unavailable in read-only mode</small>
+          <small>Wallet balance appears after connection</small>
         </div>
         <button className="swap-direction" type="button" disabled aria-label="Swap direction unavailable">
           ↓
@@ -44,19 +46,23 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
           <span className="field-label">You receive</span>
           <strong>0.00</strong>
           <span className="token-chip token-empty">Select token</span>
-          <small>Best factual net output appears after a quote</small>
+          <small>Your quote appears here</small>
         </div>
         {children}
         <div className="route-note">
           <AppIcon name="shield" />
           <span>
-            <strong>SmartSwap clarity</strong>
-            Venue, impact, gas, and slippage appear only when factual.
+            <strong>Route details</strong>
+            Venue, impact, gas and slippage appear with your quote.
           </span>
         </div>
       </section>
 
       <aside className="next-actions" aria-label="Next actions">
+        <div className="trade-marco-card">
+          <div><p className="section-kicker">Meet MARCO</p><h2>Your next move.</h2><p>Swap, earn and explore in one clear experience.</p></div>
+          <MarcoPose pose="trade" />
+        </div>
         <p className="section-kicker">Your next move</p>
         <a href="/earn">
           <span className="action-icon"><AppIcon name="earn" /></span>
@@ -65,7 +71,7 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
         </a>
         <a href="/portfolio">
           <span className="action-icon"><AppIcon name="portfolio" /></span>
-          <span><strong>Understand your holdings</strong><small>Read balances without connecting a wallet</small></span>
+          <span><strong>My Portfolio</strong><small>Review supported assets and positions</small></span>
           <AppIcon name="arrow" />
         </a>
         <a href="/explore">

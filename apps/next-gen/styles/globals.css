@@ -209,6 +209,13 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .route-note strong { color: var(--ink); font-size: 0.75rem; }
 
 .next-actions { padding: 8px 4px; }
+.trade-marco-mobile { display: none; }
+.trade-marco-card { position: relative; min-height: 184px; margin: -2px 4px 18px; padding: 24px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--graphite); color: var(--inverse); }
+.trade-marco-card > div { position: relative; z-index: 1; width: 58%; }
+.trade-marco-card .section-kicker { color: var(--accent); }
+.trade-marco-card h2 { font-size: 1.45rem; }
+.trade-marco-card p:last-child { margin: 10px 0 0; color: #b8b7af; font-size: .76rem; line-height: 1.45; }
+.trade-marco-card .marco-pose { position: absolute; right: -4px; bottom: -20px; width: 150px; height: 190px; }
 .next-actions > p { padding: 0 12px; }
 .next-actions > a { min-height: 84px; display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; align-items: center; gap: 11px; padding: 12px; border-radius: 17px; color: inherit; text-decoration: none; }
 .next-actions > a:hover { background: rgba(255, 255, 255, 0.42); }
@@ -283,6 +290,11 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .trust-row { margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; list-style: none; color: var(--muted); font-size: 0.7rem; line-height: 1.4; }
 .trust-row li { display: flex; align-items: flex-start; gap: 6px; }
 .trust-row li > span { color: var(--success); }
+.safety-disclosure { margin-top: 16px; color: var(--muted); }
+.safety-disclosure > summary { display: inline-flex; align-items: center; min-height: 40px; }
+.safety-disclosure .trust-row { margin-top: 0; padding: 0 14px 12px 18px; display: grid; gap: 7px; list-style: disc; }
+.quote-details { margin-top: 8px; }
+.quote-details .result-list { margin-top: 0; }
 
 .console-intro { max-width: 620px; margin: -14px 0 24px; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
 .tools { margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; list-style: none; }
@@ -323,6 +335,9 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .mobile-nav a[aria-current='page'] .app-icon { color: var(--accent); }
   .trade-layout,
   .portfolio-layout { grid-template-columns: 1fr; }
+  .trade-marco-card { display: none; }
+  .app-shell[data-section='swap'] .trade-marco-mobile { height: 52px; margin: -6px 4px -8px; display: flex; justify-content: flex-end; pointer-events: none; }
+  .app-shell[data-section='swap'] .trade-marco-mobile .marco-pose { width: 88px; height: 78px; object-position: center bottom; }
   .next-actions { margin-top: 8px; }
   .product-footer { margin-bottom: 10px; }
 }
@@ -341,6 +356,8 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .tool-surface { padding: 16px; }
   .app-shell[data-section='swap'] .main { padding: 10px 12px 104px; }
   .app-shell[data-section='swap'] .trade-surface { padding: 12px; }
+  .app-shell[data-section='swap'] .trade-marco-mobile { height: 40px; margin: -8px 2px -10px; display: flex; justify-content: flex-end; pointer-events: none; }
+  .app-shell[data-section='swap'] .trade-marco-mobile .marco-pose { width: 74px; height: 66px; object-position: center bottom; }
   .app-shell[data-section='swap'] .asset-field { min-height: 94px; margin-top: 10px; padding: 11px 13px; gap: 2px 10px; border-radius: 16px; }
   .app-shell[data-section='swap'] .asset-field-output { margin-top: 6px; }
   .app-shell[data-section='swap'] .asset-field strong { font-size: 1.72rem; }
@@ -354,6 +371,7 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .app-shell[data-section='swap'] .route-note { display: none; }
   .app-shell[data-section='swap'] .next-actions { margin-top: 20px; }
   .app-shell[data-section='swap'] .trust-row { margin-top: 18px; }
+  .app-shell[data-section='swap'] .safety-disclosure { margin-top: 8px; }
   .app-shell[data-section='swap'] .product-footer { margin-top: 28px; }
   .network-chip { padding: 0 9px; }
   .asset-field { min-height: 116px; padding: 15px; }

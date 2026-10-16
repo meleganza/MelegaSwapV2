@@ -8,7 +8,7 @@ export function NonOperational({ section }: { section: UxSectionCopy }) {
       <section className="swap-accessibility" aria-labelledby="section-title">
         <h1 id="section-title">Swap</h1>
         <p className="status" role="status" data-operational="false">
-          <span className="sr-only">Beta — read-only until you confirm a swap in your wallet.</span>
+          <span className="sr-only">Protected beta. A swap is sent only after wallet confirmation.</span>
         </p>
       </section>
     )

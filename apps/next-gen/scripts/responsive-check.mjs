@@ -144,7 +144,8 @@ await call('Network.enable')
 await call('Network.clearBrowserCookies')
 await call('Network.clearBrowserCache')
 
-const routes = ['/']
+const routes = (process.env.BETA_ROUTES || '/').split(',').filter(Boolean)
+const homeRequestNotes = []
 
 for (const width of widths) {
   const widthStart = requestUrls.length
@@ -155,7 +156,8 @@ for (const width of widths) {
     deviceScaleFactor: 1,
     mobile: width < 800,
   })
-  for (const route of width === 390 ? routes : ['/']) {
+  for (const route of routes) {
+    const routeRequestStart = requestNotes.length
     const loaded = waitForLoad()
     await call('Page.navigate', { url: `${base}${route}` })
     await loaded
@@ -165,7 +167,7 @@ for (const width of widths) {
         scroll: document.documentElement.scrollWidth,
         client: document.documentElement.clientWidth,
         text: document.body.innerText,
-        readOnly: document.body.innerText.includes('Beta — read-only'),
+        readOnly: document.body.innerText.includes('Protected beta'),
         operational: document.querySelector('[data-operational="false"]') ? 'false' : 'missing',
         inputs: document.querySelectorAll('input').length,
         h1: document.querySelector('h1') ? document.querySelector('h1').textContent : '',
@@ -195,7 +197,12 @@ for (const width of widths) {
         nestedScroll: [...document.querySelectorAll('.app-stage, .main, .trade-layout, .trade-surface')].some((node) => {
           const style = getComputedStyle(node)
           return /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1
-        })
+        }),
+        mascots: [...document.querySelectorAll('.marco-pose')].filter((node) => {
+          const style = getComputedStyle(node)
+          const box = node.getBoundingClientRect()
+          return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0
+        }).map((node) => node.getBoundingClientRect().toJSON())
       })`,
       returnByValue: true,
     })
@@ -203,23 +210,33 @@ for (const width of widths) {
     if (measured.scroll > measured.client + 1) {
       throw new Error(`${route} at ${width} overflows ${measured.scroll} > ${measured.client}`)
     }
-    if (measured.operational !== 'false' || measured.inputs !== 0 || !measured.actions || !measured.readOnly || !measured.primaryClear) {
+    if (!measured.actions || !measured.primaryClear || (route === '/' && !measured.readOnly)) {
       throw new Error(`${route} at ${width} failed shell checks ${result.value}`)
     }
-    if (width <= 430 && (!measured.cta || !measured.cta.clear || !measured.mobileNav || measured.cta.bottom > measured.mobileNav.top)) {
+    if (route === '/' && (measured.operational !== 'false' || measured.inputs !== 0)) {
+      throw new Error(`${route} at ${width} failed Trade safety checks ${result.value}`)
+    }
+    if (route === '/' && width <= 430 && (!measured.cta || !measured.cta.clear || !measured.mobileNav || measured.cta.bottom > measured.mobileNav.top)) {
       throw new Error(`${route} at ${width} does not keep the full Swap CTA above bottom navigation ${result.value}`)
     }
-    if (width >= 1440 && measured.pageHeight > measured.viewportHeight + 1) {
+    if (route === '/' && width >= 1440 && measured.pageHeight > measured.viewportHeight + 1) {
       throw new Error(`${route} at ${width} has avoidable desktop scrolling ${result.value}`)
     }
     if (measured.nestedScroll) throw new Error(`${route} at ${width} has nested vertical scrolling ${result.value}`)
+    if (measured.mascots.length !== 1) throw new Error(`${route} at ${width} must show exactly one MARCO ${result.value}`)
+    const mascot = measured.mascots[0]
+    if (mascot.left < -1 || mascot.right > measured.client + 1 || mascot.top < -1) {
+      throw new Error(`${route} at ${width} clips MARCO ${result.value}`)
+    }
+    if (route === '/') homeRequestNotes.push(...requestNotes.slice(routeRequestStart))
     console.log(
-      `${width} ${route}: overflow 0, h1 ${measured.h1}, CTA ${measured.cta?.bottom ?? 'n/a'}, nav ${measured.mobileNav?.top ?? 'desktop'}, height ${measured.pageHeight}/${measured.viewportHeight}`,
+      `${width} ${route}: overflow 0, h1 ${measured.h1}, MARCO visible, CTA ${measured.cta?.bottom ?? 'n/a'}, nav ${measured.mobileNav?.top ?? 'desktop'}, height ${measured.pageHeight}/${measured.viewportHeight}`,
     )
-  }
-  if (outDir) {
-    const shot = await call('Page.captureScreenshot', { format: 'png' })
-    writeFileSync(`${outDir}/shell-${width}.png`, Buffer.from(shot.data, 'base64'))
+    if (outDir) {
+      const shot = await call('Page.captureScreenshot', { format: 'png' })
+      const routeName = route === '/' ? 'trade' : route.slice(1).replaceAll('/', '-')
+      writeFileSync(`${outDir}/${routeName}-${width}.png`, Buffer.from(shot.data, 'base64'))
+    }
   }
   const slice = requestUrls.slice(widthStart)
   const widthHosts = [...new Set(slice.map((url) => new URL(url).host))]
@@ -230,7 +247,7 @@ for (const width of widths) {
 }
 
 const pageHost = new URL(base).host
-const banned = requestNotes.filter((note) => {
+const banned = homeRequestNotes.filter((note) => {
   const url = new URL(note.url)
   const api = url.pathname.startsWith('/api/')
   const foreign = url.host !== pageHost
@@ -243,7 +260,7 @@ if (banned.length > 0) {
   throw new Error(`banned network calls: ${banned.map((note) => note.url).join(', ')}`)
 }
 const hosts = [...new Set(requestUrls.map((url) => new URL(url).host))]
-const apiCount = requestUrls.filter((url) => new URL(url).pathname.startsWith('/api/')).length
+const apiCount = homeRequestNotes.filter((note) => new URL(note.url).pathname.startsWith('/api/')).length
 console.log(`LOCAL requests ${requestUrls.length}; api ${apiCount}; hosts ${hosts.join(', ') || 'none'}`)
 if (outDir) {
   writeFileSync(

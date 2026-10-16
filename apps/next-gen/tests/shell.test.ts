@@ -14,7 +14,10 @@ test('primary screens are non-operational and do not pretend to swap', () => {
   SECTIONS.filter((section) => section.id !== 'tools').forEach((section) => {
     const html = renderToStaticMarkup(React.createElement(ProductPage, { section }))
     assert.match(html, new RegExp(`<h1[^>]*>${section.title}</h1>`))
-    if (section.id === 'swap') assert.match(html, /confirm a swap in your wallet/)
+    if (section.id === 'swap') {
+      assert.match(html, /wallet confirmation/)
+      assert.match(html, /marco-trade\.webp/)
+    }
     else if (section.id === 'bridge') assert.match(html, /Not operational/)
     else assert.match(html, /marco-pose/)
     if (section.id === 'swap' || section.id === 'bridge') assert.match(html, /data-operational="false"/)
@@ -68,9 +71,9 @@ test('idle home does not mount the trend boost feed', () => {
   assert.equal(/useEffect\s*\(/.test(shell), false)
 })
 
-test('the visible shell states read-only beta without a password', () => {
+test('the visible shell states protected beta without a password', () => {
   const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS[0] }))
-  assert.match(html, /Beta — read-only/)
+  assert.match(html, /Protected beta/)
   assert.equal(html.includes('Protected Beta'), false)
   assert.equal(html.includes('type="password"'), false)
   assert.equal(html.includes('Access token'), false)
