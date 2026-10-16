@@ -97,7 +97,8 @@ test('bridge and explore render verified links and do not execute', () => {
 
   const home = renderToStaticMarkup(React.createElement(ProductPage, { section: sectionById('swap') }))
   assert.equal(home.includes('/api/trend-boost-active'), false)
-  assert.match(home, /Projects, tokens, and paid Boost/)
+  assert.match(home, /Boost Your Project/)
+  assert.doesNotMatch(home, /Projects, tokens, and paid Boost/)
 })
 
 test('tools hand off only when the href is a verified live DEX url', () => {

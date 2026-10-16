@@ -20,9 +20,12 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
   const campaign = ECOSYSTEM_CAMPAIGNS[0]
   return (
     <>
-      <section className="trade-brand-hero" aria-label="MelegaDex Evo">
-        <div><strong>MelegaDex Evo</strong><span>Trade smarter. Explore more.</span></div>
-        <MarcoPose pose="welcome" />
+      <section className="trade-brand-hero" aria-labelledby="trade-heading">
+        <div>
+          <h2 id="trade-heading">Swap anything.<br />More possibilities.</h2>
+          <p>One simple place to move through the Melega ecosystem.</p>
+        </div>
+        <MarcoPose pose="trade" />
       </section>
       <div className="trade-layout">
       <section className="surface trade-surface" aria-label="Trade preview">
@@ -36,9 +39,6 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
             </a>
             <a href="/bridge">Bridge</a>
           </div>
-          <span className="network-chip">
-            <span className="network-dot" aria-hidden="true" /> BNB Chain
-          </span>
         </div>
         <div className="asset-field">
           <span className="field-label">You pay</span>
@@ -66,32 +66,23 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
       </section>
 
       <aside className="next-actions" aria-label="Next actions">
-        <div className="ecosystem-campaign" data-campaign={campaign.id}>
+        <div className="ecosystem-campaign" data-campaign={campaign.id} aria-label={campaign.label}>
           <img src={campaign.image} alt="MARCO Chat — Private chats. Your control." width={campaign.width} height={campaign.height} loading="lazy" decoding="async" />
-          <div className="campaign-links" aria-label={`${campaign.label} downloads`}>
-            {campaign.destinations.map((destination) => (
-              <a key={destination.label} href={destination.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-                {destination.label} ↗
-              </a>
-            ))}
-          </div>
+          <a className="campaign-store-link campaign-store-link-apple" href={campaign.destinations[0].href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer" aria-label="Download MARCO Chat on the App Store" />
+          <a className="campaign-store-link campaign-store-link-google" href={campaign.destinations[1].href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer" aria-label="Get MARCO Chat on Google Play" />
         </div>
-        <p className="section-kicker">Your next move</p>
+        <div className="compact-access">
         <a href="/earn">
           <span className="action-icon"><AppIcon name="earn" /></span>
-          <span><strong>Put assets to work</strong><small>Review verified yield opportunities</small></span>
+          <span><strong>Earn</strong><small>Put assets to work</small></span>
           <AppIcon name="arrow" />
         </a>
         <a href="/portfolio">
           <span className="action-icon"><AppIcon name="portfolio" /></span>
-          <span><strong>My Portfolio</strong><small>Review supported assets and positions</small></span>
+          <span><strong>Portfolio</strong><small>View your assets</small></span>
           <AppIcon name="arrow" />
         </a>
-        <a href="/explore">
-          <span className="action-icon"><AppIcon name="explore" /></span>
-          <span><strong>Discover with context</strong><small>Projects, tokens, and paid Boost</small></span>
-          <AppIcon name="arrow" />
-        </a>
+        </div>
       </aside>
       </div>
     </>
