@@ -2,6 +2,7 @@ import React from 'react'
 import { AppIcon } from './AppIcon'
 import { MarcoPose } from './MarcoPose'
 import { LIVE_DEX_LINKS, marcoPublicPairs } from '../lib/legacyServices'
+import { ECOSYSTEM_CAMPAIGNS } from '../lib/ecosystemCampaigns'
 import type { UxSectionCopy } from '../lib/uxSections'
 
 function TrustRow({ statements }: { statements: string[] }) {
@@ -16,8 +17,14 @@ function TrustRow({ statements }: { statements: string[] }) {
 }
 
 function TradeExperience({ children }: { children?: React.ReactNode }) {
+  const campaign = ECOSYSTEM_CAMPAIGNS[0]
   return (
-    <div className="trade-layout">
+    <>
+      <section className="trade-brand-hero" aria-label="MelegaDex Evo">
+        <div><strong>MelegaDex Evo</strong><span>Trade smarter. Explore more.</span></div>
+        <MarcoPose pose="welcome" />
+      </section>
+      <div className="trade-layout">
       <section className="surface trade-surface" aria-label="Trade preview">
         <div className="trade-marco-mobile" aria-hidden="true">
           <MarcoPose pose="trade" />
@@ -59,9 +66,15 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
       </section>
 
       <aside className="next-actions" aria-label="Next actions">
-        <div className="trade-marco-card">
-          <div><p className="section-kicker">Meet MARCO</p><h2>Your next move.</h2><p>Swap, earn and explore in one clear experience.</p></div>
-          <MarcoPose pose="trade" />
+        <div className="ecosystem-campaign" data-campaign={campaign.id}>
+          <img src={campaign.image} alt="MARCO Chat — Private chats. Your control." width={campaign.width} height={campaign.height} loading="lazy" decoding="async" />
+          <div className="campaign-links" aria-label={`${campaign.label} downloads`}>
+            {campaign.destinations.map((destination) => (
+              <a key={destination.label} href={destination.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+                {destination.label} ↗
+              </a>
+            ))}
+          </div>
         </div>
         <p className="section-kicker">Your next move</p>
         <a href="/earn">
@@ -80,7 +93,8 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
           <AppIcon name="arrow" />
         </a>
       </aside>
-    </div>
+      </div>
+    </>
   )
 }
 

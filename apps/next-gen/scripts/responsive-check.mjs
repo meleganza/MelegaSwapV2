@@ -202,7 +202,11 @@ for (const width of widths) {
           const style = getComputedStyle(node)
           const box = node.getBoundingClientRect()
           return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0
-        }).map((node) => node.getBoundingClientRect().toJSON())
+        }).map((node) => node.getBoundingClientRect().toJSON()),
+        imagesComplete: [...document.images].filter((node) => node.getBoundingClientRect().width > 0).every((node) => node.complete && node.naturalWidth > 0),
+        trendingVisible: (() => { const node = document.querySelector('.desktop-trending'); return !!node && node.getBoundingClientRect().width > 0 })(),
+        heroVisible: (() => { const node = document.querySelector('.trade-brand-hero'); return !!node && node.getBoundingClientRect().width > 0 })(),
+        campaignVisible: (() => { const node = document.querySelector('.ecosystem-campaign'); return !!node && node.getBoundingClientRect().width > 0 })()
       })`,
       returnByValue: true,
     })
@@ -223,6 +227,10 @@ for (const width of widths) {
       throw new Error(`${route} at ${width} has avoidable desktop scrolling ${result.value}`)
     }
     if (measured.nestedScroll) throw new Error(`${route} at ${width} has nested vertical scrolling ${result.value}`)
+    if (!measured.imagesComplete) throw new Error(`${route} at ${width} has a broken image ${result.value}`)
+    if (route === '/' && width >= 1440 && (!measured.trendingVisible || !measured.heroVisible || !measured.campaignVisible)) {
+      throw new Error(`${route} at ${width} is missing the desktop ecosystem composition ${result.value}`)
+    }
     if (measured.mascots.length !== 1) throw new Error(`${route} at ${width} must show exactly one MARCO ${result.value}`)
     const mascot = measured.mascots[0]
     if (mascot.left < -1 || mascot.right > measured.client + 1 || mascot.top < -1) {

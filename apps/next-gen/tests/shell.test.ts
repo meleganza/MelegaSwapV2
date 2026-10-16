@@ -17,6 +17,11 @@ test('primary screens are non-operational and do not pretend to swap', () => {
     if (section.id === 'swap') {
       assert.match(html, /wallet confirmation/)
       assert.match(html, /marco-trade\.webp/)
+      assert.match(html, /marco-welcome\.webp/)
+      assert.match(html, /marco-chat-campaign\.webp/)
+      assert.match(html, /No active sponsored placements/)
+      assert.match(html, /apps\.apple\.com\/app\/marco-chat\/id6810583763/)
+      assert.match(html, /play\.google\.com\/store\/apps\/details\?id=ai\.melega\.marcochat/)
     }
     else if (section.id === 'bridge') assert.match(html, /Not operational/)
     else assert.match(html, /marco-pose/)

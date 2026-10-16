@@ -2,6 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { AppIcon, type AppIconName } from './AppIcon'
 import { uxSectionById, type UxSectionId } from '../lib/uxSections'
+import { LIVE_DEX_LINKS } from '../lib/legacyServices'
 
 const NAV_ITEMS: Array<{ label: string; href: string; icon: AppIconName; sections: UxSectionId[] }> = [
   { label: 'Trade', href: '/', icon: 'trade', sections: ['swap', 'bridge'] },
@@ -75,7 +76,15 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
         </header>
         <p className="mobile-readonly">Beta</p>
         <header className="topbar">
-          <p>MelegaDex Evo</p>
+          {section === 'swap' ? (
+            <div className="desktop-trending" aria-label="Trending and Boost status">
+              <strong>Trending</strong>
+              <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
+                Live market ↗
+              </a>
+              <span><b>Boost</b> No active sponsored placements</span>
+            </div>
+          ) : <p>MelegaDex Evo</p>}
           <span className="environment-pill">
             <span aria-hidden="true" /> Beta
           </span>

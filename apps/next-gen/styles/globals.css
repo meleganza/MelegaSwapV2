@@ -124,6 +124,11 @@ a { color: inherit; }
 .app-stage { grid-column: 2; min-width: 0; }
 .topbar { height: 72px; padding: 0 clamp(24px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(23, 24, 22, 0.08); }
 .topbar p { margin: 0; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.02em; }
+.desktop-trending { min-width: 0; display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: .72rem; white-space: nowrap; }
+.desktop-trending strong { color: var(--ink); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }
+.desktop-trending a { color: var(--ink); font-weight: 650; text-decoration: none; }
+.desktop-trending span { overflow: hidden; text-overflow: ellipsis; }
+.desktop-trending b { margin-right: 5px; color: #8a6c00; font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; }
 .environment-pill,
 .quiet-chip,
 .network-chip {
@@ -167,6 +172,11 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 
 .surface { background: var(--surface); border: 1px solid rgba(23, 24, 22, 0.08); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
 .trade-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr); gap: 20px; align-items: start; }
+.trade-brand-hero { position: relative; min-height: 66px; margin-bottom: 14px; padding: 0 28px; display: flex; align-items: center; overflow: visible; border-radius: 16px; background: var(--graphite); color: var(--inverse); }
+.trade-brand-hero > div { display: flex; align-items: baseline; gap: 10px; }
+.trade-brand-hero strong { font-size: 1rem; }
+.trade-brand-hero span { color: #b8b7af; font-size: .76rem; }
+.trade-brand-hero .marco-pose { position: absolute; right: 28px; bottom: 0; width: 92px; height: 86px; object-position: center bottom; }
 .trade-surface { position: relative; padding: clamp(18px, 3vw, 28px); }
 .surface-head,
 .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -210,12 +220,10 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 
 .next-actions { padding: 8px 4px; }
 .trade-marco-mobile { display: none; }
-.trade-marco-card { position: relative; min-height: 184px; margin: -2px 4px 18px; padding: 24px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--graphite); color: var(--inverse); }
-.trade-marco-card > div { position: relative; z-index: 1; width: 58%; }
-.trade-marco-card .section-kicker { color: var(--accent); }
-.trade-marco-card h2 { font-size: 1.45rem; }
-.trade-marco-card p:last-child { margin: 10px 0 0; color: #b8b7af; font-size: .76rem; line-height: 1.45; }
-.trade-marco-card .marco-pose { position: absolute; right: -4px; bottom: -20px; width: 150px; height: 190px; }
+.ecosystem-campaign { margin: -2px 4px 14px; overflow: hidden; border: 1px solid #403824; border-radius: 18px; background: #0e0d09; }
+.ecosystem-campaign > img { width: 100%; height: auto; display: block; aspect-ratio: 600 / 609; object-fit: contain; }
+.campaign-links { padding: 7px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.campaign-links a { min-height: 34px; display: grid; place-items: center; border: 1px solid #594923; border-radius: 9px; color: #f7e3ad; font-size: .68rem; font-weight: 650; text-decoration: none; }
 .next-actions > p { padding: 0 12px; }
 .next-actions > a { min-height: 84px; display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; align-items: center; gap: 11px; padding: 12px; border-radius: 17px; color: inherit; text-decoration: none; }
 .next-actions > a:hover { background: rgba(255, 255, 255, 0.42); }
@@ -336,6 +344,8 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .trade-layout,
   .portfolio-layout { grid-template-columns: 1fr; }
   .trade-marco-card { display: none; }
+  .trade-brand-hero,
+  .ecosystem-campaign { display: none; }
   .app-shell[data-section='swap'] .trade-marco-mobile { height: 52px; margin: -6px 4px -8px; display: flex; justify-content: flex-end; pointer-events: none; }
   .app-shell[data-section='swap'] .trade-marco-mobile .marco-pose { width: 88px; height: 78px; object-position: center bottom; }
   .next-actions { margin-top: 8px; }
@@ -408,10 +418,11 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 }
 
 @media (min-width: 961px) and (min-height: 760px) {
-  .app-shell[data-section='swap'] .main { padding-top: 30px; padding-bottom: 22px; }
-  .app-shell[data-section='swap'] .asset-field { min-height: 112px; margin-top: 16px; padding-block: 14px; }
+  .app-shell[data-section='swap'] .main { padding-top: 16px; padding-bottom: 14px; }
+  .app-shell[data-section='swap'] .asset-field { min-height: 96px; margin-top: 12px; padding-block: 11px; }
   .app-shell[data-section='swap'] .route-note { margin-top: 12px; }
-  .app-shell[data-section='swap'] .product-footer { margin-top: 28px; }
+  .app-shell[data-section='swap'] .next-actions > a { min-height: 58px; padding-block: 7px; }
+  .app-shell[data-section='swap'] .product-footer { margin-top: 14px; padding-top: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
