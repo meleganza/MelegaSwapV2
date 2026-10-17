@@ -75,9 +75,12 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
   assert.equal(prepared.feeBps, winner?.smartSwapFeeBps)
   assert.equal(prepared.gasUnits, '180000')
   assert.equal(prepared.unsignedTx?.value, '0x0')
+  assert.equal(prepared.slippageBps, 50)
   assert.equal(typeof prepared.unsignedTx?.data, 'string')
   const feeWord = BigInt(prepared.feeAmountRaw ?? '0').toString(16).padStart(64, '0')
-  assert.ok(prepared.unsignedTx?.data.toLowerCase().includes(feeWord), 'swap calldata does not carry the sealed fee')
+  const swapData = prepared.unsignedTx?.data.toLowerCase() ?? ''
+  assert.equal(swapData.split(feeWord).length - 1, 1, 'sealed fee appears once')
+  assert.ok(swapData.includes('b6436ef4c7f76be0f26c0c5c9db72f2689abf65b'), 'treasury beneficiary missing')
 
   const noGasWinner = JSON.parse(JSON.stringify(winner)) as typeof winner
   if (noGasWinner?.quote) noGasWinner.quote.estimatedGasUnits = null
@@ -98,6 +101,8 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
   assert.equal(short.unsignedTx, null)
   assert.equal(short.approved, false)
   assert.match(short.approvalTx?.data ?? '', /^0x095ea7b3/i)
+  assert.ok(short.approvalTx?.data.toLowerCase().includes('7c07082839edd5797737640bba6af47992b9861e'))
+  assert.equal(short.approvalTx?.data.toLowerCase().includes('f'.repeat(64)), false)
   assert.equal(short.broadcast, false)
   assert.equal(short.signed, false)
 })

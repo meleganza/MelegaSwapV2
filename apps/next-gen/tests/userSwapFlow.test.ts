@@ -41,6 +41,23 @@ test('a submitted transaction cannot be sent again until its receipt fails', () 
   assert.equal(receiptOutcome({ status: '1' }), 'confirmed')
 })
 
+test('receipt failure can be retried and a pending or confirmed receipt cannot', () => {
+  const shown = tx('0xabcdef01')
+  const fresh = review({ ok: true, unsignedTx: shown })
+  const phase = (outcome: 'confirmed' | 'failed' | 'pending') => (outcome === 'failed' ? 'idle' : 'submitted')
+  assert.equal(decideSend({ phase: phase('failed'), kind: 'confirm', shown, fresh }), 'send')
+  assert.equal(decideSend({ phase: phase('pending'), kind: 'confirm', shown, fresh }), 'blocked')
+  assert.equal(decideSend({ phase: phase('confirmed'), kind: 'approve', shown, fresh: review({ approvalTx: shown }) }), 'blocked')
+  assert.equal(receiptOutcome({ status: '0x0' }), 'failed')
+})
+
+test('a 0.01 WBNB fee at 20 bps is one charge inside the input', () => {
+  const input = 10n ** 16n
+  const fee = (input * 20n) / 10_000n
+  assert.equal(fee, 20_000_000_000_000n)
+  assert.equal(input - fee + fee, input)
+})
+
 test('a replaced transaction, a failed receipt, and a rejected signature stay closed', () => {
   const left = tx('0x095ea7b3aa')
   const right = tx('0x095ea7b3bb')
