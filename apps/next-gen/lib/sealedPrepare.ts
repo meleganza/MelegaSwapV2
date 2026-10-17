@@ -201,7 +201,6 @@ export async function prepareSealedBnbSwap(
   if (!unsignedTx || unsignedTx.to.toLowerCase() !== CERTIFIED_BSC_EXECUTOR.toLowerCase()) {
     return closed('SWAP_UNAVAILABLE', summary)
   }
-  if (!summary.gasUnits) return closed('GAS_UNAVAILABLE', { ...summary, destination: unsignedTx.to })
   return {
     ok: true,
     chainId: 56,

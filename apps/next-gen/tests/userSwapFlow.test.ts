@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { test } from 'node:test'
-import { receiptOutcome, reviewAction, sameUserTx, signatureRejected, type PublicUserTx, type SwapReview } from '../lib/userSwapFlow'
+import { decideSend, receiptOutcome, reviewAction, sameUserTx, signatureRejected, type PublicUserTx, type SwapReview } from '../lib/userSwapFlow'
 
 const tx = (data: string): PublicUserTx => ({ to: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', data, value: '0x0', chainId: 56 })
 
@@ -24,8 +24,21 @@ function review(partial: Partial<SwapReview>): SwapReview {
 test('a short allowance asks for approval and withholds the swap', () => {
   assert.equal(reviewAction(review({ approvalTx: tx('0x095ea7b3'), unsignedTx: null })), 'approve')
   assert.equal(reviewAction(review({ ok: true, approvalTx: null, unsignedTx: null, gasUnits: null })), 'blocked')
-  assert.equal(reviewAction(review({ ok: true, unsignedTx: tx('0x12345678'), gasUnits: null })), 'blocked')
+  assert.equal(reviewAction(review({ ok: true, unsignedTx: tx('0x12345678'), gasUnits: null })), 'confirm')
+  assert.equal(reviewAction(review({ ok: true, unsignedTx: tx('0x12345678'), gasUnits: 'not-a-number' })), 'blocked')
   assert.equal(reviewAction(review({ ok: true, unsignedTx: tx('0x12345678'), gasUnits: '180000' })), 'confirm')
+})
+
+test('a submitted transaction cannot be sent again until its receipt fails', () => {
+  const shown = tx('0xabcdef01')
+  const fresh = review({ ok: true, unsignedTx: shown, gasUnits: null })
+  assert.equal(decideSend({ phase: 'idle', kind: 'confirm', shown, fresh }), 'send')
+  assert.equal(decideSend({ phase: 'submitted', kind: 'confirm', shown, fresh }), 'blocked')
+  assert.equal(decideSend({ phase: 'idle', kind: 'confirm', shown, fresh: review({ code: 'QUOTE_STALE', unsignedTx: shown }) }), 'stale')
+  assert.equal(decideSend({ phase: 'idle', kind: 'confirm', shown, fresh: review({ ok: true, unsignedTx: tx('0xabcdef02') }) }), 'replaced')
+  assert.equal(decideSend({ phase: 'idle', kind: 'approve', shown, fresh: review({ approvalTx: shown }) }), 'send')
+  assert.equal(decideSend({ phase: 'submitted', kind: 'approve', shown, fresh: review({ approvalTx: shown }) }), 'blocked')
+  assert.equal(receiptOutcome({ status: '1' }), 'confirmed')
 })
 
 test('a replaced transaction, a failed receipt, and a rejected signature stay closed', () => {

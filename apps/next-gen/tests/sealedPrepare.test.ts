@@ -76,6 +76,19 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
   assert.equal(prepared.gasUnits, '180000')
   assert.equal(prepared.unsignedTx?.value, '0x0')
   assert.equal(typeof prepared.unsignedTx?.data, 'string')
+  const feeWord = BigInt(prepared.feeAmountRaw ?? '0').toString(16).padStart(64, '0')
+  assert.ok(prepared.unsignedTx?.data.toLowerCase().includes(feeWord), 'swap calldata does not carry the sealed fee')
+
+  const noGasWinner = JSON.parse(JSON.stringify(winner)) as typeof winner
+  if (noGasWinner?.quote) noGasWinner.quote.estimatedGasUnits = null
+  const missingGas = await prepareSealedBnbSwap(
+    { chainId: 56, sell: 'WBNB', buy: 'USDC', amount: '0.000000000001', user: USER, slippageBps: 50 },
+    { now: () => new Date(NOW), compete: async () => ({ shadowWinner: noGasWinner }), allowanceRaw: noGasWinner?.originalInputAmountRaw ?? '0' },
+  )
+  assert.equal(missingGas.ok, true)
+  assert.equal(missingGas.gasUnits, null)
+  assert.equal(missingGas.unsignedTx?.to.toLowerCase(), prepared.unsignedTx?.to.toLowerCase())
+  assert.equal(missingGas.broadcast, false)
 
   const short = await prepareSealedBnbSwap(
     { chainId: 56, sell: 'WBNB', buy: 'USDC', amount: '0.000000000001', user: USER, slippageBps: 50 },

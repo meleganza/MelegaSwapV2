@@ -27,16 +27,29 @@ export interface SwapReview {
 
 export function reviewAction(review: SwapReview): 'approve' | 'confirm' | 'blocked' {
   if (review.approvalTx && !review.unsignedTx) return 'approve'
-  if (
-    review.ok &&
-    review.unsignedTx &&
-    !review.approvalTx &&
-    typeof review.gasUnits === 'string' &&
-    /^\d+$/.test(review.gasUnits)
-  ) {
-    return 'confirm'
-  }
+  if (review.gasUnits != null && !/^\d+$/.test(review.gasUnits)) return 'blocked'
+  if (review.ok && review.unsignedTx && !review.approvalTx) return 'confirm'
   return 'blocked'
+}
+
+export type SendPhase = 'idle' | 'submitted'
+
+export function decideSend(input: {
+  phase: SendPhase
+  kind: 'approve' | 'confirm'
+  shown: PublicUserTx
+  fresh: SwapReview | null
+}): 'send' | 'replaced' | 'stale' | 'blocked' {
+  if (input.phase === 'submitted') return 'blocked'
+  if (!input.fresh) return 'replaced'
+  if (input.kind === 'approve') {
+    if (!sameUserTx(input.shown, input.fresh.approvalTx) || input.fresh.unsignedTx) return 'replaced'
+    return 'send'
+  }
+  if (input.fresh.code === 'QUOTE_STALE' || input.fresh.code === 'QUOTE_EXPIRED') return 'stale'
+  if (!input.fresh.ok || !sameUserTx(input.shown, input.fresh.unsignedTx) || input.fresh.approvalTx) return 'replaced'
+  if (reviewAction(input.fresh) !== 'confirm') return 'blocked'
+  return 'send'
 }
 
 export function sameUserTx(left: PublicUserTx | null, right: PublicUserTx | null): boolean {
@@ -52,8 +65,8 @@ export function sameUserTx(left: PublicUserTx | null, right: PublicUserTx | null
 export function receiptOutcome(receipt: { status?: string | number } | null | undefined): 'pending' | 'confirmed' | 'failed' {
   if (!receipt) return 'pending'
   const status = receipt.status
-  if (status === 1 || status === '0x1' || status === '0x01') return 'confirmed'
-  if (status === 0 || status === '0x0' || status === '0x00') return 'failed'
+  if (status === 1 || status === '1' || status === '0x1' || status === '0x01') return 'confirmed'
+  if (status === 0 || status === '0' || status === '0x0' || status === '0x00') return 'failed'
   return 'pending'
 }
 

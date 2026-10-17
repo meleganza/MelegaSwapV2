@@ -1,11 +1,13 @@
 import React from 'react'
 import { formatUnits } from '../../lib/bscQuote'
 import {
+  decideSend,
   receiptOutcome,
   reviewAction,
   sameUserTx,
   signatureRejected,
   type PublicUserTx,
+  type SendPhase,
   type SwapReview,
 } from '../../lib/userSwapFlow'
 
@@ -35,7 +37,13 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   const [status, setStatus] = React.useState<string | null>(null)
   const [pending, setPending] = React.useState(false)
   const [review, setReview] = React.useState<SwapReview | null>(null)
+  const [held, setHeld] = React.useState<{ data: string; phase: 'pending' | 'confirmed' | 'failed' } | null>(null)
   const busy = React.useRef(false)
+
+  function phaseFor(tx: PublicUserTx): SendPhase {
+    if (!held || held.data !== tx.data.toLowerCase()) return 'idle'
+    return held.phase === 'failed' ? 'idle' : 'submitted'
+  }
 
   async function readChain(ethereum: EthereumProvider): Promise<number | null> {
     try {
@@ -104,6 +112,13 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     const nextChain = await readChain(ethereum)
     setChainId(nextChain)
     if (nextChain !== 56) throw Object.assign(new Error('CHAIN_MISMATCH'), { code: 0 })
+    const gas = await ethereum.request({
+      method: 'eth_estimateGas',
+      params: [{ from: account, to: tx.to, data: tx.data, value: tx.value }],
+    })
+    if (typeof gas !== 'string' || !/^0x[0-9a-fA-F]+$/.test(gas) || BigInt(gas) <= BigInt(0)) {
+      throw Object.assign(new Error('GAS_UNAVAILABLE'), { code: 0 })
+    }
     const hash = (await ethereum.request({
       method: 'eth_sendTransaction',
       params: [{ from: account, to: tx.to, data: tx.data, value: tx.value, chainId: '0x38' }],
@@ -121,17 +136,32 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     try {
       const shown = review.approvalTx
       const fresh = await loadReview(account)
-      if (!fresh || !sameUserTx(shown, fresh.approvalTx) || fresh.unsignedTx) {
+      const decision = decideSend({ phase: phaseFor(shown), kind: 'approve', shown, fresh })
+      if (decision !== 'send') {
         setReview(fresh)
-        setStatus('REPLACED')
+        setStatus(decision === 'blocked' ? 'RECEIPT_PENDING' : 'REPLACED')
         return
       }
       const hash = await sendUserTx(shown)
-      const outcome = await waitForReceipt(provider() as EthereumProvider, hash)
+      setHeld({ data: shown.data.toLowerCase(), phase: 'pending' })
+      const ethereum = provider()
+      if (!ethereum) {
+        setStatus('RECEIPT_PENDING')
+        return
+      }
+      let outcome: 'confirmed' | 'failed' | 'pending' = 'pending'
+      try {
+        outcome = await waitForReceipt(ethereum, hash)
+      } catch {
+        setStatus('RECEIPT_PENDING')
+        return
+      }
       if (outcome !== 'confirmed') {
+        setHeld({ data: shown.data.toLowerCase(), phase: outcome === 'failed' ? 'failed' : 'pending' })
         setStatus(outcome === 'failed' ? 'FAILED_RECEIPT' : 'RECEIPT_PENDING')
         return
       }
+      setHeld({ data: shown.data.toLowerCase(), phase: 'confirmed' })
       const again = await loadReview(account)
       setReview(again)
       if (again?.approvalTx && sameUserTx(shown, again.approvalTx)) {
@@ -158,14 +188,28 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
     try {
       const shown = review.unsignedTx
       const fresh = await loadReview(account)
-      if (!fresh?.ok || !sameUserTx(shown, fresh.unsignedTx) || fresh.approvalTx || reviewAction(fresh) !== 'confirm') {
+      const decision = decideSend({ phase: phaseFor(shown), kind: 'confirm', shown, fresh })
+      if (decision !== 'send') {
         setReview(fresh)
-        setStatus(fresh?.code === 'QUOTE_STALE' || fresh?.code === 'QUOTE_EXPIRED' ? fresh.code : 'REPLACED')
+        setStatus(decision === 'stale' ? fresh?.code ?? 'QUOTE_STALE' : decision === 'blocked' ? 'RECEIPT_PENDING' : 'REPLACED')
         return
       }
       const hash = await sendUserTx(shown)
-      const outcome = await waitForReceipt(provider() as EthereumProvider, hash)
-      setStatus(outcome === 'confirmed' ? `SUBMITTED ${hash}` : outcome === 'failed' ? 'FAILED_RECEIPT' : 'RECEIPT_PENDING')
+      setHeld({ data: shown.data.toLowerCase(), phase: 'pending' })
+      const ethereum = provider()
+      if (!ethereum) {
+        setStatus(`RECEIPT_PENDING ${hash}`)
+        return
+      }
+      let outcome: 'confirmed' | 'failed' | 'pending' = 'pending'
+      try {
+        outcome = await waitForReceipt(ethereum, hash)
+      } catch {
+        setStatus(`RECEIPT_PENDING ${hash}`)
+        return
+      }
+      setHeld({ data: shown.data.toLowerCase(), phase: outcome === 'failed' ? 'failed' : outcome === 'confirmed' ? 'confirmed' : 'pending' })
+      setStatus(outcome === 'confirmed' ? `SUBMITTED ${hash}` : outcome === 'failed' ? 'FAILED_RECEIPT' : `RECEIPT_PENDING ${hash}`)
     } catch (error) {
       setStatus(signatureRejected(error) ? 'SIGNATURE_REJECTED' : error instanceof Error ? error.message : 'UNAVAILABLE')
     } finally {
@@ -175,6 +219,8 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
   }
 
   const action = review ? reviewAction(review) : 'blocked'
+  const approveHeld = review?.approvalTx ? phaseFor(review.approvalTx) === 'submitted' : false
+  const swapHeld = review?.unsignedTx ? phaseFor(review.unsignedTx) === 'submitted' : false
   return (
     <section className="quote-panel" aria-labelledby="wallet-prepare-title">
       <h2 id="wallet-prepare-title">BNB wallet</h2>
@@ -192,16 +238,16 @@ export function BnbWalletPrepare({ sell, buy, amount }: { sell: string; buy: str
           <li>Venue: {review.venueLabel ?? 'not returned'}</li>
           <li>Slippage: {review.slippageBps == null ? 'not returned' : `${(review.slippageBps / 100).toFixed(2)}%`}</li>
           <li>Canonical fee: {review.feeBps == null ? 'not returned' : `${review.feeBps} bps`} {review.feeAmountRaw ? `(${review.feeAmountRaw} raw)` : ''}</li>
-          <li>Gas: {review.gasUnits ?? 'not returned'}</li>
+          <li>Gas: {review.gasUnits ?? 'not returned by the quote. The wallet estimates it before sending.'}</li>
           <li>Destination: {review.destination ?? 'not returned'}</li>
         </ul>
       ) : null}
-      {action === 'approve' ? (
+      {action === 'approve' && !approveHeld ? (
         <button className="primary-action" type="button" onClick={onApprove} disabled={pending}>
           Approve token in wallet
         </button>
       ) : null}
-      {action === 'confirm' ? (
+      {action === 'confirm' && !swapHeld ? (
         <button className="primary-action" type="button" onClick={onConfirm} disabled={pending}>
           Sign and send swap
         </button>
