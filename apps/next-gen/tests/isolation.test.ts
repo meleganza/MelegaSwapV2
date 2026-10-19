@@ -52,6 +52,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/trade/ShadowReadiness.tsx'),
   path.join(root, 'modules/trade/BnbWalletPrepare.tsx'),
   path.join(root, 'lib/sealedPrepare.ts'),
+  path.join(root, 'lib/retiredPositionsRpc.ts'),
+  path.join(root, 'modules/earn/RetiredPositionLookup.tsx'),
 ])
 
 test('beta source does not import the live DEX stack or open a network client', () => {

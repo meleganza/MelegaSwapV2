@@ -1,6 +1,7 @@
 import React from 'react'
 import { BetaShell } from '../components/BetaShell'
 import RetiredNativeEarn from '../modules/earn/RetiredNativeEarn'
+import RetiredPositionLookup from '../modules/earn/RetiredPositionLookup'
 import { getBetaPageProps } from '../lib/page'
 
 export default function RetiredEarnPage() {
@@ -18,6 +19,7 @@ export default function RetiredEarnPage() {
       <p className="muted-copy">
         <a href="/earn">Back to BNB Earn</a>
       </p>
+      <RetiredPositionLookup />
       <RetiredNativeEarn />
     </BetaShell>
   )

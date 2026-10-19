@@ -26,7 +26,7 @@ export default function RetiredNativeEarn() {
           </h3>
           <ul className="facts">
             <li>New native deposit, stake, and create actions are not offered.</li>
-            <li>Your position is unknown on this page.</li>
+            <li>A position stays unknown until the read above returns zero or a staked amount.</li>
             <li>The live DEX does not accept a chain in these links. Switch the wallet to {chain.name} after you leave this beta.</li>
           </ul>
           <ul className="result-links">
