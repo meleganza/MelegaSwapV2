@@ -26,7 +26,7 @@ assert(!home.body.includes('Access token'), 'password form remains')
 assert(!home.body.includes('type="password"'), 'password field remains')
 assert(!/\/api\/quote|\/api\/portfolio|\/api\/earn|\/api\/earn-catalog|\/api\/shadow-readiness|\/api\/trend-boost-active|\/api\/sealed-prepare/.test(home.body), 'home html calls a read api')
 
-const pages = ['/bridge', '/earn', '/portfolio', '/tools', '/explore']
+const pages = ['/bridge', '/earn', '/earn-retired', '/portfolio', '/tools', '/explore']
 for (const pathname of pages) {
   const page = await request(pathname, { headers: { accept: 'text/html' } })
   assert(page.response.status === 200, `${pathname} status ${page.response.status}`)

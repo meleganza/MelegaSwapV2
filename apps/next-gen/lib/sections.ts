@@ -43,6 +43,7 @@ export const SECTIONS: SectionCopy[] = [
       'One BNB farm row is read only after you open Earn.',
       'Yield figures are omitted unless that read returns them.',
       'Public Create Farm and Create Pool are not offered.',
+      'Polygon, Base, and Ethereum native farms and pools are closed to new deposits. Existing exits stay on the live DEX. Positions there are not read here.',
       'Wallet withdrawal remains on the live DEX.',
     ],
   },
