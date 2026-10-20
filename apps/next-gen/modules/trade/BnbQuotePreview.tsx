@@ -42,7 +42,6 @@ export default function BnbQuotePreview() {
   const [result, setResult] = React.useState<BnbQuoteResult | null>(null)
   const [pending, setPending] = React.useState(false)
   const [shadow, setShadow] = React.useState(false)
-  const [WalletPanel, setWalletPanel] = React.useState<React.ComponentType<{ sell: string; buy: string; amount: string }> | null>(null)
 
   async function onPreview() {
     setPending(true)
@@ -109,18 +108,7 @@ export default function BnbQuotePreview() {
         </button>
       ) : null}
       {result?.ok && shadow ? <ShadowReadinessPanel quote={result as FactualBnbQuote} amount={amount} /> : null}
-      {result?.ok && !WalletPanel ? (
-        <button
-          className="primary-action"
-          type="button"
-          onClick={() => {
-            void import('./BnbWalletPrepare').then((mod) => setWalletPanel(() => mod.BnbWalletPrepare))
-          }}
-        >
-          Connect BNB wallet
-        </button>
-      ) : null}
-      {result?.ok && WalletPanel ? <WalletPanel sell={sell} buy={buy} amount={amount} /> : null}
+      <p className="muted-copy">This review preview cannot connect a wallet, approve a token, or send a transaction.</p>
     </section>
   )
 }

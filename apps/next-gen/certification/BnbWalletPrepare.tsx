@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatUnits } from '../../lib/bscQuote'
+import { formatUnits } from '../lib/bscQuote'
 import {
   decideSend,
   receiptOutcome,
@@ -9,7 +9,7 @@ import {
   type PublicUserTx,
   type SendPhase,
   type SwapReview,
-} from '../../lib/userSwapFlow'
+} from '../lib/userSwapFlow'
 
 type EthereumProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>

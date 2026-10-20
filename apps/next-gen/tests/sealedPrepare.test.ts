@@ -10,6 +10,8 @@ import { createPancakeSwapVenueAdapter } from '../../web/src/lib/smartswap-unive
 import { runEvmShadowCompetition } from '../../web/src/lib/smartswap-universal-engine/shadowCompetition'
 import { createSyntheticQuoteSource } from '../../web/src/lib/smartswap-universal-engine/shadowQuoteSource'
 import { acceptSealedWinner, prepareSealedBnbSwap } from '../lib/sealedPrepare'
+import { reviewPreviewBlocksExecution } from '../lib/previewIsolation'
+import sealedPrepareHandler from '../pages/api/sealed-prepare'
 
 const NOW = '2026-08-20T00:00:05.000Z'
 const USER = '0x1111111111111111111111111111111111111111'
@@ -105,6 +107,31 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
   assert.equal(short.approvalTx?.data.toLowerCase().includes('f'.repeat(64)), false)
   assert.equal(short.broadcast, false)
   assert.equal(short.signed, false)
+})
+
+test('the review preview refuses an executable swap plan', async () => {
+  assert.equal(reviewPreviewBlocksExecution({}), true)
+  assert.equal(reviewPreviewBlocksExecution({ BETA_REVIEW_EXECUTION: 'certify' }), false)
+  const seen: { status: number | null; body: Record<string, unknown> | null } = { status: null, body: null }
+  const res = {
+    setHeader() {
+      return undefined
+    },
+    status(code: number) {
+      seen.status = code
+      return this
+    },
+    json(body: Record<string, unknown>) {
+      seen.body = body
+    },
+  }
+  await sealedPrepareHandler({ method: 'POST', body: { chainId: 56, sell: 'WBNB', buy: 'USDT', amount: '0.01' } } as never, res as never)
+  assert.equal(seen.status, 403)
+  assert.equal(seen.body?.code, 'PREVIEW_READ_ONLY')
+  assert.equal(seen.body?.unsignedTx, null)
+  assert.equal(seen.body?.approvalTx, null)
+  assert.equal(seen.body?.broadcast, false)
+  assert.equal(seen.body?.signed, false)
 })
 
 test('the adapter source does not sign or recompute a fee schedule', () => {

@@ -14,7 +14,10 @@ test('primary screens are non-operational and do not pretend to swap', () => {
   SECTIONS.filter((section) => section.id !== 'tools').forEach((section) => {
     const html = renderToStaticMarkup(React.createElement(ProductPage, { section }))
     assert.match(html, new RegExp(`<h1[^>]*>${section.title}</h1>`))
-    if (section.id === 'swap') assert.match(html, /confirm a swap in your wallet/)
+    if (section.id === 'swap') {
+      assert.match(html, /No wallet, approval, or signature/)
+      assert.equal(html.includes('confirm a swap in your wallet'), false)
+    }
     else assert.match(html, /Not operational/)
     assert.match(html, /data-operational="false"/)
     assert.equal(html.includes('Sign and send swap'), false)
