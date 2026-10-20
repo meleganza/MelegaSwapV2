@@ -234,7 +234,7 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 
 .filter-row { margin: 12px 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-row span,
-.filter-row button { min-height: 34px; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: 0.72rem; }
+.filter-row button { min-height: 48px; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: 0.72rem; }
 .filter-row button { cursor: pointer; }
 .filter-row button.selected { border-color: var(--graphite); background: var(--graphite); color: var(--inverse); }
 .filter-row .selected { border-color: var(--graphite); background: var(--graphite); color: var(--inverse); }
@@ -271,7 +271,8 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .earn-card { padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: #faf9f6; }
 .earn-card h3 { margin: 0; font-size: 1rem; }
 .earn-compare { margin: 6px 0 0; font-size: 0.84rem; }
-.earn-card a { color: inherit; font-size: 0.78rem; }
+.earn-card a,
+.result-links a { min-height: 48px; display: inline-flex; align-items: center; color: inherit; font-size: 0.78rem; }
 .inline-alert { margin: 16px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); color: #5c4c0d; font-size: 0.76rem; line-height: 1.45; }
 .result-list,
 .result-links,
@@ -349,7 +350,7 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
   .app-shell[data-section='swap'] .token-chip { min-height: 36px; padding-inline: 11px; font-size: 0.77rem; }
   .app-shell[data-section='swap'] .swap-direction { width: 34px; height: 34px; margin-block: -14px; border-width: 3px; border-radius: 10px; }
   .app-shell[data-section='swap'] .quote-slot { margin-top: 9px; }
-  .app-shell[data-section='swap'] .quote-slot > button { min-height: 46px; }
+  .app-shell[data-section='swap'] .quote-slot > button { min-height: 48px; }
   .app-shell[data-section='swap'] .action-hint,
   .app-shell[data-section='swap'] .route-note { display: none; }
   .app-shell[data-section='swap'] .next-actions { margin-top: 20px; }

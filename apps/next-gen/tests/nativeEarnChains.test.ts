@@ -45,6 +45,8 @@ test('retired exits use the verified live DEX routes and do not invent a chain q
   assert.equal(html.includes('chain=137'), false)
   assert.equal(html.includes('chain=8453'), false)
   assert.equal(html.includes('chain=1'), false)
+  assert.match(html, /href="\/earn-retired"/)
+  assert.equal(html.includes('the read above'), false)
   assert.match(html, /https:\/\/www\.melega\.finance\/farms\?view=my/)
   assert.match(html, /https:\/\/www\.melega\.finance\/pools\?view=positions/)
   assert.match(html, /https:\/\/www\.melega\.finance\/liquidity-studio\?view=remove/)

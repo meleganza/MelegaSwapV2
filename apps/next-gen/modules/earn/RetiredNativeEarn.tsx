@@ -19,6 +19,11 @@ export default function RetiredNativeEarn() {
       <p className="muted-copy">
         Beefy vaults on BNB are a separate external catalog. They are not these native farms.
       </p>
+      <ul className="result-links">
+        <li>
+          <a href="/earn-retired">Read retired farm positions</a>
+        </li>
+      </ul>
       {chains.map((chain) => (
         <article key={chain.chainId} data-chain={chain.chainId} data-status="terminated" data-positions="unknown">
           <h3>
@@ -26,7 +31,7 @@ export default function RetiredNativeEarn() {
           </h3>
           <ul className="facts">
             <li>New native deposit, stake, and create actions are not offered.</li>
-            <li>A position stays unknown until the read above returns zero or a staked amount.</li>
+            <li>This page does not read the position. Use the retired position read. An incomplete read stays unknown.</li>
             <li>The live DEX does not accept a chain in these links. Switch the wallet to {chain.name} after you leave this beta.</li>
           </ul>
           <ul className="result-links">

@@ -1,5 +1,6 @@
 import React from 'react'
 import type { EarnRead } from '../../lib/earnRead'
+import { LIVE_FARM_EXIT, LIVE_LIQUIDITY_EXIT, LIVE_POOL_EXIT } from '../../lib/nativeEarnChains'
 
 export function EarnResult({ result }: { result: EarnRead }) {
   if (!result.ok) {
@@ -19,12 +20,31 @@ export function EarnResult({ result }: { result: EarnRead }) {
         {result.label} on BNB
       </p>
       <ul className="facts">
-        <li>Chain 56. Farm pid {result.pid}.</li>
-        <li>Stake token matches the certified MARCO address.</li>
+        <li>Chain 56. Farm pid {result.pid}. Label {result.label}.</li>
+        <li>Farm contract {result.chefAddress}.</li>
+        <li>Stake token {result.lpToken}. It matches the certified MARCO address.</li>
         <li>allocPoint {result.allocPoint}.</li>
         <li>APY is unavailable. This read does not return one.</li>
         <li>TVL is unavailable. This read does not return one.</li>
-        <li>Deposit and withdrawal are not available in this beta.</li>
+        <li>This beta does not send a deposit or a withdrawal.</li>
+      </ul>
+      <p className="muted-copy">Leaves this beta. The live DEX opens your farm and pool positions. Switch the wallet to BNB Smart Chain there.</p>
+      <ul className="result-links">
+        <li>
+          <a href={LIVE_FARM_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
+            Farm positions on the live DEX
+          </a>
+        </li>
+        <li>
+          <a href={LIVE_POOL_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
+            Pool positions on the live DEX
+          </a>
+        </li>
+        <li>
+          <a href={LIVE_LIQUIDITY_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
+            Remove liquidity on the live DEX
+          </a>
+        </li>
       </ul>
     </div>
   )
@@ -34,18 +54,19 @@ export default function EarnReadPanel() {
   const [result, setResult] = React.useState<EarnRead | null>(null)
 
   React.useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
     const load = async () => {
       try {
         const response = await fetch('/api/earn', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ chainId: 56 }),
+          signal: controller.signal,
         })
         const body = (await response.json()) as EarnRead
-        if (!cancelled) setResult(body)
+        if (!controller.signal.aborted) setResult(body)
       } catch {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setResult({
             ok: false,
             code: 'UNAVAILABLE',
@@ -67,9 +88,7 @@ export default function EarnReadPanel() {
       }
     }
     load()
-    return () => {
-      cancelled = true
-    }
+    return () => controller.abort()
   }, [])
 
   return (
