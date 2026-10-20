@@ -110,28 +110,69 @@ test('a canonical sealed candidate keeps the policy fee and does not broadcast',
 })
 
 test('the review preview refuses an executable swap plan', async () => {
-  assert.equal(reviewPreviewBlocksExecution({}), true)
-  assert.equal(reviewPreviewBlocksExecution({ BETA_REVIEW_EXECUTION: 'certify' }), false)
-  const seen: { status: number | null; body: Record<string, unknown> | null } = { status: null, body: null }
-  const res = {
-    setHeader() {
-      return undefined
-    },
-    status(code: number) {
-      seen.status = code
-      return this
-    },
-    json(body: Record<string, unknown>) {
-      seen.body = body
-    },
+  for (const env of [{}, { BETA_REVIEW_EXECUTION: '' }, { BETA_REVIEW_EXECUTION: 'certify' }, { BETA_REVIEW_EXECUTION: 'allow' }]) {
+    assert.equal(reviewPreviewBlocksExecution(env), true)
   }
-  await sealedPrepareHandler({ method: 'POST', body: { chainId: 56, sell: 'WBNB', buy: 'USDT', amount: '0.01' } } as never, res as never)
-  assert.equal(seen.status, 403)
-  assert.equal(seen.body?.code, 'PREVIEW_READ_ONLY')
-  assert.equal(seen.body?.unsignedTx, null)
-  assert.equal(seen.body?.approvalTx, null)
-  assert.equal(seen.body?.broadcast, false)
-  assert.equal(seen.body?.signed, false)
+  const routeSource = readFileSync(path.join(process.cwd(), 'pages/api/sealed-prepare.ts'), 'utf8')
+  assert.equal(routeSource.includes('prepareSealedBnbSwap'), false)
+  assert.equal(routeSource.includes('BETA_REVIEW_EXECUTION'), false)
+  const previous = process.env.BETA_REVIEW_EXECUTION
+  const originalFetch = globalThis.fetch
+  let fetchCalls = 0
+  globalThis.fetch = (async () => {
+    fetchCalls += 1
+    throw new Error('preparer must not run')
+  }) as typeof fetch
+  try {
+    for (const value of [undefined, '', 'certify', 'other']) {
+      if (value === undefined) delete process.env.BETA_REVIEW_EXECUTION
+      else process.env.BETA_REVIEW_EXECUTION = value
+      const seen: { status: number | null; headers: Record<string, string>; body: Record<string, unknown> | null } = {
+        status: null,
+        headers: {},
+        body: null,
+      }
+      const res = {
+        setHeader(key: string, header: string) {
+          seen.headers[key] = header
+        },
+        status(code: number) {
+          seen.status = code
+          return this
+        },
+        json(body: Record<string, unknown>) {
+          seen.body = body
+        },
+      }
+      await sealedPrepareHandler({
+        method: 'POST',
+        query: { BETA_REVIEW_EXECUTION: 'certify' },
+        headers: { 'x-beta-review-execution': 'certify', cookie: 'BETA_REVIEW_EXECUTION=certify' },
+        body: {
+          chainId: 56,
+          sell: 'WBNB',
+          buy: 'USDT',
+          amount: '0.01',
+          user: '0x1111111111111111111111111111111111111111',
+          BETA_REVIEW_EXECUTION: 'certify',
+          certify: true,
+        },
+      } as never, res as never)
+      assert.equal(seen.status, 403)
+      assert.equal(seen.headers['X-Melega-Surface'], 'next-gen-beta')
+      assert.equal(seen.body?.code, 'PREVIEW_READ_ONLY')
+      assert.equal(seen.body?.unsignedTx, null)
+      assert.equal(seen.body?.approvalTx, null)
+      assert.equal(seen.body?.broadcast, false)
+      assert.equal(seen.body?.signed, false)
+      assert.equal(seen.body?.executable, false)
+    }
+  } finally {
+    globalThis.fetch = originalFetch
+    if (previous === undefined) delete process.env.BETA_REVIEW_EXECUTION
+    else process.env.BETA_REVIEW_EXECUTION = previous
+  }
+  assert.equal(fetchCalls, 0)
 })
 
 test('the adapter source does not sign or recompute a fee schedule', () => {

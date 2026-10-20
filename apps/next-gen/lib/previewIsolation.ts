@@ -1,7 +1,7 @@
 /**
- * Review preview stays read-only.
- * Certification later sets BETA_REVIEW_EXECUTION=certify. The default is closed.
+ * The public review route stays closed.
+ * No environment value, header, cookie, or request field reopens it.
  */
-export function reviewPreviewBlocksExecution(env: Record<string, string | undefined> = process.env): boolean {
-  return env.BETA_REVIEW_EXECUTION !== 'certify'
+export function reviewPreviewBlocksExecution(_env?: Record<string, string | undefined>): boolean {
+  return true
 }
