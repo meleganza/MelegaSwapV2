@@ -1,4 +1,6 @@
 import assert from 'assert'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -164,4 +166,8 @@ test('the diagnostic view has no transaction controls', () => {
   assert.equal(html.includes('>Swap<'), false)
   assert.equal(html.includes('>Pay<'), false)
   assert.equal(html.includes('unsignedTx'), false)
+  const source = readFileSync(path.join(process.cwd(), 'modules/trade/ShadowReadiness.tsx'), 'utf8')
+  assert.match(source, /readGenerationCurrent/)
+  assert.match(source, /setResult\(null\)/)
+  assert.match(source, /abort\(\)/)
 })

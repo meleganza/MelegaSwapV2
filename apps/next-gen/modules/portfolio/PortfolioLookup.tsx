@@ -1,6 +1,7 @@
 import React from 'react'
 import { formatUnits } from '../../lib/bscQuote'
 import { LIVE_WITHDRAWAL_LINKS, type PortfolioRead } from '../../lib/portfolioRead'
+import { readGenerationCurrent } from '../../lib/readGeneration'
 
 export function PortfolioResult({ result }: { result: PortfolioRead }) {
   if (!result.ok && result.assets.length === 0) {
@@ -62,17 +63,36 @@ export default function PortfolioLookup() {
   const [address, setAddress] = React.useState('')
   const [result, setResult] = React.useState<PortfolioRead | null>(null)
   const [pending, setPending] = React.useState(false)
+  const generation = React.useRef(0)
+  const abortRef = React.useRef<AbortController | null>(null)
+
+  function onAddress(value: string) {
+    abortRef.current?.abort()
+    generation.current += 1
+    setAddress(value)
+    setResult(null)
+    setPending(false)
+  }
 
   async function onRead() {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+    const issued = generation.current + 1
+    generation.current = issued
+    setResult(null)
     setPending(true)
     try {
       const response = await fetch('/api/portfolio', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ chainId: 56, address }),
+        signal: controller.signal,
       })
+      if (!readGenerationCurrent(issued, generation.current)) return
       setResult((await response.json()) as PortfolioRead)
     } catch {
+      if (!readGenerationCurrent(issued, generation.current) || controller.signal.aborted) return
       setResult({
         ok: false,
         code: 'READ_FAILED',
@@ -88,7 +108,7 @@ export default function PortfolioLookup() {
         durationMs: 0,
       })
     } finally {
-      setPending(false)
+      if (readGenerationCurrent(issued, generation.current)) setPending(false)
     }
   }
 
@@ -103,7 +123,7 @@ export default function PortfolioLookup() {
           value={address}
           autoComplete="off"
           spellCheck={false}
-          onChange={(event) => setAddress(event.target.value)}
+          onChange={(event) => onAddress(event.target.value)}
         />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { BNB_QUOTE_TOKENS, formatUnits, quoteIsStale, type BnbQuoteResult, type FactualBnbQuote } from '../../lib/bscQuote'
+import { readGenerationCurrent } from '../../lib/readGeneration'
 import ShadowReadinessPanel from './ShadowReadiness'
 
 export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; nowMs: number }) {
@@ -42,18 +43,38 @@ export default function BnbQuotePreview() {
   const [result, setResult] = React.useState<BnbQuoteResult | null>(null)
   const [pending, setPending] = React.useState(false)
   const [shadow, setShadow] = React.useState(false)
+  const generation = React.useRef(0)
+  const abortRef = React.useRef<AbortController | null>(null)
+
+  function editQuote(apply: () => void) {
+    abortRef.current?.abort()
+    generation.current += 1
+    apply()
+    setResult(null)
+    setShadow(false)
+    setPending(false)
+  }
 
   async function onPreview() {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+    const issued = generation.current + 1
+    generation.current = issued
+    setResult(null)
     setPending(true)
     try {
       const response = await fetch('/api/quote', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ chainId: 56, sell, buy, amount }),
+        signal: controller.signal,
       })
+      if (!readGenerationCurrent(issued, generation.current)) return
       const body = (await response.json()) as BnbQuoteResult
       setResult(body)
     } catch {
+      if (!readGenerationCurrent(issued, generation.current) || controller.signal.aborted) return
       setResult({
         ok: false,
         code: 'QUOTE_UNAVAILABLE',
@@ -65,7 +86,7 @@ export default function BnbQuotePreview() {
         durationMs: 0,
       })
     } finally {
-      setPending(false)
+      if (readGenerationCurrent(issued, generation.current)) setPending(false)
     }
   }
 
@@ -75,7 +96,7 @@ export default function BnbQuotePreview() {
       <div className="quote-grid">
         <label htmlFor="quote-sell">
           Sell
-          <select id="quote-sell" value={sell} onChange={(event) => setSell(event.target.value)}>
+          <select id="quote-sell" value={sell} onChange={(event) => editQuote(() => setSell(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
               <option key={token.symbol} value={token.symbol}>
                 {token.symbol}
@@ -85,7 +106,7 @@ export default function BnbQuotePreview() {
         </label>
         <label htmlFor="quote-buy">
           Buy
-          <select id="quote-buy" value={buy} onChange={(event) => setBuy(event.target.value)}>
+          <select id="quote-buy" value={buy} onChange={(event) => editQuote(() => setBuy(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
               <option key={token.symbol} value={token.symbol}>
                 {token.symbol}
@@ -95,7 +116,7 @@ export default function BnbQuotePreview() {
         </label>
         <label htmlFor="quote-amount">
           Amount
-          <input id="quote-amount" inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} />
+          <input id="quote-amount" inputMode="decimal" value={amount} onChange={(event) => editQuote(() => setAmount(event.target.value))} />
         </label>
       </div>
       <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>

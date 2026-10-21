@@ -1,4 +1,6 @@
 import assert from 'assert'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -112,4 +114,8 @@ test('the position view has no transaction control', () => {
   assert.equal(html.includes('>Approve<'), false)
   assert.equal(html.includes('>Sign<'), false)
   assert.equal(html.includes('>Withdraw<'), false)
+  const source = readFileSync(path.join(process.cwd(), 'modules/earn/EarnPositions.tsx'), 'utf8')
+  assert.match(source, /readGenerationCurrent/)
+  assert.match(source, /setResult\(null\)/)
+  assert.match(source, /abort\(\)/)
 })

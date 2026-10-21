@@ -2,6 +2,7 @@ import React from 'react'
 import { formatUnits } from '../../lib/bscQuote'
 import type { FactualBnbQuote } from '../../lib/bscQuote'
 import type { ShadowReadiness } from '../../lib/shadowReadiness'
+import { readGenerationCurrent } from '../../lib/readGeneration'
 
 function quantity(raw: string | null): string {
   return raw === null ? 'unread' : formatUnits(raw, 18)
@@ -44,8 +45,24 @@ export default function ShadowReadinessPanel({ quote, amount }: { quote: Factual
   const [address, setAddress] = React.useState('')
   const [result, setResult] = React.useState<ShadowReadiness | null>(null)
   const [pending, setPending] = React.useState(false)
+  const generation = React.useRef(0)
+  const abortRef = React.useRef<AbortController | null>(null)
+
+  function onAddress(value: string) {
+    abortRef.current?.abort()
+    generation.current += 1
+    setAddress(value)
+    setResult(null)
+    setPending(false)
+  }
 
   async function onRead() {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+    const issued = generation.current + 1
+    generation.current = issued
+    setResult(null)
     setPending(true)
     try {
       const response = await fetch('/api/shadow-readiness', {
@@ -67,12 +84,15 @@ export default function ShadowReadinessPanel({ quote, amount }: { quote: Factual
             path: quote.path,
           },
         }),
+        signal: controller.signal,
       })
+      if (!readGenerationCurrent(issued, generation.current)) return
       setResult((await response.json()) as ShadowReadiness)
     } catch {
+      if (!readGenerationCurrent(issued, generation.current) || controller.signal.aborted) return
       setResult(null)
     } finally {
-      setPending(false)
+      if (readGenerationCurrent(issued, generation.current)) setPending(false)
     }
   }
 
@@ -93,7 +113,7 @@ export default function ShadowReadinessPanel({ quote, amount }: { quote: Factual
           value={address}
           autoComplete="off"
           spellCheck={false}
-          onChange={(event) => setAddress(event.target.value)}
+          onChange={(event) => onAddress(event.target.value)}
         />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>

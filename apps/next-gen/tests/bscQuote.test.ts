@@ -1,4 +1,6 @@
 import assert from 'assert'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -111,4 +113,8 @@ test('the quote form has no transaction controls', () => {
   assert.equal(html.includes('>Sign<'), false)
   assert.equal(html.includes('>Pay<'), false)
   assert.match(html, /data-executable|Not executable|Preview quote/)
+  const source = readFileSync(path.join(process.cwd(), 'modules/trade/BnbQuotePreview.tsx'), 'utf8')
+  assert.match(source, /readGenerationCurrent/)
+  assert.match(source, /setResult\(null\)/)
+  assert.match(source, /abort\(\)/)
 })

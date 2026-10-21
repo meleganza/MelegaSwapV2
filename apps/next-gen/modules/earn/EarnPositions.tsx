@@ -1,5 +1,6 @@
 import React from 'react'
 import type { EarnPositions } from '../../lib/earnPositions'
+import { readGenerationCurrent } from '../../lib/readGeneration'
 
 export function EarnPositionView({ result }: { result: EarnPositions }) {
   if (!result.ok) {
@@ -39,20 +40,39 @@ export default function EarnPositionPanel() {
   const [address, setAddress] = React.useState('')
   const [result, setResult] = React.useState<EarnPositions | null>(null)
   const [pending, setPending] = React.useState(false)
+  const generation = React.useRef(0)
+  const abortRef = React.useRef<AbortController | null>(null)
+
+  function onAddress(value: string) {
+    abortRef.current?.abort()
+    generation.current += 1
+    setAddress(value)
+    setResult(null)
+    setPending(false)
+  }
 
   async function onRead() {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+    const issued = generation.current + 1
+    generation.current = issued
+    setResult(null)
     setPending(true)
     try {
       const response = await fetch('/api/earn-positions', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ chainId: 56, address }),
+        signal: controller.signal,
       })
+      if (!readGenerationCurrent(issued, generation.current)) return
       setResult((await response.json()) as EarnPositions)
     } catch {
+      if (!readGenerationCurrent(issued, generation.current) || controller.signal.aborted) return
       setResult(null)
     } finally {
-      setPending(false)
+      if (readGenerationCurrent(issued, generation.current)) setPending(false)
     }
   }
 
@@ -62,7 +82,7 @@ export default function EarnPositionPanel() {
       <p className="muted-copy">Enter a public address. Only the vaults on this page are read. No wallet is connected.</p>
       <label htmlFor="earn-position-address">
         Public address
-        <input id="earn-position-address" value={address} autoComplete="off" spellCheck={false} onChange={(event) => setAddress(event.target.value)} />
+        <input id="earn-position-address" value={address} autoComplete="off" spellCheck={false} onChange={(event) => onAddress(event.target.value)} />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
         {pending ? 'Reading receipts' : 'Read listed receipts'}

@@ -1,9 +1,12 @@
 import assert from 'assert'
+import { readFileSync } from 'fs'
+import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { encodeBalanceOf } from '../lib/portfolioRead'
 import { readPortfolio } from '../lib/portfolioRpc'
+import { readGenerationCurrent } from '../lib/readGeneration'
 import PortfolioLookup, { PortfolioResult } from '../modules/portfolio/PortfolioLookup'
 
 const ACCOUNT = '0x0000000000000000000000000000000000000001'
@@ -108,4 +111,10 @@ test('a nonzero balance can show a router USDT quote and the form has no signing
   assert.match(form, /No wallet is connected/)
   assert.equal(form.includes('>Withdraw<'), false)
   assert.equal(form.includes('window.ethereum'), false)
+  const source = readFileSync(path.join(process.cwd(), 'modules/portfolio/PortfolioLookup.tsx'), 'utf8')
+  assert.equal(readGenerationCurrent(1, 1), true)
+  assert.equal(readGenerationCurrent(1, 2), false)
+  assert.match(source, /readGenerationCurrent/)
+  assert.match(source, /setResult\(null\)/)
+  assert.match(source, /abort\(\)/)
 })
