@@ -59,5 +59,13 @@ describe('Passport PRO checkout economics', () => {
         commissionAsset: 'M-CREDITS',
       }),
     ).toThrow('COMMISSION_ASSET_MISMATCH')
+    expect(() =>
+      assertPassportProEconomics({
+        listedPriceMinor: '10000',
+        discountMinor: '1000',
+        netPaidMinor: '9000',
+        commissionAmountMinor: '3000',
+      }),
+    ).toThrow('COMMISSION_NOT_30_PERCENT_OF_NET')
   })
 })

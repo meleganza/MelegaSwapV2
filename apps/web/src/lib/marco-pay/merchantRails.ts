@@ -17,7 +17,10 @@ export const MARCO_PAY_CONSUMER_CONTRACT = {
   schemaVersion: '1',
   machineInterface: 'MP103_MACHINE_INTERFACE_V1',
   machineInterfaceVersion: '1',
-  leadGateway: 'meleganza/melega-civ-passport#23',
+  leadGateway: 'https://marco.melega.ai/api/public/marco-pay/contract',
+  gatewayContract: 'MPG1_MARCO_PAY_GATEWAY_V1',
+  gatewayBuild: 'MP_PAY_EXECUTABLE_2026_10_12',
+  auditedAt: '2026-10-21',
 } as const
 
 export type MerchantRailId = 'bnb' | 'base' | 'polygon' | 'robinhood' | 'arc' | 'solana'

@@ -1,11 +1,11 @@
 import { assertPassportProEconomics, PASSPORT_PRO_COMMISSION_ASSET } from 'lib/marco-pay/economics'
 
 /**
- * MARCO Passport PRO referral transport for Melega DEX.
+ * MARCO Passport referral transport for Melega DEX.
  *
- * The referral code remains owned and verified by marco.melega.ai. This file
- * only carries the canonical `?ref=` value across DEX navigation and exposes a
- * verified code to checkout. It never calculates discounts or commissions.
+ * A standard `?ref=` code is enough. This file does not ask for PRO
+ * certification or an email. marco.melega.ai still owns verification, and the
+ * economics stay on the quote.
  */
 
 export const MARCO_REFERRAL_QUERY_PARAM = 'ref'
@@ -35,7 +35,6 @@ type ReferralResolvePayload = {
   ok?: boolean
   referral_code?: string
   valid?: boolean
-  pro_certified?: boolean
   certified_surfaces?: unknown
 }
 
@@ -166,7 +165,6 @@ export async function verifyMarcoReferral(
       response.ok &&
       payload.ok === true &&
       payload.valid === true &&
-      payload.pro_certified === true &&
       payload.referral_code === referral.code &&
       surfaces.includes(MELEGA_DEX_REFERRAL_SURFACE)
     if (!verified) {
