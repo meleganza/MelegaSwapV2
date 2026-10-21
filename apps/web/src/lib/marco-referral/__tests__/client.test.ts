@@ -7,7 +7,8 @@ import {
   resolveMarcoReferralForCheckout,
   quoteMarcoReferralForCheckout,
 } from '../client'
-import { dexReferralCatalogRef } from '../catalog'
+import { dexReferralCatalogRef, PASSPORT_PUBLISHED_DEX_CATALOG } from '../catalog'
+import { FEATURED_PACKAGES, TREND_BOOST_PACKAGES } from 'lib/monetization/packages'
 
 class MemoryStorage {
   private values = new Map<string, string>()
@@ -105,6 +106,21 @@ describe('MARCO Passport PRO referral transport', () => {
     expect(storage.getItem(MARCO_REFERRAL_STORAGE_KEY)).toBeNull()
   })
 
+  it('accepts a valid standard referral without PRO certification or an email', async () => {
+    const storage = new MemoryStorage()
+    captureMarcoReferral('https://melega.finance/?ref=standard-1&rd=melega-dex', storage, 1_000)
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+      ok: true,
+      valid: true,
+      referral_code: 'standard-1',
+      pro_certified: false,
+      certified_surfaces: ['melega-dex'],
+    })))
+    await expect(
+      resolveMarcoReferralForCheckout(storage, fetchImpl as unknown as typeof fetch, 2_000),
+    ).resolves.toMatchObject({ code: 'standard-1', status: 'VERIFIED' })
+  })
+
   it('exposes only a referral certified by MARCO for Melega DEX', async () => {
     const storage = new MemoryStorage()
     captureMarcoReferral('https://dex.melega.ai/?ref=founder-1', storage, 1_000)
@@ -141,19 +157,63 @@ describe('MARCO Passport PRO referral transport', () => {
     ).resolves.toMatchObject({ code: 'founder-1', status: 'VERIFIED' })
   })
 
-  it('maps every currently live DEX visibility package to an authoritative catalogue ref', () => {
-    for (const packageId of [
-      'featured_24h',
-      'featured_72h',
-      'featured_1w',
-      'featured_1m',
-      'trend_1h',
-      'trend_3h',
-      'trend_6h',
-      'trend_12h',
-      'trend_24h',
-    ]) {
-      expect(dexReferralCatalogRef(packageId)).toMatch(/^mpp_ref_dex_/)
+  it('uses the authority canonical code and commission base when they match the 10/30 rule', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+      ok: true,
+      canonical_code: 'Founder-1',
+      referral_code: 'founder-1',
+      catalog_ref: 'mpp_ref_dex_trend_6h',
+      listed_price_minor: '2900',
+      discount_minor: '290',
+      net_paid_minor: '2610',
+      commission_amount_base: '783',
+      commission_asset: 'MARCO',
+    })))
+    await expect(quoteMarcoReferralForCheckout({
+      code: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })).resolves.toMatchObject({
+      referral_code: 'founder-1',
+      net_paid_minor: '2610',
+      commission_amount_minor: '783',
+      commission_asset: 'MARCO',
+    })
+  })
+
+  it('rejects a quote that is not 10% off, not 30% of net, or paid in M-Credits', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+      ok: true,
+      referral_code: 'founder-1',
+      catalog_ref: 'mpp_ref_dex_trend_6h',
+      listed_price_minor: '2900',
+      discount_minor: '290',
+      net_paid_minor: '2610',
+      commission_amount_base: '783',
+      commission_asset: 'M-CREDITS',
+    })))
+    await expect(quoteMarcoReferralForCheckout({
+      code: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })).resolves.toBeNull()
+  })
+
+  it('quotes only the DEX packages Passport publishes, at the same listed price', () => {
+    expect(dexReferralCatalogRef('trend_6h')).toBe(PASSPORT_PUBLISHED_DEX_CATALOG.trend_6h.catalogRef)
+    expect(dexReferralCatalogRef('featured_1w')).toBe(PASSPORT_PUBLISHED_DEX_CATALOG.featured_1w.catalogRef)
+    const published = new Set<string>(Object.keys(PASSPORT_PUBLISHED_DEX_CATALOG))
+    for (const item of [...TREND_BOOST_PACKAGES, ...FEATURED_PACKAGES]) {
+      const ref = dexReferralCatalogRef(item.id)
+      if (published.has(item.id)) {
+        const row = PASSPORT_PUBLISHED_DEX_CATALOG[item.id as keyof typeof PASSPORT_PUBLISHED_DEX_CATALOG]
+        expect(ref).toBe(row.catalogRef)
+        expect(String(item.usdPrice * 100)).toBe(row.listedUsdMinor)
+      } else {
+        expect(ref).toBeNull()
+      }
     }
+    expect(dexReferralCatalogRef('trend_1h')).toBeNull()
+    expect(dexReferralCatalogRef('featured_24h')).toBeNull()
   })
 })

@@ -1,5 +1,7 @@
+import { createHmac } from 'crypto'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { MarcoPayCompletedEvent } from '../contract'
+import { verifyMarcoPaySignedEvent, type MarcoPayCompletedEvent } from '../contract'
+import { payRailCatalog } from '../merchantRails'
 
 vi.mock('@vercel/blob', () => ({ get: vi.fn(), head: vi.fn(), put: vi.fn() }))
 vi.mock('lib/featured-placement/eligibility', () => ({
@@ -84,7 +86,7 @@ function eventFor(
   orderId: string,
   overrides: Partial<MarcoPayCompletedEvent> = {},
 ): MarcoPayCompletedEvent {
-  return {
+  const event: MarcoPayCompletedEvent = {
     event_id: '00000000-0000-4000-8000-000000000010',
     event_type: 'payment.completed',
     event_version: '1',
@@ -102,6 +104,17 @@ function eventFor(
     receipt_ref: 'receipt_order_test_1',
     ...overrides,
   }
+  if (!event.test_mode && event.settlement === undefined) {
+    const bnb = payRailCatalog().find((rail) => rail.id === 'bnb')
+    event.settlement = {
+      family: 'evm',
+      chain_id: 56,
+      token_address: bnb?.token ?? '',
+      tx_hash: `0x${'ab'.repeat(32)}`,
+      proven: true,
+    }
+  }
+  return event
 }
 
 describe('MARCO Pay fulfilment', () => {
@@ -147,6 +160,62 @@ describe('MARCO Pay fulfilment', () => {
     expect(order.productRef).toBeNull()
     expect(result.testMode).toBe(true)
     expect(result.order?.state).toBe('TEST_VERIFIED')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('fulfills the paid DEX service once from a signed gateway settlement without moving funds', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      projectSlug: 'mm72',
+      projectContract: '0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    const event = eventFor(order.orderId, { test_mode: false })
+    const rawBody = Buffer.from(JSON.stringify(event))
+    const secret = 'merchant_webhook_secret_not_a_payment'
+    const timestamp = '1786770000'
+    const signature = `v1=${createHmac('sha256', secret).update(`v1.${timestamp}.${rawBody.toString('utf8')}`).digest('hex')}`
+    const signed = verifyMarcoPaySignedEvent({
+      rawBody,
+      secret,
+      expectedApplicationRef: applicationRef,
+      nowSeconds: 1_786_770_000,
+      headers: {
+        eventId: event.event_id,
+        eventType: event.event_type,
+        timestamp,
+        signature,
+        signatureVersion: 'v1',
+      },
+    })
+    const result = await processMarcoPaySignedEvent(signed)
+    expect(result.testMode).toBe(false)
+    expect(result.activated).toBe(true)
+    expect(result.order?.state).toBe('ACTIVE')
+    expect(result.order?.chainId).toBe(56)
+    expect(result.order?.txHash).toBe(event.settlement?.tx_hash)
+    const placed = getTrendBoostOrder(order.legacyOrderId)
+    expect(placed?.state).toBe('ACTIVE')
+    expect(placed?.receiptVerified).toBe(true)
+    const replay = await processMarcoPaySignedEvent(signed)
+    expect(replay.duplicate).toBe(true)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.scheduledEnd).toBe(placed?.scheduledEnd)
+  })
+
+  it('does not activate a live event that has no gateway chain proof', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { test_mode: false, settlement: null })),
+    ).rejects.toThrow('SETTLEMENT_UNPROVEN')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 
@@ -340,6 +409,50 @@ describe('MARCO Pay fulfilment', () => {
     })
     await expect(fulfilPaidBoostOrder(order.orderId)).rejects.toThrow('SETTLEMENT_WALLET_NOT_TREASURY')
     expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('charges the quoted net and refuses a completed event that drops the referral', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef,
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+      referralCode: 'founder-1',
+      referralCatalogRef: 'mpp_ref_dex_trend_1h',
+      referralQuote: {
+        listedPriceMinor: '900',
+        discountMinor: '90',
+        netPaidMinor: '810',
+        commissionAmountMinor: '243',
+        commissionAsset: 'MARCO',
+      },
+    })
+    expect(order.referenceAmountMinor).toBe('810')
+    expect(order.referralCode).toBe('founder-1')
+    expect(order.commissionAsset).toBe('MARCO')
+    await expect(
+      processMarcoPayCompletedEvent(eventFor(order.orderId, { reference_amount_minor: '810', test_mode: false })),
+    ).rejects.toThrow('REFERRAL_REQUIRED')
+    const paid = eventFor(order.orderId, {
+      reference_amount_minor: '810',
+      test_mode: false,
+      referral: {
+        referral_code: 'founder-1',
+        catalog_ref: 'mpp_ref_dex_trend_1h',
+        listed_price_minor: '900',
+        discount_minor: '90',
+        net_paid_minor: '810',
+        commission_amount_base: '243',
+        commission_asset: 'MARCO',
+      },
+    })
+    const result = await processMarcoPayCompletedEvent(paid)
+    expect(result.order?.state).toBe('ACTIVE')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
+    const replay = await processMarcoPayCompletedEvent(paid)
+    expect(replay.duplicate).toBe(true)
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
   })
 
   it('recovers a paid-but-unfulfilled historical order exactly once', async () => {

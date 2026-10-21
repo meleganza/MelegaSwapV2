@@ -106,6 +106,7 @@ async function openMarcoReview() {
   fireEvent.click(screen.getByTestId('commercial-pkg-trend_24h'))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
+  await waitFor(() => expect(screen.getByTestId('commercial-pay-MARCO_PAY').hasAttribute('disabled')).toBe(false))
   fireEvent.click(screen.getByTestId('commercial-pay-MARCO_PAY'))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
   await screen.findByText(/awaiting canonical MARCO Pay settlement/)
