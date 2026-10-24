@@ -13,6 +13,7 @@ import { GLOBAL_DATA_TRUTH_PIPELINE, truthDash } from 'lib/data-truth'
 import { LiquidityRuntimeProvider, useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import type { LiquidityStudioMode } from '../liquidityRuntime/useLiquidityMintRuntime'
 import { LiquidityMyPositionsModule } from '../modules/LiquidityMyPositionsModule'
+import { liquidityAddDeepLinkPreservesPair } from '../modules/explorePoolClick'
 import { useLiquidityMarketSnapshot } from '../modules/useLiquidityMarketSnapshot'
 import { LiquidityRemovePanel } from './LiquidityRemovePanel'
 import { LIQ_V3_COPY, LIQ_V3_LIVE_CHAINS, liqV3 } from './liquidityV3Tokens'
@@ -600,7 +601,16 @@ const LiquidityV3Body: React.FC = () => {
       setMode('Liquidity Building', { syncUrl: false })
       target = 'liquidity-builder'
     } else if (view === 'add' || view === 'remove') {
-      setMode(view === 'remove' ? 'Remove Liquidity' : 'Add Liquidity', { syncUrl: false })
+      setMode(view === 'remove' ? 'Remove Liquidity' : 'Add Liquidity', {
+        syncUrl: false,
+        preservePair:
+          view === 'add' &&
+          liquidityAddDeepLinkPreservesPair({
+            view: 'add',
+            token0: router.query.token0,
+            token1: router.query.token1,
+          }),
+      })
       target = 'liquidity-add'
     } else if (view === 'explore') {
       setMode('My Positions', { syncUrl: false })
@@ -618,6 +628,8 @@ const LiquidityV3Body: React.FC = () => {
   }, [
     router.isReady,
     router.query.view,
+    router.query.token0,
+    router.query.token1,
     router.asPath,
     setMode,
     positions.length,
