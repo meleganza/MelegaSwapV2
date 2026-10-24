@@ -137,7 +137,7 @@ const PAYMENT_ASSET_META: Record<
     purple: true,
   },
   M_CREDITS: {
-    label: 'M-Credits\nMARCO PASSPORT',
+    label: 'Mcredits\nMARCO PASSPORT',
     symbol: 'M',
     logoURI: '/images/m-credits-logo.png',
     purple: true,
@@ -184,7 +184,7 @@ function resolveSettlementEstimate(
     return { amount: `≈ ${formatApproxNumber(totalUsd, 2)} ${payment}`, label: payment }
   }
   if (payment === 'M_CREDITS') {
-    return { amount: `≈ ${formatApproxNumber(totalUsd, 2)} M-Credits`, label: 'M-Credits' }
+    return { amount: `≈ ${formatApproxNumber(totalUsd, 2)} Mcredits`, label: 'Mcredits' }
   }
   return { amount: `$${formatApproxNumber(totalUsd, 2)} via MARCO PAY`, label: 'MARCO PAY' }
 }
@@ -1404,7 +1404,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     (isMarcoPay && marcoPayReadiness !== null && !marcoPayReadiness.executable
       ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
       : isMCredits && !marcoPayReadiness?.paymentMethods?.mCredits
-      ? 'M-Credits are temporarily unavailable.'
+      ? 'Mcredits are temporarily unavailable.'
       : isMCredits && selectedPackage
       ? mCreditsCheckoutBlocker({ usdPrice: selectedPackage.usdPrice, passport: mCreditsPassport ?? undefined })
       : null)
@@ -1618,7 +1618,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     setStatus('confirmed')
     setWalletStage('success')
     setQuoteSummary(
-      `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${serviceMeta?.title ?? service}`,
+      `Mcredits confirmed · service activated · ${detected?.name ?? projectSlug} · ${serviceMeta?.title ?? service}`,
     )
   }, [
     contract,
@@ -2028,7 +2028,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       return
     }
     if (isMarcoPay || isMCredits) {
-      setError(isMCredits ? 'Complete this purchase with M-Credits.' : 'Complete payment in the MARCO PAY panel.')
+      setError(isMCredits ? 'Complete this purchase with Mcredits.' : 'Complete payment in the MARCO PAY panel.')
       return
     }
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
@@ -2262,7 +2262,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         setBusy(true)
         try {
           if (!canAcceptMCreditsPayment(service)) {
-            throw new Error(runtimeCheckoutBlocker || 'This service cannot be fulfilled with M-Credits yet.')
+            throw new Error(runtimeCheckoutBlocker || 'This service cannot be fulfilled with Mcredits yet.')
           }
           const bound = readBoundTarget()
           if (!bound) throw new Error('Detect the project before choosing visibility.')
@@ -2271,13 +2271,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             mCreditsPassport?.walletAddress ||
             null
           if (!mCreditsBuyerWallet) {
-            throw new Error('Connect MARCO Passport to pay with M-Credits.')
+            throw new Error('Connect MARCO Passport to pay with Mcredits.')
           }
           const quote = refreshMCreditsQuote(selectedPackage?.usdPrice ?? 0)
           const merchantOrderRef = `${bound.tokenAddress.toLowerCase()}:${service}:${selectedPackage?.id ?? 'default'}`
           setStatus('debiting')
           setWalletStage('confirm')
-          setQuoteSummary('Debiting M-Credits through MARCO Passport')
+          setQuoteSummary('Debiting Mcredits through MARCO Passport')
           const customerAuthorization = await authorizeMCreditsSpendForOrder({
             merchantOrderRef,
             maxAmountMinor: quote.amountMinor,
@@ -2301,11 +2301,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           })
           const payload = await response.json()
           if (payload.payment_id || payload.approval_url) {
-            throw new Error('M-Credits must not open MARCO Pay.')
+            throw new Error('Mcredits must not open MARCO Pay.')
           }
-          if (!response.ok) throw new Error(payload.message || 'M-Credits are temporarily unavailable.')
+          if (!response.ok) throw new Error(payload.message || 'Mcredits are temporarily unavailable.')
           if (payload.order?.state !== 'FULFILLED') {
-            throw new Error('M-Credits fulfilment failed.')
+            throw new Error('Mcredits fulfilment failed.')
           }
           setStatus('verifying')
           setOrderId(payload.order.orderId)
@@ -2318,7 +2318,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           })
           appendMarketingHistory(bound.projectSlug || bound.tokenAddress, {
             kind: service === 'featured' ? 'featured' : 'trend-boost',
-            label: selectedPackage?.label ?? serviceMeta?.title ?? 'M-Credits',
+            label: selectedPackage?.label ?? serviceMeta?.title ?? 'Mcredits',
             status: 'Running',
             packageId: String(selectedPackage?.id ?? ''),
             expiresAt: selectedPackage
@@ -2329,12 +2329,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           setStatus('confirmed')
           setWalletStage('success')
           setQuoteSummary(
-            `M-Credits confirmed · service activated · ${detected?.name ?? projectSlug} · ${
+            `Mcredits confirmed · service activated · ${detected?.name ?? projectSlug} · ${
               serviceMeta?.title ?? service
             } · ${quote.display}`,
           )
         } catch (cause) {
-          setError(cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.')
+          setError(cause instanceof Error ? cause.message : 'Mcredits are temporarily unavailable.')
           setWalletStage('error')
         } finally {
           setBusy(false)
@@ -2747,7 +2747,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                           : asset === 'MARCO_PAY' && !marcoPayReadiness?.executable
                           ? marcoPayReadiness?.reason ?? 'MARCO Pay is temporarily unavailable.'
                           : asset === 'M_CREDITS' && !marcoPayReadiness?.paymentMethods?.mCredits
-                          ? marcoPayReadiness?.reason ?? 'M-Credits are temporarily unavailable.'
+                          ? marcoPayReadiness?.reason ?? 'Mcredits are temporarily unavailable.'
                           : undefined
                       }
                       onClick={() => {

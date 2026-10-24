@@ -184,8 +184,8 @@ export async function resolveMarcoPayReadiness() {
       partnerBps: partnerRewardBps,
       customerLabel:
         typeof customerRewardBps === 'number'
-          ? `Get ${customerRewardBps / 100}% back in M-Credits`
-          : 'M-Credits reward available when qualified',
+          ? `Get ${customerRewardBps / 100}% back in Mcredits`
+          : 'Mcredits reward available when qualified',
     },
     token: token?.data ?? null,
     callbackUrl: 'https://www.melega.finance/api/marco-pay/webhook/',

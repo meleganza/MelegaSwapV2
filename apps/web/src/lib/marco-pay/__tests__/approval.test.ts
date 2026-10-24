@@ -25,7 +25,7 @@ describe('MARCO Pay approval handoff', () => {
     expect(marcoPayApprovalUrl('19703979-3386-429c-af9a-8376cb3f3845')).toBe(
       'https://marco.melega.ai/pay/19703979-3386-429c-af9a-8376cb3f3845',
     )
-    expect(marcoPayRewardNotice(500)).toBe('+5% M-Credits received')
+    expect(marcoPayRewardNotice(500)).toBe('+5% Mcredits received')
     expect(marcoPayRewardNotice(null)).toBeNull()
   })
 

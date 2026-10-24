@@ -164,7 +164,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
         lastError: null,
       })
       const activated = activateVerifiedTrendBoostWindow(legacy.orderId)
-      if (!activated) throw new MCreditsGatewayError('MCREDITS_ACTIVATION_FAILED', 'M-Credits fulfilment failed.')
+      if (!activated) throw new MCreditsGatewayError('MCREDITS_ACTIVATION_FAILED', 'Mcredits fulfilment failed.')
       await persistTrendBoostOrderDurably(activated)
     }
     order.state = 'FULFILLED'

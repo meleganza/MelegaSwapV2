@@ -218,7 +218,7 @@ export const PassportScreen: React.FC = () => {
             <PanelTitle>Connect to unlock your Passport</PanelTitle>
             <PanelBody>
               Connect an external wallet to view factual positions. Passport never holds keys —
-              your wallet remains the signing authority. M-Credits stay a separate service account.
+              your wallet remains the signing authority. Mcredits stay a separate service account.
             </PanelBody>
             <Actions>
               <ConnectWalletButton>Connect Wallet</ConnectWalletButton>

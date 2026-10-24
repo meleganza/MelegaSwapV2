@@ -49,7 +49,7 @@ async function loadRenderedLogo(chromeBin: string, filePath: string) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
     res.end(`<!doctype html><body>
       <span id="shell" style="width:52px;height:52px;border-radius:50%;overflow:hidden;display:grid;place-items:center">
-        <img id="logo" alt="M-Credits" src="${CANONICAL_LOGO}" style="width:100%;height:100%;object-fit:contain"
+        <img id="logo" alt="Mcredits" src="${CANONICAL_LOGO}" style="width:100%;height:100%;object-fit:contain"
           onload="document.body.dataset.nw=this.naturalWidth;document.body.dataset.nh=this.naturalHeight;document.body.dataset.fit=getComputedStyle(this).objectFit;var box=this.getBoundingClientRect();document.body.dataset.bw=box.width;document.body.dataset.bh=box.height"
           onerror="document.body.dataset.error='1'" />
       </span></body>`)
@@ -156,7 +156,7 @@ describe('Boost payment M-Credits logo', () => {
     fireEvent.click(screen.getByTestId('commercial-checkout-next'))
 
     const payment = screen.getByTestId('commercial-step-payment')
-    expect(payment.textContent).toContain('M-Credits')
+    expect(payment.textContent).toContain('Mcredits')
     expect(payment.textContent).toContain('MARCO PASSPORT')
     expect(screen.getByTestId('mcredits-beta-badge').textContent).toBe('BETA')
 

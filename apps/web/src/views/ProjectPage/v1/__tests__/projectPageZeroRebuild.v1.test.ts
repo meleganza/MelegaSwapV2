@@ -52,7 +52,7 @@ describe('Project Page Zero Rebuild V1', () => {
     expect(shell).toContain('USDT')
     expect(shell).toContain('USDC')
     expect(shell).toContain('MARCO')
-    expect(shell).toContain('5% M-Credits Cashback')
+    expect(shell).toContain('5% Mcredits Cashback')
   })
 
   it('Unavailable path present for missing metrics', () => {
