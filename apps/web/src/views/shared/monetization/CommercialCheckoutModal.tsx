@@ -2274,18 +2274,19 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             throw new Error('Connect MARCO Passport to pay with M-Credits.')
           }
           const quote = refreshMCreditsQuote(selectedPackage?.usdPrice ?? 0)
+          const merchantOrderRef = `${bound.tokenAddress.toLowerCase()}:${service}:${selectedPackage?.id ?? 'default'}`
           setStatus('debiting')
           setWalletStage('confirm')
           setQuoteSummary('Debiting M-Credits through MARCO Passport')
-          const identityToken = await authorizeMCreditsSpendForOrder({
-            merchantOrderRef: `${bound.tokenAddress}:${service}:${selectedPackage?.id ?? 'default'}`,
+          const customerAuthorization = await authorizeMCreditsSpendForOrder({
+            merchantOrderRef,
             maxAmountMinor: quote.amountMinor,
           })
           const response = await fetch('/api/mcredits/orders', {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
-              ...(identityToken ? { 'x-marco-passport-session': identityToken } : {}),
+              ...(customerAuthorization ? { 'x-marco-mcredits-authorization': customerAuthorization } : {}),
             },
             body: JSON.stringify({
               projectId: bound.projectId,
@@ -2295,6 +2296,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
               serviceId: service,
               packageId: selectedPackage?.id,
               targetId: service === 'featured-farm' ? farmTarget : service === 'featured-pool' ? poolTarget : null,
+              merchantOrderRef,
             }),
           })
           const payload = await response.json()
@@ -2801,7 +2803,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </div>
                   ) : null}
                   {pay === 'MARCO_PAY' && referral && referralCatalogRef ? (
-                    <div>Passport PRO referral recognised. The authoritative discount is verified by MARCO at review.</div>
+                    <div>MARCO referral recognised. The authoritative discount is verified by MARCO at review.</div>
                   ) : null}
                 </SettlementNote>
               </SettlementSummary>
@@ -2833,7 +2835,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </ReviewRow>
                     {marcoPayOrder?.referralApplied ? (
                       <ReviewRow>
-                        <span>Passport PRO</span>
+                        <span>MARCO referral</span>
                         <strong>
                           Referral recognised · −$
                           {formatApproxNumber(Number(marcoPayOrder.referralDiscountMinor ?? '0') / 100, 2)}

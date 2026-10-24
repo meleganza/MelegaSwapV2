@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { clearMCreditsOrdersForTests, spendMCreditsForBoost } from 'lib/mcredits/checkout'
+import { clearMCreditsOrdersForTests, spendMCreditsForBoost as spendRaw } from 'lib/mcredits/checkout'
 import { readFileSync } from 'fs'
 import path from 'path'
 
@@ -51,6 +51,26 @@ vi.mock('lib/monetization/trendBoostOrders', () => ({
   persistTrendBoostOrderDurably: async (order: any) => order,
 }))
 
+const PROJECT_CONTRACT = '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed'
+
+function spendMCreditsForBoost(input: any) {
+  return spendRaw({
+    ...input,
+    projectContract: PROJECT_CONTRACT,
+    merchantOrderRef: `${PROJECT_CONTRACT}:${input.serviceId}:trend_1h`,
+    customerAuthorization: input.identityToken,
+    mcreditsRuntime: {
+      env: {
+        MARCO_CREDITS_ENABLED: 'true',
+        MARCO_CONNECT_APPLICATION_REF: 'dex_test',
+        MARCO_PAY_API_KEY: 'test_key',
+      },
+      fetch: input.fetchImpl,
+      now: () => 1_700_000_000_000,
+    },
+  })
+}
+
 describe('M-Credits separation', () => {
   afterEach(() => {
     clearMCreditsOrdersForTests()
@@ -63,6 +83,7 @@ describe('M-Credits separation', () => {
       'utf8',
     )
     const api = readFileSync(path.join(__dirname, '../../../pages/api/mcredits/orders.ts'), 'utf8')
+    const serverCheckout = readFileSync(path.join(__dirname, '../checkout.ts'), 'utf8')
     expect(checkout).toContain("pay === 'MARCO_PAY'")
     expect(checkout).toContain("pay === 'M_CREDITS'")
     expect(checkout).not.toContain("pay === 'MARCO_PAY' || pay === 'M_CREDITS'")
@@ -71,15 +92,20 @@ describe('M-Credits separation', () => {
     expect(api).not.toContain('/pay/')
     expect(api).not.toContain('eth_sendTransaction')
     expect(api).not.toContain('buildMarcoPayWalletTransfer')
+    expect(api).not.toContain('x-marco-passport-session')
+    expect(api).toContain('x-marco-mcredits-authorization')
+    expect(serverCheckout).not.toContain('/api/public/mcredits/reserve')
+    expect(serverCheckout).not.toContain('authorization: `Bearer ${identityToken}`')
+    expect(serverCheckout).toContain('reservePassportMcredits')
   })
 
   it('reserve+confirm fulfils once and failure releases the reservation', async () => {
     const fetchImpl = vi.fn(async (url: string) => {
       if (String(url).includes('/reserve')) {
-        return new Response(JSON.stringify({ ok: true, reservation_id: 'res_1' }), { status: 200 })
+        return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
       }
       if (String(url).includes('/confirm')) {
-        return new Response(JSON.stringify({ ok: true }), { status: 200 })
+        return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
       }
       return new Response(JSON.stringify({ ok: true }), { status: 200 })
     })
@@ -97,13 +123,13 @@ describe('M-Credits separation', () => {
 
     const failing = vi.fn(async (url: string) => {
       if (String(url).includes('/reserve')) {
-        return new Response(JSON.stringify({ ok: true, reservation_id: 'res_fail' }), { status: 200 })
+        return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_fail' } }), { status: 200 })
       }
       if (String(url).includes('/confirm')) {
         return new Response(JSON.stringify({ ok: false, error: 'INSUFFICIENT' }), { status: 400 })
       }
       if (String(url).includes('/release')) {
-        return new Response(JSON.stringify({ ok: true }), { status: 200 })
+        return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_fail' } }), { status: 200 })
       }
       return new Response(JSON.stringify({ ok: false }), { status: 500 })
     })
@@ -115,7 +141,7 @@ describe('M-Credits separation', () => {
         identityToken: 'passport_session_test',
         fetchImpl: failing as unknown as typeof fetch,
       }),
-    ).rejects.toThrow(/M-Credits/)
+    ).rejects.toThrow(/Mcredits/)
     expect(failing.mock.calls.some((call) => String(call[0]).includes('/release'))).toBe(true)
   })
 

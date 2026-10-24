@@ -39,8 +39,8 @@ export function isMarcoPayPreparedOrderCurrent(
 
 const REFERRAL_REVIEW_MESSAGES: Record<string, string> = {
   REFERRAL_CODE_INVALID: 'This referral code cannot be used.',
-  REFERRAL_CATALOG_UNAVAILABLE: 'This package is not in the Passport PRO catalogue.',
-  REFERRAL_NOT_VERIFIED: 'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+  REFERRAL_CATALOG_UNAVAILABLE: 'This package is not in the MARCO referral catalogue.',
+  REFERRAL_NOT_VERIFIED: 'This MARCO referral could not be verified. MARCO Pay was not charged.',
 }
 
 /** Referral verification failures are not a MARCO Pay outage. */

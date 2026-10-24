@@ -35,7 +35,7 @@ function resolveResponse(code: string, valid = true) {
   )
 }
 
-describe('MARCO Passport PRO referral transport', () => {
+describe('MARCO Passport standard referral transport', () => {
   it('stays passive when browser storage is denied', () => {
     const denied = {
       getItem: () => {

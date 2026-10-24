@@ -1,5 +1,5 @@
 /**
- * MARCO Passport snapshot for M-Credits checkout. Reads the already-mounted
+ * MARCO Passport snapshot for Mcredits checkout. Reads the already-mounted
  * Connect widget. Tests inject a snapshot — never a real Passport session.
  */
 export type MCreditsPassportSnapshot = {
@@ -60,7 +60,7 @@ export function requiredMCreditsMinor(usdPrice: number): string {
 export function refreshMCreditsQuote(usdPrice: number): { amountMinor: string; display: string } {
   const amountMinor = requiredMCreditsMinor(usdPrice)
   const credits = (Number(amountMinor) / 100).toFixed(2).replace(/\.00$/, '')
-  return { amountMinor, display: `≈ ${credits} M-Credits` }
+  return { amountMinor, display: `≈ ${credits} Mcredits` }
 }
 
 function readMountedSdk(): ConnectSdk | null {
@@ -88,10 +88,10 @@ export function mCreditsCheckoutBlocker(input: {
   passport?: MCreditsPassportSnapshot
 }): string | null {
   const passport = input.passport ?? readMCreditsPassport()
-  if (!passport.connected) return 'Connect MARCO Passport to pay with M-Credits.'
+  if (!passport.connected) return 'Connect MARCO Passport to pay with Mcredits.'
   const required = Number(requiredMCreditsMinor(input.usdPrice))
   if (passport.known && passport.availableMinor != null && passport.availableMinor < required) {
-    return 'Insufficient M-Credits for this purchase.'
+    return 'Insufficient Mcredits for this purchase.'
   }
   return null
 }
@@ -102,13 +102,15 @@ export async function authorizeMCreditsSpendForOrder(input: {
 }): Promise<string | null> {
   if (testSnapshot?.identityToken) return testSnapshot.identityToken
   const sdk = readMountedSdk()
-  if (typeof sdk?.authorizeMCreditsSpend !== 'function') return readMCreditsPassport().identityToken
+  if (typeof sdk?.authorizeMCreditsSpend !== 'function') {
+    throw new Error('Update MARCO Passport to authorize this Mcredits purchase.')
+  }
   const result = await sdk.authorizeMCreditsSpend({
     merchantOrderRef: input.merchantOrderRef,
     maxAmountMinor: input.maxAmountMinor,
   })
   if (!result?.ok || !result.mcreditsAuthorization) {
-    throw new Error(result?.error?.message || 'M-Credits authorization was not granted.')
+    throw new Error(result?.error?.message || 'Mcredits authorization was not granted.')
   }
   return result.mcreditsAuthorization
 }
