@@ -134,7 +134,7 @@ const handler: NextApiHandler = async (req, res) => {
   if (referralCode && !referralCatalogRef) {
     return res.status(409).json({
       error: 'REFERRAL_CATALOG_UNAVAILABLE',
-      message: 'This package is not in the Passport PRO catalogue.',
+      message: 'This package is not in the MARCO referral catalogue.',
     })
   }
   if (referralCode) {
@@ -147,7 +147,7 @@ const handler: NextApiHandler = async (req, res) => {
     if (!authorityQuote) {
       return res.status(422).json({
         error: 'REFERRAL_NOT_VERIFIED',
-        message: 'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+        message: 'This MARCO referral could not be verified. MARCO Pay was not charged.',
       })
     }
   }

@@ -79,7 +79,7 @@ describe('MARCO Pay prepared checkout binding', () => {
 
   it('does not describe a referral verification failure as a provider outage', () => {
     expect(marcoPayReviewErrorMessage({ error: 'REFERRAL_NOT_VERIFIED' })).toBe(
-      'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+      'This MARCO referral could not be verified. MARCO Pay was not charged.',
     )
     expect(marcoPayReviewErrorMessage({ error: 'REFERRAL_NOT_VERIFIED', message: '' })).not.toBe(
       MARCO_PAY_PROVIDER_UNAVAILABLE,

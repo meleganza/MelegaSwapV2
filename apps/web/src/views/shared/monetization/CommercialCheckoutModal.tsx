@@ -2803,7 +2803,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </div>
                   ) : null}
                   {pay === 'MARCO_PAY' && referral && referralCatalogRef ? (
-                    <div>Passport PRO referral recognised. The authoritative discount is verified by MARCO at review.</div>
+                    <div>MARCO referral recognised. The authoritative discount is verified by MARCO at review.</div>
                   ) : null}
                 </SettlementNote>
               </SettlementSummary>
@@ -2835,7 +2835,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </ReviewRow>
                     {marcoPayOrder?.referralApplied ? (
                       <ReviewRow>
-                        <span>Passport PRO</span>
+                        <span>MARCO referral</span>
                         <strong>
                           Referral recognised · −$
                           {formatApproxNumber(Number(marcoPayOrder.referralDiscountMinor ?? '0') / 100, 2)}
