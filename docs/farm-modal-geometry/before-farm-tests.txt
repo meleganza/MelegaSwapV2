@@ -1,0 +1,509 @@
+RUN  v0.27.2 /private/tmp/melega-pool-public-truth/apps/web
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts  (12 tests | 2 failed) 11ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > freezes Architecture tip, Founder mockup, and Modules 001–003 sources
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable
+     → expected true to be false // Object.is equality
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts  (14 tests | 2 failed) 15ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Architecture 000 mockup SHA and certified tips
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Modules 001–005 sources byte-identically
+     → expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts  (9 tests | 2 failed) 4ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > freezes Architecture tip, Founder mockup, and Modules 001–004 sources
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > ships no production mock positions and keeps Explore frozen
+     → expected '12eac1dd3b6519d3b44a5bddd20c2a46aa515…' to be 'da7e0223f517cf2ad26f02f3b8d3458709501…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts  (15 tests | 2 failed) 4ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Architecture 000 mockup SHA and certified tips
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Modules 001–006 sources byte-identically
+     → expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts  (12 tests | 2 failed) 3ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > keeps Architecture 000 mockup and Module 001 Hero sources byte-frozen
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > ownership map records Module 002 file assignment
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ✓ src/views/FarmsStudio/__tests__/farmsFinalProductConsistency.test.ts  (13 tests) 4ms
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+ ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts  (10 tests | 1 failed) 2ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts > FARMS_MODULE_003 My Farms > locks mockup and prior module source hashes
+     → expected false to be true // Object.is equality
+(node:9156) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x8c880e839f3cacf60f11612087babd3307a33720 is not checksummed.
+
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+ ✓ src/views/FarmsStudio/__tests__/farmsWalletFirst.test.tsx  (10 tests) 28ms
+ ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts  (10 tests | 3 failed) 7ms
+   ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > locks Founder mockup SHA + Architecture tip
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > freezes Modules 001–008 + shared screen byte-identically
+     → modules/FarmsOverviewKpisModule.tsx: expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > evidence pack path exists for certification artifacts
+     → expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts  (6 tests | 4 failed) 2ms
+   ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > archives Founder mockup with recorded SHA-256 and dimensions
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/mockup-integrity.json'
+   ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > locks canonical farm status vocabulary and user actions
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/canonical-farm-status.json'
+   ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > freezes current /farms mount as LEGACY_IMPLEMENTATION without cutover
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/legacy-implementation-freeze.json'
+   ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > validates ownership map, runtime boundaries, dependencies, and report
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ❯ src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts  (7 tests | 2 failed) 1ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Architecture 000 mockup SHA and certified tips
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Modules 001–007 sources byte-identically
+     → expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ✓ src/views/FarmsStudio/__tests__/publicFarmFactory.feesAndHandoffs.test.ts  (10 tests) 1ms
+ ❯ src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts  (8 tests | 2 failed) 1ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > keeps Architecture 000 Founder mockup byte-identical
+     → expected false to be true // Object.is equality
+   ❯ src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > ownership map records Module 001 file assignment
+     → ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ✓ src/views/FarmsStudio/__tests__/farmsFounderAcceptance.test.ts  (9 tests) 2ms
+ ✓ src/views/FarmsStudio/__tests__/farmsFounderAmendmentP0.test.ts  (10 tests) 2ms
+ ✓ src/views/FarmsStudio/__tests__/createFarmUxSimplification.test.ts  (5 tests) 1ms
+ ✓ src/views/FarmsStudio/__tests__/publicFarmFactory.eligibility.test.ts  (8 tests) 1ms
+ ✓ src/views/FarmsStudio/__tests__/publicFarmFactory.uiLock.test.ts  (4 tests)
+ ✓ src/views/FarmsStudio/__tests__/ethereumFarmersCount.test.tsx  (3 tests) 1ms
+ ✓ src/views/FarmsStudio/__tests__/createFarmPairSearchLayout.test.ts  (2 tests)
+ ✓ src/views/FarmsStudio/__tests__/farmsFounderDisplay.test.ts  (3 tests)
+ ✓ src/views/FarmsStudio/__tests__/publicFarmEconomics.test.ts  (3 tests) 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > freezes Architecture tip, Founder mockup, and Modules 001–003 sources
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts:83:30
+     81|     expect(FARMS_ARCHITECTURE_000_TIP.startsWith('8edd68d4')).toBe(tru…
+     82|     const mock = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     83|     expect(existsSync(mock)).toBe(true)
+       |                              ^
+     84|     expect(createHash('sha256').update(readFileSync(mock)).digest('hex…
+     85|     expect(farmsExplore.mockupSha256).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts > FARMS_MODULE_004 Explore Farms > rejects Arbitrum 42161 config-only stubs; fetcher-supported chains stay stakeable
+AssertionError: expected true to be false // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts:191:51
+    189|       } as any,
+    190|     })
+    191|     expect(isActiveStakeableExploreFarm(arbStub)).toBe(false)
+       |                                                   ^
+    192|
+    193|     const bsc = makeCard({
+
+  - Expected   "false"
+  + Received   "true"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Architecture 000 mockup SHA and certified tips
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts:65:32
+     63|   it('freezes Architecture 000 mockup SHA and certified tips', () => {
+     64|     const mockup = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     65|     expect(existsSync(mockup)).toBe(true)
+       |                                ^
+     66|     const hash = createHash('sha256').update(readFileSync(mockup)).dig…
+     67|     expect(hash).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Modules 001–005 sources byte-identically
+AssertionError: expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts:79:78
+     77|     expect(sha('src/views/FarmsStudio/modules/farmsHeroTokens.ts')).to…
+     78|
+     79|     expect(sha('src/views/FarmsStudio/modules/FarmsOverviewKpisModule.…
+       |                                                                              ^
+     80|       FARMS_MODULE_002_FREEZE_SHA256.FarmsOverviewKpisModule,
+     81|     )
+
+  - Expected   "f4d119abf68e9791ee14bc89e7571368591886e1a53b2525f6174bb794a0ba9c"
+  + Received   "0e4ead2da26a915705f18143c47862433df1e259054f9a3ef8c0c5b0c9321a27"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > freezes Architecture tip, Founder mockup, and Modules 001–004 sources
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts:78:30
+     76|     expect(FARMS_ARCHITECTURE_000_TIP.startsWith('8edd68d4')).toBe(tru…
+     77|     const mock = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     78|     expect(existsSync(mock)).toBe(true)
+       |                              ^
+     79|     expect(createHash('sha256').update(readFileSync(mock)).digest('hex…
+     80|     expect(farmsFinished.mockupSha256).toBe(FARMS_FOUNDER_MOCKUP.sha25…
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts > FARMS_MODULE_005 Finished Farms > ships no production mock positions and keeps Explore frozen
+AssertionError: expected '12eac1dd3b6519d3b44a5bddd20c2a46aa515…' to be 'da7e0223f517cf2ad26f02f3b8d3458709501…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts:328:78
+    326|     expect(src).not.toContain('fixtureFinished')
+    327|     // Ensure we did not mutate Explore source (freeze already asserte…
+    328|     expect(sha('src/views/FarmsStudio/modules/FarmsExploreFarmsModule.…
+       |                                                                              ^
+    329|       FARMS_MODULE_004_FREEZE_SHA256.FarmsExploreFarmsModule,
+    330|     )
+
+  - Expected   "da7e0223f517cf2ad26f02f3b8d34587095012859ba07476673a629066c5a6dc"
+  + Received   "12eac1dd3b6519d3b44a5bddd20c2a46aa5154302839dec8a35feb9e2e00e666"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Architecture 000 mockup SHA and certified tips
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts:64:32
+     62|   it('freezes Architecture 000 mockup SHA and certified tips', () => {
+     63|     const mockup = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     64|     expect(existsSync(mockup)).toBe(true)
+       |                                ^
+     65|     const hash = createHash('sha256').update(readFileSync(mockup)).dig…
+     66|     expect(hash).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts > FARMS_MODULE_007 Analytics > freezes Modules 001–006 sources byte-identically
+AssertionError: expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule007.analytics.test.ts:74:78
+     72|   it('freezes Modules 001–006 sources byte-identically', () => {
+     73|     expect(sha('src/views/FarmsStudio/modules/FarmsHeroModule.tsx')).t…
+     74|     expect(sha('src/views/FarmsStudio/modules/FarmsOverviewKpisModule.…
+       |                                                                              ^
+     75|       FARMS_MODULE_002_FREEZE_SHA256.FarmsOverviewKpisModule,
+     76|     )
+
+  - Expected   "f4d119abf68e9791ee14bc89e7571368591886e1a53b2525f6174bb794a0ba9c"
+  + Received   "0e4ead2da26a915705f18143c47862433df1e259054f9a3ef8c0c5b0c9321a27"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > keeps Architecture 000 mockup and Module 001 Hero sources byte-frozen
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts:64:36
+     62|   it('keeps Architecture 000 mockup and Module 001 Hero sources byte-f…
+     63|     const mockupPath = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePa…
+     64|     expect(existsSync(mockupPath)).toBe(true)
+       |                                    ^
+     65|     const mockSha = createHash('sha256').update(readFileSync(mockupPat…
+     66|     expect(mockSha).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts > FARMS_MODULE_002 Overview KPIs > ownership map records Module 002 file assignment
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts:288:17
+    286|
+    287|   it('ownership map records Module 002 file assignment', () => {
+    288|     const map = readFileSync(path.join(WEB, 'docs/runtime/FARMS_MODULE…
+       |                 ^
+    289|     expect(map).toContain('FarmsOverviewKpisModule.tsx')
+    290|     expect(map).toContain('useFarmsOverviewKpis.ts')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts > FARMS_MODULE_003 My Farms > locks mockup and prior module source hashes
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule003.myFarms.test.ts:19:95
+     17| describe('FARMS_MODULE_003 My Farms', () => {
+     18|   it('locks mockup and prior module source hashes', () => {
+     19|     const mock = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath); e…
+       |                                                                                               ^
+     20|     expect(createHash('sha256').update(readFileSync(mock)).digest('hex…
+     21|     expect(farmsMyFarms.mockupSha256).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > locks Founder mockup SHA + Architecture tip
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts:27:32
+     25|   it('locks Founder mockup SHA + Architecture tip', () => {
+     26|     const mockup = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     27|     expect(existsSync(mockup)).toBe(true)
+       |                                ^
+     28|     expect(sha256File(mockup)).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+     29|     expect(sha256File(mockup)).toBe(
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > freezes Modules 001–008 + shared screen byte-identically
+AssertionError: modules/FarmsOverviewKpisModule.tsx: expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts:42:27
+     40|     for (const [rel, expected] of Object.entries(lock.files as Record<…
+     41|       const actual = sha256File(path.join(STUDIO, rel))
+     42|       expect(actual, rel).toBe(expected)
+       |                           ^
+     43|     }
+     44|     for (const [rel, expected] of Object.entries(lock.shared as Record…
+
+  - Expected   "f4d119abf68e9791ee14bc89e7571368591886e1a53b2525f6174bb794a0ba9c"
+  + Received   "0e4ead2da26a915705f18143c47862433df1e259054f9a3ef8c0c5b0c9321a27"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts > FARMS_V1 Final Integration & Certification > evidence pack path exists for certification artifacts
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsV1.finalCertification.test.ts:177:60
+    175|   it('evidence pack path exists for certification artifacts', () => {
+    176|     const evidence = path.join(WEB, 'docs/runtime/farms-v1-final-certi…
+    177|     expect(existsSync(path.join(evidence, 'certify.mjs'))).toBe(true)
+       |                                                            ^
+    178|   })
+    179| })
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > archives Founder mockup with recorded SHA-256 and dimensions
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/mockup-integrity.json'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts:27:7
+     25|   it('archives Founder mockup with recorded SHA-256 and dimensions', (…
+     26|     const meta = JSON.parse(
+     27|       readFileSync(path.join(WEB, 'docs/runtime/farms-architecture-000…
+       |       ^
+     28|     )
+     29|     const mockupPath = path.join(REPO, meta.relativePath)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/mockup-integrity.json",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > locks canonical farm status vocabulary and user actions
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/canonical-farm-status.json'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts:70:7
+     68|     ])
+     69|     const statusDoc = JSON.parse(
+     70|       readFileSync(path.join(WEB, 'docs/runtime/farms-architecture-000…
+       |       ^
+     71|     )
+     72|     expect(statusDoc.vocabulary).toEqual([...FARMS_CANONICAL_STATUS])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/canonical-farm-status.json",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > freezes current /farms mount as LEGACY_IMPLEMENTATION without cutover
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/legacy-implementation-freeze.json'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts:93:7
+     91|
+     92|     const freeze = JSON.parse(
+     93|       readFileSync(path.join(WEB, 'docs/runtime/farms-architecture-000…
+       |       ^
+     94|     )
+     95|     expect(freeze.label).toBe('LEGACY_IMPLEMENTATION')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/farms-architecture-000/legacy-implementation-freeze.json",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts > FARMS_ARCHITECTURE_000 Mockup Lock > validates ownership map, runtime boundaries, dependencies, and report
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts:101:17
+     99|
+    100|   it('validates ownership map, runtime boundaries, dependencies, and r…
+    101|     const map = readFileSync(path.join(WEB, 'docs/runtime/FARMS_MODULE…
+       |                 ^
+    102|     expect(map).toContain('MODULE 001')
+    103|     expect(map).toContain('MODULE 005')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Architecture 000 mockup SHA and certified tips
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts:31:32
+     29|   it('freezes Architecture 000 mockup SHA and certified tips', () => {
+     30|     const mockup = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePath)
+     31|     expect(existsSync(mockup)).toBe(true)
+       |                                ^
+     32|     const hash = createHash('sha256').update(readFileSync(mockup)).dig…
+     33|     expect(hash).toBe(FARMS_FOUNDER_MOCKUP.sha256)
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts > FARMS_MODULE_008 Final Visual Polish > freezes Modules 001–007 sources byte-identically
+AssertionError: expected '0e4ead2da26a915705f18143c47862433df1e…' to be 'f4d119abf68e9791ee14bc89e757136859188…' // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts:41:78
+     39|   it('freezes Modules 001–007 sources byte-identically', () => {
+     40|     expect(sha('src/views/FarmsStudio/modules/FarmsHeroModule.tsx')).t…
+     41|     expect(sha('src/views/FarmsStudio/modules/FarmsOverviewKpisModule.…
+       |                                                                              ^
+     42|       FARMS_MODULE_002_FREEZE_SHA256.FarmsOverviewKpisModule,
+     43|     )
+
+  - Expected   "f4d119abf68e9791ee14bc89e7571368591886e1a53b2525f6174bb794a0ba9c"
+  + Received   "0e4ead2da26a915705f18143c47862433df1e259054f9a3ef8c0c5b0c9321a27"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > keeps Architecture 000 Founder mockup byte-identical
+AssertionError: expected false to be true // Object.is equality
+ ❯ src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts:22:36
+     20|   it('keeps Architecture 000 Founder mockup byte-identical', () => {
+     21|     const mockupPath = path.join(REPO, FARMS_FOUNDER_MOCKUP.relativePa…
+     22|     expect(existsSync(mockupPath)).toBe(true)
+       |                                    ^
+     23|     const bytes = readFileSync(mockupPath)
+     24|     const sha = createHash('sha256').update(bytes).digest('hex')
+
+  - Expected   "true"
+  + Received   "false"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/22]⎯
+
+ FAIL  src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts > FARMS_MODULE_001 Hero > ownership map records Module 001 file assignment
+Error: ENOENT: no such file or directory, open '/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md'
+ ❯ Proxy.readFileSync node:fs:436:20
+ ❯ src/views/FarmsStudio/__tests__/farmsModule001.hero.test.ts:126:17
+    124|
+    125|   it('ownership map records Module 001 file assignment', () => {
+    126|     const map = readFileSync(path.join(WEB, 'docs/runtime/FARMS_MODULE…
+       |                 ^
+    127|     expect(map).toContain('FarmsHeroModule.tsx')
+    128|     expect(map).toContain('farmsHeroTokens.ts')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: {
+  "code": "ENOENT",
+  "errno": -2,
+  "path": "/private/tmp/melega-pool-public-truth/apps/web/docs/runtime/FARMS_MODULE_OWNERSHIP_MAP.md",
+  "syscall": "open",
+}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/22]⎯
+
+ Test Files  10 failed | 12 passed (22)
+      Tests  22 failed | 161 passed (183)
+   Start at  11:05:48
+   Duration  4.70s (transform 2.65s, setup 83ms, collect 4.09s, tests 91ms)

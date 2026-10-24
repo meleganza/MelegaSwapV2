@@ -1,0 +1,1422 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "modal": {
+        "left": 340,
+        "top": 81,
+        "right": 1100,
+        "bottom": 819,
+        "width": 760,
+        "height": 738
+      },
+      "search": {
+        "left": 382,
+        "top": 374,
+        "right": 574,
+        "bottom": 418,
+        "width": 192,
+        "height": 44
+      },
+      "selector": {
+        "left": 369,
+        "top": 279,
+        "right": 494.984375,
+        "bottom": 659,
+        "width": 125.984375,
+        "height": 380
+      },
+      "list": {
+        "left": 382,
+        "top": 426,
+        "right": 481.984375,
+        "bottom": 646,
+        "width": 99.984375,
+        "height": 220
+      },
+      "status": {
+        "left": 504.984375,
+        "top": 279,
+        "right": 754.984375,
+        "bottom": 659,
+        "width": 250,
+        "height": 380
+      },
+      "review": {
+        "left": 786,
+        "top": 185,
+        "right": 1086,
+        "bottom": 624,
+        "width": 300,
+        "height": 439
+      },
+      "close": {
+        "left": 1040,
+        "top": 95,
+        "right": 1084,
+        "bottom": 139,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 382,
+        "top": 354,
+        "right": 481.984375,
+        "bottom": 366,
+        "width": 99.984375,
+        "height": 12
+      },
+      "searchPosition": "static",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 382,
+          "top": 426,
+          "right": 481.984375,
+          "bottom": 496,
+          "width": 99.984375,
+          "height": 70,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 504,
+          "right": 481.984375,
+          "bottom": 630,
+          "width": 99.984375,
+          "height": 126,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 638,
+          "right": 481.984375,
+          "bottom": 764,
+          "width": 99.984375,
+          "height": 126,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 772,
+          "right": 481.984375,
+          "bottom": 842,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 850,
+          "right": 481.984375,
+          "bottom": 920,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 928,
+          "right": 481.984375,
+          "bottom": 998,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1006,
+          "right": 481.984375,
+          "bottom": 1132,
+          "width": 99.984375,
+          "height": 126,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1140,
+          "right": 481.984375,
+          "bottom": 1210,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1218,
+          "right": 481.984375,
+          "bottom": 1288,
+          "width": 99.984375,
+          "height": 70,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1296,
+          "right": 481.984375,
+          "bottom": 1366,
+          "width": 99.984375,
+          "height": 70,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1374,
+          "right": 481.984375,
+          "bottom": 1444,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 1452,
+          "right": 481.984375,
+          "bottom": 1578,
+          "width": 99.984375,
+          "height": 126,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": true
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 382,
+          "top": 426,
+          "right": 481.984375,
+          "bottom": 496,
+          "width": 99.984375,
+          "height": 70,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 504,
+          "right": 481.984375,
+          "bottom": 630,
+          "width": 99.984375,
+          "height": 126,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 382,
+          "top": 638,
+          "right": 481.984375,
+          "bottom": 764,
+          "width": 99.984375,
+          "height": 126,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": true
+        }
+      ],
+      "overflow": [
+        {
+          "testId": "public-farm-pair-search",
+          "tag": "DIV",
+          "width": 124,
+          "scrollWidth": 204
+        },
+        {
+          "tag": "DIV",
+          "width": 100,
+          "scrollWidth": 192
+        },
+        {
+          "tag": "DIV",
+          "width": 100,
+          "scrollWidth": 192
+        },
+        {
+          "testId": "create-farm-pair-dropdown",
+          "tag": "UL",
+          "width": 100,
+          "scrollWidth": 179
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 129
+        },
+        {
+          "testId": "public-farm-pair-option-0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 128
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 58
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 58
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 179
+        },
+        {
+          "testId": "public-farm-pair-option-0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 178
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 108
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 108
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 142
+        },
+        {
+          "testId": "public-farm-pair-option-0xd656c120e843012c33187e8732b83f0c1fc1f858",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 141
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 71
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 71
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 136
+        },
+        {
+          "testId": "public-farm-pair-option-0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 135
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 65
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 65
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 152
+        },
+        {
+          "testId": "public-farm-pair-option-0x2261f5434dd3e352563b09c9e462956082606f5a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 151
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 81
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 81
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 128
+        },
+        {
+          "testId": "public-farm-pair-option-0x5b1405a8157285ab1f5912a05b5fc8023a666346",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 127
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 57
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 57
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 153
+        },
+        {
+          "testId": "public-farm-pair-option-0x9819ba5974e5a5062d9cc91ed1a39e5eeb8d43f8",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 152
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 148
+        },
+        {
+          "testId": "public-farm-pair-option-0xe69b45a33419a5456ea8db9533224d0fc98faae3",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 147
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 77
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 77
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 157
+        },
+        {
+          "testId": "public-farm-pair-option-0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 156
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 86
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 86
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 150
+        },
+        {
+          "testId": "public-farm-pair-option-0x8386dbc0ef580285626379b0505311525290600d",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 149
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 79
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 79
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 137
+        },
+        {
+          "testId": "public-farm-pair-option-0x1db96e2c7d7b286048983089392977b6b52a507a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 136
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 66
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 66
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 153
+        },
+        {
+          "testId": "public-farm-pair-option-0x2b2b1cb7cef2d72fc77bb8405d32e5cd75f5d74a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 152
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        }
+      ],
+      "documentOverflow": false,
+      "listOverflow": true,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 0,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 95
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "modal": {
+        "left": 260,
+        "top": 72,
+        "right": 1020,
+        "bottom": 728,
+        "width": 760,
+        "height": 656
+      },
+      "search": {
+        "left": 302,
+        "top": 365,
+        "right": 494,
+        "bottom": 409,
+        "width": 192,
+        "height": 44
+      },
+      "selector": {
+        "left": 289,
+        "top": 270,
+        "right": 414.984375,
+        "bottom": 650,
+        "width": 125.984375,
+        "height": 380
+      },
+      "list": {
+        "left": 302,
+        "top": 417,
+        "right": 401.984375,
+        "bottom": 637,
+        "width": 99.984375,
+        "height": 220
+      },
+      "status": {
+        "left": 424.984375,
+        "top": 270,
+        "right": 674.984375,
+        "bottom": 650,
+        "width": 250,
+        "height": 380
+      },
+      "review": {
+        "left": 706,
+        "top": 176,
+        "right": 1006,
+        "bottom": 615,
+        "width": 300,
+        "height": 439
+      },
+      "close": {
+        "left": 960,
+        "top": 86,
+        "right": 1004,
+        "bottom": 130,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 302,
+        "top": 345,
+        "right": 401.984375,
+        "bottom": 357,
+        "width": 99.984375,
+        "height": 12
+      },
+      "searchPosition": "static",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 302,
+          "top": 417,
+          "right": 401.984375,
+          "bottom": 487,
+          "width": 99.984375,
+          "height": 70,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 495,
+          "right": 401.984375,
+          "bottom": 621,
+          "width": 99.984375,
+          "height": 126,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 629,
+          "right": 401.984375,
+          "bottom": 755,
+          "width": 99.984375,
+          "height": 126,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 763,
+          "right": 401.984375,
+          "bottom": 833,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 841,
+          "right": 401.984375,
+          "bottom": 911,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 919,
+          "right": 401.984375,
+          "bottom": 989,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 997,
+          "right": 401.984375,
+          "bottom": 1123,
+          "width": 99.984375,
+          "height": 126,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 1131,
+          "right": 401.984375,
+          "bottom": 1201,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 1209,
+          "right": 401.984375,
+          "bottom": 1279,
+          "width": 99.984375,
+          "height": 70,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 1287,
+          "right": 401.984375,
+          "bottom": 1357,
+          "width": 99.984375,
+          "height": 70,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 1365,
+          "right": 401.984375,
+          "bottom": 1435,
+          "width": 99.984375,
+          "height": 70,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 1443,
+          "right": 401.984375,
+          "bottom": 1569,
+          "width": 99.984375,
+          "height": 126,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": true
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 302,
+          "top": 417,
+          "right": 401.984375,
+          "bottom": 487,
+          "width": 99.984375,
+          "height": 70,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 495,
+          "right": 401.984375,
+          "bottom": 621,
+          "width": 99.984375,
+          "height": 126,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": true
+        },
+        {
+          "left": 302,
+          "top": 629,
+          "right": 401.984375,
+          "bottom": 755,
+          "width": 99.984375,
+          "height": 126,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": true
+        }
+      ],
+      "overflow": [
+        {
+          "testId": "public-farm-pair-search",
+          "tag": "DIV",
+          "width": 124,
+          "scrollWidth": 204
+        },
+        {
+          "tag": "DIV",
+          "width": 100,
+          "scrollWidth": 192
+        },
+        {
+          "tag": "DIV",
+          "width": 100,
+          "scrollWidth": 192
+        },
+        {
+          "testId": "create-farm-pair-dropdown",
+          "tag": "UL",
+          "width": 100,
+          "scrollWidth": 179
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 129
+        },
+        {
+          "testId": "public-farm-pair-option-0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 128
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 58
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 58
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 179
+        },
+        {
+          "testId": "public-farm-pair-option-0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 178
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 108
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 108
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 142
+        },
+        {
+          "testId": "public-farm-pair-option-0xd656c120e843012c33187e8732b83f0c1fc1f858",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 141
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 71
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 71
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 136
+        },
+        {
+          "testId": "public-farm-pair-option-0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 135
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 65
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 65
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 152
+        },
+        {
+          "testId": "public-farm-pair-option-0x2261f5434dd3e352563b09c9e462956082606f5a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 151
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 81
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 81
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 128
+        },
+        {
+          "testId": "public-farm-pair-option-0x5b1405a8157285ab1f5912a05b5fc8023a666346",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 127
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 57
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 57
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 153
+        },
+        {
+          "testId": "public-farm-pair-option-0x9819ba5974e5a5062d9cc91ed1a39e5eeb8d43f8",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 152
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 148
+        },
+        {
+          "testId": "public-farm-pair-option-0xe69b45a33419a5456ea8db9533224d0fc98faae3",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 147
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 77
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 77
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 157
+        },
+        {
+          "testId": "public-farm-pair-option-0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 156
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 86
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 86
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 150
+        },
+        {
+          "testId": "public-farm-pair-option-0x8386dbc0ef580285626379b0505311525290600d",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 149
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 79
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 79
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 137
+        },
+        {
+          "testId": "public-farm-pair-option-0x1db96e2c7d7b286048983089392977b6b52a507a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 136
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 66
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 66
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        },
+        {
+          "tag": "LI",
+          "width": 100,
+          "scrollWidth": 153
+        },
+        {
+          "testId": "public-farm-pair-option-0x2b2b1cb7cef2d72fc77bb8405d32e5cd75f5d74a",
+          "tag": "BUTTON",
+          "width": 98,
+          "scrollWidth": 152
+        },
+        {
+          "tag": "DIV",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 82
+        },
+        {
+          "tag": "SPAN",
+          "width": 16,
+          "scrollWidth": 30
+        }
+      ],
+      "documentOverflow": false,
+      "listOverflow": true,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 322,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 86
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "modal": {
+        "left": 1,
+        "top": 83,
+        "right": 389,
+        "bottom": 843,
+        "width": 388,
+        "height": 760
+      },
+      "search": {
+        "left": 41,
+        "top": 375,
+        "right": 233,
+        "bottom": 419,
+        "width": 192,
+        "height": 44
+      },
+      "selector": {
+        "left": 28,
+        "top": 316,
+        "right": 362,
+        "bottom": 660,
+        "width": 334,
+        "height": 344
+      },
+      "list": {
+        "left": 41,
+        "top": 427,
+        "right": 349,
+        "bottom": 647,
+        "width": 308,
+        "height": 220
+      },
+      "status": {
+        "left": 28,
+        "top": 670,
+        "right": 362,
+        "bottom": 940.5,
+        "width": 334,
+        "height": 270.5
+      },
+      "review": {
+        "left": 13,
+        "top": 1391.5,
+        "right": 377,
+        "bottom": 1820.5,
+        "width": 364,
+        "height": 429
+      },
+      "close": {
+        "left": 329,
+        "top": 97,
+        "right": 373,
+        "bottom": 141,
+        "width": 44,
+        "height": 44
+      },
+      "label": {
+        "left": 41,
+        "top": 355,
+        "right": 349,
+        "bottom": 367,
+        "width": 308,
+        "height": 12
+      },
+      "searchPosition": "static",
+      "searchTransform": "none",
+      "searchBoxSizing": "border-box",
+      "cards": [
+        {
+          "left": 41,
+          "top": 427,
+          "right": 349,
+          "bottom": 483,
+          "width": 308,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 491,
+          "right": 349,
+          "bottom": 547,
+          "width": 308,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 555,
+          "right": 349,
+          "bottom": 611,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 619,
+          "right": 349,
+          "bottom": 675,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 683,
+          "right": 349,
+          "bottom": 739,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 747,
+          "right": 349,
+          "bottom": 803,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/VBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 811,
+          "right": 349,
+          "bottom": 867,
+          "width": 308,
+          "height": 56,
+          "text": "GGW/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 875,
+          "right": 349,
+          "bottom": 931,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/CUSDT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 939,
+          "right": 349,
+          "bottom": 995,
+          "width": 308,
+          "height": 56,
+          "text": "SUP/MARCO\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 1003,
+          "right": 349,
+          "bottom": 1059,
+          "width": 308,
+          "height": 56,
+          "text": "GGW/RMBR\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 1067,
+          "right": 349,
+          "bottom": 1123,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/CXRP\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 1131,
+          "right": 349,
+          "bottom": 1187,
+          "width": 308,
+          "height": 56,
+          "text": "Dsun/WBNB\nBNB Chain · 0.01 BNB TVL",
+          "overflow": false
+        }
+      ],
+      "visibleCards": [
+        {
+          "left": 41,
+          "top": 427,
+          "right": 349,
+          "bottom": 483,
+          "width": 308,
+          "height": 56,
+          "text": "M01/ZLT\nBNB Chain",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 491,
+          "right": 349,
+          "bottom": 547,
+          "width": 308,
+          "height": 56,
+          "text": "BNBDOG/WBNB\nBNB Chain · 0.03 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 555,
+          "right": 349,
+          "bottom": 611,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/WBNB\nBNB Chain · 0.06 BNB TVL",
+          "overflow": false
+        },
+        {
+          "left": 41,
+          "top": 619,
+          "right": 349,
+          "bottom": 675,
+          "width": 308,
+          "height": 56,
+          "text": "ZLT/BEAR\nBNB Chain",
+          "overflow": false
+        }
+      ],
+      "overflow": [],
+      "documentOverflow": false,
+      "listOverflow": false,
+      "listScrollable": true,
+      "bodyOverflowY": "auto",
+      "reviewText": "REVIEW\nPair\nBNBDOG/WBNB\nReward\n—\nBudget\n—\nDuration\n—\nEmission\n—\nCreation Fee\n0.25 BNB\nEstimated APR\n—\nACTIVATION FLOW\n1\nCreate or select the LP pair\n2\nSet reward token, budget and duration\n3\nApprove the exact reward budget\n4\nConfirm creation and the displayed fee in your wallet\n5\nThe factory moves the budget into the new farm and activates it\n\nOne flow, two wallet confirmations. The factory never keeps your reward tokens.",
+      "scroll": {
+        "reachable": true,
+        "bodyScrollTop": 542,
+        "bodyScrollable": true,
+        "pageScrollY": 0,
+        "closeVisible": true,
+        "closeTop": 97
+      },
+      "pageErrors": [
+        "This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."
+      ]
+    }
+  ],
+  "failures": [
+    "1440x900: search contained",
+    "1440x900: search/list/status separated",
+    "1440x900: all LP rows fit horizontally",
+    "1440x900: no horizontal overflow",
+    "1440x900: desktop selector/cards minimum widths",
+    "1280x800: search contained",
+    "1280x800: search/list/status separated",
+    "1280x800: all LP rows fit horizontally",
+    "1280x800: no horizontal overflow",
+    "1280x800: desktop selector/cards minimum widths"
+  ]
+}

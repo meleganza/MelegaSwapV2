@@ -87,8 +87,8 @@ const ModeRow = styled.div`
 
 const PairStepLayout = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
-  gap: 10px;
+  grid-template-columns: minmax(286px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 16px;
   align-items: stretch;
 
   > [data-testid='public-farm-pair-mode'],
@@ -99,7 +99,7 @@ const PairStepLayout = styled.div`
   > [data-testid='public-farm-pair-search'],
   > [data-testid='public-farm-eligibility'] {
     margin: 0;
-    min-height: 100%;
+    min-width: 0;
   }
 
   @media (max-width: 760px) {
@@ -126,12 +126,12 @@ const ModeBtn = styled.button<{ $active?: boolean }>`
 
 const Body = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   align-items: start;
   gap: 16px;
   min-width: 0;
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1199px) {
     grid-template-columns: 1fr;
   }
 `
@@ -145,7 +145,7 @@ const FieldsCol = styled.div`
   grid-column: 1;
   grid-row: 1;
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1199px) {
     grid-column: auto;
     grid-row: auto;
     order: 1;
@@ -194,6 +194,11 @@ const inputStyles = `
 
 const InputBox = styled.input`
   ${inputStyles}
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   &::placeholder {
     color: rgba(255, 255, 255, 0.35);
   }
@@ -296,11 +301,16 @@ const PairList = styled.ul`
   flex-direction: column;
   gap: 8px;
   max-height: 220px;
-  overflow: auto;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 `
 
 const PairDropdownItem = styled.button<{ $active?: boolean }>`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -327,6 +337,7 @@ const PairDropdownMeta = styled.div`
 `
 
 const PairDropdownName = styled.span`
+  overflow-wrap: anywhere;
   font-size: 14px;
   font-weight: 700;
   color: #f2f2f2;
@@ -334,6 +345,7 @@ const PairDropdownName = styled.span`
 `
 
 const PairDropdownSub = styled.span`
+  overflow-wrap: anywhere;
   font-size: 11px;
   line-height: 14px;
   color: rgba(255, 255, 255, 0.5);
@@ -451,8 +463,8 @@ const RejectBanner = styled.div`
 `
 
 const PreviewCol = styled.aside`
-  width: 300px;
-  min-width: 300px;
+  width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -466,7 +478,7 @@ const PreviewCol = styled.aside`
   grid-column: 2;
   grid-row: 1;
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1199px) {
     width: 100%;
     min-width: 0;
     position: relative;
