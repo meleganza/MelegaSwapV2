@@ -245,7 +245,7 @@ function TransparencyStack({ mode, compact = false }: { mode: SmartSwapIntelMode
               idle={idle}
             />
           ) : null}
-          <SmartSwapCompactMetrics items={metrics} />
+          {!compact || !idle ? <SmartSwapCompactMetrics items={metrics} /> : null}
           {!compact && !v2View ? <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} /> : null}
         </>
       ) : null}
