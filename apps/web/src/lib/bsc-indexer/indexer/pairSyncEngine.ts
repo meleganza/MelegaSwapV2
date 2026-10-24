@@ -6,14 +6,13 @@ import {
   REORG_SAFETY_BLOCKS,
 } from '../constants'
 import { ammPairEventTopicsOrFilter } from '../eventTopics'
-import { AMM_TOPICS } from '../rpc/chunkedLogs'
 import {
+  AMM_TOPICS,
   getBlockNumber,
   getBlockTimestamp,
   getLogsChunked,
   normalizeMintBurnLog,
   normalizeSwapLog,
-  scanPairEventsFromHead,
   type RawLog,
 } from '../rpc/chunkedLogs'
 import { resolveIndexerStorageForSlug } from '../storage'
@@ -35,8 +34,8 @@ import {
   finalizeAdaptiveTelemetry,
   type AdaptiveScanTelemetry,
 } from './adaptiveGapScan'
+import { FORWARD_CHUNK_BLOCKS, planNearHeadLiveTip } from './liveTipScan'
 
-const FORWARD_CHUNK_BLOCKS = 200
 const MIN_GAP_CHUNK_SIZE = 25
 
 function normalizeLogs(
@@ -179,25 +178,26 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   let gapRangesProcessed = 0
   let gapFillCursor = checkpoint.gapFillCursor ?? bootstrapFloor
   let phase = checkpoint.phase ?? 'bootstrap'
+  let chunkSize = checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS
 
-  // 1) Forward live sync — head tip first when near head
-  const nearHead = gapFillCursor >= forwardHigh - FORWARD_CHUNK_BLOCKS * 2
-  if (nearHead && !deadline?.shouldStop()) {
-    const headScan = await scanPairEventsFromHead({
-      address: pair.pairAddress,
-      maxBlocks: 24,
-      maxLogs: MAX_EVENTS_PER_SYNC - normalized.length,
-      stopBeforeBlock: Math.max(0, forwardHigh - 24),
-    })
-    providerUsed = headScan.providerUsed
-    normalizeLogs(headScan.logs, pair, headScan.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
-    if (headScan.logs.length) {
-      const bn = headScan.lastScannedBlock
-      coverageRanges = addCoverageRange(coverageRanges, { fromBlock: bn, toBlock: forwardHigh })
-      gapFillCursor = Math.max(gapFillCursor, forwardHigh)
+  // 1) Live tip — reorg-unsafe zone only. Confirmed tip is owned by chunked gap-fill.
+  const livePlan = planNearHeadLiveTip({ chainHead, forwardHigh, gapFillCursor })
+  if (livePlan.scanFrom !== null && livePlan.scanTo !== null && !deadline?.shouldStop()) {
+    const liveScan = await scanRange(
+      pair,
+      livePlan.scanFrom,
+      livePlan.scanTo,
+      chunkSize,
+      MAX_EVENTS_PER_SYNC - normalized.length,
+      normalized,
+      deadline,
+    )
+    providerUsed = liveScan.providerUsed
+    chunkSize = Math.max(MIN_GAP_CHUNK_SIZE, liveScan.finalChunkSize)
+    if (!liveScan.aborted) {
       forwardRangesProcessed += 1
-      fromBlock = bn
-      toBlock = forwardHigh
+      fromBlock = livePlan.scanFrom
+      toBlock = livePlan.scanTo
     }
   }
 
@@ -206,7 +206,6 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   const adaptive = Boolean(params.adaptiveGapFill)
   const gapIterationCap = adaptive ? Number.POSITIVE_INFINITY : (params.maxGapRangesPerRun ?? Number.POSITIVE_INFINITY)
   const scanSamples: Array<{ latencyMs: number; blocks: number; failed?: boolean }> = []
-  let chunkSize = checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS
   const gapsAtStart = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
   const blocksRemainingStart = gapsAtStart.reduce((sum, g) => sum + (g.toBlock - g.fromBlock + 1), 0)
   let adaptiveTelemetry = createEmptyAdaptiveTelemetry(
