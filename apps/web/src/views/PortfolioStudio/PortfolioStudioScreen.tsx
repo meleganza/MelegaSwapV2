@@ -37,6 +37,7 @@ import { Metric } from './Metric'
 import { explorerAddressUrl, positionActionLinks, type PositionDomain } from './runtime/buildPortfolioViewModel'
 import { chainLabel } from './helpers'
 import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
+import { McreditsProfileTransfer } from './McreditsProfileTransfer'
 
 const HeroGrid = styled.div`
   display: grid;
@@ -207,6 +208,16 @@ export const PortfolioStudioScreen: React.FC = () => {
           </Grid>
           {model.portfolioValueNote ? <Muted>{model.portfolioValueNote}</Muted> : null}
         </Band>
+
+        {wallet.connected ? (
+          <Band data-portfolio-section="mcredits" data-testid="portfolio-section-mcredits">
+            <BandHead>
+              <BandTitle>Mcredits</BandTitle>
+              <BandMeta>MARCO Passport ↔ DEX profile</BandMeta>
+            </BandHead>
+            <McreditsProfileTransfer />
+          </Band>
+        ) : null}
 
         {/* POSITIONS — Liquidity / Farms / Pools */}
         <Band data-portfolio-section="positions" data-testid="portfolio-section-positions">

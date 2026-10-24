@@ -20,7 +20,7 @@ const MOBILE_ACTIVATION_QUERY =
 
 type MarcoConnectSize = 'compact' | 'standard' | 'full' | 'navbar' | 'floating' | 'icon'
 type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
-type MarcoConnectSdk = {
+export type MarcoConnectSdk = {
   connect: () => Promise<void> | void
   disconnect: () => Promise<void> | void
   getState: () => {
@@ -33,6 +33,16 @@ type MarcoConnectSdk = {
   authorizeMCreditsSpend?: (input: { merchantOrderRef: string; maxAmountMinor: string }) => Promise<{
     ok?: boolean
     mcreditsAuthorization?: string
+    error?: { code?: string; message?: string }
+  }>
+  authorizeMCreditsTransfer?: (input: {
+    surface: 'melega_dex'
+    direction: 'PASSPORT_TO_APP' | 'APP_TO_PASSPORT'
+    amountMinor: string
+  }) => Promise<{
+    ok: boolean
+    mcreditsTransferAuthorization?: string
+    passportSubject?: string
     error?: { code?: string; message?: string }
   }>
   on: (event: 'disconnect', handler: () => void) => void | (() => void)
