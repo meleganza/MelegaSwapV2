@@ -162,7 +162,7 @@ export const FeaturedHomePromotionCard: React.FC<Props> = ({
         ))}
       </PayRow>
       {pay === 'MARCO' ? (
-        <Note data-testid={`${testId}-marco-cashback`}>5% cashback in M-Credits when paying with MARCO.</Note>
+        <Note data-testid={`${testId}-marco-cashback`}>5% cashback in Mcredits when paying with MARCO.</Note>
       ) : (
         <Note>Accepted: BNB · USDT · USDC · MARCO</Note>
       )}

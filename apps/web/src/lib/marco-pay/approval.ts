@@ -99,7 +99,7 @@ export function marcoPayRewardNotice(customerBps: number | null | undefined): st
   if (typeof customerBps !== 'number' || !(customerBps > 0)) return null
   const percent = customerBps / 100
   const shown = Number.isInteger(percent) ? String(percent) : percent.toFixed(1)
-  return `+${shown}% M-Credits received`
+  return `+${shown}% Mcredits received`
 }
 
 export const MARCO_PASSPORT_URL = `${MARCO_PAY_APPROVAL_ORIGIN}/passport`

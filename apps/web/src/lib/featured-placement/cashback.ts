@@ -11,13 +11,13 @@ export function resolveCashbackState(asset: FeaturedPayAsset): CashbackState {
 export function cashbackUserMessage(state: CashbackState): string {
   switch (state) {
     case 'NOT_ELIGIBLE':
-      return 'M-Credits cashback applies only when paying with MARCO.'
+      return 'Mcredits cashback applies only when paying with MARCO.'
     case 'ELIGIBLE_PENDING':
-      return `${FEATURED_OFFER.marcoCashbackMCredits} M-Credits promotional cashback is recorded as pending. It is not credited until the M-Credits fulfillment service confirms.`
+      return `${FEATURED_OFFER.marcoCashbackMCredits} Mcredits promotional cashback is recorded as pending. It is not credited until the Mcredits fulfillment service confirms.`
     case 'FULFILLMENT_SUBMITTED':
       return 'Cashback fulfillment submitted — awaiting confirmation.'
     case 'CREDITED':
-      return 'M-Credits cashback has been credited.'
+      return 'Mcredits cashback has been credited.'
     case 'REVERSAL_PENDING':
       return 'Cashback reversal pending.'
     case 'REVERSED':

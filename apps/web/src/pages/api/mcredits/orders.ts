@@ -75,7 +75,7 @@ const handler: NextApiHandler = async (req, res) => {
       code === 'MCREDITS_AUTHORIZATION_REQUIRED' ? 401 : code === 'SERVICE_NOT_FULFILLABLE' ? 409 : 503
     return res.status(status).json({
       error: code,
-      message: cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.',
+      message: cause instanceof Error ? cause.message : 'Mcredits are temporarily unavailable.',
       payment_id: null,
       approval_url: null,
     })

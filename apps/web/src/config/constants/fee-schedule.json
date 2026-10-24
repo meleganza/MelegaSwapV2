@@ -111,7 +111,7 @@
           "MARCO"
         ],
         "marcoCashbackPercent": 5,
-        "marcoCashbackUnit": "M-Credits"
+        "marcoCashbackUnit": "Mcredits"
       },
       "packages": [
         { "id": "featured_24h", "durationLabel": "24 hours", "usd": 29 },

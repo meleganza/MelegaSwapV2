@@ -306,7 +306,7 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       />
       {pay === 'MARCO' ? (
         <Note data-testid={`${testId}-marco-cashback`}>
-          {FEATURED_OFFER.marcoCashbackPct}% M-Credits promotional cashback on MARCO payments (pending fulfillment).
+          {FEATURED_OFFER.marcoCashbackPct}% Mcredits promotional cashback on MARCO payments (pending fulfillment).
         </Note>
       ) : (
         <Note>{RC_COPY.treasuryNote}</Note>

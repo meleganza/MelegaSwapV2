@@ -337,8 +337,8 @@ export function buildPortfolioSummary(args: {
     ],
     partialValuation,
     note: partialValuation
-      ? 'Portfolio value excludes unpriced assets, M-Credits, and project ownership estimates.'
-      : 'Portfolio value excludes unpriced assets, M-Credits, and project ownership estimates.',
+      ? 'Portfolio value excludes unpriced assets, Mcredits, and project ownership estimates.'
+      : 'Portfolio value excludes unpriced assets, Mcredits, and project ownership estimates.',
   }
 }
 
@@ -433,7 +433,7 @@ export function buildPassportV1Model(input: {
     createProjectHref: LIST_CREATE_PROJECT_HREF,
     claimProjectHref: LIST_CLAIM_PROJECT_HREF,
     mCreditsStatus: 'unavailable',
-    mCreditsNote: 'M-Credits runtime unavailable — not shown as an ERC-20 wallet balance.',
+    mCreditsNote: 'Mcredits runtime unavailable — not shown as an ERC-20 wallet balance.',
   }
 }
 

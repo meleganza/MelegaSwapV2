@@ -847,7 +847,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
         </Row>
         {pay === 'MARCO' ? (
           <Muted style={{ marginBottom: 8 }} data-testid="project-v1-marco-cashback">
-            5% M-Credits Cashback when paying with MARCO.
+            5% Mcredits Cashback when paying with MARCO.
           </Muted>
         ) : null}
         <PrimaryButton type="button" data-testid="project-v1-get-featured">
