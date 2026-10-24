@@ -1,6 +1,7 @@
 /** Review-only standard referral contract. Not wired into DEX checkout. */
 export const MARCO_REFERRAL_G2_CONTRACT_VERSION = 'MARCO_REFERRAL_G2_V1' as const
 export const MELEGA_DEX_REFERRAL_G2_CONSUMER_VERSION = 'melega-dex.referral.g2.v1' as const
+export const MELEGA_DEX_REFERRAL_G2_CONSUMER = 'MELEGASWAP' as const
 
 export const MARCO_REFERRAL_G2_POLICY = Object.freeze({
   active: false,
@@ -20,7 +21,7 @@ export type MelegaDexReferralG2Quote = {
   currency: string
   listedMinor: bigint
   contractVersion: typeof MARCO_REFERRAL_G2_CONTRACT_VERSION
-  consumer: 'MELEGA_DEX'
+  consumer: typeof MELEGA_DEX_REFERRAL_G2_CONSUMER
   consumerVersion: typeof MELEGA_DEX_REFERRAL_G2_CONSUMER_VERSION
   basis: 'LISTED'
   active: false
@@ -55,7 +56,7 @@ export function quoteMelegaDexReferralG2(input: {
   return {
     ...input,
     contractVersion: MARCO_REFERRAL_G2_CONTRACT_VERSION,
-    consumer: 'MELEGA_DEX',
+    consumer: MELEGA_DEX_REFERRAL_G2_CONSUMER,
     consumerVersion: MELEGA_DEX_REFERRAL_G2_CONSUMER_VERSION,
     basis: MARCO_REFERRAL_G2_POLICY.basis,
     active: false,

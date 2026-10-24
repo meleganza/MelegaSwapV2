@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   MARCO_REFERRAL_G2_CONTRACT_VERSION,
   MARCO_REFERRAL_G2_POLICY,
+  MELEGA_DEX_REFERRAL_G2_CONSUMER,
   MELEGA_DEX_REFERRAL_G2_CONSUMER_VERSION,
   quoteMelegaDexReferralG2,
 } from '../g2'
@@ -18,7 +19,7 @@ describe('Melega DEX standard referral G2 review contract', () => {
   it('is versioned and remains inactive with no effective date', () => {
     expect(quote(100n)).toMatchObject({
       contractVersion: MARCO_REFERRAL_G2_CONTRACT_VERSION,
-      consumer: 'MELEGA_DEX',
+      consumer: 'MELEGASWAP',
       consumerVersion: MELEGA_DEX_REFERRAL_G2_CONSUMER_VERSION,
       basis: 'LISTED',
       active: false,
@@ -26,6 +27,7 @@ describe('Melega DEX standard referral G2 review contract', () => {
       claimWindowDays: 90,
     })
     expect(MARCO_REFERRAL_G2_POLICY.effectiveAt).toBeNull()
+    expect(MELEGA_DEX_REFERRAL_G2_CONSUMER).toBe('MELEGASWAP')
   })
 
   it('uses LISTED 100 = customer 90, referral 30, merchant 60', () => {
