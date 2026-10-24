@@ -14,7 +14,7 @@ export type McreditsResult =
   | { ok: true; paymentId: string; status: 'RESERVED' | 'CONFIRMED' | 'RELEASED' }
   | { ok: false; gate: McreditsGate }
 
-type Runtime = {
+export type McreditsRuntime = {
   env?: Record<string, string | undefined>
   fetch?: (input: string, init?: RequestInit) => Promise<Response>
   now?: () => number
@@ -31,7 +31,7 @@ function config(env: Record<string, string | undefined> = process.env): Config {
   }
 }
 
-export function mcreditsCapability(runtime: Runtime = {}):
+export function mcreditsCapability(runtime: McreditsRuntime = {}):
   | { enabled: true; gate: null }
   | { enabled: false; gate: 'PASSPORT_MCREDITS_NOT_CONFIGURED' | 'PASSPORT_MCREDITS_DISABLED' } {
   const cfg = config(runtime.env)
@@ -52,7 +52,7 @@ function signedHeaders(cfg: Config, body: string, now: () => number): Record<str
   }
 }
 
-async function call(path: string, data: Record<string, unknown>, runtime: Runtime) {
+async function call(path: string, data: Record<string, unknown>, runtime: McreditsRuntime) {
   const cfg = config(runtime.env)
   try {
     const body = JSON.stringify(data)
@@ -71,7 +71,7 @@ async function call(path: string, data: Record<string, unknown>, runtime: Runtim
   }
 }
 
-function unavailable(runtime: Runtime): McreditsResult | null {
+function unavailable(runtime: McreditsRuntime): McreditsResult | null {
   const capability = mcreditsCapability(runtime)
   return capability.enabled ? null : { ok: false, gate: capability.gate }
 }
@@ -86,7 +86,7 @@ export async function reservePassportMcredits(input: {
   orderRef: string
   amountMinor: string
   item: string
-}, runtime: Runtime = {}): Promise<McreditsResult> {
+}, runtime: McreditsRuntime = {}): Promise<McreditsResult> {
   const blocked = unavailable(runtime)
   if (blocked) return blocked
   if (!input.customerAuthorization?.trim()) return { ok: false, gate: 'PASSPORT_ORDER_AUTHORIZATION_REQUIRED' }
@@ -111,7 +111,7 @@ export async function reservePassportMcredits(input: {
   return { ok: true, paymentId, status: 'RESERVED' }
 }
 
-async function settle(paymentId: string, action: 'confirm' | 'release', runtime: Runtime, reason?: string): Promise<McreditsResult> {
+async function settle(paymentId: string, action: 'confirm' | 'release', runtime: McreditsRuntime, reason?: string): Promise<McreditsResult> {
   const blocked = unavailable(runtime)
   if (blocked) return blocked
   if (!paymentId.trim()) return { ok: false, gate: 'PASSPORT_MCREDITS_REFUSED' }
@@ -133,5 +133,5 @@ async function settle(paymentId: string, action: 'confirm' | 'release', runtime:
   }
 }
 
-export const confirmPassportMcredits = (paymentId: string, runtime: Runtime = {}) => settle(paymentId, 'confirm', runtime)
-export const releasePassportMcredits = (paymentId: string, reason?: string, runtime: Runtime = {}) => settle(paymentId, 'release', runtime, reason)
+export const confirmPassportMcredits = (paymentId: string, runtime: McreditsRuntime = {}) => settle(paymentId, 'confirm', runtime)
+export const releasePassportMcredits = (paymentId: string, reason?: string, runtime: McreditsRuntime = {}) => settle(paymentId, 'release', runtime, reason)

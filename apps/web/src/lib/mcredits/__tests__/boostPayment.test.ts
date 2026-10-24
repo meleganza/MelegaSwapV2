@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createFeaturedOrder, persistFeaturedOrderDurably } from 'lib/featured-placement/orderStore'
-import { clearMCreditsOrdersForTests, getMCreditsOrder, spendMCreditsForBoost } from 'lib/mcredits/checkout'
+import { clearMCreditsOrdersForTests, getMCreditsOrder, spendMCreditsForBoost as spendRaw } from 'lib/mcredits/checkout'
 import {
   mCreditsCheckoutBlocker,
   refreshMCreditsQuote,
@@ -67,12 +67,33 @@ vi.mock('lib/monetization/trendBoostOrders', () => ({
 function ledger(ok = true) {
   return vi.fn(async (url: string) => {
     if (String(url).includes('/reserve')) {
-      return new Response(JSON.stringify({ ok: true, reservation_id: 'res_1' }), { status: 200 })
+      return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
     }
     if (String(url).includes('/confirm')) {
-      return new Response(JSON.stringify({ ok }), { status: ok ? 200 : 400 })
+      return new Response(JSON.stringify({ ok, payment: ok ? { payment_id: 'res_1' } : null }), { status: ok ? 200 : 400 })
     }
-    return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
+  })
+}
+
+const PROJECT_CONTRACT = '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed'
+
+function spendMCreditsForBoost(input: any) {
+  const packageId = input.serviceId === 'featured' ? 'featured_24h' : 'trend_6h'
+  return spendRaw({
+    ...input,
+    projectContract: PROJECT_CONTRACT,
+    merchantOrderRef: `${PROJECT_CONTRACT}:${input.serviceId}:${packageId}`,
+    customerAuthorization: input.identityToken,
+    mcreditsRuntime: {
+      env: {
+        MARCO_CREDITS_ENABLED: 'true',
+        MARCO_CONNECT_APPLICATION_REF: 'dex_test',
+        MARCO_PAY_API_KEY: 'test_key',
+      },
+      fetch: input.fetchImpl,
+      now: () => 1_700_000_000_000,
+    },
   })
 }
 
@@ -88,18 +109,18 @@ describe('M-Credits Boost payment activation', () => {
 
   it('A. disconnected Passport requires connect', () => {
     setMCreditsPassportForTests({ connected: false, known: false, availableMinor: null, identityToken: null })
-    expect(mCreditsCheckoutBlocker({ usdPrice: 29 })).toBe('Connect MARCO Passport to pay with M-Credits.')
+    expect(mCreditsCheckoutBlocker({ usdPrice: 29 })).toBe('Connect MARCO Passport to pay with Mcredits.')
   })
 
   it('B. connected Passport exposes M-Credits balance', () => {
     setMCreditsPassportForTests({ connected: true, known: true, availableMinor: 5000, identityToken: 'passport_session_test' })
     expect(mCreditsCheckoutBlocker({ usdPrice: 29 })).toBeNull()
-    expect(refreshMCreditsQuote(29)).toEqual({ amountMinor: '2900', display: '≈ 29 M-Credits' })
+    expect(refreshMCreditsQuote(29)).toEqual({ amountMinor: '2900', display: '≈ 29 Mcredits' })
   })
 
   it('C. insufficient M-Credits disables payment with a controlled reason', () => {
     setMCreditsPassportForTests({ connected: true, known: true, availableMinor: 100, identityToken: 'passport_session_test' })
-    expect(mCreditsCheckoutBlocker({ usdPrice: 29 })).toBe('Insufficient M-Credits for this purchase.')
+    expect(mCreditsCheckoutBlocker({ usdPrice: 29 })).toBe('Insufficient Mcredits for this purchase.')
   })
 
   it('D/E. sufficient balance keeps Review and Pay operational with a refreshed quote', () => {
@@ -133,9 +154,9 @@ describe('M-Credits Boost payment activation', () => {
     const fetchImpl = vi.fn(async (url: string) => {
       if (String(url).includes('/reserve')) {
         await gate
-        return new Response(JSON.stringify({ ok: true, reservation_id: 'res_1' }), { status: 200 })
+        return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
       }
-      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+      return new Response(JSON.stringify({ ok: true, payment: { payment_id: 'res_1' } }), { status: 200 })
     })
     const input = {
       projectId: 'mm72',
@@ -177,7 +198,7 @@ describe('M-Credits Boost payment activation', () => {
         identityToken: 'passport_session_test',
         fetchImpl: failing as unknown as typeof fetch,
       }),
-    ).rejects.toThrow(/M-Credits/)
+    ).rejects.toThrow(/Mcredits/)
     const retry = await spendMCreditsForBoost({
       projectId: 'mm72',
       buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
