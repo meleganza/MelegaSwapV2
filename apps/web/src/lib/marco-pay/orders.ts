@@ -68,6 +68,7 @@ export type MarcoPayOrder = {
   listedPriceMinor: string | null
   commissionAmountMinor: string | null
   commissionAsset: 'MARCO' | null
+  referralEconomicsVersion: string | null
   referralDestinationRef?: string | null
   referralCampaignRef?: string | null
   legacyOrderId: string
@@ -138,6 +139,7 @@ function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
     listedPriceMinor: order.listedPriceMinor ?? null,
     commissionAmountMinor: order.commissionAmountMinor ?? null,
     commissionAsset: order.commissionAsset ?? null,
+    referralEconomicsVersion: order.referralEconomicsVersion ?? null,
     referralDestinationRef: order.referralDestinationRef ?? null,
     referralCampaignRef: order.referralCampaignRef ?? null,
   }
@@ -311,6 +313,7 @@ export async function createMarcoPayOrder(input: {
     listedPriceMinor: quote?.listedPriceMinor ?? listedMinor,
     commissionAmountMinor: quote?.commissionAmountMinor ?? null,
     commissionAsset: quote?.commissionAsset ?? null,
+    referralEconomicsVersion: quote?.contractVersion ?? null,
     referralDestinationRef: input.referralDestinationRef ?? null,
     referralCampaignRef: input.referralCampaignRef ?? null,
     legacyOrderId,
@@ -388,6 +391,7 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
       netPaidMinor: referral.net_paid_minor,
       commissionAmountMinor: referral.commission_amount_base,
       commissionAsset: referral.commission_asset,
+      contractVersion: referral.economics_contract_version,
     })
     if (order.listedPriceMinor && economics.listedPriceMinor !== order.listedPriceMinor) throw new Error('REFERRAL_PRICE_MISMATCH')
     if (order.referralDiscountMinor && economics.discountMinor !== order.referralDiscountMinor) {
@@ -395,6 +399,9 @@ function reconcileEvent(order: MarcoPayOrder, event: MarcoPayCompletedEvent) {
     }
     if (order.commissionAmountMinor && economics.commissionAmountMinor !== order.commissionAmountMinor) {
       throw new Error('COMMISSION_MISMATCH')
+    }
+    if (order.referralEconomicsVersion && economics.contractVersion !== order.referralEconomicsVersion) {
+      throw new Error('REFERRAL_ECONOMICS_VERSION_MISMATCH')
     }
   }
   if (!event.test_mode) {

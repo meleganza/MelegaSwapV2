@@ -33,6 +33,7 @@ export type MarcoPayPaymentSession = {
     listedPriceMinor: string
     discountMinor: string
     netPaidMinor: string
+    contractVersion: string
   } | null
 }
 
@@ -62,6 +63,7 @@ type GatewayResponse = {
     listed_price_minor?: string
     discount_minor?: string
     net_paid_minor?: string
+    economics_contract_version?: string
   } | null
   chain_id?: number | string
   chainId?: number | string
@@ -293,6 +295,7 @@ function readReferral(payload: GatewayResponse, payableMinor: string): MarcoPayP
     commission_amount_minor?: string
     commission_amount_base?: string
     commission_asset?: string
+    economics_contract_version?: string
   }
   const commission = extra.commission_amount_base || extra.commission_amount_minor || ''
   try {
@@ -303,14 +306,17 @@ function readReferral(payload: GatewayResponse, payableMinor: string): MarcoPayP
         netPaidMinor: net,
         commissionAmountMinor: commission,
         commissionAsset: extra.commission_asset,
+        contractVersion: extra.economics_contract_version,
       })
     } else {
+      const version = extra.economics_contract_version || 'P0_2_REFERRAL_PRO_V1'
       assertPassportProEconomics({
         listedPriceMinor: listed,
         discountMinor: discount,
         netPaidMinor: net,
-        commissionAmountMinor: ((BigInt(net) * 3_000n) / 10_000n).toString(),
+        commissionAmountMinor: (((version === 'MARCO_REFERRAL_LISTED_30_V2' ? BigInt(listed) : BigInt(net)) * 3_000n) / 10_000n).toString(),
         commissionAsset: extra.commission_asset,
+        contractVersion: version,
       })
     }
   } catch {
@@ -325,6 +331,7 @@ function readReferral(payload: GatewayResponse, payableMinor: string): MarcoPayP
     listedPriceMinor: listed,
     discountMinor: discount,
     netPaidMinor: net,
+    contractVersion: extra.economics_contract_version || 'P0_2_REFERRAL_PRO_V1',
   }
 }
 
