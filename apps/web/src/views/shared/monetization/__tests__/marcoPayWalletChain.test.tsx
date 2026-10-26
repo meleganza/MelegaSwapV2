@@ -2,23 +2,12 @@
 import { useAccount, useSigner } from 'wagmi'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { RC_COPY } from 'lib/monetization/copy'
-import { assessPaymentWalletChain, resolvePaymentWalletForSettlement } from 'lib/monetization/paymentWalletChain'
 import { CommercialCheckoutModal } from '../CommercialCheckoutModal'
 
 vi.mock('wagmi', () => ({
   useAccount: vi.fn(() => ({ address: undefined })),
   useSigner: vi.fn(() => ({ data: undefined })),
 }))
-vi.mock('lib/monetization/paymentWalletChain', async () => {
-  const actual = await vi.importActual<typeof import('lib/monetization/paymentWalletChain')>(
-    'lib/monetization/paymentWalletChain',
-  )
-  return {
-    ...actual,
-    resolvePaymentWalletForSettlement: vi.fn(actual.resolvePaymentWalletForSettlement),
-  }
-})
 vi.mock('components/MarcoWidgets', () => ({
   MarcoPay: ({ onLaunch }: { onLaunch?: () => void }) => (
     <button type="button" data-testid="marco-pay-launch" onClick={() => onLaunch?.()}>
@@ -31,15 +20,16 @@ vi.mock('components/ConnectWalletButton', () => ({
 }))
 
 const ADDRESS = '0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e'
-const WALLET = {
-  to: '0x55d398326f99059ff775485246999027b3197955',
-  value: '0x0',
-  data: '0xa9059cbb',
-  chainId: 56,
-}
+let replaceLocation: ReturnType<typeof vi.fn>
+let closePopup: ReturnType<typeof vi.fn>
+let openPopup: ReturnType<typeof vi.fn>
 
 beforeEach(() => {
   vi.mocked(useAccount).mockReturnValue({ address: ADDRESS, connector: { getProvider: async () => null } } as any)
+  replaceLocation = vi.fn()
+  closePopup = vi.fn()
+  openPopup = vi.fn(() => ({ location: { replace: replaceLocation }, close: closePopup }))
+  vi.stubGlobal('open', openPopup)
   vi.stubGlobal(
     'fetch',
     vi.fn(async (input: string, options?: any) => {
@@ -72,7 +62,6 @@ beforeEach(() => {
             },
             payment_id: 'pay_fixture',
             approval_url: 'https://marco.melega.ai/pay/pay_fixture',
-            wallet: WALLET,
           }),
         }
       }
@@ -92,7 +81,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
-  vi.mocked(resolvePaymentWalletForSettlement).mockReset()
 })
 
 async function openMarcoReview() {
@@ -112,65 +100,36 @@ async function openMarcoReview() {
   await screen.findByText(/awaiting canonical MARCO Pay settlement/)
 }
 
-describe('MARCO Pay payment-wallet chain', () => {
-  it('recognizes a BNB 56 payment wallet even when the wagmi signer still reports Ethereum', async () => {
-    const sendTransaction = vi.fn(async () => ({ hash: `0x${'a'.repeat(64)}` }))
+describe('MARCO Pay Gateway handoff', () => {
+  it('opens only the canonical hosted payment and never sends a DEX wallet transaction', async () => {
+    const sendTransaction = vi.fn()
     vi.mocked(useSigner).mockReturnValue({
       data: { getChainId: async () => 1, sendTransaction: vi.fn() },
     } as any)
-    vi.mocked(resolvePaymentWalletForSettlement).mockResolvedValue({
-      chainId: 56,
-      signer: { sendTransaction },
-      source: 'payment_wallet',
-    })
-    expect(assessPaymentWalletChain(56).ok).toBe(true)
     await openMarcoReview()
     fireEvent.click(screen.getByTestId('marco-pay-launch'))
-    await waitFor(() => expect(sendTransaction).toHaveBeenCalledTimes(1))
-    expect(screen.queryByText(RC_COPY.wrongNetwork)).toBeNull()
-    await waitFor(() => expect(screen.getByTestId('commercial-checkout-processing')).toBeTruthy())
+    await waitFor(() => expect(replaceLocation).toHaveBeenCalledWith('https://marco.melega.ai/pay/pay_fixture'))
+    expect(sendTransaction).not.toHaveBeenCalled()
+    expect(openPopup).toHaveBeenCalledTimes(1)
   })
 
-  it('asks to switch when the payment wallet is on Ethereum and does not fall back to a generic error', async () => {
+  it('does not use the browser wallet chain as payment authority', async () => {
     const sendTransaction = vi.fn()
     vi.mocked(useSigner).mockReturnValue({
       data: { getChainId: async () => 56, sendTransaction },
     } as any)
-    vi.mocked(resolvePaymentWalletForSettlement).mockResolvedValue({
-      chainId: 1,
-      signer: { sendTransaction },
-      source: 'payment_wallet',
-    })
     await openMarcoReview()
     fireEvent.click(screen.getByTestId('marco-pay-launch'))
-    await waitFor(() => expect(screen.getByTestId('commercial-checkout-error').textContent).toBe(RC_COPY.wrongNetwork))
-    expect(screen.getByTestId('wallet-flow-status').getAttribute('data-wallet-stage')).toBe('switch_network')
+    await waitFor(() => expect(replaceLocation).toHaveBeenCalledWith('https://marco.melega.ai/pay/pay_fixture'))
     expect(sendTransaction).not.toHaveBeenCalled()
-    expect(screen.queryByText(RC_COPY.errorRetry)).toBeNull()
   })
 
-  it('double-clicking PAY does not create a second order or transfer', async () => {
-    let release: (() => void) | undefined
-    const gate = new Promise<void>((resolve) => {
-      release = resolve
-    })
-    const sendTransaction = vi.fn(async () => {
-      await gate
-      return { hash: `0x${'b'.repeat(64)}` }
-    })
-    vi.mocked(useSigner).mockReturnValue({
-      data: { getChainId: async () => 56, sendTransaction },
-    } as any)
-    vi.mocked(resolvePaymentWalletForSettlement).mockResolvedValue({
-      chainId: 56,
-      signer: { sendTransaction },
-      source: 'payment_wallet',
-    })
+  it('double-clicking PAY does not create a second order or hosted handoff', async () => {
     await openMarcoReview()
     fireEvent.click(screen.getByTestId('marco-pay-launch'))
     fireEvent.click(screen.getByTestId('marco-pay-launch'))
-    release?.()
-    await waitFor(() => expect(sendTransaction).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(replaceLocation).toHaveBeenCalledTimes(1))
+    expect(openPopup).toHaveBeenCalledTimes(1)
     const creates = (global.fetch as any).mock.calls.filter(
       (call: any[]) => String(call[0]).includes('/api/marco-pay/orders') && call[1]?.method === 'POST',
     )

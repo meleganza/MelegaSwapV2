@@ -49,7 +49,6 @@ import {
   readMarcoPayHandoffSession,
   runMarcoPaySingleFlight,
 } from 'lib/marco-pay/approval'
-import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
@@ -86,7 +85,6 @@ type MarcoPayOrderConfig = {
   reference: string
   paymentId: string
   approvalUrl: string
-  wallet: MarcoPayWalletTransfer | null
   referenceAmountMinor: string
   referralApplied: boolean
   referralCode: string | null
@@ -1715,7 +1713,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const currentOrder = marcoPayOrderRef.current
     if (
       currentOrder?.paymentId &&
-      currentOrder.wallet &&
       isMarcoPayPreparedOrderCurrent(currentOrder, requestedBinding)
     ) {
       setError(null)
@@ -1764,8 +1761,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
         if (!response.ok) throw new Error(marcoPayReviewErrorMessage(payload))
         const session = readMarcoPayHandoffSession(payload)
         if (!session) throw new Error('MARCO Pay is temporarily unavailable.')
-        const wallet = payload.wallet as MarcoPayWalletTransfer | null
-        if (!wallet?.data || !wallet.to) throw new Error('MARCO Pay is temporarily unavailable.')
         const next: MarcoPayOrderConfig = {
           orderId: String(payload.order.orderId),
           application: String(payload.widget.application),
@@ -1775,7 +1770,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           reference: String(payload.widget.reference),
           paymentId: session.paymentId,
           approvalUrl: session.approvalUrl,
-          wallet,
           referenceAmountMinor: String(payload.order.referenceAmountMinor),
           referralApplied: payload.order.referralApplied === true,
           referralCode:
@@ -2346,38 +2340,23 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
     if (isMarcoPay) {
       if (isMarcoPayWalletFlightActive()) return
+      const popup = openMarcoPayHandoffWindow()
       beginMarcoPayIsolation()
       await runMarcoPaySingleFlight(async () => {
         setBusy(true)
         try {
           const order = await prepareMarcoPayOrder()
-          const wallet = order?.wallet
-          if (!order || !wallet) return
-          setWalletStage('confirm')
-          const preferredProvider = (await connector?.getProvider?.()) ?? null
-          const paymentWallet = await resolvePaymentWalletForSettlement({
-            preferredProvider,
-            fallbackSigner: signer ?? null,
-            expectedChainId: wallet.chainId,
-          })
-          const chainGate = assessPaymentWalletChain(paymentWallet.chainId, wallet.chainId)
-          if (chainGate.stage === 'switch_network') {
-            setWalletStage(chainGate.stage)
-            throw new Error(chainGate.message || RC_COPY.wrongNetwork)
+          if (!order) {
+            popup?.close()
+            return
           }
-          if (!paymentWallet.signer) throw new Error(RC_COPY.walletUnavailable)
-          setQuoteSummary('Confirm the MARCO transfer in your wallet')
-          const transaction = await paymentWallet.signer.sendTransaction({
-            to: wallet.to,
-            value: wallet.value,
-            data: wallet.data,
-            chainId: wallet.chainId,
-          })
-          setStatus('submitted')
-          setWalletStage('idle')
-          setSubmittedTxHash(transaction.hash)
-          setQuoteSummary(`Transaction submitted · ${transaction.hash} · verifying MARCO settlement`)
+          setWalletStage('confirm')
+          if (!assignMarcoPayHandoff(popup, { paymentId: order.paymentId, approvalUrl: order.approvalUrl })) {
+            throw new Error('MARCO Pay is temporarily unavailable.')
+          }
+          handleMarcoPayStarted()
         } catch (cause) {
+          popup?.close()
           const message = cause instanceof Error ? cause.message : String(cause)
           if (/reject|denied|cancel/i.test(message)) {
             setStatus('cancelled')
@@ -2392,11 +2371,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           }
           setError(message)
           setWalletStage('error')
-          const order = marcoPayOrderRef.current
-          if (order?.paymentId && order.approvalUrl && !signer) {
-            const popup = openMarcoPayHandoffWindow()
-            assignMarcoPayHandoff(popup, { paymentId: order.paymentId, approvalUrl: order.approvalUrl })
-          }
         } finally {
           setBusy(false)
         }

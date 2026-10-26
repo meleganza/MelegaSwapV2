@@ -4,7 +4,7 @@ import type { NextApiHandler } from 'next'
 import { getMarcoPayApplicationRef, getMarcoPayMerchantApiKey } from 'lib/marco-pay/contract'
 import { resolveMarcoPayWebhookSecret } from 'lib/marco-pay/connectionGrant'
 import { createMarcoPayPaymentSession, MarcoPayGatewayError, quoteMarcoPayConversion } from 'lib/marco-pay/gateway'
-import { assertMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET } from 'lib/marco-pay/settlement'
+import { assertMarcoPaySettlementWallet } from 'lib/marco-pay/settlement'
 import {
   createMarcoPayOrder,
   hydrateMarcoPayOrder,
@@ -14,7 +14,6 @@ import {
   type MarcoPayOrder,
 } from 'lib/marco-pay/orders'
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
-import { buildMarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { passportProEconomicsFromReferralQuote } from 'lib/marco-pay/economics'
 import { resolveMerchantPayRail } from 'lib/marco-pay/merchantRails'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
@@ -71,20 +70,6 @@ function publicOrder(order: MarcoPayOrder) {
   }
 }
 
-function walletPayload(order: MarcoPayOrder) {
-  if (!order.marcoAmountMinor || order.chainId == null || order.networkId === 'solana') return null
-  try {
-    return buildMarcoPayWalletTransfer({
-      marcoAmountMinor: order.marcoAmountMinor,
-      destinationWallet: order.destinationWallet || MARCO_PAY_SETTLEMENT_WALLET,
-      chainId: order.chainId,
-      tokenAddress: order.settlementToken,
-    })
-  } catch {
-    return null
-  }
-}
-
 const handler: NextApiHandler = async (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store')
   if (req.method === 'GET') {
@@ -105,7 +90,6 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(200).json({
       payment_id: order.paymentRef,
       approval_url: order.approvalUrl,
-      wallet: walletPayload(order),
       order: publicOrder(order),
     })
   }
@@ -334,15 +318,10 @@ const handler: NextApiHandler = async (req, res) => {
     if (!bound.paymentRef || !bound.approvalUrl) {
       return res.status(503).json({ error: 'MARCO_PAY_INTENT_UNAVAILABLE', message: 'MARCO Pay did not return a payment session.' })
     }
-    const wallet = walletPayload(bound)
-    if (!wallet && paymentRail.family !== 'solana') {
-      return res.status(503).json({ error: 'WALLET_TRANSFER_UNAVAILABLE', message: 'MARCO Pay is temporarily unavailable.' })
-    }
     return res.status(201).json({
       payment_id: bound.paymentRef,
       approval_url: bound.approvalUrl,
       quote,
-      wallet,
       order: {
         ...publicOrder(bound),
         referenceCurrency: bound.referenceCurrency,
