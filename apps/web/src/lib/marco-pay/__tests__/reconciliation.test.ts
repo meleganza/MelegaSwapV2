@@ -102,6 +102,10 @@ describe('MARCO Pay reconciliation', () => {
   beforeEach(() => {
     process.env.MARCO_PAY_ORDERS_DIR = '/private/tmp/melega-marco-pay-recon-test'
     process.env.TREND_BOOST_ORDERS_DIR = '/private/tmp/melega-marco-pay-recon-trend-test'
+    paidState.status = 'COMPLETED'
+    paidState.completed = true
+    paidState.testMode = false
+    paidState.receiptRef = 'rcp_recon_1'
     paidState.merchantOrderRef = null
     clearMarcoPayOrdersForTests()
     clearTrendBoostOrdersForTests()
@@ -112,7 +116,7 @@ describe('MARCO Pay reconciliation', () => {
     clearTrendBoostOrdersForTests()
   })
 
-  it('fulfils once after a lost callback when MARCO reports paid settlement', async () => {
+  it('does not fulfil from a public COMPLETED poll without the signed gateway event', async () => {
     const order = await createMarcoPayOrder({
       applicationRef: 'app_sedafoqw6qlxyxb9l8ds',
       projectId: 'mm72',
@@ -130,8 +134,31 @@ describe('MARCO Pay reconciliation', () => {
     })
     const first = await reconcileMarcoPayOrder(order.orderId)
     const second = await reconcileMarcoPayOrder(order.orderId)
-    expect(first?.state).toBe('ACTIVE')
-    expect(second?.activatedAt).toBe(first?.activatedAt)
-    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('ACTIVE')
+    expect(first?.state).not.toBe('ACTIVE')
+    expect(second?.state).not.toBe('ACTIVE')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
+  })
+
+  it('does not fulfil when MARCO only reports the intermediate PAID status', async () => {
+    const order = await createMarcoPayOrder({
+      applicationRef: 'app_sedafoqw6qlxyxb9l8ds',
+      projectId: 'mm72',
+      buyerWallet: '0x8fc8ac2af31c67c704da79dc454a6a29507f8fed',
+      serviceId: 'trend-boost',
+      packageId: 'trend_1h',
+    })
+    paidState.status = 'PAID'
+    paidState.completed = true
+    paidState.merchantOrderRef = order.orderId
+    const { updateMarcoPayOrder } = await import('../orders')
+    await updateMarcoPayOrder(order.orderId, {
+      paymentRef: 'pay_recon_paid',
+      marcoAmountMinor: '2840000',
+      destinationWallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      chainId: 56,
+    })
+    const result = await reconcileMarcoPayOrder(order.orderId)
+    expect(result?.state).not.toBe('ACTIVE')
+    expect(getTrendBoostOrder(order.legacyOrderId)?.state).toBe('DRAFT')
   })
 })

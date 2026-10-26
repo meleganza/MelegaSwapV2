@@ -1,5 +1,7 @@
 import { createHmac } from 'crypto'
 import { MARCO_PAY_BASE_URL, MARCO_PAY_SIGNATURE_VERSION } from './contract'
+import { assertPassportProEconomics } from './economics'
+import { assertObservedPayChain, isAuthoritativeMarcoPaidStatus, settlementAssetMatches, merchantRailForChain, merchantRailForNetwork } from './merchantRails'
 import {
   assertLiveMarcoConversion,
   assertMarcoPaySettlementWallet,
@@ -64,6 +66,10 @@ type GatewayResponse = {
   chain_id?: number | string
   chainId?: number | string
   chain?: number | string | { id?: number | string; chain_id?: number | string }
+  token_address?: string
+  tokenAddress?: string
+  mint?: string
+  marco_token?: string
   quote?: {
     marco_amount_minor?: string
     marcoAmountMinor?: string
@@ -195,11 +201,12 @@ async function postSignedMarcoPay(
   return { status: response.status, payload: parseGatewayPayload(raw) }
 }
 
-function readChainId(payload: GatewayResponse): number | null {
+function readChainId(payload: GatewayResponse): { chainId: number | null; invalid: boolean } {
   const nested = typeof payload.chain === 'object' && payload.chain ? payload.chain.id ?? payload.chain.chain_id : payload.chain
   const raw = payload.chain_id ?? payload.chainId ?? nested
+  if (typeof raw === 'string' && raw.trim() && !/^\d+$/.test(raw.trim())) return { chainId: null, invalid: true }
   const value = typeof raw === 'number' ? raw : typeof raw === 'string' && /^\d+$/.test(raw) ? Number(raw) : NaN
-  return Number.isInteger(value) ? value : null
+  return { chainId: Number.isInteger(value) ? value : null, invalid: false }
 }
 
 function readDestination(payload: GatewayResponse): string | null {
@@ -238,10 +245,10 @@ function sessionFromPayload(payload: GatewayResponse, fallbackUsdMinor: string):
     )
   }
   const marcoMinor = readMarcoAmountMinor(payload)
-  const referenceAmountMinor =
-    typeof payload.amount_minor === 'string' && /^\d+$/.test(payload.amount_minor)
-      ? payload.amount_minor
-      : fallbackUsdMinor
+  if (typeof payload.amount_minor === 'string' && payload.amount_minor !== fallbackUsdMinor) {
+    throw new MarcoPayGatewayError('AMOUNT_MISMATCH', 'MARCO Pay returned a different payable amount.')
+  }
+  const referenceAmountMinor = fallbackUsdMinor
   try {
     assertLiveMarcoConversion({ usdMinor: referenceAmountMinor, marcoMinor })
   } catch {
@@ -251,6 +258,18 @@ function sessionFromPayload(payload: GatewayResponse, fallbackUsdMinor: string):
   if (destination && !isCanonicalMarcoPaySettlementWallet(destination)) {
     throw new MarcoPayGatewayError('SETTLEMENT_WALLET_NOT_TREASURY', 'MARCO Pay is temporarily unavailable.')
   }
+  const observedChain = readChainId(payload)
+  let chainId: number | null = null
+  if (observedChain.chainId != null || observedChain.invalid) {
+    try {
+      chainId = assertObservedPayChain(observedChain.chainId, observedChain.invalid)
+    } catch (cause) {
+      throw new MarcoPayGatewayError(
+        cause instanceof Error ? cause.message : 'CHAIN_MISMATCH',
+        'MARCO Pay is temporarily unavailable.',
+      )
+    }
+  }
   return {
     paymentId,
     intentId: readIntentId(payload, paymentId),
@@ -258,21 +277,54 @@ function sessionFromPayload(payload: GatewayResponse, fallbackUsdMinor: string):
     referenceAmountMinor,
     marcoAmountMinor: marcoMinor,
     destinationWallet: destination,
-    chainId: readChainId(payload),
-    referral:
-      payload.referral?.referral_code &&
-      payload.referral.catalog_ref &&
-      payload.referral.listed_price_minor &&
-      payload.referral.discount_minor &&
-      payload.referral.net_paid_minor
-        ? {
-            referralCode: payload.referral.referral_code,
-            catalogRef: payload.referral.catalog_ref,
-            listedPriceMinor: payload.referral.listed_price_minor,
-            discountMinor: payload.referral.discount_minor,
-            netPaidMinor: payload.referral.net_paid_minor,
-          }
-        : null,
+    chainId,
+    referral: readReferral(payload, referenceAmountMinor),
+  }
+}
+
+function readReferral(payload: GatewayResponse, payableMinor: string): MarcoPayPaymentSession['referral'] {
+  const referral = payload.referral
+  if (!referral) return null
+  const listed = referral.listed_price_minor || ''
+  const discount = referral.discount_minor || ''
+  const net = referral.net_paid_minor || ''
+  if (!referral.referral_code || !referral.catalog_ref || !listed || !discount || !net) return null
+  const extra = referral as GatewayResponse['referral'] & {
+    commission_amount_minor?: string
+    commission_amount_base?: string
+    commission_asset?: string
+  }
+  const commission = extra.commission_amount_base || extra.commission_amount_minor || ''
+  try {
+    if (commission) {
+      assertPassportProEconomics({
+        listedPriceMinor: listed,
+        discountMinor: discount,
+        netPaidMinor: net,
+        commissionAmountMinor: commission,
+        commissionAsset: extra.commission_asset,
+      })
+    } else {
+      assertPassportProEconomics({
+        listedPriceMinor: listed,
+        discountMinor: discount,
+        netPaidMinor: net,
+        commissionAmountMinor: ((BigInt(net) * 3_000n) / 10_000n).toString(),
+        commissionAsset: extra.commission_asset,
+      })
+    }
+  } catch {
+    throw new MarcoPayGatewayError('REFERRAL_ECONOMICS_INVALID', 'MARCO Pay is temporarily unavailable.')
+  }
+  if (net !== payableMinor) {
+    throw new MarcoPayGatewayError('AMOUNT_MISMATCH', 'MARCO Pay returned a different payable amount.')
+  }
+  return {
+    referralCode: referral.referral_code.trim().toLowerCase(),
+    catalogRef: referral.catalog_ref,
+    listedPriceMinor: listed,
+    discountMinor: discount,
+    netPaidMinor: net,
   }
 }
 
@@ -327,6 +379,8 @@ export async function createMarcoPayPaymentSession(input: {
   catalogRef?: string | null
   destinationRef?: string | null
   campaignRef?: string | null
+  expectedChainId?: number | null
+  expectedToken?: string | null
   secret: string
   merchantApiKey?: string | null
   nowSeconds?: number
@@ -382,19 +436,65 @@ export async function createMarcoPayPaymentSession(input: {
   if (!isCanonicalMarcoPaySettlementWallet(destinationWallet)) {
     throw new MarcoPayGatewayError('SETTLEMENT_WALLET_NOT_TREASURY', 'MARCO Pay is temporarily unavailable.')
   }
+  if (created.referenceAmountMinor !== input.amountMinor) {
+    throw new MarcoPayGatewayError('AMOUNT_MISMATCH', 'MARCO Pay returned a different payable amount.')
+  }
+  const requestedCode = input.referralCode?.trim().toLowerCase() || ''
+  if (requestedCode) {
+    if (!created.referral || created.referral.referralCode !== requestedCode || created.referral.catalogRef !== input.catalogRef) {
+      throw new MarcoPayGatewayError('REFERRAL_NOT_VERIFIED', 'This Passport PRO referral could not be verified. MARCO Pay was not charged.')
+    }
+  }
+  let chainId: number | null
+  try {
+    if (state.chainInvalid && created.chainId == null) throw new Error('CHAIN_MISMATCH')
+    if (state.chainId != null && created.chainId != null && state.chainId !== created.chainId) throw new Error('CHAIN_MISMATCH')
+    const requested = input.expectedChainId === undefined ? 56 : input.expectedChainId
+    if (requested == null) {
+      if (created.chainId != null || state.chainId != null) throw new Error('CHAIN_MISMATCH')
+      chainId = null
+    } else {
+      const railChain = assertObservedPayChain(requested, false)
+      const observed = created.chainId ?? state.chainId
+      if (observed != null && observed !== railChain) throw new Error('CHAIN_MISMATCH')
+      if (observed == null && requested !== 56) throw new Error('CHAIN_MISMATCH')
+      chainId = observed ?? railChain
+    }
+    const reportedToken = readSettlementAsset(session.payload) || state.settlementToken
+    if (input.expectedToken && reportedToken && !tokenMatchesExpected(input.expectedToken, reportedToken, requested)) {
+      throw new Error('TOKEN_MISMATCH')
+    }
+  } catch (cause) {
+    throw new MarcoPayGatewayError(
+      cause instanceof Error ? cause.message : 'CHAIN_MISMATCH',
+      'MARCO Pay is temporarily unavailable.',
+    )
+  }
   return {
     ...created,
     marcoAmountMinor,
     destinationWallet,
-    chainId: created.chainId ?? state.chainId ?? 56,
+    chainId,
   }
+}
+
+function readSettlementAsset(payload: GatewayResponse): string | null {
+  const value = payload.token_address || payload.tokenAddress || payload.mint || payload.marco_token || ''
+  const trimmed = value.trim()
+  return trimmed || null
+}
+
+function tokenMatchesExpected(expected: string, reported: string, chainId: number | null): boolean {
+  const rail = chainId == null ? merchantRailForNetwork('solana') : merchantRailForChain(chainId)
+  if (!rail) return reported.toLowerCase() === expected.toLowerCase()
+  return settlementAssetMatches(rail, reported) && settlementAssetMatches(rail, expected)
 }
 
 export async function readMarcoPayPublicState(input: {
   applicationRef: string
   paymentId: string
   fetchImpl?: typeof fetch
-}): Promise<{ marcoAmountMinor: string | null; destinationWallet: string | null; chainId: number | null }> {
+}): Promise<{ marcoAmountMinor: string | null; destinationWallet: string | null; chainId: number | null; chainInvalid: boolean; settlementToken: string | null }> {
   const fetchImpl = input.fetchImpl ?? fetch
   try {
     const response = await fetchImpl(`${MARCO_PAY_BASE_URL}/api/public/pay/state`, {
@@ -407,16 +507,19 @@ export async function readMarcoPayPublicState(input: {
       signal: typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8_000) : undefined,
     })
     if (!response.ok) {
-      return { marcoAmountMinor: null, destinationWallet: null, chainId: null }
+      return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false, settlementToken: null }
     }
     const payload = parseGatewayPayload(await response.text())
+    const observed = readChainId(payload)
     return {
       marcoAmountMinor: readMarcoAmountMinor(payload),
       destinationWallet: readDestination(payload),
-      chainId: readChainId(payload),
+      chainId: observed.chainId,
+      chainInvalid: observed.invalid,
+      settlementToken: readSettlementAsset(payload),
     }
   } catch {
-    return { marcoAmountMinor: null, destinationWallet: null, chainId: null }
+    return { marcoAmountMinor: null, destinationWallet: null, chainId: null, chainInvalid: false, settlementToken: null }
   }
 }
 
@@ -430,6 +533,7 @@ export type MarcoPaySettlementState = {
   marcoAmountMinor: string | null
   destinationWallet: string | null
   chainId: number | null
+  settlementToken: string | null
   txHash: string | null
 }
 
@@ -459,6 +563,7 @@ export async function readMarcoPaySettlementState(input: {
     marcoAmountMinor: null,
     destinationWallet: null,
     chainId: null,
+    settlementToken: null,
     txHash: null,
   }
   try {
@@ -475,16 +580,19 @@ export async function readMarcoPaySettlementState(input: {
     const payload = parseGatewayPayload(await response.text())
     const status = readStringField(payload, ['status', 'payment_status', 'state'])
     const completedRaw = (payload as Record<string, unknown>).completed
+    const completed =
+      typeof completedRaw === 'boolean' ? completedRaw : status ? isAuthoritativeMarcoPaidStatus(status) : null
     return {
       status,
-      completed: typeof completedRaw === 'boolean' ? completedRaw : status ? ['COMPLETED', 'PAID', 'SETTLED'].includes(status.toUpperCase()) : null,
+      completed,
       testMode: payload.test_mode === true || payload.testMode === true,
       receiptRef: readStringField(payload, ['receipt_ref', 'receiptRef', 'receipt_id']),
       merchantOrderRef: readStringField(payload, ['merchant_order_ref', 'merchantOrderRef']),
       referenceAmountMinor: readStringField(payload, ['reference_amount_minor', 'amount_minor', 'referenceAmountMinor']),
       marcoAmountMinor: readMarcoAmountMinor(payload),
       destinationWallet: readDestination(payload),
-      chainId: readChainId(payload),
+      chainId: readChainId(payload).chainId,
+      settlementToken: readStringField(payload, ['token_address', 'tokenAddress', 'mint', 'marco_token', 'contract_address']),
       txHash: readStringField(payload, ['tx_hash', 'transaction_hash', 'transactionHash']),
     }
   } catch {
