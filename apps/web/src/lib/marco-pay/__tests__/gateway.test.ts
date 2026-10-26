@@ -177,6 +177,7 @@ describe('MARCO Pay merchant session', () => {
       listedPriceMinor: '2900',
       discountMinor: '290',
       netPaidMinor: '2610',
+      contractVersion: 'P0_2_REFERRAL_PRO_V1',
     })
 
     const rewritten = vi.fn(async () =>

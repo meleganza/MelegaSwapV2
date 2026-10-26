@@ -21,6 +21,7 @@ describe('MARCO Pay multichain repair boundaries', () => {
       netPaidMinor: '2610',
       commissionAmountMinor: '783',
       commissionAsset: 'MARCO',
+      contractVersion: 'P0_2_REFERRAL_PRO_V1',
     })
     expect(BigInt(economics.netPaidMinor) + BigInt(economics.discountMinor)).toBe(BigInt(economics.listedPriceMinor))
   })

@@ -2,16 +2,18 @@
  * Passport PRO checkout economics for Melega DEX.
  *
  * Published Passport basis, read 2026-10-21 from referral resolve and the
- * signed webhook contract: 10% off the listed price, referrer commission 30%
- * of the net actually paid, same asset (MARCO). On a listed 100 that is
- * discount 10, paid 90, referrer 27, merchant remainder 63. A 30-of-listed
- * and merchant-60 split is not what Passport publishes. M-Credits cashback
- * stays a separate ledger.
+ * signed webhook contract: 10% off the listed price. V1 commissions 30% of
+ * net paid; V2, effective 2026-11-01, commissions 30% of immutable listed
+ * price. M-Credits cashback stays a separate ledger.
  */
 
 export const PASSPORT_PRO_CUSTOMER_DISCOUNT_BPS = 1_000
 export const PASSPORT_PRO_COMMISSION_BPS = 3_000
 export const PASSPORT_PRO_COMMISSION_ASSET = 'MARCO' as const
+export const PASSPORT_PRO_ECONOMICS_V1 = 'P0_2_REFERRAL_PRO_V1' as const
+export const PASSPORT_PRO_ECONOMICS_V2 = 'MARCO_REFERRAL_LISTED_30_V2' as const
+export const PASSPORT_PRO_ECONOMICS_V2_EFFECTIVE_FROM = '2026-11-01T00:00:00.000Z' as const
+export type PassportProEconomicsVersion = typeof PASSPORT_PRO_ECONOMICS_V1 | typeof PASSPORT_PRO_ECONOMICS_V2
 
 const MINOR = /^\d+$/
 
@@ -21,6 +23,7 @@ export type PassportProEconomics = {
   netPaidMinor: string
   commissionAmountMinor: string
   commissionAsset: typeof PASSPORT_PRO_COMMISSION_ASSET
+  contractVersion: PassportProEconomicsVersion
 }
 
 export function bpsOfMinor(amountMinor: string, bps: number): string {
@@ -37,8 +40,12 @@ export function passportProNetMinor(listedPriceMinor: string): string {
   return (BigInt(listedPriceMinor) - BigInt(passportProDiscountMinor(listedPriceMinor))).toString()
 }
 
-export function passportProCommissionMinor(netPaidMinor: string): string {
-  return bpsOfMinor(netPaidMinor, PASSPORT_PRO_COMMISSION_BPS)
+export function passportProCommissionMinor(
+  listedPriceMinor: string,
+  netPaidMinor: string = listedPriceMinor,
+  version: PassportProEconomicsVersion = PASSPORT_PRO_ECONOMICS_V1,
+): string {
+  return bpsOfMinor(version === PASSPORT_PRO_ECONOMICS_V2 ? listedPriceMinor : netPaidMinor, PASSPORT_PRO_COMMISSION_BPS)
 }
 
 /** M-Credits, USD, or any other asset is not the PRO commission asset. */
@@ -54,6 +61,7 @@ export type ReferralQuoteWire = {
   net_paid_minor: string
   commission_amount_minor: string
   commission_asset?: string | null
+  economics_contract_version?: string | null
 }
 
 export function passportProEconomicsFromReferralQuote(quote: ReferralQuoteWire): PassportProEconomics {
@@ -63,6 +71,7 @@ export function passportProEconomicsFromReferralQuote(quote: ReferralQuoteWire):
     netPaidMinor: quote.net_paid_minor,
     commissionAmountMinor: quote.commission_amount_minor,
     commissionAsset: quote.commission_asset,
+    contractVersion: quote.economics_contract_version,
   })
 }
 
@@ -72,18 +81,25 @@ export function assertPassportProEconomics(input: {
   netPaidMinor: string
   commissionAmountMinor: string
   commissionAsset?: string | null
+  contractVersion?: string | null
 }): PassportProEconomics {
   const listedPriceMinor = input.listedPriceMinor.trim()
   const discountMinor = input.discountMinor.trim()
   const netPaidMinor = input.netPaidMinor.trim()
   const commissionAmountMinor = input.commissionAmountMinor.trim()
+  const contractVersion = input.contractVersion?.trim() || PASSPORT_PRO_ECONOMICS_V1
+  if (contractVersion !== PASSPORT_PRO_ECONOMICS_V1 && contractVersion !== PASSPORT_PRO_ECONOMICS_V2) {
+    throw new Error('REFERRAL_ECONOMICS_VERSION_INVALID')
+  }
   if (![listedPriceMinor, discountMinor, netPaidMinor, commissionAmountMinor].every((value) => MINOR.test(value))) {
     throw new Error('REFERRAL_ECONOMICS_INVALID')
   }
   if (discountMinor !== passportProDiscountMinor(listedPriceMinor)) throw new Error('DISCOUNT_NOT_10_PERCENT')
   if (netPaidMinor !== (BigInt(listedPriceMinor) - BigInt(discountMinor)).toString()) throw new Error('NET_MISMATCH')
-  if (commissionAmountMinor !== passportProCommissionMinor(netPaidMinor)) {
-    throw new Error('COMMISSION_NOT_30_PERCENT_OF_NET')
+  if (commissionAmountMinor !== passportProCommissionMinor(listedPriceMinor, netPaidMinor, contractVersion)) {
+    throw new Error(contractVersion === PASSPORT_PRO_ECONOMICS_V2
+      ? 'COMMISSION_NOT_30_PERCENT_OF_LISTED'
+      : 'COMMISSION_NOT_30_PERCENT_OF_NET')
   }
   if (!isSameAssetProCommission(input.commissionAsset)) throw new Error('COMMISSION_ASSET_MISMATCH')
   return {
@@ -92,6 +108,7 @@ export function assertPassportProEconomics(input: {
     netPaidMinor,
     commissionAmountMinor,
     commissionAsset: PASSPORT_PRO_COMMISSION_ASSET,
+    contractVersion,
   }
 }
 

@@ -37,6 +37,7 @@ export type MarcoPayReferralFact = {
   net_paid_minor: string
   commission_amount_base: string
   commission_asset: string | null
+  economics_contract_version?: string
 }
 
 /** Gateway CHAIN_OBSERVER proof. Absent means the payment is not chain-proven. */
@@ -235,6 +236,9 @@ function parseReferralFact(value: unknown): MarcoPayReferralFact | null {
     net_paid_minor: requireMinorUnits(referral.net_paid_minor, 'referral.net_paid_minor'),
     commission_amount_base: requireMinorUnits(commission, 'referral.commission_amount_base'),
     commission_asset: referral.commission_asset == null ? null : requireString(referral.commission_asset, 'referral.commission_asset'),
+    economics_contract_version: referral.economics_contract_version == null
+      ? 'P0_2_REFERRAL_PRO_V1'
+      : requireString(referral.economics_contract_version, 'referral.economics_contract_version'),
   }
 }
 
