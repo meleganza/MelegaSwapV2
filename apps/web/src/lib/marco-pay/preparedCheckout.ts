@@ -9,6 +9,7 @@ export const MARCO_PAY_PREPARED_QUOTE_TTL_MS = 10 * 60 * 1000
 export const MARCO_PAY_PROVIDER_UNAVAILABLE = 'MARCO Pay is temporarily unavailable.'
 
 export type MarcoPayPreparedBinding = {
+  networkId?: string
   referralCode: string | null
   packageId: string
   serviceId: string
@@ -28,6 +29,7 @@ export function isMarcoPayPreparedOrderCurrent(
 ): boolean {
   if (!requested.buyerWallet || !requested.targetKey || !requested.packageId || !requested.serviceId) return false
   if (order.referralCode !== requested.referralCode) return false
+  if ((order.networkId ?? 'bnb') !== (requested.networkId ?? 'bnb')) return false
   if (order.packageId !== requested.packageId) return false
   if (order.serviceId !== requested.serviceId) return false
   if (order.buyerWallet.toLowerCase() !== requested.buyerWallet.toLowerCase()) return false

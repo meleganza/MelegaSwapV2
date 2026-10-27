@@ -15,6 +15,7 @@ import {
 } from 'lib/marco-pay/orders'
 import { resolveMarcoPayReadiness } from 'lib/marco-pay/readiness'
 import { buildMarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
+import { parseMarcoPayNetworkId, resolveMarcoPayNetwork } from 'lib/marco-pay/networks'
 import { dexReferralCatalogRef } from 'lib/marco-referral/catalog'
 import { normalizeMarcoReferralCode, quoteMarcoReferralForCheckout } from 'lib/marco-referral/client'
 
@@ -56,6 +57,7 @@ function publicOrder(order: MarcoPayOrder) {
     marcoAmountMinor: order.marcoAmountMinor,
     destinationWallet: order.destinationWallet,
     chainId: order.chainId,
+    networkId: order.networkId,
     referenceAmountMinor: order.referenceAmountMinor,
     referralApplied: Boolean(order.referralCode && order.referralCatalogRef),
     referralCode: order.referralCode,
@@ -72,6 +74,7 @@ function walletPayload(order: MarcoPayOrder) {
       marcoAmountMinor: order.marcoAmountMinor,
       destinationWallet: order.destinationWallet || MARCO_PAY_SETTLEMENT_WALLET,
       chainId: order.chainId ?? 56,
+      networkId: order.networkId ?? 'bnb',
     })
   } catch {
     return null
@@ -121,6 +124,8 @@ const handler: NextApiHandler = async (req, res) => {
   const rawReferralCode = typeof body.referralCode === 'string' ? body.referralCode.trim() : ''
   const referralCode = rawReferralCode ? normalizeMarcoReferralCode(rawReferralCode) : null
   const packageId = body.packageId ? String(body.packageId) : null
+  const requestedNetworkId = parseMarcoPayNetworkId(body.networkId ?? 'bnb')
+  const settlementNetwork = requestedNetworkId ? resolveMarcoPayNetwork({ networkId: requestedNetworkId }) : null
   const referralCatalogRef = referralCode ? dexReferralCatalogRef(packageId) : null
   const referralDestinationRef = referralCode && typeof body.referralDestination === 'string' ? body.referralDestination.trim() : null
   const referralCampaignRef = referralCode && typeof body.referralCampaign === 'string' ? body.referralCampaign.trim() : null
@@ -128,6 +133,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(400).json({ error: 'PROJECT_AND_WALLET_REQUIRED' })
   }
   if (!SERVICES.has(serviceId)) return res.status(400).json({ error: 'SERVICE_UNSUPPORTED' })
+  if (!settlementNetwork) return res.status(400).json({ error: 'NETWORK_UNSUPPORTED' })
   if (rawReferralCode && !referralCode) {
     return res.status(400).json({ error: 'REFERRAL_CODE_INVALID', message: 'This referral code cannot be used.' })
   }
@@ -168,6 +174,7 @@ const handler: NextApiHandler = async (req, res) => {
       existing.referralCatalogRef === referralCatalogRef &&
       existing.referralDestinationRef === referralDestinationRef &&
       existing.referralCampaignRef === referralCampaignRef &&
+      existing.networkId === settlementNetwork.id &&
       checkoutTokenAddressesMatch(existing.projectContract, requestedContract) &&
       OPEN_STATES.has(existing.state)
         ? existing
@@ -184,6 +191,7 @@ const handler: NextApiHandler = async (req, res) => {
             referralCatalogRef,
             referralDestinationRef,
             referralCampaignRef,
+            networkId: settlementNetwork.id,
           })
     const secret = await resolveMarcoPayWebhookSecret()
     const merchantApiKey = getMarcoPayMerchantApiKey()
@@ -223,6 +231,9 @@ const handler: NextApiHandler = async (req, res) => {
           catalogRef: order.referralCatalogRef,
           destinationRef: order.referralDestinationRef,
           campaignRef: order.referralCampaignRef,
+          networkId: settlementNetwork.id,
+          chainId: settlementNetwork.chainId,
+          settlementWallet: settlementNetwork.treasuryWallet,
         })
         quote = {
           reference_amount_minor: session.referenceAmountMinor,
@@ -241,7 +252,8 @@ const handler: NextApiHandler = async (req, res) => {
             referralDiscountMinor: session.referral?.discountMinor ?? null,
             marcoAmountMinor: session.marcoAmountMinor,
             destinationWallet: session.destinationWallet,
-            chainId: session.chainId ?? 56,
+            chainId: session.chainId ?? settlementNetwork.chainId,
+            networkId: session.networkId ?? settlementNetwork.id,
           })) ?? order
       } catch (cause) {
         const code = cause instanceof MarcoPayGatewayError ? cause.code : 'MARCO_PAY_INTENT_UNAVAILABLE'

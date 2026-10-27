@@ -1,4 +1,11 @@
 import { MELEGA_TREASURY_WALLET_ADDRESS } from 'config/dexEconomicAuthority'
+import {
+  MARCO_PAY_EVM_TREASURY,
+  MARCO_PAY_NETWORKS,
+  type MarcoPayNetworkId,
+  resolveMarcoPayNetwork,
+  sameMarcoPayWallet,
+} from './networks'
 
 export const MARCO_PAY_SETTLEMENT_WALLET = MELEGA_TREASURY_WALLET_ADDRESS
 
@@ -30,6 +37,27 @@ export function isCanonicalMarcoPaySettlementWallet(value: string | null | undef
   return wallet === normalizeWallet(MARCO_PAY_SETTLEMENT_WALLET)
 }
 
+export function isCanonicalMarcoPayNetworkSettlementWallet(
+  networkId: MarcoPayNetworkId,
+  value: string | null | undefined,
+): boolean {
+  return sameMarcoPayWallet(value, MARCO_PAY_NETWORKS[networkId].treasuryWallet)
+}
+
+export function assertMarcoPayNetworkSettlement(input: {
+  networkId?: unknown
+  chainId?: unknown
+  wallet?: string | null
+}) {
+  const selected = resolveMarcoPayNetwork(input)
+  if (!selected) throw new Error('NETWORK_UNSUPPORTED')
+  if (input.chainId != null && selected.chainId !== input.chainId) throw new Error('CHAIN_MISMATCH')
+  if (!isCanonicalMarcoPayNetworkSettlementWallet(selected.id, input.wallet || selected.treasuryWallet)) {
+    throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
+  }
+  return selected
+}
+
 export function resolveMarcoPaySettlementWallet(): {
   ok: boolean
   wallet: string | null
@@ -40,7 +68,7 @@ export function resolveMarcoPaySettlementWallet(): {
   if (primary && alias && normalizeWallet(primary) !== normalizeWallet(alias)) {
     return { ok: false, wallet: null, reason: 'SETTLEMENT_WALLET_CONFLICT' }
   }
-  const wallet = primary || alias || MARCO_PAY_SETTLEMENT_WALLET
+  const wallet = primary || alias || MARCO_PAY_EVM_TREASURY
   if (isForbiddenSettlementWallet(wallet)) {
     return { ok: false, wallet: null, reason: 'SETTLEMENT_WALLET_INVALID' }
   }

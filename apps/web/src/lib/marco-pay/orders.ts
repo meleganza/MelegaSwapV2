@@ -21,13 +21,17 @@ import {
 import {
   getFeaturedPackage,
   getVisibilityPackage,
-  MONETIZATION_TREASURY,
   type VisibilityProductId,
 } from 'lib/monetization/packages'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
 import type { MarcoPayCompletedEvent, MarcoPayLifecycleEvent, MarcoPaySignedEvent } from './contract'
-import { isCanonicalMarcoPaySettlementWallet, MARCO_PAY_SETTLEMENT_WALLET, usdCopiedToMarco } from './settlement'
-import { MARCO_PAY_CHAIN_ID } from './walletTransfer'
+import {
+  assertMarcoPayNetworkSettlement,
+  isCanonicalMarcoPaySettlementWallet,
+  MARCO_PAY_SETTLEMENT_WALLET,
+  usdCopiedToMarco,
+} from './settlement'
+import { type MarcoPayNetworkId, resolveMarcoPayNetwork } from './networks'
 import { readMarcoPaySettlementState, type MarcoPaySettlementState } from './gateway'
 
 export type MarcoPayOrderState =
@@ -72,6 +76,7 @@ export type MarcoPayOrder = {
   marcoAmountMinor: string | null
   destinationWallet: string | null
   chainId: number | null
+  networkId: MarcoPayNetworkId | null
   txHash: string | null
   testMode: boolean | null
   createdAt: string
@@ -127,6 +132,7 @@ function hydrate(order: MarcoPayOrder | null): MarcoPayOrder | null {
     referralDiscountMinor: order.referralDiscountMinor ?? null,
     referralDestinationRef: order.referralDestinationRef ?? null,
     referralCampaignRef: order.referralCampaignRef ?? null,
+    networkId: order.networkId ?? resolveMarcoPayNetwork({ chainId: order.chainId })?.id ?? null,
   }
   MEMORY.set(next.orderId, next)
   return next
@@ -235,7 +241,10 @@ export async function createMarcoPayOrder(input: {
   referralCatalogRef?: string | null
   referralDestinationRef?: string | null
   referralCampaignRef?: string | null
+  networkId?: MarcoPayNetworkId | null
 }): Promise<MarcoPayOrder> {
+  const settlementNetwork = resolveMarcoPayNetwork({ networkId: input.networkId ?? 'bnb' })
+  if (!settlementNetwork) throw new Error('NETWORK_UNSUPPORTED')
   const pkg =
     input.serviceId === 'featured'
       ? getFeaturedPackage(input.packageId)
@@ -294,8 +303,9 @@ export async function createMarcoPayOrder(input: {
     approvalUrl: null,
     receiptRef: null,
     marcoAmountMinor: null,
-    destinationWallet: null,
-    chainId: null,
+    destinationWallet: settlementNetwork.treasuryWallet,
+    chainId: settlementNetwork.chainId,
+    networkId: settlementNetwork.id,
     txHash: null,
     testMode: null,
     createdAt: now,
@@ -357,7 +367,11 @@ function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
   if (order.destinationWallet && !isCanonicalMarcoPaySettlementWallet(order.destinationWallet)) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (order.chainId != null && order.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  assertMarcoPayNetworkSettlement({
+    networkId: order.networkId ?? undefined,
+    chainId: order.chainId ?? undefined,
+    wallet: order.destinationWallet,
+  })
   if (
     order.marcoAmountMinor &&
     usdCopiedToMarco({ usdMinor: order.referenceAmountMinor, marcoMinor: order.marcoAmountMinor })
@@ -367,9 +381,15 @@ function assertLiveFulfilmentPreconditions(order: MarcoPayOrder) {
 }
 
 async function activatePlacement(order: MarcoPayOrder): Promise<void> {
+  const settlement = assertMarcoPayNetworkSettlement({
+    networkId: order.networkId ?? undefined,
+    chainId: order.chainId ?? undefined,
+    wallet: order.destinationWallet,
+  })
   if (order.serviceId === 'featured') {
     const existing = (await hydrateFeaturedOrder(order.legacyOrderId)) ?? getFeaturedOrder(order.legacyOrderId)
-    if (existing?.treasuryWallet && !isCanonicalMarcoPaySettlementWallet(existing.treasuryWallet)) {
+    if (existing?.treasuryWallet && !isCanonicalMarcoPaySettlementWallet(existing.treasuryWallet)
+      && existing.treasuryWallet !== settlement.treasuryWallet) {
       throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
     }
     const alreadyScheduled = Boolean(
@@ -391,7 +411,7 @@ async function activatePlacement(order: MarcoPayOrder): Promise<void> {
           scheduledStart: window.start,
           scheduledEnd: window.end,
           rotationStatus: 'candidate',
-          treasuryWallet: MARCO_PAY_SETTLEMENT_WALLET,
+          treasuryWallet: settlement.treasuryWallet,
           lastError: null,
         })
     if (!legacy) throw new Error('FULFILMENT_ORDER_MISSING')
@@ -403,14 +423,13 @@ async function activatePlacement(order: MarcoPayOrder): Promise<void> {
     state: 'PAYMENT_CONFIRMED',
     paymentStatus: 'confirmed',
     receiptVerified: true,
-    treasuryWallet: MONETIZATION_TREASURY,
+    treasuryWallet: settlement.treasuryWallet,
     lastError: null,
   })
   if (!current) throw new Error('FULFILMENT_ORDER_MISSING')
-  if (!isCanonicalMarcoPaySettlementWallet(current.treasuryWallet)) {
+  if (current.treasuryWallet !== settlement.treasuryWallet) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (current.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
   const activated = activateVerifiedTrendBoostWindow(order.legacyOrderId)
   if (!activated) throw new Error('ACTIVATION_PRECONDITION_FAILED')
   await persistTrendBoostOrderDurably(activated)
@@ -464,14 +483,19 @@ export async function reconcileMarcoPayOrder(orderRef: string): Promise<MarcoPay
   if (state.destinationWallet && !isCanonicalMarcoPaySettlementWallet(state.destinationWallet)) {
     throw new Error('SETTLEMENT_WALLET_NOT_TREASURY')
   }
-  if (state.chainId != null && state.chainId !== MARCO_PAY_CHAIN_ID) throw new Error('CHAIN_MISMATCH')
+  const network = assertMarcoPayNetworkSettlement({
+    networkId: order.networkId ?? undefined,
+    chainId: state.chainId ?? order.chainId ?? undefined,
+    wallet: state.destinationWallet ?? order.destinationWallet,
+  })
   if (!state.receiptRef && !order.receiptRef) throw new Error('RECEIPT_REQUIRED')
   const confirmed = await updateMarcoPayOrder(order.orderId, {
     state: 'PAYMENT_CONFIRMED',
     receiptRef: state.receiptRef || order.receiptRef,
     marcoAmountMinor: state.marcoAmountMinor || order.marcoAmountMinor,
-    destinationWallet: MARCO_PAY_SETTLEMENT_WALLET,
-    chainId: MARCO_PAY_CHAIN_ID,
+    destinationWallet: network.treasuryWallet,
+    chainId: network.chainId,
+    networkId: network.id,
     txHash: state.txHash || order.txHash,
     testMode: false,
   })
@@ -559,8 +583,9 @@ export async function processMarcoPayCompletedEvent(event: MarcoPayCompletedEven
     intentRef: event.intent_ref,
     receiptRef: event.receipt_ref,
     marcoAmountMinor: event.marco_amount_minor,
-    destinationWallet: order.destinationWallet || MARCO_PAY_SETTLEMENT_WALLET,
-    chainId: order.chainId || MARCO_PAY_CHAIN_ID,
+    destinationWallet:
+      order.destinationWallet || resolveMarcoPayNetwork({ networkId: order.networkId, chainId: order.chainId })?.treasuryWallet || MARCO_PAY_SETTLEMENT_WALLET,
+    chainId: order.chainId,
     testMode: false,
   })
   if (!confirmed) throw new Error('ORDER_NOT_FOUND')

@@ -61,6 +61,13 @@ describe('payment wallet chain source of truth', () => {
     expect(afterSwitch.message).toBeNull()
   })
 
+  it('validates the selected authorised EVM settlement chain', () => {
+    expect(assessPaymentWalletChain(137, 137).ok).toBe(true)
+    expect(assessPaymentWalletChain(56, 137).stage).toBe('switch_network')
+    expect(assessPaymentWalletChain(4663, 4663).ok).toBe(true)
+    expect(assessPaymentWalletChain(5042, 5042).ok).toBe(true)
+  })
+
   it('falls back to the supplied signer only when no payment wallet provider exists', async () => {
     const fallback = { getChainId: async () => 56, sendTransaction: vi.fn() }
     const resolved = await resolvePaymentWalletForSettlement({ fallbackSigner: fallback })

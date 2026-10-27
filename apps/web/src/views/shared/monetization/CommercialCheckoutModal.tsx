@@ -49,7 +49,8 @@ import {
   readMarcoPayHandoffSession,
   runMarcoPaySingleFlight,
 } from 'lib/marco-pay/approval'
-import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
+import type { MarcoPayTransferTarget } from 'lib/marco-pay/walletTransfer'
+import { MARCO_PAY_NETWORK_LIST, type MarcoPayNetworkId } from 'lib/marco-pay/networks'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
@@ -86,7 +87,8 @@ type MarcoPayOrderConfig = {
   reference: string
   paymentId: string
   approvalUrl: string
-  wallet: MarcoPayWalletTransfer | null
+  wallet: MarcoPayTransferTarget | null
+  networkId: MarcoPayNetworkId
   referenceAmountMinor: string
   referralApplied: boolean
   referralCode: string | null
@@ -1317,6 +1319,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [service, setService] = useState<CommercialServiceId | null>(initialService)
   const [selectedPackageId, setSelectedPackageId] = useState<string>('')
   const [identityChain, setIdentityChain] = useState(chainId)
+  const [settlementNetworkId, setSettlementNetworkId] = useState<MarcoPayNetworkId>('bnb')
   const [contract, setContract] = useState(projectContract ?? '')
   const [detected, setDetected] = useState<DetectedProject | null>(null)
   const [detecting, setDetecting] = useState(false)
@@ -1704,6 +1707,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const targetKey = preparedTargetKey(bound.chainId, bound.tokenAddress)
     const packageId = String(selectedPackage.id)
     const requestedBinding = {
+      networkId: settlementNetworkId,
       referralCode: requestedReferralCode,
       packageId,
       serviceId: service,
@@ -1726,6 +1730,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       requestedBinding.serviceId,
       requestedBinding.packageId,
       requestedBinding.referralCode ?? '',
+      requestedBinding.networkId,
     ].join('|')
     if (prepareFlightRef.current && prepareFlightBindingRef.current === bindingKey) return prepareFlightRef.current
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
@@ -1755,14 +1760,17 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             referralCode: requestedReferralCode,
             referralDestination: requestedReferralCode ? referralContext?.destinationRef ?? null : null,
             referralCampaign: requestedReferralCode ? referralContext?.campaignRef ?? null : null,
+            networkId: settlementNetworkId,
           }),
         })
         const payload = await response.json()
         if (!response.ok) throw new Error(marcoPayReviewErrorMessage(payload))
         const session = readMarcoPayHandoffSession(payload)
         if (!session) throw new Error('MARCO Pay is temporarily unavailable.')
-        const wallet = payload.wallet as MarcoPayWalletTransfer | null
-        if (!wallet?.data || !wallet.to) throw new Error('MARCO Pay is temporarily unavailable.')
+        const wallet = payload.wallet as MarcoPayTransferTarget | null
+        if (!wallet || (wallet.family === 'evm' && (!wallet.data || !wallet.to))) {
+          throw new Error('MARCO Pay is temporarily unavailable.')
+        }
         const next: MarcoPayOrderConfig = {
           orderId: String(payload.order.orderId),
           application: String(payload.widget.application),
@@ -1773,6 +1781,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           paymentId: session.paymentId,
           approvalUrl: session.approvalUrl,
           wallet,
+          networkId: settlementNetworkId,
           referenceAmountMinor: String(payload.order.referenceAmountMinor),
           referralApplied: payload.order.referralApplied === true,
           referralCode:
@@ -1818,6 +1827,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     detected,
     farmTarget,
     identityChain,
+    settlementNetworkId,
     marcoPayReadiness,
     poolTarget,
     projectContract,
@@ -2351,11 +2361,20 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           if (!order || !wallet) return
           setWalletStage('confirm')
           const preferredProvider = (await connector?.getProvider?.()) ?? null
+          if (wallet.family === 'solana') {
+            const popup = openMarcoPayHandoffWindow()
+            assignMarcoPayHandoff(popup, { paymentId: order.paymentId, approvalUrl: order.approvalUrl })
+            setStatus('marco_pay_started')
+            setWalletStage('idle')
+            setQuoteSummary('Continue the Solana MARCO payment in MARCO Passport')
+            return
+          }
           const paymentWallet = await resolvePaymentWalletForSettlement({
             preferredProvider,
             fallbackSigner: signer ?? null,
+            expectedChainId: wallet.chainId,
           })
-          const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
+          const chainGate = assessPaymentWalletChain(paymentWallet.chainId, wallet.chainId)
           if (chainGate.stage === 'switch_network') {
             setWalletStage(chainGate.stage)
             throw new Error(chainGate.message || RC_COPY.wrongNetwork)
@@ -2714,11 +2733,23 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             <div data-testid="commercial-step-chain">
               <Label>Settlement network</Label>
               <ChipRow>
-                <Chip type="button" $on>
-                  BNB Chain
-                </Chip>
+                {MARCO_PAY_NETWORK_LIST.map((network) => (
+                  <Chip
+                    key={network.id}
+                    type="button"
+                    $on={settlementNetworkId === network.id}
+                    onClick={() => {
+                      setSettlementNetworkId(network.id)
+                      setMarcoPayOrder(null)
+                      setError(null)
+                    }}
+                    data-testid={`commercial-settlement-network-${network.id}`}
+                  >
+                    {network.label}
+                  </Chip>
+                ))}
               </ChipRow>
-              <Meta style={{ marginTop: 8 }}>Selected automatically for commercial placements.</Meta>
+              <Meta style={{ marginTop: 8 }}>MARCO Pay settles only to the registered treasury for this network.</Meta>
             </div>
           ) : null}
 
@@ -2763,7 +2794,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                       {asset === 'M_CREDITS' ? <PaymentBetaBadge data-testid="mcredits-beta-badge">BETA</PaymentBetaBadge> : null}
                       <PaymentAssetLogo asset={asset} />
                       <PaymentName>{meta.label}</PaymentName>
-                      <PaymentNetwork>BNB Chain</PaymentNetwork>
+                      <PaymentNetwork>
+                        {asset === 'MARCO_PAY'
+                          ? MARCO_PAY_NETWORK_LIST.find((network) => network.id === settlementNetworkId)?.label
+                          : 'BNB Chain'}
+                      </PaymentNetwork>
                       {asset === 'MARCO_PAY' && marcoPayReadiness?.rewards?.customerLabel ? (
                         <PremiumCashbackSticker>{marcoPayReadiness.rewards.customerLabel}</PremiumCashbackSticker>
                       ) : null}
@@ -2789,7 +2824,11 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   </SettlementCell>
                   <SettlementCell>
                     <SettlementLabel>Network</SettlementLabel>
-                    <SettlementValue>BNB Chain</SettlementValue>
+                    <SettlementValue>
+                      {pay === 'MARCO_PAY'
+                        ? MARCO_PAY_NETWORK_LIST.find((network) => network.id === settlementNetworkId)?.label
+                        : 'BNB Chain'}
+                    </SettlementValue>
                   </SettlementCell>
                 </SettlementMain>
                 <SettlementNote>
@@ -2829,7 +2868,12 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </ReviewRow>
                     <ReviewRow>
                       <span>Settlement</span>
-                      <strong>{paymentLabel} on BNB Chain</strong>
+                      <strong>
+                        {paymentLabel} on{' '}
+                        {isMarcoPay
+                          ? MARCO_PAY_NETWORK_LIST.find((network) => network.id === settlementNetworkId)?.label
+                          : 'BNB Chain'}
+                      </strong>
                     </ReviewRow>
                     {marcoPayOrder?.referralApplied ? (
                       <ReviewRow>

@@ -8,6 +8,7 @@ import {
   signMarcoPayMerchantRequest,
   MarcoPayGatewayError,
 } from '../gateway'
+import { MARCO_PAY_NETWORK_LIST } from '../networks'
 
 const applicationRef = 'app_sedafoqw6qlxyxb9l8ds'
 const secret = 'test_merchant_secret_only'
@@ -54,6 +55,98 @@ describe('MARCO Pay merchant session', () => {
       }),
     ).toThrowError(MarcoPayGatewayError)
   })
+
+  it('binds the authorised settlement network and treasury inside the signed body', () => {
+    const rawBody = buildMarcoPayCreateBody({
+      applicationRef,
+      merchantOrderRef: 'mp_polygon_order_1',
+      amountMinor: '2900',
+      currency: 'USD',
+      item: 'trend-boost',
+      networkId: 'polygon',
+      chainId: 137,
+      settlementWallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      referralCode: 'founder-1',
+      catalogRef: 'mpp_ref_dex_trend_6h',
+    })
+    expect(JSON.parse(rawBody)).toMatchObject({
+      settlement_network: 'polygon',
+      chain_id: 137,
+      receiving_wallet: '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
+      referral_code: 'founder-1',
+      catalog_ref: 'mpp_ref_dex_trend_6h',
+    })
+  })
+
+  it.each(MARCO_PAY_NETWORK_LIST)('accepts only provider-confirmed settlement on $label', async (network) => {
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (String(url).includes('/api/public/pay/state')) return jsonResponse({ ok: true })
+      expect(JSON.parse(String(init?.body))).toMatchObject({
+        settlement_network: network.id,
+        receiving_wallet: network.treasuryWallet,
+      })
+      if (network.chainId == null) {
+        expect(JSON.parse(String(init?.body))).not.toHaveProperty('chain_id')
+      } else {
+        expect(JSON.parse(String(init?.body))).toHaveProperty('chain_id', network.chainId)
+      }
+      return jsonResponse({
+        ok: true,
+        payment_id: `pay_${network.id}_confirmed`,
+        marco_amount_minor: '2840000',
+        network_id: network.id,
+        chain_id: network.chainId,
+        receiving_wallet: network.treasuryWallet,
+      })
+    })
+    const session = await createMarcoPayPaymentSession({
+      applicationRef,
+      merchantOrderRef: `mp_${network.id}_confirmed_1`,
+      amountMinor: '900',
+      currency: 'USD',
+      networkId: network.id,
+      secret,
+      merchantApiKey,
+      nowSeconds: now,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })
+    expect(session.networkId).toBe(network.id)
+    expect(session.destinationWallet).toBe(network.treasuryWallet)
+  })
+
+  it.each(MARCO_PAY_NETWORK_LIST.filter((network) => network.id !== 'bnb'))(
+    'fails closed when $label is requested but the provider does not confirm the network',
+    async (network) => {
+      const fetchImpl = vi.fn(async (url: string) => {
+        if (String(url).includes('/api/public/pay/state')) {
+          return jsonResponse({
+            ok: true,
+            marco_amount_minor: '2840000',
+            receiving_wallet: network.treasuryWallet,
+          })
+        }
+        return jsonResponse({
+          ok: true,
+          payment_id: `pay_${network.id}_unconfirmed`,
+          marco_amount_minor: '2840000',
+          receiving_wallet: network.treasuryWallet,
+        })
+      })
+      await expect(
+        createMarcoPayPaymentSession({
+          applicationRef,
+          merchantOrderRef: `mp_${network.id}_unconfirmed_1`,
+          amountMinor: '900',
+          currency: 'USD',
+          networkId: network.id,
+          secret,
+          merchantApiKey,
+          nowSeconds: now,
+          fetchImpl: fetchImpl as unknown as typeof fetch,
+        }),
+      ).rejects.toMatchObject({ code: 'NETWORK_CONFIRMATION_REQUIRED' })
+    },
+  )
 
   it('POSTs HMAC-signed /api/public/pay/session with Bearer merchant key and never puts secrets in the body', async () => {
     const rawBody = buildMarcoPayCreateBody({

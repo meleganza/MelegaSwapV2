@@ -36,12 +36,15 @@ export async function readPaymentWalletChainId(preferred?: EthereumProvider | nu
   }
 }
 
-export function assessPaymentWalletChain(chainId: number | null | undefined): {
+export function assessPaymentWalletChain(
+  chainId: number | null | undefined,
+  expectedChainId: number = PAYMENT_SETTLEMENT_CHAIN_ID,
+): {
   ok: boolean
   stage: 'ready' | 'switch_network'
   message: string | null
 } {
-  if (chainId === PAYMENT_SETTLEMENT_CHAIN_ID) {
+  if (chainId === expectedChainId) {
     return { ok: true, stage: 'ready', message: null }
   }
   return { ok: false, stage: 'switch_network', message: RC_COPY.wrongNetwork }
@@ -50,13 +53,15 @@ export function assessPaymentWalletChain(chainId: number | null | undefined): {
 export async function resolvePaymentWalletForSettlement(input: {
   preferredProvider?: EthereumProvider | null
   fallbackSigner?: PaymentWalletSigner | null
+  expectedChainId?: number
 }): Promise<{
   chainId: number | null
   signer: PaymentWalletSigner | null
   source: 'payment_wallet' | 'fallback_signer' | 'none'
 }> {
   const walletChainId = await readPaymentWalletChainId(input.preferredProvider)
-  if (walletChainId === PAYMENT_SETTLEMENT_CHAIN_ID) {
+  const expectedChainId = input.expectedChainId ?? PAYMENT_SETTLEMENT_CHAIN_ID
+  if (walletChainId === expectedChainId) {
     const eth = resolveWalletProvider(input.preferredProvider ?? null)
     if (eth) {
       return {

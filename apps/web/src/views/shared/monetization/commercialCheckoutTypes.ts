@@ -119,4 +119,9 @@ export const FEATURED_PACKAGE_BADGES = ['impressions', 'rotation', 'homepage', '
 
 export const TREND_PACKAGE_BADGES = ['Estimated Reach', 'Discovery Boost', 'Trending Surface'] as const
 
-export const COMMERCIAL_CHAINS = [{ id: 56, label: 'BNB Chain', short: 'BSC' }] as const
+export const COMMERCIAL_CHAINS = [
+  { id: 56, label: 'BNB Chain', short: 'BSC' },
+  { id: 137, label: 'Polygon', short: 'POL' },
+  { id: 4663, label: 'Robinhood Chain', short: 'RHC' },
+  { id: 5042, label: 'Arc', short: 'ARC' },
+] as const

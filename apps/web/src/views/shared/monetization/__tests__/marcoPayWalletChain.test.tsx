@@ -95,7 +95,7 @@ afterEach(() => {
   vi.mocked(resolvePaymentWalletForSettlement).mockReset()
 })
 
-async function openMarcoReview() {
+async function openMarcoReview(settlementNetwork: 'bnb' | 'polygon' | 'robinhood' | 'arc' | 'solana' = 'bnb') {
   render(<CommercialCheckoutModal open onClose={vi.fn()} projectId="" projectSlug="" identityReady />)
   fireEvent.change(screen.getByPlaceholderText('Paste the token address (0x...)'), { target: { value: ADDRESS } })
   fireEvent.click(screen.getByRole('button', { name: 'Detect token' }))
@@ -105,13 +105,24 @@ async function openMarcoReview() {
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
   fireEvent.click(screen.getByTestId('commercial-pkg-trend_24h'))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
+  fireEvent.click(screen.getByTestId(`commercial-settlement-network-${settlementNetwork}`))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
+  await waitFor(() => expect(screen.getByTestId('commercial-pay-MARCO_PAY').hasAttribute('disabled')).toBe(false))
   fireEvent.click(screen.getByTestId('commercial-pay-MARCO_PAY'))
   fireEvent.click(screen.getByTestId('commercial-checkout-next'))
   await screen.findByText(/awaiting canonical MARCO Pay settlement/)
 }
 
 describe('MARCO Pay payment-wallet chain', () => {
+  it('binds the selected settlement network into the server-owned order request', async () => {
+    await openMarcoReview('polygon')
+    const create = (global.fetch as any).mock.calls.find(
+      (call: any[]) => String(call[0]).includes('/api/marco-pay/orders') && call[1]?.method === 'POST',
+    )
+    expect(JSON.parse(String(create[1].body)).networkId).toBe('polygon')
+    expect(screen.getByTestId('commercial-step-review').textContent).toContain('MARCO Pay on Polygon')
+  })
+
   it('recognizes a BNB 56 payment wallet even when the wagmi signer still reports Ethereum', async () => {
     const sendTransaction = vi.fn(async () => ({ hash: `0x${'a'.repeat(64)}` }))
     vi.mocked(useSigner).mockReturnValue({
