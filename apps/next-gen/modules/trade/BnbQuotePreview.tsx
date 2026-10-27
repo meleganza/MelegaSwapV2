@@ -105,6 +105,7 @@ export default function BnbQuotePreview() {
       <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>
         {pending ? 'Getting quote…' : 'Get quote'}
       </button>
+      <div className="swap-summary" aria-label="Quote summary"><span><small>Rate</small><strong>—</strong></span><span><small>Fee</small><strong>—</strong></span><span><small>Slippage</small><strong>—</strong></span></div>
       {result ? <QuoteResultView result={result} nowMs={Date.now()} /> : null}
       {result?.ok && !shadow ? (
         <button className="primary-action" type="button" onClick={() => setShadow(true)}>
@@ -112,6 +113,7 @@ export default function BnbQuotePreview() {
         </button>
       ) : null}
       {result?.ok && shadow ? <ShadowReadinessPanel quote={result as FactualBnbQuote} amount={amount} /> : null}
+      <details className="advanced-details analytics-entry"><summary>Analytics</summary><p className="muted-copy">Quote details appear after a verified read.</p></details>
       <p className="action-hint">Preview only · No wallet or transaction</p>
     </section>
   )

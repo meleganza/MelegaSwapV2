@@ -66,7 +66,7 @@ export default function EarnReadPanel() {
   }, [])
 
   return (
-    <section className="quote-panel" aria-labelledby="earn-read-title">
+    <section className="quote-panel" id="bnb-farm" aria-labelledby="earn-read-title">
       <h2 id="earn-read-title" className="sr-only">BNB farm</h2>
       {result ? <EarnResult result={result} /> : <p className="footnote">Reading one BNB farm row.</p>}
     </section>

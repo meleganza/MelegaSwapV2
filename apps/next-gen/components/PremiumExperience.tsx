@@ -47,6 +47,8 @@ function BridgeExperience() {
         </div>
         <span className="quiet-chip">Live DEX handoff</span>
       </div>
+      <nav className="earn-tabs" aria-label="Earn filters"><a href="#earn-all" aria-current="page">All</a><a href="#bnb-farm">Farms</a><a href="#earn-catalog-title">Vaults</a><a href="#beefy-positions">My positions</a></nav>
+      <div id="earn-all" />
       <ul className="facts">
         {marcoPublicPairs().map((pair) => (
           <li key={`${pair.fromId}-${pair.toId}`}>
@@ -94,6 +96,7 @@ function PortfolioExperience({ children }: { children?: React.ReactNode }) {
         <div><p className="section-kicker">Wallet overview</p><h2>Track a public address</h2></div>
         <span className="quiet-chip">Read only</span>
       </div>
+      <div className="portfolio-value-card"><span>Portfolio value</span><strong>—</strong><small>Unpriced assets omitted</small></div>
       {children}
     </section>
   )
