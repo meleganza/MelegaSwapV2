@@ -85,7 +85,7 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
         </header>
         <p className="mobile-readonly">Beta — read-only</p>
         <header className="topbar">
-          <p>MelegaDex Evo</p>
+          <div className="trending-rail"><span>Trending</span><strong>Verified projects appear here</strong><a href="/tools/trend-boost">Boost your project</a></div>
           <div className="header-actions"><button className="theme-toggle theme-toggle-wide" type="button" onClick={toggleTheme}><span aria-hidden="true">{theme === 'pearl' ? '◐' : '☀'}</span>{theme === 'pearl' ? 'Graphite' : 'Pearl'}</button><span className="environment-pill"><span aria-hidden="true" /> Beta — read-only</span></div>
         </header>
 

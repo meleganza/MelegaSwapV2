@@ -2,6 +2,7 @@ import React from 'react'
 import { formatUnits } from '../../lib/bscQuote'
 import { LIVE_WITHDRAWAL_LINKS, type PortfolioRead } from '../../lib/portfolioRead'
 import { readGenerationCurrent } from '../../lib/readGeneration'
+import { TokenMark } from '../../components/TokenMark'
 
 export function PortfolioResult({ result }: { result: PortfolioRead }) {
   if (!result.ok && result.assets.length === 0) {
@@ -16,15 +17,13 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
                 ? 'The balance read timed out. No number is shown.'
                 : 'No balance was returned.'}
         </p>
-        <ul className="result-links">
+        <div className="portfolio-actions">
           {LIVE_WITHDRAWAL_LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
+            <a key={link.href} href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
                 {link.label}
-              </a>
-            </li>
+            </a>
           ))}
-        </ul>
+        </div>
       </div>
     )
   }
@@ -32,7 +31,7 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
     <div data-executable="false" data-custody="false" data-chain="56">
       <div className="asset-list">
         {result.assets.map((asset) => (
-          <div className="asset-row" key={asset.symbol}><span className="asset-avatar">{asset.symbol.slice(0, 1)}</span><strong>{asset.symbol}</strong><span>
+          <div className="asset-row" key={asset.symbol}><TokenMark symbol={asset.symbol} size={40} /><strong>{asset.symbol}</strong><span>
             {asset.status === 'ok' ? asset.display : '—'}
             {asset.usdtQuoteRaw && asset.usdtQuoteRaw !== '0'
               ? ` · ${formatUnits(asset.usdtQuoteRaw, 18)} USDT via router, not a USD index`
@@ -41,15 +40,13 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
         ))}
       </div>
       <details className="advanced-details"><summary>About these balances</summary><p className="muted-copy">BNB assets only. USD valuation and unscanned positions are omitted.</p></details>
-      <ul className="result-links">
+      <div className="portfolio-actions">
         {LIVE_WITHDRAWAL_LINKS.map((link) => (
-          <li key={link.href}>
-            <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
+          <a key={link.href} href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
               {link.label}
-            </a>
-          </li>
+          </a>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }
@@ -123,17 +120,7 @@ export default function PortfolioLookup() {
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
         {pending ? 'Loading portfolio…' : 'View portfolio'}
       </button>
-      {result ? null : (
-        <ul className="result-links">
-          {LIVE_WITHDRAWAL_LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} rel="noreferrer noopener" referrerPolicy="no-referrer">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      {result ? null : <p className="action-hint">Read-only · No wallet connection</p>}
       {result ? <PortfolioResult result={result} /> : null}
     </section>
   )

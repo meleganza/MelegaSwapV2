@@ -2,6 +2,7 @@ import React from 'react'
 import { BNB_QUOTE_TOKENS, formatUnits, quoteIsStale, type BnbQuoteResult, type FactualBnbQuote } from '../../lib/bscQuote'
 import { readGenerationCurrent } from '../../lib/readGeneration'
 import ShadowReadinessPanel from './ShadowReadiness'
+import { TokenMark } from '../../components/TokenMark'
 
 export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; nowMs: number }) {
   if (!result.ok) {
@@ -36,6 +37,14 @@ export default function BnbQuotePreview() {
   const [shadow, setShadow] = React.useState(false)
   const generation = React.useRef(0)
   const abortRef = React.useRef<AbortController | null>(null)
+  const [copied, setCopied] = React.useState<string | null>(null)
+
+  const sellToken = BNB_QUOTE_TOKENS.find((token) => token.symbol === sell)!
+  const buyToken = BNB_QUOTE_TOKENS.find((token) => token.symbol === buy)!
+
+  function copyContract(symbol: string, address: string) {
+    navigator.clipboard?.writeText(address).then(() => setCopied(symbol)).catch(() => setCopied(null))
+  }
 
   function editQuote(apply: () => void) {
     abortRef.current?.abort()
@@ -87,20 +96,23 @@ export default function BnbQuotePreview() {
       <div className="asset-field interactive-asset">
         <label htmlFor="quote-amount" className="field-label">Sell</label>
         <input id="quote-amount" className="asset-amount" inputMode="decimal" value={amount} onChange={(event) => editQuote(() => setAmount(event.target.value))} aria-label="Amount to sell" />
-        <label className="token-select"><span className="sr-only">Sell token</span><select id="quote-sell" value={sell} onChange={(event) => editQuote(() => setSell(event.target.value))}>
+        <label className="token-select"><TokenMark symbol={sell} /><span className="token-symbol">{sell}</span><span className="token-chevron">⌄</span><span className="sr-only">Sell token</span><select id="quote-sell" value={sell} onChange={(event) => editQuote(() => setSell(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
               <option key={token.symbol} value={token.symbol}>{token.symbol}</option>
             ))}
           </select></label>
+        <div className="amount-presets" aria-label="Amount presets">{[25,50,75,100].map((percent) => <button key={percent} type="button" disabled title="Available after address lookup">{percent}%</button>)}</div>
+        <div className="token-utilities"><button type="button" onClick={() => copyContract(sellToken.symbol, sellToken.address)}>{copied === sell ? 'Copied' : 'Copy contract'}</button><button type="button" disabled title="Available on the live DEX">Add to MetaMask</button></div>
       </div>
       <button className="swap-direction" type="button" aria-label="Switch tokens" onClick={() => editQuote(() => { setSell(buy); setBuy(sell) })}>↓</button>
       <div className="asset-field asset-field-output interactive-asset">
         <span className="field-label">Buy</span><strong>{result?.ok ? formatUnits(result.amountOutRaw, 18) : '0.00'}</strong>
-        <label className="token-select token-select-buy"><span className="sr-only">Buy token</span><select id="quote-buy" value={buy} onChange={(event) => editQuote(() => setBuy(event.target.value))}>
+        <label className="token-select token-select-buy"><TokenMark symbol={buy} /><span className="token-symbol">{buy}</span><span className="token-chevron">⌄</span><span className="sr-only">Buy token</span><select id="quote-buy" value={buy} onChange={(event) => editQuote(() => setBuy(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
               <option key={token.symbol} value={token.symbol}>{token.symbol}</option>
             ))}
           </select></label>
+        <div className="token-utilities buy-utilities"><button type="button" onClick={() => copyContract(buyToken.symbol, buyToken.address)}>{copied === buy ? 'Copied' : 'Copy contract'}</button><button type="button" disabled title="Available on the live DEX">Add to MetaMask</button></div>
       </div>
       <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>
         {pending ? 'Getting quote…' : 'Get quote'}

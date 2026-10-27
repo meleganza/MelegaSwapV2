@@ -1,5 +1,7 @@
 import React from 'react'
 import { parseTrendBoostActive, type BoostPlacement } from '../../lib/legacyServices'
+import { BNB_QUOTE_TOKENS } from '../../lib/bscQuote'
+import { TokenMark } from '../../components/TokenMark'
 
 type FeedState = 'loading' | 'empty' | 'rows' | 'unavailable'
 
@@ -32,11 +34,13 @@ export default function ExploreDiscovery() {
     }
   }, [])
 
-  if (state !== 'rows') return null
   return (
-    <div className="boost-grid" data-boost-feed={state}>
+    <div className="explore-content" data-boost-feed={state}>
+      <div className="token-directory">
+        {BNB_QUOTE_TOKENS.map((token) => <article key={token.symbol}><TokenMark symbol={token.symbol} size={42} /><div><strong>{token.symbol}</strong><small>BNB Chain</small></div><button type="button" onClick={() => navigator.clipboard?.writeText(token.address)} aria-label={`Copy ${token.symbol} contract`}>Copy</button></article>)}
+      </div>
+      {state === 'rows' ? <div className="boost-grid">
       <div className="section-divider"><p className="section-kicker">Sponsored</p><h2>Boosted now</h2></div>
-      {state === 'rows' ? (
         <ul className="boost-cards">
           {rows.map((row) => (
             <li key={row.orderId}>
@@ -59,7 +63,7 @@ export default function ExploreDiscovery() {
             </li>
           ))}
         </ul>
-      ) : null}
+      </div> : null}
     </div>
   )
 }

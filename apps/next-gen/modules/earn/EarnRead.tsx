@@ -1,6 +1,7 @@
 import React from 'react'
 import type { EarnRead } from '../../lib/earnRead'
 import { LIVE_FARM_EXIT, LIVE_LIQUIDITY_EXIT, LIVE_POOL_EXIT } from '../../lib/nativeEarnChains'
+import { TokenMark } from '../../components/TokenMark'
 
 export function EarnResult({ result }: { result: EarnRead }) {
   if (!result.ok) {
@@ -16,7 +17,7 @@ export function EarnResult({ result }: { result: EarnRead }) {
   }
   return (
     <article className="earn-feature" data-executable="false" data-deposit="false" data-apr="unavailable" data-chain="56">
-      <div className="earn-token-art" aria-hidden="true">M</div>
+      <div className="earn-token-art"><TokenMark symbol="MARCO" size={48} /></div>
       <div className="earn-feature-copy"><span className="verified-label">Melega farm · BNB</span><h3>{result.label}</h3><div className="earn-metrics"><span><small>APY</small><strong>—</strong></span><span><small>TVL</small><strong>—</strong></span></div></div>
       <a className="card-action" href={LIVE_FARM_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">View farm</a>
       <details className="advanced-details earn-details"><summary>Details</summary><ul className="facts"><li>Chain 56 · Farm {result.pid}</li><li>Contract {result.chefAddress}</li><li>Stake token {result.lpToken}</li><li>APY and TVL are not returned by this read.</li></ul><div className="detail-links"><a href={LIVE_POOL_EXIT}>Pools</a><a href={LIVE_LIQUIDITY_EXIT}>Liquidity</a></div></details>

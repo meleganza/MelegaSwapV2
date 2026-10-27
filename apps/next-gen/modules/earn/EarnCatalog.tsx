@@ -1,5 +1,6 @@
 import React from 'react'
 import { formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
+import { TokenMark } from '../../components/TokenMark'
 
 function matches(opportunity: EarnOpportunity, asset: string, protocol: string): boolean {
   const assetQuery = asset.trim().toLowerCase()
@@ -24,9 +25,9 @@ export function EarnCatalogView({ catalog, asset, protocol }: { catalog: EarnCat
     <div data-executable="false" data-deposit="false" data-catalog="bnb">
       {visible.length === 0 ? <p className="inline-alert">No verified matches.</p> : null}
       <div className="earn-catalog">
-        {visible.map((opportunity) => (
+        {visible.slice(0, 6).map((opportunity) => (
           <article className="earn-card" key={opportunity.id}>
-            <div className="pair-art" aria-hidden="true">{opportunity.assets.slice(0, 2).map((asset) => <span key={asset}>{asset.slice(0, 1)}</span>)}</div>
+            <div className="pair-art">{opportunity.assets.slice(0, 2).map((asset) => <TokenMark key={asset} symbol={asset} size={34} />)}</div>
             <span className="verified-label">Beefy · PancakeSwap</span><h3>{opportunity.assets.join(' / ')}</h3>
             <div className="earn-metrics"><span><small>APY</small><strong>{formatReportedApy(opportunity.apyDecimal) ?? '—'}</strong></span><span><small>TVL</small><strong>{formatReportedTvl(opportunity.tvlUsd) === null ? '—' : `$${formatReportedTvl(opportunity.tvlUsd)}`}</strong></span></div>
             <a className="card-action" href={opportunity.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">View vault</a>
@@ -85,32 +86,17 @@ export default function EarnCatalogPanel() {
 
   return (
     <section className="quote-panel" aria-labelledby="earn-catalog-title">
-      <div className="panel-title">
+      <div className="panel-title compact-catalog-title">
         <div>
-          <p className="section-kicker">More opportunities</p>
-          <h2 id="earn-catalog-title">Beefy vaults</h2>
+          <h2 id="earn-catalog-title">Opportunities</h2>
+          <p className="catalog-source">Verified live data</p>
         </div>
         <span className="quiet-chip">Read only</span>
       </div>
-      <div className="filter-row" aria-label="Asset filter">
-        <button type="button" className={asset === '' ? 'selected' : undefined} onClick={() => setAsset('')}>
-          All assets
-        </button>
-        {assets.map((item) => (
-          <button key={item} type="button" className={asset === item ? 'selected' : undefined} onClick={() => setAsset(asset === item ? '' : item)}>
-            {item}
-          </button>
-        ))}
-      </div>
-      <div className="filter-row" aria-label="Protocol filter">
-        <button type="button" className={protocol === '' ? 'selected' : undefined} onClick={() => setProtocol('')}>
-          All protocols
-        </button>
-        {protocols.map((item) => (
-          <button key={item} type="button" className={protocol === item ? 'selected' : undefined} onClick={() => setProtocol(protocol === item ? '' : item)}>
-            {item}
-          </button>
-        ))}
+      <div className="earn-filter-bar">
+        <label><span>Asset</span><select value={asset} onChange={(event) => setAsset(event.target.value)}><option value="">All assets</option>{assets.map((item) => <option key={item}>{item}</option>)}</select></label>
+        <label><span>Protocol</span><select value={protocol} onChange={(event) => setProtocol(event.target.value)}><option value="">All protocols</option>{protocols.map((item) => <option key={item}>{item}</option>)}</select></label>
+        <span className="provider-badge">Powered by Beefy</span>
       </div>
       {catalog ? <EarnCatalogView catalog={catalog} asset={asset} protocol={protocol} /> : <p className="footnote">Reading the Beefy BNB catalog.</p>}
     </section>

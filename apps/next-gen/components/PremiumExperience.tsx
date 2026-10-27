@@ -18,6 +18,7 @@ function TrustRow({ statements }: { statements: string[] }) {
 
 function TradeExperience({ children }: { children?: React.ReactNode }) {
   return (
+    <div className="trade-home-grid">
     <div className="trade-layout">
       <section className="surface trade-surface" aria-label="Trade preview">
         <div className="surface-head">
@@ -33,6 +34,11 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
         </div>
         {children}
       </section>
+    </div>
+    <aside className="desktop-promo" aria-label="Melega highlights">
+      <article className="marco-promo"><div><span>MARCO</span><h2>Your guide to the Melega ecosystem.</h2><a href="/explore">Explore MARCO</a></div><img src="/brand/marco-hero.webp" alt="MARCO character" /></article>
+      <a className="featured-slot" href="/tools/featured-project"><span>Featured project</span><strong>Put your project in front of Melega users</strong><small>Verified paid placement</small></a>
+    </aside>
     </div>
   )
 }
@@ -72,9 +78,9 @@ function BridgeExperience() {
 function EarnExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Earn on BNB</p><h2>Choose an opportunity</h2></div>
-        <span className="network-chip"><span className="network-dot" aria-hidden="true" /> BNB Chain</span>
+      <div className="surface-head compact-page-head">
+        <div><h2>Earn</h2><p>BNB opportunities</p></div>
+        <label className="chain-select"><span className="sr-only">Network</span><select defaultValue="56"><option value="56">BNB Chain</option><option disabled>Ethereum · Terminated</option><option disabled>Polygon · Terminated</option><option disabled>Base · Terminated</option></select></label>
       </div>
       {children ? (
         children
@@ -92,11 +98,10 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
 function PortfolioExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface lookup-surface portfolio-dashboard" aria-label="Portfolio dashboard">
-      <div className="surface-head">
-        <div><p className="section-kicker">Wallet overview</p><h2>Track a public address</h2></div>
+      <div className="surface-head compact-page-head">
+        <div><h2>Portfolio</h2><p>Public BNB address</p></div>
         <span className="quiet-chip">Read only</span>
       </div>
-      <div className="portfolio-value-card"><span>Portfolio value</span><strong>—</strong><small>Unpriced assets omitted</small></div>
       {children}
     </section>
   )
@@ -105,20 +110,9 @@ function PortfolioExperience({ children }: { children?: React.ReactNode }) {
 function ExploreExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Explore preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Discover</p><h2>Explore Melega</h2></div>
-        <span className="quiet-chip">Verified links</span>
-      </div>
-      <div className="explore-categories">
-        <a href={LIVE_DEX_LINKS.projects} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="explore" /></span><strong>Featured projects</strong><small>Curated on the live DEX</small>
-        </a>
-        <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>See what is moving</small>
-        </a>
-        <a href={LIVE_DEX_LINKS.tokensBnb} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Browse verified token pages</small>
-        </a>
+      <div className="surface-head compact-page-head">
+        <div><h2>Explore</h2><p>Tokens and verified projects</p></div>
+        <a className="small-cta" href="/tools/trend-boost">Boost your project</a>
       </div>
       {children}
     </section>
