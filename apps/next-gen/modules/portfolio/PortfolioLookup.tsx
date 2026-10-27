@@ -30,22 +30,17 @@ export function PortfolioResult({ result }: { result: PortfolioRead }) {
   }
   return (
     <div data-executable="false" data-custody="false" data-chain="56">
-      <p className="inline-alert" role="status">
-        BNB balances, read-only
-      </p>
-      <ul className="result-list">
+      <div className="asset-list">
         {result.assets.map((asset) => (
-          <li key={asset.symbol}>
-            {asset.symbol}: {asset.status === 'ok' ? asset.display : 'unavailable'}
+          <div className="asset-row" key={asset.symbol}><span className="asset-avatar">{asset.symbol.slice(0, 1)}</span><strong>{asset.symbol}</strong><span>
+            {asset.status === 'ok' ? asset.display : '—'}
             {asset.usdtQuoteRaw && asset.usdtQuoteRaw !== '0'
               ? ` · ${formatUnits(asset.usdtQuoteRaw, 18)} USDT via router, not a USD index`
               : ''}
-          </li>
+          </span></div>
         ))}
-        <li>USD valuation is not shown.</li>
-        <li>LP positions are not scanned. Farm positions are not scanned.</li>
-        <li>This beta cannot withdraw, approve, or sign.</li>
-      </ul>
+      </div>
+      <details className="advanced-details"><summary>About these balances</summary><p className="muted-copy">BNB assets only. USD valuation and unscanned positions are omitted.</p></details>
       <ul className="result-links">
         {LIVE_WITHDRAWAL_LINKS.map((link) => (
           <li key={link.href}>
@@ -114,10 +109,9 @@ export default function PortfolioLookup() {
 
   return (
     <section className="quote-panel" aria-labelledby="portfolio-title">
-      <div className="panel-title"><div><p className="section-kicker">Read-only lookup</p><h2 id="portfolio-title">Public address</h2></div><span className="quiet-chip">BNB Chain</span></div>
-      <p className="muted-copy">No wallet is connected. Melega does not take custody of this address.</p>
+      <h2 id="portfolio-title" className="sr-only">Public address</h2>
       <label htmlFor="portfolio-address">
-        Address
+        Public address
         <input
           id="portfolio-address"
           value={address}
@@ -127,7 +121,7 @@ export default function PortfolioLookup() {
         />
       </label>
       <button className="primary-action" type="button" onClick={onRead} disabled={pending}>
-        {pending ? 'Reading balances' : 'Read BNB balances'}
+        {pending ? 'Loading portfolio…' : 'View portfolio'}
       </button>
       {result ? null : (
         <ul className="result-links">

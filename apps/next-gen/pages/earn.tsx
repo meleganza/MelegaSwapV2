@@ -12,8 +12,8 @@ export default function EarnPage() {
     <ProductPage section={sectionById('earn')}>
       <EarnReadPanel />
       <EarnCatalogPanel />
-      <EarnPositionPanel />
-      <RetiredNativeEarn />
+      <details className="secondary-positions"><summary>Your Beefy positions</summary><EarnPositionPanel /></details>
+      <details className="secondary-positions terminated-section"><summary>Terminated networks</summary><RetiredNativeEarn /></details>
     </ProductPage>
   )
 }

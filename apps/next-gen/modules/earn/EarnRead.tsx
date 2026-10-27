@@ -15,38 +15,12 @@ export function EarnResult({ result }: { result: EarnRead }) {
     )
   }
   return (
-    <div data-executable="false" data-deposit="false" data-apr="unavailable" data-chain="56">
-      <p className="status" role="status">
-        {result.label} on BNB
-      </p>
-      <ul className="facts">
-        <li>Chain 56. Farm pid {result.pid}. Label {result.label}.</li>
-        <li>Farm contract {result.chefAddress}.</li>
-        <li>Stake token {result.lpToken}. It matches the certified MARCO address.</li>
-        <li>allocPoint {result.allocPoint}.</li>
-        <li>APY is unavailable. This read does not return one.</li>
-        <li>TVL is unavailable. This read does not return one.</li>
-        <li>This beta does not send a deposit or a withdrawal.</li>
-      </ul>
-      <p className="muted-copy">Leaves this beta. The live DEX opens your farm and pool positions. Switch the wallet to BNB Smart Chain there.</p>
-      <ul className="result-links">
-        <li>
-          <a href={LIVE_FARM_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
-            Farm positions on the live DEX
-          </a>
-        </li>
-        <li>
-          <a href={LIVE_POOL_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
-            Pool positions on the live DEX
-          </a>
-        </li>
-        <li>
-          <a href={LIVE_LIQUIDITY_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">
-            Remove liquidity on the live DEX
-          </a>
-        </li>
-      </ul>
-    </div>
+    <article className="earn-feature" data-executable="false" data-deposit="false" data-apr="unavailable" data-chain="56">
+      <div className="earn-token-art" aria-hidden="true">M</div>
+      <div className="earn-feature-copy"><span className="verified-label">Melega farm · BNB</span><h3>{result.label}</h3><div className="earn-metrics"><span><small>APY</small><strong>—</strong></span><span><small>TVL</small><strong>—</strong></span></div></div>
+      <a className="card-action" href={LIVE_FARM_EXIT} rel="noreferrer noopener" referrerPolicy="no-referrer">View farm</a>
+      <details className="advanced-details earn-details"><summary>Details</summary><ul className="facts"><li>Chain 56 · Farm {result.pid}</li><li>Contract {result.chefAddress}</li><li>Stake token {result.lpToken}</li><li>APY and TVL are not returned by this read.</li></ul><div className="detail-links"><a href={LIVE_POOL_EXIT}>Pools</a><a href={LIVE_LIQUIDITY_EXIT}>Liquidity</a></div></details>
+    </article>
   )
 }
 
@@ -93,7 +67,7 @@ export default function EarnReadPanel() {
 
   return (
     <section className="quote-panel" aria-labelledby="earn-read-title">
-      <h2 id="earn-read-title">BNB farm</h2>
+      <h2 id="earn-read-title" className="sr-only">BNB farm</h2>
       {result ? <EarnResult result={result} /> : <p className="footnote">Reading one BNB farm row.</p>}
     </section>
   )

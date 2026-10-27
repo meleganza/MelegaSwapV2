@@ -32,6 +32,9 @@ export async function prepareUnsignedFromSealed(
   }
   const preparer = await import('@melega/smartswap-v2-prepare')
   const assertSealed: (value: unknown) => asserts value is ShadowCandidate = preparer.assertSealedShadowCandidate
+  if (typeof assertSealed !== 'function') {
+    return { ok: false, code: 'RAW_QUOTE_NOT_SEALED_CANDIDATE', unsignedTx: null, broadcast: false, signed: false, approved: false }
+  }
   try {
     assertSealed(candidate)
   } catch (error) {

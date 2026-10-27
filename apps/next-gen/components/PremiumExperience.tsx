@@ -31,49 +31,8 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
             <span className="network-dot" aria-hidden="true" /> BNB Chain
           </span>
         </div>
-        <div className="asset-field">
-          <span className="field-label">You pay</span>
-          <strong>0.00</strong>
-          <span className="token-chip">BNB</span>
-          <small>Balance unavailable in read-only mode</small>
-        </div>
-        <button className="swap-direction" type="button" disabled aria-label="Swap direction unavailable">
-          ↓
-        </button>
-        <div className="asset-field asset-field-output">
-          <span className="field-label">You receive</span>
-          <strong>0.00</strong>
-          <span className="token-chip token-empty">Select token</span>
-          <small>Best factual net output appears after a quote</small>
-        </div>
         {children}
-        <div className="route-note">
-          <AppIcon name="shield" />
-          <span>
-            <strong>SmartSwap clarity</strong>
-            Venue, impact, gas, and slippage appear only when factual.
-          </span>
-        </div>
       </section>
-
-      <aside className="next-actions" aria-label="Next actions">
-        <p className="section-kicker">Your next move</p>
-        <a href="/earn">
-          <span className="action-icon"><AppIcon name="earn" /></span>
-          <span><strong>Put assets to work</strong><small>Review verified yield opportunities</small></span>
-          <AppIcon name="arrow" />
-        </a>
-        <a href="/portfolio">
-          <span className="action-icon"><AppIcon name="portfolio" /></span>
-          <span><strong>Understand your holdings</strong><small>Read balances without connecting a wallet</small></span>
-          <AppIcon name="arrow" />
-        </a>
-        <a href="/explore">
-          <span className="action-icon"><AppIcon name="explore" /></span>
-          <span><strong>Discover with context</strong><small>Projects, tokens, and paid Boost</small></span>
-          <AppIcon name="arrow" />
-        </a>
-      </aside>
     </div>
   )
 }
@@ -112,8 +71,8 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
       <div className="surface-head">
-        <div><p className="section-kicker">Opportunities</p><h2>Yield, with the facts first</h2></div>
-        <span className="quiet-chip">{children ? 'BNB reads' : 'No verified data loaded'}</span>
+        <div><p className="section-kicker">Earn on BNB</p><h2>Choose an opportunity</h2></div>
+        <span className="network-chip"><span className="network-dot" aria-hidden="true" /> BNB Chain</span>
       </div>
       {children ? (
         children
@@ -130,19 +89,13 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
 
 function PortfolioExperience({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="portfolio-layout">
-      <section className="surface portfolio-summary" aria-label="Portfolio summary">
-        <p className="section-kicker">Total portfolio value</p>
-        <p className="unavailable-value">—</p>
-        <p className="muted-copy">Enter a public BNB address to read supported balances. No wallet connection is requested.</p>
-        <div className="portfolio-metrics">
-          <div><small>Assets</small><strong>Not loaded</strong></div>
-          <div><small>Networks</small><strong>BNB read available</strong></div>
-          <div><small>Rewards</small><strong>Not scanned</strong></div>
-        </div>
-      </section>
-      <section className="surface lookup-surface" aria-label="Portfolio lookup">{children}</section>
-    </div>
+    <section className="surface lookup-surface portfolio-dashboard" aria-label="Portfolio dashboard">
+      <div className="surface-head">
+        <div><p className="section-kicker">Wallet overview</p><h2>Track a public address</h2></div>
+        <span className="quiet-chip">Read only</span>
+      </div>
+      {children}
+    </section>
   )
 }
 
@@ -150,18 +103,18 @@ function ExploreExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Explore preview">
       <div className="surface-head">
-        <div><p className="section-kicker">Discovery</p><h2>Find signal, not noise</h2></div>
-        <span className="quiet-chip">Live DEX handoff</span>
+        <div><p className="section-kicker">Discover</p><h2>Explore Melega</h2></div>
+        <span className="quiet-chip">Verified links</span>
       </div>
       <div className="explore-categories">
         <a href={LIVE_DEX_LINKS.projects} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="explore" /></span><strong>Projects</strong><small>Live project directory. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="explore" /></span><strong>Featured projects</strong><small>Curated on the live DEX</small>
         </a>
         <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>Same directory, trending sort. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>See what is moving</small>
         </a>
         <a href={LIVE_DEX_LINKS.tokensBnb} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Live info for BNB Smart Chain. Leaves this beta.</small>
+          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Browse verified token pages</small>
         </a>
       </div>
       {children}

@@ -32,22 +32,12 @@ export default function ExploreDiscovery() {
     }
   }, [])
 
+  if (state !== 'rows') return null
   return (
-    <div data-boost-feed={state}>
-      <h2>Paid Boost</h2>
-      {state === 'loading' ? <p className="muted-copy">Reading the canonical active feed.</p> : null}
-      {state === 'unavailable' ? (
-        <p className="muted-copy" role="status">
-          The Boost feed did not return a verified list. No placement is shown.
-        </p>
-      ) : null}
-      {state === 'empty' ? (
-        <p className="muted-copy" role="status">
-          No active paid Boost placements.
-        </p>
-      ) : null}
+    <div className="boost-grid" data-boost-feed={state}>
+      <div className="section-divider"><p className="section-kicker">Sponsored</p><h2>Boosted now</h2></div>
       {state === 'rows' ? (
-        <ul className="facts">
+        <ul className="boost-cards">
           {rows.map((row) => (
             <li key={row.orderId}>
               <a href={row.projectHref} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
@@ -65,7 +55,7 @@ export default function ExploreDiscovery() {
                   </a>
                 </>
               ) : null}
-              <span> Paid placement from the live feed. Leaves this beta.</span>
+              <span className="paid-label">Paid placement</span>
             </li>
           ))}
         </ul>

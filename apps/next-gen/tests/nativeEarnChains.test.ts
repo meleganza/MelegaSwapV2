@@ -61,7 +61,7 @@ test('retired exits use the verified live DEX routes and do not invent a chain q
 
 test('the BNB earn page still lists the catalog and the retired notice', () => {
   const html = renderToStaticMarkup(React.createElement(EarnPage))
-  assert.match(html, /PancakeSwap vaults on BNB/)
+  assert.match(html, /Beefy vaults/)
   assert.match(html, /Terminated native farms and pools/)
   assert.match(html, /href="\/earn"/)
 })

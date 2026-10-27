@@ -18,20 +18,11 @@ export function QuoteResultView({ result, nowMs }: { result: BnbQuoteResult; now
   const stale = quoteIsStale(result.quotedAt, nowMs, result.staleAfterMs)
   return (
     <div data-operational="false" data-executable="false" data-quote="factual">
-      <p className="inline-alert" role="status">
-        {stale ? 'Stale preview' : 'Read-only preview'}
-      </p>
-      <ul className="result-list">
-        <li>Venue: {result.venueLabel}</li>
-        <li>
-          Output: {formatUnits(result.amountOutRaw, 18)} {result.buy}
-        </li>
-        <li>Raw output: {result.amountOutRaw}</li>
-        <li>Quoted at {result.quotedAt}. A preview older than {result.staleAfterMs / 1000} seconds is stale.</li>
-        <li>Price impact and gas are omitted because this read did not return them.</li>
-        <li>Melega protocol fee collection is not certified. This preview does not collect a fee.</li>
-        <li>Not executable. No wallet, approval, or signature.</li>
-      </ul>
+      <div className="quote-result-main"><small>{stale ? 'Quote expired' : result.venueLabel}</small><strong>{formatUnits(result.amountOutRaw, 18)} {result.buy}</strong></div>
+      <details className="advanced-details"><summary>Analytics</summary><ul className="result-list">
+        <li>Raw output: {result.amountOutRaw}</li><li>Quoted at {result.quotedAt}</li>
+        <li>Price impact and gas unavailable from this read.</li><li>No protocol fee collected.</li>
+      </ul></details>
     </div>
   )
 }
@@ -91,45 +82,37 @@ export default function BnbQuotePreview() {
   }
 
   return (
-    <section className="quote-panel" aria-labelledby="quote-title">
-      <div className="panel-title"><div><p className="section-kicker">Read-only route</p><h2 id="quote-title">BNB quote preview</h2></div><span className="quiet-chip">No execution</span></div>
-      <div className="quote-grid">
-        <label htmlFor="quote-sell">
-          Sell
-          <select id="quote-sell" value={sell} onChange={(event) => editQuote(() => setSell(event.target.value))}>
+    <section className="quote-panel compact-swap" aria-labelledby="quote-title">
+      <h2 id="quote-title" className="sr-only">Swap quote</h2>
+      <div className="asset-field interactive-asset">
+        <label htmlFor="quote-amount" className="field-label">Sell</label>
+        <input id="quote-amount" className="asset-amount" inputMode="decimal" value={amount} onChange={(event) => editQuote(() => setAmount(event.target.value))} aria-label="Amount to sell" />
+        <label className="token-select"><span className="sr-only">Sell token</span><select id="quote-sell" value={sell} onChange={(event) => editQuote(() => setSell(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
-              <option key={token.symbol} value={token.symbol}>
-                {token.symbol}
-              </option>
+              <option key={token.symbol} value={token.symbol}>{token.symbol}</option>
             ))}
-          </select>
-        </label>
-        <label htmlFor="quote-buy">
-          Buy
-          <select id="quote-buy" value={buy} onChange={(event) => editQuote(() => setBuy(event.target.value))}>
+          </select></label>
+      </div>
+      <button className="swap-direction" type="button" aria-label="Switch tokens" onClick={() => editQuote(() => { setSell(buy); setBuy(sell) })}>↓</button>
+      <div className="asset-field asset-field-output interactive-asset">
+        <span className="field-label">Buy</span><strong>{result?.ok ? formatUnits(result.amountOutRaw, 18) : '0.00'}</strong>
+        <label className="token-select token-select-buy"><span className="sr-only">Buy token</span><select id="quote-buy" value={buy} onChange={(event) => editQuote(() => setBuy(event.target.value))}>
             {BNB_QUOTE_TOKENS.map((token) => (
-              <option key={token.symbol} value={token.symbol}>
-                {token.symbol}
-              </option>
+              <option key={token.symbol} value={token.symbol}>{token.symbol}</option>
             ))}
-          </select>
-        </label>
-        <label htmlFor="quote-amount">
-          Amount
-          <input id="quote-amount" inputMode="decimal" value={amount} onChange={(event) => editQuote(() => setAmount(event.target.value))} />
-        </label>
+          </select></label>
       </div>
       <button className="primary-action" type="button" onClick={onPreview} disabled={pending}>
-        {pending ? 'Reading quote' : 'Preview quote'}
+        {pending ? 'Getting quote…' : 'Get quote'}
       </button>
       {result ? <QuoteResultView result={result} nowMs={Date.now()} /> : null}
       {result?.ok && !shadow ? (
         <button className="primary-action" type="button" onClick={() => setShadow(true)}>
-          Open shadow readiness
+          Advanced readiness
         </button>
       ) : null}
       {result?.ok && shadow ? <ShadowReadinessPanel quote={result as FactualBnbQuote} amount={amount} /> : null}
-      <p className="muted-copy">This review preview cannot connect a wallet, approve a token, or send a transaction.</p>
+      <p className="action-hint">Preview only · No wallet or transaction</p>
     </section>
   )
 }
