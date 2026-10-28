@@ -150,9 +150,10 @@ describe('Pools/Farms action modal repair', () => {
     expect(priced.methodology).toBe('reward_rate_x_active_blocks_in_rolling_24h')
   })
 
-  it('standalone Finished Farms section is unmounted; Create Farm present', () => {
+  it('terminated Farms recovery section and canonical Create Farm remain mounted', () => {
     const screen = readFileSync(path.join(STUDIO, '../FarmsStudio/FarmsStudioScreen.tsx'), 'utf8')
-    expect(screen).not.toContain('<FarmsFinishedFarmsModule')
+    expect(screen).toContain('<FarmsFinishedFarmsModule')
+    expect(screen).toContain('id="terminated"')
     expect(screen).toContain('CreateFarmWorkspace')
     expect(screen).toContain('data-farms-create-farm="modal"')
   })

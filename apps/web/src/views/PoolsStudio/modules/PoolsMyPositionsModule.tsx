@@ -6,6 +6,7 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { truthDash } from 'lib/data-truth'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
@@ -117,7 +118,7 @@ const ViewToggle = styled.div`
 `
 
 const ToggleBtn = styled.button<{ $active?: boolean }>`
-  height: 34px;
+  min-height: 44px;
   padding: 0 12px;
   border: 0;
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
@@ -157,6 +158,10 @@ const Body = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
+`
+
+const ConnectWrap = styled.div`
+  button { min-height: 44px; padding: 0 18px; border-radius: 10px; }
 `
 
 const CardGrid = styled.ul`
@@ -503,11 +508,6 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
 
   const canExpand = (vm.totalCount ?? vm.positions.length) > limit
 
-  // No giant empty module — hide when disconnected or zero positions.
-  if (vm.state === 'empty' || vm.state === 'disconnected') {
-    return null
-  }
-
   return (
     <Row
       data-testid="pools-my-positions-module"
@@ -521,7 +521,7 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
       <Surface data-pools-my-positions-surface="true">
         <Header>
           <TitleRow>
-            <Title id="pools-my-positions-title">My Positions</Title>
+            <Title id="pools-my-positions-title">My positions</Title>
             {vm.showCountBadge && vm.totalCount != null ? (
               <CountBadge aria-label={`${vm.totalCount} positions`}>{vm.totalCount}</CountBadge>
             ) : null}
@@ -563,6 +563,18 @@ export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-crea
         </Header>
 
         <Body>
+          {vm.state === 'disconnected' ? (
+            <CenterState data-testid="pools-my-positions-disconnected">
+              <StateTitle>Connect to see your positions</StateTitle>
+              <ConnectWrap><ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton></ConnectWrap>
+            </CenterState>
+          ) : null}
+          {vm.state === 'empty' ? (
+            <CenterState data-testid="pools-my-positions-empty">
+              <StateTitle>No active pool positions</StateTitle>
+              <StateDesc>Your open positions will appear here automatically.</StateDesc>
+            </CenterState>
+          ) : null}
           {vm.state === 'loading' ? (
             <CardGrid aria-busy="true" aria-label="Loading pool positions" data-testid="pools-my-positions-loading">
               {[0, 1, 2, 3].map((i) => (

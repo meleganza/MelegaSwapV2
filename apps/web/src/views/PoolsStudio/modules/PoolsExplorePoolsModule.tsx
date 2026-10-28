@@ -218,8 +218,8 @@ const ChipRow = styled.div`
 const Chip = styled.button<{ $active?: boolean }>`
   appearance: none;
   cursor: pointer;
-  height: 30px;
-  padding: 0 10px;
+  min-height: 44px;
+  padding: 0 14px;
   border-radius: 999px;
   border: 1px solid ${({ $active }) => ($active ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $active }) => ($active ? 'rgba(244,196,48,0.14)' : 'rgba(255,255,255,0.03)')};
@@ -230,8 +230,8 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 const Select = styled.select`
-  height: 34px;
-  padding: 0 10px;
+  height: 44px;
+  padding: 0 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(20, 20, 20, 0.95);
@@ -246,7 +246,7 @@ const ViewToggle = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
   flex-shrink: 0;
-  height: 40px;
+  height: 46px;
 `
 
 const ToggleBtn = styled.button<{ $active?: boolean }>`
@@ -791,7 +791,7 @@ export const PoolsExplorePoolsModule: React.FC = () => {
     >
       <Header>
         <TitleRow>
-          <Title id="pools-explore-pools-title">Explore Pools</Title>
+          <Title id="pools-explore-pools-title">Opportunities</Title>
           {vm.state !== 'loading' && vm.state !== 'unavailable' ? (
             <Count aria-label={`${vm.totalActive} active pools`}>{vm.totalActive}</Count>
           ) : null}

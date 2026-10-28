@@ -3,16 +3,16 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
+import { EarnPremiumShell, EarnSection } from 'views/Earn/EarnPremiumShell'
 import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
-import { PoolsHeroModule } from './modules/PoolsHeroModule'
-import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
 import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
+import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
 import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
@@ -52,7 +52,7 @@ const Content = styled.div`
 
 /**
  * Pools product IA:
- * Hero (Featured compact) → KPIs → My Positions → Explore Pools
+ * Earn shell → Active opportunities → My positions → Terminated positions
  * Public pool creation is hidden until an end-to-end user flow is available.
  */
 export const PoolsStudioScreen: React.FC = () => {
@@ -75,11 +75,11 @@ export const PoolsStudioScreen: React.FC = () => {
   return (
     <Root
       data-pools-studio-screen="true"
-      data-pools-module-001="mounted"
-      data-pools-module-002="mounted"
+      data-pools-module-001="unmounted"
+      data-pools-module-002="unmounted"
       data-pools-module-003="mounted"
       data-pools-module-004="mounted"
-      data-pools-module-005="unmounted"
+      data-pools-module-005="mounted"
       data-pools-module-006="unmounted"
       data-pools-module-007="unmounted"
       data-pools-module-008="mounted"
@@ -95,19 +95,22 @@ export const PoolsStudioScreen: React.FC = () => {
       <PoolsRuntimeProvider>
         <PoolsActionHost />
         <Content data-ps-content data-pools-ia="product-ux-redesign-v1">
-          <PoolsHeroModule />
-          <DataSurfaceErrorBoundary
-            surface="Pools Overview KPIs"
-            userReason="Pool overview metrics are temporarily unavailable."
-          >
-            <PoolsOverviewKpisModule />
-          </DataSurfaceErrorBoundary>
-          <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
-            <PoolsMyPositionsModule variant="with-create-side" />
-          </DataSurfaceErrorBoundary>
-          <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
-            <PoolsExplorePoolsModule />
-          </DataSurfaceErrorBoundary>
+          <EarnPremiumShell kind="pools" />
+          <EarnSection id="opportunities">
+            <DataSurfaceErrorBoundary surface="Earn opportunities" userReason="Active staking pools are temporarily unavailable.">
+              <PoolsExplorePoolsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
+          <EarnSection id="positions">
+            <DataSurfaceErrorBoundary surface="My positions" userReason="Pool positions are temporarily unavailable.">
+              <PoolsMyPositionsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
+          <EarnSection id="terminated">
+            <DataSurfaceErrorBoundary surface="Terminated positions" userReason="Terminated pool positions are temporarily unavailable.">
+              <PoolsFinishedPoolsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
         </Content>
       </PoolsRuntimeProvider>
     </Root>
