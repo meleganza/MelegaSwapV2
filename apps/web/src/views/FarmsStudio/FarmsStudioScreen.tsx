@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
 import { MelegaModal, typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
@@ -57,6 +59,7 @@ const Content = styled.div`
  */
 export const FarmsStudioScreen: React.FC = () => {
   const router = useRouter()
+  const { chainId } = useActiveChainId()
   const [createOpen, setCreateOpen] = useState(false)
   const [everOpened, setEverOpened] = useState(false)
   const createOpenRef = useRef(false)
@@ -70,13 +73,14 @@ export const FarmsStudioScreen: React.FC = () => {
     const q = router.query.create
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
     const shouldOpen = q === '1' || q === 'true' || hash === '#create-farm'
-    if (shouldOpen) {
+    if (shouldOpen && isNativeYieldOperationAllowed(chainId, 'create')) {
       setCreateOpen(true)
       setEverOpened(true)
     }
-  }, [router.isReady, router.query.create])
+  }, [router.isReady, router.query.create, chainId])
 
   const openCreate = useCallback(() => {
+    if (!isNativeYieldOperationAllowed(chainId, 'create')) return
     if (createOpenRef.current) return
     setCreateOpen(true)
     setEverOpened(true)
@@ -85,7 +89,7 @@ export const FarmsStudioScreen: React.FC = () => {
     void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
       shallow: true,
     })
-  }, [router])
+  }, [router, chainId])
 
   const closeCreate = useCallback(() => {
     setCreateOpen(false)

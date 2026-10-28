@@ -357,7 +357,7 @@ export default function CurrencyInputPanel({
               </Flex>
             )}
           </InputRow>
-          <div style={{ paddingBottom: '10px' }}></div>
+          <div style={{ paddingBottom: '10px' }} />
           {disabled && <Overlay />}
         </InputPanel>
       ) : null}
@@ -395,7 +395,7 @@ export default function CurrencyInputPanel({
             ) : null}
             {showQuickInputButton && maxAmount?.greaterThan(0) && onPercentInput ? (
               <Flex alignItems="center" style={{ gap: '2px' }} data-wallet-percent-actions>
-                {[25, 50].map((percent) => (
+                {[25, 50, 75].map((percent) => (
                   <Button
                     key={`compact-percent-${percent}`}
                     type="button"
@@ -421,7 +421,7 @@ export default function CurrencyInputPanel({
                   setCurrentClickedPercent('MAX')
                 }}
               >
-                {t('Max')}
+                100%
               </Button>
             ) : null}
           </Flex>

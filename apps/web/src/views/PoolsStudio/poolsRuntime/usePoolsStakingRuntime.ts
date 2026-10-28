@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
 import { useCurrentBlock, useInitialBlock } from 'state/block/hooks'
 import 'config/constants/types';
 import { VaultKey } from 'state/types'
@@ -657,9 +658,14 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
         ? 'Reading wallet…'
         : undefined
 
-  const requestModal = useCallback((pool: PoolPreviewCard, action: Exclude<PoolsModalAction, null>) => {
-    setModalRequest({ pool, action })
-  }, [])
+  const requestModal = useCallback(
+    (pool: PoolPreviewCard, action: Exclude<PoolsModalAction, null>) => {
+      const operation = action === 'stake' ? 'stake' : action === 'unstake' ? 'withdraw' : 'claim'
+      if (!isNativeYieldOperationAllowed(chainId, operation)) return
+      setModalRequest({ pool, action })
+    },
+    [chainId],
+  )
 
   const clearModal = useCallback(() => setModalRequest(null), [])
 

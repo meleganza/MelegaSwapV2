@@ -3,6 +3,7 @@
  * Missing addresses ⇒ capability stays disabled. No cross-chain address fallbacks.
  */
 import { ChainId } from '@pancakeswap/sdk'
+
 export { MELEGA_BNB_FACTORY } from '@melega/smartswap-v2-prepare/src/melegaAddresses'
 
 export type MelegaChainStatus = 'LIVE' | 'PREPARING' | 'DISABLED'
@@ -127,8 +128,8 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     status: 'LIVE',
     capabilities: {
       swap: true,
-      farms: true,
-      pools: true,
+      farms: false,
+      pools: false,
       tokens: true,
       liquidityBuilder: false,
     },
@@ -156,8 +157,8 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     status: 'LIVE',
     capabilities: {
       swap: true,
-      farms: true,
-      pools: true,
+      farms: false,
+      pools: false,
       tokens: true,
       liquidityBuilder: false,
     },
@@ -185,8 +186,8 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     status: 'LIVE',
     capabilities: {
       swap: true,
-      farms: true,
-      pools: true,
+      farms: false,
+      pools: false,
       tokens: true,
       liquidityBuilder: false,
     },

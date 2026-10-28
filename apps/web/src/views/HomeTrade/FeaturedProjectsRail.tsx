@@ -98,7 +98,7 @@ const Shell = styled.section`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: 14px;
   min-width: 0;
   align-items: stretch;
@@ -403,7 +403,7 @@ export const FeaturedProjectsRail: React.FC = () => {
   return (
     <Shell ref={shellRef} data-testid="dex-home-featured-projects" data-home-section="featured-projects">
       <Grid>
-        {cards.map(({ project: p, placement }) => {
+        {cards.slice(0, 2).map(({ project: p, placement }) => {
           const market = rowsBySlug[p.slug]
           const change = formatFeaturedChange(market)
           const q = new URLSearchParams({

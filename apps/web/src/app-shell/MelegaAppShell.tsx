@@ -104,6 +104,28 @@ const MobileHeader = styled.div`
   }
 `
 
+const MobileBrand = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+`
+
+const MobileBeta = styled.span`
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(221, 185, 47, 0.4);
+  color: ${uxRebuildColors.gold};
+  background: rgba(221, 185, 47, 0.08);
+  display: inline-flex;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+`
+
 const MobileNetwork = styled.div`
   flex: 1;
   display: flex;
@@ -201,7 +223,10 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
       <GlobalTrendingBar />
 
       <MobileHeader data-melega-mobile-header>
-        <MelegaBrandLockup size="mobile" iconOnly />
+        <MobileBrand>
+          <MelegaBrandLockup size="mobile" iconOnly />
+          <MobileBeta>Beta</MobileBeta>
+        </MobileBrand>
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>

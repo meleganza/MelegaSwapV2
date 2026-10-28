@@ -1,22 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 import { typography } from 'design-system/melega'
-import { Field } from 'state/swap/actions'
-import { useSwapState } from 'state/swap/hooks'
-import { useCurrency } from 'hooks/Tokens'
 import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
-import TradeSwapHero from './components/TradeSwapHero'
-import TradeCockpit from './TradeCockpit'
-import TradeCenterPanel from './TradeCenterPanel'
-import TradeRecentSwaps from './components/TradeRecentSwaps'
-import TradeRouterPanel from './components/TradeRouterPanel'
-import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
-import useTradeTerminalData from './useTradeTerminalData'
-import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
+import { TradeCockpit } from './TradeCockpit'
+import { TradeMarcoIconPatch } from './components/TradeMarcoIconPatch'
 import { tradeColors, tradeLayout } from './tradeTokens'
 
 const Root = styled.div`
@@ -33,184 +22,29 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${tradeLayout.contentMax};
+  max-width: ${tradeLayout.cockpitWidth};
   margin: 0 auto;
   padding: ${tradeLayout.contentPaddingTop} ${tradeLayout.contentPaddingX} ${tradeLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  /* Home desktop content rhythm; intentionally local to the Swap page shell. */
-  gap: 20px;
+  display: block;
 
   @media (max-width: 767px) {
     padding: 16px 0 ${tradeLayout.mobileBottomPad};
-    gap: 14px;
+    padding-left: 0;
+    padding-right: 0;
   }
-`
-
-const TopGrid = styled.div`
-  display: grid;
-  gap: ${tradeLayout.columnGap};
-  align-items: start;
-  min-width: 0;
-
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1fr) minmax(360px, ${tradeLayout.cockpitWidth});
-    grid-template-areas: 'center cockpit';
-  }
-
-  @media (max-width: 899px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'cockpit'
-      'center';
-  }
-`
-
-const BottomGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
-  grid-auto-rows: ${tradeLayout.tradeTerminalRecentSwapsHeight};
-  gap: ${tradeLayout.columnGap};
-  min-width: 0;
-  align-items: stretch;
-
-  @media (max-width: 899px) {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-`
-
-const stretchColumn = `
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-
-  & > * {
-    flex: 1;
-    min-height: 0;
-  }
-`
-
-const LeftWorkspace = styled.div`
-  grid-area: center;
-  display: flex;
-  flex-direction: column;
-  gap: ${tradeLayout.verticalRhythm};
-  min-width: 0;
-  min-height: 0;
-  align-self: start;
-`
-
-const AreaCockpit = styled.div`
-  grid-area: cockpit;
-  min-width: 0;
-  align-self: start;
-`
-
-const AreaSwaps = styled.div`
-  ${stretchColumn}
-`
-
-const AreaRoutes = styled.div`
-  ${stretchColumn}
 `
 
 export const TradeTerminalScreen: React.FC = () => {
   const [productAction, setProductAction] = React.useState<SmartSwapProductAction>('swap')
-  const { chainId } = useActiveChainId()
-  const {
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-  } = useSwapState()
-  const inputCurrency = useCurrency(inputCurrencyId)
-  const outputCurrency = useCurrency(outputCurrencyId)
-
-  const inputSymbol =
-    inputCurrency?.symbol ??
-    (chainId === 137 ? 'POL' : chainId === 8453 || chainId === 1 || chainId === 42161 ? 'ETH' : chainId === 43114 ? 'AVAX' : 'BNB')
-  const outputSymbol = outputCurrency?.symbol ?? 'Select token'
-
-  // Market/indexer reads are intentionally created once for the whole terminal.
-  // TradeCenterPanel used to create a second identical runtime (SWR, multicall,
-  // holder and candle subscriptions), which made route entry especially heavy in Firefox.
-  const tradeData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId, inputCurrencyId)
-  const { recentSwaps, isIndexing, swapEmptyReason, missingReason, missingReasonDetail, swapDiagnostic } = tradeData
-
   return (
     <Root data-trade-terminal-screen="true" data-trade-one-page-workspace="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <Content>
-        <DataSurfaceErrorBoundary
-          surface="Swap Hero"
-          userReason="Featured markets are temporarily unavailable."
-        >
-          <TradeSwapHero />
-        </DataSurfaceErrorBoundary>
-        <TradeRuntimeProvider>
-          <TopGrid>
-            <AreaCockpit>
-              <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
-            </AreaCockpit>
-            <LeftWorkspace>
-              <DataSurfaceErrorBoundary
-                surface="Swap Market"
-                userReason="Market data is temporarily unavailable."
-              >
-              <TradeCenterPanel
-                data={tradeData}
-                inputSymbol={inputSymbol}
-                outputSymbol={outputSymbol}
-                inputCurrencyId={inputCurrencyId}
-                outputCurrencyId={outputCurrencyId}
-              />
-              </DataSurfaceErrorBoundary>
-              {productAction === 'bridge' ? (
-                <AreaSwaps data-bridge-recent-swaps="true">
-                  <TradeRecentSwaps
-                    rows={recentSwaps}
-                    isIndexing={isIndexing}
-                    swapEmptyReason={swapEmptyReason}
-                    missingReason={missingReason}
-                    missingReasonDetail={missingReasonDetail}
-                    swapDiagnostic={swapDiagnostic}
-                  />
-                </AreaSwaps>
-              ) : null}
-            </LeftWorkspace>
-          </TopGrid>
-          {productAction === 'swap' ? (
-            <BottomGrid>
-              <AreaSwaps>
-                <DataSurfaceErrorBoundary
-                  surface="Swap Recent"
-                  userReason="Recent swaps are temporarily unavailable."
-                >
-                <TradeRecentSwaps
-                  rows={recentSwaps}
-                  isIndexing={isIndexing}
-                  swapEmptyReason={swapEmptyReason}
-                  missingReason={missingReason}
-                  missingReasonDetail={missingReasonDetail}
-                  swapDiagnostic={swapDiagnostic}
-                />
-                </DataSurfaceErrorBoundary>
-              </AreaSwaps>
-              <AreaRoutes>
-                <DataSurfaceErrorBoundary
-                  surface="Swap Routes"
-                  userReason="Route comparison is temporarily unavailable."
-                >
-                <TradeRouterPanel />
-                </DataSurfaceErrorBoundary>
-              </AreaRoutes>
-            </BottomGrid>
-          ) : null}
-        </TradeRuntimeProvider>
+        <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
       </Content>
     </Root>
   )

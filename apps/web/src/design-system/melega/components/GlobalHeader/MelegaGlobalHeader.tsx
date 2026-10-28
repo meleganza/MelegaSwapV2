@@ -108,6 +108,24 @@ const DexWord = styled.span`
   margin-left: 3px;
 `
 
+const BetaBadge = styled.span`
+  min-width: 36px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(221, 185, 47, 0.4);
+  color: ${uxRebuildColors.gold};
+  background: rgba(221, 185, 47, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`
+
 const Nav = styled.nav`
   display: flex;
   align-items: center;
@@ -388,6 +406,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             <MelegaWord>Melega</MelegaWord>
             <DexWord>DEX</DexWord>
           </Wordmark>
+          <BetaBadge>Beta</BetaBadge>
         </Brand>
 
         <Nav aria-label="Primary navigation" data-testid="melega-header-primary-nav">
