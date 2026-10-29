@@ -1,5 +1,6 @@
 import { ChainId } from '@pancakeswap/sdk'
 import {
+  getNativeYieldChainState,
   isNativeYieldEntryAllowed,
   isNativeYieldOperationAllowed,
   isNativeYieldTerminatedChain,
@@ -35,5 +36,13 @@ describe('native Melega Farms/Pools capability policy', () => {
   it('fails closed when the chain is unavailable', () => {
     expect(isNativeYieldOperationAllowed(undefined, 'stake')).toBe(false)
     expect(isNativeYieldOperationAllowed(undefined, 'withdraw')).toBe(false)
+  })
+
+  it('exposes the lifecycle state rendered by Earn', () => {
+    expect(getNativeYieldChainState(ChainId.BSC)).toBe('active')
+    expect(getNativeYieldChainState(ChainId.POLYGON)).toBe('terminated')
+    expect(getNativeYieldChainState(ChainId.BASE)).toBe('terminated')
+    expect(getNativeYieldChainState(ChainId.ETHEREUM)).toBe('terminated')
+    expect(getNativeYieldChainState(ChainId.ARBITRUM)).toBe('unsupported')
   })
 })

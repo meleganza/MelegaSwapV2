@@ -12,7 +12,7 @@ import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import { useMasterChefEmission, type MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { getMasterChefAddress } from 'utils/addressHelpers'
-import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
+import { isNativeYieldOperationAllowed, isNativeYieldTerminatedChain } from 'config/nativeYieldPolicy'
 import { getMelegaChain } from 'config/melegaChainRegistry'
 import { enrichFarmParticipantCounts } from 'lib/yield-participants/enrichYieldParticipantCards'
 import { useYieldParticipants } from 'lib/yield-participants/useYieldParticipants'
@@ -244,7 +244,10 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const portfolioPreviewCards = useMemo(() => {
     if (!portfolioEnrichedFarms.length) return []
-    const cards = portfolioEnrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
+    const cards = portfolioEnrichedFarms.map((f) => {
+      const card = mapFarmToPreviewCard(f, masterChefEmission)
+      return isNativeYieldTerminatedChain(chainId) ? { ...card, status: 'finished' as const, cta: 'none' as const } : card
+    })
     return enrichFarmParticipantCounts(
       cards,
       participantSnapshot,

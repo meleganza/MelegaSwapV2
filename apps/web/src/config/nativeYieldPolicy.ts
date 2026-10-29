@@ -20,6 +20,14 @@ export function isNativeYieldEntryAllowed(chainId?: number | null): boolean {
   return chainId === NATIVE_YIELD_ACTIVE_CHAIN_ID
 }
 
+export type NativeYieldChainState = 'active' | 'terminated' | 'unsupported'
+
+export function getNativeYieldChainState(chainId?: number | null): NativeYieldChainState {
+  if (chainId === NATIVE_YIELD_ACTIVE_CHAIN_ID) return 'active'
+  if (isNativeYieldTerminatedChain(chainId)) return 'terminated'
+  return 'unsupported'
+}
+
 export function isNativeYieldOperationAllowed(
   chainId: number | null | undefined,
   operation: NativeYieldOperation,

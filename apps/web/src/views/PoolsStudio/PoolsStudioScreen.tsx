@@ -15,6 +15,7 @@ import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
 import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
 import { poolsHero } from './modules/poolsHeroTokens'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const Root = styled.div`
   color: ${poolsStudioColors.text};
@@ -57,6 +58,7 @@ const Content = styled.div`
  */
 export const PoolsStudioScreen: React.FC = () => {
   const router = useRouter()
+  const { chainId } = useActiveChainId()
   useEffect(() => {
     if (!router.isReady) return
     const hash = router.asPath.split('#')[1]
@@ -95,7 +97,7 @@ export const PoolsStudioScreen: React.FC = () => {
       <PoolsRuntimeProvider>
         <PoolsActionHost />
         <Content data-ps-content data-pools-ia="product-ux-redesign-v1">
-          <EarnPremiumShell kind="pools" />
+          <EarnPremiumShell kind="pools" chainId={chainId} />
           <EarnSection id="opportunities">
             <DataSurfaceErrorBoundary surface="Earn opportunities" userReason="Active staking pools are temporarily unavailable.">
               <PoolsExplorePoolsModule />

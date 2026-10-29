@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
+import { getNativeYieldChainState } from 'config/nativeYieldPolicy'
 
 type EarnKind = 'farms' | 'pools'
 
@@ -49,6 +50,17 @@ const Support = styled.p`
   margin: 0;
   color: #72736e;
   font-size: 13px;
+`
+const SafetyNotice = styled.div`
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(166, 57, 57, 0.28);
+  border-radius: 12px;
+  background: rgba(166, 57, 57, 0.07);
+  color: #3d3e3a;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.45;
 `
 const Protocols = styled.nav`
   display: grid;
@@ -109,13 +121,20 @@ export const EarnSection = styled.section`
   scroll-margin-top: 142px;
 `
 
-export const EarnPremiumShell: React.FC<{ kind: EarnKind }> = ({ kind }) => (
-  <>
+export const EarnPremiumShell: React.FC<{ kind: EarnKind; chainId?: number | null }> = ({ kind, chainId }) => {
+  const terminated = getNativeYieldChainState(chainId) === 'terminated'
+  return <>
     <Header data-earn-premium-header>
       <Identity>
-        <Eyebrow>BNB Chain · Active</Eyebrow>
+        <Eyebrow>{terminated ? 'Terminated · exits only' : 'BNB Chain · Active'}</Eyebrow>
         <Title>Earn</Title>
         <Support>Verified opportunities and your on-chain positions.</Support>
+        {terminated ? (
+          <SafetyNotice data-testid="native-yield-terminated-notice">
+            New farm and pool entries are closed on this network. Existing positions remain readable and exits,
+            claims and emergency withdrawals stay available where the contracts permit them.
+          </SafetyNotice>
+        ) : null}
       </Identity>
       <Protocols aria-label="Earn protocol type">
         <Link href="/farms" passHref legacyBehavior>
@@ -136,6 +155,6 @@ export const EarnPremiumShell: React.FC<{ kind: EarnKind }> = ({ kind }) => (
       <JumpLink href="#terminated">Terminated</JumpLink>
     </JumpNav>
   </>
-)
+}
 
 export default EarnPremiumShell

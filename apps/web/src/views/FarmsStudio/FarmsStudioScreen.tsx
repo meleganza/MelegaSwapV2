@@ -131,7 +131,7 @@ export const FarmsStudioScreen: React.FC = () => {
         <FarmsVisualPolishModule />
         <FarmsActionHost />
         <Content data-fs-content data-farms-ia="product-ux-redesign-v1">
-          <EarnPremiumShell kind="farms" />
+          <EarnPremiumShell kind="farms" chainId={chainId} />
           <EarnSection id="opportunities">
             <DataSurfaceErrorBoundary surface="Earn opportunities" userReason="Active farms are temporarily unavailable.">
               <FarmsExploreFarmsModule />

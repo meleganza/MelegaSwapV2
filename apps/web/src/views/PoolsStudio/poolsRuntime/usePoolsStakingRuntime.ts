@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
+import { isNativeYieldOperationAllowed, isNativeYieldTerminatedChain } from 'config/nativeYieldPolicy'
 import { useCurrentBlock, useInitialBlock } from 'state/block/hooks'
 import 'config/constants/types';
 import { VaultKey } from 'state/types'
@@ -325,6 +325,11 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
       .map((p) => mapPoolToPreviewCard(p, currentBlockRef.current, performanceFee, rewardTokenBalanceByChef))
       .filter((c): c is PoolPreviewCard => c !== null)
+      .map((card) =>
+        isNativeYieldTerminatedChain(chainId)
+          ? { ...card, status: 'ended' as const, displayStatus: 'ENDED' as const, cta: 'none' as const }
+          : card,
+      )
     const next = deduplicatePoolPreviewCards(cards, chainId ?? 56)
     if (next.length > 0) {
       lastGoodStakingCardsRef.current = { chainId: scopeChain, cards: next }
