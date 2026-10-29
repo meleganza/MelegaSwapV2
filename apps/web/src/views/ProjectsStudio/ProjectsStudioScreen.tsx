@@ -2,9 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import ProjectsStudioGlobalStyle from './ProjectsStudioGlobalStyle'
-import ProjectsFilterRow from './components/ProjectsFilterRow'
-import ProjectsGrid from './components/ProjectsGrid'
-import ProjectsStudioPageHeader from './components/ProjectsStudioPageHeader'
+import { ProjectsFilterRow } from './components/ProjectsFilterRow'
+import { ProjectsGrid } from './components/ProjectsGrid'
+import { ProjectsStudioPageHeader } from './components/ProjectsStudioPageHeader'
+import { FeaturedProjectsSection } from './components/FeaturedProjectsSection'
 import { ProjectsRuntimeProvider } from './projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioColors, projectsStudioLayout } from './projectsStudioTokens'
 
@@ -53,6 +54,7 @@ export const ProjectsStudioScreen: React.FC = () => (
       <ProjectsStudioGlobalStyle />
       <Content>
         <ProjectsStudioPageHeader />
+        <FeaturedProjectsSection />
         <ProjectsFilterRow />
         <ProjectsGrid />
       </Content>

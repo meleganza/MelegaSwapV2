@@ -1,285 +1,123 @@
 import React, { useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+import { ArrowUpRight } from 'lucide-react'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { PROJECTS_SCROLL_KEY } from '../projectsDirectoryV3'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { projectsStudioColors, projectsStudioLayout, PR_FONT_BODY } from '../projectsStudioTokens'
 
-const Wrap = styled.div`
+const Wrap = styled.section`
   min-width: 0;
   font-family: ${PR_FONT_BODY};
+  @media (max-width: 767px) { padding: 0 16px; }
 `
-
-const Count = styled.p`
-  margin: 0 0 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${projectsStudioColors.muted};
+const Head = styled.div`
+  display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 12px;
 `
-
-const TableViewport = styled.div`
-  overflow-x: auto;
-  border: 1px solid ${projectsStudioColors.cardBorder};
-  border-radius: ${projectsStudioLayout.cardRadius};
-  background: rgba(13, 13, 13, 0.86);
+const Heading = styled.div`
+  h2 { margin: 0; color: ${projectsStudioColors.text}; font-size: 20px; line-height: 1.2; }
+  p { margin: 3px 0 0; color: ${projectsStudioColors.muted}; font-size: 12px; }
 `
-
-const Table = styled.div`
-  min-width: 920px;
+const Grid = styled.div`
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+  @media (max-width: 1023px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 639px) { grid-template-columns: 1fr; gap: 10px; }
 `
-
-const HeaderRow = styled.div`
-  min-height: 38px;
-  display: grid;
-  grid-template-columns: 44px minmax(220px, 1.65fr) 104px 112px 112px 112px 100px 132px;
-  gap: 12px;
-  align-items: center;
-  padding: 0 14px;
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 10px;
-  line-height: 14px;
-  font-weight: 760;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-bottom: 1px solid ${projectsStudioColors.cardBorder};
+const Card = styled(Link)`
+  min-width: 0; min-height: 136px; padding: 16px;
+  border: 1px solid ${projectsStudioColors.cardBorder}; border-radius: ${projectsStudioLayout.cardRadius};
+  background: linear-gradient(145deg, rgba(24,24,22,.98), rgba(11,11,11,.98));
+  color: ${projectsStudioColors.text}; text-decoration: none;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
+  transition: border-color 140ms ease, transform 140ms ease;
+  &:hover { border-color: rgba(244,196,48,.42); transform: translateY(-2px); }
+  &:focus-visible { outline: 2px solid ${projectsStudioColors.gold}; outline-offset: 2px; }
 `
-
-const Row = styled.div`
-  min-height: 68px;
-  display: grid;
-  grid-template-columns: 44px minmax(220px, 1.65fr) 104px 112px 112px 112px 100px 132px;
-  gap: 12px;
-  align-items: center;
-  padding: 0 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
-  transition: background 120ms ease;
-
-  &:last-child {
-    border-bottom: 0;
-  }
-  &:hover {
-    background: rgba(255, 255, 255, 0.025);
-  }
-`
-
-const Rank = styled.span`
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-`
-
 const Identity = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+  display: flex; align-items: center; gap: 12px; min-width: 0;
 `
-
 const Logo = styled.img`
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; object-fit: contain;
+  background: #090909; border: 1px solid rgba(255,255,255,.1);
 `
-
 const Initial = styled.span`
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(244, 196, 48, 0.1);
-  color: ${projectsStudioColors.gold};
-  border: 1px solid rgba(244, 196, 48, 0.24);
-  font-weight: 800;
+  width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(244,196,48,.12); border: 1px solid rgba(244,196,48,.28);
+  color: ${projectsStudioColors.gold}; font-weight: 850;
 `
-
-const IdentityText = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+const Names = styled.div`
+  min-width: 0; flex: 1;
+  strong, span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  strong { font-size: 16px; line-height: 20px; }
+  span { margin-top: 3px; color: ${projectsStudioColors.muted}; font-size: 12px; }
 `
-
-const ProjectName = styled(Link)`
-  color: ${projectsStudioColors.text};
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 730;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const Open = styled.span`
+  width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center;
+  border-radius: 12px; border: 1px solid rgba(255,255,255,.1);
 `
-
-const Sub = styled.span`
-  color: ${projectsStudioColors.muted};
-  font-size: 11px;
-  line-height: 14px;
+const Facts = styled.div`
+  display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap;
+  color: ${projectsStudioColors.secondary}; font-size: 12px;
+  span:first-child { color: ${projectsStudioColors.gold}; font-weight: 750; }
 `
-
-const Metric = styled.span<{ $positive?: boolean; $negative?: boolean }>`
-  color: ${({ $positive, $negative }) => ($positive ? '#18d987' : $negative ? '#ff5964' : projectsStudioColors.text)};
-  font-size: 13px;
-  font-weight: 660;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-`
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-`
-
-const Action = styled(Link)<{ $primary?: boolean }>`
-  min-height: 34px;
-  padding: 0 10px;
-  border-radius: 9px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.48)' : projectsStudioColors.cardBorder)};
-  background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.13)' : 'transparent')};
-  color: ${({ $primary }) => ($primary ? projectsStudioColors.gold : projectsStudioColors.text)};
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 720;
-`
-
 const EmptyPanel = styled.div`
-  padding: 22px 16px;
-  border-radius: ${projectsStudioLayout.cardRadius};
-  border: 1px solid ${projectsStudioColors.cardBorder};
-  color: ${projectsStudioColors.muted};
-  text-align: center;
+  padding: 22px 16px; border-radius: ${projectsStudioLayout.cardRadius};
+  border: 1px solid ${projectsStudioColors.cardBorder}; color: ${projectsStudioColors.muted}; text-align: center;
 `
-
 const LoadMore = styled.button`
-  display: block;
-  margin: 16px auto 0;
-  height: 40px;
-  padding: 0 20px;
-  border-radius: 10px;
-  border: 1px solid ${projectsStudioColors.cardBorder};
-  background: ${projectsStudioColors.card};
-  color: ${projectsStudioColors.text};
-  font-family: ${PR_FONT_BODY};
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
+  display: block; margin: 16px auto 0; min-height: 44px; padding: 0 20px; border-radius: 12px;
+  border: 1px solid ${projectsStudioColors.cardBorder}; background: ${projectsStudioColors.card};
+  color: ${projectsStudioColors.text}; font: 700 13px ${PR_FONT_BODY}; cursor: pointer;
 `
 
-function metric(project: ProjectPreviewCard, ...labels: string[]): string {
-  return project.metrics.find((entry) => labels.includes(entry.label))?.value ?? '—'
-}
-
-/** Fail closed: discovery never publishes a URL-as-name, a generic DEX shell,
- * a missing contract, or a record with no indexed market observation. */
+/** Fail closed: cards require a canonical contract and at least one indexed market fact. */
 export function isMarketDiscoverableProject(project: ProjectPreviewCard): boolean {
   const address = project.contractAddress ?? project.contract
   if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) return false
-  if (/^https?:\/\//i.test(project.name.trim())) return false
-  if (/^melega\s*dex$/i.test(project.name.trim())) return false
-  const values = project.metrics.map((entry) => entry.value)
-  return values.some((value) => Boolean(value && value !== '—' && value !== 'Unavailable'))
+  if (/^https?:\/\//i.test(project.name.trim()) || /^melega\s*dex$/i.test(project.name.trim())) return false
+  return project.metrics.some((entry) => Boolean(entry.value && entry.value !== '—' && entry.value !== 'Unavailable'))
+}
+
+function firstFact(project: ProjectPreviewCard): string | null {
+  return project.metrics.find((entry) => entry.value && entry.value !== '—' && entry.value !== 'Unavailable')?.value ?? null
 }
 
 export const ProjectsGrid: React.FC = () => {
-  const { projects, visibleProjects, loadMore } = useProjectsRuntime()
+  const { projects, visibleProjects, loadMore, sort } = useProjectsRuntime()
   const realProjects = useMemo(() => projects.filter(isMarketDiscoverableProject), [projects])
-  // Invalid registry records must not consume pagination slots. The runtime
-  // still owns the page size; discovery applies that size to the already
-  // validated market inventory.
-  const realVisible = useMemo(
-    () => realProjects.slice(0, Math.max(visibleProjects.length, 1)),
-    [realProjects, visibleProjects.length],
-  )
+  const realVisible = useMemo(() => realProjects.slice(0, Math.max(visibleProjects.length, 1)), [realProjects, visibleProjects.length])
   const hasRealMore = realVisible.length < realProjects.length
 
   useEffect(() => {
     try {
       const y = Number(sessionStorage.getItem(PROJECTS_SCROLL_KEY))
       if (Number.isFinite(y) && y > 0) window.requestAnimationFrame(() => window.scrollTo(0, y))
-    } catch {
-      /* storage unavailable */
-    }
+    } catch { /* storage unavailable */ }
   }, [])
-
   useEffect(() => {
-    const onScroll = () => {
-      try {
-        sessionStorage.setItem(PROJECTS_SCROLL_KEY, String(window.scrollY))
-      } catch {
-        /* ignore */
-      }
-    }
+    const onScroll = () => { try { sessionStorage.setItem(PROJECTS_SCROLL_KEY, String(window.scrollY)) } catch { /* ignore */ } }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
-    <Wrap data-testid="projects-directory-list" data-projects-directory-view="market-list">
-      <Count>{`Showing ${realVisible.length} of ${realProjects.length} indexed projects`}</Count>
-      {realVisible.length === 0 ? (
-        <EmptyPanel>No verified market records match these filters.</EmptyPanel>
-      ) : (
-        <TableViewport>
-          <Table role="table" aria-label="Indexed projects">
-            <HeaderRow role="row">
-              <span>#</span>
-              <span>Project</span>
-              <span>Price</span>
-              <span>24H</span>
-              <span>Market cap</span>
-              <span>Volume</span>
-              <span>Chain</span>
-              <span />
-            </HeaderRow>
-            {realVisible.map((project, index) => {
-              const change = project.change24hPct
-              return (
-                <Row role="row" key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`}>
-                  <Rank>{index + 1}</Rank>
-                  <Identity>
-                    {project.logoURI ? (
-                      <Logo src={project.logoURI} alt="" loading="lazy" />
-                    ) : (
-                      <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>
-                    )}
-                    <IdentityText>
-                      <ProjectName href={project.projectHref ?? `/@${project.slug}`}>{project.name}</ProjectName>
-                      <Sub>{project.symbol ? `$${project.symbol}` : project.contractAddress?.slice(0, 10)}</Sub>
-                    </IdentityText>
-                  </Identity>
-                  <Metric>{project.priceDisplay ?? metric(project, 'Price')}</Metric>
-                  <Metric $positive={change != null && change > 0} $negative={change != null && change < 0}>
-                    {project.change24hDisplay ??
-                      (change == null ? '—' : `${change > 0 ? '+' : ''}${change.toFixed(2)}%`)}
-                  </Metric>
-                  <Metric>{metric(project, 'Market Cap', 'FDV')}</Metric>
-                  <Metric>{metric(project, 'Volume', 'Volume 24h')}</Metric>
-                  <Sub>{project.chains[0] ?? '—'}</Sub>
-                  <Actions>
-                    <Action href={project.projectHref ?? `/@${project.slug}`}>Project</Action>
-                    <Action $primary href={project.tradeHref ?? '/swap'}>
-                      Trade
-                    </Action>
-                  </Actions>
-                </Row>
-              )
-            })}
-          </Table>
-        </TableViewport>
+    <Wrap data-testid="projects-directory-list" data-projects-directory-view="premium-cards">
+      <Head><Heading><h2>{sort === 'Trending' ? 'Trending' : 'Discover'}</h2><p>{realProjects.length} verified market {realProjects.length === 1 ? 'record' : 'records'}</p></Heading></Head>
+      {realVisible.length === 0 ? <EmptyPanel>No verified projects match these filters.</EmptyPanel> : (
+        <Grid>{realVisible.map((project) => {
+          const fact = firstFact(project)
+          return <Card key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`} href={project.projectHref ?? `/@${project.slug}`}>
+            <Identity>
+              {project.logoURI ? <Logo src={project.logoURI} alt="" loading="lazy" /> : <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>}
+              <Names><strong>{project.name}</strong><span>{project.symbol ? `$${project.symbol}` : project.contractAddress?.slice(0, 10)}</span></Names>
+              <Open aria-hidden="true"><ArrowUpRight size={18} /></Open>
+            </Identity>
+            <Facts><span>{project.chains[0] ?? 'Verified'}</span>{fact ? <span>{fact}</span> : null}{project.featured ? <span>Featured</span> : null}{project.boosted ? <span>Boosted</span> : null}</Facts>
+          </Card>
+        })}</Grid>
       )}
-      {hasRealMore ? (
-        <LoadMore type="button" onClick={loadMore} data-testid="projects-load-more">
-          Load more
-        </LoadMore>
-      ) : null}
+      {hasRealMore ? <LoadMore type="button" onClick={loadMore} data-testid="projects-load-more">Load more</LoadMore> : null}
     </Wrap>
   )
 }

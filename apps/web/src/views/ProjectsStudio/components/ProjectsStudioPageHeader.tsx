@@ -18,19 +18,17 @@ const Shell = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 140px;
-  max-height: 170px;
-  padding: 12px 0 8px;
+  min-height: 92px;
+  padding: 14px 0 6px;
   box-sizing: border-box;
   min-width: 0;
 
   @media (max-width: 767px) {
     flex-direction: column;
     align-items: flex-start;
-    max-height: none;
     min-height: 0;
-    gap: 12px;
-    padding: 8px 0;
+    gap: 10px;
+    padding: 10px 16px 2px;
   }
 `
 
@@ -44,14 +42,14 @@ const Left = styled.div`
 const Title = styled.h1`
   margin: 0;
   font-family: ${PR_FONT_DISPLAY};
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 750;
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: ${projectsStudioColors.text};
 
   @media (max-width: 767px) {
-    font-size: 24px;
+    font-size: 28px;
   }
 `
 
@@ -85,12 +83,12 @@ export const ProjectsStudioPageHeader: React.FC = () => (
     data-projects-hero="compact-v3"
   >
     <Left>
-      <Title>Discover Projects</Title>
-      <Sub>Explore tokens and projects across Melega DEX.</Sub>
+      <Title>Explore</Title>
+      <Sub>Verified projects, real markets and community discovery.</Sub>
     </Left>
     <Actions>
       <MelegaStudioPrimaryBtn as="a" href="/list" style={{ textDecoration: 'none' }} data-testid="projects-list-cta">
-        List Your Project
+        Grow your project
       </MelegaStudioPrimaryBtn>
       <MelegaStudioGhostBtn
         as="a"
@@ -98,7 +96,7 @@ export const ProjectsStudioPageHeader: React.FC = () => (
         style={{ textDecoration: 'none' }}
         data-testid="projects-claim-cta"
       >
-        Claim Project
+        Claim page
       </MelegaStudioGhostBtn>
     </Actions>
   </Shell>

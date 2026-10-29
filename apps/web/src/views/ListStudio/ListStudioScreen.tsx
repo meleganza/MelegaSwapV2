@@ -7,6 +7,7 @@ import { listOne } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListContractFirstFunnel } from './ListContractFirstFunnel'
 import { ClaimWorkspaceBoundary } from './ClaimWorkspaceBoundary'
+import { ToolsServiceGrid } from './ToolsServiceGrid'
 
 const ListWorkspace = dynamic(() => import('./ListWorkspace').then((module) => module.ListWorkspace), { ssr: false })
 
@@ -66,6 +67,7 @@ export const ListStudioScreen: React.FC = () => {
     <Root data-list-studio-screen data-ux-rebuild-list data-list-concept="list-your-project">
       <PageMeta />
       <Content data-testid="list-one-content">
+        <ToolsServiceGrid />
         <ListContractFirstFunnel />
       </Content>
       {listIntent ? (
