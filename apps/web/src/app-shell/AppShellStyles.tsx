@@ -32,13 +32,22 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     color: #171817 !important;
   }
 
+  [data-melega-global-search] > div {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+  }
+
   [data-melega-global-search] input::placeholder {
     color: #72736E !important;
   }
 
   [data-testid='melega-header-chain'] > div,
-  [data-testid='melega-header-chain'] button {
+  [data-testid='melega-header-chain'] button,
+  [data-testid='melega-header-chain'] [role='button'] {
     background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
     color: #171817 !important;
   }
 
@@ -50,6 +59,53 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   }
 
   [data-tool-service] h2 {
+    color: #171817 !important;
+  }
+
+  /* R030 consumer surfaces: presentation only; runtime/action hosts remain untouched. */
+  [data-projects-studio-screen],
+  [data-farms-studio-screen],
+  [data-pools-studio-screen],
+  [data-portfolio='premium-v3'] {
+    background: #F7F6F2 !important;
+    color: #171817 !important;
+    color-scheme: light !important;
+  }
+
+  [data-projects-studio-screen] [data-pr-panel],
+  [data-projects-studio-screen] [data-pr-project-card],
+  [data-projects-studio-screen] [data-pr-kpi-card],
+  [data-projects-studio-screen] [data-pr-featured],
+  [data-farms-studio-screen] [data-testid='farms-my-farms-surface'],
+  [data-farms-studio-screen] [data-testid='farms-my-farm-card'],
+  [data-farms-studio-screen] [data-testid='farms-explore-card'],
+  [data-farms-studio-screen] [data-testid='farms-finished-card'],
+  [data-pools-studio-screen] [data-testid='pools-my-positions-surface'],
+  [data-pools-studio-screen] [data-testid='pools-explore-card'],
+  [data-pools-studio-screen] [data-testid='pools-finished-card'] {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    box-shadow: 0 16px 44px rgba(23, 24, 23, 0.07) !important;
+    color: #171817 !important;
+  }
+
+  [data-pools-studio-screen] [data-testid='pools-my-positions-card'] *:not(button),
+  [data-pools-studio-screen] [data-testid='pools-explore-card'] *:not(button),
+  [data-pools-studio-screen] [data-testid='pools-finished-card'] *:not(button) {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: inherit;
+  }
+
+  [data-projects-studio-screen] input,
+  [data-projects-studio-screen] select,
+  [data-farms-studio-screen] input,
+  [data-farms-studio-screen] select,
+  [data-pools-studio-screen] input,
+  [data-pools-studio-screen] select {
+    background: #FBFAF7 !important;
+    border-color: #E5E2D9 !important;
     color: #171817 !important;
   }
 

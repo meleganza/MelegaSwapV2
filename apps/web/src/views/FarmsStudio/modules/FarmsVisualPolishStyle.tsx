@@ -17,7 +17,7 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
     --farms-polish-ease: ${ease};
     --farms-polish-ms: ${ms};
     --farms-polish-gold: ${farmsVisualPolish.gold};
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   /* Premium layered surfaces — color / shadow only (no size) */
@@ -32,8 +32,7 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid='farms-yield-advisor-module'],
   ${S} [data-testid^='farms-kpi-'] {
     background-image:
-      radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.04) 0%, transparent 42%),
-      radial-gradient(circle at 12% 92%, rgba(0, 0, 0, 0.05) 0%, transparent 48%);
+      linear-gradient(#FFFFFF, #FFFFFF);
     box-shadow: ${farmsVisualPolish.cardShadow};
   }
 
@@ -45,11 +44,45 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid^='farms-kpi-'],
   ${S} [data-testid='farms-hero-trust'],
   ${S} [data-testid='farms-my-farms-surface'] {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    color: #171817 !important;
     border-color: ${farmsVisualPolish.borderSoft} !important;
     transition:
       border-color var(--farms-polish-ms) var(--farms-polish-ease),
       box-shadow var(--farms-polish-ms) var(--farms-polish-ease),
       background-color var(--farms-polish-ms) var(--farms-polish-ease);
+  }
+
+  /* Legacy styled-component ids collide across studios; neutralize their dark fills inside cards. */
+  ${S} [data-testid='farms-my-farm-card'] *:not(button),
+  ${S} [data-testid='farms-explore-card'] *:not(button),
+  ${S} [data-testid='farms-finished-card'] *:not(button) {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: inherit;
+  }
+
+  ${S} [data-testid='farms-my-farm-card'] button,
+  ${S} [data-testid='farms-explore-card'] button,
+  ${S} [data-testid='farms-finished-card'] button {
+    border-color: #E5E2D9 !important;
+  }
+
+  ${S} [data-earn-premium-header] nav,
+  ${S} [data-earn-premium-header] nav a[aria-current='page'] {
+    background: #FFF2BD !important;
+    color: #171817 !important;
+  }
+
+  ${S} nav[aria-label='Earn sections'] {
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-color: #E5E2D9 !important;
+  }
+
+  ${S} nav[aria-label='Earn sections'] a {
+    color: #5F605C !important;
+    background: transparent !important;
   }
 
   ${S} [data-testid='farms-my-farm-card']:hover,
@@ -124,7 +157,7 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
   /* Skeleton polish — softer pulse, no layout change */
   ${S} [data-testid$='-skeleton'],
   ${S} [data-testid*='skeleton'] {
-    background-color: rgba(255, 255, 255, 0.045) !important;
+    background-color: #F0EEE7 !important;
     border-color: ${farmsVisualPolish.borderSoft} !important;
   }
 
@@ -143,7 +176,7 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid$='-empty'],
   ${S} [data-testid$='-unavailable'],
   ${S} [data-testid$='-disconnected'] {
-    color: rgba(245, 245, 245, 0.92);
+    color: #171817;
   }
 
   /* Reduced motion — kill polish transitions / live pulses inside studio */

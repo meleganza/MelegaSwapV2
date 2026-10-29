@@ -11,9 +11,9 @@ const Header = styled.header`
   justify-content: space-between;
   gap: 20px;
   padding: 22px 24px;
-  border: 1px solid rgba(244, 196, 48, 0.16);
+  border: 1px solid #e5e2d9;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(244, 196, 48, 0.09), rgba(255, 255, 255, 0.025) 48%);
+  background: #ffffff;
   @media (max-width: 767px) {
     align-items: stretch;
     flex-direction: column;
@@ -31,7 +31,7 @@ const Eyebrow = styled.span`
   padding: 0 9px;
   border-radius: 999px;
   background: rgba(244, 196, 48, 0.12);
-  color: #f4c430;
+  color: #171817;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -39,7 +39,7 @@ const Eyebrow = styled.span`
 `
 const Title = styled.h1`
   margin: 8px 0 2px;
-  color: #f7f4ed;
+  color: #171817;
   font-family: ${typography.fontFamily.body};
   font-size: clamp(30px, 4vw, 44px);
   line-height: 1;
@@ -47,7 +47,7 @@ const Title = styled.h1`
 `
 const Support = styled.p`
   margin: 0;
-  color: rgba(247, 244, 237, 0.58);
+  color: #72736e;
   font-size: 13px;
 `
 const Protocols = styled.nav`
@@ -55,9 +55,9 @@ const Protocols = styled.nav`
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #e5e2d9;
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.3);
+  background: #f7f6f2;
 `
 const ProtocolLink = styled.a<{ $active: boolean }>`
   min-width: 112px;
@@ -67,8 +67,8 @@ const ProtocolLink = styled.a<{ $active: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $active }) => ($active ? '#f4c430' : 'rgba(247,244,237,.72)')} !important;
-  background: ${({ $active }) => ($active ? 'rgba(244,196,48,.14)' : 'transparent')};
+  color: ${({ $active }) => ($active ? '#171817' : '#72736e')} !important;
+  background: ${({ $active }) => ($active ? '#fff2bd' : 'transparent')};
   font-size: 13px;
   font-weight: 750;
   text-decoration: none;
@@ -82,9 +82,9 @@ const JumpNav = styled.nav`
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid #e5e2d9;
   border-radius: 14px;
-  background: rgba(10, 10, 10, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(16px);
   @media (max-width: 767px) { top: 54px; margin: 0 12px; }
 `
@@ -96,12 +96,12 @@ const JumpLink = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(247, 244, 237, 0.76);
+  color: #5f605c;
   font-size: 12px;
   font-weight: 700;
   text-align: center;
   text-decoration: none;
-  &:hover, &:focus-visible { color: #f4c430; background: rgba(244, 196, 48, 0.1); }
+  &:hover, &:focus-visible { color: #171817; background: #fff2bd; }
 `
 
 export const EarnSection = styled.section`

@@ -15,7 +15,7 @@ const TERMINATED_CHAIN_IDS = new Set([1, 137, 8453])
 
 const Hero = styled(Band)`
   padding: 20px;
-  background: radial-gradient(ellipse 70% 100% at 0% 0%, rgba(242,200,76,.14), transparent 60%), linear-gradient(150deg, #17150f 0%, #0d0d0d 72%);
+  background: linear-gradient(135deg, #fff2bd 0%, #ffffff 68%);
 `
 const HeroRow = styled.div`
   display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-width: 0;

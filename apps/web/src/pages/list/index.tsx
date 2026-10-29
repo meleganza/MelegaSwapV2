@@ -6,5 +6,6 @@ const ListScreen = dynamic(() => import('views/ListStudio/ListStudioScreen'), { 
 const ListPage: NextPageWithLayout = () => <ListScreen />
 
 ListPage.chains = []
+ListPage.disablePageSuspense = true
 
 export default ListPage

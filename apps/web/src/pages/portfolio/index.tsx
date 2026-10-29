@@ -10,5 +10,6 @@ const PortfolioPage: NextPageWithLayout = () => <PortfolioStudioScreen />
 
 PortfolioPage.chains = CHAIN_IDS
 PortfolioPage.isShowScrollToTopButton = false
+PortfolioPage.disablePageSuspense = true
 
 export default PortfolioPage

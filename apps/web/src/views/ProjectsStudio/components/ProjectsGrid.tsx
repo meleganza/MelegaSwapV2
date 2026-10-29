@@ -27,7 +27,7 @@ const Grid = styled.div`
 const Card = styled(Link)`
   min-width: 0; min-height: 136px; padding: 16px;
   border: 1px solid ${projectsStudioColors.cardBorder}; border-radius: ${projectsStudioLayout.cardRadius};
-  background: linear-gradient(145deg, rgba(24,24,22,.98), rgba(11,11,11,.98));
+  background: ${projectsStudioColors.card};
   color: ${projectsStudioColors.text}; text-decoration: none;
   display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
   transition: border-color 140ms ease, transform 140ms ease;
@@ -39,7 +39,7 @@ const Identity = styled.div`
 `
 const Logo = styled.img`
   width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; object-fit: contain;
-  background: #090909; border: 1px solid rgba(255,255,255,.1);
+  background: #F7F6F2; border: 1px solid ${projectsStudioColors.cardBorder};
 `
 const Initial = styled.span`
   width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; display: grid; place-items: center;
@@ -54,7 +54,7 @@ const Names = styled.div`
 `
 const Open = styled.span`
   width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center;
-  border-radius: 12px; border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; border: 1px solid ${projectsStudioColors.cardBorder};
 `
 const Facts = styled.div`
   display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap;

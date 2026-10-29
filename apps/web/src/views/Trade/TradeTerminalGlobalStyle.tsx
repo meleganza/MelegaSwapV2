@@ -289,6 +289,58 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     line-height: 18px !important;
   }
 
+  /* R030 Pearl Minimal presentation. SmartSwap state, handlers and execution remain unchanged. */
+  .trade-cockpit,
+  .trade-swap-cockpit,
+  .trade-terminal-swap {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    color: #171817 !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input,
+  .trade-terminal-swap #swap-currency-output {
+    background: #FBFAF7 !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    color: #171817 !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input *:not(button),
+  .trade-terminal-swap #swap-currency-output *:not(button) {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #171817 !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input button,
+  .trade-terminal-swap #swap-currency-output button,
+  .trade-terminal-swap [class*='CurrencySelect'] {
+    background: #FFFFFF !important;
+    border-color: #E5E2D9 !important;
+    color: #171817 !important;
+  }
+
+  .trade-cockpit [role='tablist'],
+  .trade-cockpit [role='tab'] {
+    background: #FFFFFF !important;
+    border-color: #E5E2D9 !important;
+    color: #5F605C !important;
+  }
+
+  .trade-cockpit [role='tab'][aria-selected='true'] {
+    background: #FFF2BD !important;
+    color: #171817 !important;
+  }
+
+  .trade-terminal-swap [data-trade-quote-summary],
+  .trade-terminal-swap [data-trade-quote-summary] > * {
+    background: #F7F6F2 !important;
+    border-color: #E5E2D9 !important;
+    color: #5F605C !important;
+  }
+
   .trade-terminal-swap #swap-currency-input > [class*='InputPanel'],
   .trade-terminal-swap #swap-currency-output > [class*='InputPanel'] {
     display: none !important;

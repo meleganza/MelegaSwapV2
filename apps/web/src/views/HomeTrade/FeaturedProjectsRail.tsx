@@ -79,14 +79,14 @@ const halo = keyframes`
   0%, 100% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 14px 2px rgba(244, 196, 48, 0.12),
-      0 8px 22px rgba(0, 0, 0, 0.34);
+      0 0 14px 2px rgba(244, 196, 48, 0.08),
+      0 12px 30px rgba(23, 24, 23, 0.08);
   }
   50% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 28px 8px rgba(244, 196, 48, 0.26),
-      0 10px 26px rgba(0, 0, 0, 0.4);
+      0 0 24px 6px rgba(244, 196, 48, 0.14),
+      0 14px 34px rgba(23, 24, 23, 0.1);
   }
 `
 
@@ -129,8 +129,8 @@ const Card = styled.article`
   min-height: 0;
   padding: 10px 12px;
   border-radius: ${uxRebuildRadius.card};
-  background: linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid ${uxRebuildColors.border};
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -140,7 +140,7 @@ const Card = styled.article`
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    box-shadow: 0 0 16px 2px rgba(244, 196, 48, 0.14), 0 8px 22px rgba(0, 0, 0, 0.34);
+    box-shadow: 0 0 16px 2px rgba(244, 196, 48, 0.1), 0 12px 30px rgba(23, 24, 23, 0.08);
   }
 `
 
@@ -326,7 +326,7 @@ const SparkRow = styled.div`
 const SparkUnavailable = styled.span`
   font-size: 11px;
   font-weight: 650;
-  color: rgba(255, 255, 255, 0.38);
+  color: ${uxRebuildColors.muted};
 `
 
 /** Real indexed sparkline only — never invents points. */
