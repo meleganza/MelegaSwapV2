@@ -30,9 +30,9 @@ const Nav = styled.nav<{
   bottom: 0;
   min-height: calc(64px + env(safe-area-inset-bottom, 0px));
   padding: 4px 4px env(safe-area-inset-bottom, 0px);
-  background: #080808;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
-  border-top: 1px solid #1f1f1f;
+  border-top: 1px solid #e5e2d9;
   z-index: 200;
   box-shadow: none;
 
@@ -57,11 +57,11 @@ const Item = styled(Link)<{ $active?: boolean }>`
   text-decoration: none;
   position: relative;
   border-radius: 12px;
-  color: ${({ $active }) => ($active ? '#DDB92F' : '#747474')};
+  color: ${({ $active }) => ($active ? '#8A6C00' : '#72736E')};
   transition: color 160ms ease, background 160ms ease;
 
   &:active {
-    background: rgba(255, 255, 255, 0.04);
+    background: #f0eee7;
   }
 `
 
@@ -71,7 +71,7 @@ const Indicator = styled.div`
   width: 20px;
   height: 2px;
   border-radius: 999px;
-  background: #ddb92f;
+  background: #f3c928;
   opacity: 0.9;
 `
 
@@ -81,7 +81,7 @@ const Icon = styled.span<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $active }) => ($active ? '#DDB92F' : '#747474')};
+  color: ${({ $active }) => ($active ? '#8A6C00' : '#72736E')};
   transition: color 160ms ease;
 
   svg {

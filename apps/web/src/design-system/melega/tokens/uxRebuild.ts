@@ -3,27 +3,27 @@
  * Applied across Home, Liquidity, Farms, Pools, List, Passport, Project Page.
  */
 export const uxRebuildColors = {
-  pageBg: '#050607',
-  headerBg: 'rgba(5,6,7,0.92)',
-  card: '#0D0F11',
-  cardElevated: '#14171A',
-  input: '#121518',
-  hover: '#191D21',
-  borderStrong: 'rgba(255,255,255,0.13)',
-  border: 'rgba(255,255,255,0.08)',
-  divider: 'rgba(255,255,255,0.07)',
-  text: '#F5F5F5',
-  secondary: '#A7ADB4',
-  muted: '#737B84',
-  gold: '#DDB92F',
-  goldHover: '#E8C83B',
-  goldDarkSurface: '#1A170A',
-  goldBorder: '#3A2D0A',
-  positive: '#16D977',
+  pageBg: '#F7F6F2',
+  headerBg: 'rgba(247,246,242,0.94)',
+  card: '#FFFFFF',
+  cardElevated: '#FFFFFF',
+  input: '#FBFAF7',
+  hover: '#F0EEE7',
+  borderStrong: '#D8D4C8',
+  border: '#E5E2D9',
+  divider: '#E5E2D9',
+  text: '#171817',
+  secondary: '#72736E',
+  muted: '#92938D',
+  gold: '#F3C928',
+  goldHover: '#E5B919',
+  goldDarkSurface: '#FFF2BD',
+  goldBorder: '#E7C53E',
+  positive: '#21865A',
   warning: '#F4B942',
-  error: '#F04F5F',
+  error: '#C84545',
   newViolet: '#7C3AED',
-  bodySoft: '#C4C4C4',
+  bodySoft: '#5F605C',
 } as const
 
 export const uxRebuildLayout = {
@@ -48,9 +48,9 @@ export const uxRebuildRadius = {
 } as const
 
 export const uxRebuildShadow = {
-  card: '0 18px 52px rgba(0,0,0,0.28)',
-  elevated: '0 28px 80px rgba(0,0,0,0.48)',
-  goldCta: '0 10px 30px rgba(221,185,47,0.16)',
+  card: '0 16px 44px rgba(23,24,23,0.07)',
+  elevated: '0 24px 72px rgba(23,24,23,0.12)',
+  goldCta: '0 10px 30px rgba(243,201,40,0.18)',
 } as const
 
 export const uxRebuildFont = "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"

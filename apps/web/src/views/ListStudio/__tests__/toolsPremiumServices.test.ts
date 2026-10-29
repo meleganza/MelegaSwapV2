@@ -23,7 +23,7 @@ describe('R029 premium Tools services', () => {
     const screen = load('ListStudioScreen.tsx')
     const workspace = load('ListWorkspace.tsx')
     expect(screen).toContain('<ToolsServiceGrid />')
-    expect(screen).toContain('<ListContractFirstFunnel />')
+    expect(screen).not.toContain('<ListContractFirstFunnel />')
     expect(screen).toContain('<ListWorkspace />')
     expect(workspace).toContain('ListTrendBoostCheckout')
     expect(workspace).toContain('ListFeaturedCheckout')

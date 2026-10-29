@@ -116,8 +116,8 @@ const MobileBeta = styled.span`
   padding: 0 6px;
   border-radius: 999px;
   border: 1px solid rgba(221, 185, 47, 0.4);
-  color: ${uxRebuildColors.gold};
-  background: rgba(221, 185, 47, 0.08);
+  color: #6f5700;
+  background: ${uxRebuildColors.goldDarkSurface};
   display: inline-flex;
   align-items: center;
   font-size: 8px;
@@ -150,9 +150,9 @@ const MobileMyMelegaTrigger = styled.button`
   min-width: 44px;
   min-height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(244, 196, 48, 0.35);
-  background: linear-gradient(160deg, rgba(244, 196, 48, 0.16) 0%, rgba(20, 20, 20, 0.9) 100%);
-  color: ${uxRebuildColors.gold};
+  border: 1px solid ${uxRebuildColors.borderStrong};
+  background: ${uxRebuildColors.card};
+  color: ${uxRebuildColors.text};
   display: inline-flex;
   align-items: center;
   justify-content: center;

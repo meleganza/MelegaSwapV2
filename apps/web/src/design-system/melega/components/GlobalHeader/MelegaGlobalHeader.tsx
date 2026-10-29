@@ -100,7 +100,7 @@ const Wordmark = styled.span`
 `
 
 const MelegaWord = styled.span`
-  color: #ffffff;
+  color: ${uxRebuildColors.text};
 `
 
 const DexWord = styled.span`
@@ -113,9 +113,9 @@ const BetaBadge = styled.span`
   height: 20px;
   padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid rgba(221, 185, 47, 0.4);
-  color: ${uxRebuildColors.gold};
-  background: rgba(221, 185, 47, 0.08);
+  border: 1px solid ${uxRebuildColors.goldBorder};
+  color: #6f5700;
+  background: ${uxRebuildColors.goldDarkSurface};
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -148,7 +148,7 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
   padding: 0 ${ds001Layout.headerNavItemPaddingX};
   border-radius: ${ds001Layout.headerNavItemRadius};
   border: 0;
-  background: ${({ $open }) => ($open ? '#181818' : 'transparent')};
+  background: ${({ $open }) => ($open ? uxRebuildColors.hover : 'transparent')};
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -186,8 +186,8 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   height: ${ds001Layout.headerNavItemHeight};
   padding: 0 ${ds001Layout.headerNavItemPaddingX};
   border-radius: 999px;
-  border: ${({ $active }) => ($active ? `1px solid rgba(221,185,47,0.45)` : '1px solid transparent')};
-  background: ${({ $active }) => ($active ? 'rgba(221,185,47,0.08)' : 'transparent')};
+  border: ${({ $active }) => ($active ? `1px solid ${uxRebuildColors.goldBorder}` : '1px solid transparent')};
+  background: ${({ $active }) => ($active ? uxRebuildColors.goldDarkSurface : 'transparent')};
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +197,7 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   line-height: 18px;
   font-weight: 550;
   letter-spacing: -0.1px;
-  color: ${({ $active }) => ($active ? uxRebuildColors.gold : uxRebuildColors.secondary)};
+  color: ${({ $active }) => ($active ? '#6f5700' : uxRebuildColors.secondary)};
   white-space: nowrap;
   text-decoration: none;
   transition: background-color 160ms cubic-bezier(0.4, 0, 0.2, 1), color 160ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -320,9 +320,9 @@ const MyMelegaTrigger = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  border: 1px solid rgba(244, 196, 48, 0.35);
-  background: linear-gradient(160deg, rgba(244, 196, 48, 0.16) 0%, rgba(20, 20, 20, 0.9) 100%);
-  color: ${uxRebuildColors.gold};
+  border: 1px solid ${uxRebuildColors.borderStrong};
+  background: ${uxRebuildColors.card};
+  color: ${uxRebuildColors.text};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -330,9 +330,9 @@ const MyMelegaTrigger = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    border-color: rgba(244, 196, 48, 0.55);
-    background: linear-gradient(160deg, rgba(244, 196, 48, 0.24) 0%, rgba(24, 24, 24, 0.95) 100%);
-    color: #ffe28a;
+    border-color: ${uxRebuildColors.goldBorder};
+    background: ${uxRebuildColors.goldDarkSurface};
+    color: ${uxRebuildColors.text};
   }
 
   &:focus-visible {

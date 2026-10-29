@@ -151,39 +151,31 @@ export const shellNavigation: ShellNavSection[] = [
 /** Mobile bottom rail — core DEX funnels, each reachable in one tap. */
 export const shellBottomNavItems = [
   {
-    id: 'home',
-    label: 'Home',
+    id: 'trade',
+    label: 'Trade',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
-    // Home owns Discover only — Swap / Project Pages must not highlight Home.
-    match: (p: string) => p === '/',
+    match: (p: string) => p === '/' || p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
   },
   {
-    id: 'swap',
-    label: 'Swap',
-    href: '/swap',
-    icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
-  },
-  {
-    id: 'liquidity',
-    label: 'Liquidity',
-    href: '/liquidity',
-    icon: 'drop' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/liquidity-studio') || p === '/liquidity',
-  },
-  {
-    id: 'farms',
-    label: 'Farms',
+    id: 'earn',
+    label: 'Earn',
     href: '/farms',
     icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/farms'),
+    match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools'),
   },
   {
-    id: 'pools',
-    label: 'Pools',
-    href: '/pools',
-    icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/pools'),
+    id: 'portfolio',
+    label: 'Portfolio',
+    href: '/portfolio',
+    icon: 'wallet' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/portfolio') || p.startsWith('/command-center'),
+  },
+  {
+    id: 'explore',
+    label: 'Explore',
+    href: '/projects?sort=trending',
+    icon: 'star' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/projects'),
   },
 ]

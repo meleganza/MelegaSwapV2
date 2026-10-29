@@ -4,6 +4,61 @@ import { colors } from 'design-system/melega/tokens'
 
 /** Neutralize legacy UIkit chrome inside the Melega app shell only. */
 export const AppShellUIKitNeutralizer = createGlobalStyle`
+  /* R030 Pearl consumer shell — wins over legacy dark component styles. */
+  [data-melega-app-shell],
+  [data-melega-shell-main] {
+    background: #F7F6F2 !important;
+    color: #171817 !important;
+  }
+
+  [data-melega-global-header] {
+    background: rgba(247, 246, 242, 0.96) !important;
+    border-bottom-color: #E5E2D9 !important;
+  }
+
+  [data-melega-global-header] a,
+  [data-melega-global-header] button {
+    color: #171817;
+  }
+
+  [data-testid='melega-header-primary-nav'],
+  [data-testid='melega-header-primary-nav'] > div {
+    background: transparent !important;
+    background-image: none !important;
+  }
+
+  [data-melega-global-search] input {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+  }
+
+  [data-melega-global-search] input::placeholder {
+    color: #72736E !important;
+  }
+
+  [data-testid='melega-header-chain'] > div,
+  [data-testid='melega-header-chain'] button {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+  }
+
+  [data-tool-service] {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    color: #171817 !important;
+  }
+
+  [data-tool-service] h2 {
+    color: #171817 !important;
+  }
+
+  [data-testid='melega-dex-footer'] {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+  }
+
   /* DS001.2 — disconnected wallet control */
   [data-melega-app-shell] .melega-shell-connect {
     min-width: 164px !important;

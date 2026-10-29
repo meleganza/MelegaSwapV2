@@ -8,39 +8,40 @@ const Shell = styled.section`
   min-width: 0;
 `
 const Header = styled.div`
-  display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 14px;
-  h1 { margin: 0; color: #fff; font-size: clamp(28px, 4vw, 42px); line-height: 1; letter-spacing: -.035em; }
-  p { margin: 6px 0 0; color: rgba(255,255,255,.54); font-size: 13px; }
-  @media (max-width: 767px) { padding: 16px 12px 0; }
+  display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 22px;
+  h1 { margin: 0; color: #171817; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.045em; }
+  p { margin: 8px 0 0; color: #72736e; font-size: 14px; }
+  @media (max-width: 767px) { padding: 0 16px; }
 `
 const Grid = styled.div`
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
   @media (max-width: 1023px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 639px) { grid-template-columns: 1fr; gap: 9px; padding: 0 4px; }
+  @media (max-width: 639px) { grid-template-columns: 1fr; gap: 10px; padding: 0 12px; }
 `
 const Card = styled(Link)`
-  min-width: 0; min-height: 180px; padding: 18px; border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.1);
-  background: linear-gradient(150deg, rgba(25,25,23,.98), rgba(10,10,10,.99));
-  color: #fff; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
-  transition: transform 140ms ease, border-color 140ms ease;
-  &:hover { transform: translateY(-2px); border-color: rgba(244,196,48,.48); }
-  &:focus-visible { outline: 2px solid #f4c430; outline-offset: 2px; }
-  @media (max-width: 639px) { min-height: 116px; padding: 14px; flex-direction: row; align-items: center; }
+  min-width: 0; min-height: 176px; padding: 20px; border-radius: 20px;
+  border: 1px solid #e5e2d9;
+  background: #fff;
+  color: #171817; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
+  box-shadow: 0 16px 44px rgba(23,24,23,.06);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  &:hover { transform: translateY(-2px); border-color: #e1bd2a; box-shadow: 0 20px 56px rgba(23,24,23,.1); }
+  &:focus-visible { outline: 2px solid #f3c928; outline-offset: 2px; }
+  @media (max-width: 639px) { min-height: 112px; padding: 16px; flex-direction: row; align-items: center; }
 `
 const Icon = styled.span`
   width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center;
-  border-radius: 14px; background: rgba(244,196,48,.13); color: #f4c430;
-  border: 1px solid rgba(244,196,48,.24);
+  border-radius: 14px; background: #fff2bd; color: #171817;
+  border: 1px solid #ead15f;
 `
 const Copy = styled.div`
   min-width: 0; flex: 1;
   h2 { margin: 0; font-size: 17px; line-height: 22px; }
-  p { margin: 5px 0 0; color: rgba(255,255,255,.52); font-size: 12px; line-height: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  p { margin: 5px 0 0; color: #72736e; font-size: 12px; line-height: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 `
 const Cta = styled.span`
   min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  color: #f4c430; font-size: 12px; font-weight: 800;
+  color: #8a6c00; font-size: 12px; font-weight: 800;
   @media (max-width: 639px) { width: 44px; flex: 0 0 44px; justify-content: center; span { display: none; } }
 `
 
