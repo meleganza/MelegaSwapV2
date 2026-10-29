@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { buildAssetsSummary, buildClaimables, buildHeroCtas } from '../runtime/buildPortfolioViewModel'
-import { resolvePortfolioSurfaceState } from '../runtime/portfolioState'
+import { clearOnWalletChange, resolvePortfolioSurfaceState, shouldRejectStaleResponse } from '../runtime/portfolioState'
 
 const ROOT = path.resolve(__dirname, '..')
 
@@ -11,16 +11,19 @@ function load(rel: string) {
 }
 
 describe('Portfolio V2 complete redesign', () => {
-  it('shell has required sections and no identity enrollment language', () => {
+  it('shell is wallet-first, data-dense, and keeps terminated exits visible', () => {
     const shell = load('PortfolioStudioScreen.tsx')
     expect(shell).toContain('portfolio-studio-screen')
     expect(shell).toContain('portfolio-section-hero')
     expect(shell).toContain('portfolio-section-assets')
     expect(shell).toContain('portfolio-section-positions')
+    expect(shell).toContain('portfolio-section-liquidity')
     expect(shell).toContain('portfolio-section-rewards')
-    expect(shell).toContain('portfolio-section-activity')
-    expect(shell).toContain('portfolio-section-analytics')
-    expect(shell).toContain('AnalyticsDetails')
+    expect(shell).toContain('portfolio-section-terminated')
+    expect(shell).toContain('portfolio-disconnected-state')
+    expect(shell).toContain('ConnectWalletButton')
+    expect(shell).not.toContain('portfolio-section-activity')
+    expect(shell).not.toContain('portfolio-section-analytics')
     expect(shell).not.toContain('usePassportHeroIdentity')
     expect(shell).not.toContain('Guest')
     expect(shell).not.toContain('VERIFICATION')
@@ -103,6 +106,26 @@ describe('Portfolio V2 complete redesign', () => {
     })
     expect(rows).toHaveLength(1)
     expect(rows[0].id).toContain('f2')
+  })
+
+  it('invalidates stale results immediately when account or chain changes', () => {
+    expect(clearOnWalletChange({ previousWallet: '0xabc', nextWallet: '0xdef' })).toBe(true)
+    expect(shouldRejectStaleResponse({
+      requestWallet: '0xabc',
+      requestChainId: 56,
+      currentWallet: '0xdef',
+      currentChainId: 56,
+      requestGeneration: 1,
+      currentGeneration: 2,
+    })).toBe(true)
+    expect(shouldRejectStaleResponse({
+      requestWallet: '0xabc',
+      requestChainId: 137,
+      currentWallet: '0xabc',
+      currentChainId: 56,
+      requestGeneration: 2,
+      currentGeneration: 2,
+    })).toBe(true)
   })
 
   it('pages and nav point Portfolio to /portfolio', () => {

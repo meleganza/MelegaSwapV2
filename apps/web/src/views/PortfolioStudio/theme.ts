@@ -60,27 +60,6 @@ export const Stack = styled.div`
   flex-direction: column;
   gap: 10px;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    [data-portfolio-section='hero'] {
-      order: 1;
-    }
-    [data-portfolio-section='assets'] {
-      order: 2;
-    }
-    [data-portfolio-section='rewards'] {
-      order: 3;
-    }
-    [data-portfolio-section='positions'] {
-      order: 4;
-    }
-    [data-portfolio-section='activity'] {
-      order: 5;
-    }
-    [data-portfolio-section='analytics'] {
-      order: 6;
-    }
-  }
 `
 
 export const Band = styled.section`
@@ -184,7 +163,7 @@ export const Btn = styled.a<{ $primary?: boolean; $ghost?: boolean; $disabled?: 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   border-radius: 9px;
   font-size: 13px;
@@ -270,7 +249,7 @@ export const TabRow = styled.div`
 `
 
 export const TabBtn = styled.button<{ $active?: boolean }>`
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 12px;
   border-radius: 8px;
   font-size: 12px;
@@ -303,8 +282,10 @@ export const DenseRow = styled.div`
   align-items: center;
 
   @media (max-width: 767px) {
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px 0;
+    > :first-child { grid-column: 1 / -1; }
   }
 `
 
