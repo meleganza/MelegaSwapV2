@@ -10,7 +10,6 @@ const Shell = styled.section`
 const Header = styled.div`
   display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 22px;
   h1 { margin: 0; color: #171817; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.045em; }
-  p { margin: 8px 0 0; color: #72736e; font-size: 14px; }
   @media (max-width: 767px) { padding: 0 16px; }
 `
 const Grid = styled.div`
@@ -54,7 +53,7 @@ const SERVICES = [
 
 export const ToolsServiceGrid: React.FC = () => (
   <Shell data-testid="tools-premium-services">
-    <Header><div><h1>Tools</h1><p>Build and grow on Melega.</p></div></Header>
+    <Header><div><h1>Tools</h1></div></Header>
     <Grid>
       {SERVICES.map(({ title, description, cta, href, Icon: ServiceIcon }) => (
         <Card key={title} href={href} data-tool-service={title.toLowerCase().replaceAll(' ', '-')}>

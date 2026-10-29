@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { MarcoConnect } from 'components/MarcoWidgets'
@@ -9,29 +8,19 @@ import { MelegaGlobalHeader, MELEGA_APP_HEADER_HEIGHT } from 'design-system/mele
 import { MelegaBottomNavigation } from 'design-system/melega/components/BottomNavigation'
 import { colors } from 'design-system/melega/tokens/colors'
 import { ds001Layout } from 'design-system/melega/tokens/ds001'
-import { IconUser } from 'design-system/melega/components/GlobalHeader/HeaderIcons'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { MyMelegaProvider, preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
-import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
+import { MyMelegaProvider } from 'components/MyMelega/MyMelegaProvider'
 import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
-import {
-  GlobalTrendingBar,
-  MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
-  MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
-} from './GlobalTrendingBar'
-
-const MyMelegaDrawer = dynamic(preloadMyMelegaDrawer, { ssr: false, loading: () => null })
 
 const MOBILE_HEADER_H = '56px'
 const MOBILE_BOTTOM_NAV_H = '64px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
-  /* Mobile sticky stack: mobile header + trending bar */
-  padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${MELEGA_TRENDING_BAR_MOBILE_HEIGHT}) 16px
+  padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px)) 16px
     calc(${MOBILE_BOTTOM_NAV_H} + env(safe-area-inset-bottom, 0px));
   background: ${uxRebuildColors.pageBg};
   min-height: 100dvh;
@@ -41,8 +30,7 @@ const DesktopMain = styled.main`
 
   @media (min-width: 1024px) {
     margin-left: 0;
-    /* Desktop sticky stack: 72 header + 44 trending — content begins below stack */
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${MELEGA_TRENDING_BAR_DESKTOP_HEIGHT}) ${ds001Layout.pagePaddingX}
+    padding: ${MELEGA_APP_HEADER_HEIGHT} ${ds001Layout.pagePaddingX}
       ${ds001Layout.pagePaddingBottom};
   }
 
@@ -68,19 +56,6 @@ const Content = styled.div`
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-`
-
-const FooterSlot = styled.div`
-  margin-top: 20px;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  /* Clear mobile bottom nav */
-  padding-bottom: 8px;
-
-  @media (max-width: 1023px) {
-    padding-bottom: calc(${MOBILE_BOTTOM_NAV_H} + 8px + env(safe-area-inset-bottom, 0px));
-  }
 `
 
 const MobileHeader = styled.div`
@@ -111,21 +86,6 @@ const MobileBrand = styled.div`
   flex-shrink: 0;
 `
 
-const MobileBeta = styled.span`
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(221, 185, 47, 0.4);
-  color: #6f5700;
-  background: ${uxRebuildColors.goldDarkSurface};
-  display: inline-flex;
-  align-items: center;
-  font-size: 8px;
-  font-weight: 750;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-`
-
 const MobileNetwork = styled.div`
   flex: 1;
   display: flex;
@@ -144,53 +104,8 @@ const MobileNetwork = styled.div`
   }
 `
 
-const MobileMyMelegaTrigger = styled.button`
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 999px;
-  border: 1px solid ${uxRebuildColors.borderStrong};
-  background: ${uxRebuildColors.card};
-  color: ${uxRebuildColors.text};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  padding: 0;
-
-  &:focus-visible {
-    outline: 2px solid ${uxRebuildColors.gold};
-    outline-offset: 2px;
-  }
-
-  &[aria-expanded='true'] {
-    border-color: rgba(244, 196, 48, 0.7);
-  }
-`
-
 export interface MelegaAppShellProps {
   children: React.ReactNode
-}
-
-const MobileMyMelegaButton: React.FC = () => {
-  const { open, toggleDrawer } = useMyMelegaDrawer()
-  return (
-    <MobileMyMelegaTrigger
-      type="button"
-      aria-label="Open My Melega"
-      title="My Melega"
-      aria-haspopup="dialog"
-      aria-expanded={open}
-      data-testid="melega-mobile-my-melega"
-      onClick={toggleDrawer}
-      onPointerEnter={preloadMyMelegaDrawer}
-      onFocus={preloadMyMelegaDrawer}
-    >
-      <IconUser size={18} />
-    </MobileMyMelegaTrigger>
-  )
 }
 
 /**
@@ -200,7 +115,6 @@ const MobileMyMelegaButton: React.FC = () => {
  */
 const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
-  const { open: isMyMelegaOpen } = useMyMelegaDrawer()
 
   const bottomItems = useMemo(
     () =>
@@ -220,31 +134,24 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
       <AppShellUIKitNeutralizer />
 
       <MelegaGlobalHeader />
-      <GlobalTrendingBar />
 
       <MobileHeader data-melega-mobile-header>
         <MobileBrand>
           <MelegaBrandLockup size="mobile" iconOnly />
-          <MobileBeta>Beta</MobileBeta>
         </MobileBrand>
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
         <MarcoConnect size="icon" activation="mobile" />
-        <MobileMyMelegaButton />
       </MobileHeader>
 
       <DesktopMain data-melega-shell-main>
         <Content>
           {children}
-          <FooterSlot data-testid="melega-global-footer">
-            <MelegaDexFooter />
-          </FooterSlot>
         </Content>
       </DesktopMain>
 
       <MelegaBottomNavigation items={bottomItems} activeId={activeBottomId} />
-      {isMyMelegaOpen ? <MyMelegaDrawer /> : null}
     </Root>
   )
 }

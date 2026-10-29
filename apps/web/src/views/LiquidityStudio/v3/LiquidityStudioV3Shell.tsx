@@ -74,6 +74,14 @@ const Page = styled.div`
   }
 `
 
+const SimpleHeader = styled.header`
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  h1 { margin: 0; color: #171817; font-size: 28px; line-height: 1; letter-spacing: -0.035em; }
+  @media (max-width: ${liqV3.mobileBreak}) { padding: 0 16px; }
+`
+
 const Hero = styled.section<{ $builder?: boolean }>`
   min-height: 176px;
   padding: 18px 22px;
@@ -674,52 +682,7 @@ const LiquidityV3Body: React.FC = () => {
 
   return (
     <>
-      <Hero $builder={false} data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="one-page-compact">
-        <HeroCopy>
-          <HeroTitle $builder={false}>{LIQ_V3_COPY.title}</HeroTitle>
-          <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
-          <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
-            <Btn
-              $ghost
-              type="button"
-              onClick={goPositions}
-              data-testid="liquidity-v3-hero-positions"
-            >
-              My Positions
-            </Btn>
-            <Btn
-              $primary
-              type="button"
-              onClick={goAdd}
-              data-testid="liquidity-v3-hero-add"
-            >
-              {LIQ_V3_COPY.addCta}
-            </Btn>
-            <Btn
-              $ghost
-              type="button"
-              onClick={goAi}
-              data-testid="liquidity-v3-hero-ai"
-            >
-              {LIQ_V3_COPY.aiEntry}
-              <ExclusiveBadge>BETA</ExclusiveBadge>
-            </Btn>
-            <Btn $ghost type="button" onClick={goExplore} data-testid="liquidity-v3-explore-pools">
-              Explore pools ↓
-            </Btn>
-          </HeroActions>
-        </HeroCopy>
-        <LiquidityHeroArtwork />
-      </Hero>
-
-      <Snapshot $hidden={false} data-testid="liquidity-v3-snapshot" data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
-        {snapCells.map((c) => (
-          <SnapCell key={c.label}>
-            <SnapLabel>{c.label}</SnapLabel>
-            <SnapValue>{c.value}</SnapValue>
-          </SnapCell>
-        ))}
-      </Snapshot>
+      <SimpleHeader data-testid="liquidity-v3-header"><h1>Liquidity</h1></SimpleHeader>
 
       <Workspace
         data-testid="liquidity-v3-workspace"
@@ -796,7 +759,7 @@ const LiquidityV3Body: React.FC = () => {
           </AddRemoveCard>
         </Panel>
 
-        <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
+        {router.query.view === 'builder' ? <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
           <SectionHeader>
             <SectionTitleRow>
               <SectionIndex>{sectionNumber(builderIndex)}</SectionIndex>
@@ -818,9 +781,9 @@ const LiquidityV3Body: React.FC = () => {
               </AvailabilityPanel>
             )}
           </ProgressiveSurface>
-        </Panel>
+        </Panel> : null}
 
-        <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
+        {router.query.view === 'explore' ? <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
           <SectionHeader>
             <SectionTitleRow>
               <SectionIndex>{sectionNumber(exploreIndex)}</SectionIndex>
@@ -831,7 +794,7 @@ const LiquidityV3Body: React.FC = () => {
           <ProgressiveSurface label="Pool Explorer">
             <LiquidityPoolDiscoveryModule embedded />
           </ProgressiveSurface>
-        </Panel>
+        </Panel> : null}
       </Workspace>
     </>
   )

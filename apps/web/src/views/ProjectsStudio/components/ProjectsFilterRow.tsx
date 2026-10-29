@@ -166,6 +166,27 @@ const DrawerTitle = styled.p`
   color: ${projectsStudioColors.text};
 `
 
+const DiscoveryTabs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  border-radius: 12px;
+  background: ${projectsStudioColors.card};
+`
+
+const DiscoveryTab = styled.button<{ $active?: boolean }>`
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: ${({ $active }) => ($active ? '#fff2bd' : 'transparent')};
+  color: ${projectsStudioColors.text};
+  font: 700 12px ${PR_FONT_BODY};
+  cursor: pointer;
+`
+
 function isStatus(v: string): v is DirectoryStatus {
   return (DIRECTORY_STATUS as readonly string[]).includes(v)
 }
@@ -274,7 +295,7 @@ export const ProjectsFilterRow: React.FC = () => {
   )
 
   return (
-    <Toolbar data-pr-filters data-testid="projects-directory-filters" data-projects-filters="dropdowns">
+    <Toolbar data-pr-filters data-testid="projects-directory-filters" data-projects-filters="minimal">
       <Search
         type="search"
         value={searchQuery}
@@ -283,22 +304,11 @@ export const ProjectsFilterRow: React.FC = () => {
         aria-label="Search projects"
         data-testid="projects-directory-search"
       />
-      <DesktopFilters data-projects-filters-desktop>{filterSelects}</DesktopFilters>
-      <MobileFiltersBtn
-        type="button"
-        data-testid="projects-filters-mobile"
-        onClick={() => setDrawerOpen(true)}
-      >
-        Filters
-      </MobileFiltersBtn>
-      <DrawerBackdrop $open={drawerOpen} onClick={() => setDrawerOpen(false)} />
-      <Drawer $open={drawerOpen} data-testid="projects-filters-drawer" role="dialog" aria-label="Filters">
-        <DrawerTitle>Filters</DrawerTitle>
-        {filterSelects}
-        <ResetBtn type="button" onClick={() => setDrawerOpen(false)}>
-          Done
-        </ResetBtn>
-      </Drawer>
+      <DiscoveryTabs role="tablist" aria-label="Explore views">
+        <DiscoveryTab type="button" role="tab" $active={sort !== 'Trending'} onClick={() => resetFilters()}>Featured</DiscoveryTab>
+        <DiscoveryTab type="button" role="tab" $active={sort === 'Trending'} onClick={() => onSortChange('Trending')}>Trending</DiscoveryTab>
+        <DiscoveryTab type="button" role="tab" onClick={() => resetFilters()}>All</DiscoveryTab>
+      </DiscoveryTabs>
     </Toolbar>
   )
 }

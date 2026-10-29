@@ -14,8 +14,9 @@ import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
 const TERMINATED_CHAIN_IDS = new Set([1, 137, 8453])
 
 const Hero = styled(Band)`
-  padding: 20px;
-  background: linear-gradient(135deg, #fff2bd 0%, #ffffff 68%);
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
 `
 const HeroRow = styled.div`
   display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-width: 0;
@@ -67,32 +68,23 @@ export const PortfolioStudioScreen: React.FC = () => {
         <Hero data-portfolio-section="hero" data-testid="portfolio-section-hero">
           <HeroRow>
             <Identity>
-              <Eyebrow>Personal portfolio</Eyebrow>
               <Title>Portfolio</Title>
-              {wallet.connected ? (
-                <>
-                  <Address data-testid="portfolio-wallet-address">{wallet.shortened}</Address>
-                  <Row>{model.chainId != null ? <MelegaExploreChainBadge chainId={model.chainId} /> : null}<Chip $tone="ok">{chainLabel(model.chainId)}</Chip></Row>
-                </>
-              ) : <Muted>Your assets and positions, in one place.</Muted>}
             </Identity>
             <HeroActions data-testid="portfolio-hero-ctas">
               {!wallet.connected ? <ConnectWalletButton>Connect Wallet</ConnectWalletButton> : null}
-              {wallet.connected ? <Btn as="button" type="button" $ghost data-testid="portfolio-disconnect" onClick={() => disconnect?.()}>Disconnect</Btn> : null}
             </HeroActions>
           </HeroRow>
         </Hero>
 
         {!wallet.connected ? (
           <StateBox data-testid="portfolio-disconnected-state">
-            <strong>Connect your wallet</strong>
-            <Muted>No address entry required. Nothing is estimated before connection.</Muted>
+            <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
           </StateBox>
         ) : (
           <>
             <ValueBand data-portfolio-section="assets" data-testid="portfolio-section-assets">
               <div>
-                <ValueLabel>Portfolio value</ValueLabel>
+                <ValueLabel>Total Value</ValueLabel>
                 <Value data-testid="portfolio-value">{portfolioMetric?.value || '—'}</Value>
                 <Muted>{portfolioMetric?.source || 'Valuation unavailable'}</Muted>
               </div>
@@ -102,7 +94,7 @@ export const PortfolioStudioScreen: React.FC = () => {
             </ValueBand>
 
             <Band data-portfolio-section="positions" data-testid="portfolio-section-positions">
-              <BandHead><BandTitle>Earn positions</BandTitle><BandMeta>BNB Chain</BandMeta></BandHead>
+              <BandHead><BandTitle>Earn</BandTitle><BandMeta>BNB Chain</BandMeta></BandHead>
               <TabRow role="tablist" aria-label="Earn positions">
                 <TabBtn type="button" role="tab" $active={earnTab === 'farms'} aria-selected={earnTab === 'farms'} onClick={() => startTransition(() => setEarnTab('farms'))}>Farms ({activeFarms.length})</TabBtn>
                 <TabBtn type="button" role="tab" $active={earnTab === 'pools'} aria-selected={earnTab === 'pools'} onClick={() => startTransition(() => setEarnTab('pools'))}>Pools ({activePools.length})</TabBtn>
@@ -140,7 +132,7 @@ export const PortfolioStudioScreen: React.FC = () => {
 
             {model.claimables.length > 0 ? (
               <Band data-portfolio-section="rewards" data-testid="portfolio-section-rewards">
-                <BandHead><BandTitle>Rewards</BandTitle><BandMeta>{model.claimables.length} claimable</BandMeta></BandHead>
+                <BandHead><BandTitle>Earn</BandTitle><BandMeta>{model.claimables.length} claimable</BandMeta></BandHead>
                 <DenseTable>{model.claimables.map((reward) => (
                   <DenseRow key={reward.id} data-testid="portfolio-claimable-row">
                     <div><strong>{reward.source}</strong><div>{reward.token}</div></div><div><strong>{reward.amount}</strong></div><div><strong>{reward.estimatedUsd || '—'}</strong></div>
@@ -152,7 +144,7 @@ export const PortfolioStudioScreen: React.FC = () => {
 
             {terminatedFarms.length + terminatedPools.length > 0 ? (
               <Band data-portfolio-section="terminated" data-testid="portfolio-section-terminated">
-                <BandHead><BandTitle>Terminated positions</BandTitle><BandMeta>Exit only</BandMeta></BandHead>
+                <BandHead><BandTitle>Finished</BandTitle><BandMeta>Exit only</BandMeta></BandHead>
                 <DenseTable>
                   {terminatedFarms.map((p) => { const links = positionActionLinks('farms'); const contract = explorerAddressUrl(p.masterChef, p.chainId); return (
                     <DenseRow key={p.positionId} data-testid="portfolio-terminated-farm-row">

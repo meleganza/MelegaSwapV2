@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
-import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
+import { FeaturedProjectsRail } from 'views/HomeTrade/FeaturedProjectsRail'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
 import { TradeCockpit } from './TradeCockpit'
 import { TradeMarcoIconPatch } from './components/TradeMarcoIconPatch'
@@ -36,15 +36,22 @@ const Content = styled.div`
   }
 `
 
+const Promotions = styled.div`
+  margin-top: 16px;
+  & > section { padding: 0; }
+`
+
 export const TradeTerminalScreen: React.FC = () => {
-  const [productAction, setProductAction] = React.useState<SmartSwapProductAction>('swap')
   return (
     <Root data-trade-terminal-screen="true" data-trade-one-page-workspace="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <Content>
-        <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
+        <TradeCockpit />
+        <Promotions aria-label="Featured projects">
+          <FeaturedProjectsRail />
+        </Promotions>
       </Content>
     </Root>
   )

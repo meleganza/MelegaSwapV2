@@ -98,36 +98,19 @@ const cinematicDrift = keyframes`
   50% { transform: scale(1.085) translate3d(-1.2%, -0.8%, 0); }
 `
 const Hero = styled.header<{ $embedded?: boolean }>`
-  position: relative;
-  isolation: isolate;
-  min-height: 260px;
+  min-height: 56px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 20px;
-  margin-bottom: 18px;
-  padding: 32px;
-  overflow: hidden;
-  border: 1px solid rgba(244, 196, 48, 0.17);
-  border-radius: 18px;
-  background: #050606;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0;
   h1 {
     margin: 0;
-    font-size: clamp(34px, 5vw, 58px);
+    font-size: 28px;
     line-height: 1;
     letter-spacing: -0.045em;
   }
-  p {
-    margin: 10px 0 0;
-    color: rgba(255, 255, 255, 0.58);
-    font-size: 15px;
-  }
   @media (max-width: 700px) {
-    min-height: 300px;
-    padding: 24px 20px;
-    align-items: start;
-    flex-direction: column;
-    justify-content: flex-end;
+    padding: 0 4px;
   }
 
   ${({ $embedded }) => ($embedded ? 'display: none;' : '')}
@@ -935,17 +918,9 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
     >
       <Shell>
         <Hero $embedded={embedded}>
-          <HeroArtwork src="/images/bridge/marco-bridge-hero.webp" alt="" aria-hidden="true" />
-          <HeroVeil aria-hidden="true" />
           <HeroCopy>
-            <h1>MARCO Bridge</h1>
-            <p>Move MELEGA (MARCO) across certified networks. One route, one tracked delivery.</p>
+            <h1>Bridge</h1>
           </HeroCopy>
-          <Available aria-label="Available on">
-            {networkEntries.map((network) => (
-              <NetworkPill key={network.id}>{network.label}</NetworkPill>
-            ))}
-          </Available>
         </Hero>
         <Workspace $embedded={embedded}>
           <Card $embedded={embedded}>

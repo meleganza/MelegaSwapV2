@@ -10,6 +10,7 @@ const webRoot = path.dirname(fileURLToPath(import.meta.url))
 const localTokensPackage = path.resolve(webRoot, '../../packages/tokens')
 const localUiWalletsPackage = path.resolve(webRoot, '../../packages/ui-wallets')
 const localUikitPackage = path.resolve(webRoot, '../../packages/uikit')
+const localLocalizationPackage = path.resolve(webRoot, '../../packages/localization')
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -318,6 +319,7 @@ const config = {
       '@pancakeswap/tokens': localTokensPackage,
       '@pancakeswap/ui-wallets': localUiWalletsPackage,
       '@pancakeswap/uikit': localUikitPackage,
+      '@pancakeswap/localization': localLocalizationPackage,
     }
     webpackConfig.resolve.fallback = {
       ...webpackConfig.resolve.fallback,

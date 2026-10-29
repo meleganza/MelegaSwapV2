@@ -11,14 +11,12 @@ import {
   type HeaderNavItem,
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
-import GlobalSearch from 'app-shell/components/GlobalSearch'
-import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
 import { uxRebuildColors } from '../../tokens/uxRebuild'
 import HeaderNavDropdown from './HeaderNavDropdown'
-import { IconChevronDown, IconUser } from './HeaderIcons'
+import { IconChevronDown } from './HeaderIcons'
 
 const Bar = styled.header`
   display: none;
@@ -106,24 +104,6 @@ const MelegaWord = styled.span`
 const DexWord = styled.span`
   color: ${uxRebuildColors.gold};
   margin-left: 3px;
-`
-
-const BetaBadge = styled.span`
-  min-width: 36px;
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid ${uxRebuildColors.goldBorder};
-  color: #6f5700;
-  background: ${uxRebuildColors.goldDarkSurface};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  line-height: 1;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 `
 
 const Nav = styled.nav`
@@ -238,37 +218,6 @@ const Chevron = styled.span<{ $open?: boolean }>`
   transform: ${({ $open }) => ($open ? 'rotate(180deg)' : 'none')};
 `
 
-const SearchRegion = styled.div`
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: min(520px, 42vw);
-  display: flex;
-  justify-content: stretch;
-  align-items: center;
-  margin-left: 16px;
-  margin-right: 12px;
-  overflow: visible;
-
-  [data-melega-global-search] {
-    width: 100%;
-    max-width: none;
-  }
-
-  @media (max-width: 1279px) {
-    min-width: 0;
-    max-width: min(240px, 22vw);
-    margin-left: 10px;
-    margin-right: 8px;
-  }
-
-  /* Keep Wallet + My Melega in-viewport on 1024 tablet landscape. */
-  @media (max-width: 1100px) {
-    max-width: min(160px, 16vw);
-    margin-left: 8px;
-    margin-right: 6px;
-  }
-`
-
 const RightCluster = styled.div`
   display: flex;
   align-items: center;
@@ -276,7 +225,7 @@ const RightCluster = styled.div`
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
   min-width: 0;
-  margin-left: 4px;
+  margin-left: auto;
   margin-right: 0;
 
   @media (max-width: 1100px) {
@@ -316,40 +265,8 @@ const RightCluster = styled.div`
   }
 `
 
-const MyMelegaTrigger = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid ${uxRebuildColors.borderStrong};
-  background: ${uxRebuildColors.card};
-  color: ${uxRebuildColors.text};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-
-  &:hover {
-    border-color: ${uxRebuildColors.goldBorder};
-    background: ${uxRebuildColors.goldDarkSurface};
-    color: ${uxRebuildColors.text};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${uxRebuildColors.gold};
-    outline-offset: 2px;
-  }
-
-  &[aria-expanded='true'] {
-    border-color: rgba(244, 196, 48, 0.7);
-    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.25);
-  }
-`
-
-const LangSlot = styled.div`
-  @media (max-width: 1279px) {
-    display: none;
-  }
+const LanguageRuntimeBridge = styled.div`
+  display: none;
 `
 
 function isNavActive(item: HeaderNavItem, pathname: string): boolean {
@@ -368,7 +285,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   const pathname = pathnameOverride ?? router.pathname
   const asPath = router.asPath?.split('?')[0] ?? pathname
   const query = router.query as Record<string, string | string[] | undefined>
-  const { open: myMelegaOpen, toggleDrawer: toggleMyMelega } = useMyMelegaDrawer()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement>(null)
 
@@ -406,7 +322,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             <MelegaWord>Melega</MelegaWord>
             <DexWord>DEX</DexWord>
           </Wordmark>
-          <BetaBadge>Beta</BetaBadge>
         </Brand>
 
         <Nav aria-label="Primary navigation" data-testid="melega-header-primary-nav">
@@ -470,36 +385,16 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           })}
         </Nav>
 
-        <SearchRegion>
-          <GlobalSearch />
-        </SearchRegion>
-
         <RightCluster data-testid="melega-header-actions">
+          <LanguageRuntimeBridge aria-hidden="true">
+            <MelegaLanguageControl />
+          </LanguageRuntimeBridge>
           <div className="melega-shell-network" data-testid="melega-header-chain">
             <NetworkSwitcher />
           </div>
-          <LangSlot>
-            <MelegaLanguageControl />
-          </LangSlot>
           <div data-testid="melega-header-connect">
             <MarcoConnect size="navbar" activation="desktop" />
           </div>
-          <MyMelegaTrigger
-            type="button"
-            aria-label="Open My Melega"
-            title="My Melega"
-            aria-haspopup="dialog"
-            aria-expanded={myMelegaOpen}
-            data-testid="melega-header-my-melega"
-            onPointerEnter={preloadMyMelegaDrawer}
-            onFocus={preloadMyMelegaDrawer}
-            onClick={() => {
-              closeMenus()
-              toggleMyMelega()
-            }}
-          >
-            <IconUser />
-          </MyMelegaTrigger>
         </RightCluster>
       </Inner>
     </Bar>
