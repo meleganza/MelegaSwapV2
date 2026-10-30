@@ -15,8 +15,8 @@ import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
 
-const MOBILE_HEADER_H = '56px'
-const MOBILE_BOTTOM_NAV_H = '64px'
+const MOBILE_HEADER_H = '72px'
+const MOBILE_BOTTOM_NAV_H = '68px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
@@ -62,13 +62,13 @@ const MobileHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 10px 0;
+  padding: env(safe-area-inset-top, 0px) 16px 0;
   background: ${uxRebuildColors.pageBg};
   border-bottom: 1px solid ${uxRebuildColors.divider};
   z-index: 95;
@@ -83,11 +83,12 @@ const MobileBrand = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-width: 0;
 `
 
 const MobileNetwork = styled.div`
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -137,12 +138,12 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
 
       <MobileHeader data-melega-mobile-header>
         <MobileBrand>
-          <MelegaBrandLockup size="mobile" iconOnly />
+          <MelegaBrandLockup size="mobile" />
         </MobileBrand>
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        <MarcoConnect size="icon" activation="mobile" />
+        <MarcoConnect size="navbar" activation="mobile" />
       </MobileHeader>
 
       <DesktopMain data-melega-shell-main>

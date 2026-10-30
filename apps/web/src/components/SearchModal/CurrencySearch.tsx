@@ -11,7 +11,6 @@ import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import { useAudioModeManager } from 'state/user/hooks'
 import { isAddress } from 'utils'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { SponsoredSuggestionsStrip } from 'views/shared/monetization/SponsoredSuggestionsStrip'
 import { RC_COPY } from 'lib/monetization/copy'
 import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
 import Column, { AutoColumn } from '../Layout/Column'
@@ -256,16 +255,6 @@ function CurrencySearch({
             />
           </Row>
         )}
-        <SponsoredSuggestionsStrip
-          query={debouncedQuery}
-          onSelect={(s) => {
-            if (!s.address || !chainId) return
-            const match = filteredSortedTokens.find(
-              (tok) => tok.address.toLowerCase() === s.address!.toLowerCase(),
-            )
-            if (match) handleCurrencySelect(match)
-          }}
-        />
         {showCommonBases && (
           <CommonBases
             chainId={chainId}

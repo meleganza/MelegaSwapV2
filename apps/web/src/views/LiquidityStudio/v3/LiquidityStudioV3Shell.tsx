@@ -136,7 +136,7 @@ const HeroTitle = styled.h1<{ $builder?: boolean }>`
   line-height: ${({ $builder }) => ($builder ? '38px' : liqV3.titleLine)};
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #f7f7f7;
+  color: ${liqV3.text};
 
   @media (max-width: ${liqV3.mobileBreak}) {
     font-size: 42px;
@@ -148,7 +148,7 @@ const HeroSub = styled.p`
   margin: 8px 0 0;
   font-size: ${liqV3.descSize};
   line-height: ${liqV3.descLine};
-  color: rgba(255, 255, 255, 0.66);
+  color: ${liqV3.mute};
   max-width: 380px;
 `
 
@@ -229,7 +229,7 @@ const SnapCell = styled.div`
   border-radius: 12px;
   border: 1px solid ${liqV3.line};
   background: ${liqV3.panel};
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -250,7 +250,7 @@ const SnapValue = styled.div`
   font-size: 16px;
   line-height: 1.25;
   font-weight: 800;
-  color: #fff;
+  color: ${liqV3.text};
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 `
@@ -306,7 +306,7 @@ const SectionIndex = styled.span`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 24px;
   line-height: 30px;
   font-weight: 820;
@@ -360,14 +360,14 @@ const ModeSwitch = styled.div`
   margin: 0 0 14px;
   border-radius: 12px;
   border: 1px solid ${liqV3.line};
-  background: rgba(5, 5, 5, 0.72);
+  background: #F1F0EB;
 `
 
 const AddRemoveCard = styled.div`
   overflow: hidden;
   border: 1px solid ${liqV3.line};
   border-radius: 18px;
-  background: linear-gradient(160deg, rgba(17, 18, 18, 0.98), rgba(8, 9, 9, 0.98));
+  background: ${liqV3.panel};
 `
 
 const AddRemoveHeader = styled.div`
@@ -397,7 +397,7 @@ const WorkspacePair = styled.div`
   justify-content: flex-end;
   gap: 10px;
   min-width: 0;
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
@@ -473,7 +473,7 @@ const AvailabilityPanel = styled.div`
 `
 
 const AvailabilityTitle = styled.strong`
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 15px;
 `
 
@@ -493,7 +493,7 @@ const ChainChip = styled.span<{ $on?: boolean }>`
   font-size: 11px;
   font-weight: 700;
   border: 1px solid ${({ $on }) => ($on ? liqV3.goldLine : liqV3.line)};
-  background: ${({ $on }) => ($on ? 'rgba(221,185,47,0.12)' : 'rgba(255,255,255,0.02)')};
+  background: ${({ $on }) => ($on ? '#FFF2BD' : '#FFFFFF')};
   color: ${({ $on }) => ($on ? liqV3.gold : liqV3.mute)};
 `
 

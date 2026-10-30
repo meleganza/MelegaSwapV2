@@ -36,7 +36,7 @@ const Panel = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 18px;
+  padding: 16px;
   background: #ffffff;
   border: 1px solid #e5e2d9;
   border-radius: 16px;
@@ -50,7 +50,7 @@ const Panel = styled.div`
 const CockpitHeader = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
 `
@@ -69,9 +69,9 @@ const Divider = styled.div`
 `
 
 const IconBtn = styled.button`
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   border: 1px solid #e5e2d9;
   background: #f7f6f2;
   color: #5f605c;

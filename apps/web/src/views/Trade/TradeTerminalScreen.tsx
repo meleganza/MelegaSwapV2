@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import { FeaturedProjectsRail } from 'views/HomeTrade/FeaturedProjectsRail'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
 import { TradeCockpit } from './TradeCockpit'
+import type { SmartSwapProductAction } from 'views/SmartSwapStudio/SmartSwapProductActions'
 import { TradeMarcoIconPatch } from './components/TradeMarcoIconPatch'
 import { tradeColors, tradeLayout } from './tradeTokens'
 
@@ -42,13 +43,15 @@ const Promotions = styled.div`
 `
 
 export const TradeTerminalScreen: React.FC = () => {
+  const [productAction, setProductAction] = useState<SmartSwapProductAction>('swap')
+
   return (
     <Root data-trade-terminal-screen="true" data-trade-one-page-workspace="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <Content>
-        <TradeCockpit />
+        <TradeCockpit productAction={productAction} onProductActionChange={setProductAction} />
         <Promotions aria-label="Featured projects">
           <FeaturedProjectsRail />
         </Promotions>

@@ -35,6 +35,13 @@ const Title = styled.h1`
     font-size: 28px;
   }
 `
+const Subtitle = styled.p`
+  margin: 7px 0 0;
+  color: ${projectsStudioColors.muted};
+  font-size: 14px;
+  line-height: 1.4;
+`
+const Copy = styled.div`min-width: 0;`
 
 export const ProjectsStudioPageHeader: React.FC = () => (
   <Shell
@@ -42,7 +49,10 @@ export const ProjectsStudioPageHeader: React.FC = () => (
     data-testid="projects-directory-header"
     data-projects-hero="compact-v3"
   >
-    <Title>Explore</Title>
+    <Copy>
+      <Title>Explore</Title>
+      <Subtitle>Discover verified tokens, trends and projects.</Subtitle>
+    </Copy>
   </Shell>
 )
 

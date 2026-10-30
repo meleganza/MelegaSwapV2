@@ -175,7 +175,7 @@ export const Btn = styled.a<{ $primary?: boolean; $ghost?: boolean; $disabled?: 
     ${({ $primary, $ghost }) => ($primary ? px.goldLine : $ghost ? px.line : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary, $ghost }) =>
     $primary
-      ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)'
+      ? '#F3C928'
       : $ghost
         ? 'transparent'
       : '#F7F6F2'};

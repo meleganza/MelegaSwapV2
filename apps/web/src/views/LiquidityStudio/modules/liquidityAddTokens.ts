@@ -15,15 +15,15 @@ export const liquidityAdd = {
   sideW: '32%',
 
   cardRadius: '14px',
-  cardBorder: '1px solid rgba(255,255,255,0.09)',
-  cardBg: 'rgba(15,15,15,0.92)',
+  cardBorder: '1px solid #E5E2D9',
+  cardBg: '#FFFFFF',
   cardPad: '16px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
-  text: '#F7F7F7',
-  muted: 'rgba(255,255,255,0.66)',
-  dim: 'rgba(255,255,255,0.45)',
+  text: '#171817',
+  muted: '#72736E',
+  dim: '#92938D',
   danger: '#F87171',
 
   ctaH: '44px',

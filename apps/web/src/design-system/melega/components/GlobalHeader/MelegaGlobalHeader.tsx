@@ -12,7 +12,7 @@ import {
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
-import { MELEGA_LOGO_URI } from '../../constants/brand'
+import { MelegaBrandLockup } from '../BrandLockup'
 import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
 import { uxRebuildColors } from '../../tokens/uxRebuild'
 import HeaderNavDropdown from './HeaderNavDropdown'
@@ -54,7 +54,7 @@ const Inner = styled.div`
   }
 `
 
-const Brand = styled(Link)`
+const Brand = styled.div`
   width: ${ds001Layout.headerLogoBlockWidth};
   height: ${ds001Layout.headerHeight};
   padding: 0;
@@ -78,33 +78,6 @@ const Brand = styled(Link)`
   }
 `
 
-const Logo = styled.img`
-  width: ${ds001Layout.headerLogoSize};
-  height: ${ds001Layout.headerLogoSize};
-  flex: 0 0 ${ds001Layout.headerLogoSize};
-  object-fit: contain;
-  border-radius: 50%;
-`
-
-const Wordmark = styled.span`
-  display: flex;
-  align-items: baseline;
-  white-space: nowrap;
-  font-family: ${ds001FontFamily.sans};
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-`
-
-const MelegaWord = styled.span`
-  color: ${uxRebuildColors.text};
-`
-
-const DexWord = styled.span`
-  color: ${uxRebuildColors.gold};
-  margin-left: 3px;
-`
 
 const Nav = styled.nav`
   display: flex;
@@ -316,12 +289,8 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   return (
     <Bar ref={rootRef} data-melega-app-header data-melega-global-header data-testid="melega-global-header">
       <Inner>
-        <Brand href="/" aria-label="Melega DEX home" data-testid="melega-header-brand" onClick={closeMenus}>
-          <Logo src={MELEGA_LOGO_URI} alt="" width={36} height={36} />
-          <Wordmark>
-            <MelegaWord>Melega</MelegaWord>
-            <DexWord>DEX</DexWord>
-          </Wordmark>
+        <Brand data-testid="melega-header-brand" onClick={closeMenus}>
+          <MelegaBrandLockup />
         </Brand>
 
         <Nav aria-label="Primary navigation" data-testid="melega-header-primary-nav">

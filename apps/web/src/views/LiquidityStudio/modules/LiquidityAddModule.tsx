@@ -79,12 +79,12 @@ const PreviewRail = styled.aside<{ $embedded?: boolean }>`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 1px solid #E5E2D9;
   padding-left: 16px;
 
   @media (max-width: ${liquidityAdd.tabletBreak}) {
     border-left: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid #E5E2D9;
     padding: 14px 0 0;
   }
 `
@@ -145,8 +145,8 @@ const PairName = styled.div`
 const TokenBox = styled.div`
   margin-top: 14px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(8, 8, 8, 0.9);
+  border: 1px solid #E5E2D9;
+  background: #F1F0EB;
   padding: 12px 14px;
   min-width: 0;
 
@@ -177,8 +177,8 @@ const TokenSelect = styled.button`
   height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #111;
+  border: 1px solid #E5E2D9;
+  background: #FFFFFF;
   color: ${liquidityAdd.text};
   font-size: 14px;
   font-weight: 700;
@@ -256,8 +256,8 @@ const Metrics = styled.div`
 const Metric = styled.div`
   min-width: 0;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #E5E2D9;
+  background: #F7F6F2;
   padding: 10px 12px;
 `
 

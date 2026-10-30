@@ -33,7 +33,7 @@ export const FarmsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid^='farms-kpi-'] {
     background-image:
       linear-gradient(#FFFFFF, #FFFFFF);
-    box-shadow: ${farmsVisualPolish.cardShadow};
+    box-shadow: none;
   }
 
   ${S} [data-testid='farms-my-farm-card'],

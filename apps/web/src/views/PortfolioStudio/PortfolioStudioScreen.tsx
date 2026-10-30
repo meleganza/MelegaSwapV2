@@ -25,6 +25,7 @@ const HeroRow = styled.div`
 const Identity = styled.div`display: flex; flex-direction: column; gap: 7px; min-width: 0;`
 const Eyebrow = styled.span`color: ${px.gold}; font-size: 10px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase;`
 const Title = styled.h1`margin: 0; color: ${px.text}; font-size: clamp(30px,4vw,44px); line-height: 1; letter-spacing: -.045em;`
+const Subtitle = styled.p`margin: 0; color: ${px.mute}; font-size: 14px; line-height: 1.45;`
 const Address = styled.code`color: ${px.mute}; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size: 12px; word-break: break-all;`
 const HeroActions = styled(Row)`
   justify-content: flex-end;
@@ -43,8 +44,7 @@ const StateBox = styled.div`
 `
 const Skeleton = styled.div`
   width: 100%; height: 14px; border-radius: 6px;
-  background: linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.1),rgba(255,255,255,.04));
-  background-size: 200% 100%; animation: portfolio-shimmer 1.2s linear infinite;
+  background: ${px.panel2}; animation: portfolio-shimmer 1.2s linear infinite;
   @keyframes portfolio-shimmer { to { background-position: -200% 0; } }
 `
 
@@ -69,15 +69,18 @@ export const PortfolioStudioScreen: React.FC = () => {
           <HeroRow>
             <Identity>
               <Title>Portfolio</Title>
+              <Subtitle>Your assets, positions and rewards in one place.</Subtitle>
             </Identity>
             <HeroActions data-testid="portfolio-hero-ctas">
-              {!wallet.connected ? <ConnectWalletButton>Connect Wallet</ConnectWalletButton> : null}
+              {wallet.connected ? <Btn href="#portfolio-positions" $ghost>My Positions</Btn> : null}
             </HeroActions>
           </HeroRow>
         </Hero>
 
         {!wallet.connected ? (
           <StateBox data-testid="portfolio-disconnected-state">
+            <strong>Connect your wallet</strong>
+            <Muted>No address entry required. Nothing is estimated before connection.</Muted>
             <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
           </StateBox>
         ) : (
@@ -93,7 +96,7 @@ export const PortfolioStudioScreen: React.FC = () => {
               </Grid>
             </ValueBand>
 
-            <Band data-portfolio-section="positions" data-testid="portfolio-section-positions">
+            <Band id="portfolio-positions" data-portfolio-section="positions" data-testid="portfolio-section-positions">
               <BandHead><BandTitle>Earn</BandTitle><BandMeta>BNB Chain</BandMeta></BandHead>
               <TabRow role="tablist" aria-label="Earn positions">
                 <TabBtn type="button" role="tab" $active={earnTab === 'farms'} aria-selected={earnTab === 'farms'} onClick={() => startTransition(() => setEarnTab('farms'))}>Farms ({activeFarms.length})</TabBtn>

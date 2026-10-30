@@ -290,6 +290,112 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     font-size: 0 !important;
     box-shadow: none !important;
   }
+
+  /* R033 Founder-approved Pearl shell. */
+  [data-melega-mobile-header] {
+    background: #F7F6F2 !important;
+    border-bottom: 0 !important;
+  }
+
+  [data-melega-app-shell] .melega-shell-mobile-network button,
+  [data-melega-app-shell] .melega-shell-mobile-network [role='button'],
+  [data-melega-app-shell] .melega-shell-mobile-connect,
+  [data-melega-app-shell] .melega-shell-wallet-icon {
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    border: 1px solid #E5E2D9 !important;
+    border-radius: 12px !important;
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    box-shadow: none !important;
+  }
+
+  [data-melega-app-shell] .melega-shell-mobile-network button,
+  [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
+    width: 66px !important;
+    max-width: 66px !important;
+    min-width: 66px !important;
+    padding: 0 8px !important;
+  }
+
+  [data-melega-app-shell] .melega-shell-mobile-connect {
+    max-width: 96px !important;
+    padding: 0 10px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  @media (max-width: 374px) {
+    [data-melega-mobile-header] { padding-left: 10px !important; padding-right: 10px !important; }
+    [data-melega-mobile-header] [data-melega-brand-lockup] { transform: scale(.9); transform-origin: left center; }
+    [data-melega-app-shell] .melega-shell-mobile-network button,
+    [data-melega-app-shell] .melega-shell-mobile-network [role='button'] { width: 52px !important; min-width: 52px !important; }
+    [data-melega-app-shell] .melega-shell-mobile-connect { width: 44px !important; min-width: 44px !important; font-size: 0 !important; padding: 0 !important; }
+  }
+
+  [data-testid='marco-wave1-bridge'] select,
+  [data-testid='marco-wave1-bridge'] input {
+    background: #F1F0EB !important;
+    color: #171817 !important;
+    border-color: #E5E2D9 !important;
+    color-scheme: light !important;
+  }
+
+  [data-liquidity-studio='v3'] [data-add-surface] input,
+  [data-liquidity-studio='v3'] [data-add-surface] [class*='TokenBox'],
+  [data-liquidity-studio='v3'] [data-add-surface] [class*='CurrencyInput'],
+  [data-liquidity-studio='v3'] [data-add-surface] [class*='InputPanel'] {
+    background: #F1F0EB !important;
+    color: #171817 !important;
+    border-color: #E5E2D9 !important;
+    background-image: none !important;
+  }
+
+  [data-liquidity-studio='v3'] [data-add-surface] input::placeholder { color: #92938D !important; }
+
+  [data-testid='list-workspace'] {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    color-scheme: light !important;
+  }
+  [data-testid='list-workspace'] input,
+  [data-testid='list-workspace'] select,
+  [data-testid='list-workspace'] textarea {
+    background: #F1F0EB !important;
+    color: #171817 !important;
+    border-color: #E5E2D9 !important;
+  }
+  [data-testid='list-workspace'] h1,
+  [data-testid='list-workspace'] h2,
+  [data-testid='list-workspace'] h3,
+  [data-testid='list-workspace'] strong { color: #171817 !important; }
+
+  [data-project-page='v7'] { background: #F7F6F2 !important; color: #171817 !important; color-scheme: light !important; }
+  [data-project-page='v7'] [data-testid='project-v7-market-first-identity'],
+  [data-project-page='v7'] [data-testid='project-v7-terminal'],
+  [data-project-page='v7'] [data-testid='project-v7-intel'],
+  [data-project-page='v7'] [data-project-section] {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    box-shadow: none !important;
+  }
+  [data-project-page='v7'] [data-testid='project-v7-market-first-identity'] p,
+  [data-project-page='v7'] [data-testid='project-v7-market-first-identity'] span { color: #72736E; }
+  [data-project-page='v7'] h1,
+  [data-project-page='v7'] h2,
+  [data-project-page='v7'] h3,
+  [data-project-page='v7'] strong { color: #171817 !important; }
+  [data-project-page='v7'] [data-testid='project-v7-boost'] { display: none !important; }
+
+  nav[aria-label='Main navigation'] {
+    background: rgba(255,255,255,.98) !important;
+    border-top: 1px solid #E5E2D9 !important;
+    box-shadow: none !important;
+  }
+  nav[aria-label='Main navigation'] a { background: transparent !important; color: #72736E !important; }
+  nav[aria-label='Main navigation'] a[aria-current='page'] { color: #9A7600 !important; }
 `
 
 const WalletIconBtn = styled.div`

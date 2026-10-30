@@ -73,9 +73,9 @@ type BridgeEthereumProvider = {
 const Page = styled.section<{ $embedded?: boolean }>`
   min-height: 70vh;
   padding: 26px 22px 56px;
-  color: #f5f5f5;
+  color: #171817;
   font-family: ${typography.fontFamily.body};
-  background: radial-gradient(circle at 78% 8%, rgba(244, 196, 48, 0.08), transparent 28%), #050606;
+  background: #F7F6F2;
   @media (max-width: 767px) {
     padding: 16px 12px 40px;
   }
@@ -109,6 +109,7 @@ const Hero = styled.header<{ $embedded?: boolean }>`
     line-height: 1;
     letter-spacing: -0.045em;
   }
+  p { margin: 8px 0 0; color: #72736E; font-size: 14px; }
   @media (max-width: 700px) {
     padding: 0 4px;
   }
@@ -179,9 +180,9 @@ const Workspace = styled.section<{ $embedded?: boolean }>`
 `
 const Card = styled.div<{ $embedded?: boolean }>`
   min-width: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  background: linear-gradient(145deg, rgba(18, 18, 18, 0.98), rgba(8, 9, 9, 0.98));
+  border: 1px solid #E5E2D9;
+  border-radius: 16px;
+  background: #FFFFFF;
   padding: 18px;
   ${({ $embedded }) =>
     $embedded
@@ -194,7 +195,7 @@ const Card = styled.div<{ $embedded?: boolean }>`
     & + & {
       margin-top: 14px;
       padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid #E5E2D9;
     }
   `
       : ''}
@@ -230,7 +231,7 @@ const Field = styled.label`
   flex-direction: column;
   gap: 7px;
   > span {
-    color: rgba(255, 255, 255, 0.48);
+    color: #72736E;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -241,10 +242,10 @@ const Field = styled.label`
     width: 100%;
     height: 48px;
     box-sizing: border-box;
-    border-radius: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: #141617;
-    color: #fff;
+    border-radius: 12px;
+    border: 1px solid #E5E2D9;
+    background: #F1F0EB;
+    color: #171817;
     padding: 0 12px;
     font: 650 14px ${typography.fontFamily.body};
     outline: none;
@@ -259,9 +260,9 @@ const SwapNetworks = styled.button`
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1px solid rgba(244, 196, 48, 0.3);
-  background: rgba(244, 196, 48, 0.08);
-  color: #f4c430;
+  border: 1px solid #E5E2D9;
+  background: #FFFFFF;
+  color: #F3C928;
   cursor: pointer;
   @media (max-width: 560px) {
     transform: rotate(90deg);
@@ -277,11 +278,11 @@ const WalletLine = styled.div`
   justify-content: space-between;
   gap: 8px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.025);
-  color: rgba(255, 255, 255, 0.62);
+  background: #F7F6F2;
+  color: #72736E;
   font-size: 11px;
   strong {
-    color: rgba(255, 255, 255, 0.86);
+    color: #171817;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -302,8 +303,8 @@ const AmountRow = styled.div`
 const Max = styled.button`
   border: 1px solid rgba(244, 196, 48, 0.34);
   border-radius: 11px;
-  color: #f4c430;
-  background: rgba(244, 196, 48, 0.07);
+  color: #9A7600;
+  background: #FFF2BD;
   font-weight: 780;
   cursor: pointer;
 `
@@ -314,15 +315,15 @@ const Summary = styled.div`
   gap: 1px;
   overflow: hidden;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #E5E2D9;
 `
 const SummaryCell = styled.div`
   min-height: 65px;
   padding: 11px 12px;
-  background: #101111;
+  background: #F7F6F2;
   span {
     display: block;
-    color: rgba(255, 255, 255, 0.42);
+    color: #72736E;
     font-size: 10px;
     font-weight: 760;
     text-transform: uppercase;
@@ -341,7 +342,7 @@ const Notice = styled.div<{ $danger?: boolean }>`
   border-radius: 10px;
   border: 1px solid ${({ $danger }) => ($danger ? 'rgba(255,89,100,.28)' : 'rgba(244,196,48,.22)')};
   background: ${({ $danger }) => ($danger ? 'rgba(255,89,100,.06)' : 'rgba(244,196,48,.055)')};
-  color: rgba(255, 255, 255, 0.72);
+  color: #72736E;
   font-size: 12px;
   line-height: 1.45;
   a {
@@ -406,14 +407,14 @@ const Primary = styled.button`
   margin-top: 14px;
   border: 0;
   border-radius: 12px;
-  background: #f4c430;
-  color: #090909;
+  background: #F3C928;
+  color: #171817;
   font: 800 14px ${typography.fontFamily.body};
   cursor: pointer;
   &:disabled {
     cursor: not-allowed;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.38);
+    background: #F1F0EB;
+    color: #72736E;
   }
 `
 const Review = styled.div`
@@ -425,10 +426,10 @@ const ReviewRow = styled.div`
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
   gap: 10px;
-  color: rgba(255, 255, 255, 0.5);
+  color: #72736E;
   font-size: 12px;
   strong {
-    color: #f3f3f3;
+    color: #171817;
     text-align: right;
     overflow-wrap: anywhere;
   }
@@ -449,14 +450,14 @@ const Steps = styled.ol`
     display: flex;
     align-items: center;
     gap: 9px;
-    color: rgba(255, 255, 255, 0.52);
+    color: #72736E;
     font-size: 12px;
   }
   li[data-state='completed'] {
     color: rgba(244, 196, 48, 0.92);
   }
   li[data-state='current'] {
-    color: #f5f5f5;
+    color: #171817;
   }
   i {
     width: 20px;
@@ -464,7 +465,7 @@ const Steps = styled.ol`
     display: grid;
     place-items: center;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.07);
+    background: #F1F0EB;
     color: #f4c430;
     font-style: normal;
     font-size: 10px;
@@ -480,11 +481,11 @@ const Steps = styled.ol`
 `
 const Advanced = styled.details`
   margin-top: 12px;
-  color: rgba(255, 255, 255, 0.48);
+  color: #72736E;
   font-size: 11px;
   summary {
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.7);
+    color: #171817;
   }
   ul {
     padding-left: 18px;
@@ -919,7 +920,8 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       <Shell>
         <Hero $embedded={embedded}>
           <HeroCopy>
-            <h1>Bridge</h1>
+            <h1>MARCO Bridge</h1>
+            <p>Move MARCO across supported networks.</p>
           </HeroCopy>
         </Hero>
         <Workspace $embedded={embedded}>

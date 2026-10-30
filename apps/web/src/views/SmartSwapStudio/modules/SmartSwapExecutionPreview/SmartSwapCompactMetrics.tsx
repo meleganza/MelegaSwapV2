@@ -3,20 +3,20 @@ import styled from 'styled-components'
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0;
   width: 100%;
 
   @media (max-width: 520px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `
 
 const Cell = styled.div`
   min-width: 0;
-  padding: 5px 6px 4px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(0, 0, 0, 0.28);
+  padding: 6px 8px;
+  border-right: 1px solid #E5E2D9;
+  background: transparent;
+  &:last-child { border-right: 0; }
 `
 
 const K = styled.div`
@@ -24,7 +24,7 @@ const K = styled.div`
   font-size: 9px;
   line-height: 11px;
   font-weight: 600;
-  color: #9ca3af;
+  color: #72736E;
   letter-spacing: 0.02em;
   margin-bottom: 2px;
   white-space: normal;
@@ -34,7 +34,7 @@ const K = styled.div`
 const V = styled.div<{ $tone?: 'ok' | 'warn' | 'neutral' }>`
   font-size: 10px;
   font-weight: 700;
-  color: ${({ $tone }) => ($tone === 'ok' ? '#22c55e' : $tone === 'warn' ? '#f59e0b' : '#f8fafc')};
+  color: ${({ $tone }) => ($tone === 'ok' ? '#21865A' : $tone === 'warn' ? '#9A7600' : '#171817')};
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
   white-space: normal;

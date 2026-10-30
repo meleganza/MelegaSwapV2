@@ -13,11 +13,13 @@ const Header = styled.header`
   padding: 10px 0 4px;
   @media (max-width: 767px) {
     align-items: flex-start;
+    flex-direction: column;
     padding: 10px 16px 4px;
   }
 `
 
 const Identity = styled.div`min-width: 0;`
+const Subtitle = styled.p`margin: 7px 0 0; color: #72736E; font-size: 14px; line-height: 1.4;`
 const Title = styled.h1`
   margin: 0;
   color: #171817;
@@ -28,12 +30,13 @@ const Title = styled.h1`
 `
 const Protocols = styled.nav`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
   border: 1px solid #e5e2d9;
   border-radius: 14px;
   background: #f7f6f2;
+  @media (max-width: 767px) { width: 100%; }
 `
 const ProtocolLink = styled.a<{ $active: boolean }>`
   min-width: 112px;
@@ -86,17 +89,21 @@ export const EarnPremiumShell: React.FC<{ kind: EarnKind; chainId?: number | nul
     <Header data-earn-premium-header>
       <Identity>
         <Title>Earn</Title>
+        <Subtitle>Stake tokens, provide liquidity and earn rewards.</Subtitle>
       </Identity>
       <Protocols aria-label="Earn protocol type">
         <Link href="/farms" passHref legacyBehavior>
           <ProtocolLink $active={kind === 'farms'} aria-current={kind === 'farms' ? 'page' : undefined}>
-            Farms
+            Pair
           </ProtocolLink>
         </Link>
         <Link href="/pools" passHref legacyBehavior>
           <ProtocolLink $active={kind === 'pools'} aria-current={kind === 'pools' ? 'page' : undefined}>
-            Pools
+            Token
           </ProtocolLink>
+        </Link>
+        <Link href="/liquidity" passHref legacyBehavior>
+          <ProtocolLink $active={false}>Liquidity</ProtocolLink>
         </Link>
       </Protocols>
     </Header>
