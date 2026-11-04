@@ -34,17 +34,17 @@ const PUBLIC_LOG_FALLBACKS = [
 ]
 
 export function resolveRpcUrls(): string[] {
-  return [
+  return [...new Set([
     process.env.BSC_RPC_URL,
     process.env.BSC_RPC_FALLBACK_URL,
     process.env.NEXT_PUBLIC_BSC_RPC_URL,
     ...PUBLIC_LOG_FALLBACKS.slice(0, 2),
-  ].filter(Boolean) as string[]
+  ].map((url) => url?.trim()).filter(Boolean))] as string[]
 }
 
 /** Head / eth_call reads — QuickNode primary. */
 export function resolveIndexerLogRpcUrls(): string[] {
-  return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
+  return resolveRpcUrls()
 }
 
 /**
@@ -90,25 +90,34 @@ async function postRpc<T>(
   label: string,
 ): Promise<T> {
   ensureEventTopicsValid()
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
-    signal: AbortSignal.timeout(5_000),
-  })
-  const json = (await res.json()) as { result?: T; error?: { message: string } }
-  if (!res.ok || json.error) {
-    const reason = classifyRpcFailure(json.error?.message ?? `HTTP ${res.status}`, res.status)
+  let result: T
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+      signal: AbortSignal.timeout(5_000),
+    })
+    // Quota/auth errors may return HTML or plain text rather than JSON.
+    let json: { result?: T; error?: { message: string } }
+    try {
+      json = await res.json()
+    } catch (error) {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      throw error
+    }
+    if (!res.ok || json.error) {
+      throw new Error(classifyRpcFailure(`HTTP ${res.status}: ${json.error?.message ?? 'RPC request failed'}`, res.status))
+    }
+    if (json.result === undefined) throw new Error(`RPC ${method} empty result`)
+    result = json.result
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
     recordProviderFailure(url, label, reason)
-    throw new Error(reason)
-  }
-  if (json.result === undefined) {
-    const reason = `RPC ${method} empty result`
-    recordProviderFailure(url, label, reason)
-    throw new Error(reason)
+    throw error
   }
   recordProviderSuccess(url, label)
-  return json.result
+  return result
 }
 
 export async function rpcCallWithFailover<T>(
