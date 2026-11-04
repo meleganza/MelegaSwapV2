@@ -55,6 +55,7 @@ export function recordProviderFailure(url: string, label: string, reason: string
   record.lastFailureReason = reason
   if (
     record.consecutiveFailures >= MAX_CONSECUTIVE_FAILURES ||
+    /\b(402|403|429)\b|quota|credits? exhausted|monthly limit/i.test(reason) ||
     reason.includes('404') ||
     reason.toLowerCase().includes('not found') ||
     reason.toLowerCase().includes('unauthorized')
