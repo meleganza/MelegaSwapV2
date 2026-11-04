@@ -258,11 +258,11 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input::before {
-    content: 'FROM';
+    content: 'From';
   }
 
   .trade-terminal-swap #swap-currency-output::before {
-    content: 'TO (ESTIMATED)';
+    content: 'To';
   }
 
   .trade-terminal-swap [data-compact-wallet-controls] {
@@ -703,6 +703,23 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     min-width: 0 !important;
   }
 
+  .trade-terminal-swap [data-wallet-percent-menu] {
+    display: none !important;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .trade-terminal-swap [data-wallet-control-bar]:hover [data-wallet-percent-menu],
+    .trade-terminal-swap [data-wallet-control-bar]:focus-within [data-wallet-percent-menu] {
+      display: inline-flex !important;
+    }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .trade-terminal-swap [data-wallet-percent-menu][data-open='true'] {
+      display: inline-flex !important;
+    }
+  }
+
   .trade-terminal-swap [data-wallet-inline-actions] button {
     display: inline-flex !important;
     width: auto !important;
@@ -731,24 +748,84 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap #swap-currency-input,
   .trade-terminal-swap #swap-currency-output {
-    min-height: 128px !important;
-    height: 128px !important;
-    max-height: 128px !important;
-    padding: 18px !important;
-    border: 1px solid #E5E2D9 !important;
-    border-radius: 16px !important;
+    min-height: 162px !important;
+    height: 162px !important;
+    max-height: 162px !important;
+    padding: 20px !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    background: #FBFAF7 !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input::before,
+  .trade-terminal-swap #swap-currency-output::before {
+    top: 18px !important;
+    left: 20px !important;
+    color: #72736E !important;
+    font-size: 13px !important;
+    letter-spacing: 0 !important;
+    font-weight: 500 !important;
+  }
+
+  /* Placeholder only while no wallet is connected; connected balances come from the live wallet controls. */
+  .trade-terminal-swap:not(.is-disconnected) #swap-currency-input::after,
+  .trade-terminal-swap:not(.is-disconnected) #swap-currency-output::after {
+    content: none !important;
+  }
+  .trade-terminal-swap #swap-currency-input::after,
+  .trade-terminal-swap #swap-currency-output::after {
+    content: 'Balance: —';
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    color: #72736E;
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
+  .trade-terminal-swap #swap-currency-output [class*='InputContainer'],
+  .trade-terminal-swap #swap-currency-input > div:nth-of-type(2) > div:first-child,
+  .trade-terminal-swap #swap-currency-output > div:nth-of-type(2) > div:first-child {
+    left: auto !important;
+    right: 18px !important;
+    top: 62px !important;
+    width: 45% !important;
+    height: 42px !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input [class*='InputContainer'] [class*='LabelRow'],
+  .trade-terminal-swap #swap-currency-output [class*='InputContainer'] [class*='LabelRow'] {
+    display: flex !important;
+    visibility: visible !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    overflow: visible !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input .open-currency-select-button,
+  .trade-terminal-swap #swap-currency-output .open-currency-select-button {
+    position: absolute !important;
+    left: 18px !important;
+    right: auto !important;
+    top: 60px !important;
+    min-width: 118px !important;
+    justify-content: flex-start !important;
+    border: 0 !important;
+    background: transparent !important;
   }
 
   .trade-terminal-swap .token-amount-input,
   .trade-terminal-swap [class*='CurrencyInputPanel'] input {
     color: #171817 !important;
-    font-size: 28px !important;
+    font-size: 34px !important;
     font-weight: 600 !important;
     line-height: 34px !important;
     height: 34px !important;
     min-height: 34px !important;
     max-height: 34px !important;
     caret-color: #171817 !important;
+    text-align: right !important;
   }
 
   .trade-terminal-swap .open-currency-select-button,
@@ -795,15 +872,168 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   @media (max-width: 767px) {
-    .trade-cockpit [data-trade-cockpit-shell] { padding: 12px !important; }
+    [data-trade-cockpit] { width: 100% !important; max-width: 100% !important; }
+    .trade-cockpit [data-trade-cockpit-shell] {
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+    }
     .trade-cockpit [data-trade-cockpit-toolbar] { gap: 6px !important; }
+    .trade-cockpit [data-trade-cockpit-header] {
+      background: #F1F0EB !important;
+      border-radius: 18px !important;
+      padding: 6px !important;
+      min-height: 58px !important;
+    }
+    .trade-cockpit [data-trade-cockpit-toolbar] button:last-child { display: none !important; }
+    .trade-cockpit [role='tablist'] { flex: 1 1 auto !important; }
+    .trade-cockpit [role='tab'] {
+      min-height: 46px !important;
+      border: 0 !important;
+      border-radius: 14px !important;
+      font-size: 14px !important;
+    }
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 118px !important;
-      height: 118px !important;
-      max-height: 118px !important;
-      padding: 16px !important;
+      min-height: 154px !important;
+      height: 154px !important;
+      max-height: 154px !important;
+      padding: 18px !important;
     }
+    .trade-terminal-swap #swap-page {
+      background: #FFFFFF !important;
+      border-radius: 20px !important;
+      padding: 8px !important;
+      border: 1px solid #EEECE6 !important;
+      box-shadow: 0 10px 30px rgba(23,24,23,.04) !important;
+    }
+    .trade-terminal-swap #swap-currency-input,
+    .trade-terminal-swap #swap-currency-output {
+      background: #FAF9F6 !important;
+      border-radius: 18px !important;
+    }
+    .trade-terminal-swap #swap-currency-input .open-currency-select-button,
+    .trade-terminal-swap #swap-currency-output .open-currency-select-button {
+      top: 54px !important;
+      left: 14px !important;
+      min-width: 124px !important;
+      font-size: 17px !important;
+      font-weight: 750 !important;
+    }
+    .trade-terminal-swap .token-amount-input,
+    .trade-terminal-swap [class*='CurrencyInputPanel'] input {
+      font-size: 38px !important;
+      line-height: 42px !important;
+      height: 42px !important;
+    }
+    .trade-terminal-swap .pancake-button--primary,
+    .trade-terminal-swap button[id='swap-button'],
+    .trade-terminal-swap [class*='CommitButton'] button,
+    .trade-terminal-swap #swap-page > div:last-child button {
+      height: 58px !important;
+      min-height: 58px !important;
+      font-size: 18px !important;
+      border-radius: 16px !important;
+    }
+  }
+
+  /* ---- R035B: approved Pearl Trade mockup (presentation only; SmartSwapForm untouched) ---- */
+  .trade-terminal-swap #swap-currency-input > div:first-child *,
+  .trade-terminal-swap #swap-currency-output > div:first-child * {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #72736E !important;
+  }
+  .trade-cockpit [data-smart-swap-product-tabs] {
+    background: #F1F0EB !important;
+    border: 0 !important;
+  }
+  .trade-cockpit [data-smart-swap-product-tabs] [role='tab'] {
+    background: transparent !important;
+    color: #72736E !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+  }
+  .trade-cockpit [data-smart-swap-product-tabs] [role='tab'][aria-selected='true'] {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    box-shadow: inset 0 -2px 0 #F3C928, 0 2px 8px rgba(23, 24, 23, 0.05) !important;
+  }
+  .trade-terminal-swap #swap-currency-input,
+  .trade-terminal-swap #swap-currency-output {
+    min-height: 116px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 14px 16px !important;
+    border-radius: 16px !important;
+    background: #F7F6F2 !important;
+  }
+  .trade-terminal-swap #swap-currency-input::before,
+  .trade-terminal-swap #swap-currency-output::before {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #72736E !important;
+  }
+
+  /* R035B — compact Trade per mockup: flip control, panel rhythm, CTA, Featured. */
+  .trade-terminal-swap #swap-currency-input,
+  .trade-terminal-swap #swap-currency-output {
+    min-height: 104px !important;
+  }
+  .trade-swap-cockpit .trade-terminal-swap #swap-currency-input + div {
+    position: relative !important;
+    z-index: 3 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: visible !important;
+  }
+  .trade-swap-cockpit .trade-terminal-swap #swap-currency-input + div button {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 4px solid #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(23, 24, 23, 0.08) !important;
+    color: #E9B10F !important;
+  }
+  .trade-swap-cockpit .trade-terminal-swap #swap-currency-input + div button svg {
+    fill: #E9B10F !important;
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .trade-swap-cockpit .trade-terminal-swap #swap-currency-output {
+    margin-top: 8px !important;
+  }
+  .trade-terminal-swap [data-wallet-connected] button,
+  .trade-terminal-swap button[aria-label='Connect wallet'] {
+    height: 48px !important;
+    min-height: 48px !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+  [data-trade-terminal-screen] [data-testid='dex-home-featured-projects'] article {
+    padding: 10px 12px !important;
+    gap: 4px !important;
+  }
+  [data-trade-terminal-screen] [data-testid='dex-home-featured-projects'] [data-featured-stats] {
+    display: none !important;
+  }
+  [data-trade-terminal-screen] [data-testid='dex-home-featured-projects'] article a {
+    height: 30px !important;
+    min-height: 30px !important;
+    font-size: 12px !important;
   }
 `
 

@@ -46,7 +46,7 @@ function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
 
 const MenuItem = styled(RowBetween)<{ disabled: boolean; selected: boolean }>`
   padding: 6px 16px;
-  height: 64px;
+  height: 60px;
   display: grid;
   grid-template-columns: auto minmax(80px, 1fr) minmax(0, 72px) auto;
   grid-gap: 8px;
@@ -60,9 +60,12 @@ const MenuItem = styled(RowBetween)<{ disabled: boolean; selected: boolean }>`
   > div:nth-child(2) > div:first-child {
     color: #171817 !important;
     font-weight: 700;
+    font-size: 16px !important;
   }
 
-  > div:nth-child(2) > div:last-child { color: #72736E !important; }
+  > div:nth-child(2) > div:last-child { color: #72736E !important; font-size: 13px !important; }
+
+  img[class*='CurrencyLogo'], > img, > div:first-child img { width: 40px; height: 40px; }
 `
 
 const TokenActions = styled.div`
@@ -92,7 +95,7 @@ const TokenAction = styled.button`
 `
 
 const CopyIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-const WalletIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m4 5 4 5-4 9 7-4 3 4 6-14-8 6-3-6-5 0Z"/></svg>
+const WalletIcon = () => <img src="/images/wallets/metamask.png" alt="" width={18} height={18} style={{ display: 'block' }} />
 const ExternalIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
 
 function CurrencyRow({

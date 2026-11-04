@@ -16,9 +16,13 @@ export const TradeMarcoIconPatch: React.FC = () => {
       scope.querySelectorAll(BUTTON_SELECTOR).forEach((btn) => {
         if (!isMarcoButton(btn)) return
 
-        btn.querySelectorAll('img, picture, [class*="TokenImage"], [class*="CurrencyLogo"]').forEach((node) => {
-          ;(node as HTMLElement).style.display = 'none'
-        })
+        btn
+          .querySelectorAll(
+            'img:not([data-melega-marco-icon]), picture, [class*="TokenImage"], [class*="CurrencyLogo"]',
+          )
+          .forEach((node) => {
+            ;(node as HTMLElement).style.display = 'none'
+          })
 
         let slot = btn.querySelector('[data-melega-marco-icon]') as HTMLElement | null
         if (!slot) {
@@ -26,12 +30,12 @@ export const TradeMarcoIconPatch: React.FC = () => {
           slot.setAttribute('data-melega-marco-icon', 'true')
           slot.setAttribute('src', MARCO_LOGO_URI)
           slot.setAttribute('alt', '')
-          slot.style.width = '22px'
-          slot.style.height = '22px'
+          slot.style.width = '32px'
+          slot.style.height = '32px'
           slot.style.borderRadius = '50%'
           slot.style.objectFit = 'cover'
           slot.style.display = 'inline-block'
-          slot.style.marginRight = '6px'
+          slot.style.marginRight = '8px'
           btn.insertBefore(slot, btn.firstChild)
         }
       })

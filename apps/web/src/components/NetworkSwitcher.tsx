@@ -240,7 +240,7 @@ export const NetworkSwitcher = () => {
             lineHeight={1.2}
             title={headerChainTitle(ChainId.BSC)}
           >
-            BSC
+            BNB
           </Text>
         </Flex>
       </Box>
@@ -263,14 +263,13 @@ export const NetworkSwitcher = () => {
         avatarClassName="melega-chain-avatar"
         disabled={cannotChangeNetwork}
         text={
-          !isMobile &&
           (isLoading ? (
             t('Requesting')
           ) : headerDanger ? (
             t('Network')
           ) : headerRecognized && displayChainId != null ? (
             <Box data-testid="header-chain-label" title={headerChainTitle(displayChainId)}>
-              {headerChainLabel(displayChainId)}
+              {isMobile && displayChainId === ChainId.BSC ? 'BNB' : headerChainLabel(displayChainId)}
             </Box>
           ) : (
             t('Select a Network')

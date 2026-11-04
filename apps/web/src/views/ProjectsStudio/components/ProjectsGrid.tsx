@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { ArrowUpRight } from 'lucide-react'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { PROJECTS_SCROLL_KEY } from '../projectsDirectoryV3'
 import type { ProjectPreviewCard } from '../projectsStudioData'
@@ -19,47 +18,49 @@ const Heading = styled.div`
   h2 { margin: 0; color: ${projectsStudioColors.text}; font-size: 20px; line-height: 1.2; }
   p { margin: 3px 0 0; color: ${projectsStudioColors.muted}; font-size: 12px; }
 `
+/* R035B: approved Explore mockup — ranked rows: rank, logo, name/symbol, verified fact, Swap. */
 const Grid = styled.div`
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
-  @media (max-width: 1023px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 639px) { grid-template-columns: 1fr; gap: 10px; }
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 6px; border-radius: 18px; background: #FFFFFF; border: 1px solid #EFEDE6;
+`
+const Row = styled.div`
+  min-width: 0; min-height: 60px; padding: 8px 10px; border-radius: 14px;
+  display: grid; grid-template-columns: 26px minmax(0, 1fr) auto auto; align-items: center; gap: 10px;
+  &:hover { background: #F7F6F2; }
+`
+const Rank = styled.span<{ $top?: boolean }>`
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 13px; font-weight: 600; color: #171817; background: ${({ $top }) => ($top ? '#FFF2BD' : 'transparent')};
 `
 const Card = styled(Link)`
-  min-width: 0; min-height: 136px; padding: 16px;
-  border: 1px solid ${projectsStudioColors.cardBorder}; border-radius: ${projectsStudioLayout.cardRadius};
-  background: ${projectsStudioColors.card};
-  color: ${projectsStudioColors.text}; text-decoration: none;
-  display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
-  transition: border-color 140ms ease, transform 140ms ease;
-  &:hover { border-color: rgba(244,196,48,.42); transform: translateY(-2px); }
-  &:focus-visible { outline: 2px solid ${projectsStudioColors.gold}; outline-offset: 2px; }
+  min-width: 0; color: ${projectsStudioColors.text}; text-decoration: none;
+  &:focus-visible { outline: 2px solid ${projectsStudioColors.gold}; outline-offset: 2px; border-radius: 10px; }
 `
 const Identity = styled.div`
   display: flex; align-items: center; gap: 12px; min-width: 0;
 `
 const Logo = styled.img`
-  width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; object-fit: contain;
-  background: #F7F6F2; border: 1px solid ${projectsStudioColors.cardBorder};
+  width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%; object-fit: contain;
+  background: #F7F6F2;
 `
 const Initial = styled.span`
-  width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(244,196,48,.12); border: 1px solid rgba(244,196,48,.28);
-  color: ${projectsStudioColors.gold}; font-weight: 850;
+  width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(244,196,48,.12); color: ${projectsStudioColors.gold}; font-weight: 800;
 `
 const Names = styled.div`
   min-width: 0; flex: 1;
   strong, span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  strong { font-size: 16px; line-height: 20px; }
-  span { margin-top: 3px; color: ${projectsStudioColors.muted}; font-size: 12px; }
+  strong { font-size: 15px; line-height: 19px; }
+  span { margin-top: 2px; color: ${projectsStudioColors.muted}; font-size: 12px; }
 `
-const Open = styled.span`
-  width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center;
-  border-radius: 12px; border: 1px solid ${projectsStudioColors.cardBorder};
+const Fact = styled.span`
+  font-size: 13px; font-weight: 600; color: #171817; text-align: right; white-space: nowrap;
+  max-width: 96px; overflow: hidden; text-overflow: ellipsis;
 `
-const Facts = styled.div`
-  display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap;
-  color: ${projectsStudioColors.secondary}; font-size: 12px;
-  span:first-child { color: ${projectsStudioColors.gold}; font-weight: 750; }
+const SwapCta = styled(Link)`
+  height: 34px; padding: 0 16px; border-radius: 10px; display: inline-flex; align-items: center;
+  background: #FFF2BD !important; color: #171817 !important; font: 600 13px ${PR_FONT_BODY}; text-decoration: none;
+  &:focus-visible { outline: 2px solid ${projectsStudioColors.gold}; outline-offset: 2px; }
 `
 const EmptyPanel = styled.div`
   padding: 22px 16px; border-radius: ${projectsStudioLayout.cardRadius};
@@ -79,8 +80,15 @@ export function isMarketDiscoverableProject(project: ProjectPreviewCard): boolea
   return project.metrics.some((entry) => Boolean(entry.value && entry.value !== '—' && entry.value !== 'Unavailable'))
 }
 
+/** Row fact: verified price first, else the first known metric. Unknown values render "—", never "$0.00". */
+const UNKNOWN_VALUES = new Set(['—', 'Unavailable', 'Price updating', '$0.00', '$0'])
 function firstFact(project: ProjectPreviewCard): string | null {
-  return project.metrics.find((entry) => entry.value && entry.value !== '—' && entry.value !== 'Unavailable')?.value ?? null
+  if (project.priceDisplay && !UNKNOWN_VALUES.has(project.priceDisplay)) return project.priceDisplay
+  const MARKET_LABELS = new Set(['Liquidity', 'Volume', 'Volume 24h', 'FDV'])
+  return (
+    project.metrics.find((entry) => MARKET_LABELS.has(entry.label) && entry.value && !UNKNOWN_VALUES.has(entry.value))
+      ?.value ?? null
+  )
 }
 
 export const ProjectsGrid: React.FC = () => {
@@ -105,16 +113,20 @@ export const ProjectsGrid: React.FC = () => {
     <Wrap data-testid="projects-directory-list" data-projects-directory-view="premium-cards">
       <Head><Heading><h2>{sort === 'Trending' ? 'Trending' : 'Discover'}</h2><p>{realProjects.length} verified market {realProjects.length === 1 ? 'record' : 'records'}</p></Heading></Head>
       {realVisible.length === 0 ? <EmptyPanel>No verified projects match these filters.</EmptyPanel> : (
-        <Grid>{realVisible.map((project) => {
+        <Grid>{realVisible.map((project, index) => {
           const fact = firstFact(project)
-          return <Card key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`} href={project.projectHref ?? `/@${project.slug}`}>
-            <Identity>
-              {project.logoURI ? <Logo src={project.logoURI} alt="" loading="lazy" /> : <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>}
-              <Names><strong>{project.name}</strong><span>{project.symbol ? `$${project.symbol}` : project.contractAddress?.slice(0, 10)}</span></Names>
-              <Open aria-hidden="true"><ArrowUpRight size={18} /></Open>
-            </Identity>
-            <Facts><span>{project.chains[0] ?? 'Verified'}</span>{fact ? <span>{fact}</span> : null}{project.featured ? <span>Featured</span> : null}{project.boosted ? <span>Boosted</span> : null}</Facts>
-          </Card>
+          const tradeHref = project.tradeHref && project.tradeHref.startsWith('/swap') ? project.tradeHref : null
+          return <Row key={`${project.chainId ?? 0}:${project.contractAddress ?? project.id}`} data-testid="projects-directory-row">
+            <Rank $top={index === 0}>{index + 1}</Rank>
+            <Card href={project.projectHref ?? `/@${project.slug}`}>
+              <Identity>
+                {project.logoURI ? <Logo src={project.logoURI} alt="" loading="lazy" /> : <Initial>{project.symbol?.[0] ?? project.name[0]}</Initial>}
+                <Names><strong>{project.name}</strong><span>{project.symbol ? `$${project.symbol}` : project.contractAddress?.slice(0, 10)}{project.featured ? ' · Featured' : ''}{project.boosted ? ' · Boosted' : ''}</span></Names>
+              </Identity>
+            </Card>
+            <Fact title={fact ?? undefined}>{fact ?? '—'}</Fact>
+            {tradeHref ? <SwapCta href={tradeHref} data-testid="projects-directory-swap">Swap</SwapCta> : <span />}
+          </Row>
         })}</Grid>
       )}
       {hasRealMore ? <LoadMore type="button" onClick={loadMore} data-testid="projects-load-more">Load more</LoadMore> : null}

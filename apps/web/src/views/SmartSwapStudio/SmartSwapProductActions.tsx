@@ -6,81 +6,86 @@ export type SmartSwapProductAction = 'swap' | 'bridge'
 const Tabs = styled.div`
   position: relative;
   display: flex;
-  align-items: flex-end;
-  gap: 5px;
-  width: min(100%, 310px);
-  min-height: 43px;
-  padding: 0 5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+  gap: 4px;
+  width: min(100%, 300px);
+  min-height: 52px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #f1f0eb;
 
   @media (max-width: 430px) {
-    width: 100%;
+    width: min(100%, 270px);
   }
 `
 
 const Tab = styled.button<{ $active: boolean }>`
   position: relative;
   z-index: 1;
-  min-width: 118px;
-  min-height: 42px;
-  padding: 0 17px;
-  margin-bottom: -1px;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)')};
-  border-bottom-color: ${({ $active }) => ($active ? '#141414' : 'rgba(255, 255, 255, 0.1)')};
-  border-radius: 13px 13px 0 0;
-  background: ${({ $active }) =>
-    $active
-      ? 'linear-gradient(180deg, rgba(30, 30, 29, 0.99), #141414)'
-      : 'linear-gradient(180deg, rgba(14, 15, 15, 0.9), rgba(8, 9, 9, 0.82))'};
-  color: ${({ $active }) => ($active ? '#ffffff' : 'rgba(255, 255, 255, 0.48)')};
-  font-size: 12px;
-  font-weight: 800;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: ${({ $active }) => ($active ? '#ffffff' : 'transparent')};
+  box-shadow: ${({ $active }) => ($active ? 'inset 0 -2px 0 #f3c928, 0 2px 8px rgba(23, 24, 23, 0.05)' : 'none')};
+  color: ${({ $active }) => ($active ? '#171817' : '#72736e')};
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 140ms ease, border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  transition: color 140ms ease, background 140ms ease;
 
-  &:first-child {
-    color: ${({ $active }) => ($active ? '#f4c430' : 'rgba(244, 196, 48, 0.56)')};
-  }
-
-  &:hover {
-    color: ${({ $active }) => ($active ? '#ffffff' : 'rgba(255, 255, 255, 0.78)')};
-    border-color: rgba(244, 196, 48, 0.2);
-  }
-
-  &:active {
-    transform: translateY(1px);
+  svg {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   &:focus-visible {
-    outline: 2px solid rgba(244, 196, 48, 0.62);
+    outline: 2px solid rgba(243, 201, 40, 0.62);
     outline-offset: 2px;
-  }
-
-  @media (max-width: 430px) {
-    flex: 1;
-    min-width: 0;
   }
 
   .smart-swap-tab-new {
     display: inline-flex;
     align-items: center;
     height: 15px;
-    margin-left: 6px;
     padding: 0 5px;
     border-radius: 999px;
-    background: #7c3aed;
-    color: #fff;
+    background: #fff2bd;
+    color: #171817;
     font-size: 8px;
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: 0.03em;
-    vertical-align: middle;
   }
 `
 
+const SwapGlyph = () => (
+  <svg viewBox="0 0 24 24" aria-hidden>
+    <path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4" />
+  </svg>
+)
+
+const BridgeGlyph = () => (
+  <svg viewBox="0 0 24 24" aria-hidden>
+    <path d="M3 17c0-5 4-9 9-9s9 4 9 9M7 17c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+  </svg>
+)
+
 const ACTIONS: Array<{ id: SmartSwapProductAction; label: string }> = [
-  { id: 'swap', label: '⚡ Smart Swap' },
+  { id: 'swap', label: 'Swap' },
   { id: 'bridge', label: 'Bridge' },
 ]
 
@@ -97,9 +102,11 @@ export const SmartSwapProductTabs: React.FC<{
         type="button"
         role="tab"
         aria-selected={value === action.id}
+        aria-label={action.id === 'swap' ? 'Smart Swap' : bridgeLabel}
         $active={value === action.id}
         onClick={() => onChange(action.id)}
       >
+        {action.id === 'bridge' ? <BridgeGlyph /> : <SwapGlyph />}
         {action.id === 'bridge' ? bridgeLabel : action.label}
         {action.id === 'bridge' && showBridgeNewBadge ? <span className="smart-swap-tab-new">NEW</span> : null}
       </Tab>

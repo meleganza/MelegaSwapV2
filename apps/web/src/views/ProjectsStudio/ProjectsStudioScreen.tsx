@@ -53,9 +53,10 @@ export const ProjectsStudioScreen: React.FC = () => (
       <PageMeta />
       <ProjectsStudioGlobalStyle />
       <Content>
+        {/* R035B order per approved Explore mockup: search/filters, verified featured placements, list. */}
         <ProjectsStudioPageHeader />
-        <FeaturedProjectsSection />
         <ProjectsFilterRow />
+        <FeaturedProjectsSection />
         <ProjectsGrid />
       </Content>
     </Root>

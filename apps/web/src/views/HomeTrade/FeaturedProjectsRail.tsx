@@ -464,7 +464,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   enabled={chartsEnabled}
                 />
               </SparkRow>
-              <StatGrid>
+              <StatGrid data-featured-stats>
                 <Stat>
                   <StatLabel>Liquidity</StatLabel>
                   <StatValue>{formatFeaturedLiquidity(market)}</StatValue>

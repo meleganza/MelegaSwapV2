@@ -15,8 +15,8 @@ import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer } from './AppShellStyles'
 
-const MOBILE_HEADER_H = '72px'
-const MOBILE_BOTTOM_NAV_H = '68px'
+const MOBILE_HEADER_H = '88px'
+const MOBILE_BOTTOM_NAV_H = '76px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
@@ -68,7 +68,7 @@ const MobileHeader = styled.div`
   left: 0;
   right: 0;
   height: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 16px 0;
+  padding: env(safe-area-inset-top, 0px) 12px 0;
   background: ${uxRebuildColors.pageBg};
   border-bottom: 1px solid ${uxRebuildColors.divider};
   z-index: 95;
@@ -143,7 +143,12 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        <MarcoConnect size="navbar" activation="mobile" />
+        <MarcoConnect
+          size="navbar"
+          activation="mobile"
+          appearance="wallet"
+          className="melega-shell-wallet-pill"
+        />
       </MobileHeader>
 
       <DesktopMain data-melega-shell-main>

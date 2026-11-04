@@ -40,12 +40,13 @@ const Wordmark = styled.span`
 `
 
 const Evo = styled.img<{ $compact?: boolean }>`
-  width: ${({ $compact }) => ($compact ? '46px' : '54px')};
-  height: ${({ $compact }) => ($compact ? '31px' : '36px')};
-  object-fit: cover;
-  object-position: center;
+  /* Proportions measured on the approved Trade mockup: Evo ~0.44x wordmark width, dropping below the baseline. */
+  width: auto;
+  height: ${({ $compact }) => ($compact ? '40px' : '46px')};
+  object-fit: contain;
   margin-left: 4px;
-  mix-blend-mode: multiply;
+  position: relative;
+  top: ${({ $compact }) => ($compact ? '10px' : '12px')};
 `
 
 export interface MelegaBrandLockupProps {
@@ -63,7 +64,7 @@ export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'de
         {!iconOnly ? (
           <BrandText $compact={compact}>
             <Wordmark>MelegaDEX</Wordmark>
-            <Evo src="/brand/evo-founder.png" alt="Evo" $compact={compact} />
+            <Evo src="/brand/evo-founder-v2.svg" alt="Evo" width={compact ? 49 : 56} height={compact ? 40 : 46} $compact={compact} />
           </BrandText>
         ) : null}
       </Wrap>

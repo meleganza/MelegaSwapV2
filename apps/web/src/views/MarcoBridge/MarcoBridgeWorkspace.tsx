@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { startTransition, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -97,25 +97,6 @@ const cinematicDrift = keyframes`
   0%, 100% { transform: scale(1.045) translate3d(0, 0, 0); }
   50% { transform: scale(1.085) translate3d(-1.2%, -0.8%, 0); }
 `
-const Hero = styled.header<{ $embedded?: boolean }>`
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 0;
-  h1 {
-    margin: 0;
-    font-size: 28px;
-    line-height: 1;
-    letter-spacing: -0.045em;
-  }
-  p { margin: 8px 0 0; color: #72736E; font-size: 14px; }
-  @media (max-width: 700px) {
-    padding: 0 4px;
-  }
-
-  ${({ $embedded }) => ($embedded ? 'display: none;' : '')}
-`
 const HeroArtwork = styled.img`
   position: absolute;
   z-index: -3;
@@ -147,10 +128,6 @@ const HeroVeil = styled.div`
     background: linear-gradient(0deg, rgba(4, 5, 5, 0.98) 0%, rgba(4, 5, 5, 0.38) 70%, rgba(4, 5, 5, 0.18) 100%);
   }
 `
-const HeroCopy = styled.div`
-  position: relative;
-  z-index: 1;
-`
 const Available = styled.div`
   position: relative;
   z-index: 1;
@@ -180,10 +157,18 @@ const Workspace = styled.section<{ $embedded?: boolean }>`
 `
 const Card = styled.div<{ $embedded?: boolean }>`
   min-width: 0;
-  border: 1px solid #E5E2D9;
-  border-radius: 16px;
+  border: 1px solid #EFEDE6;
+  border-radius: 20px;
   background: #FFFFFF;
-  padding: 18px;
+  padding: 10px;
+  .sr-only-bridge {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
   ${({ $embedded }) =>
     $embedded
       ? `
@@ -214,15 +199,6 @@ const CardHead = styled.div`
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.08em;
-  }
-`
-const NetworkGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 42px 1fr;
-  align-items: end;
-  gap: 10px;
-  @media (max-width: 560px) {
-    grid-template-columns: 1fr;
   }
 `
 const Field = styled.label`
@@ -256,19 +232,6 @@ const Field = styled.label`
     box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.08);
   }
 `
-const SwapNetworks = styled.button`
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid #E5E2D9;
-  background: #FFFFFF;
-  color: #F3C928;
-  cursor: pointer;
-  @media (max-width: 560px) {
-    transform: rotate(90deg);
-    justify-self: center;
-  }
-`
 const WalletLine = styled.div`
   margin-top: 9px;
   min-height: 34px;
@@ -293,48 +256,6 @@ const ConnectSolana = styled.button`
   color: #f4c430;
   font: 750 11px ${typography.fontFamily.body};
   cursor: pointer;
-`
-const AmountRow = styled.div`
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 84px;
-  gap: 8px;
-`
-const Max = styled.button`
-  border: 1px solid rgba(244, 196, 48, 0.34);
-  border-radius: 11px;
-  color: #9A7600;
-  background: #FFF2BD;
-  font-weight: 780;
-  cursor: pointer;
-`
-const Summary = styled.div`
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #E5E2D9;
-`
-const SummaryCell = styled.div`
-  min-height: 65px;
-  padding: 11px 12px;
-  background: #F7F6F2;
-  span {
-    display: block;
-    color: #72736E;
-    font-size: 10px;
-    font-weight: 760;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  strong {
-    display: block;
-    margin-top: 5px;
-    font-size: 13px;
-    line-height: 1.3;
-  }
 `
 const Notice = styled.div<{ $danger?: boolean }>`
   margin-top: 12px;
@@ -417,6 +338,293 @@ const Primary = styled.button`
     color: #72736E;
   }
 `
+
+/* ---- R035B: approved Pearl Bridge mockup (presentation only) ---- */
+const EvoTabs = styled.div`
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin: 0 0 14px;
+  border-radius: 999px;
+  background: #F1F0EB !important;
+  width: 100%;
+  max-width: 480px;
+  > a {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+`
+const EvoTab = styled(Link)<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font: 600 16px ${typography.fontFamily.body};
+  color: ${({ $active }) => ($active ? '#171817' : '#72736E')};
+  background: ${({ $active }) => ($active ? '#FFFFFF' : 'transparent')};
+  box-shadow: ${({ $active }) => ($active ? 'inset 0 -2px 0 #F3C928, 0 2px 8px rgba(23,24,23,.05)' : 'none')};
+`
+const TabGlyph = styled.svg`
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+`
+const EvoPanel = styled.div`
+  border-radius: 16px;
+  background: #F7F6F2;
+  padding: 14px 16px 16px;
+  & + & {
+    margin-top: 6px;
+  }
+`
+const EvoPanelHead = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #72736E;
+  font-size: 13px;
+  font-weight: 500;
+`
+const EvoPanelBody = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+`
+const EvoChip = styled.label`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(23, 24, 23, 0.04);
+  cursor: pointer;
+  flex: 0 0 auto;
+  max-width: 70%;
+  select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  &:focus-within {
+    box-shadow: 0 0 0 3px rgba(243, 201, 40, 0.35);
+  }
+`
+const EvoTokenIcon = styled.span`
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  > img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: block;
+  }
+`
+const EvoBadge = styled.span`
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+`
+const EvoChainBadge: React.FC<{ network: { chainId: number | null; shortLabel: string } }> = ({ network }) => (
+  <EvoBadge aria-hidden>
+    {network.chainId ? (
+      <img src={`/images/chains/${network.chainId}.png`} alt="" />
+    ) : (
+      <span>{network.shortLabel.slice(0, 3).toUpperCase()}</span>
+    )}
+  </EvoBadge>
+)
+const EvoChipText = styled.span`
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #171817;
+  }
+  small {
+    margin-top: 2px;
+    font-size: 13px;
+    color: #72736E;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`
+const EvoChevron = styled.i`
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  border-right: 2px solid #171817;
+  border-bottom: 2px solid #171817;
+  transform: rotate(45deg);
+`
+const EvoAmount = styled.label`
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  input,
+  output {
+    width: 100%;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    text-align: right;
+    font: 600 34px/1.1 ${typography.fontFamily.body};
+    color: #171817;
+    outline: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  input::placeholder {
+    color: #8E8F89;
+  }
+  output {
+    color: #8E8F89;
+  }
+`
+const EvoFlip = styled.button`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: -20px auto;
+  border: 4px solid #FFFFFF;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(23, 24, 23, 0.08);
+  cursor: pointer;
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #E9B10F;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`
+const EvoLinkButton = styled.button`
+  margin: 10px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #72736E;
+  font: 500 12px ${typography.fontFamily.body};
+  text-decoration: underline;
+  cursor: pointer;
+`
+const EvoInfoRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
+  margin-top: 14px;
+  padding: 12px 6px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid #EFEDE6;
+`
+const EvoInfoCell = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  padding: 0 6px;
+  min-width: 0;
+  & + & {
+    border-left: 1px solid #EFEDE6;
+  }
+  svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    fill: none;
+    stroke: #171817;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  span {
+    display: block;
+    font-size: 12px;
+    color: #72736E;
+  }
+  strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #171817;
+    overflow-wrap: anywhere;
+  }
+`
+const EvoRoutePill = styled.strong<{ $ok?: boolean }>`
+  display: inline-block !important;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: ${({ $ok }) => ($ok ? '#E7F5EC' : '#F1F0EB')};
+  color: ${({ $ok }) => ($ok ? '#21865A' : '#72736E')} !important;
+  font-size: 11px !important;
+  white-space: nowrap;
+`
+const EvoConnect = styled.div`
+  button {
+    height: 52px !important;
+    border-radius: 14px !important;
+    background: #F3C928 !important;
+    color: #171817 !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+  }
+`
+
 const Review = styled.div`
   display: flex;
   flex-direction: column;
@@ -510,6 +718,7 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
   const [submissionPhase, setSubmissionPhase] = useState<MarcoBridgeSubmissionPhase>('idle')
   const [amount, setAmount] = useState('')
   const [destination, setDestination] = useState('')
+  const [showCustomDestination, setShowCustomDestination] = useState(false)
   const [solanaWallet, setSolanaWallet] = useState('')
   const [review, setReview] = useState(false)
   const [quote, setQuote] = useState<MarcoBridgeQuote | null>(null)
@@ -584,17 +793,30 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
 
   useEffect(() => {
     let cancelled = false
-    void fetch(marcoBridgeApiPath('/api/marco-bridge/route-state'), { cache: 'no-store' })
-      .then(async (response) => {
-        const payload = (await response.json()) as CanonicalMmnRouteState & { message?: string }
-        if (!response.ok) throw new Error(payload.message || 'Canonical route authority is unavailable.')
-        if (!cancelled) setRouteAuthority(payload)
+    let secondFrame = 0
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        void fetch(marcoBridgeApiPath('/api/marco-bridge/route-state'), { cache: 'no-store' })
+          .then(async (response) => {
+            const payload = (await response.json()) as CanonicalMmnRouteState & { message?: string }
+            if (!response.ok) throw new Error(payload.message || 'Canonical route authority is unavailable.')
+            if (!cancelled) {
+              startTransition(() => setRouteAuthority(payload))
+            }
+          })
+          .catch((cause) => {
+            if (!cancelled) {
+              startTransition(() =>
+                setRouteAuthorityError(cause instanceof Error ? cause.message : 'Route authority unavailable.'),
+              )
+            }
+          })
       })
-      .catch((cause) => {
-        if (!cancelled) setRouteAuthorityError(cause instanceof Error ? cause.message : 'Route authority unavailable.')
-      })
+    })
     return () => {
       cancelled = true
+      window.cancelAnimationFrame(firstFrame)
+      if (secondFrame) window.cancelAnimationFrame(secondFrame)
     }
   }, [])
 
@@ -918,127 +1140,188 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
       data-submission-phase={submissionPhase}
     >
       <Shell>
-        <Hero $embedded={embedded}>
-          <HeroCopy>
-            <h1>MARCO Bridge</h1>
-            <p>Move MARCO across supported networks.</p>
-          </HeroCopy>
-        </Hero>
+        {!embedded ? (
+          <EvoTabs role="tablist" aria-label="Trade mode">
+            <EvoTab href="/" role="tab" aria-selected={false}>
+              <TabGlyph aria-hidden viewBox="0 0 24 24">
+                <path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4" />
+              </TabGlyph>
+              Swap
+            </EvoTab>
+            <EvoTab href="/bridge" role="tab" aria-selected $active>
+              <TabGlyph aria-hidden viewBox="0 0 24 24">
+                <path d="M3 17c0-5 4-9 9-9s9 4 9 9M7 17c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+              </TabGlyph>
+              Bridge
+            </EvoTab>
+          </EvoTabs>
+        ) : null}
         <Workspace $embedded={embedded}>
           <Card $embedded={embedded}>
-            <NetworkGrid>
-              <Field>
+            <h1 className="sr-only-bridge">MARCO Bridge</h1>
+            <EvoPanel>
+              <EvoPanelHead>
                 <span>From</span>
-                <select
-                  value={from}
-                  disabled={sourceLocked}
-                  onChange={(event) => {
-                    applyRouteChange(event.target.value as MarcoBridgeNetworkId, to)
-                  }}
-                >
-                  {networkEntries.map((network) => (
-                    <option key={network.id} value={network.id}>
-                      {network.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <SwapNetworks
-                type="button"
-                aria-label="Swap networks"
-                disabled={sourceLocked}
-                onClick={() => {
-                  applyRouteChange(to, from)
-                }}
-              >
-                ⇄
-              </SwapNetworks>
-              <Field>
+              </EvoPanelHead>
+              <EvoPanelBody>
+                <EvoChip>
+                  <EvoTokenIcon>
+                    <img src="/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png" alt="" />
+                    <EvoChainBadge network={fromNetwork} />
+                  </EvoTokenIcon>
+                  <EvoChipText>
+                    <strong>
+                      MARCO <EvoChevron aria-hidden />
+                    </strong>
+                    <small>{fromNetwork.label.replace('Smart Chain', 'Chain')}</small>
+                  </EvoChipText>
+                  <select
+                    aria-label="From network"
+                    value={from}
+                    disabled={sourceLocked}
+                    onChange={(event) => {
+                      applyRouteChange(event.target.value as MarcoBridgeNetworkId, to)
+                    }}
+                  >
+                    {networkEntries.map((network) => (
+                      <option key={network.id} value={network.id}>
+                        {network.label}
+                      </option>
+                    ))}
+                  </select>
+                </EvoChip>
+                <EvoAmount>
+                  <input
+                    inputMode="decimal"
+                    aria-label="MARCO amount"
+                    value={amount}
+                    disabled={sourceLocked}
+                    onChange={(event) => {
+                      setAmount(event.target.value.replace(/[^0-9.]/g, ''))
+                      resetQuote()
+                    }}
+                    placeholder="0"
+                  />
+                </EvoAmount>
+              </EvoPanelBody>
+            </EvoPanel>
+            <EvoFlip
+              type="button"
+              aria-label="Swap networks"
+              disabled={sourceLocked}
+              onClick={() => {
+                applyRouteChange(to, from)
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden>
+                <path d="M8 4v15M4 15l4 4 4-4M16 20V5M12 9l4-4 4 4" />
+              </svg>
+            </EvoFlip>
+            <EvoPanel>
+              <EvoPanelHead>
                 <span>To</span>
-                <select
-                  value={to}
-                  disabled={sourceLocked}
-                  onChange={(event) => {
-                    applyRouteChange(from, event.target.value as MarcoBridgeNetworkId)
-                  }}
-                >
-                  {networkEntries.map((network) => (
-                    <option key={network.id} value={network.id}>
-                      {network.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </NetworkGrid>
-            <WalletLine>
-              <span>Source wallet</span>
-              <strong>{short(sourceWallet)}</strong>
-              {fromNetwork.walletFamily === 'solana' ? (
-                sourceWallet ? (
+              </EvoPanelHead>
+              <EvoPanelBody>
+                <EvoChip>
+                  <EvoTokenIcon>
+                    <img src="/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png" alt="" />
+                    <EvoChainBadge network={toNetwork} />
+                  </EvoTokenIcon>
+                  <EvoChipText>
+                    <strong>
+                      MARCO <EvoChevron aria-hidden />
+                    </strong>
+                    <small>{toNetwork.label.replace('Smart Chain', 'Chain')}</small>
+                  </EvoChipText>
+                  <select
+                    aria-label="To network"
+                    value={to}
+                    disabled={sourceLocked}
+                    onChange={(event) => {
+                      applyRouteChange(from, event.target.value as MarcoBridgeNetworkId)
+                    }}
+                  >
+                    {networkEntries.map((network) => (
+                      <option key={network.id} value={network.id}>
+                        {network.label}
+                      </option>
+                    ))}
+                  </select>
+                </EvoChip>
+                <EvoAmount as="div" aria-live="polite">
+                  <output>{quote?.live ? quote.expectedReceive : '0'}</output>
+                </EvoAmount>
+              </EvoPanelBody>
+            </EvoPanel>
+            {fromNetwork.walletFamily === 'solana' ? (
+              <WalletLine>
+                <span>Source wallet</span>
+                <strong>{short(sourceWallet)}</strong>
+                {sourceWallet ? (
                   <span data-testid="solana-wallet-connected">{solanaWalletConnectionLabel(sourceWallet)}</span>
                 ) : (
                   <ConnectSolana type="button" onClick={connectSolana} data-testid="solana-wallet-connect">
                     {solanaWalletConnectionLabel(sourceWallet)}
                   </ConnectSolana>
-                )
-              ) : null}
-            </WalletLine>
-            <Field style={{ marginTop: 12 }}>
-              <span>Destination wallet</span>
-              <input
-                aria-label="Destination wallet"
-                value={resolvedDestination}
-                readOnly={sourceLocked}
-                placeholder={toNetwork.walletFamily === 'evm' ? '0x…' : 'Solana address'}
-                onChange={(event) => {
-                  setDestination(event.target.value)
-                  resetQuote()
-                }}
-              />
-            </Field>
-            <AmountRow>
-              <Field>
-                <span>Amount</span>
+                )}
+              </WalletLine>
+            ) : null}
+            {!sameFamily || showCustomDestination ? (
+              <Field style={{ marginTop: 12 }}>
+                <span>Destination wallet</span>
                 <input
-                  inputMode="decimal"
-                  aria-label="MARCO amount"
-                  value={amount}
-                  disabled={sourceLocked}
+                  aria-label="Destination wallet"
+                  value={resolvedDestination}
+                  readOnly={sourceLocked}
+                  placeholder={toNetwork.walletFamily === 'evm' ? '0x…' : 'Solana address'}
                   onChange={(event) => {
-                    setAmount(event.target.value.replace(/[^0-9.]/g, ''))
+                    setDestination(event.target.value)
                     resetQuote()
                   }}
-                  placeholder="0.0 MARCO"
                 />
               </Field>
-              <Max type="button" disabled>
-                MAX
-              </Max>
-            </AmountRow>
-            <Summary>
-              <SummaryCell>
-                <span>You receive</span>
-                <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : '—'}</strong>
-              </SummaryCell>
-              <SummaryCell>
-                <span>Fees</span>
-                <strong>
-                  {quote?.live
-                    ? `${quote.nativeFee} ${quote.nativeFeeSymbol}`
-                    : quoteLoading
-                    ? 'FETCHING LIVE QUOTE'
-                    : '—'}
-                </strong>
-              </SummaryCell>
-              <SummaryCell>
-                <span>Quote state</span>
-                <strong>{quote?.live ? `LIVE · ${new Date(quote.quotedAt).toLocaleTimeString()}` : '—'}</strong>
-              </SummaryCell>
-              <SummaryCell>
-                <span>Route</span>
-                <strong>{routeText}</strong>
-              </SummaryCell>
-            </Summary>
+            ) : (
+              <EvoLinkButton type="button" onClick={() => setShowCustomDestination(true)} disabled={sourceLocked}>
+                Send to a different wallet
+              </EvoLinkButton>
+            )}
+            <EvoInfoRow>
+              <EvoInfoCell>
+                <svg viewBox="0 0 24 24" aria-hidden>
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M12 7.5V12l3 2" />
+                </svg>
+                <div>
+                  <span>You receive</span>
+                  <strong>{quote?.live ? `${quote.expectedReceive} MARCO` : '—'}</strong>
+                </div>
+              </EvoInfoCell>
+              <EvoInfoCell>
+                <svg viewBox="0 0 24 24" aria-hidden>
+                  <ellipse cx="12" cy="6.5" rx="7" ry="2.5" />
+                  <path d="M5 6.5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5M5 11.5v5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-5" />
+                </svg>
+                <div>
+                  <span>Bridge fee</span>
+                  <strong>
+                    {quote?.live
+                      ? `${quote.nativeFee} ${quote.nativeFeeSymbol}`
+                      : quoteLoading
+                      ? 'Fetching…'
+                      : '—'}
+                  </strong>
+                </div>
+              </EvoInfoCell>
+              <EvoInfoCell>
+                <svg viewBox="0 0 24 24" aria-hidden>
+                  <path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4" />
+                </svg>
+                <div>
+                  <span>Route</span>
+                  <EvoRoutePill $ok={route.kind === 'direct'} title={routeText}>{route.kind === 'direct' ? 'Direct' : route.kind === 'via-bnb' ? 'Via BNB' : '—'}</EvoRoutePill>
+                </div>
+              </EvoInfoCell>
+            </EvoInfoRow>
             {route.kind === 'via-bnb' ? (
               <Notice>
                 Direct delivery is not certified for this pair. Complete the first transfer to BNB, then start the
@@ -1051,9 +1334,11 @@ export const MarcoBridgePanel: React.FC<{ embedded?: boolean }> = ({ embedded = 
               </Notice>
             ) : null}
             {!sourceWallet && fromNetwork.walletFamily === 'evm' ? (
-              <ConnectWalletButton width="100%" mt="14px">
-                CONNECT WALLET
-              </ConnectWalletButton>
+              <EvoConnect>
+                <ConnectWalletButton width="100%" mt="14px">
+                  Connect Wallet
+                </ConnectWalletButton>
+              </EvoConnect>
             ) : (
               <Primary
                 type="button"

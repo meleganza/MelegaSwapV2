@@ -51,13 +51,40 @@ const StyledModalContainer = styled(ModalContainer)`
   h2, h3, [role='heading'] {
     color: #171817 !important;
     font-family: Inter, sans-serif !important;
-    font-size: 24px !important;
+    font-size: 20px !important;
     font-weight: 700 !important;
   }
 
   button { color: #171817; }
   ${({ theme }) => theme.mediaQueries.md} {
     min-height: auto;
+  }
+
+  @media (max-width: 767px) {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 78dvh !important;
+    max-height: 88dvh !important;
+    border-radius: 24px 24px 0 0 !important;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: 54px;
+      height: 5px;
+      border-radius: 999px;
+      background: #B9BAB5;
+      transform: translateX(-50%);
+    }
+
+    > div:first-child { padding: 30px 20px 8px !important; }
   }
 `
 
@@ -82,7 +109,14 @@ const StyledModalBody = styled(ModalBody)`
   p, span { color: #171817; }
 
   @media (max-width: 767px) {
-    padding: 20px;
+    padding: 8px 20px 20px;
+
+    input {
+      min-height: 48px !important;
+      border-radius: 14px !important;
+      font-size: 15px !important;
+      padding-left: 16px !important;
+    }
   }
 `
 
@@ -150,7 +184,7 @@ export default function CurrencySearchModal({
   }, [adding, dispatch, fetchList, listURL])
 
   const config = {
-    [CurrencyModalView.search]: { title: t('Select a Token'), onBack: undefined },
+    [CurrencyModalView.search]: { title: t('Select token'), onBack: undefined },
     [CurrencyModalView.manage]: { title: t('Manage'), onBack: () => setModalView(CurrencyModalView.search) },
     [CurrencyModalView.importToken]: {
       title: t('Import Tokens'),

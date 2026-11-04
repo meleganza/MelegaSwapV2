@@ -42,6 +42,13 @@ const StateBox = styled.div`
   display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px;
   border: 1px solid ${px.line}; border-radius: 12px; background: rgba(255,255,255,.025);
 `
+const PortfolioTabs = styled.div`
+  display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; padding: 4px;
+  border: 1px solid ${px.line}; border-radius: 16px; background: #fff;
+  a { min-height: 42px; display: grid; place-items: center; border-radius: 12px; color: ${px.mute};
+    font-size: 12px; font-weight: 720; text-decoration: none; text-align: center; }
+  a:first-child { background: #fff2bd; color: ${px.text}; }
+`
 const Skeleton = styled.div`
   width: 100%; height: 14px; border-radius: 6px;
   background: ${px.panel2}; animation: portfolio-shimmer 1.2s linear infinite;
@@ -77,6 +84,11 @@ export const PortfolioStudioScreen: React.FC = () => {
           </HeroRow>
         </Hero>
 
+        <PortfolioTabs aria-label="Portfolio views">
+          <a href="#portfolio-assets">Assets</a><a href="#portfolio-positions">Earn Positions</a>
+          <a href="#portfolio-liquidity">Liquidity</a><a href="#portfolio-positions">All</a>
+        </PortfolioTabs>
+
         {!wallet.connected ? (
           <StateBox data-testid="portfolio-disconnected-state">
             <strong>Connect your wallet</strong>
@@ -85,7 +97,7 @@ export const PortfolioStudioScreen: React.FC = () => {
           </StateBox>
         ) : (
           <>
-            <ValueBand data-portfolio-section="assets" data-testid="portfolio-section-assets">
+            <ValueBand id="portfolio-assets" data-portfolio-section="assets" data-testid="portfolio-section-assets">
               <div>
                 <ValueLabel>Total Value</ValueLabel>
                 <Value data-testid="portfolio-value">{portfolioMetric?.value || '—'}</Value>
@@ -122,7 +134,7 @@ export const PortfolioStudioScreen: React.FC = () => {
             </Band>
 
             {model.liquidity.length > 0 ? (
-              <Band data-portfolio-section="liquidity" data-testid="portfolio-section-liquidity">
+              <Band id="portfolio-liquidity" data-portfolio-section="liquidity" data-testid="portfolio-section-liquidity">
                 <BandHead><BandTitle>Liquidity</BandTitle><BandMeta>{model.liquidity.length} positions</BandMeta></BandHead>
                 <DenseTable data-position-domain="liquidity">{model.liquidity.map((p) => { const links = positionActionLinks('liquidity', p.id); return (
                   <DenseRow key={p.id} data-testid="portfolio-liquidity-row">

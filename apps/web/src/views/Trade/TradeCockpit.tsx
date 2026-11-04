@@ -36,10 +36,10 @@ const Panel = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e2d9;
-  border-radius: 16px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
@@ -53,6 +53,7 @@ const CockpitHeader = styled.div`
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
+  min-height: 56px;
 `
 
 const Toolbar = styled.div`
@@ -64,7 +65,7 @@ const Toolbar = styled.div`
 `
 
 const Divider = styled.div`
-  height: 12px;
+  height: 14px;
   flex-shrink: 0;
 `
 

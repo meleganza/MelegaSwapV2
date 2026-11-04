@@ -55,7 +55,10 @@ const Inner = styled.div`
 `
 
 const Brand = styled.div`
-  width: ${ds001Layout.headerLogoBlockWidth};
+  /* R035B: size to the canonical lockup (MelegaDEX + Evo) so it never overlaps the nav. */
+  width: auto;
+  min-width: ${ds001Layout.headerLogoBlockWidth};
+  margin-right: 28px;
   height: ${ds001Layout.headerHeight};
   padding: 0;
   border: 0;
@@ -362,7 +365,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             <NetworkSwitcher />
           </div>
           <div data-testid="melega-header-connect">
-            <MarcoConnect size="navbar" activation="desktop" />
+            <MarcoConnect size="navbar" activation="desktop" appearance="wallet" />
           </div>
         </RightCluster>
       </Inner>

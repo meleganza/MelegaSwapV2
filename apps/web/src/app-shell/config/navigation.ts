@@ -154,28 +154,35 @@ export const shellBottomNavItems = [
     id: 'trade',
     label: 'Trade',
     href: '/',
-    icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/' || p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+    icon: 'trade' as MelegaNavIcon,
+    match: (p: string) =>
+      p === '/' ||
+      p === '/swap' ||
+      p.startsWith('/swap/') ||
+      p === '/trade' ||
+      p.startsWith('/trade/') ||
+      p === '/bridge' ||
+      p.startsWith('/bridge/'),
   },
   {
     id: 'earn',
     label: 'Earn',
     href: '/farms',
-    icon: 'coins' as MelegaNavIcon,
+    icon: 'leaf' as MelegaNavIcon,
     match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools'),
   },
   {
     id: 'portfolio',
     label: 'Portfolio',
     href: '/portfolio',
-    icon: 'wallet' as MelegaNavIcon,
+    icon: 'portfolio' as MelegaNavIcon,
     match: (p: string) => p.startsWith('/portfolio') || p.startsWith('/command-center'),
   },
   {
     id: 'explore',
     label: 'Explore',
     href: '/projects?sort=trending',
-    icon: 'star' as MelegaNavIcon,
+    icon: 'search' as MelegaNavIcon,
     match: (p: string) => p.startsWith('/projects'),
   },
 ]

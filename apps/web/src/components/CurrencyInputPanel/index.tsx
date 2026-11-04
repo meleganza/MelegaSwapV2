@@ -84,6 +84,19 @@ const Overlay = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `
 
+const BalanceTrigger = styled.button`
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textSubtle};
+  font: inherit;
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+`
+
 type ZapStyle = 'noZap' | 'zap'
 
 interface CurrencyInputPanelProps {
@@ -184,6 +197,7 @@ export default function CurrencyInputPanel({
   )
 
   const [currentClickedPercent, setCurrentClickedPercent] = useState('')
+  const [percentMenuOpen, setPercentMenuOpen] = useState(false)
 
   const isAtPercentMax = (maxAmount && value === maxAmount.toExact()) || (lpPercent && lpPercent === '100')
   const translatedLabel = label || t('Input')
@@ -362,8 +376,20 @@ export default function CurrencyInputPanel({
         </InputPanel>
       ) : null}
       {compactWalletControls && account ? (
-        <Flex data-compact-wallet-controls alignItems="center" justifyContent="space-between" style={{ gap: '8px' }}>
-          <Text color="textSubtle" fontSize="11px" data-wallet-balance>
+        <Flex
+          data-compact-wallet-controls
+          data-wallet-control-bar
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ gap: '8px' }}
+        >
+          <BalanceTrigger
+            type="button"
+            data-wallet-balance
+            aria-expanded={percentMenuOpen}
+            aria-controls={`${id}-percent-menu`}
+            onClick={() => setPercentMenuOpen((open) => !open)}
+          >
             {!hideBalance && currency
               ? t('Balance: %balance%', {
                   balance:
@@ -371,7 +397,7 @@ export default function CurrencyInputPanel({
                     (selectedCurrencyBalanceLoading ? t('Loading') : '—'),
                 })
               : '—'}
-          </Text>
+          </BalanceTrigger>
           <Flex alignItems="center" style={{ gap: '4px' }} data-wallet-inline-actions>
             {token && tokenAddress ? (
               <Flex style={{ gap: '4px' }} alignItems="center" data-wallet-token-actions>
@@ -394,14 +420,25 @@ export default function CurrencyInputPanel({
               </Flex>
             ) : null}
             {showQuickInputButton && maxAmount?.greaterThan(0) && onPercentInput ? (
-              <Flex alignItems="center" style={{ gap: '2px' }} data-wallet-percent-actions>
+              <Flex
+                id={`${id}-percent-menu`}
+                alignItems="center"
+                style={{ gap: '2px' }}
+                data-wallet-percent-actions
+                data-wallet-percent-menu
+                data-open={percentMenuOpen ? 'true' : 'false'}
+              >
                 {[25, 50, 75].map((percent) => (
                   <Button
                     key={`compact-percent-${percent}`}
                     type="button"
                     scale="xs"
                     variant="text"
-                    onClick={() => onPercentInput(percent)}
+                    onClick={() => {
+                      onPercentInput(percent)
+                      setCurrentClickedPercent(percent.toString())
+                      setPercentMenuOpen(false)
+                    }}
                   >
                     {percent}%
                   </Button>
@@ -414,14 +451,17 @@ export default function CurrencyInputPanel({
                 scale="xs"
                 variant="text"
                 data-wallet-max-button
+                data-wallet-percent-menu
+                data-open={percentMenuOpen ? 'true' : 'false'}
                 onClick={(event) => {
                   event.stopPropagation()
                   event.preventDefault()
                   onMax()
                   setCurrentClickedPercent('MAX')
+                  setPercentMenuOpen(false)
                 }}
               >
-                100%
+                MAX
               </Button>
             ) : null}
           </Flex>

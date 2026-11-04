@@ -28,11 +28,10 @@ const Nav = styled.nav<{
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: calc(64px + env(safe-area-inset-bottom, 0px));
-  padding: 4px 4px env(safe-area-inset-bottom, 0px);
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid #e5e2d9;
+  min-height: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: #f7f6f2;
+  border-top: 1px solid #efede6;
   z-index: 200;
   box-shadow: none;
 
@@ -50,29 +49,20 @@ const Item = styled(Link)<{ $active?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  min-height: 48px;
+  gap: 4px;
+  min-height: 56px;
   min-width: 48px;
   padding: 6px 4px;
   text-decoration: none;
   position: relative;
-  border-radius: 12px;
-  color: ${({ $active }) => ($active ? '#8A6C00' : '#72736E')};
+  border-radius: 16px;
+  background: ${({ $active }) => ($active ? '#FFF6D6' : 'transparent')};
+  color: ${({ $active }) => ($active ? '#E9B10F' : '#72736E')};
   transition: color 160ms ease, background 160ms ease;
 
   &:active {
     background: #f0eee7;
   }
-`
-
-const Indicator = styled.div`
-  position: absolute;
-  top: 2px;
-  width: 20px;
-  height: 2px;
-  border-radius: 999px;
-  background: #f3c928;
-  opacity: 0.9;
 `
 
 const Icon = styled.span<{ $active?: boolean }>`
@@ -81,18 +71,18 @@ const Icon = styled.span<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $active }) => ($active ? '#8A6C00' : '#72736E')};
+  color: ${({ $active }) => ($active ? '#E9B10F' : '#72736E')};
   transition: color 160ms ease;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
   }
 `
 
 const Label = styled.span<{ $active?: boolean }>`
   font-family: ${typography.fontFamily.body};
-  font-size: 11px;
+  font-size: 13px;
   font-weight: ${({ $active }) => ($active ? typography.fontWeight.semibold : typography.fontWeight.medium)};
   letter-spacing: 0.01em;
   line-height: 1;
@@ -124,7 +114,6 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
             preserveEarlyNavigation(event, item.href)
           }}
         >
-          {active && <Indicator />}
           <Icon $active={active}>{item.icon}</Icon>
           <Label $active={active}>{item.label}</Label>
         </Item>

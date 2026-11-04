@@ -31,9 +31,7 @@ const Content = styled.div`
   display: block;
 
   @media (max-width: 767px) {
-    padding: 16px 0 ${tradeLayout.mobileBottomPad};
-    padding-left: 0;
-    padding-right: 0;
+    padding: 10px 8px ${tradeLayout.mobileBottomPad};
   }
 `
 

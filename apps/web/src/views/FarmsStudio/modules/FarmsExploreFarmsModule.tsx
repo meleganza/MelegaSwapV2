@@ -3,7 +3,7 @@
  * Compact toolbar: Search | Filters ▼ | Cards|List
  */
 
-import React, { useMemo, useRef, useState } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -83,6 +83,83 @@ const Freshness = styled.span`
   color: rgba(255, 255, 255, 0.45);
 `
 
+const EvoChainSelect = styled.label`
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 28px 0 10px;
+  border-radius: 999px;
+  border: 1px solid #ece9e1;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #171817;
+  cursor: pointer;
+  img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -5px;
+    border-right: 1.75px solid #171817;
+    border-bottom: 1.75px solid #171817;
+    transform: rotate(45deg);
+  }
+  select {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  &:focus-within {
+    box-shadow: 0 0 0 3px rgba(243, 201, 40, 0.35);
+  }
+`
+
+const EvoFilterRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 4px;
+  margin: 10px 0 12px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  > button {
+    flex: 0 0 auto;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 0;
+    background: #f1f0eb;
+    color: #72736e;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  > button[aria-pressed='true'] {
+    background: #fff2bd;
+    color: #171817;
+    font-weight: 600;
+  }
+  > select {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+`
+
 const Toolbar = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -118,84 +195,12 @@ const Search = styled.input`
   }
 `
 
-const ToolbarSide = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
 
-  @media (max-width: ${farmsExplore.mobileBreak}) {
-    width: 100%;
-    justify-content: space-between;
-  }
-`
 
-const FiltersWrap = styled.div`
-  position: relative;
-  flex-shrink: 0;
-`
 
-const FiltersBtn = styled.button<{ $open?: boolean }>`
-  appearance: none;
-  cursor: pointer;
-  height: 40px;
-  min-height: ${farmsExplore.touchMin};
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid ${({ $open }) => ($open ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
-  background: ${({ $open }) => ($open ? 'rgba(244,196,48,0.12)' : 'rgba(255,255,255,0.04)')};
-  color: ${({ $open }) => ($open ? farmsExplore.gold : '#f5f5f5')};
-  font-family: ${typography.fontFamily.body};
-  font-size: 12px;
-  font-weight: 650;
-  white-space: nowrap;
 
-  &:focus-visible {
-    outline: ${farmsExplore.focusRing};
-    outline-offset: ${farmsExplore.focusOffset};
-  }
-`
 
-const FiltersPanel = styled.div`
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 40;
-  width: min(320px, calc(100vw - 32px));
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(18, 18, 18, 0.98);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 
-  @media (max-width: ${farmsExplore.mobileBreak}) {
-    left: 0;
-    right: auto;
-  }
-`
-
-const FilterGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`
-
-const FilterGroupLabel = styled.span`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-`
-
-const ChipRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-`
 
 const Chip = styled.button<{ $active?: boolean }>`
   appearance: none;
@@ -232,48 +237,9 @@ const Select = styled.select`
   }
 `
 
-const ActiveChips = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  min-width: 0;
-  margin-bottom: 12px;
-`
 
-const RemovableChip = styled.button`
-  appearance: none;
-  cursor: pointer;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(244, 196, 48, 0.35);
-  background: rgba(244, 196, 48, 0.1);
-  color: ${farmsExplore.gold};
-  font-size: 11px;
-  font-weight: 650;
-  font-family: ${typography.fontFamily.body};
-`
 
-const ViewToggle = styled.div`
-  display: inline-flex;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  overflow: hidden;
-  flex-shrink: 0;
-  height: 46px;
-`
 
-const ToggleBtn = styled.button<{ $active?: boolean }>`
-  height: 100%;
-  padding: 0 12px;
-  border: 0;
-  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
-  color: ${({ $active }) => ($active ? farmsExplore.gold : '#f5f5f5')};
-  font-size: 12px;
-  font-weight: 650;
-  cursor: pointer;
-  font-family: ${typography.fontFamily.body};
-`
 
 const Grid = styled.ul`
   list-style: none;
@@ -656,128 +622,14 @@ function ExploreFarmListRow({ farm }: { farm: ExploreFarmViewModel }) {
 
 export const FarmsExploreFarmsModule: React.FC = () => {
   const vm = useExploreFarms()
-  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const filtersRef = useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    if (!filtersOpen) return
-    const onDoc = (e: MouseEvent) => {
-      if (!filtersRef.current?.contains(e.target as Node)) setFiltersOpen(false)
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
-  }, [filtersOpen])
-
-  const activeChips = useMemo(() => {
-    const chips: { key: string; label: string; clear: () => void }[] = []
-    if (vm.chainFilter !== 'all') {
-      const label = LIVE_CHAIN_FILTERS.find((c) => c.id === vm.chainFilter)?.label ?? String(vm.chainFilter)
-      chips.push({
-        key: 'chain',
-        label: `Chain: ${label}`,
-        clear: () => vm.setChainFilter('all'),
-      })
-    }
-    if (vm.filter !== 'All') {
-      chips.push({
-        key: 'filter',
-        label: vm.filter,
-        clear: () => vm.setFilter('All'),
-      })
-    }
-    if (vm.sort !== 'Highest TVL') {
-      chips.push({
-        key: 'sort',
-        label: vm.sort,
-        clear: () => vm.setSort('Highest TVL'),
-      })
-    }
-    return chips
-  }, [vm])
+  // R035B: the approved mockup uses compact rows only; list layout remains in code but is not offered.
+  const viewMode = 'cards' as 'cards' | 'list'
 
   const showCount = vm.state !== 'loading' && vm.state !== 'unavailable' && vm.totalActive > 0
   const chainCountLabel =
     vm.chainFilter === 'all'
       ? 'all LIVE chains'
       : LIVE_CHAIN_FILTERS.find((chain) => chain.id === vm.chainFilter)?.label ?? String(vm.chainFilter)
-
-  const viewToggle = (
-    <ViewToggle role="group" aria-label="Explore farms view mode" data-testid="farms-explore-view-toggle">
-      <ToggleBtn type="button" $active={viewMode === 'cards'} onClick={() => setViewMode('cards')}>
-        Cards
-      </ToggleBtn>
-      <ToggleBtn type="button" $active={viewMode === 'list'} onClick={() => setViewMode('list')}>
-        List
-      </ToggleBtn>
-    </ViewToggle>
-  )
-
-  const filtersControl = (
-    <FiltersWrap ref={filtersRef}>
-      <FiltersBtn
-        type="button"
-        $open={filtersOpen}
-        aria-expanded={filtersOpen}
-        aria-haspopup="dialog"
-        data-testid="farms-explore-filters"
-        onClick={() => setFiltersOpen((v) => !v)}
-      >
-        Filters ▾
-      </FiltersBtn>
-      {filtersOpen ? (
-        <FiltersPanel role="dialog" aria-label="Explore farm filters" data-testid="farms-explore-filters-panel">
-          <FilterGroup>
-            <FilterGroupLabel>Chain</FilterGroupLabel>
-            <ChipRow role="toolbar" aria-label="Explore farm chains" data-testid="farms-chain-filters">
-              {LIVE_CHAIN_FILTERS.map((c) => (
-                <Chip
-                  key={String(c.id)}
-                  type="button"
-                  $active={vm.chainFilter === c.id}
-                  aria-pressed={vm.chainFilter === c.id}
-                  data-testid={`farms-chain-filter-${c.id}`}
-                  onClick={() => vm.setChainFilter(c.id)}
-                >
-                  {c.label}
-                </Chip>
-              ))}
-            </ChipRow>
-          </FilterGroup>
-          <FilterGroup>
-            <FilterGroupLabel>Filter</FilterGroupLabel>
-            <ChipRow role="toolbar" aria-label="Explore farm filters">
-              {FARMS_EXPLORE_FILTERS.map((f) => (
-                <Chip
-                  key={f}
-                  type="button"
-                  $active={vm.filter === f}
-                  aria-pressed={vm.filter === f}
-                  onClick={() => vm.setFilter(f as FarmsExploreFilter)}
-                >
-                  {f}
-                </Chip>
-              ))}
-            </ChipRow>
-          </FilterGroup>
-          <FilterGroup>
-            <FilterGroupLabel>Sort</FilterGroupLabel>
-            <Select
-              value={vm.sort}
-              aria-label="Sort active farms"
-              onChange={(e) => vm.setSort(e.target.value as FarmsExploreSort)}
-            >
-              {FARMS_EXPLORE_SORTS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </Select>
-          </FilterGroup>
-        </FiltersPanel>
-      ) : null}
-    </FiltersWrap>
-  )
 
   return (
     <Module
@@ -814,21 +666,55 @@ export const FarmsExploreFarmsModule: React.FC = () => {
           onChange={(e) => vm.setSearch(e.target.value)}
           aria-label="Search farm, token or pair"
         />
-        <ToolbarSide>
-          {filtersControl}
-          {viewToggle}
-        </ToolbarSide>
+        {/* R035B: compact chain selector with authentic chain logo — drives the real vm.chainFilter. */}
+        <EvoChainSelect data-testid="farms-chain-filters">
+          {vm.chainFilter !== 'all' ? (
+            <img src={`/images/chains/${vm.chainFilter}.png`} alt="" aria-hidden="true" />
+          ) : null}
+          <span>{chainCountLabel === 'all LIVE chains' ? 'All chains' : chainCountLabel}</span>
+          <select
+            aria-label="Filter farms by chain"
+            value={String(vm.chainFilter)}
+            onChange={(e) =>
+              vm.setChainFilter(
+                (e.target.value === 'all' ? 'all' : Number(e.target.value)) as typeof vm.chainFilter,
+              )
+            }
+          >
+            {LIVE_CHAIN_FILTERS.map((c) => (
+              <option key={String(c.id)} value={String(c.id)}>
+                {c.id === 'all' ? 'All chains' : c.label}
+              </option>
+            ))}
+          </select>
+        </EvoChainSelect>
       </Toolbar>
 
-      {activeChips.length > 0 ? (
-        <ActiveChips data-testid="farms-explore-active-chips">
-          {activeChips.map((c) => (
-            <RemovableChip key={c.key} type="button" onClick={c.clear} aria-label={`Clear ${c.label}`}>
-              {c.label} ×
-            </RemovableChip>
+      {/* R035B: real data filters inline (no hidden panel); sort stays a compact select. */}
+      <EvoFilterRow role="toolbar" aria-label="Explore farm filters" data-testid="farms-explore-filters">
+        {FARMS_EXPLORE_FILTERS.map((f) => (
+          <Chip
+            key={f}
+            type="button"
+            $active={vm.filter === f}
+            aria-pressed={vm.filter === f}
+            onClick={() => vm.setFilter(f as FarmsExploreFilter)}
+          >
+            {f}
+          </Chip>
+        ))}
+        <Select
+          value={vm.sort}
+          aria-label="Sort active farms"
+          onChange={(e) => vm.setSort(e.target.value as FarmsExploreSort)}
+        >
+          {FARMS_EXPLORE_SORTS.map((sortOption) => (
+            <option key={sortOption} value={sortOption}>
+              {sortOption}
+            </option>
           ))}
-        </ActiveChips>
-      ) : null}
+        </Select>
+      </EvoFilterRow>
 
       {vm.disclosure ? <Disclosure role="status">{vm.disclosure}</Disclosure> : null}
 

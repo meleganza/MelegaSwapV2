@@ -49,7 +49,7 @@ export const Page = styled.main`
   }
 
   @media (max-width: 767px) {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0px));
   }
 `
 
@@ -64,7 +64,7 @@ export const Band = styled.section`
   animation: ${rise} 0.35s ease both;
   margin: 0;
   padding: 12px 12px 10px;
-  border-radius: ${px.radius};
+  border-radius: 18px;
   border: 1px solid ${px.line};
   background: ${px.panel};
   min-width: 0;

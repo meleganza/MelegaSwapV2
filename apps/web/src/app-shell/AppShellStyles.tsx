@@ -278,6 +278,42 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     justify-content: center !important;
   }
 
+  [data-melega-mobile-header] .melega-shell-wallet-pill {
+    width: 116px !important;
+    min-width: 116px !important;
+    max-width: 116px !important;
+    flex: 0 0 116px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+  }
+
+  [data-melega-mobile-header] .melega-shell-wallet-pill button {
+    border: 1px solid #E5E2D9 !important;
+    border-radius: 14px !important;
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(23,24,23,.04) !important;
+  }
+
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-network-status-pill] > div,
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] > div {
+    border: 1px solid #E5E2D9 !important;
+    border-radius: 14px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(23,24,23,.04) !important;
+  }
+
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-network-status-pill] > div {
+    position: relative !important;
+    width: 76px !important;
+    min-width: 76px !important;
+    padding: 0 8px !important;
+    gap: 6px !important;
+    color: transparent !important;
+  }
+
   [data-melega-app-shell] .melega-shell-wallet-icon {
     width: 40px !important;
     height: 40px !important;
@@ -293,8 +329,13 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
   /* R033 Founder-approved Pearl shell. */
   [data-melega-mobile-header] {
-    background: #F7F6F2 !important;
+    background: rgba(250,249,245,.98) !important;
     border-bottom: 0 !important;
+  }
+
+  [data-melega-mobile-header] [data-melega-brand-lockup] {
+    transform: scale(.94);
+    transform-origin: left center;
   }
 
   [data-melega-app-shell] .melega-shell-mobile-network button,
@@ -313,10 +354,76 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
   [data-melega-app-shell] .melega-shell-mobile-network button,
   [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
-    width: 66px !important;
-    max-width: 66px !important;
-    min-width: 66px !important;
+    width: 78px !important;
+    max-width: 78px !important;
+    min-width: 78px !important;
     padding: 0 8px !important;
+  }
+
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    overflow: visible !important;
+  }
+
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] > div {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    padding: 0 7px !important;
+    gap: 5px !important;
+    overflow: visible !important;
+  }
+
+  [data-melega-mobile-header] .melega-chain-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #F3C928 !important;
+  }
+
+  [data-melega-mobile-header] .melega-chain-avatar img {
+    display: block !important;
+    width: 28px !important;
+    height: 28px !important;
+    object-fit: contain !important;
+  }
+
+  [data-melega-mobile-header] [data-testid='header-chain-label'] {
+    display: block !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+    color: #171817 !important;
+    font-size: 12px !important;
+    font-weight: 750 !important;
+  }
+
+  [data-melega-mobile-header] [data-testid='header-chain-label'] > *,
+  [data-melega-mobile-header] [data-testid='header-chain-label'] + * {
+    display: none !important;
+  }
+
+  [data-melega-mobile-header] [data-testid='header-chain-label']:not(:empty) {
+    visibility: visible !important;
+  }
+
+  [data-melega-mobile-header] [data-testid='header-chain-label'] {
+    flex: 0 0 24px !important;
+  }
+
+  [data-melega-mobile-header] .melega-chain-avatar + div {
+    display: block !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 18px !important;
+    overflow: visible !important;
   }
 
   [data-melega-app-shell] .melega-shell-mobile-connect {
@@ -330,8 +437,14 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     [data-melega-mobile-header] { padding-left: 10px !important; padding-right: 10px !important; }
     [data-melega-mobile-header] [data-melega-brand-lockup] { transform: scale(.9); transform-origin: left center; }
     [data-melega-app-shell] .melega-shell-mobile-network button,
-    [data-melega-app-shell] .melega-shell-mobile-network [role='button'] { width: 52px !important; min-width: 52px !important; }
-    [data-melega-app-shell] .melega-shell-mobile-connect { width: 44px !important; min-width: 44px !important; font-size: 0 !important; padding: 0 !important; }
+    [data-melega-app-shell] .melega-shell-mobile-network [role='button'],
+    [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'],
+    [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] > div {
+      width: 68px !important;
+      min-width: 68px !important;
+      max-width: 68px !important;
+    }
+    [data-melega-mobile-header] .melega-shell-wallet-pill { width: 108px !important; min-width: 108px !important; max-width: 108px !important; flex-basis: 108px !important; }
   }
 
   [data-testid='marco-wave1-bridge'] select,
@@ -340,6 +453,11 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     color: #171817 !important;
     border-color: #E5E2D9 !important;
     color-scheme: light !important;
+  }
+  /* R035B: approved Bridge mockup — amount sits flat on the From panel. */
+  [data-testid='marco-wave1-bridge'] input[aria-label='MARCO amount'] {
+    background: transparent !important;
+    border: 0 !important;
   }
 
   [data-liquidity-studio='v3'] [data-add-surface] input,
@@ -389,13 +507,128 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   [data-project-page='v7'] strong { color: #171817 !important; }
   [data-project-page='v7'] [data-testid='project-v7-boost'] { display: none !important; }
 
+  /* R035B — bottom navigation per approved Pearl mockups (Trade/Bridge/Earn). */
   nav[aria-label='Main navigation'] {
-    background: rgba(255,255,255,.98) !important;
-    border-top: 1px solid #E5E2D9 !important;
+    background: #F7F6F2 !important;
+    border-top: 1px solid #EFEDE6 !important;
     box-shadow: none !important;
+    min-height: 76px !important;
+    padding: 8px 10px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
   }
   nav[aria-label='Main navigation'] a { background: transparent !important; color: #72736E !important; }
-  nav[aria-label='Main navigation'] a[aria-current='page'] { color: #9A7600 !important; }
+  nav[aria-label='Main navigation'] a[aria-current='page'] { background: #FFF6D6 !important; color: #E9B10F !important; }
+
+  /* R035B — mobile header controls: neutral white pills (chain + wallet) per approved mockups. */
+  [data-melega-mobile-header] {
+    border-bottom: 0 !important;
+  }
+  [data-melega-mobile-header] [data-testid='network-switcher-root'] > div,
+  [data-melega-mobile-header] [data-testid='network-switcher-root'] > div > div {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+  }
+  [data-melega-mobile-header] [data-testid='network-switcher-root'] > div {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 12px 0 6px !important;
+    border: 1px solid #ECE9E1 !important;
+    border-radius: 999px !important;
+    box-shadow: 0 2px 8px rgba(23, 24, 23, 0.04) !important;
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  [data-melega-mobile-header] [data-testid='network-switcher-root'] img {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+  }
+  [data-melega-mobile-header] [data-testid='header-chain-label'] {
+    display: block !important;
+    color: #171817 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-left: 6px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  [data-melega-mobile-header] [data-testid='marco-connect'] button {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 12px !important;
+    border: 1px solid #ECE9E1 !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 8px rgba(23, 24, 23, 0.04) !important;
+  }
+  /* R035B — desktop header controls: Pearl network pill + neutral wallet pill (same provider). */
+  [data-melega-global-header] [data-testid='network-switcher-root'] > div,
+  [data-melega-global-header] [data-testid='network-switcher-root'] > div > div {
+    background: #FFFFFF !important;
+    color: #171817 !important;
+  }
+  [data-melega-global-header] [data-testid='network-switcher-root'] > div {
+    height: 40px !important;
+    padding: 0 14px 0 6px !important;
+    border: 1px solid #ECE9E1 !important;
+    border-radius: 999px !important;
+    box-shadow: 0 2px 8px rgba(23, 24, 23, 0.04) !important;
+  }
+  [data-melega-global-header] [data-testid='network-switcher-root'] img {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+  }
+  [data-melega-global-header] [data-testid='header-chain-label'] {
+    color: #171817 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+  [data-melega-global-header] [data-testid='marco-connect'] button {
+    height: 40px !important;
+    padding: 0 16px !important;
+    border: 1px solid #ECE9E1 !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: #171817 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    gap: 8px !important;
+    box-shadow: 0 2px 8px rgba(23, 24, 23, 0.04) !important;
+  }
+  [data-melega-global-header] [data-testid='marco-connect'] button[aria-label='Connect wallet'] > span:first-child {
+    background: #C9C6BC !important;
+  }
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'],
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] > div,
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-network-status-pill] > div {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  [data-melega-mobile-header] .melega-shell-mobile-network [data-testid='network-switcher-root'] > div > div {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+  /* R035B — 320px: keep brand, chain and wallet on one line without overlap. */
+  @media (max-width: 359px) {
+    [data-melega-mobile-header] [data-testid='header-chain-label'] { display: none !important; }
+    [data-melega-mobile-header] { gap: 6px !important; padding-left: 10px !important; padding-right: 10px !important; }
+    [data-melega-mobile-header] [data-testid='network-switcher-root'] > div { padding: 0 20px 0 4px !important; height: 36px !important; min-height: 36px !important; }
+    [data-melega-mobile-header] [data-testid='network-switcher-root'] img { width: 24px !important; height: 24px !important; }
+    [data-melega-mobile-header] [data-testid='marco-connect'] button { height: 36px !important; min-height: 36px !important; padding: 0 9px !important; font-size: 11px !important; gap: 4px !important; }
+    [data-melega-mobile-header] [data-melega-brand-lockup] span { font-size: 15px !important; }
+    [data-melega-mobile-header] [data-melega-brand-lockup] img { height: 30px !important; top: 7px !important; margin-left: 2px !important; }
+  }
+  /* Disconnected: neutral status dot (green only once a wallet is connected). */
+  [data-melega-mobile-header] [data-testid='marco-connect'] button[aria-label='Connect wallet'] > span:first-child {
+    background: #C9C6BC !important;
+  }
 `
 
 const WalletIconBtn = styled.div`
