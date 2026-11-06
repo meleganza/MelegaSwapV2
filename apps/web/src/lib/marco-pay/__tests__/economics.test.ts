@@ -7,16 +7,16 @@ import {
 } from '../economics'
 
 describe('Passport PRO checkout economics', () => {
-  it('keeps a 10% customer discount and a 30% commission of the net in MARCO', () => {
+  it('keeps a 10% customer discount and a 30% commission of nominal pre-discount value in MARCO', () => {
     const economics = assertPassportProEconomics({
       listedPriceMinor: '2900',
       discountMinor: '290',
       netPaidMinor: '2610',
-      commissionAmountMinor: '783',
+      commissionAmountMinor: '870',
       commissionAsset: 'MARCO',
     })
     expect(passportProDiscountMinor('2900')).toBe('290')
-    expect(passportProCommissionMinor('2610')).toBe('783')
+    expect(passportProCommissionMinor('2900')).toBe('870')
     expect(payableMinorAfterReferral(economics)).toBe('2610')
     expect(economics.commissionAsset).toBe('MARCO')
   })
@@ -26,11 +26,11 @@ describe('Passport PRO checkout economics', () => {
       listedPriceMinor: '10000',
       discountMinor: '1000',
       netPaidMinor: '9000',
-      commissionAmountMinor: '2700',
+      commissionAmountMinor: '3000',
     })
     expect(payableMinorAfterReferral(economics)).toBe('9000')
     expect(payableMinorAfterReferral(economics)).not.toBe('8500')
-    expect(economics.commissionAmountMinor).toBe('2700')
+    expect(economics.commissionAmountMinor).toBe('3000')
   })
 
   it('rejects a discount, net, or commission that is not the published rule', () => {
@@ -47,15 +47,15 @@ describe('Passport PRO checkout economics', () => {
         listedPriceMinor: '10000',
         discountMinor: '1000',
         netPaidMinor: '9000',
-        commissionAmountMinor: '2701',
+        commissionAmountMinor: '3001',
       }),
-    ).toThrow('COMMISSION_NOT_30_PERCENT_OF_NET')
+    ).toThrow('COMMISSION_NOT_30_PERCENT_OF_NOMINAL')
     expect(() =>
       assertPassportProEconomics({
         listedPriceMinor: '10000',
         discountMinor: '1000',
         netPaidMinor: '9000',
-        commissionAmountMinor: '2700',
+        commissionAmountMinor: '3000',
         commissionAsset: 'M-CREDITS',
       }),
     ).toThrow('COMMISSION_ASSET_MISMATCH')
@@ -64,8 +64,8 @@ describe('Passport PRO checkout economics', () => {
         listedPriceMinor: '10000',
         discountMinor: '1000',
         netPaidMinor: '9000',
-        commissionAmountMinor: '3000',
+        commissionAmountMinor: '2700',
       }),
-    ).toThrow('COMMISSION_NOT_30_PERCENT_OF_NET')
+    ).toThrow('COMMISSION_NOT_30_PERCENT_OF_NOMINAL')
   })
 })

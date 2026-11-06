@@ -3,9 +3,8 @@
  *
  * Published Passport basis, read 2026-10-21 from referral resolve and the
  * signed webhook contract: 10% off the listed price, referrer commission 30%
- * of the net actually paid, same asset (MARCO). On a listed 100 that is
- * discount 10, paid 90, referrer 27, merchant remainder 63. A 30-of-listed
- * and merchant-60 split is not what Passport publishes. M-Credits cashback
+ * of the nominal pre-discount value, same asset (MARCO). On a listed 100 that
+ * is discount 10, paid 90, referrer accrual 30. M-Credits cashback
  * stays a separate ledger.
  */
 
@@ -37,8 +36,8 @@ export function passportProNetMinor(listedPriceMinor: string): string {
   return (BigInt(listedPriceMinor) - BigInt(passportProDiscountMinor(listedPriceMinor))).toString()
 }
 
-export function passportProCommissionMinor(netPaidMinor: string): string {
-  return bpsOfMinor(netPaidMinor, PASSPORT_PRO_COMMISSION_BPS)
+export function passportProCommissionMinor(listedPriceMinor: string): string {
+  return bpsOfMinor(listedPriceMinor, PASSPORT_PRO_COMMISSION_BPS)
 }
 
 /** M-Credits, USD, or any other asset is not the PRO commission asset. */
@@ -82,8 +81,8 @@ export function assertPassportProEconomics(input: {
   }
   if (discountMinor !== passportProDiscountMinor(listedPriceMinor)) throw new Error('DISCOUNT_NOT_10_PERCENT')
   if (netPaidMinor !== (BigInt(listedPriceMinor) - BigInt(discountMinor)).toString()) throw new Error('NET_MISMATCH')
-  if (commissionAmountMinor !== passportProCommissionMinor(netPaidMinor)) {
-    throw new Error('COMMISSION_NOT_30_PERCENT_OF_NET')
+  if (commissionAmountMinor !== passportProCommissionMinor(listedPriceMinor)) {
+    throw new Error('COMMISSION_NOT_30_PERCENT_OF_NOMINAL')
   }
   if (!isSameAssetProCommission(input.commissionAsset)) throw new Error('COMMISSION_ASSET_MISMATCH')
   return {
@@ -97,7 +96,7 @@ export function assertPassportProEconomics(input: {
 
 /**
  * Payable amount is the net only. Cashback and commission are not subtracted
- * again: cashback is M-Credits, and commission is recorded against the net.
+ * again: cashback is M-Credits, and commission is accrued against nominal value.
  */
 export function payableMinorAfterReferral(economics: PassportProEconomics): string {
   return economics.netPaidMinor

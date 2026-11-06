@@ -151,7 +151,7 @@ describe('MARCO Pay merchant session', () => {
           listed_price_minor: '2900',
           discount_minor: '290',
           net_paid_minor: '2610',
-          commission_amount_base: '783',
+          commission_amount_base: '870',
           commission_asset: 'MARCO',
         },
       })

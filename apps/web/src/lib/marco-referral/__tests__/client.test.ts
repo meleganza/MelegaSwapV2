@@ -87,7 +87,7 @@ describe('MARCO Passport PRO referral transport', () => {
         listed_price_minor: '10000',
         discount_minor: '1000',
         net_paid_minor: '9000',
-        commission_amount_minor: '2700',
+        commission_amount_minor: '3000',
       }))
     })
     await expect(quoteMarcoReferralForCheckout({
@@ -96,7 +96,7 @@ describe('MARCO Passport PRO referral transport', () => {
       destinationRef: 'melega-dex',
       campaignRef: 'launch-2026',
       fetchImpl: fetchImpl as unknown as typeof fetch,
-    })).resolves.toMatchObject({ net_paid_minor: '9000', commission_amount_minor: '2700' })
+    })).resolves.toMatchObject({ net_paid_minor: '9000', commission_amount_minor: '3000' })
   })
 
   it('expires attribution after 30 days', () => {
@@ -166,7 +166,7 @@ describe('MARCO Passport PRO referral transport', () => {
       listed_price_minor: '2900',
       discount_minor: '290',
       net_paid_minor: '2610',
-      commission_amount_base: '783',
+      commission_amount_base: '870',
       commission_asset: 'MARCO',
     })))
     await expect(quoteMarcoReferralForCheckout({
@@ -176,12 +176,12 @@ describe('MARCO Passport PRO referral transport', () => {
     })).resolves.toMatchObject({
       referral_code: 'founder-1',
       net_paid_minor: '2610',
-      commission_amount_minor: '783',
+      commission_amount_minor: '870',
       commission_asset: 'MARCO',
     })
   })
 
-  it('rejects a quote that is not 10% off, not 30% of net, or paid in M-Credits', async () => {
+  it('rejects a quote that is not 10% off, not 30% of nominal, or paid in M-Credits', async () => {
     const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
       ok: true,
       referral_code: 'founder-1',
@@ -189,7 +189,7 @@ describe('MARCO Passport PRO referral transport', () => {
       listed_price_minor: '2900',
       discount_minor: '290',
       net_paid_minor: '2610',
-      commission_amount_base: '783',
+      commission_amount_base: '870',
       commission_asset: 'M-CREDITS',
     })))
     await expect(quoteMarcoReferralForCheckout({

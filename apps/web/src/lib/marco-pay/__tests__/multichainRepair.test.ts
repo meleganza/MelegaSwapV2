@@ -12,14 +12,14 @@ describe('MARCO Pay multichain repair boundaries', () => {
       listed_price_minor: '2900',
       discount_minor: '290',
       net_paid_minor: '2610',
-      commission_amount_minor: '783',
+      commission_amount_minor: '870',
       commission_asset: 'MARCO',
     })
     expect(economics).toEqual({
       listedPriceMinor: '2900',
       discountMinor: '290',
       netPaidMinor: '2610',
-      commissionAmountMinor: '783',
+      commissionAmountMinor: '870',
       commissionAsset: 'MARCO',
     })
     expect(BigInt(economics.netPaidMinor) + BigInt(economics.discountMinor)).toBe(BigInt(economics.listedPriceMinor))

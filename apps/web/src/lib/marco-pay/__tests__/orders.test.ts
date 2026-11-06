@@ -424,7 +424,7 @@ describe('MARCO Pay fulfilment', () => {
         listedPriceMinor: '900',
         discountMinor: '90',
         netPaidMinor: '810',
-        commissionAmountMinor: '243',
+        commissionAmountMinor: '270',
         commissionAsset: 'MARCO',
       },
     })
@@ -443,7 +443,7 @@ describe('MARCO Pay fulfilment', () => {
         listed_price_minor: '900',
         discount_minor: '90',
         net_paid_minor: '810',
-        commission_amount_base: '243',
+        commission_amount_base: '270',
         commission_asset: 'MARCO',
       },
     })
