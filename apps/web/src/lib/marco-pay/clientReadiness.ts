@@ -4,6 +4,7 @@ export type MarcoPayReadiness = {
   applicationRef: string | null
   paymentMethods?: { marco?: boolean; mCredits?: boolean }
   rewards?: { customerBps?: number | null; partnerBps?: number | null; customerLabel?: string }
+  chains?: Array<{ id: string; chainId: number | null; label: string; checkout?: boolean; reason: string | null }>
 }
 
 const RETRY_DELAYS_MS = [0, 400, 800] as const

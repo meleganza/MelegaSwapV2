@@ -1,6 +1,7 @@
 import { get, put } from '@vercel/blob'
 import { getMarcoPayApplicationRef, getMarcoPayMerchantApiKey, MARCO_MACHINE_ORIGIN, MARCO_PAY_WIDGET_URL } from './contract'
 import { resolveMarcoPayWebhookSecret } from './connectionGrant'
+import { listMerchantPayRails } from './merchantRails'
 import { resolveMarcoPaySettlementWallet } from './settlement'
 
 const HEALTH_KEY = 'monetization/v1/marco-pay/health/signed-test-webhook.json'
@@ -189,5 +190,17 @@ export async function resolveMarcoPayReadiness() {
     },
     token: token?.data ?? null,
     callbackUrl: 'https://www.melega.finance/api/marco-pay/webhook/',
+    chains: listMerchantPayRails().map((rail) => ({
+      id: rail.id,
+      label: rail.label,
+      chainId: rail.chainId,
+      family: rail.family,
+      token: rail.token,
+      status: rail.executable && executable ? 'configured' : 'prepared',
+      checkout: Boolean(rail.executable && executable),
+      reason: rail.executable ? (executable ? null : reason) : rail.reason,
+      detail: rail.detail,
+      settlementWallet: rail.executable && executable ? rail.settlementWallet : null,
+    })),
   }
 }

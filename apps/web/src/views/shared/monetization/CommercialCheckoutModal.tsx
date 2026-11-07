@@ -49,7 +49,6 @@ import {
   readMarcoPayHandoffSession,
   runMarcoPaySingleFlight,
 } from 'lib/marco-pay/approval'
-import type { MarcoPayWalletTransfer } from 'lib/marco-pay/walletTransfer'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 import type { WalletFlowStage } from 'lib/monetization/copy'
 import {
@@ -86,7 +85,6 @@ type MarcoPayOrderConfig = {
   reference: string
   paymentId: string
   approvalUrl: string
-  wallet: MarcoPayWalletTransfer | null
   referenceAmountMinor: string
   referralApplied: boolean
   referralCode: string | null
@@ -1336,6 +1334,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
   const [settlementMarket, setSettlementMarket] = useState<SettlementMarket>({ loading: false })
   const [marcoPayReadiness, setMarcoPayReadiness] = useState<MarcoPayReadiness | null>(null)
   const [marcoPayOrder, setMarcoPayOrder] = useState<MarcoPayOrderConfig | null>(null)
+  const [paymentChainId, setPaymentChainId] = useState(56)
   const marcoPayOrderRef = useRef<MarcoPayOrderConfig | null>(null)
   const prepareFlightRef = useRef<Promise<MarcoPayOrderConfig | null> | null>(null)
   const prepareFlightBindingRef = useRef<string | null>(null)
@@ -1714,7 +1713,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     const currentOrder = marcoPayOrderRef.current
     if (
       currentOrder?.paymentId &&
-      currentOrder.wallet &&
       isMarcoPayPreparedOrderCurrent(currentOrder, requestedBinding)
     ) {
       setError(null)
@@ -1726,6 +1724,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
       requestedBinding.serviceId,
       requestedBinding.packageId,
       requestedBinding.referralCode ?? '',
+      String(paymentChainId),
     ].join('|')
     if (prepareFlightRef.current && prepareFlightBindingRef.current === bindingKey) return prepareFlightRef.current
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
@@ -1755,14 +1754,13 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
             referralCode: requestedReferralCode,
             referralDestination: requestedReferralCode ? referralContext?.destinationRef ?? null : null,
             referralCampaign: requestedReferralCode ? referralContext?.campaignRef ?? null : null,
+            chainId: paymentChainId,
           }),
         })
         const payload = await response.json()
         if (!response.ok) throw new Error(marcoPayReviewErrorMessage(payload))
         const session = readMarcoPayHandoffSession(payload)
         if (!session) throw new Error('MARCO Pay is temporarily unavailable.')
-        const wallet = payload.wallet as MarcoPayWalletTransfer | null
-        if (!wallet?.data || !wallet.to) throw new Error('MARCO Pay is temporarily unavailable.')
         const next: MarcoPayOrderConfig = {
           orderId: String(payload.order.orderId),
           application: String(payload.widget.application),
@@ -1772,7 +1770,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           reference: String(payload.widget.reference),
           paymentId: session.paymentId,
           approvalUrl: session.approvalUrl,
-          wallet,
           referenceAmountMinor: String(payload.order.referenceAmountMinor),
           referralApplied: payload.order.referralApplied === true,
           referralCode:
@@ -1823,6 +1820,7 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     projectContract,
     projectId,
     projectSlug,
+    paymentChainId,
     referral,
     referralCatalogRef,
     selectedPackage,
@@ -2342,37 +2340,23 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
     }
     if (isMarcoPay) {
       if (isMarcoPayWalletFlightActive()) return
+      const popup = openMarcoPayHandoffWindow()
       beginMarcoPayIsolation()
       await runMarcoPaySingleFlight(async () => {
         setBusy(true)
         try {
           const order = await prepareMarcoPayOrder()
-          const wallet = order?.wallet
-          if (!order || !wallet) return
-          setWalletStage('confirm')
-          const preferredProvider = (await connector?.getProvider?.()) ?? null
-          const paymentWallet = await resolvePaymentWalletForSettlement({
-            preferredProvider,
-            fallbackSigner: signer ?? null,
-          })
-          const chainGate = assessPaymentWalletChain(paymentWallet.chainId)
-          if (chainGate.stage === 'switch_network') {
-            setWalletStage(chainGate.stage)
-            throw new Error(chainGate.message || RC_COPY.wrongNetwork)
+          if (!order) {
+            popup?.close()
+            return
           }
-          if (!paymentWallet.signer) throw new Error(RC_COPY.walletUnavailable)
-          setQuoteSummary('Confirm the MARCO transfer in your wallet')
-          const transaction = await paymentWallet.signer.sendTransaction({
-            to: wallet.to,
-            value: wallet.value,
-            data: wallet.data,
-            chainId: wallet.chainId,
-          })
-          setStatus('submitted')
-          setWalletStage('idle')
-          setSubmittedTxHash(transaction.hash)
-          setQuoteSummary(`Transaction submitted · ${transaction.hash} · verifying MARCO settlement`)
+          setWalletStage('confirm')
+          if (!assignMarcoPayHandoff(popup, { paymentId: order.paymentId, approvalUrl: order.approvalUrl })) {
+            throw new Error('MARCO Pay is temporarily unavailable.')
+          }
+          handleMarcoPayStarted()
         } catch (cause) {
+          popup?.close()
           const message = cause instanceof Error ? cause.message : String(cause)
           if (/reject|denied|cancel/i.test(message)) {
             setStatus('cancelled')
@@ -2387,11 +2371,6 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
           }
           setError(message)
           setWalletStage('error')
-          const order = marcoPayOrderRef.current
-          if (order?.paymentId && order.approvalUrl && !signer) {
-            const popup = openMarcoPayHandoffWindow()
-            assignMarcoPayHandoff(popup, { paymentId: order.paymentId, approvalUrl: order.approvalUrl })
-          }
         } finally {
           setBusy(false)
         }
@@ -2771,6 +2750,24 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                   )
                 })}
               </PaymentGrid>
+              {pay === 'MARCO_PAY' && marcoPayReadiness?.chains?.length ? (
+                <div data-testid="commercial-pay-networks">
+                  {marcoPayReadiness.chains.map((chain) => (
+                    <button
+                      key={chain.id}
+                      type="button"
+                      data-testid={`commercial-pay-network-${chain.id}`}
+                      disabled={chain.checkout === false || chain.chainId == null}
+                      aria-pressed={chain.chainId === paymentChainId}
+                      onClick={() => {
+                        if (chain.chainId != null) setPaymentChainId(chain.chainId)
+                      }}
+                    >
+                      {chain.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <SettlementSummary data-testid="commercial-settlement-summary">
                 <SettlementMain>
                   <SettlementCell $title>
@@ -2829,15 +2826,23 @@ export const CommercialCheckoutModal: React.FC<Props> = ({
                     </ReviewRow>
                     <ReviewRow>
                       <span>Settlement</span>
-                      <strong>{paymentLabel} on BNB Chain</strong>
+                      <strong>
+                        {paymentLabel} on {paymentChainId === 56 ? 'BNB Chain' : `chain ${paymentChainId}`}
+                      </strong>
                     </ReviewRow>
                     {marcoPayOrder?.referralApplied ? (
                       <ReviewRow>
                         <span>Passport PRO</span>
                         <strong>
-                          Referral recognised · −$
+                          {marcoPayOrder.referralCode} · −$
                           {formatApproxNumber(Number(marcoPayOrder.referralDiscountMinor ?? '0') / 100, 2)}
                         </strong>
+                      </ReviewRow>
+                    ) : null}
+                    {isMarcoPay ? (
+                      <ReviewRow>
+                        <span>M-Credits</span>
+                        <strong>Separate cashback · not taken from this total</strong>
                       </ReviewRow>
                     ) : null}
                   </ReviewRows>
