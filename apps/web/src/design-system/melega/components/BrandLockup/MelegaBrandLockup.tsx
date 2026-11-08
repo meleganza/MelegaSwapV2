@@ -16,6 +16,12 @@ const BrandLink = styled(Link)`
   &:hover {
     opacity: 0.92;
   }
+
+  &:focus-visible {
+    outline: 2px solid #f4c430;
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
 `
 
 const Wrap = styled.div`
@@ -72,7 +78,7 @@ export interface MelegaBrandLockupProps {
 }
 
 export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'desktop', iconOnly = false }) => {
-  const logoSize = size === 'mobile' ? 38 : 42
+  const logoSize = size === 'mobile' ? 44 : 42
   const [ok, setOk] = useState(true)
 
   return (

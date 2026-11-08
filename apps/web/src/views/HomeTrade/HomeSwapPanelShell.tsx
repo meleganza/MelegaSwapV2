@@ -65,6 +65,10 @@ const Inner = styled.div`
   min-height: 0;
   padding: 12px 16px 16px;
   box-sizing: border-box;
+
+  @media (max-width: 380px) and (max-height: 640px) {
+    padding: 8px 12px 10px;
+  }
 `
 
 /** Folder tabs on the left, contextual actions on the right. */
@@ -82,6 +86,12 @@ const Header = styled.div`
     align-items: center;
     flex-wrap: wrap;
   }
+
+  /* 320px phones: tabs take the full row so Swap and MARCO Bridge stay readable. */
+  @media (max-width: 430px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `
 
 const Left = styled.div`
@@ -89,6 +99,11 @@ const Left = styled.div`
   align-items: center;
   min-width: 0;
   flex: 1;
+
+  @media (max-width: 430px) {
+    width: 100%;
+    flex: none;
+  }
 `
 
 const Center = styled.div`
@@ -116,6 +131,16 @@ const Right = styled.div`
     justify-content: space-between;
     flex-wrap: wrap;
   }
+
+  @media (max-width: 430px) {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Short phones: the extra toolbar row pushed Connect Wallet under the bottom nav. */
+  @media (max-width: 380px) and (max-height: 640px) {
+    display: none;
+  }
 `
 
 const PairSlot = styled.div`
@@ -138,6 +163,8 @@ const Toolbar = styled.div`
 export const HomeSwapIconButton = styled.button`
   width: 32px;
   height: 32px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #121212;

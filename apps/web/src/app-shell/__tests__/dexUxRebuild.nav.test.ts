@@ -10,43 +10,40 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header exposes Swap and the other core funnels directly (Portfolio via My Melega)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Trade')).toBe(false)
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Projects')).toBe(false)
-    const list = GLOBAL_HEADER_NAV.find((i) => i.id === 'list')
-    expect(list?.kind).toBe('link')
-    if (list?.kind === 'link') {
-      expect(list.href).toBe('/list')
-      expect(list.badge).toBe('NEW')
-    }
+  it('primary header is Swap, MARCO Bridge, and Earn', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Swap', 'MARCO Bridge', 'Earn'])
+    const swap = GLOBAL_HEADER_NAV.find((i) => i.id === 'swap')
+    const bridge = GLOBAL_HEADER_NAV.find((i) => i.id === 'bridge')
+    expect(swap?.kind).toBe('link')
+    expect(bridge?.kind).toBe('link')
+    if (swap?.kind === 'link') expect(swap.href).toBe('/')
+    if (bridge?.kind === 'link') expect(bridge.href).toBe('/bridge')
   })
 
-  it('mobile bottom nav exposes the five core DEX funnels in one tap', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools'])
-    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/swap')
+  it('mobile bottom nav exposes the four public destinations', () => {
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Swap', 'Bridge', 'Earn'])
+    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/')
+    expect(shellBottomNavItems.find((i) => i.id === 'bridge')?.href).toBe('/bridge')
+    expect(shellBottomNavItems.find((i) => i.id === 'earn')?.href).toBe('/earn')
   })
 
-  it('Home nav active state is only Discover (/) — not Swap or Project Pages', () => {
-    const home = GLOBAL_HEADER_NAV.find((i) => i.id === 'home')
-    expect(home?.kind).toBe('link')
-    if (home?.kind !== 'link') return
-    expect(home.match('/')).toBe(true)
-    expect(home.match('/swap')).toBe(false)
-    expect(home.match('/project-hq/marco')).toBe(false)
-    expect(home.match('/@marco')).toBe(false)
-    expect(home.match('/@marco/')).toBe(false)
-    expect(home.match('/passport')).toBe(false)
-    expect(home.match('/list')).toBe(false)
-    expect(home.match('/liquidity-studio')).toBe(false)
+  it('Swap owns home and the swap route; Bridge does not own project pages', () => {
+    const swap = GLOBAL_HEADER_NAV.find((i) => i.id === 'swap')
+    const bridge = GLOBAL_HEADER_NAV.find((i) => i.id === 'bridge')
+    expect(swap?.kind).toBe('link')
+    expect(bridge?.kind).toBe('link')
+    if (swap?.kind !== 'link' || bridge?.kind !== 'link') return
+    expect(swap.match('/')).toBe(true)
+    expect(swap.match('/swap')).toBe(true)
+    expect(swap.match('/project-hq/marco')).toBe(false)
+    expect(swap.match('/@marco')).toBe(false)
+    expect(bridge.match('/bridge')).toBe(true)
+    expect(bridge.match('/projects')).toBe(false)
 
-    const bottomHome = shellBottomNavItems.find((i) => i.id === 'home')
-    expect(bottomHome?.match('/')).toBe(true)
-    expect(bottomHome?.match('/swap')).toBe(false)
-    expect(bottomHome?.match('/project-hq/marco')).toBe(false)
-    expect(bottomHome?.match('/@marco/')).toBe(false)
-    expect(bottomHome?.match('/passport')).toBe(false)
+    const bottomSwap = shellBottomNavItems.find((i) => i.id === 'swap')
+    expect(bottomSwap?.match('/swap')).toBe(true)
+    expect(bottomSwap?.match('/')).toBe(true)
+    expect(bottomSwap?.match('/@marco/')).toBe(false)
   })
 
   it('Liquidity Building deep links remain available', () => {
@@ -55,14 +52,14 @@ describe('DEX UX Rebuild navigation', () => {
     )
   })
 
-  it('Home uses DexHomeScreen and on-page Swap reuses HomeSwapPanel', () => {
-    const home = readFileSync(path.join(ROOT, 'views/HomeTrade/HomeTradeScreen.tsx'), 'utf8')
-    const dex = readFileSync(path.join(ROOT, 'views/HomeTrade/DexHomeScreen.tsx'), 'utf8')
-    expect(home).toMatch(/DexHomeScreen/)
-    expect(dex).toMatch(/HomeSwapPanel/)
-    expect(dex).toMatch(/dex-home-instant-swap|dex-home-start-trading/)
-    expect(dex).not.toMatch(/home-investor-journey|JourneyGuideRail|PageNextAction|Founder Path/)
-    expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
+  it('Home route uses the swap-first screen and HomeSwapPanel', () => {
+    const page = readFileSync(path.join(ROOT, 'pages/index.tsx'), 'utf8')
+    const home = readFileSync(path.join(ROOT, 'views/HomeTrade/RadicalHomeScreen.tsx'), 'utf8')
+    expect(page).toMatch(/RadicalHomeScreen/)
+    expect(home).toMatch(/HomeSwapPanel/)
+    expect(home).toMatch(/dex-home-instant-swap/)
+    expect(home).not.toMatch(/home-investor-journey|JourneyGuideRail|PageNextAction|Founder Path/)
+    expect(home).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 
   it('redirects /trade to /swap; trending into Projects discovery', () => {

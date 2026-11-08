@@ -79,7 +79,10 @@ class MyDocument extends Document {
             <link rel="preconnect" href={process.env.NEXT_PUBLIC_NODE_PRODUCTION} />
           )}
           <meta charSet="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+          />
           <meta
             name="description"
             content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
@@ -106,16 +109,12 @@ class MyDocument extends Document {
           <meta name="twitter:url" content="https://melega.finance" />
 
           {/* Typography is served locally from /public/fonts to avoid render-blocking third-party requests. */}
+          {/* Inter is the product UI face (regular woff2 is 16.7KB). Melega Relative
+              stays available via @font-face for display headings and is not preloaded:
+              its woff2 is 60.8KB and the phone swap does not use it. */}
           <link
             rel="preload"
             href="/fonts/inter/inter-v12-latin-regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
-          <link
-            rel="preload"
-            href="/fonts/relative/relative-book-pro.woff2"
             as="font"
             type="font/woff2"
             crossOrigin="anonymous"

@@ -3,7 +3,9 @@
  */
 import React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
+import { isQuietPrimaryRoute } from 'app-shell/config/navigation'
 import { Github, Instagram, Youtube, Send } from 'lucide-react'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import {
@@ -163,8 +165,11 @@ function SocialIcon({ id }: { id: (typeof MELEGA_FOOTER_SOCIALS)[number]['id'] }
   }
 }
 
-export const MelegaDexFooter: React.FC = () => (
-  <Shell data-testid="melega-dex-footer" data-home-section="footer">
+export const MelegaDexFooter: React.FC = () => {
+  const { pathname } = useRouter()
+  const quiet = isQuietPrimaryRoute(pathname)
+  return (
+  <Shell data-testid="melega-dex-footer" data-home-section="footer" data-footer-socials={quiet ? 'hidden' : 'visible'}>
     <Copyright>{MELEGA_FOOTER_COPYRIGHT}</Copyright>
     <Right>
       <Nav aria-label="Footer">
@@ -180,7 +185,7 @@ export const MelegaDexFooter: React.FC = () => (
           ),
         )}
       </Nav>
-      <SocialRow>
+      {quiet ? null : <SocialRow>
         {MELEGA_FOOTER_SOCIALS.map((social) => (
           <SocialAnchor
             key={social.id}
@@ -192,9 +197,10 @@ export const MelegaDexFooter: React.FC = () => (
             <SocialIcon id={social.id} />
           </SocialAnchor>
         ))}
-      </SocialRow>
+      </SocialRow>}
     </Right>
   </Shell>
-)
+  )
+}
 
 export default MelegaDexFooter

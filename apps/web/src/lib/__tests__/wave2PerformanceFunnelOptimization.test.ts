@@ -270,12 +270,15 @@ describe('Recovery Wave 2 — performance and one-click funnels', () => {
     expect(tradeWarning).not.toContain('ImportTokenWarningModal')
   })
 
-  it('keeps every core DEX funnel one click away on desktop and mobile', () => {
-    expect(GLOBAL_HEADER_NAV.find((item) => item.id === 'swap')).toMatchObject({ href: '/swap' })
-    expect(GLOBAL_HEADER_NAV.find((item) => item.id === 'liquidity')).toMatchObject({ href: '/liquidity' })
-    expect(shellBottomNavItems.map((item) => item.id)).toEqual(['home', 'swap', 'liquidity', 'farms', 'pools'])
-    expect(shellBottomNavItems.find((item) => item.id === 'swap')?.href).toBe('/swap')
-    expect(shellBottomNavItems.find((item) => item.id === 'liquidity')?.href).toBe('/liquidity')
+  it('keeps Swap one click away and Earn grouped without new routes', () => {
+    const swap = GLOBAL_HEADER_NAV.find((item) => item.id === 'swap')
+    expect(swap?.kind).toBe('link')
+    if (swap?.kind === 'link') expect(swap.href).toBe('/')
+    const bridge = GLOBAL_HEADER_NAV.find((item) => item.id === 'bridge')
+    expect(bridge?.kind).toBe('link')
+    if (bridge?.kind === 'link') expect(bridge.href).toBe('/bridge')
+    expect(shellBottomNavItems.map((item) => item.id)).toEqual(['swap', 'bridge', 'earn'])
+    expect(shellBottomNavItems.find((item) => item.id === 'earn')?.href).toBe('/earn')
   })
 
   it('keeps the Swap terminal above the fold with compact premium rhythm', () => {

@@ -56,9 +56,9 @@ describe('DS001.2 global header shell contracts', () => {
     expect(POOLS_DROPDOWN_ITEMS.some((i) => /My Pools/i.test(i.label))).toBe(false)
   })
 
-  it('primary navigation exposes every core DEX funnel in one click (Portfolio secondary)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
+  it('primary navigation is the four public destinations', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Swap', 'MARCO Bridge', 'Earn'])
+    expect(GLOBAL_HEADER_NAV.find((i) => i.id === 'swap')?.kind).toBe('link')
   })
 
   it('secondary surfaces remain available via More overflow destinations', () => {

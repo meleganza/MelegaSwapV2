@@ -1,7 +1,6 @@
 /**
- * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Swap · Liquidity · Farms · Pools · List
- * Portfolio is secondary via My Melega → View Full Portfolio (/portfolio kept).
+ * Immediate actions are Swap, MARCO Bridge, and Earn.
+ * Portfolio and Tools are secondary and are not in this row.
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -22,6 +21,9 @@ export type HeaderNavItem =
       badge?: 'NEW'
       match: (pathname: string) => boolean
       compactHide?: boolean
+      /** Grouped destinations. The label still navigates to `href`. */
+      items?: HeaderDropdownItem[]
+      menuWidth?: number
     }
   | {
       id: string
@@ -157,63 +159,33 @@ export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   match: (p) => p === '/radar',
 }
 
-/** Canonical primary navigation — flat links matching approved mockup. */
+const isEarnPath = (p: string) =>
+  p.startsWith('/farms') || p.startsWith('/pools') || p === '/liquidity' || p.startsWith('/liquidity/') || p.startsWith('/liquidity-studio')
+
+/** Three immediate actions. Portfolio and Tools stay outside this row. */
 export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
-  {
-    id: 'home',
-    label: 'Home',
-    kind: 'link',
-    href: '/',
-    // Home owns Discover only — Swap / Project Pages must not highlight Home.
-    match: (p) => p === '/',
-  },
   {
     id: 'swap',
     label: 'Swap',
     kind: 'link',
-    href: '/swap',
-    match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
+    href: '/',
+    match: (p) => p === '/' || p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
   },
   {
     id: 'bridge',
-    label: 'Bridge',
+    label: 'MARCO Bridge',
     kind: 'link',
     href: '/bridge',
     match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
-    compactHide: true,
   },
   {
-    id: 'liquidity',
-    label: 'Liquidity',
+    id: 'earn',
+    label: 'Earn',
     kind: 'link',
-    href: '/liquidity',
-    match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
-  },
-  {
-    id: 'farms',
-    label: 'Farms',
-    kind: 'link',
-    href: '/farms',
-    match: (p) => p.startsWith('/farms'),
-  },
-  {
-    id: 'pools',
-    label: 'Pools',
-    kind: 'link',
-    href: '/pools',
-    match: (p) => p.startsWith('/pools'),
-  },
-  {
-    id: 'list',
-    label: 'List',
-    kind: 'link',
-    href: '/list',
-    badge: 'NEW',
+    href: '/earn',
     match: (p) =>
-      p === '/list' ||
-      p === '/import-existing-token' ||
-      p === '/launch' ||
-      p === '/new-project' ||
-      p.startsWith('/build-studio'),
+      p === '/earn' ||
+      p.startsWith('/earn/') ||
+      isEarnPath(p),
   },
 ]

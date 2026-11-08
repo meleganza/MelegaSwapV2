@@ -1,8 +1,8 @@
-import HomeTradeScreen from 'views/HomeTrade/HomeTradeScreen'
+import RadicalHomeScreen from 'views/HomeTrade/RadicalHomeScreen'
 import { CHAIN_IDS } from 'utils/wagmi'
 
 function IndexPage() {
-  return <HomeTradeScreen />
+  return <RadicalHomeScreen />
 }
 
 IndexPage.chains = CHAIN_IDS
