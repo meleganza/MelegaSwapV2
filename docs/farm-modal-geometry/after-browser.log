@@ -1,0 +1,39 @@
+VIEWPORT 1440
+NAVIGATED 1440
+MODAL 1440
+MEASURING 1440
+VIEWPORT 1280
+NAVIGATED 1280
+MODAL 1280
+MEASURING 1280
+VIEWPORT 390
+NAVIGATED 390
+MODAL 390
+MEASURING 390
+{
+  "phase": "after",
+  "viewports": [
+    {
+      "width": 1440,
+      "selector": 334.609375,
+      "minCard": 308.609375,
+      "searchPosition": "relative",
+      "cta": true
+    },
+    {
+      "width": 1280,
+      "selector": 304.375,
+      "minCard": 278.375,
+      "searchPosition": "relative",
+      "cta": true
+    },
+    {
+      "width": 390,
+      "selector": 320,
+      "minCard": 294,
+      "searchPosition": "relative",
+      "cta": true
+    }
+  ],
+  "failures": []
+}
