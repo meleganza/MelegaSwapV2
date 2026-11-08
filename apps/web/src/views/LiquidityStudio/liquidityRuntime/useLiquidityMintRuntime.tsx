@@ -48,6 +48,11 @@ import { useMultichainLiquidityPositions, type LiquidityChainStatus } from './us
 import { buildLiquidityWalletPortfolio } from './buildLiquidityWalletPortfolio'
 import useLiquidityTerminalData from './useLiquidityTerminalData'
 import { computeProRataAmountRaw } from './walletLpPositionMath'
+import {
+  manualCurrencyReplacesSelection,
+  resolveLiquidityInputDisplay,
+  type LiquidityPairSelection,
+} from '../modules/explorePoolClick'
 
 export type LiquidityStudioMode =
   | 'Add Liquidity'
@@ -155,6 +160,9 @@ export interface LiquidityMintRuntime {
   currencyB?: Currency
   setCurrencyA: (currency: Currency) => void
   setCurrencyB: (currency: Currency) => void
+  /** Preload Add Liquidity from an Explore Pools pair. Does not submit a transaction. */
+  setLiquidityPairSelection: (selection: LiquidityPairSelection) => void
+  clearLiquidityPairSelection: (blockDefaultPair?: boolean) => void
   onFieldAInput: (value: string) => void
   onFieldBInput: (value: string) => void
   onSwapTokens: () => void
@@ -239,6 +247,8 @@ export function useLiquidityMintRuntime({
   const [mode, setModeState] = useState<LiquidityStudioMode>(initialMode)
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
+  const [pairSelection, setPairSelection] = useState<LiquidityPairSelection | null>(null)
+  const [addPairBlocked, setAddPairBlocked] = useState(false)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
   const [receiveNative, setReceiveNative] = useState(false)
 
@@ -255,11 +265,31 @@ export function useLiquidityMintRuntime({
 
   // Add always opens on the canonical BNB/MARCO pair. Remove derives its pair
   // exclusively from a wallet-owned LP position.
-  const resolvedIdA = currencyIdA ?? (isRemoveMode ? undefined : native.symbol)
-  const resolvedIdB = currencyIdB ?? (isRemoveMode ? undefined : defaultB)
+  const resolvedIdA = currencyIdA ?? (isRemoveMode || addPairBlocked ? undefined : native.symbol)
+  const resolvedIdB = currencyIdB ?? (isRemoveMode || addPairBlocked ? undefined : defaultB)
 
-  const currencyA = useCurrency(resolvedIdA)
-  const currencyB = useCurrency(resolvedIdB)
+  const liveCurrencyA = useCurrency(resolvedIdA)
+  const liveCurrencyB = useCurrency(resolvedIdB)
+  const activeSelection = isRemoveMode ? null : pairSelection
+  const currencyA = activeSelection
+    ? resolveLiquidityInputDisplay({
+        chainId: activeSelection.chainId,
+        addressOrId: activeSelection.token0,
+        indexedSymbol: activeSelection.symbol0,
+        walletChainId: chainId,
+        live: liveCurrencyA,
+      })
+    : liveCurrencyA
+  const currencyB = activeSelection
+    ? resolveLiquidityInputDisplay({
+        chainId: activeSelection.chainId,
+        addressOrId: activeSelection.token1,
+        indexedSymbol: activeSelection.symbol1,
+        walletChainId: chainId,
+        live: liveCurrencyB,
+      })
+    : liveCurrencyB
+  const mintChainBlocked = Boolean(activeSelection && chainId != null && activeSelection.chainId !== chainId)
   const wrappedNative = chainId ? WNATIVE[chainId] : undefined
   const currencyAIsWrappedNative = Boolean(
     wrappedNative && currencyA?.wrapped && wrappedNative.equals(currencyA.wrapped),
@@ -282,12 +312,35 @@ export function useLiquidityMintRuntime({
       if (next === 'Add Liquidity' && addModeShouldClearPair(opts)) {
         setCurrencyIdA(undefined)
         setCurrencyIdB(undefined)
+        setPairSelection(null)
+        setAddPairBlocked(false)
       }
+      const clearAddPair = next === 'Add Liquidity' && addModeShouldClearPair(opts)
       if (next === 'Remove Liquidity') onBurnInput(BurnField.LIQUIDITY_PERCENT, '50')
-      if (opts?.syncUrl === false) return
+      const stripPairQuery = (query: Record<string, string | string[] | undefined>) => {
+        if (!clearAddPair) return query
+        const nextQuery = { ...query }
+        delete nextQuery.token0
+        delete nextQuery.token1
+        delete nextQuery.pair
+        delete nextQuery.symbol0
+        delete nextQuery.symbol1
+        delete nextQuery.chain
+        return nextQuery
+      }
+      if (opts?.syncUrl === false) {
+        if (clearAddPair && (router.query.token0 || router.query.token1 || router.query.pair || router.query.chain)) {
+          void router.replace(
+            { pathname: router.pathname, query: stripPairQuery({ ...router.query }) },
+            undefined,
+            { shallow: true },
+          )
+        }
+        return
+      }
       const view = LIQUIDITY_MODE_TO_VIEW[next]
       const current = typeof router.query.view === 'string' ? router.query.view : undefined
-      const nextQuery: Record<string, string | string[] | undefined> = { ...router.query }
+      const nextQuery: Record<string, string | string[] | undefined> = stripPairQuery({ ...router.query })
       if (view) nextQuery.view = view
       else delete nextQuery.view
       // AI builder deep-link params must not leak onto Add / My Liquidity URLs.
@@ -304,8 +357,12 @@ export function useLiquidityMintRuntime({
     [onBurnInput, router],
   )
 
-  const mintInfo = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
-  const { pair, pairState, parsedAmounts, price, noLiquidity, liquidityMinted, poolTokenPercentage, error: mintError } = mintInfo;
+  const mintInfo = useDerivedMintInfo(
+    mintChainBlocked ? undefined : currencyA ?? undefined,
+    mintChainBlocked ? undefined : currencyB ?? undefined,
+  )
+  const { pair, pairState, parsedAmounts, price, noLiquidity: mintNoLiquidity, liquidityMinted, poolTokenPercentage, error: mintError } = mintInfo;
+  const noLiquidity = mintChainBlocked ? false : mintNoLiquidity
 
   const burnInfo = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
   const lpAprData = useLPApr(pair ?? undefined)
@@ -664,13 +721,36 @@ export function useLiquidityMintRuntime({
 
   const setCurrencyA = useCallback((currency: Currency) => {
     setCurrencyIdA(currencyId(currency))
+    setPairSelection((prev) => (prev && manualCurrencyReplacesSelection(prev, currency, 'A') ? null : prev))
   }, [])
 
   const setCurrencyB = useCallback((currency: Currency) => {
     setCurrencyIdB(currencyId(currency))
+    setPairSelection((prev) => (prev && manualCurrencyReplacesSelection(prev, currency, 'B') ? null : prev))
+  }, [])
+
+  const setLiquidityPairSelection = useCallback(
+    (selection: LiquidityPairSelection) => {
+      setModeState('Add Liquidity')
+      setAddPairBlocked(false)
+      setPairSelection(selection)
+      setCurrencyIdA(selection.token0)
+      setCurrencyIdB(selection.token1)
+      onFieldAInput('')
+      onFieldBInput('')
+    },
+    [onFieldAInput, onFieldBInput],
+  )
+
+  const clearLiquidityPairSelection = useCallback((blockDefaultPair = false) => {
+    setPairSelection(null)
+    setAddPairBlocked(blockDefaultPair)
+    setCurrencyIdA(undefined)
+    setCurrencyIdB(undefined)
   }, [])
 
   const onSwapTokens = useCallback(() => {
+    setPairSelection(null)
     const nextA = resolvedIdB
     const nextB = resolvedIdA
     setCurrencyIdA(nextA)
@@ -702,6 +782,19 @@ export function useLiquidityMintRuntime({
       setLiquidityState({
         attemptingTxn: false,
         liquidityErrorMessage: 'Missing wallet, network, or router — cannot add liquidity.',
+        txHash: undefined,
+      })
+      return
+    }
+    if (
+      (pairSelection && pairSelection.chainId !== chainId) ||
+      (currencyA && currencyA.chainId !== chainId) ||
+      (currencyB && currencyB.chainId !== chainId)
+    ) {
+      setAddTxLifecycle('failed')
+      setLiquidityState({
+        attemptingTxn: false,
+        liquidityErrorMessage: 'Switch to the pool network before adding liquidity.',
         txHash: undefined,
       })
       return
@@ -807,6 +900,7 @@ export function useLiquidityMintRuntime({
     chainId,
     account,
     routerContract,
+    pairSelection,
     parsedAmounts,
     currencyA,
     currencyB,
@@ -1209,6 +1303,8 @@ export function useLiquidityMintRuntime({
     currencyB,
     setCurrencyA,
     setCurrencyB,
+    setLiquidityPairSelection,
+    clearLiquidityPairSelection,
     onFieldAInput,
     onFieldBInput,
     onSwapTokens,

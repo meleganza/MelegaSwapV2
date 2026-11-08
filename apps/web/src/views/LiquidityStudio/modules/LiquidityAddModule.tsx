@@ -2,7 +2,7 @@
  * LIQUIDITY_MODULE_004_ADD_LIQUIDITY — premium UI over existing mint runtime.
  * No second AMM math / slippage model / router path.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -12,7 +12,6 @@ import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useLiveCurrencyBalance } from 'state/wallet/hooks'
@@ -21,8 +20,8 @@ import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
-import { getChainId } from 'config/chains'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import { parseExploreAddQuery } from './explorePoolClick'
 import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
 import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 
@@ -504,6 +503,8 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     currencyB,
     setCurrencyA,
     setCurrencyB,
+    setLiquidityPairSelection,
+    clearLiquidityPairSelection,
     onFieldAInput,
     onFieldBInput,
     typedValueA,
@@ -521,30 +522,45 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     addConfirmModal,
   } = useLiquidityRuntime()
 
-  const [seeded, setSeeded] = useState(false)
   const [completedFlash, setCompletedFlash] = useState(false)
   const [switchOpen, setSwitchOpen] = useState(false)
+  const appliedPairKey = useRef<string | null>(null)
 
   // Do NOT call setMode('Add Liquidity') on mount — that router.replace(view=add)
   // fights LiquidityBuildingCard's view=building writer and causes route oscillation.
 
   const token0Q = queryTokenId(router.query.token0)
   const token1Q = queryTokenId(router.query.token1)
-  const requestedChainId = useMemo(() => {
-    const queryChain = Array.isArray(router.query.chain) ? router.query.chain[0] : router.query.chain
-    return getChainId(queryChain ?? '') ?? chainId ?? MELEGA_CHAIN_ID
-  }, [router.query.chain, chainId])
-  const seedA = useCurrency(token0Q)
-  const seedB = useCurrency(token1Q)
+  const exploreQuery = useMemo(
+    () => parseExploreAddQuery({ ...router.query, token0: token0Q, token1: token1Q }, chainId),
+    [router.query, token0Q, token1Q, chainId],
+  )
+  const unsupportedNetwork = exploreQuery.kind === 'unsupported'
+  const requestedChainId =
+    exploreQuery.kind === 'pair' ? exploreQuery.selection.chainId : chainId ?? MELEGA_CHAIN_ID
 
   useEffect(() => {
-    if (seeded) return
-    if (seedA && seedB) {
-      setCurrencyA(seedA)
-      setCurrencyB(seedB)
-      setSeeded(true)
+    if (!router.isReady) return
+    if (exploreQuery.kind === 'empty') {
+      appliedPairKey.current = null
+      return
     }
-  }, [seedA, seedB, seeded, setCurrencyA, setCurrencyB])
+    if (exploreQuery.kind === 'pair') {
+      if (appliedPairKey.current === exploreQuery.key) return
+      appliedPairKey.current = exploreQuery.key
+      setLiquidityPairSelection(exploreQuery.selection)
+      window.requestAnimationFrame(() => {
+        document.getElementById('liquidity-add')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+      return
+    }
+    if (exploreQuery.kind === 'unsupported') {
+      const key = `unsupported:${exploreQuery.chainId ?? 'none'}`
+      if (appliedPairKey.current === key) return
+      appliedPairKey.current = key
+      clearLiquidityPairSelection(true)
+    }
+  }, [router.isReady, exploreQuery, setLiquidityPairSelection, clearLiquidityPairSelection])
 
   const { balance: balA } = useLiveCurrencyBalance(account ?? undefined, currencyA ?? undefined)
   const { balance: balB } = useLiveCurrencyBalance(account ?? undefined, currencyB ?? undefined)
@@ -585,7 +601,8 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
   // The liquidity workspace is multichain. Compare the wallet with the chain
   // requested by this page, not with BNB unconditionally. The previous BNB
   // constant made a correctly connected Ethereum wallet appear mismatched.
-  const wrongChain = Boolean(account && chainId != null && chainId !== requestedChainId)
+  const wrongChain =
+    !unsupportedNetwork && Boolean(account && chainId != null && chainId !== requestedChainId)
 
   const cta = useMemo(
     () =>
@@ -620,6 +637,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
   }, [typedValueA, typedValueB, currencyA?.symbol, currencyB?.symbol])
 
   const handlePrimary = useCallback(() => {
+    if (unsupportedNetwork) return
     if (wrongChain) {
       setSwitchOpen(true)
       return
@@ -629,7 +647,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
     if (cta.state === 'add') {
       setCompletedFlash(false)
     }
-  }, [wrongChain, cta.state, cta.disabled, onPrimaryAction])
+  }, [unsupportedNetwork, wrongChain, cta.state, cta.disabled, onPrimaryAction])
 
   useEffect(() => {
     if (approvalA === ApprovalState.PENDING || approvalB === ApprovalState.PENDING) {
@@ -658,7 +676,13 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
           </>
         ) : null}
 
-        {noLiquidity ? (
+        {unsupportedNetwork ? (
+          <ErrorBanner data-testid="liquidity-add-unsupported-network">
+            This network is not supported for Add Liquidity.
+          </ErrorBanner>
+        ) : null}
+
+        {noLiquidity && !unsupportedNetwork && !wrongChain ? (
           <NewPairBanner data-testid="liquidity-add-new-pair">
             <strong>New liquidity pool</strong>
             You’ll create the first liquidity for this pair.
@@ -695,7 +719,14 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <TokenBox data-testid="liquidity-add-token-a">
                 <TokenHead>
                   <TokenLabel>{LIQUIDITY_ADD_COPY.tokenA}</TokenLabel>
-                  <TokenSelect type="button" onClick={onPresentSelectA} data-testid="liquidity-add-token-a-select">
+                  <TokenSelect
+                    type="button"
+                    onClick={onPresentSelectA}
+                    data-testid="liquidity-add-token-a-select"
+                    data-token-symbol={currencyA?.symbol ?? ''}
+                    data-token-chain={currencyA?.chainId ?? ''}
+                    data-token-address={currencyA?.isToken ? currencyA.address : currencyA?.isNative ? 'native' : ''}
+                  >
                     <MelegaTokenAvatar
                       symbol={currencyA?.symbol}
                       name={currencyA?.name}
@@ -734,7 +765,14 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <TokenBox data-testid="liquidity-add-token-b">
                 <TokenHead>
                   <TokenLabel>{LIQUIDITY_ADD_COPY.tokenB}</TokenLabel>
-                  <TokenSelect type="button" onClick={onPresentSelectB} data-testid="liquidity-add-token-b-select">
+                  <TokenSelect
+                    type="button"
+                    onClick={onPresentSelectB}
+                    data-testid="liquidity-add-token-b-select"
+                    data-token-symbol={currencyB?.symbol ?? ''}
+                    data-token-chain={currencyB?.chainId ?? ''}
+                    data-token-address={currencyB?.isToken ? currencyB.address : currencyB?.isNative ? 'native' : ''}
+                  >
                     <MelegaTokenAvatar
                       symbol={currencyB?.symbol}
                       name={currencyB?.name}
@@ -840,7 +878,15 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <PreviewRow>
                 <PreviewDt>Pool state</PreviewDt>
                 <PreviewDd data-testid="liquidity-add-pool-state">
-                  {!currencyA || !currencyB ? 'Awaiting pair' : noLiquidity ? 'New Pair' : 'Existing'}
+                  {unsupportedNetwork
+                    ? 'Unsupported network'
+                    : wrongChain
+                    ? 'Switch network to continue'
+                    : !currencyA || !currencyB
+                    ? 'Awaiting pair'
+                    : noLiquidity
+                    ? 'New Pair'
+                    : 'Existing'}
                 </PreviewDd>
               </PreviewRow>
               <PreviewRow $wide>
@@ -866,11 +912,18 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <Primary
                 type="button"
                 onClick={handlePrimary}
-                disabled={wrongChain ? false : cta.disabled}
+                disabled={unsupportedNetwork ? true : wrongChain ? false : cta.disabled}
                 data-testid="liquidity-add-cta"
-                data-cta-state={wrongChain ? 'wrong-chain' : cta.state}
+                data-cta-state={unsupportedNetwork ? 'unsupported-network' : wrongChain ? 'wrong-chain' : cta.state}
+                data-disabled-reason={unsupportedNetwork ? 'This network is not supported for Add Liquidity.' : undefined}
               >
-                {wrongChain ? 'Switch Network' : noLiquidity ? 'Create Pool & Add Liquidity' : cta.label}
+                {unsupportedNetwork
+                  ? 'Unsupported network'
+                  : wrongChain
+                  ? 'Switch Network'
+                  : noLiquidity
+                  ? 'Create Pool & Add Liquidity'
+                  : cta.label}
               </Primary>
             )}
             <Security>{LIQUIDITY_ADD_COPY.securityNote}</Security>
