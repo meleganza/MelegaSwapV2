@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto'
 import {
   createFeaturedOrder,
   persistFeaturedOrderDurably,
@@ -18,6 +17,12 @@ import {
 } from 'lib/monetization/packages'
 import { canAcceptMCreditsPayment } from 'lib/monetization/visibilityRuntime'
 import type { CommercialServiceId } from 'views/shared/monetization/commercialCheckoutTypes'
+import {
+  confirmPassportMcredits,
+  releasePassportMcredits,
+  reservePassportMcredits,
+  type McreditsRuntime,
+} from 'lib/marco-mcredits/server'
 
 export class MCreditsGatewayError extends Error {
   constructor(public readonly code: string, message: string) {
@@ -46,54 +51,33 @@ type SpendInput = {
   serviceId: MCreditsOrder['serviceId']
   packageId?: string | null
   targetId?: string | null
-  identityToken?: string | null
+  merchantOrderRef?: string
+  customerAuthorization?: string | null
   fetchImpl?: typeof fetch
+  mcreditsRuntime?: McreditsRuntime
 }
 
 const MEMORY = new Map<string, MCreditsOrder>()
 const IDEMPOTENCY = new Map<string, string>()
 
-function marcoOrigin(): string {
-  return 'https://marco.melega.ai'
-}
-
-async function postMCredits(
-  path: string,
-  body: Record<string, unknown>,
-  identityToken: string,
-  fetchImpl: typeof fetch,
-): Promise<{ ok: boolean; reservation_id?: string; error?: string }> {
-  const response = await fetchImpl(`${marcoOrigin()}${path}`, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      authorization: `Bearer ${identityToken}`,
-    },
-    body: JSON.stringify(body),
-  })
-  const payload = (await response.json().catch(() => ({}))) as {
-    ok?: boolean
-    reservation_id?: string
-    error?: string
-  }
-  return { ok: response.ok && payload.ok !== false, reservation_id: payload.reservation_id, error: payload.error }
-}
-
 export async function spendMCreditsForBoost(input: SpendInput): Promise<MCreditsOrder> {
-  if (input.identityToken?.startsWith('mpk_') || input.identityToken?.startsWith('whsec')) {
-    throw new MCreditsGatewayError('MCREDITS_SECRET_REJECTED', 'M-Credits cannot use MARCO Pay server secrets.')
+  if (input.customerAuthorization?.startsWith('mpk_') || input.customerAuthorization?.startsWith('whsec')) {
+    throw new MCreditsGatewayError('MCREDITS_SECRET_REJECTED', 'Mcredits cannot use MARCO Pay server secrets.')
   }
-  if (!input.identityToken?.trim()) {
-    throw new MCreditsGatewayError('MCREDITS_IDENTITY_REQUIRED', 'M-Credits require a MARCO Passport session.')
+  if (!input.customerAuthorization?.trim()) {
+    throw new MCreditsGatewayError('MCREDITS_AUTHORIZATION_REQUIRED', 'Mcredits require explicit MARCO Passport authorization.')
   }
   if (!canAcceptMCreditsPayment(input.serviceId)) {
-    throw new MCreditsGatewayError('SERVICE_NOT_FULFILLABLE', 'This service cannot be fulfilled with M-Credits yet.')
+    throw new MCreditsGatewayError('SERVICE_NOT_FULFILLABLE', 'This service cannot be fulfilled with Mcredits yet.')
   }
   const pkg =
     input.serviceId === 'featured'
       ? getFeaturedPackage(input.packageId)
       : getVisibilityPackage(input.serviceId as VisibilityProductId, input.packageId)
+  const expectedOrderRef = `${String(input.projectContract ?? '').toLowerCase()}:${input.serviceId}:${pkg.id}`
+  if (!/^0x[a-f0-9]{40}:/.test(expectedOrderRef) || input.merchantOrderRef !== expectedOrderRef) {
+    throw new MCreditsGatewayError('MCREDITS_ORDER_REFERENCE_INVALID', 'The Mcredits authorization does not match this order.')
+  }
   const idempotencyKey = `${input.buyerWallet.toLowerCase()}|${input.serviceId}|${pkg.id}|${input.projectId}`
   const existingId = IDEMPOTENCY.get(idempotencyKey)
   const existing = existingId ? MEMORY.get(existingId) : null
@@ -103,7 +87,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
   }
   const now = new Date().toISOString()
   const order: MCreditsOrder = {
-    orderId: `mc_${randomBytes(12).toString('hex')}`,
+    orderId: input.merchantOrderRef,
     reservationId: null,
     state: 'CREATED',
     serviceId: input.serviceId,
@@ -115,38 +99,28 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
   }
   MEMORY.set(order.orderId, order)
   IDEMPOTENCY.set(idempotencyKey, order.orderId)
-  const fetchImpl = input.fetchImpl ?? fetch
-  const identity = input.identityToken.trim()
+  const runtime: McreditsRuntime = { ...input.mcreditsRuntime, fetch: input.mcreditsRuntime?.fetch ?? input.fetchImpl }
+  const authorization = input.customerAuthorization.trim()
   const amountMinor = order.referenceAmountMinor
   let reservationId: string | null = null
   try {
-    const reserved = await postMCredits(
-      '/api/public/mcredits/reserve',
-      {
-        merchant_order_ref: order.orderId,
-        amount_minor: amountMinor,
-        currency: 'USD',
-        item: input.serviceId,
-      },
-      identity,
-      fetchImpl,
-    )
-    if (!reserved.ok || !reserved.reservation_id) {
-      throw new MCreditsGatewayError(reserved.error || 'MCREDITS_RESERVE_FAILED', 'M-Credits could not reserve this purchase.')
+    const reserved = await reservePassportMcredits({
+      customerAuthorization: authorization,
+      orderRef: order.orderId,
+      amountMinor,
+      item: input.serviceId,
+    }, runtime)
+    if ('gate' in reserved) {
+      throw new MCreditsGatewayError(reserved.gate, 'Mcredits could not reserve this purchase.')
     }
-    reservationId = reserved.reservation_id
+    reservationId = reserved.paymentId
     order.reservationId = reservationId
     order.state = 'RESERVED'
     MEMORY.set(order.orderId, { ...order })
 
-    const confirmed = await postMCredits(
-      '/api/public/mcredits/confirm',
-      { reservation_id: reservationId, merchant_order_ref: order.orderId },
-      identity,
-      fetchImpl,
-    )
-    if (!confirmed.ok) {
-      throw new MCreditsGatewayError(confirmed.error || 'MCREDITS_CONFIRM_FAILED', 'M-Credits could not confirm this purchase.')
+    const confirmed = await confirmPassportMcredits(reservationId, runtime)
+    if ('gate' in confirmed) {
+      throw new MCreditsGatewayError(confirmed.gate, 'Mcredits could not confirm this purchase.')
     }
 
     if (input.serviceId === 'featured') {
@@ -199,12 +173,7 @@ export async function spendMCreditsForBoost(input: SpendInput): Promise<MCredits
     return order
   } catch (cause) {
     if (reservationId) {
-      await postMCredits(
-        '/api/public/mcredits/release',
-        { reservation_id: reservationId, merchant_order_ref: order.orderId },
-        identity,
-        fetchImpl,
-      ).catch(() => ({ ok: false }))
+      await releasePassportMcredits(reservationId, 'DEX_ORDER_FAILED', runtime).catch(() => ({ ok: false as const, gate: 'PASSPORT_MCREDITS_UNREACHABLE' as const }))
       order.state = 'RELEASED'
     } else {
       order.state = 'FAILED'

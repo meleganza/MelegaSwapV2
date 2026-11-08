@@ -45,8 +45,8 @@ const handler: NextApiHandler = async (req, res) => {
   if (!VISIBILITY_RUNTIME[serviceId]?.live || !canAcceptMCreditsPayment(serviceId)) {
     return res.status(409).json({ error: 'SERVICE_ACTIVATION_PENDING' })
   }
-  const identityHeader = req.headers['x-marco-passport-session']
-  const identityToken = Array.isArray(identityHeader) ? identityHeader[0] : identityHeader
+  const authorizationHeader = req.headers['x-marco-mcredits-authorization']
+  const customerAuthorization = Array.isArray(authorizationHeader) ? authorizationHeader[0] : authorizationHeader
   try {
     const order = await spendMCreditsForBoost({
       projectId,
@@ -56,7 +56,8 @@ const handler: NextApiHandler = async (req, res) => {
       serviceId,
       packageId: body.packageId ? String(body.packageId) : null,
       targetId: body.targetId ? String(body.targetId) : null,
-      identityToken: identityToken || body.identityToken || null,
+      merchantOrderRef: body.merchantOrderRef ? String(body.merchantOrderRef) : '',
+      customerAuthorization: customerAuthorization || null,
     })
     return res.status(order.state === 'FULFILLED' ? 201 : 409).json({
       order: {
@@ -71,7 +72,7 @@ const handler: NextApiHandler = async (req, res) => {
   } catch (cause) {
     const code = cause instanceof MCreditsGatewayError ? cause.code : 'MCREDITS_UNAVAILABLE'
     const status =
-      code === 'MCREDITS_IDENTITY_REQUIRED' ? 401 : code === 'SERVICE_NOT_FULFILLABLE' ? 409 : 503
+      code === 'MCREDITS_AUTHORIZATION_REQUIRED' ? 401 : code === 'SERVICE_NOT_FULFILLABLE' ? 409 : 503
     return res.status(status).json({
       error: code,
       message: cause instanceof Error ? cause.message : 'M-Credits are temporarily unavailable.',

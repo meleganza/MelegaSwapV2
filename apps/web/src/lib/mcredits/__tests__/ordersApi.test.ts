@@ -49,7 +49,7 @@ describe('M-Credits orders API', () => {
     expect(res.body.error).toBe('SERVICE_ACTIVATION_PENDING')
   })
 
-  it('requires a Passport session instead of succeeding silently', async () => {
+  it('requires an explicit Passport order authorization instead of succeeding silently', async () => {
     const req: any = {
       method: 'POST',
       headers: {},
@@ -63,7 +63,7 @@ describe('M-Credits orders API', () => {
     const res = mockRes()
     await handler(req, res)
     expect(res.statusCode).toBe(401)
-    expect(res.body.error).toBe('MCREDITS_IDENTITY_REQUIRED')
+    expect(res.body.error).toBe('MCREDITS_AUTHORIZATION_REQUIRED')
     expect(res.body.payment_id).toBeNull()
   })
 })

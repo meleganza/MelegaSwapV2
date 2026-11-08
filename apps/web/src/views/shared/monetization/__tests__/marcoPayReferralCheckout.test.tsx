@@ -164,7 +164,7 @@ describe('MARCO Pay referral review', () => {
     fireEvent.click(screen.getByTestId('commercial-checkout-next'))
     await waitFor(() =>
       expect(screen.getByTestId('commercial-checkout-error').textContent).toBe(
-        'This Passport PRO referral could not be verified. MARCO Pay was not charged.',
+        'This MARCO referral could not be verified. MARCO Pay was not charged.',
       ),
     )
     expect(screen.queryByText('MARCO Pay is temporarily unavailable.')).toBeNull()

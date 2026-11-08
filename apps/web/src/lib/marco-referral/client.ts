@@ -11,6 +11,7 @@ import { assertPassportProEconomics, PASSPORT_PRO_COMMISSION_ASSET } from 'lib/m
 export const MARCO_REFERRAL_QUERY_PARAM = 'ref'
 export const MARCO_REFERRAL_DESTINATION_PARAM = 'rd'
 export const MARCO_REFERRAL_CAMPAIGN_PARAM = 'rc'
+// Kept for backward-compatible reads; this legacy key is not a product name.
 export const MARCO_REFERRAL_STORAGE_KEY = 'marco.passport-pro.referral.v1'
 export const MARCO_REFERRAL_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 export const MARCO_REFERRAL_CHANGE_EVENT = 'marco:referral-change'
