@@ -63,7 +63,8 @@ export async function scanBlockRangeEvents(params: {
       const ordered = [variants[variants.length - 1], ...variants.slice(0, -1)].filter(
         (v, i, a) => a.indexOf(v) === i,
       )
-      let batch: RawLog[] = []
+      let batch: RawLog[] | undefined
+      let lastError: unknown
       for (const quantity of ordered) {
         try {
           const res = await rpcCallWithFailover<RawLog[]>(
@@ -81,10 +82,12 @@ export async function scanBlockRangeEvents(params: {
           providerUsed = res.url
           batch = res.result
           break
-        } catch {
+        } catch (error) {
+          lastError = error
           continue
         }
       }
+      if (batch === undefined) throw lastError ?? new Error(`Incomplete log scan at block ${bn}`)
       logs.push(...batch)
     }
   }
