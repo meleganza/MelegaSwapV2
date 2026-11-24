@@ -51,7 +51,7 @@ export const ProjectsStudioPageHeader: React.FC = () => (
   >
     <Copy>
       <Title>Explore</Title>
-      <Subtitle>Discover tokens, trends and opportunities on BNB Chain.</Subtitle>
+      <Subtitle>Verified projects, real markets and community discovery.</Subtitle>
     </Copy>
   </Shell>
 )

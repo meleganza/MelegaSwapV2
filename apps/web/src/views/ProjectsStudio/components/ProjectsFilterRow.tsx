@@ -295,7 +295,7 @@ export const ProjectsFilterRow: React.FC = () => {
   )
 
   return (
-    <Toolbar data-pr-filters data-testid="projects-directory-filters" data-projects-filters="minimal">
+    <Toolbar data-pr-filters data-testid="projects-directory-filters" data-projects-filters="dropdowns">
       <Search
         type="search"
         value={searchQuery}
@@ -309,6 +309,22 @@ export const ProjectsFilterRow: React.FC = () => {
         <DiscoveryTab type="button" role="tab" $active={sort === 'Trending'} onClick={() => onSortChange('Trending')}>Trending</DiscoveryTab>
         <DiscoveryTab type="button" role="tab" onClick={() => resetFilters()}>All</DiscoveryTab>
       </DiscoveryTabs>
+      <DesktopFilters data-projects-filters-desktop>{filterSelects}</DesktopFilters>
+      <MobileFiltersBtn
+        type="button"
+        data-testid="projects-filters-mobile"
+        onClick={() => setDrawerOpen(true)}
+      >
+        Filters
+      </MobileFiltersBtn>
+      <DrawerBackdrop $open={drawerOpen} onClick={() => setDrawerOpen(false)} />
+      <Drawer $open={drawerOpen} data-testid="projects-filters-drawer" role="dialog" aria-label="Filters">
+        <DrawerTitle>Filters</DrawerTitle>
+        {filterSelects}
+        <ResetBtn type="button" onClick={() => setDrawerOpen(false)}>
+          Done
+        </ResetBtn>
+      </Drawer>
     </Toolbar>
   )
 }

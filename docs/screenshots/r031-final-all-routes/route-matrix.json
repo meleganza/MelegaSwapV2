@@ -1,7 +1,7 @@
 {
   "task": "R031 FINAL ALL-ROUTES PREMIUM UX + TERMINATED SAFETY",
   "base": "http://127.0.0.1:3013",
-  "capturedAt": "2026-10-29T14:32:29.730Z",
+  "capturedAt": "2026-11-24T17:06:55.163Z",
   "rows": [
     {
       "name": "home",
@@ -13,9 +13,9 @@
         "title": "Home | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 47,
-        "bodyTextLength": 1349,
-        "visibleH1": true,
+        "interactiveCount": 34,
+        "bodyTextLength": 403,
+        "visibleH1": false,
         "nextError": false
       },
       "consoleErrors": []
@@ -25,14 +25,14 @@
       "route": "/",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "home-390.png",
       "checks": {
         "title": "Home | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 47,
-        "bodyTextLength": 1349,
-        "visibleH1": true,
+        "interactiveCount": 34,
+        "bodyTextLength": 407,
+        "visibleH1": false,
         "nextError": false
       },
       "consoleErrors": []
@@ -47,12 +47,16 @@
         "title": "Home | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 47,
-        "bodyTextLength": 1349,
-        "visibleH1": true,
+        "interactiveCount": 62,
+        "bodyTextLength": 751,
+        "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
     },
     {
       "name": "home",
@@ -64,29 +68,38 @@
         "title": "Home | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 47,
-        "bodyTextLength": 1349,
-        "visibleH1": true,
+        "interactiveCount": 71,
+        "bodyTextLength": 853,
+        "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
     },
     {
       "name": "home",
       "route": "/",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "home-1440.png",
       "checks": {
         "title": "Home | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 49,
-        "bodyTextLength": 1388,
-        "visibleH1": true,
+        "interactiveCount": 84,
+        "bodyTextLength": 1016,
+        "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "swap",
@@ -98,29 +111,38 @@
         "title": "Swap | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 30,
-        "bodyTextLength": 338,
+        "interactiveCount": 62,
+        "bodyTextLength": 747,
         "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
     },
     {
       "name": "swap",
       "route": "/swap",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "swap-390.png",
       "checks": {
         "title": "Swap | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 30,
-        "bodyTextLength": 338,
+        "interactiveCount": 62,
+        "bodyTextLength": 751,
         "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "swap",
@@ -132,12 +154,17 @@
         "title": "Swap | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 30,
-        "bodyTextLength": 338,
+        "interactiveCount": 62,
+        "bodyTextLength": 751,
         "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "swap",
@@ -149,369 +176,461 @@
         "title": "Swap | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 30,
-        "bodyTextLength": 337,
+        "interactiveCount": 71,
+        "bodyTextLength": 853,
         "visibleH1": false,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
     },
     {
       "name": "swap",
       "route": "/swap",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "swap-1440.png",
       "checks": {
         "title": "Swap | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 84,
+        "bodyTextLength": 1016,
+        "visibleH1": false,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "bridge",
+      "route": "/bridge",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "MARCO Bridge | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 56,
+        "bodyTextLength": 1020,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "bridge",
+      "route": "/bridge",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "bridge-390.png",
+      "checks": {
+        "title": "MARCO Bridge | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 56,
+        "bodyTextLength": 1024,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "bridge",
+      "route": "/bridge",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "MARCO Bridge | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 56,
+        "bodyTextLength": 1024,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "bridge",
+      "route": "/bridge",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "MARCO Bridge | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 64,
+        "bodyTextLength": 1126,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "bridge",
+      "route": "/bridge",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "bridge-1440.png",
+      "checks": {
+        "title": "MARCO Bridge | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 77,
+        "bodyTextLength": 1289,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "liquidity",
+      "route": "/liquidity",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1163,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity",
+      "route": "/liquidity",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "liquidity-390.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1167,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "liquidity",
+      "route": "/liquidity",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1167,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "liquidity",
+      "route": "/liquidity",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 67,
+        "bodyTextLength": 1269,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "liquidity",
+      "route": "/liquidity",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "liquidity-1440.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 80,
+        "bodyTextLength": 1432,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-add",
+      "route": "/liquidity?view=add",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1156,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-add",
+      "route": "/liquidity?view=add",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "liquidity-add-390.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1160,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-add",
+      "route": "/liquidity?view=add",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1160,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-add",
+      "route": "/liquidity?view=add",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 67,
+        "bodyTextLength": 1262,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-add",
+      "route": "/liquidity?view=add",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "liquidity-add-1440.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 80,
+        "bodyTextLength": 1425,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-remove",
+      "route": "/liquidity?view=remove",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1084,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "liquidity-remove",
+      "route": "/liquidity?view=remove",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "liquidity-remove-390.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1088,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-remove",
+      "route": "/liquidity?view=remove",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 59,
+        "bodyTextLength": 1080,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "liquidity-remove",
+      "route": "/liquidity?view=remove",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 31,
+        "bodyTextLength": 745,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "liquidity-remove",
+      "route": "/liquidity?view=remove",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "liquidity-remove-1440.png",
+      "checks": {
+        "title": "Liquidity | Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
         "interactiveCount": 32,
-        "bodyTextLength": 376,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "bridge",
-      "route": "/bridge",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "MARCO Bridge | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 26,
-        "bodyTextLength": 803,
+        "bodyTextLength": 756,
         "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
-    },
-    {
-      "name": "bridge",
-      "route": "/bridge",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "MARCO Bridge | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 26,
-        "bodyTextLength": 803,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "bridge",
-      "route": "/bridge",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "MARCO Bridge | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 26,
-        "bodyTextLength": 803,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "bridge",
-      "route": "/bridge",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "MARCO Bridge | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 26,
-        "bodyTextLength": 803,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "bridge",
-      "route": "/bridge",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "MARCO Bridge | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 28,
-        "bodyTextLength": 842,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity",
-      "route": "/liquidity",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity",
-      "route": "/liquidity",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity",
-      "route": "/liquidity",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity",
-      "route": "/liquidity",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 854,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity",
-      "route": "/liquidity",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 31,
-        "bodyTextLength": 893,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-add",
-      "route": "/liquidity?view=add",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-add",
-      "route": "/liquidity?view=add",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-add",
-      "route": "/liquidity?view=add",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-add",
-      "route": "/liquidity?view=add",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 854,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-add",
-      "route": "/liquidity?view=add",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 31,
-        "bodyTextLength": 893,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-remove",
-      "route": "/liquidity?view=remove",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-remove",
-      "route": "/liquidity?view=remove",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-remove",
-      "route": "/liquidity?view=remove",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 834,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-remove",
-      "route": "/liquidity?view=remove",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 29,
-        "bodyTextLength": 854,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "liquidity-remove",
-      "route": "/liquidity?view=remove",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 31,
-        "bodyTextLength": 893,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "remove-deep-link",
@@ -521,418 +640,462 @@
       "screenshot": null,
       "checks": {
         "title": "Remove Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 34,
-        "bodyTextLength": 423,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "remove-deep-link",
-      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Remove Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 34,
-        "bodyTextLength": 423,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "remove-deep-link",
-      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Remove Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 34,
-        "bodyTextLength": 423,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "remove-deep-link",
-      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Remove Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 34,
-        "bodyTextLength": 423,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "remove-deep-link",
-      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Remove Liquidity | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 36,
-        "bodyTextLength": 462,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "farms",
-      "route": "/farms?view=explore",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Farms | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 59,
-        "bodyTextLength": 2474,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "farms",
-      "route": "/farms?view=explore",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Farms | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 59,
-        "bodyTextLength": 2474,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "farms",
-      "route": "/farms?view=explore",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Farms | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 59,
-        "bodyTextLength": 2474,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "farms",
-      "route": "/farms?view=explore",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Farms | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 59,
-        "bodyTextLength": 2474,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "farms",
-      "route": "/farms?view=explore",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Farms | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 61,
-        "bodyTextLength": 2513,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "pools",
-      "route": "/pools?view=explore",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Pools | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 49,
-        "bodyTextLength": 1805,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "pools",
-      "route": "/pools?view=explore",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Pools | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 49,
-        "bodyTextLength": 1805,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "pools",
-      "route": "/pools?view=explore",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Pools | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 49,
-        "bodyTextLength": 1805,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "pools",
-      "route": "/pools?view=explore",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Pools | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 49,
-        "bodyTextLength": 1805,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "pools",
-      "route": "/pools?view=explore",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Pools | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 51,
-        "bodyTextLength": 1844,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "portfolio",
-      "route": "/portfolio",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Portfolio | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 21,
-        "bodyTextLength": 162,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "portfolio",
-      "route": "/portfolio",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Portfolio | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 21,
-        "bodyTextLength": 162,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "portfolio",
-      "route": "/portfolio",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Portfolio | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 21,
-        "bodyTextLength": 162,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "portfolio",
-      "route": "/portfolio",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Portfolio | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 21,
-        "bodyTextLength": 162,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "portfolio",
-      "route": "/portfolio",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Portfolio | Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 23,
-        "bodyTextLength": 201,
-        "visibleH1": false,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "projects",
-      "route": "/projects",
-      "viewport": "320",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 35,
-        "bodyTextLength": 732,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "projects",
-      "route": "/projects",
-      "viewport": "390",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 35,
-        "bodyTextLength": 732,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "projects",
-      "route": "/projects",
-      "viewport": "430",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 35,
-        "bodyTextLength": 732,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "projects",
-      "route": "/projects",
-      "viewport": "768",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Melega DEX",
-        "overflow": 0,
-        "hasMainSurface": true,
-        "interactiveCount": 35,
-        "bodyTextLength": 931,
-        "visibleH1": true,
-        "nextError": false
-      },
-      "consoleErrors": []
-    },
-    {
-      "name": "projects",
-      "route": "/projects",
-      "viewport": "1440",
-      "status": 200,
-      "screenshot": null,
-      "checks": {
-        "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
         "interactiveCount": 37,
-        "bodyTextLength": 970,
+        "bodyTextLength": 460,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "remove-deep-link",
+      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "remove-deep-link-390.png",
+      "checks": {
+        "title": "Remove Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 37,
+        "bodyTextLength": 464,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "remove-deep-link",
+      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Remove Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 37,
+        "bodyTextLength": 464,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "remove-deep-link",
+      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Remove Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 37,
+        "bodyTextLength": 464,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "remove-deep-link",
+      "route": "/remove/BNB/0x55d398326f99059ff775485246999027b3197955",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "remove-deep-link-1440.png",
+      "checks": {
+        "title": "Remove Liquidity | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 38,
+        "bodyTextLength": 475,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "farms",
+      "route": "/farms?view=explore",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Farms | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 41,
+        "bodyTextLength": 1610,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "farms",
+      "route": "/farms?view=explore",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "farms-390.png",
+      "checks": {
+        "title": "Farms | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 41,
+        "bodyTextLength": 1615,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "farms",
+      "route": "/farms?view=explore",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Farms | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 41,
+        "bodyTextLength": 1615,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "farms",
+      "route": "/farms?view=explore",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Farms | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 41,
+        "bodyTextLength": 1615,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "farms",
+      "route": "/farms?view=explore",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "farms-1440.png",
+      "checks": {
+        "title": "Farms | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 1626,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "pools",
+      "route": "/pools?view=explore",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Pools | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 1381,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "pools",
+      "route": "/pools?view=explore",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "pools-390.png",
+      "checks": {
+        "title": "Pools | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 1385,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "pools",
+      "route": "/pools?view=explore",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Pools | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 1385,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "pools",
+      "route": "/pools?view=explore",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Pools | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 1385,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "pools",
+      "route": "/pools?view=explore",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "pools-1440.png",
+      "checks": {
+        "title": "Pools | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 43,
+        "bodyTextLength": 1396,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Portfolio | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 26,
+        "bodyTextLength": 373,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "portfolio-390.png",
+      "checks": {
+        "title": "Portfolio | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 26,
+        "bodyTextLength": 377,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Portfolio | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 26,
+        "bodyTextLength": 377,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Portfolio | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 26,
+        "bodyTextLength": 377,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "portfolio-1440.png",
+      "checks": {
+        "title": "Portfolio | Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 27,
+        "bodyTextLength": 388,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "projects",
+      "route": "/projects",
+      "viewport": "320",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 643,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "projects",
+      "route": "/projects",
+      "viewport": "390",
+      "status": 200,
+      "screenshot": "projects-390.png",
+      "checks": {
+        "title": "Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 647,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "projects",
+      "route": "/projects",
+      "viewport": "430",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 647,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "projects",
+      "route": "/projects",
+      "viewport": "768",
+      "status": 200,
+      "screenshot": null,
+      "checks": {
+        "title": "Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 42,
+        "bodyTextLength": 846,
+        "visibleH1": true,
+        "nextError": false
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    },
+    {
+      "name": "projects",
+      "route": "/projects",
+      "viewport": "1440",
+      "status": 200,
+      "screenshot": "projects-1440.png",
+      "checks": {
+        "title": "Melega DEX",
+        "overflow": 0,
+        "hasMainSurface": true,
+        "interactiveCount": 43,
+        "bodyTextLength": 857,
         "visibleH1": true,
         "nextError": false
       },
@@ -945,32 +1108,38 @@
       "status": 200,
       "screenshot": null,
       "checks": {
-        "title": "Opening project · Melega DEX",
+        "title": "MARCO | Melega DEX Project",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 185,
-        "visibleH1": false,
+        "interactiveCount": 54,
+        "bodyTextLength": 1678,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "project-detail",
       "route": "/project/marco",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "project-detail-390.png",
       "checks": {
-        "title": "Opening project · Melega DEX",
+        "title": "MARCO | Melega DEX Project",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 185,
-        "visibleH1": false,
+        "interactiveCount": 54,
+        "bodyTextLength": 1682,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "project-detail",
@@ -979,15 +1148,18 @@
       "status": 200,
       "screenshot": null,
       "checks": {
-        "title": "Opening project · Melega DEX",
+        "title": "MARCO | Melega DEX Project",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 185,
-        "visibleH1": false,
+        "interactiveCount": 54,
+        "bodyTextLength": 1682,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "project-detail",
@@ -996,32 +1168,38 @@
       "status": 200,
       "screenshot": null,
       "checks": {
-        "title": "Opening project · Melega DEX",
+        "title": "MARCO | Melega DEX Project",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 185,
-        "visibleH1": false,
+        "interactiveCount": 55,
+        "bodyTextLength": 1682,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "project-detail",
       "route": "/project/marco",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "project-detail-1440.png",
       "checks": {
-        "title": "Opening project · Melega DEX",
+        "title": "MARCO | Melega DEX Project",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 224,
-        "visibleH1": false,
+        "interactiveCount": 56,
+        "bodyTextLength": 1693,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 502 (Bad Gateway)",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "list-tools",
@@ -1033,29 +1211,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 720,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "list-tools",
       "route": "/list",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "list-tools-390.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "list-tools",
@@ -1067,12 +1249,14 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "list-tools",
@@ -1084,29 +1268,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 777,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "list-tools",
       "route": "/list",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "list-tools-1440.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 201,
-        "visibleH1": false,
+        "interactiveCount": 32,
+        "bodyTextLength": 788,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-featured",
@@ -1118,29 +1306,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 720,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-featured",
       "route": "/list?intent=featured",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-featured-390.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-featured",
@@ -1152,12 +1344,14 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-featured",
@@ -1169,29 +1363,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 777,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-featured",
       "route": "/list?intent=featured",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-featured-1440.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 201,
-        "visibleH1": false,
+        "interactiveCount": 32,
+        "bodyTextLength": 788,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-trend-boost",
@@ -1203,29 +1401,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 720,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-trend-boost",
       "route": "/list?intent=trend-boost",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-trend-boost-390.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-trend-boost",
@@ -1237,12 +1439,14 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-trend-boost",
@@ -1254,29 +1458,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 777,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-trend-boost",
       "route": "/list?intent=trend-boost",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-trend-boost-1440.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 201,
-        "visibleH1": false,
+        "interactiveCount": 32,
+        "bodyTextLength": 788,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-liquidity",
@@ -1288,29 +1496,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 720,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-liquidity",
       "route": "/list?intent=liquidity",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-liquidity-390.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-liquidity",
@@ -1322,12 +1534,14 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 724,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-liquidity",
@@ -1339,29 +1553,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 31,
+        "bodyTextLength": 777,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-liquidity",
       "route": "/list?intent=liquidity",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-liquidity-1440.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 201,
-        "visibleH1": false,
+        "interactiveCount": 32,
+        "bodyTextLength": 788,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-project",
@@ -1373,29 +1591,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 55,
+        "bodyTextLength": 2216,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-project",
       "route": "/list?intent=create-project",
       "viewport": "390",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-project-390.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 55,
+        "bodyTextLength": 2220,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-project",
@@ -1407,12 +1629,14 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 55,
+        "bodyTextLength": 2220,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-project",
@@ -1424,29 +1648,33 @@
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 22,
-        "bodyTextLength": 162,
-        "visibleH1": false,
+        "interactiveCount": 55,
+        "bodyTextLength": 2273,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     },
     {
       "name": "service-project",
       "route": "/list?intent=create-project",
       "viewport": "1440",
       "status": 200,
-      "screenshot": null,
+      "screenshot": "service-project-1440.png",
       "checks": {
         "title": "Melega DEX",
         "overflow": 0,
         "hasMainSurface": true,
-        "interactiveCount": 24,
-        "bodyTextLength": 201,
-        "visibleH1": false,
+        "interactiveCount": 56,
+        "bodyTextLength": 2284,
+        "visibleH1": true,
         "nextError": false
       },
-      "consoleErrors": []
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
     }
   ],
   "summary": {
@@ -1455,7 +1683,7 @@
     "overflowFailures": 0,
     "nextErrors": 0,
     "emptySurfaces": 0,
-    "consoleErrorRows": 0,
-    "screenshots": 0
+    "consoleErrorRows": 75,
+    "screenshots": 34
   }
 }

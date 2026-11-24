@@ -11,12 +11,14 @@ import {
   type HeaderNavItem,
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
+import GlobalSearch from 'app-shell/components/GlobalSearch'
+import { preloadMyMelegaDrawer, useMyMelegaDrawer } from 'components/MyMelega/MyMelegaProvider'
 import { preserveEarlyNavigation } from 'lib/navigation/preserveEarlyNavigation'
 import { MelegaBrandLockup } from '../BrandLockup'
 import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
 import { uxRebuildColors } from '../../tokens/uxRebuild'
 import HeaderNavDropdown from './HeaderNavDropdown'
-import { IconChevronDown } from './HeaderIcons'
+import { IconChevronDown, IconUser } from './HeaderIcons'
 
 const Bar = styled.header`
   display: none;
@@ -194,6 +196,23 @@ const Chevron = styled.span<{ $open?: boolean }>`
   transform: ${({ $open }) => ($open ? 'rotate(180deg)' : 'none')};
 `
 
+const SearchRegion = styled.div`
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: min(360px, 30vw);
+  margin: 0 10px 0 16px;
+
+  [data-melega-global-search] {
+    width: 100%;
+    max-width: none;
+  }
+
+  @media (max-width: 1100px) {
+    max-width: min(150px, 15vw);
+    margin-inline: 8px 6px;
+  }
+`
+
 const RightCluster = styled.div`
   display: flex;
   align-items: center;
@@ -241,6 +260,26 @@ const RightCluster = styled.div`
   }
 `
 
+const MyMelegaTrigger = styled.button`
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: rgba(244, 196, 48, 0.1);
+  color: ${uxRebuildColors.gold};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid ${uxRebuildColors.gold};
+    outline-offset: 2px;
+  }
+`
+
 const LanguageRuntimeBridge = styled.div`
   display: none;
 `
@@ -261,6 +300,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   const pathname = pathnameOverride ?? router.pathname
   const asPath = router.asPath?.split('?')[0] ?? pathname
   const query = router.query as Record<string, string | string[] | undefined>
+  const { open: myMelegaOpen, toggleDrawer: toggleMyMelega } = useMyMelegaDrawer()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement>(null)
 
@@ -357,6 +397,10 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           })}
         </Nav>
 
+        <SearchRegion>
+          <GlobalSearch />
+        </SearchRegion>
+
         <RightCluster data-testid="melega-header-actions">
           <LanguageRuntimeBridge aria-hidden="true">
             <MelegaLanguageControl />
@@ -367,6 +411,22 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
           <div data-testid="melega-header-connect">
             <MarcoConnect size="navbar" activation="desktop" appearance="wallet" />
           </div>
+          <MyMelegaTrigger
+            type="button"
+            aria-label="Open My Melega"
+            title="My Melega"
+            aria-haspopup="dialog"
+            aria-expanded={myMelegaOpen}
+            data-testid="melega-header-my-melega"
+            onPointerEnter={preloadMyMelegaDrawer}
+            onFocus={preloadMyMelegaDrawer}
+            onClick={() => {
+              closeMenus()
+              toggleMyMelega()
+            }}
+          >
+            <IconUser />
+          </MyMelegaTrigger>
         </RightCluster>
       </Inner>
     </Bar>
