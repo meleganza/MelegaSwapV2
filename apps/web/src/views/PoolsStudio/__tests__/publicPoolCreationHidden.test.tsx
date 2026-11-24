@@ -12,12 +12,16 @@ vi.mock('components/Layout/Page', () => ({ PageMeta: () => null }))
 vi.mock('components/ErrorBoundary', () => ({ DataSurfaceErrorBoundary: ({ children }) => children }))
 vi.mock('design-system/melega', () => ({ typography: { fontFamily: { body: 'sans-serif' } } }))
 vi.mock('../PoolsStudioGlobalStyle', () => ({ default: () => null }))
-vi.mock('../poolsRuntime/PoolsRuntimeContext', () => ({ PoolsRuntimeProvider: ({ children }) => children }))
+vi.mock('../poolsRuntime/PoolsRuntimeContext', () => ({
+  PoolsRuntimeProvider: ({ children }) => children,
+  usePoolsRuntime: () => ({ pools: [], status: 'ready', error: null }),
+}))
 vi.mock('../poolsRuntime/PoolsActionHost', () => ({ default: () => <div data-testid="staking-actions" /> }))
 vi.mock('../modules/PoolsHeroModule', () => ({ PoolsHeroModule: () => <div data-testid="pool-hero" /> }))
 vi.mock('../modules/PoolsOverviewKpisModule', () => ({ PoolsOverviewKpisModule: () => <div data-testid="pool-kpis" /> }))
 vi.mock('../modules/PoolsMyPositionsModule', () => ({ PoolsMyPositionsModule: () => <div data-testid="pool-positions" /> }))
 vi.mock('../modules/PoolsExplorePoolsModule', () => ({ PoolsExplorePoolsModule: () => <div data-testid="pool-browsing" /> }))
+vi.mock('../modules/PoolsFinishedPoolsModule', () => ({ PoolsFinishedPoolsModule: () => null }))
 vi.mock('../modules/PoolsVisualPolishModule', () => ({ PoolsVisualPolishModule: () => null }))
 vi.mock('../poolsRuntime/poolsUxFixture', () => ({ isPoolsUxFixtureEnabled: () => false }))
 vi.mock('../components/CreatePoolCta', () => ({ default: () => { throw new Error('Public wizard mounted') } }))
@@ -34,7 +38,7 @@ describe('Public pool creation remains hidden while staking stays available', ()
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith(
       { pathname: '/pools', query: { chain: '56', view: 'explore' }, hash: undefined }, undefined, { shallow: true, scroll: false },
     ))
-    for (const id of ['pool-hero', 'pool-kpis', 'pool-positions', 'pool-browsing', 'staking-actions']) expect(screen.getByTestId(id)).toBeTruthy()
+    for (const id of ['pool-positions', 'pool-browsing', 'staking-actions']) expect(screen.getByTestId(id)).toBeTruthy()
     window.dispatchEvent(new Event('melega:open-create-pool'))
     expect(screen.queryByText(/Create Pool|Final deployment requires/i)).toBeNull()
     expect(screen.queryByTestId('create-pool-modal')).toBeNull()

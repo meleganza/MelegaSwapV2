@@ -45,13 +45,13 @@ function card(partial: Partial<FarmPreviewCard> & { pid: number; liq: number; ap
 }
 
 describe('Farms Founder Acceptance', () => {
-  it('IA order: Hero → KPI → My Farms → Explore; Create Farm is modal-only', () => {
+  it('IA order: Earn shell → opportunities → positions → terminated; Create Farm is modal-only', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     const order = [
-      'FarmsHeroModule',
-      'FarmsOverviewKpisModule',
-      'FarmsMyFarmsModule',
+      'EarnPremiumShell',
       'FarmsExploreFarmsModule',
+      'FarmsMyFarmsModule',
+      'FarmsFinishedFarmsModule',
     ]
     let prev = -1
     for (const name of order) {
@@ -62,7 +62,6 @@ describe('Farms Founder Acceptance', () => {
     }
     expect(screen).toContain('create-farm-modal')
     expect(screen).toContain('<CreateFarmWorkspace')
-    expect(screen).not.toContain('<FarmsFinishedFarmsModule')
     expect(screen).not.toContain('<FarmsYieldAdvisorModule')
     expect(screen).not.toContain('<FarmsAnalyticsModule')
   })
