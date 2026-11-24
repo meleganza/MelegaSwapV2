@@ -10,43 +10,27 @@ import { shellBottomNavItems } from '../config/navigation'
 const ROOT = path.resolve(__dirname, '../..')
 
 describe('DEX UX Rebuild navigation', () => {
-  it('primary header exposes Swap and the other core funnels directly (Portfolio via My Melega)', () => {
-    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools', 'List'])
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Portfolio')).toBe(false)
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Trade')).toBe(false)
-    expect(GLOBAL_HEADER_NAV.some((i) => i.label === 'Projects')).toBe(false)
-    const list = GLOBAL_HEADER_NAV.find((i) => i.id === 'list')
-    expect(list?.kind).toBe('link')
-    if (list?.kind === 'link') {
-      expect(list.href).toBe('/list')
-      expect(list.badge).toBe('NEW')
+  it('primary header exposes the R030 consumer destinations', () => {
+    expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore', 'Tools'])
+    const tools = GLOBAL_HEADER_NAV.find((i) => i.id === 'tools')
+    expect(tools?.kind).toBe('link')
+    if (tools?.kind === 'link') {
+      expect(tools.href).toBe('/list')
     }
   })
 
-  it('mobile bottom nav exposes the five core DEX funnels in one tap', () => {
-    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Home', 'Swap', 'Liquidity', 'Farms', 'Pools'])
-    expect(shellBottomNavItems.find((i) => i.id === 'swap')?.href).toBe('/swap')
+  it('mobile bottom nav exposes the four primary consumer destinations', () => {
+    expect(shellBottomNavItems.map((i) => i.label)).toEqual(['Trade', 'Earn', 'Portfolio', 'Explore'])
+    expect(shellBottomNavItems.find((i) => i.id === 'trade')?.href).toBe('/')
   })
 
-  it('Home nav active state is only Discover (/) — not Swap or Project Pages', () => {
-    const home = GLOBAL_HEADER_NAV.find((i) => i.id === 'home')
-    expect(home?.kind).toBe('link')
-    if (home?.kind !== 'link') return
-    expect(home.match('/')).toBe(true)
-    expect(home.match('/swap')).toBe(false)
-    expect(home.match('/project-hq/marco')).toBe(false)
-    expect(home.match('/@marco')).toBe(false)
-    expect(home.match('/@marco/')).toBe(false)
-    expect(home.match('/passport')).toBe(false)
-    expect(home.match('/list')).toBe(false)
-    expect(home.match('/liquidity-studio')).toBe(false)
-
-    const bottomHome = shellBottomNavItems.find((i) => i.id === 'home')
-    expect(bottomHome?.match('/')).toBe(true)
-    expect(bottomHome?.match('/swap')).toBe(false)
-    expect(bottomHome?.match('/project-hq/marco')).toBe(false)
-    expect(bottomHome?.match('/@marco/')).toBe(false)
-    expect(bottomHome?.match('/passport')).toBe(false)
+  it('Trade owns both the home swap and canonical swap route', () => {
+    const trade = GLOBAL_HEADER_NAV.find((i) => i.id === 'trade')
+    expect(trade?.kind).toBe('link')
+    if (trade?.kind !== 'link') return
+    expect(trade.match('/')).toBe(true)
+    expect(trade.match('/swap')).toBe(true)
+    expect(trade.match('/projects')).toBe(false)
   })
 
   it('Liquidity Building deep links remain available', () => {
@@ -78,7 +62,7 @@ describe('DEX UX Rebuild navigation', () => {
   it('List and Passport routes exist', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
     expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/\/portfolio|PassportRedirect/)
-    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(/ListPageHero/)
+    expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(/ToolsServiceGrid/)
     expect(readFileSync(path.join(ROOT, 'pages/portfolio/index.tsx'), 'utf8')).toMatch(
       /PortfolioStudio|PassportV1Shell|Portfolio/,
     )

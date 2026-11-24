@@ -13,9 +13,9 @@ export const liqV3 = {
   text: uxRebuildColors.text,
   mute: uxRebuildColors.secondary,
   mute2: uxRebuildColors.muted,
-  line: 'rgba(255, 255, 255, 0.09)',
-  panel: 'rgba(15, 15, 15, 0.92)',
-  panel2: 'rgba(18, 18, 18, 0.98)',
+  line: '#E5E2D9',
+  panel: '#FFFFFF',
+  panel2: '#F1F0EB',
   radius: uxRebuildRadius.card,
   /** Dense laptop hero — full first viewport with snapshot (Farms language, tighter chrome). */
   heroMaxH: '220px',

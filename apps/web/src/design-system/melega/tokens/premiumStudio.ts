@@ -3,7 +3,8 @@
  * DS001.1 foundations override conflicting legacy values.
  * Header chrome geometry is NOT applied here (reserved for DS001.2).
  */
-import { ds001Colors, ds001GoldSoft } from './ds001/colors'
+import { uxRebuildColors } from './uxRebuild'
+import { ds001Colors } from './ds001/colors'
 import { ds001FontFamily, ds001TypeRoles } from './ds001/typography'
 import { ds001Layout } from './ds001/layout'
 import { ds001Radius } from './ds001/radius'
@@ -40,22 +41,22 @@ export const premiumStudioLayout = {
 } as const
 
 export const premiumStudioColors = {
-  canvas: ds001Colors.background,
-  card: ds001Colors.surface,
-  cardBorder: ds001Colors.border,
-  cardBorderHover: ds001Colors.cardHoverBorder,
-  gold: ds001Colors.primaryGold,
-  green: ds001Colors.success,
-  red: ds001Colors.danger,
-  orange: ds001Colors.warning,
-  muted: ds001Colors.muted,
-  secondary: ds001Colors.secondaryText,
-  subtitle: ds001Colors.secondaryText,
-  summary: ds001Colors.secondaryText,
-  text: ds001Colors.primaryText,
-  divider: ds001Colors.divider,
-  goldBg: ds001GoldSoft,
-  surfaceElevated: ds001Colors.surfaceElevated,
+  canvas: uxRebuildColors.pageBg,
+  card: uxRebuildColors.card,
+  cardBorder: uxRebuildColors.border,
+  cardBorderHover: uxRebuildColors.borderStrong,
+  gold: uxRebuildColors.gold,
+  green: uxRebuildColors.positive,
+  red: uxRebuildColors.error,
+  orange: uxRebuildColors.warning,
+  muted: uxRebuildColors.muted,
+  secondary: uxRebuildColors.secondary,
+  subtitle: uxRebuildColors.secondary,
+  summary: uxRebuildColors.secondary,
+  text: uxRebuildColors.text,
+  divider: uxRebuildColors.divider,
+  goldBg: uxRebuildColors.goldDarkSurface,
+  surfaceElevated: uxRebuildColors.input,
   info: ds001Colors.info,
 } as const
 

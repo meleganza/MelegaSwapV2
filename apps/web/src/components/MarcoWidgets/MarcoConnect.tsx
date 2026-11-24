@@ -20,6 +20,7 @@ const MOBILE_ACTIVATION_QUERY =
 
 type MarcoConnectSize = 'compact' | 'standard' | 'full' | 'navbar' | 'floating' | 'icon'
 type MarcoConnectActivation = 'always' | 'desktop' | 'mobile'
+type MarcoConnectAppearance = 'branded' | 'wallet'
 type MarcoConnectSdk = {
   connect: () => Promise<void> | void
   disconnect: () => Promise<void> | void
@@ -163,6 +164,15 @@ const ConnectedDisplay = styled.button`
   }
 `
 
+const WalletStatusDot = styled.span`
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 50%;
+  background: #18BE7A;
+  box-shadow: 0 0 0 3px rgba(24, 190, 122, .10);
+`
+
 const Fallback = styled.div<{ $hidden: boolean }>`
   position: absolute;
   inset: 0;
@@ -206,7 +216,8 @@ export const MarcoConnect: React.FC<{
   size?: MarcoConnectSize
   className?: string
   activation?: MarcoConnectActivation
-}> = ({ size = 'navbar', className, activation = 'always' }) => {
+  appearance?: MarcoConnectAppearance
+}> = ({ size = 'navbar', className, activation = 'always', appearance = 'branded' }) => {
   const { address } = useAccount()
   const hostRef = useRef<HTMLDivElement | null>(null)
   const sdkRef = useRef<MarcoConnectSdk | null>(null)
@@ -330,20 +341,20 @@ export const MarcoConnect: React.FC<{
             requestPassportOpen()
           }}
         >
-          <img src={MARCO_LOGO_URI} alt="" />
+          {appearance === 'wallet' ? <WalletStatusDot /> : <img src={MARCO_LOGO_URI} alt="" />}
           {size === 'icon' ? null : shortAddress}
         </ConnectedDisplay>
       ) : null}
       <Fallback $hidden={Boolean(shortAddress)}>
         <ConnectWalletButton
           className={size === 'icon' ? 'melega-shell-mobile-connect' : 'melega-shell-connect'}
-          aria-label="MARCO Connect"
+          aria-label="Connect wallet"
           onClick={() => {
             passportIntentRef.current = true
           }}
         >
-          <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />
-          {size === 'icon' ? null : MARCO_CONNECT_FALLBACK_LABEL}
+          {appearance === 'wallet' ? <WalletStatusDot /> : <img src={MARCO_LOGO_URI} alt="" aria-hidden="true" width={20} height={20} />}
+          {size === 'icon' ? null : appearance === 'wallet' ? 'Connect Wallet' : MARCO_CONNECT_FALLBACK_LABEL}
         </ConnectWalletButton>
       </Fallback>
     </Root>

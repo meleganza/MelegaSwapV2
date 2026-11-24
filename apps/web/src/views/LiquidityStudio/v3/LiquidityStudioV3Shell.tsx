@@ -74,6 +74,14 @@ const Page = styled.div`
   }
 `
 
+const SimpleHeader = styled.header`
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  h1 { margin: 0; color: #171817; font-size: 28px; line-height: 1; letter-spacing: -0.035em; }
+  @media (max-width: ${liqV3.mobileBreak}) { padding: 0 16px; }
+`
+
 const Hero = styled.section<{ $builder?: boolean }>`
   min-height: 176px;
   padding: 18px 22px;
@@ -128,7 +136,7 @@ const HeroTitle = styled.h1<{ $builder?: boolean }>`
   line-height: ${({ $builder }) => ($builder ? '38px' : liqV3.titleLine)};
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #f7f7f7;
+  color: ${liqV3.text};
 
   @media (max-width: ${liqV3.mobileBreak}) {
     font-size: 42px;
@@ -140,7 +148,7 @@ const HeroSub = styled.p`
   margin: 8px 0 0;
   font-size: ${liqV3.descSize};
   line-height: ${liqV3.descLine};
-  color: rgba(255, 255, 255, 0.66);
+  color: ${liqV3.mute};
   max-width: 380px;
 `
 
@@ -221,7 +229,7 @@ const SnapCell = styled.div`
   border-radius: 12px;
   border: 1px solid ${liqV3.line};
   background: ${liqV3.panel};
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -242,7 +250,7 @@ const SnapValue = styled.div`
   font-size: 16px;
   line-height: 1.25;
   font-weight: 800;
-  color: #fff;
+  color: ${liqV3.text};
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 `
@@ -298,7 +306,7 @@ const SectionIndex = styled.span`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 24px;
   line-height: 30px;
   font-weight: 820;
@@ -352,14 +360,14 @@ const ModeSwitch = styled.div`
   margin: 0 0 14px;
   border-radius: 12px;
   border: 1px solid ${liqV3.line};
-  background: rgba(5, 5, 5, 0.72);
+  background: #F1F0EB;
 `
 
 const AddRemoveCard = styled.div`
   overflow: hidden;
   border: 1px solid ${liqV3.line};
   border-radius: 18px;
-  background: linear-gradient(160deg, rgba(17, 18, 18, 0.98), rgba(8, 9, 9, 0.98));
+  background: ${liqV3.panel};
 `
 
 const AddRemoveHeader = styled.div`
@@ -389,7 +397,7 @@ const WorkspacePair = styled.div`
   justify-content: flex-end;
   gap: 10px;
   min-width: 0;
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
@@ -465,7 +473,7 @@ const AvailabilityPanel = styled.div`
 `
 
 const AvailabilityTitle = styled.strong`
-  color: #fff;
+  color: ${liqV3.text};
   font-size: 15px;
 `
 
@@ -485,7 +493,7 @@ const ChainChip = styled.span<{ $on?: boolean }>`
   font-size: 11px;
   font-weight: 700;
   border: 1px solid ${({ $on }) => ($on ? liqV3.goldLine : liqV3.line)};
-  background: ${({ $on }) => ($on ? 'rgba(221,185,47,0.12)' : 'rgba(255,255,255,0.02)')};
+  background: ${({ $on }) => ($on ? '#FFF2BD' : '#FFFFFF')};
   color: ${({ $on }) => ($on ? liqV3.gold : liqV3.mute)};
 `
 
@@ -674,52 +682,7 @@ const LiquidityV3Body: React.FC = () => {
 
   return (
     <>
-      <Hero $builder={false} data-testid="liquidity-v3-hero" data-liquidity-hero-geometry="one-page-compact">
-        <HeroCopy>
-          <HeroTitle $builder={false}>{LIQ_V3_COPY.title}</HeroTitle>
-          <HeroSub>{LIQ_V3_COPY.subtitle}</HeroSub>
-          <HeroActions aria-label="Liquidity Studio primary" data-testid="liquidity-v3-hero-nav">
-            <Btn
-              $ghost
-              type="button"
-              onClick={goPositions}
-              data-testid="liquidity-v3-hero-positions"
-            >
-              My Positions
-            </Btn>
-            <Btn
-              $primary
-              type="button"
-              onClick={goAdd}
-              data-testid="liquidity-v3-hero-add"
-            >
-              {LIQ_V3_COPY.addCta}
-            </Btn>
-            <Btn
-              $ghost
-              type="button"
-              onClick={goAi}
-              data-testid="liquidity-v3-hero-ai"
-            >
-              {LIQ_V3_COPY.aiEntry}
-              <ExclusiveBadge>BETA</ExclusiveBadge>
-            </Btn>
-            <Btn $ghost type="button" onClick={goExplore} data-testid="liquidity-v3-explore-pools">
-              Explore pools ↓
-            </Btn>
-          </HeroActions>
-        </HeroCopy>
-        <LiquidityHeroArtwork />
-      </Hero>
-
-      <Snapshot $hidden={false} data-testid="liquidity-v3-snapshot" data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
-        {snapCells.map((c) => (
-          <SnapCell key={c.label}>
-            <SnapLabel>{c.label}</SnapLabel>
-            <SnapValue>{c.value}</SnapValue>
-          </SnapCell>
-        ))}
-      </Snapshot>
+      <SimpleHeader data-testid="liquidity-v3-header"><h1>Liquidity</h1></SimpleHeader>
 
       <Workspace
         data-testid="liquidity-v3-workspace"
@@ -796,7 +759,7 @@ const LiquidityV3Body: React.FC = () => {
           </AddRemoveCard>
         </Panel>
 
-        <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
+        {router.query.view === 'builder' ? <Panel id="liquidity-builder" data-testid="liquidity-v3-panel-ai">
           <SectionHeader>
             <SectionTitleRow>
               <SectionIndex>{sectionNumber(builderIndex)}</SectionIndex>
@@ -818,9 +781,9 @@ const LiquidityV3Body: React.FC = () => {
               </AvailabilityPanel>
             )}
           </ProgressiveSurface>
-        </Panel>
+        </Panel> : null}
 
-        <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
+        {router.query.view === 'explore' ? <Panel id="liquidity-explore" data-testid="liquidity-v3-panel-explore">
           <SectionHeader>
             <SectionTitleRow>
               <SectionIndex>{sectionNumber(exploreIndex)}</SectionIndex>
@@ -831,7 +794,7 @@ const LiquidityV3Body: React.FC = () => {
           <ProgressiveSurface label="Pool Explorer">
             <LiquidityPoolDiscoveryModule embedded />
           </ProgressiveSurface>
-        </Panel>
+        </Panel> : null}
       </Workspace>
     </>
   )

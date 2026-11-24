@@ -2,12 +2,12 @@ import React from 'react'
 import type { UxSectionCopy } from '../lib/uxSections'
 
 export function NonOperational({ section }: { section: UxSectionCopy }) {
-  if (section.id === 'swap') {
+  if (['swap', 'earn', 'portfolio', 'explore'].includes(section.id)) {
     return (
       <section className="swap-accessibility" aria-labelledby="section-title">
-        <h1 id="section-title">Swap</h1>
+        <h1 id="section-title">{section.title}</h1>
         <p className="status" role="status" data-operational="false">
-          <span className="sr-only">Beta — read-only. No wallet, approval, or signature.</span>
+          <span className="sr-only">Not operational. Beta — read-only. No wallet, approval, or signature.</span>
         </p>
       </section>
     )

@@ -29,16 +29,62 @@ import { BAD_SRCS } from '../Logo/constants'
 
 const Footer = styled.div`
   width: 100%;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background: #ffffff;
   text-align: center;
 `
 const StyledModalContainer = styled(ModalContainer)`
   width: 100%;
   min-width: 320px;
-  max-width: 420px !important;
+  max-width: 520px !important;
   min-height: calc(var(--vh, 1vh) * 90);
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  color: #171817 !important;
+  box-shadow: 0 20px 60px rgba(23, 24, 23, 0.14) !important;
+
+  > div:first-child {
+    padding: 22px 24px 12px !important;
+    background: #ffffff !important;
+    color: #171817 !important;
+  }
+
+  h2, h3, [role='heading'] {
+    color: #171817 !important;
+    font-family: Inter, sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+  }
+
+  button { color: #171817; }
   ${({ theme }) => theme.mediaQueries.md} {
     min-height: auto;
+  }
+
+  @media (max-width: 767px) {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 78dvh !important;
+    max-height: 88dvh !important;
+    border-radius: 24px 24px 0 0 !important;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: 54px;
+      height: 5px;
+      border-radius: 999px;
+      background: #B9BAB5;
+      transform: translateX(-50%);
+    }
+
+    > div:first-child { padding: 30px 20px 8px !important; }
   }
 `
 
@@ -49,6 +95,28 @@ const StyledModalBody = styled(ModalBody)`
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  input {
+    min-height: 52px !important;
+    border: 1px solid #E5E2D9 !important;
+    border-radius: 12px !important;
+    background: #F1F0EB !important;
+    color: #171817 !important;
+    box-shadow: none !important;
+  }
+
+  p, span { color: #171817; }
+
+  @media (max-width: 767px) {
+    padding: 8px 20px 20px;
+
+    input {
+      min-height: 48px !important;
+      border-radius: 14px !important;
+      font-size: 15px !important;
+      padding-left: 16px !important;
+    }
   }
 `
 
@@ -116,7 +184,7 @@ export default function CurrencySearchModal({
   }, [adding, dispatch, fetchList, listURL])
 
   const config = {
-    [CurrencyModalView.search]: { title: t('Select a Token'), onBack: undefined },
+    [CurrencyModalView.search]: { title: t('Select token'), onBack: undefined },
     [CurrencyModalView.manage]: { title: t('Manage'), onBack: () => setModalView(CurrencyModalView.search) },
     [CurrencyModalView.importToken]: {
       title: t('Import Tokens'),

@@ -279,13 +279,14 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
   return (
     <Card
       data-testid="pools-explore-card"
+      data-earn-row
       data-pool-id={pool.poolId}
       data-pool-chain={pool.chainId}
       data-explore-status={pool.status}
       data-stake-enabled={pool.stakeEnabled ? 'true' : 'false'}
       data-primary-action={pool.primaryAction}
     >
-      <Header>
+      <Header data-farm-row-head>
         <Identity>
           <LogoStack aria-hidden="true">
             <PoolTokenIcon
@@ -307,7 +308,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
             <Title title={pool.title}>{pool.title}</Title>
           </TextCol>
         </Identity>
-        <Badges>
+        <Badges data-earn-row-badges>
           <MelegaExploreChainBadge chainId={pool.chainId} />
           <Status $tone={pool.statusLabel} aria-label={`Status ${pool.statusLabel}`}>
             {pool.statusLabel}
@@ -320,11 +321,11 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
       </span>
 
       <Metrics data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
-        <Metric>
+        <Metric data-metric="apr">
           <MetricLabel>APR</MetricLabel>
           <MetricValue>{truthDash(pool.aprDisplay)}</MetricValue>
         </Metric>
-        <Metric>
+        <Metric data-metric="tvl">
           <MetricLabel>TVL</MetricLabel>
           <MetricValue>{truthDash(pool.tvlDisplay)}</MetricValue>
         </Metric>
@@ -353,7 +354,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         testId="pools-explore-activity-spark"
       />
 
-      <Actions>
+      <Actions data-earn-row-actions>
         {pool.primaryAction === 'Connect Wallet' ? (
           <ConnectBtn data-testid="pools-explore-connect" aria-label={`Connect wallet to stake in ${pool.title}`}>
             Connect Wallet

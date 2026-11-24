@@ -88,16 +88,14 @@ test('bridge and explore render verified links and do not execute', () => {
   assert.match(bridge, /Not operational/)
 
   const explore = renderToStaticMarkup(React.createElement(ProductPage, { section: uxSectionById('explore') }))
-  assert.match(explore, /https:\/\/www\.melega\.finance\/projects"/)
-  assert.match(explore, /https:\/\/www\.melega\.finance\/projects\?sort=trending/)
-  assert.match(explore, /https:\/\/www\.melega\.finance\/info\/bsc/)
-  assert.match(explore, /Leaves this beta/)
+  assert.match(explore, /Boost your project/)
+  assert.equal(explore.includes('projects?sort=trending'), false)
   assert.equal(explore.includes('/api/trend-boost-active'), false)
   assert.equal(explore.includes('No discovery feed connected'), false)
 
   const home = renderToStaticMarkup(React.createElement(ProductPage, { section: sectionById('swap') }))
   assert.equal(home.includes('/api/trend-boost-active'), false)
-  assert.match(home, /Projects, tokens, and paid Boost/)
+  assert.equal(home.includes('Put assets to work'), false)
 })
 
 test('tools hand off only when the href is a verified live DEX url', () => {
@@ -110,7 +108,7 @@ test('tools hand off only when the href is a verified live DEX url', () => {
   assert.match(joined, /list\?intent=create-project#featured/)
   assert.match(joined, /list\?intent=create-project#trend-boost/)
   assert.match(joined, /list\?intent=create-project/)
-  assert.match(joined, /Leaves this beta/)
+  assert.match(joined, /Continue to live review/)
   assert.equal(joined.includes('Get Featured'), false)
   assert.equal(joined.includes('checkout button'), false)
   assert.equal(joined.includes('javascript:'), false)
@@ -118,20 +116,17 @@ test('tools hand off only when the href is a verified live DEX url', () => {
   const blocked = renderToStaticMarkup(
     React.createElement(ExternalService, { title: 'Missing', detail: 'Not verified.', href: 'https://evil.example/pay' }),
   )
-  assert.match(blocked, /Unavailable/)
+  assert.match(blocked, /not available yet/)
   assert.equal(blocked.includes('Continue on the live DEX'), false)
   assert.equal(blocked.includes('evil.example'), false)
 })
 
-test('portfolio keeps live withdrawal links before a balance read', () => {
+test('portfolio keeps legacy exits out of the initial dashboard', () => {
   const gate = renderToStaticMarkup(React.createElement(PortfolioGate))
-  assert.match(gate, /liquidity-studio\?view=remove/)
-  assert.match(gate, /farms\?view=my/)
-  assert.match(gate, /pools\?view=positions/)
+  assert.equal(gate.includes('liquidity-studio?view=remove'), false)
   const html = renderToStaticMarkup(React.createElement(PortfolioLookup))
-  assert.match(html, /liquidity-studio\?view=remove/)
-  assert.match(html, /farms\?view=my/)
-  assert.match(html, /pools\?view=positions/)
+  assert.equal(html.includes('liquidity-studio?view=remove'), false)
+  assert.match(html, /Read-only/)
   const shell = readFileSync(path.join(process.cwd(), 'components/BetaShell.tsx'), 'utf8')
   assert.equal(shell.includes('/api/trend-boost-active'), false)
 })

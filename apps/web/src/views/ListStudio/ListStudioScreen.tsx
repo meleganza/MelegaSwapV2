@@ -3,34 +3,33 @@ import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
-import { listOne } from './listTokens'
 import { useListIntent } from './useListIntent'
-import { ListContractFirstFunnel } from './ListContractFirstFunnel'
 import { ClaimWorkspaceBoundary } from './ClaimWorkspaceBoundary'
+import { ToolsServiceGrid } from './ToolsServiceGrid'
 
 const ListWorkspace = dynamic(() => import('./ListWorkspace').then((module) => module.ListWorkspace), { ssr: false })
 
 const Root = styled.div`
   color: ${uxRebuildColors.text};
   font-family: ${uxRebuildFont};
-  background: ${listOne.pageBg};
+  background: ${uxRebuildColors.pageBg};
   padding: 0;
   min-width: 0;
   overflow-x: hidden;
 `
 
 const Content = styled.div`
-  max-width: ${listOne.contentMax};
+  max-width: 1240px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
-  padding: 24px 0 52px;
+  padding: 48px 24px 72px;
 
   @media (max-width: 767px) {
     width: 100%;
-    padding: 0 4px 40px;
+    padding: 24px 0 40px;
   }
 `
 
@@ -66,7 +65,7 @@ export const ListStudioScreen: React.FC = () => {
     <Root data-list-studio-screen data-ux-rebuild-list data-list-concept="list-your-project">
       <PageMeta />
       <Content data-testid="list-one-content">
-        <ListContractFirstFunnel />
+        <ToolsServiceGrid />
       </Content>
       {listIntent ? (
         <ModalBackdrop data-testid="list-adaptive-modal" role="presentation">

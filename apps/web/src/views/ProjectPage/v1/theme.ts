@@ -9,9 +9,9 @@ export const pp = {
   goldDim: 'rgba(221, 185, 47, 0.14)',
   goldLine: 'rgba(221, 185, 47, 0.32)',
   bg: uxRebuildColors.pageBg,
-  panel: 'rgba(14, 14, 14, 0.96)',
-  panel2: 'rgba(18, 18, 18, 0.98)',
-  line: 'rgba(255, 255, 255, 0.08)',
+  panel: '#FFFFFF',
+  panel2: '#F7F6F2',
+  line: '#E5E2D9',
   text: uxRebuildColors.text,
   mute: uxRebuildColors.secondary,
   mute2: uxRebuildColors.muted,
@@ -33,9 +33,7 @@ export const Page = styled.main`
   margin: 0 auto;
   padding: 6px 8px 36px;
   color: ${pp.text};
-  background:
-    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(221, 185, 47, 0.08), transparent 55%),
-    linear-gradient(180deg, #0a0a0a 0%, ${pp.bg} 28%, #050505 100%);
+  background: ${pp.bg};
   min-height: 100vh;
   font-family: ${uxRebuildFont};
 
@@ -60,7 +58,7 @@ export const Band = styled.section`
   padding: 7px 10px 6px;
   border-radius: ${pp.radius};
   border: 1px solid ${pp.line};
-  background: linear-gradient(165deg, ${pp.panel2} 0%, ${pp.panel} 100%);
+  background: ${pp.panel};
   min-width: 0;
 
   @media (min-width: 768px) {

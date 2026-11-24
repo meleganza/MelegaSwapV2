@@ -15,6 +15,34 @@ const ProjectsStudioGlobalStyle = createGlobalStyle`
   [data-projects-studio-screen] [data-pr-activity] {
     transition: border-color 180ms ease;
   }
+
+  /* Attribute selectors avoid styled-components component-id collisions with legacy Home cards. */
+  [data-projects-studio-screen] [data-featured-slug],
+  [data-projects-studio-screen] [data-testid='projects-directory-list'] a {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #E5E2D9 !important;
+    color: #171817 !important;
+  }
+
+  [data-projects-studio-screen] [data-featured-slug] a:not([data-testid^='featured-trade']) {
+    border-color: #E5E2D9 !important;
+  }
+  /* R035B: Trending row Swap CTA (Pearl gold-soft pill per approved mockup). */
+  [data-projects-studio-screen] a[data-testid='projects-directory-swap'] {
+    background: #FFF2BD !important;
+    color: #171817 !important;
+    border-radius: 10px !important;
+  }
+  /* R035B: compact verified Featured placements on Explore (stats live on project pages). */
+  [data-projects-studio-screen] [data-testid='dex-home-featured-projects'] [data-featured-stats] {
+    display: none !important;
+  }
+  [data-projects-studio-screen] [data-testid='dex-home-featured-projects'] article {
+    padding: 10px 12px !important;
+    gap: 4px !important;
+  }
+
 `
 
 export default ProjectsStudioGlobalStyle

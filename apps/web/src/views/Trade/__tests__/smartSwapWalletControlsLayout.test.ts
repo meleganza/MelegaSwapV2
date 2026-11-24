@@ -11,6 +11,9 @@ describe('Smart Swap wallet controls layout', () => {
     expect(panel).toContain('data-compact-wallet-controls')
     expect(panel).toContain('data-wallet-token-actions')
     expect(panel).toContain('data-wallet-max-button')
+    expect(panel).toContain('data-wallet-percent-menu')
+    expect(panel).toContain('aria-expanded={percentMenuOpen}')
+    expect(panel).toContain("setPercentMenuOpen(false)")
     expect(panel).toContain("{t('Max')}")
     expect(panel).toContain('<CopyButton')
     expect(panel).toContain('<AddToWalletButton')
@@ -28,14 +31,12 @@ describe('Smart Swap wallet controls layout', () => {
     expect(tradeStyle).toContain('top: 31px !important')
   })
 
-  it('keeps the market column independent when cockpit Details expands', () => {
+  it('keeps the approved market rail separate and after the cockpit', () => {
     const screen = readFileSync(path.join(WEB, 'views/Trade/TradeTerminalScreen.tsx'), 'utf8')
-    const center = readFileSync(path.join(WEB, 'views/Trade/TradeCenterPanel.tsx'), 'utf8')
 
-    expect(screen).toContain('align-items: start')
-    expect(screen).toContain('align-self: start')
-    expect(screen).not.toContain('grid-area: cockpit;\n  ${stretchColumn}')
-    expect(center).toContain('gap: ${tradeLayout.verticalRhythm}')
+    expect(screen).toContain('<TradeCockpit')
+    expect(screen).toContain('<Promotions aria-label="Featured projects">')
+    expect(screen.indexOf('<TradeCockpit')).toBeLessThan(screen.indexOf('<Promotions aria-label="Featured projects">'))
   })
 
   it('keeps a single full-width approval/swap CTA inside the cockpit', () => {

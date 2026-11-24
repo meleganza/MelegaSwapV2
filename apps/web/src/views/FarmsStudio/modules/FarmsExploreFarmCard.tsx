@@ -380,11 +380,12 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
   return (
     <Card
       data-testid="farms-explore-card"
+      data-earn-row
       data-farm-id={farm.farmId}
       data-explore-status={farm.status}
       data-stake-enabled={farm.stakeEnabled ? 'true' : 'false'}
     >
-      <Header>
+      <Header data-farm-row-head>
         <Identity>
           <Logos aria-hidden="true">
             <Logo>
@@ -423,7 +424,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             <Earn>{farm.earnLine}</Earn>
           </TextCol>
         </Identity>
-        <Badges data-testid="farms-explore-badges">
+        <Badges data-testid="farms-explore-badges" data-earn-row-badges>
           <MelegaExploreChainBadge chainId={farm.chainId} />
           <Status $tone={farm.statusLabel} aria-label={`Status ${farm.statusLabel}`}>
             {farm.statusLabel}
@@ -434,11 +435,11 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       <VisuallyHidden>{logoDesc}</VisuallyHidden>
 
       <Metrics data-truth-pipeline={GLOBAL_DATA_TRUTH_PIPELINE}>
-        <Metric>
+        <Metric data-metric="apr">
           <MetricLabel>{farm.aprLabel}</MetricLabel>
           <MetricValue>{truthDash(farm.apr)}</MetricValue>
         </Metric>
-        <Metric>
+        <Metric data-metric="tvl">
           <MetricLabel>TVL</MetricLabel>
           <MetricValue>{truthDash(farm.tvl)}</MetricValue>
         </Metric>
@@ -468,7 +469,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
         </Metric>
       </Metrics>
 
-      <WalletLine>
+      <WalletLine data-farm-wallet-line>
         {walletLpLine(farm)}
         {farm.allowanceState !== 'Disconnected' && farm.allowanceState !== 'Unavailable'
           ? ` · ${farm.allowanceState}`
@@ -481,7 +482,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
         testId="farms-explore-activity-spark"
       />
 
-      <Actions data-testid="farms-explore-actions">
+      <Actions data-testid="farms-explore-actions" data-earn-row-actions>
         {farm.primaryAction === 'Connect Wallet' ? (
           <ConnectWrap>
             <ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton>

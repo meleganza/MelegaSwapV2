@@ -173,7 +173,7 @@ export const PoolsFinishedPoolsModule: React.FC = () => {
       aria-labelledby="pools-finished-pools-title"
     >
       <Header>
-        <Title id="pools-finished-pools-title">Finished Pools</Title>
+        <Title id="pools-finished-pools-title">Terminated</Title>
         {vm.showCountBadge && vm.totalCount != null ? (
           <Count aria-label={`${vm.totalCount} finished positions`}>{vm.totalCount}</Count>
         ) : null}

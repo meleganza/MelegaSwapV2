@@ -157,63 +157,47 @@ export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   match: (p) => p === '/radar',
 }
 
-/** Canonical primary navigation — flat links matching approved mockup. */
+/** R030 consumer navigation. Legacy routes remain available through deep links. */
 export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
   {
-    id: 'home',
-    label: 'Home',
+    id: 'trade',
+    label: 'Trade',
     kind: 'link',
     href: '/',
-    // Home owns Discover only — Swap / Project Pages must not highlight Home.
-    match: (p) => p === '/',
+    match: (p) => p === '/' || p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
   },
   {
-    id: 'swap',
-    label: 'Swap',
-    kind: 'link',
-    href: '/swap',
-    match: (p) => p === '/swap' || p.startsWith('/swap/') || p === '/trade' || p.startsWith('/trade/'),
-  },
-  {
-    id: 'bridge',
-    label: 'Bridge',
-    kind: 'link',
-    href: '/bridge',
-    match: (p) => p === '/bridge' || p.startsWith('/bridge/'),
-    compactHide: true,
-  },
-  {
-    id: 'liquidity',
-    label: 'Liquidity',
-    kind: 'link',
-    href: '/liquidity',
-    match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
-  },
-  {
-    id: 'farms',
-    label: 'Farms',
+    id: 'earn',
+    label: 'Earn',
     kind: 'link',
     href: '/farms',
-    match: (p) => p.startsWith('/farms'),
+    match: (p) => p.startsWith('/farms') || p.startsWith('/pools'),
   },
   {
-    id: 'pools',
-    label: 'Pools',
+    id: 'portfolio',
+    label: 'Portfolio',
     kind: 'link',
-    href: '/pools',
-    match: (p) => p.startsWith('/pools'),
+    href: '/portfolio',
+    match: (p) => p.startsWith('/portfolio') || p.startsWith('/command-center'),
   },
   {
-    id: 'list',
-    label: 'List',
+    id: 'explore',
+    label: 'Explore',
+    kind: 'link',
+    href: '/projects?sort=trending',
+    match: (p) => p.startsWith('/projects'),
+  },
+  {
+    id: 'tools',
+    label: 'Tools',
     kind: 'link',
     href: '/list',
-    badge: 'NEW',
     match: (p) =>
       p === '/list' ||
       p === '/import-existing-token' ||
       p === '/launch' ||
       p === '/new-project' ||
       p.startsWith('/build-studio'),
+    compactHide: true,
   },
 ]

@@ -2,7 +2,7 @@ import { getAddress } from '@ethersproject/address'
 import memoize from 'lodash/memoize'
 import { ChainId, Token } from '@pancakeswap/sdk'
 
-const mapping = {
+const mapping: Partial<Record<number, string>> = {
   [ChainId.ARBITRUM]: 'arbitrum',
   [ChainId.ETHEREUM]: 'ethereum',
   [ChainId.BSC]: 'smartchain',
@@ -20,7 +20,7 @@ const getTokenLogoURL = memoize(
     }
     return null
   },
-  (t) => `${t.chainId}#${t.address}`,
+  (t) => (t ? `${t.chainId}#${t.address}` : 'none'),
 )
 
 export const getTokenLogoPosition = memoize(
@@ -30,7 +30,7 @@ export const getTokenLogoPosition = memoize(
     }
     return null
   },
-  (t) => `${t.chainId}#${t.address}`,
+  (t) => (t ? `${t.chainId}#${t.address}` : 'none'),
 )
 
 export const getTokenLogoURLByAddress = memoize(
