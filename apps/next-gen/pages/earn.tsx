@@ -10,10 +10,12 @@ import { sectionById } from '../lib/sections'
 export default function EarnPage() {
   return (
     <ProductPage section={sectionById('earn')}>
-      <EarnReadPanel />
-      <EarnCatalogPanel />
-      <details className="secondary-positions"><summary>Your Beefy positions</summary><EarnPositionPanel /></details>
-      <details className="secondary-positions terminated-section"><summary>Terminated networks</summary><RetiredNativeEarn /></details>
+      <EarnCatalogPanel native={<EarnReadPanel />} positions={
+        <>
+          <details className="secondary-positions"><summary>Your Beefy positions</summary><EarnPositionPanel /></details>
+          <details className="secondary-positions terminated-section"><summary>Terminated native farms and pools</summary><RetiredNativeEarn /></details>
+        </>
+      } />
     </ProductPage>
   )
 }

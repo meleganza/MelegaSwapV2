@@ -79,8 +79,8 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
       <div className="surface-head compact-page-head">
-        <div><h2>Earn</h2><p>BNB opportunities</p></div>
-        <label className="chain-select"><span className="sr-only">Network</span><select defaultValue="56"><option value="56">BNB Chain</option><option disabled>Ethereum · Terminated</option><option disabled>Polygon · Terminated</option><option disabled>Base · Terminated</option></select></label>
+        <div><h2>Earn</h2><p>Compare farms and vaults</p></div>
+        <span className="quiet-chip">BNB Chain</span>
       </div>
       {children ? (
         children

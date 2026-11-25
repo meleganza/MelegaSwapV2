@@ -514,4 +514,17 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .tool-surface{position:relative;padding:28px;text-align:left}.tool-surface>.service-back{left:22px;top:22px}.tool-surface>.eyebrow,.tool-surface>h1,.tool-surface>.tool-lead{margin-left:58px}.tool-surface>h1{font-size:1.8rem}.tool-surface>.tool-lead{margin-top:8px}.service-preview-form{margin:22px 0 12px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border:1px solid var(--line);border-radius:17px;background:var(--graphite-soft)}.service-preview-form label{display:grid;gap:5px;color:var(--muted);font-size:.65rem}.service-preview-form label span{min-height:44px;padding:0 12px;display:flex;align-items:center;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-size:.74rem}.tool-surface .service-points{margin:12px 0}.tool-surface .service-points span{min-height:62px}.tool-surface .action-hint{text-align:left}
 @media(max-width:640px){.tool-surface{padding:68px 14px 16px}.tool-surface>.eyebrow,.tool-surface>h1,.tool-surface>.tool-lead{margin-left:0}.service-preview-form{grid-template-columns:1fr}.tool-surface .service-points{grid-template-columns:repeat(3,1fr)}.tool-surface .service-points span{min-height:70px;flex-direction:column;text-align:center}}
 @media(max-width:640px){.earn-catalog .earn-card:nth-child(n+3){display:none}.earn-card .advanced-details{display:none}.earn-card .card-action{margin-top:8px}.app-shell[data-section='earn'] .product-footer{display:none}}
+.earn-browser{min-width:0;margin-top:12px}
+.earn-navigation{display:flex;gap:8px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.earn-navigation button{min-height:44px;padding:0 10px;border:0;border-bottom:2px solid transparent;background:none;color:var(--ink);font:inherit;font-size:.8rem;cursor:pointer}
+.earn-navigation button[aria-pressed=true]{border-color:var(--accent);font-weight:750}
+.earn-navigation button:last-child{margin-left:auto}
+.earn-browser .earn-filter-bar{grid-template-columns:repeat(3,minmax(0,1fr))}
+.earn-browser .earn-filter-bar select{width:100%;padding-right:6px}
+.earn-browser .earn-card h3{overflow-wrap:anywhere}
+.earn-estimate{display:grid;gap:5px;margin-top:12px;color:var(--muted);font-size:.75rem}
+.earn-estimate input{min-height:44px;min-width:0;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit}
+.earn-more{margin:12px auto}
+.earn-liquidity{max-width:430px;margin:0 auto}
+.earn-browser .earn-card:nth-child(n+3),.earn-browser .earn-card .advanced-details{display:block}
 @media(max-width:640px){.trade-home-grid{display:block}.trade-home-grid,.trade-layout,.trade-surface,.compact-swap{width:100%;min-width:0;max-width:100%}.trade-surface .surface-head{gap:8px}.trade-surface .network-chip{max-width:112px;overflow:hidden;white-space:nowrap}.compact-swap .asset-field{grid-template-columns:minmax(0,1fr) 112px}.compact-swap .token-select{width:112px}.compact-swap .token-select select{width:100%}.compact-swap .asset-amount{max-width:100%}.swap-summary{min-width:0}.swap-summary strong{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
