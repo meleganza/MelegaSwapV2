@@ -534,7 +534,9 @@ const ProgressiveSurface: React.FC<React.PropsWithChildren<{ force?: boolean; la
   children,
 }) => {
   const ref = React.useRef<HTMLDivElement>(null)
-  const [mounted, setMounted] = useState(force)
+  // Mount client-only chunks after hydration, including forced surfaces.
+  // Rendering next/dynamic with ssr:false during static generation emits a server bailout.
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     if (force) {
