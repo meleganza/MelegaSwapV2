@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
+import { EARN_NETWORKS, formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
 import { TokenMark } from '../../components/TokenMark'
 
 function matches(opportunity: EarnOpportunity, asset: string, protocol: string): boolean {
@@ -34,17 +34,17 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
       <div className="earn-catalog">
         {visible.slice(0, limit).map((opportunity) => (
           <article className="earn-card" key={opportunity.id}>
-            <div className="pair-art">{opportunity.assets.slice(0, 2).map((asset) => <TokenMark key={asset} symbol={asset} size={34} />)}</div>
-            <span className="verified-label">Beefy · PancakeSwap · BNB</span><h3>{opportunity.assets.join(' / ')}</h3>
+            <div className="pair-art">{opportunity.assets.slice(0, 2).map((asset) => <TokenMark key={asset} symbol={asset} address={opportunity.assetAddresses?.[asset]} logoURI={opportunity.assetLogos?.[asset]} chainId={opportunity.chainId} allowSymbolMark={false} size={34} />)}</div>
+            <span className="verified-label">{EARN_NETWORKS.find(({ id }) => id === opportunity.chainId)?.label} · Vault</span><h3>{opportunity.assets.join(' / ')}</h3>
             <div className="earn-metrics"><span><small>APY</small><strong>{formatReportedApy(opportunity.apyDecimal) ?? '—'}</strong></span><span><small>TVL</small><strong>{formatReportedTvl(opportunity.tvlUsd) === null ? '—' : `$${formatReportedTvl(opportunity.tvlUsd)}`}</strong></span></div>
             {principal > 0 && Number.isFinite(principal) && !opportunity.stale && opportunity.apyDecimal !== null && Number.isFinite(principal * opportunity.apyDecimal) ? (
               <p className="footnote">Estimated annual reward: {(principal * opportunity.apyDecimal).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}. APY can change.</p>
             ) : null}
-            <a className="card-action" href={opportunity.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">View vault</a>
             <details className="advanced-details">
-              <summary>Details & risk</summary>
+              <summary>View vault</summary>
               <ul className="facts">
-                <li>Protocol: {opportunity.protocol}</li>
+                <li>Vault manager: Beefy</li>
+                <li>Underlying protocol: {opportunity.protocol}</li>
                 <li>Source: {opportunity.source}</li>
                 <li>APY updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
                 <li>{opportunity.stale ? 'This fetch is older than 15 minutes.' : 'Fetched with this page view.'}</li>
@@ -55,6 +55,7 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
                 </li>
                 <li>{opportunity.withdrawalNote}</li><li>No Melega fee or referral parameter.</li>
               </ul>
+              <a className="card-action" href={opportunity.href} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">Open on Beefy ↗</a>
             </details>
           </article>
         ))}
@@ -67,14 +68,14 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
 export default function EarnCatalogPanel({ native, positions }: { native?: React.ReactNode; positions?: React.ReactNode }) {
   const [catalog, setCatalog] = React.useState<EarnCatalog | null>(null)
   const [asset, setAsset] = React.useState('')
-  const [protocol, setProtocol] = React.useState('')
+  const [chain, setChain] = React.useState(56)
   const [view, setView] = React.useState<'discover' | 'positions' | 'liquidity'>('discover')
   const [sort, setSort] = React.useState<'tvl' | 'apy'>('tvl')
-  const assets = [...new Set(['BNB', 'WBNB', 'MARCO', ...(catalog?.ok ? catalog.opportunities.flatMap((row) => row.assets) : [])])].sort()
+  const assets = [...new Set([...(chain === 56 ? ['BNB', 'WBNB', 'MARCO'] : []), ...(catalog?.ok ? catalog.opportunities.flatMap((row) => row.assets) : [])])].sort()
 
   React.useEffect(() => {
     const controller = new AbortController()
-    fetch('/api/earn-catalog', { signal: controller.signal })
+    fetch(`/api/earn-catalog?chainId=${chain}`, { signal: controller.signal })
       .then(async (response) => (await response.json()) as EarnCatalog)
       .then((body) => { if (!controller.signal.aborted) setCatalog(body) })
       .catch(() => {
@@ -83,7 +84,7 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
             ok: false,
             code: 'UNAVAILABLE',
             schema: 'melega.next-gen.earn-catalog.v1',
-            chainId: 56,
+            chainId: chain,
             source: 'https://api.beefy.finance',
             fetchedAt: null,
             count: 0,
@@ -94,7 +95,7 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
         }
       })
     return () => controller.abort()
-  }, [])
+  }, [chain])
 
   return (
     <section className="earn-browser" aria-label="Earn workspace">
@@ -115,12 +116,11 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
       {view === 'discover' ? <>
         <div className="earn-filter-bar">
           <label><span>Asset</span><select value={asset} onChange={(event) => setAsset(event.target.value)}><option value="">All assets</option>{assets.map((item) => <option key={item}>{item}</option>)}</select></label>
-          <label><span>Provider</span><select value={protocol} onChange={(event) => setProtocol(event.target.value)}><option value="">All providers</option><option value="melega">Melega</option><option value="beefy">Beefy</option></select></label>
+          <label><span>Network</span><select value={chain} onChange={(event) => { setCatalog(null); setAsset(''); setChain(Number(event.target.value)) }}>{EARN_NETWORKS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}</select></label>
           <label><span>Sort vaults</span><select value={sort} onChange={(event) => setSort(event.target.value === 'apy' ? 'apy' : 'tvl')}><option value="tvl">TVL</option><option value="apy">APY</option></select></label>
         </div>
-        {protocol !== 'beefy' && ['', 'BNB', 'WBNB', 'MARCO'].includes(asset) ? native : null}
-        {protocol !== 'melega' && (catalog ? <EarnCatalogView key={asset + sort} catalog={catalog} asset={asset} protocol="" sort={sort} /> : <p className="footnote" role="status">Loading Beefy vaults…</p>)}
-        {protocol === 'melega' && !['', 'BNB', 'WBNB', 'MARCO'].includes(asset) ? <p role="status">No Melega farm matches this asset.</p> : null}
+        {chain === 56 && ['', 'BNB', 'WBNB', 'MARCO'].includes(asset) ? native : null}
+        {catalog ? <EarnCatalogView key={chain} catalog={catalog} asset={asset} protocol="" sort={sort} /> : <p className="footnote" role="status">Loading opportunities…</p>}
       </> : null}
     </section>
   )

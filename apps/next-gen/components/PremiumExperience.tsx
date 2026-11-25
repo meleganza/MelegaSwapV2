@@ -80,7 +80,6 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
       <div className="surface-head compact-page-head">
         <div><h2>Earn</h2><p>Compare farms and vaults</p></div>
-        <span className="quiet-chip">BNB Chain</span>
       </div>
       {children ? (
         children

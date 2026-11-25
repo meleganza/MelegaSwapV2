@@ -7,7 +7,13 @@ export const EARN_CATALOG_SOURCE = 'https://api.beefy.finance'
 /** Beefy handoff URLs carry no referral. A native swap fee belongs in @melega/smartswap-v2-prepare sealedFee, not here. */
 export const MELEGA_BEEFY_HANDOFF_FEE = 0
 export const EARN_CATALOG_CHAIN_ID = 56
-export const EARN_CATALOG_LIMIT = 12
+export const EARN_NETWORKS = [
+  { id: 56, key: 'bsc', label: 'BNB Chain' },
+  { id: 1, key: 'ethereum', label: 'Ethereum' },
+  { id: 8453, key: 'base', label: 'Base' },
+  { id: 137, key: 'polygon', label: 'Polygon' },
+  { id: 42161, key: 'arbitrum', label: 'Arbitrum' },
+] as const
 export const EARN_CATALOG_STALE_MS = 15 * 60 * 1000
 export const EARN_CATALOG_TIMEOUT_MS = 8_000
 
@@ -33,8 +39,10 @@ export interface EarnOpportunity {
   id: string
   name: string
   assets: string[]
-  protocol: 'PancakeSwap'
-  chainId: 56
+  protocol: string
+  chainId: number
+  assetAddresses?: Record<string, string>
+  assetLogos?: Record<string, string>
   apyDecimal: number | null
   tvlUsd: number | null
   source: typeof EARN_CATALOG_SOURCE
@@ -58,7 +66,7 @@ export interface EarnCatalog {
   ok: boolean
   code?: 'TIMEOUT' | 'UNAVAILABLE' | 'CHAIN_MISMATCH'
   schema: 'melega.next-gen.earn-catalog.v1'
-  chainId: 56
+  chainId: number
   source: typeof EARN_CATALOG_SOURCE
   fetchedAt: string | null
   count: number
@@ -134,21 +142,43 @@ export function buildEarnCatalog(input: {
   vaults: unknown
   apy: unknown
   tvl: unknown
+  tokens?: unknown
+  tokenLists?: unknown[]
+  chainId?: number
   fetchedAt: string
   nowMs: number
 }): EarnCatalog {
   const fetchedMs = Date.parse(input.fetchedAt)
   if (!Number.isFinite(fetchedMs)) return emptyCatalog('UNAVAILABLE')
   if (!Array.isArray(input.vaults)) return emptyCatalog('UNAVAILABLE', input.fetchedAt)
+  const network = EARN_NETWORKS.find(({ id }) => id === (input.chainId ?? EARN_CATALOG_CHAIN_ID))
+  if (!network) return emptyCatalog('CHAIN_MISMATCH')
+  const tokenRoot = input.tokens as Record<string, Record<string, { id?: string; address?: string }>> | null | undefined
+  const tokenIndex = tokenRoot?.[network.key]
+  const logos = new Map<string, string>()
+  const logoHosts = new Set(['tokens.pancakeswap.finance', 'assets.coingecko.com', 'coin-images.coingecko.com', 's2.coinmarketcap.com', 'bscscan.com'])
+  for (const list of input.tokenLists ?? []) {
+    const entries = (list as { tokens?: unknown } | null)?.tokens
+    if (!Array.isArray(entries)) continue
+    for (const token of entries) {
+      if (token?.chainId !== network.id || typeof token.address !== 'string' || typeof token.logoURI !== 'string') continue
+      const address = token.address.toLowerCase()
+      if (logos.has(address)) continue
+      try {
+        const url = new URL(token.logoURI)
+        if (url.protocol === 'https:' && !url.username && !url.password && !url.port && logoHosts.has(url.hostname)) logos.set(address, url.href)
+      } catch { /* Invalid metadata is optional. */ }
+    }
+  }
   const apyMap = input.apy && typeof input.apy === 'object' ? (input.apy as Record<string, unknown>) : {}
   const tvlRoot = input.tvl && typeof input.tvl === 'object' ? (input.tvl as Record<string, unknown>) : {}
-  const bscTvl = tvlRoot['56'] && typeof tvlRoot['56'] === 'object' ? (tvlRoot['56'] as Record<string, unknown>) : {}
+  const chainTvl = tvlRoot[network.id] && typeof tvlRoot[network.id] === 'object' ? (tvlRoot[network.id] as Record<string, unknown>) : {}
   const stale = input.nowMs - fetchedMs > EARN_CATALOG_STALE_MS
   const rows: EarnOpportunity[] = []
   input.vaults.forEach((value) => {
     if (!value || typeof value !== 'object') return
     const vault = value as Record<string, unknown>
-    if (vault.chain !== 'bsc' || vault.status !== 'active' || vault.platformId !== 'pancakeswap') return
+    if (vault.chain !== network.key || vault.status !== 'active' || typeof vault.platformId !== 'string' || !VAULT_ID.test(vault.platformId)) return
     if (typeof vault.id !== 'string') return
     const href = officialHref(vault.id)
     if (!href) return
@@ -156,14 +186,24 @@ export function buildEarnCatalog(input: {
     if (assets.length === 0) return
     const name = typeof vault.name === 'string' && vault.name.length > 0 ? vault.name : assets.join(' / ')
     const receipt = receiptOf(vault)
+    const assetAddresses = Object.fromEntries(assets.flatMap((asset) => {
+      const token = tokenIndex?.[asset]
+      return token?.id === asset && typeof token.address === 'string' && /^0x[0-9a-f]{40}$/i.test(token.address)
+        ? [[asset, token.address]] : []
+    }))
     rows.push({
       id: vault.id,
       name,
       assets,
-      protocol: 'PancakeSwap',
-      chainId: 56,
+      protocol: vault.platformId === 'pancakeswap' ? 'PancakeSwap' : vault.platformId,
+      chainId: network.id,
+      assetAddresses,
+      assetLogos: Object.fromEntries(Object.entries(assetAddresses).flatMap(([symbol, address]) => {
+        const logo = logos.get(address.toLowerCase())
+        return logo ? [[symbol, logo]] : []
+      })),
       apyDecimal: finiteOrNull(apyMap[vault.id]),
-      tvlUsd: finiteOrNull(bscTvl[vault.id]),
+      tvlUsd: finiteOrNull(chainTvl[vault.id]),
       source: EARN_CATALOG_SOURCE,
       updatedAt: null,
       fetchedAt: input.fetchedAt,
@@ -187,11 +227,11 @@ export function buildEarnCatalog(input: {
     if (left.tvlUsd !== right.tvlUsd) return right.tvlUsd - left.tvlUsd
     return left.id < right.id ? -1 : 1
   })
-  const opportunities = rows.slice(0, EARN_CATALOG_LIMIT)
+  const opportunities = rows
   return {
     ok: true,
     schema: 'melega.next-gen.earn-catalog.v1',
-    chainId: 56,
+    chainId: network.id,
     source: EARN_CATALOG_SOURCE,
     fetchedAt: input.fetchedAt,
     count: opportunities.length,

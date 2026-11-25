@@ -76,7 +76,7 @@ test('retired, non-BNB, and stale rows do not invent a fresh number', () => {
     fetchedAt: STALE,
     nowMs: NOW,
   })
-  assert.deepEqual(catalog.opportunities.map((row) => row.id), ['kept'])
+  assert.deepEqual(catalog.opportunities.map((row) => row.id), ['kept', 'other-protocol'])
   assert.equal(catalog.opportunities[0].stale, true)
   assert.equal(catalog.opportunities[0].apyDecimal, 0.2)
   assert.equal(catalog.opportunities[0].fetchedAt, STALE)
@@ -104,6 +104,22 @@ test('a failed catalog read returns no opportunities', async () => {
   assert.deepEqual(bad.opportunities, emptyCatalog('UNAVAILABLE', FRESH).opportunities)
 })
 
+test('discovery includes all active vaults for the selected chain and joins logos by contract', () => {
+  const address = '0x1111111111111111111111111111111111111111'
+  const logoURI = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
+  const catalog = buildEarnCatalog({
+    chainId: 1,
+    vaults: Array.from({ length: 15 }, (_, index) => vault(`curve-${index}`, { chain: 'ethereum', platformId: 'curve', assets: ['USDC'] })),
+    apy: {}, tvl: {}, fetchedAt: FRESH, nowMs: NOW,
+    tokens: { ethereum: { USDC: { id: 'USDC', address } } },
+    tokenLists: [{ tokens: [{ address, chainId: 56, logoURI }, { address, chainId: 1, logoURI: 'https://example.org/wrong.png' }, { address, chainId: 1, logoURI }] }],
+  })
+  assert.equal(catalog.count, 15)
+  assert.equal(catalog.opportunities[0].protocol, 'curve')
+  assert.deepEqual(catalog.opportunities[0].assetAddresses, { USDC: address })
+  assert.deepEqual(catalog.opportunities[0].assetLogos, { USDC: logoURI })
+})
+
 test('a vault id that is not a Beefy slug never becomes a link', () => {
   const catalog = buildEarnCatalog({
     vaults: [vault('https://evil.example/phish'), vault('Not A Vault'), vault('ok-vault', { assets: ['CAKE'] })],
@@ -128,7 +144,7 @@ test('the wrong chain never calls Beefy, and a missing APY feed stays null', asy
       json: async () => [vault('ok-vault', { assets: ['CAKE'], earnedTokenAddress: '0x1111111111111111111111111111111111111111', tokenDecimals: 18 })],
     }
   }
-  const wrong = await readEarnCatalog({ chainId: 1, fetchImpl: fetchImpl as never, now: () => NOW })
+  const wrong = await readEarnCatalog({ chainId: 999, fetchImpl: fetchImpl as never, now: () => NOW })
   assert.equal(wrong.ok, false)
   if (!wrong.ok) assert.equal(wrong.code, 'CHAIN_MISMATCH')
   assert.equal(calls, 0)
