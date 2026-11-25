@@ -56,6 +56,8 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'lib/sealedPrepare.ts'),
   path.join(root, 'lib/retiredPositionsRpc.ts'),
   path.join(root, 'modules/earn/RetiredPositionLookup.tsx'),
+  path.join(root, 'modules/earn/EarnDiscovery.tsx'),
+  path.join(root, 'pages/api/earn-discovery.ts'),
 ])
 
 const WALLET_EXCEPTIONS = new Set([

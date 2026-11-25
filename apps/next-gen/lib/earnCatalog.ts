@@ -13,6 +13,7 @@ export const EARN_NETWORKS = [
   { id: 8453, key: 'base', label: 'Base' },
   { id: 137, key: 'polygon', label: 'Polygon' },
   { id: 42161, key: 'arbitrum', label: 'Arbitrum' },
+  { id: 43114, key: 'avax', label: 'Avalanche' },
 ] as const
 export const EARN_CATALOG_STALE_MS = 15 * 60 * 1000
 export const EARN_CATALOG_TIMEOUT_MS = 8_000

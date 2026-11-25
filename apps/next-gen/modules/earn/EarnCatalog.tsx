@@ -1,6 +1,7 @@
 import React from 'react'
 import { EARN_NETWORKS, formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
 import { TokenMark } from '../../components/TokenMark'
+import EarnDiscovery from './EarnDiscovery'
 
 function matches(opportunity: EarnOpportunity, asset: string, protocol: string): boolean {
   const assetQuery = asset.trim().toLowerCase()
@@ -69,6 +70,7 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
   const [catalog, setCatalog] = React.useState<EarnCatalog | null>(null)
   const [asset, setAsset] = React.useState('')
   const [chain, setChain] = React.useState(56)
+  const [source, setSource] = React.useState<'vaults' | 'farms' | 'pools' | 'index'>('vaults')
   const [view, setView] = React.useState<'discover' | 'positions' | 'liquidity'>('discover')
   const [sort, setSort] = React.useState<'tvl' | 'apy'>('tvl')
   const assets = [...new Set([...(chain === 56 ? ['BNB', 'WBNB', 'MARCO'] : []), ...(catalog?.ok ? catalog.opportunities.flatMap((row) => row.assets) : [])])].sort()
@@ -114,13 +116,20 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
         </section>
       ) : null}
       {view === 'discover' ? <>
-        <div className="earn-filter-bar">
-          <label><span>Asset</span><select value={asset} onChange={(event) => setAsset(event.target.value)}><option value="">All assets</option>{assets.map((item) => <option key={item}>{item}</option>)}</select></label>
-          <label><span>Network</span><select value={chain} onChange={(event) => { setCatalog(null); setAsset(''); setChain(Number(event.target.value)) }}>{EARN_NETWORKS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}</select></label>
-          <label><span>Sort vaults</span><select value={sort} onChange={(event) => setSort(event.target.value === 'apy' ? 'apy' : 'tvl')}><option value="tvl">TVL</option><option value="apy">APY</option></select></label>
+        <div className="earn-navigation" role="group" aria-label="Opportunity types">
+          <button type="button" aria-pressed={source === 'vaults'} onClick={() => setSource('vaults')}>Vaults</button>
+          <button type="button" aria-pressed={source === 'farms'} onClick={() => { setChain(56); setSource('farms') }}>Farms</button>
+          <button type="button" aria-pressed={source === 'pools'} onClick={() => { setChain(56); setSource('pools') }}>Pools</button>
+          <button type="button" aria-pressed={source === 'index'} onClick={() => setSource('index')}>Market index</button>
         </div>
-        {chain === 56 && ['', 'BNB', 'WBNB', 'MARCO'].includes(asset) ? native : null}
-        {catalog ? <EarnCatalogView key={chain} catalog={catalog} asset={asset} protocol="" sort={sort} /> : <p className="footnote" role="status">Loading opportunities…</p>}
+        <div className="earn-filter-bar">
+          {source === 'vaults' ? <label><span>Asset</span><select value={asset} onChange={(event) => setAsset(event.target.value)}><option value="">All assets</option>{assets.map((item) => <option key={item}>{item}</option>)}</select></label> : null}
+          <label><span>Network</span><select value={chain} disabled={source === 'farms' || source === 'pools'} onChange={(event) => { setCatalog(null); setAsset(''); setChain(Number(event.target.value)) }}>{EARN_NETWORKS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}</select></label>
+          {source === 'vaults' ? <label><span>Sort vaults</span><select value={sort} onChange={(event) => setSort(event.target.value === 'apy' ? 'apy' : 'tvl')}><option value="tvl">TVL</option><option value="apy">APY</option></select></label> : null}
+        </div>
+        {source === 'farms' ? native : null}
+        {source !== 'vaults' ? <EarnDiscovery key={source + chain} kind={source} chain={chain} /> :
+          catalog?.chainId === chain ? <EarnCatalogView key={chain} catalog={catalog} asset={asset} protocol="" sort={sort} /> : <p className="footnote" role="status">Loading opportunities…</p>}
       </> : null}
     </section>
   )
