@@ -260,7 +260,7 @@ export const FarmsFinishedFarmsModule: React.FC = () => {
       <Header>
         <TitleBlock>
           <TitleRow>
-            <Title id="farms-finished-farms-title">Finished Farms</Title>
+            <Title id="farms-finished-farms-title">Terminated</Title>
             {showCount ? (
               <Count aria-label={`${vm.totalCount} positions requiring attention`}>
                 {vm.totalCount} positions requiring attention

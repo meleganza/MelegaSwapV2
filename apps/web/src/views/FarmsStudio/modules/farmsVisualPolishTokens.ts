@@ -25,17 +25,17 @@ export const farmsVisualPolish = {
   module007MockupSha256: farmsAnalytics.mockupSha256,
 
   /** Restrained gold (Liquidity / Pools / Passport parity) — focus / accent only */
-  gold: '#C9A84A',
+  gold: '#F3C928',
   goldHover: '#D4B45C',
   goldFocus: 'rgba(201, 168, 74, 0.55)',
   goldFocusSoft: 'rgba(201, 168, 74, 0.45)',
 
-  canvas: '#0D0D0D',
-  cardBg: 'rgba(18, 18, 18, 0.98)',
-  borderSoft: 'rgba(255, 255, 255, 0.05)',
-  borderHover: 'rgba(255, 255, 255, 0.12)',
-  insetHighlight: 'rgba(255, 255, 255, 0.03)',
-  cardShadow: '0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+  canvas: '#F7F6F2',
+  cardBg: '#FFFFFF',
+  borderSoft: '#E5E2D9',
+  borderHover: '#D8D4C8',
+  insetHighlight: 'rgba(255, 255, 255, 0.7)',
+  cardShadow: '0 16px 44px rgba(23, 24, 23, 0.07)',
 
   transitionMs: '120ms',
   transitionEase: 'ease',

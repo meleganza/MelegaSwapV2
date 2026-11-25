@@ -18,6 +18,7 @@ function TrustRow({ statements }: { statements: string[] }) {
 
 function TradeExperience({ children }: { children?: React.ReactNode }) {
   return (
+    <div className="trade-home-grid">
     <div className="trade-layout">
       <section className="surface trade-surface" aria-label="Trade preview">
         <div className="surface-head">
@@ -31,49 +32,13 @@ function TradeExperience({ children }: { children?: React.ReactNode }) {
             <span className="network-dot" aria-hidden="true" /> BNB Chain
           </span>
         </div>
-        <div className="asset-field">
-          <span className="field-label">You pay</span>
-          <strong>0.00</strong>
-          <span className="token-chip">BNB</span>
-          <small>Balance unavailable in read-only mode</small>
-        </div>
-        <button className="swap-direction" type="button" disabled aria-label="Swap direction unavailable">
-          ↓
-        </button>
-        <div className="asset-field asset-field-output">
-          <span className="field-label">You receive</span>
-          <strong>0.00</strong>
-          <span className="token-chip token-empty">Select token</span>
-          <small>Best factual net output appears after a quote</small>
-        </div>
         {children}
-        <div className="route-note">
-          <AppIcon name="shield" />
-          <span>
-            <strong>SmartSwap clarity</strong>
-            Venue, impact, gas, and slippage appear only when factual.
-          </span>
-        </div>
       </section>
-
-      <aside className="next-actions" aria-label="Next actions">
-        <p className="section-kicker">Your next move</p>
-        <a href="/earn">
-          <span className="action-icon"><AppIcon name="earn" /></span>
-          <span><strong>Put assets to work</strong><small>Review verified yield opportunities</small></span>
-          <AppIcon name="arrow" />
-        </a>
-        <a href="/portfolio">
-          <span className="action-icon"><AppIcon name="portfolio" /></span>
-          <span><strong>Understand your holdings</strong><small>Read balances without connecting a wallet</small></span>
-          <AppIcon name="arrow" />
-        </a>
-        <a href="/explore">
-          <span className="action-icon"><AppIcon name="explore" /></span>
-          <span><strong>Discover with context</strong><small>Projects, tokens, and paid Boost</small></span>
-          <AppIcon name="arrow" />
-        </a>
-      </aside>
+    </div>
+    <aside className="desktop-promo" aria-label="Melega highlights">
+      <article className="marco-promo"><div><span>MARCO</span><h2>Your guide to the Melega ecosystem.</h2><a href="/explore">Explore MARCO</a></div><img src="/brand/marco-hero.webp" alt="MARCO character" /></article>
+      <a className="featured-slot" href="/tools/featured-project"><span>Featured project</span><strong>Put your project in front of Melega users</strong><small>Verified paid placement</small></a>
+    </aside>
     </div>
   )
 }
@@ -88,6 +53,8 @@ function BridgeExperience() {
         </div>
         <span className="quiet-chip">Live DEX handoff</span>
       </div>
+      <nav className="earn-tabs" aria-label="Earn filters"><a href="#earn-all" aria-current="page">All</a><a href="#bnb-farm">Farms</a><a href="#earn-catalog-title">Vaults</a><a href="#beefy-positions">My positions</a></nav>
+      <div id="earn-all" />
       <ul className="facts">
         {marcoPublicPairs().map((pair) => (
           <li key={`${pair.fromId}-${pair.toId}`}>
@@ -111,9 +78,9 @@ function BridgeExperience() {
 function EarnExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Earn opportunities preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Opportunities</p><h2>Yield, with the facts first</h2></div>
-        <span className="quiet-chip">{children ? 'BNB reads' : 'No verified data loaded'}</span>
+      <div className="surface-head compact-page-head">
+        <div><h2>Earn</h2><p>BNB opportunities</p></div>
+        <label className="chain-select"><span className="sr-only">Network</span><select defaultValue="56"><option value="56">BNB Chain</option><option disabled>Ethereum · Terminated</option><option disabled>Polygon · Terminated</option><option disabled>Base · Terminated</option></select></label>
       </div>
       {children ? (
         children
@@ -130,39 +97,22 @@ function EarnExperience({ children }: { children?: React.ReactNode }) {
 
 function PortfolioExperience({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="portfolio-layout">
-      <section className="surface portfolio-summary" aria-label="Portfolio summary">
-        <p className="section-kicker">Total portfolio value</p>
-        <p className="unavailable-value">—</p>
-        <p className="muted-copy">Enter a public BNB address to read supported balances. No wallet connection is requested.</p>
-        <div className="portfolio-metrics">
-          <div><small>Assets</small><strong>Not loaded</strong></div>
-          <div><small>Networks</small><strong>BNB read available</strong></div>
-          <div><small>Rewards</small><strong>Not scanned</strong></div>
-        </div>
-      </section>
-      <section className="surface lookup-surface" aria-label="Portfolio lookup">{children}</section>
-    </div>
+    <section className="surface lookup-surface portfolio-dashboard" aria-label="Portfolio dashboard">
+      <div className="surface-head compact-page-head">
+        <div><h2>Portfolio</h2><p>Public BNB address</p></div>
+        <span className="quiet-chip">Read only</span>
+      </div>
+      {children}
+    </section>
   )
 }
 
 function ExploreExperience({ children }: { children?: React.ReactNode }) {
   return (
     <section className="surface discovery-surface" aria-label="Explore preview">
-      <div className="surface-head">
-        <div><p className="section-kicker">Discovery</p><h2>Find signal, not noise</h2></div>
-        <span className="quiet-chip">Live DEX handoff</span>
-      </div>
-      <div className="explore-categories">
-        <a href={LIVE_DEX_LINKS.projects} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="explore" /></span><strong>Projects</strong><small>Live project directory. Leaves this beta.</small>
-        </a>
-        <a href={LIVE_DEX_LINKS.projectsTrending} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="trade" /></span><strong>Trending</strong><small>Same directory, trending sort. Leaves this beta.</small>
-        </a>
-        <a href={LIVE_DEX_LINKS.tokensBnb} target="_blank" rel="noreferrer noopener" referrerPolicy="no-referrer">
-          <span className="action-icon"><AppIcon name="earn" /></span><strong>BNB tokens</strong><small>Live info for BNB Smart Chain. Leaves this beta.</small>
-        </a>
+      <div className="surface-head compact-page-head">
+        <div><h2>Explore</h2><p>Tokens and verified projects</p></div>
+        <a className="small-cta" href="/tools/trend-boost">Boost your project</a>
       </div>
       {children}
     </section>

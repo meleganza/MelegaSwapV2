@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { useModal } from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { useLiveCurrencyBalance, useTokenBalance } from 'state/wallet/hooks'
@@ -19,6 +21,7 @@ import { usePoolsRuntime } from './PoolsRuntimeContext'
 export const PoolsActionHost: React.FC = () => {
   const { modalRequest, clearModal } = usePoolsRuntime()
   const { address: account } = useAccount()
+  const { chainId } = useActiveChainId()
   const presentedKeyRef = useRef<string | null>(null)
 
   const pool = modalRequest?.pool.rawPool
@@ -55,7 +58,7 @@ export const PoolsActionHost: React.FC = () => {
   }, [])
 
   const stakeNode =
-    pool && action === 'stake' && !pool.vaultKey ? (
+    pool && action === 'stake' && !pool.vaultKey && isNativeYieldOperationAllowed(chainId, 'stake') ? (
       <StakeModal
         isBnbPool={isBnbPool}
         pool={pool}
@@ -66,7 +69,7 @@ export const PoolsActionHost: React.FC = () => {
     ) : null
 
   const vaultStakeNode =
-    pool && action === 'stake' && pool.vaultKey ? (
+    pool && action === 'stake' && pool.vaultKey && isNativeYieldOperationAllowed(chainId, 'stake') ? (
       <VaultStakeModal stakingMax={stakingTokenBalance} pool={pool} onTxSuccess={handlePoolTxSuccess} />
     ) : null
 

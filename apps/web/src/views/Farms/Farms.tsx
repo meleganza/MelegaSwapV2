@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
-import { Image, Toggle, Text, Flex, Farm as FarmUI, Loading, SearchInput, Select, OptionProps, FlexLayout, ToggleView } from '@pancakeswap/uikit';
+import { Image, Toggle, Text, Flex, Farm as FarmUI, Loading, SearchInput, Select, OptionProps, FlexLayout, ToggleView, useMatchBreakpoints } from '@pancakeswap/uikit';
 import styled from 'styled-components'
 import { melegaOperational as tokens } from 'ui/tokens'
 import Page from 'components/Layout/Page'
@@ -145,6 +145,7 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
   const query = normalizedUrlSearch && !_query ? normalizedUrlSearch : _query
 
   const [viewMode, setViewMode] = useUserFarmsViewMode()
+  const { isMobile } = useMatchBreakpoints()
   const { address: account } = useAccount()
   const [sortOption, setSortOption] = useState('hot')
   const { observerRef, isIntersecting } = useIntersectionObserver()
@@ -440,7 +441,7 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
             </Flex>
           </FinishedTextContainer>
         )} */}
-        {viewMode === ViewMode.TABLE ? (
+        {isMobile || viewMode === ViewMode.TABLE ? (
           <Table farms={chosenFarmsMemoized} cakePrice={cakePrice} userDataReady={userDataReady} />
         ) : (
           <FlexLayout>{children}</FlexLayout>

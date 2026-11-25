@@ -9,5 +9,6 @@ import LiquidityStudioV3Shell from 'views/LiquidityStudio/v3/LiquidityStudioV3Sh
 const LiquidityPage = () => <LiquidityStudioV3Shell />
 
 LiquidityPage.chains = SUPPORT_MULTI_CHAINS
+LiquidityPage.disablePageSuspense = true
 
 export default LiquidityPage

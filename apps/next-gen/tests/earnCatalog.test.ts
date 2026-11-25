@@ -152,11 +152,9 @@ test('the catalog view has no deposit or signature control', () => {
       }),
     }),
   )
-  assert.match(html, /APY unavailable/)
-  assert.match(html, /Melega fee: 0/)
-  assert.match(html, /Net APY is unknown/)
-  assert.match(html, /Leaves this beta/)
-  assert.match(html, /Continue on Beefy/)
+  assert.match(html, /<small>APY<\/small><strong>—<\/strong>/)
+  assert.match(html, /No Melega fee or referral parameter/)
+  assert.match(html, /View vault/)
   assert.match(html, /https:\/\/app\.beefy\.com\/vault\/pancake-cow-bsc-wbnb-usdt-vault/)
   assert.equal(html.includes('>Deposit<'), false)
   assert.equal(html.includes('>Approve<'), false)

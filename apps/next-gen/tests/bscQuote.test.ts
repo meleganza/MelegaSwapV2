@@ -4,6 +4,8 @@ import path from 'path'
 import { test } from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { WagmiProvider } from '@pancakeswap/wagmi'
+import { client } from '../../web/src/utils/wagmi'
 import {
   assertReadonlyRpc,
   decodeGetAmountsOut,
@@ -13,6 +15,7 @@ import {
 } from '../lib/bscQuote'
 import { previewBnbQuote } from '../lib/bscQuoteRpc'
 import BnbQuotePreview, { QuoteResultView } from '../modules/trade/BnbQuotePreview'
+import type { SealedPreparation } from '../lib/sealedPrepare'
 
 const CALLDATA =
   '0xd06ca61f000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000002000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c00000000000000000000000055d398326f99059ff775485246999027b3197955'
@@ -80,10 +83,15 @@ test('the higher factual router output wins and a timeout invents nothing', asyn
     assert.equal(quote.chainId, 56)
   }
   assert.deepEqual(methods, ['eth_chainId', 'eth_call', 'eth_call'])
-  const html = renderToStaticMarkup(
-    React.createElement(QuoteResultView, { result: quote, nowMs: Date.parse('2026-10-13T00:00:20.000Z') }),
-  )
-  assert.match(html, /Stale preview/)
+  const prepared: SealedPreparation = {
+    ok: true, chainId: 56, broadcast: false, signed: false, approved: false, executable: false,
+    feeBps: 20, feeAmountRaw: '2000', gasUnits: '180000', allowanceRaw: '1000000', venueLabel: 'Melega DEX',
+    amountInRaw: '1000000', amountOutRaw: '123456789', slippageBps: 50,
+    destination: '0x1111111111111111111111111111111111111111', approvalTx: null,
+    unsignedTx: { to: '0x1111111111111111111111111111111111111111', data: '0x12345678', value: '0x0', chainId: 56 },
+  }
+  const html = renderToStaticMarkup(React.createElement(QuoteResultView, { result: prepared }))
+  assert.match(html, /SmartSwap fee:.*20 bps/)
   assert.equal(html.includes('>Swap<'), false)
   assert.equal(html.includes('>Approve<'), false)
   assert.equal(html.includes('>Sign<'), false)
@@ -105,16 +113,18 @@ test('the higher factual router output wins and a timeout invents nothing', asyn
   assert.equal(timed.gasUnits, null)
 })
 
-test('the quote form has no transaction controls', () => {
-  const html = renderToStaticMarkup(React.createElement(BnbQuotePreview))
-  assert.match(html, /Preview quote/)
+test('the quote form exposes wallet reads but no transaction controls', () => {
+  const html = renderToStaticMarkup(React.createElement(WagmiProvider as React.ComponentType<any>, { client }, React.createElement(BnbQuotePreview)))
+  assert.match(html, /Connect wallet above/)
   assert.equal(html.includes('>Swap<'), false)
   assert.equal(html.includes('>Approve<'), false)
   assert.equal(html.includes('>Sign<'), false)
   assert.equal(html.includes('>Pay<'), false)
-  assert.match(html, /data-executable|Not executable|Preview quote/)
+  assert.match(html, /Signing and broadcast disabled/)
   const source = readFileSync(path.join(process.cwd(), 'modules/trade/BnbQuotePreview.tsx'), 'utf8')
   assert.match(source, /readGenerationCurrent/)
   assert.match(source, /setResult\(null\)/)
   assert.match(source, /abort\(\)/)
+  assert.match(source, /address, chain\?\.id, isConnected/)
+  assert.match(source, /\/api\/sealed-prepare/)
 })

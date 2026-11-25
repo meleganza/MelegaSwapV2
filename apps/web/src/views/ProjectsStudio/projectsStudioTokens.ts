@@ -44,8 +44,8 @@ export const projectsStudioLayout = {
 } as const
 
 export const projectsStudioColors = {
-  border: '#2A2A2A',
   ...premiumStudioColors,
+  border: premiumStudioColors.cardBorder,
   goldBright: premiumStudioColors.gold,
   chartBg: premiumStudioColors.card,
   goldBorder: 'rgba(244, 196, 48,0.55)',

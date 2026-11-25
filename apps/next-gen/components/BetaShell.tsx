@@ -1,7 +1,13 @@
 import React from 'react'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
 import { AppIcon, type AppIconName } from './AppIcon'
 import { uxSectionById, type UxSectionId } from '../lib/uxSections'
+
+const WalletControl = dynamic(() => import('./WalletControl'), {
+  ssr: false,
+  loading: () => <button className="wallet-control" type="button" disabled>Connect Wallet</button>,
+})
 
 const NAV_ITEMS: Array<{ label: string; href: string; icon: AppIconName; sections: UxSectionId[] }> = [
   { label: 'Trade', href: '/', icon: 'trade', sections: ['swap', 'bridge'] },
@@ -40,8 +46,17 @@ function ProductNavigation({ section, className }: { section: UxSectionId; class
 
 export function BetaShell({ section, children }: { section: UxSectionId; children: React.ReactNode }) {
   const current = uxSectionById(section)
+  const [theme, setTheme] = React.useState<'pearl' | 'graphite'>('pearl')
+
+  function toggleTheme() {
+    setTheme((currentTheme) => {
+      const next = currentTheme === 'pearl' ? 'graphite' : 'pearl'
+      window.localStorage.setItem('melega-evo-theme', next)
+      return next
+    })
+  }
   return (
-    <div className="app-shell" data-layout="responsive-app" data-section={section}>
+    <div className="app-shell" data-layout="responsive-app" data-section={section} data-theme={theme}>
       <Head>
         <title>{`${current.title} · MelegaDex Evo`}</title>
       </Head>
@@ -69,16 +84,16 @@ export function BetaShell({ section, children }: { section: UxSectionId; childre
       <div className="app-stage">
         <header className="mobile-header">
           <Brand />
-          <a className="mobile-console" href="/tools" aria-label="Open Tools">
-            <AppIcon name="advanced" />
-          </a>
+          <div className="header-actions">
+            <WalletControl compact />
+            <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Use ${theme === 'pearl' ? 'Graphite Premium' : 'Pearl Minimal'} theme`}><span aria-hidden="true">{theme === 'pearl' ? '◐' : '☀'}</span></button>
+            <a className="mobile-console" href="/tools" aria-label="Open Tools"><AppIcon name="advanced" /></a>
+          </div>
         </header>
         <p className="mobile-readonly">Beta — read-only</p>
         <header className="topbar">
-          <p>MelegaDex Evo</p>
-          <span className="environment-pill">
-            <span aria-hidden="true" /> Beta — read-only
-          </span>
+          <div className="trending-rail"><span>Trending</span><strong>Verified projects appear here</strong><a href="/tools/trend-boost">Boost your project</a></div>
+          <div className="header-actions"><WalletControl /><button className="theme-toggle theme-toggle-wide" type="button" onClick={toggleTheme}><span aria-hidden="true">{theme === 'pearl' ? '◐' : '☀'}</span>{theme === 'pearl' ? 'Graphite' : 'Pearl'}</button><span className="environment-pill"><span aria-hidden="true" /> Beta — read-only</span></div>
         </header>
 
         <main className="main" id="content">

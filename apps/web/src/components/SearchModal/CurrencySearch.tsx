@@ -11,8 +11,8 @@ import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import { useAudioModeManager } from 'state/user/hooks'
 import { isAddress } from 'utils'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { SponsoredSuggestionsStrip } from 'views/shared/monetization/SponsoredSuggestionsStrip'
 import { RC_COPY } from 'lib/monetization/copy'
+import styled from 'styled-components'
 import { useAllTokens, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
@@ -23,6 +23,30 @@ import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
 import ImportRow from './ImportRow'
+
+const CurrentNetwork = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  min-height: 0;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid #f3c928;
+  border-radius: 14px;
+  background: #fffdf6;
+  color: #171817;
+  font-size: 13px;
+  font-weight: 600;
+
+  img { width: 28px; height: 28px; border-radius: 50%; }
+`
+
+const ListHeading = styled(Text)`
+  color: #171817 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin: 18px 0 2px;
+`
 
 interface CurrencySearchProps {
   selectedCurrency?: Currency | null
@@ -196,7 +220,7 @@ function CurrencySearch({
     }
 
     return Boolean(filteredSortedTokens?.length) || hasFilteredInactiveTokens ? (
-      <Box margin="24px -24px">
+      <Box margin="0 -24px 24px">
         <CurrencyList
           height={isMobile ? (showCommonBases ? height || 250 : height ? height + 80 : 350) : 390}
           showNative={showNative}
@@ -256,25 +280,22 @@ function CurrencySearch({
             />
           </Row>
         )}
-        <SponsoredSuggestionsStrip
-          query={debouncedQuery}
-          onSelect={(s) => {
-            if (!s.address || !chainId) return
-            const match = filteredSortedTokens.find(
-              (tok) => tok.address.toLowerCase() === s.address!.toLowerCase(),
-            )
-            if (match) handleCurrencySelect(match)
-          }}
-        />
         {showCommonBases && (
-          <CommonBases
-            chainId={chainId}
-            onSelect={handleCurrencySelect}
-            selectedCurrency={selectedCurrency}
-            commonBasesType={commonBasesType}
-          />
+          <>
+            <CurrentNetwork aria-label={t('Current network: BNB Chain')}>
+              <img src="/images/home/trade/BNB.png" alt="" />
+              <span>{t('BNB Chain')}</span>
+            </CurrentNetwork>
+            <CommonBases
+              chainId={chainId}
+              onSelect={handleCurrencySelect}
+              selectedCurrency={selectedCurrency}
+              commonBasesType={commonBasesType}
+            />
+          </>
         )}
       </AutoColumn>
+      <ListHeading>{t('All tokens')}</ListHeading>
       {getCurrencyListRows()}
     </>
   )

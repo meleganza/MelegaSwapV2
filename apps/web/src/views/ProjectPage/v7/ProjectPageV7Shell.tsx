@@ -154,8 +154,7 @@ const IdentityHeader = styled.div`
   padding: 16px 18px;
   border-radius: ${pp.radius};
   border: 1px solid ${pp.line};
-  background: radial-gradient(circle at 84% 18%, rgba(244, 196, 48, 0.07), transparent 34%),
-    linear-gradient(145deg, rgba(17, 17, 17, 0.98), rgba(10, 10, 10, 0.98));
+  background: #FFFFFF;
 
   @media (max-width: 860px) {
     grid-template-columns: 1fr;
@@ -188,7 +187,7 @@ const HeroContextBlock = styled.div`
   }
   p {
     margin: 0;
-    color: rgba(255, 255, 255, 0.68);
+    color: ${pp.mute};
     font-size: 12px;
     line-height: 1.45;
     display: -webkit-box;

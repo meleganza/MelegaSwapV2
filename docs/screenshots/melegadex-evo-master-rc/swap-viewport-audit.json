@@ -1,0 +1,268 @@
+[
+  {
+    "width": 320,
+    "height": 780,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "cta": {
+        "top": 26,
+        "bottom": 62,
+        "left": 174,
+        "right": 338,
+        "width": 164,
+        "height": 36
+      },
+      "bottomNav": {
+        "top": 704,
+        "bottom": 780,
+        "left": 0,
+        "right": 320,
+        "width": 320,
+        "height": 76
+      },
+      "badge": {
+        "top": 30.5,
+        "bottom": 57.5,
+        "left": 10,
+        "right": 35.19999694824219,
+        "width": 25.199996948242188,
+        "height": 27
+      },
+      "scrollHeight": 1317,
+      "innerHeight": 780
+    }
+  },
+  {
+    "width": 360,
+    "height": 800,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "cta": {
+        "top": 24,
+        "bottom": 64,
+        "left": 214,
+        "right": 378,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 724,
+        "bottom": 800,
+        "left": 0,
+        "right": 360,
+        "width": 360,
+        "height": 76
+      },
+      "badge": {
+        "top": 32.29999923706055,
+        "bottom": 55.69999694824219,
+        "left": 10,
+        "right": 33.400001525878906,
+        "width": 23.400001525878906,
+        "height": 23.39999771118164
+      },
+      "scrollHeight": 1302,
+      "innerHeight": 800
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "cta": {
+        "top": 24,
+        "bottom": 64,
+        "left": 238,
+        "right": 402,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 768,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 76
+      },
+      "badge": {
+        "top": 31.780000686645508,
+        "bottom": 56.220001220703125,
+        "left": 12,
+        "right": 36.44000244140625,
+        "width": 24.44000244140625,
+        "height": 24.440000534057617
+      },
+      "scrollHeight": 1288,
+      "innerHeight": 844
+    }
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 430,
+      "innerWidth": 430,
+      "cta": {
+        "top": 24,
+        "bottom": 64,
+        "left": 278,
+        "right": 442,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 856,
+        "bottom": 932,
+        "left": 0,
+        "right": 430,
+        "width": 430,
+        "height": 76
+      },
+      "badge": {
+        "top": 31.780000686645508,
+        "bottom": 56.220001220703125,
+        "left": 12,
+        "right": 36.44000244140625,
+        "width": 24.44000244140625,
+        "height": 24.440000534057617
+      },
+      "scrollHeight": 1254,
+      "innerHeight": 932
+    }
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "cta": {
+        "top": 24,
+        "bottom": 64,
+        "left": 566,
+        "right": 730,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 948,
+        "bottom": 1024,
+        "left": 0,
+        "right": 768,
+        "width": 768,
+        "height": 76
+      },
+      "badge": {
+        "top": 31.780000686645508,
+        "bottom": 56.220001220703125,
+        "left": 12,
+        "right": 36.44000244140625,
+        "width": 24.44000244140625,
+        "height": 24.440000534057617
+      },
+      "scrollHeight": 1109,
+      "innerHeight": 1024
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "cta": {
+        "top": 13,
+        "bottom": 53,
+        "left": 798,
+        "right": 962,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 0,
+        "bottom": 72,
+        "left": 262.734375,
+        "right": 548.0625,
+        "width": 285.328125,
+        "height": 72
+      },
+      "badge": {
+        "top": 21,
+        "bottom": 51,
+        "left": 16,
+        "right": 46,
+        "width": 30,
+        "height": 30
+      },
+      "scrollHeight": 954,
+      "innerHeight": 900
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "status": 200,
+    "rpcRequests": [
+      "https://bsc-rpc.publicnode.com/"
+    ],
+    "audit": {
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "cta": {
+        "top": 13,
+        "bottom": 53,
+        "left": 1212,
+        "right": 1376,
+        "width": 164,
+        "height": 40
+      },
+      "bottomNav": {
+        "top": 0,
+        "bottom": 72,
+        "left": 262.734375,
+        "right": 609.421875,
+        "width": 346.6875,
+        "height": 72
+      },
+      "badge": {
+        "top": 21,
+        "bottom": 51,
+        "left": 16,
+        "right": 46,
+        "width": 30,
+        "height": 30
+      },
+      "scrollHeight": 1000,
+      "innerHeight": 1000
+    }
+  }
+]

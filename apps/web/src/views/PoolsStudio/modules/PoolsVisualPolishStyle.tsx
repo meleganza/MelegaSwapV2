@@ -17,7 +17,7 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
     --pools-polish-ease: ${ease};
     --pools-polish-ms: ${ms};
     --pools-polish-gold: ${poolsVisualPolish.gold};
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   /* Premium layered surfaces — color / shadow only (no size) */
@@ -30,10 +30,9 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid='pools-analytics-panel'],
   ${S} [data-testid='pools-reward-advisor-module'],
   ${S} [data-testid='pools-hero-trust'] {
-    background-image:
-      radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.045) 0%, transparent 42%),
-      radial-gradient(circle at 12% 92%, rgba(0, 0, 0, 0.055) 0%, transparent 48%);
-    box-shadow: ${poolsVisualPolish.cardShadow};
+    background: #FFFFFF !important;
+    background-image: none !important;
+    box-shadow: none;
   }
 
   ${S} [data-testid='pools-my-position-card'],
@@ -43,6 +42,8 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid='pools-analytics-panel'],
   ${S} [data-testid^='pools-kpi-'],
   ${S} [data-testid='pools-hero-trust'] {
+    background: #FFFFFF !important;
+    color: #171817 !important;
     border-color: ${poolsVisualPolish.borderSoft} !important;
     transition:
       border-color var(--pools-polish-ms) var(--pools-polish-ease),
@@ -108,7 +109,7 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
   /* Skeleton polish — softer pulse, no layout change */
   ${S} [data-testid$='-skeleton'],
   ${S} [data-testid*='skeleton'] {
-    background-color: rgba(255, 255, 255, 0.045) !important;
+    background-color: #F0EEE7 !important;
     border-color: ${poolsVisualPolish.borderSoft} !important;
   }
 
@@ -127,7 +128,7 @@ export const PoolsVisualPolishStyle = createGlobalStyle`
   ${S} [data-testid$='-empty'],
   ${S} [data-testid$='-unavailable'],
   ${S} [data-testid$='-disconnected'] {
-    color: rgba(245, 245, 245, 0.92);
+    color: #171817;
   }
 
   /* Mobile-only legibility: KPI labels and values must not be truncated. */

@@ -3,16 +3,18 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
+import { EarnPremiumShell, EarnSection } from 'views/Earn/EarnPremiumShell'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
 import { MelegaModal, typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
-import { FarmsHeroModule } from './modules/FarmsHeroModule'
-import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
 import { CreateFarmWorkspace } from './modules/CreateFarmWorkspace'
 import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
+import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
 import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
@@ -52,11 +54,12 @@ const Content = styled.div`
 
 /**
  * Farms product IA:
- * Hero (Featured compact) → KPIs → My Farms → Explore Farms
+ * Earn shell → Active opportunities → My positions → Terminated positions
  * Create Farm opens as a modal / ?create=1 — never a permanent page column.
  */
 export const FarmsStudioScreen: React.FC = () => {
   const router = useRouter()
+  const { chainId } = useActiveChainId()
   const [createOpen, setCreateOpen] = useState(false)
   const [everOpened, setEverOpened] = useState(false)
   const createOpenRef = useRef(false)
@@ -70,13 +73,14 @@ export const FarmsStudioScreen: React.FC = () => {
     const q = router.query.create
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
     const shouldOpen = q === '1' || q === 'true' || hash === '#create-farm'
-    if (shouldOpen) {
+    if (shouldOpen && isNativeYieldOperationAllowed(chainId, 'create')) {
       setCreateOpen(true)
       setEverOpened(true)
     }
-  }, [router.isReady, router.query.create])
+  }, [router.isReady, router.query.create, chainId])
 
   const openCreate = useCallback(() => {
+    if (!isNativeYieldOperationAllowed(chainId, 'create')) return
     if (createOpenRef.current) return
     setCreateOpen(true)
     setEverOpened(true)
@@ -85,7 +89,7 @@ export const FarmsStudioScreen: React.FC = () => {
     void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
       shallow: true,
     })
-  }, [router])
+  }, [router, chainId])
 
   const closeCreate = useCallback(() => {
     setCreateOpen(false)
@@ -105,11 +109,11 @@ export const FarmsStudioScreen: React.FC = () => {
   return (
     <Root
       data-farms-studio-screen="true"
-      data-farms-module-001="mounted"
-      data-farms-module-002="mounted"
+      data-farms-module-001="unmounted"
+      data-farms-module-002="unmounted"
       data-farms-module-003="mounted"
       data-farms-module-004="mounted"
-      data-farms-module-005="unmounted"
+      data-farms-module-005="mounted"
       data-farms-module-006="unmounted"
       data-farms-module-007="unmounted"
       data-farms-module-008="mounted"
@@ -127,19 +131,22 @@ export const FarmsStudioScreen: React.FC = () => {
         <FarmsVisualPolishModule />
         <FarmsActionHost />
         <Content data-fs-content data-farms-ia="product-ux-redesign-v1">
-          <FarmsHeroModule onRequestCreateFarm={openCreate} />
-          <DataSurfaceErrorBoundary
-            surface="Farms Overview KPIs"
-            userReason="Farm overview metrics are temporarily unavailable."
-          >
-            <FarmsOverviewKpisModule />
-          </DataSurfaceErrorBoundary>
-          <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
-            <FarmsMyFarmsModule />
-          </DataSurfaceErrorBoundary>
-          <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
-            <FarmsExploreFarmsModule />
-          </DataSurfaceErrorBoundary>
+          <EarnPremiumShell kind="farms" chainId={chainId} />
+          <EarnSection id="opportunities">
+            <DataSurfaceErrorBoundary surface="Earn opportunities" userReason="Active farms are temporarily unavailable.">
+              <FarmsExploreFarmsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
+          <EarnSection id="positions">
+            <DataSurfaceErrorBoundary surface="My positions" userReason="Farm positions are temporarily unavailable.">
+              <FarmsMyFarmsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
+          <EarnSection id="terminated">
+            <DataSurfaceErrorBoundary surface="Terminated positions" userReason="Terminated farm positions are temporarily unavailable.">
+              <FarmsFinishedFarmsModule />
+            </DataSurfaceErrorBoundary>
+          </EarnSection>
         </Content>
         {everOpened ? (
           <MelegaModal

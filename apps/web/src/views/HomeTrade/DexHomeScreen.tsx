@@ -70,7 +70,7 @@ const Content = styled.div`
 
 const Hero = styled.section`
   display: grid;
-  grid-template-columns: minmax(0, 56%) minmax(0, 44%);
+  grid-template-columns: minmax(0, 42%) minmax(0, 58%);
   gap: 24px;
   min-height: 332px;
   align-items: stretch;
@@ -94,7 +94,7 @@ const Hero = styled.section`
   }
 
   @media (max-width: 1199px) {
-    grid-template-columns: minmax(0, 55%) minmax(0, 45%);
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%);
   }
 
   @media (max-width: 767px) {
@@ -113,7 +113,7 @@ const HeroLeft = styled.div`
 
   @media (max-width: 767px) {
     padding: 16px 12px 8px;
-    order: 1;
+    order: 2;
   }
 `
 
@@ -124,7 +124,7 @@ const HeroRight = styled.div`
   align-items: stretch;
 
   @media (max-width: 767px) {
-    order: 2;
+    order: 1;
   }
 `
 

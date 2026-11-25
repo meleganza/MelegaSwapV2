@@ -11,10 +11,12 @@
     "budget": "node scripts/assert-budget.mjs"
   },
   "dependencies": {
+    "@pancakeswap/wagmi": "*",
     "@melega/smartswap-v2-prepare": "0.0.1",
     "next": "13.0.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "wagmi": "^0.10.10"
   },
   "devDependencies": {
     "@types/node": "^13.13.5",

@@ -9,6 +9,7 @@ import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { poolIdentity } from 'lib/data-truth/globalYieldInventory'
 import { resolvePoolTvlUsd } from 'lib/data-truth/yieldMetricHelpers'
 import { getBlockExploreLink } from 'utils'
+import { isNativeYieldEntryAllowed } from 'config/nativeYieldPolicy'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import type {
@@ -227,7 +228,7 @@ export function cardToExploreModel(
     /lp/i.test(stakeSymbol) ||
     Boolean(card.poolTypeLabel?.toLowerCase().includes('lp'))
 
-  const depositEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+  const depositEnabled = isNativeYieldEntryAllowed(poolChainId) && card.cta === 'stake' && Boolean(card.rawPool)
   const primaryAction = resolvePrimaryAction({
     depositEnabled,
     account: opts?.account,

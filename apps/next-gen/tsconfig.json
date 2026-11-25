@@ -8,6 +8,8 @@
     "incremental": false,
     "jsx": "preserve",
     "paths": {
+      "config/constants/rpc": ["../web/src/config/constants/rpc.ts"],
+      "config/constants/bscTestnet": ["../web/src/config/constants/bscTestnet.ts"],
       "config/constants/feeSchedule": ["../web/src/config/constants/feeSchedule.ts"],
       "lib/d87-pricing/codex/ratified": ["../web/src/lib/d87-pricing/codex/ratified.ts"],
       "lib/smart-swap-gas-protocol-fee/types": ["../web/src/lib/smart-swap-gas-protocol-fee/types.ts"]

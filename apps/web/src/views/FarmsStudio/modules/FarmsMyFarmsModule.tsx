@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
@@ -98,7 +99,7 @@ const ViewToggle = styled.div`
 `
 
 const ToggleBtn = styled.button<{ $active?: boolean }>`
-  height: 34px;
+  min-height: 44px;
   padding: 0 12px;
   border: 0;
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.16)' : 'transparent')};
@@ -132,6 +133,10 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 0;
+`
+
+const ConnectWrap = styled.div`
+  button { min-height: 44px; padding: 0 18px; border-radius: 10px; }
 `
 
 const Grid = styled.ul`
@@ -459,11 +464,6 @@ export const FarmsMyFarmsModule: React.FC = () => {
 
   const canExpand = (vm.totalCount ?? vm.positions.length) > limit
 
-  // Hide when empty or disconnected — full-width module must not sit under KPIs unused (FARM-02).
-  if (vm.state === 'empty' || vm.state === 'disconnected') {
-    return null
-  }
-
   return (
     <Row
       data-testid="farms-my-farms-module"
@@ -478,7 +478,7 @@ export const FarmsMyFarmsModule: React.FC = () => {
       <Surface data-testid="farms-my-farms-surface">
         <Header>
           <TitleRow>
-            <Title id="farms-my-farms-title">My Farms</Title>
+            <Title id="farms-my-farms-title">My positions</Title>
             {vm.showCountBadge && vm.totalCount != null ? (
               <Badge aria-label={`${vm.totalCount} farm positions`}>{vm.totalCount}</Badge>
             ) : null}
@@ -509,6 +509,18 @@ export const FarmsMyFarmsModule: React.FC = () => {
           </HeaderActions>
         </Header>
         <Body>
+          {vm.state === 'disconnected' ? (
+            <Center data-testid="farms-my-farms-disconnected">
+              <StateTitle>Connect to see your positions</StateTitle>
+              <ConnectWrap><ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton></ConnectWrap>
+            </Center>
+          ) : null}
+          {vm.state === 'empty' ? (
+            <Center data-testid="farms-my-farms-empty">
+              <StateTitle>No active farm positions</StateTitle>
+              <StateDesc>Your open positions will appear here automatically.</StateDesc>
+            </Center>
+          ) : null}
           {vm.moduleDisclosure ? <StateDesc role="status">{vm.moduleDisclosure}</StateDesc> : null}
           <LiveRegion aria-live="polite">{vm.liveRegion}</LiveRegion>
           {vm.state === 'loading' ? (

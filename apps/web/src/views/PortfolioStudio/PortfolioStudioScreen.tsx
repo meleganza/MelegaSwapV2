@@ -1,492 +1,181 @@
-/**
- * Portfolio Studio — complete redesign.
- * Same visual language as Project Pages / Farms / Pools.
- * Product surface only: assets, positions, rewards, activity, analytics.
- */
-import React, { useState, useTransition } from 'react'
+import React, { useMemo, useState, useTransition } from 'react'
 import styled from 'styled-components'
 import { useDisconnect } from 'wagmi'
 import { PageMeta } from 'components/Layout/Page'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
-import {
-  AnalyticsBody,
-  AnalyticsDetails,
-  AnalyticsSummary,
-  Band,
-  BandHead,
-  BandMeta,
-  BandTitle,
-  Btn,
-  Chip,
-  DenseRow,
-  DenseTable,
-  ExtLink,
-  Grid,
-  Muted,
-  Page,
-  Row,
-  Stack,
-  TabBtn,
-  TabRow,
-  px,
-} from './theme'
+import { Band, BandHead, BandMeta, BandTitle, Btn, Chip, DenseRow, DenseTable, ExtLink, Grid, Muted, Page, Row, Stack, TabBtn, TabRow, px } from './theme'
 import { Metric } from './Metric'
 import { explorerAddressUrl, positionActionLinks, type PositionDomain } from './runtime/buildPortfolioViewModel'
 import { chainLabel } from './helpers'
 import { usePortfolioRuntime } from './runtime/usePortfolioRuntime'
 
-const HeroGrid = styled.div`
-  display: grid;
-  gap: 14px;
-  min-width: 0;
+const TERMINATED_CHAIN_IDS = new Set([1, 137, 8453])
 
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
-    align-items: center;
-  }
+const Hero = styled(Band)`
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
 `
-
-const HeroLeft = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+const HeroRow = styled.div`
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-width: 0;
+  @media (max-width: 767px) { align-items: stretch; flex-direction: column; gap: 16px; }
 `
-
-const HeroRight = styled.div`
-  min-width: 0;
-  border-radius: 12px;
-  border: 1px solid ${px.goldLine};
-  background:
-    radial-gradient(ellipse 80% 70% at 30% 20%, rgba(242, 200, 76, 0.14), transparent 60%),
-    linear-gradient(165deg, #16140f 0%, #0c0c0c 100%);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 96px;
+const Identity = styled.div`display: flex; flex-direction: column; gap: 7px; min-width: 0;`
+const Eyebrow = styled.span`color: ${px.gold}; font-size: 10px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase;`
+const Title = styled.h1`margin: 0; color: ${px.text}; font-size: clamp(30px,4vw,44px); line-height: 1; letter-spacing: -.045em;`
+const Subtitle = styled.p`margin: 0; color: ${px.mute}; font-size: 14px; line-height: 1.45;`
+const Address = styled.code`color: ${px.mute}; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size: 12px; word-break: break-all;`
+const HeroActions = styled(Row)`
+  justify-content: flex-end;
+  button, a { min-height: 44px; }
+  @media (max-width: 767px) { justify-content: stretch; > * { flex: 1 1 auto; } }
 `
-
-const BrandLabel = styled.div`
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${px.gold};
+const ValueBand = styled(Band)`
+  display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,2fr); gap: 20px; align-items: center;
+  @media (max-width: 767px) { grid-template-columns: 1fr; gap: 12px; }
 `
-
-const HeroTitle = styled.h1`
-  margin: 0;
-  font-size: clamp(18px, 2.8vw, 24px);
-  font-weight: 850;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
-  color: #fff;
+const ValueLabel = styled.span`color: ${px.mute2}; font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase;`
+const Value = styled.div`margin-top: 4px; color: ${px.text}; font-size: clamp(30px,5vw,48px); font-weight: 850; line-height: 1; font-variant-numeric: tabular-nums;`
+const StateBox = styled.div`
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px;
+  border: 1px solid ${px.line}; border-radius: 12px; background: rgba(255,255,255,.025);
 `
-
-const Mono = styled.code`
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
-  color: #c8c8c8;
-  word-break: break-all;
+const PortfolioTabs = styled.div`
+  display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; padding: 4px;
+  border: 1px solid ${px.line}; border-radius: 16px; background: #fff;
+  a { min-height: 42px; display: grid; place-items: center; border-radius: 12px; color: ${px.mute};
+    font-size: 12px; font-weight: 720; text-decoration: none; text-align: center; }
+  a:first-child { background: #fff2bd; color: ${px.text}; }
 `
-
-const VisualLabel = styled.div`
-  font-size: 12px;
-  font-weight: 750;
-  color: ${px.text};
-  text-align: center;
-`
-
 const Skeleton = styled.div`
-  height: 14px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-  background-size: 200% 100%;
-  animation: shimmer 1.2s linear infinite;
-  @keyframes shimmer {
-    0% {
-      background-position: 100% 0;
-    }
-    100% {
-      background-position: -100% 0;
-    }
-  }
+  width: 100%; height: 14px; border-radius: 6px;
+  background: ${px.panel2}; animation: portfolio-shimmer 1.2s linear infinite;
+  @keyframes portfolio-shimmer { to { background-position: -200% 0; } }
 `
 
 export const PortfolioStudioScreen: React.FC = () => {
   const { model } = usePortfolioRuntime()
   const { disconnect } = useDisconnect()
-  const [tab, setTab] = useState<PositionDomain>('liquidity')
+  const [earnTab, setEarnTab] = useState<Exclude<PositionDomain, 'liquidity'>>('farms')
   const [, startTransition] = useTransition()
-  const wallet = model.wallet
-
-  const onTab = (next: PositionDomain) => {
-    startTransition(() => setTab(next))
-  }
+  const { wallet } = model
+  const activeFarms = useMemo(() => model.farms.filter((p) => !TERMINATED_CHAIN_IDS.has(p.chainId ?? 0)), [model.farms])
+  const activePools = useMemo(() => model.pools.filter((p) => !TERMINATED_CHAIN_IDS.has(p.chainId ?? 0)), [model.pools])
+  const terminatedFarms = useMemo(() => model.farms.filter((p) => TERMINATED_CHAIN_IDS.has(p.chainId ?? 0)), [model.farms])
+  const terminatedPools = useMemo(() => model.pools.filter((p) => TERMINATED_CHAIN_IDS.has(p.chainId ?? 0)), [model.pools])
+  const portfolioMetric = model.summary.find((metric) => metric.id === 'portfolio')
+  const assetMetrics = model.summary.filter((metric) => metric.id !== 'portfolio')
 
   return (
-    <Page
-      data-portfolio="v2"
-      data-portfolio-surface={model.surfaceState}
-      data-portfolio-wallet={wallet.connected ? 'connected' : 'disconnected'}
-      data-testid="portfolio-studio-screen"
-    >
+    <Page data-portfolio="premium-v3" data-portfolio-surface={model.surfaceState} data-portfolio-wallet={wallet.connected ? 'connected' : 'disconnected'} data-testid="portfolio-studio-screen">
       <PageMeta />
       <Stack>
-        {/* HERO */}
-        <Band data-portfolio-section="hero" data-testid="portfolio-section-hero">
-          <HeroGrid>
-            <HeroLeft>
-              <BrandLabel>Portfolio</BrandLabel>
-              <HeroTitle>{wallet.connected ? 'Your Portfolio' : 'Connect to view your portfolio'}</HeroTitle>
-              <Mono data-testid="portfolio-wallet-address">
-                {wallet.connected ? wallet.shortened : 'No wallet connected'}
-              </Mono>
-              <Row>
-                {model.chainId != null ? <MelegaExploreChainBadge chainId={model.chainId} /> : null}
-                <Chip $tone="mute">{chainLabel(model.chainId)}</Chip>
-              </Row>
-              <Muted>Assets, liquidity, farms, pools, and rewards — simple portfolio view.</Muted>
-              <Row data-testid="portfolio-hero-ctas">
-                {!wallet.connected ? <ConnectWalletButton>Connect Wallet</ConnectWalletButton> : null}
-                {model.heroCtas
-                  .filter((c) => c.kind !== 'connect')
-                  .map((cta) =>
-                    cta.enabled && cta.href ? (
-                      <Btn key={cta.kind} href={cta.href} $primary={cta.primary} data-cta={cta.kind}>
-                        {cta.label}
-                      </Btn>
-                    ) : null,
-                  )}
-                {wallet.connected ? (
-                  <Btn
-                    as="button"
-                    type="button"
-                    $ghost
-                    data-testid="portfolio-disconnect"
-                    onClick={() => disconnect?.()}
-                  >
-                    Disconnect
-                  </Btn>
-                ) : null}
-              </Row>
-            </HeroLeft>
-            <HeroRight data-testid="portfolio-visual">
-              <MelegaLogoSvg size={48} />
-              <VisualLabel>Portfolio</VisualLabel>
-              <Chip $on={wallet.connected} $tone={wallet.connected ? 'ok' : 'mute'}>
-                {wallet.connected ? 'Wallet connected' : 'Awaiting wallet'}
-              </Chip>
-            </HeroRight>
-          </HeroGrid>
-        </Band>
+        <Hero data-portfolio-section="hero" data-testid="portfolio-section-hero">
+          <HeroRow>
+            <Identity>
+              <Title>Portfolio</Title>
+              <Subtitle>Your assets, positions and rewards in one place.</Subtitle>
+            </Identity>
+            <HeroActions data-testid="portfolio-hero-ctas">
+              {wallet.connected ? <Btn href="#portfolio-positions" $ghost>My Positions</Btn> : null}
+            </HeroActions>
+          </HeroRow>
+        </Hero>
 
-        {/* ASSETS */}
-        <Band data-portfolio-section="assets" data-testid="portfolio-section-assets">
-          <BandHead>
-            <BandTitle>Assets</BandTitle>
-            <BandMeta>{model.portfolioPartialValuation ? 'Partial valuation' : 'Factual sources'}</BandMeta>
-          </BandHead>
-          <Grid $cols={5}>
-            {model.summary.map((m) => (
-              <Metric
-                key={m.id}
-                label={m.label}
-                value={m.value || '—'}
-                source={m.source}
-                tone={m.partial || m.status === 'partial' ? 'gold' : m.status === 'zero' ? 'mute' : undefined}
-                testId={`portfolio-metric-${m.id}`}
-              />
-            ))}
-          </Grid>
-          {model.portfolioValueNote ? <Muted>{model.portfolioValueNote}</Muted> : null}
-        </Band>
+        <PortfolioTabs aria-label="Portfolio views">
+          <a href="#portfolio-assets">Assets</a><a href="#portfolio-positions">Earn Positions</a>
+          <a href="#portfolio-liquidity">Liquidity</a><a href="#portfolio-positions">All</a>
+        </PortfolioTabs>
 
-        {/* POSITIONS — Liquidity / Farms / Pools */}
-        <Band data-portfolio-section="positions" data-testid="portfolio-section-positions">
-          <BandHead>
-            <BandTitle>Positions</BandTitle>
-            <BandMeta>Liquidity · Farms · Pools</BandMeta>
-          </BandHead>
-          <TabRow role="tablist" aria-label="Position domains">
-            {(
-              [
-                ['liquidity', 'Liquidity', model.liquidity.length],
-                ['farms', 'Farms', model.farms.length],
-                ['pools', 'Pools', model.pools.length],
-              ] as const
-            ).map(([key, label, count]) => (
-              <TabBtn
-                key={key}
-                type="button"
-                role="tab"
-                $active={tab === key}
-                aria-selected={tab === key}
-                data-position-tab={key}
-                onClick={() => onTab(key)}
-              >
-                {label} ({count})
-              </TabBtn>
-            ))}
-          </TabRow>
+        {!wallet.connected ? (
+          <StateBox data-testid="portfolio-disconnected-state">
+            <strong>Connect your wallet</strong>
+            <Muted>No address entry required. Nothing is estimated before connection.</Muted>
+            <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+          </StateBox>
+        ) : (
+          <>
+            <ValueBand id="portfolio-assets" data-portfolio-section="assets" data-testid="portfolio-section-assets">
+              <div>
+                <ValueLabel>Total Value</ValueLabel>
+                <Value data-testid="portfolio-value">{portfolioMetric?.value || '—'}</Value>
+                <Muted>{portfolioMetric?.source || 'Valuation unavailable'}</Muted>
+              </div>
+              <Grid $cols={4}>
+                {assetMetrics.map((metric) => <Metric key={metric.id} label={metric.label} value={metric.value || '—'} source={metric.source} tone={metric.partial || metric.status === 'partial' ? 'gold' : metric.status === 'zero' ? 'mute' : undefined} testId={`portfolio-metric-${metric.id}`} />)}
+              </Grid>
+            </ValueBand>
 
-          {tab === 'liquidity' ? (
-            model.liquidity.length === 0 ? (
-              <Muted>
-                {wallet.connected
-                  ? 'No AMM LP positions for this wallet.'
-                  : 'Connect a wallet to load liquidity positions.'}
-              </Muted>
-            ) : (
-              <DenseTable data-position-domain="liquidity">
-                {model.liquidity.map((pos) => {
-                  const links = positionActionLinks('liquidity', pos.id)
-                  return (
-                    <DenseRow key={pos.id} data-testid="portfolio-liquidity-row">
-                      <div>
-                        <Row>
-                          <MelegaTokenAvatar symbol={pos.token0Symbol} size={22} />
-                          <MelegaTokenAvatar symbol={pos.token1Symbol} size={22} />
-                          <strong>{pos.pairLabel}</strong>
-                        </Row>
-                        <div style={{ color: px.mute2, marginTop: 2 }}>
-                          {pos.type} · {pos.status}
-                        </div>
-                      </div>
-                      <div>
-                        <div>Value</div>
-                        <div>{pos.estimatedValue || '—'}</div>
-                      </div>
-                      <div>
-                        <div>Share</div>
-                        <div>{pos.sharePrimary}</div>
-                      </div>
-                      <div>
-                        <Btn href={links.manageHref} $ghost>
-                          Manage
-                        </Btn>
-                      </div>
-                      <div>
-                        <Btn href={links.removeHref || links.manageHref} $ghost>
-                          Remove
-                        </Btn>
-                      </div>
-                    </DenseRow>
-                  )
-                })}
-              </DenseTable>
-            )
-          ) : null}
+            <Band id="portfolio-positions" data-portfolio-section="positions" data-testid="portfolio-section-positions">
+              <BandHead><BandTitle>Earn</BandTitle><BandMeta>BNB Chain</BandMeta></BandHead>
+              <TabRow role="tablist" aria-label="Earn positions">
+                <TabBtn type="button" role="tab" $active={earnTab === 'farms'} aria-selected={earnTab === 'farms'} onClick={() => startTransition(() => setEarnTab('farms'))}>Farms ({activeFarms.length})</TabBtn>
+                <TabBtn type="button" role="tab" $active={earnTab === 'pools'} aria-selected={earnTab === 'pools'} onClick={() => startTransition(() => setEarnTab('pools'))}>Pools ({activePools.length})</TabBtn>
+              </TabRow>
+              {model.surfaceState === 'LOADING' ? <Skeleton data-testid="portfolio-positions-skeleton" /> : null}
+              {earnTab === 'farms' && model.surfaceState !== 'LOADING' ? (activeFarms.length === 0 ? <Muted>No active farm positions.</Muted> : (
+                <DenseTable data-position-domain="farms">{activeFarms.map((p) => { const links = positionActionLinks('farms'); return (
+                  <DenseRow key={p.positionId} data-testid="portfolio-farm-row">
+                    <div><Row><MelegaExploreChainBadge chainId={p.chainId} /><strong>{p.token0.symbol}/{p.token1.symbol}</strong></Row></div>
+                    <div><div>Staked</div><strong>{p.stakedFormatted}</strong></div><div><div>Rewards</div><strong>{p.pendingFormatted}</strong></div>
+                    <div><Btn href={links.harvestHref || links.manageHref} $primary>Harvest</Btn></div><div><Btn href={links.manageHref} $ghost>Manage</Btn></div>
+                  </DenseRow>) })}</DenseTable>
+              )) : null}
+              {earnTab === 'pools' && model.surfaceState !== 'LOADING' ? (activePools.length === 0 ? <Muted>No active pool positions.</Muted> : (
+                <DenseTable data-position-domain="pools">{activePools.map((p) => { const links = positionActionLinks('pools'); return (
+                  <DenseRow key={p.positionId} data-testid="portfolio-pool-row">
+                    <div><Row><MelegaExploreChainBadge chainId={p.chainId} /><strong>{p.stakeToken.symbol}</strong></Row></div>
+                    <div><div>Staked</div><strong>{p.stakedFormatted}</strong></div><div><div>Rewards</div><strong>{p.claimableFormatted}</strong></div>
+                    <div><Btn href={links.claimHref || links.manageHref} $primary>Claim</Btn></div><div><Btn href={links.manageHref} $ghost>Manage</Btn></div>
+                  </DenseRow>) })}</DenseTable>
+              )) : null}
+            </Band>
 
-          {tab === 'farms' ? (
-            model.farms.length === 0 ? (
-              <Muted>
-                {wallet.connected
-                  ? 'No farm positions for this wallet.'
-                  : 'Connect a wallet to load farm positions.'}
-              </Muted>
-            ) : (
-              <DenseTable data-position-domain="farms">
-                {model.farms.map((pos) => {
-                  const links = positionActionLinks('farms')
-                  const contract = explorerAddressUrl(pos.masterChef, pos.chainId)
-                  return (
-                    <DenseRow key={pos.positionId} data-testid="portfolio-farm-row">
-                      <div>
-                        <Row>
-                          {pos.chainId != null ? <MelegaExploreChainBadge chainId={pos.chainId} /> : null}
-                          <strong>
-                            {pos.token0.symbol}/{pos.token1.symbol}
-                          </strong>
-                        </Row>
-                        <div style={{ color: px.mute2 }}>
-                          Earn {pos.rewardToken.symbol} · {pos.statusLabel}
-                        </div>
-                      </div>
-                      <div>
-                        <div>Staked</div>
-                        <div>{pos.stakedFormatted}</div>
-                        <div style={{ color: px.mute2 }}>{pos.stakedValue || '—'}</div>
-                      </div>
-                      <div>
-                        <div>Claimable</div>
-                        <div>{pos.pendingFormatted}</div>
-                      </div>
-                      <div>
-                        <Btn href={links.harvestHref || links.manageHref} $primary>
-                          Harvest
-                        </Btn>
-                      </div>
-                      <div>
-                        <Row>
-                          <Btn href={links.manageHref} $ghost>
-                            Manage
-                          </Btn>
-                          {contract ? (
-                            <ExtLink href={contract} target="_blank" rel="noreferrer">
-                              Explorer
-                            </ExtLink>
-                          ) : null}
-                        </Row>
-                      </div>
-                    </DenseRow>
-                  )
-                })}
-              </DenseTable>
-            )
-          ) : null}
+            {model.liquidity.length > 0 ? (
+              <Band id="portfolio-liquidity" data-portfolio-section="liquidity" data-testid="portfolio-section-liquidity">
+                <BandHead><BandTitle>Liquidity</BandTitle><BandMeta>{model.liquidity.length} positions</BandMeta></BandHead>
+                <DenseTable data-position-domain="liquidity">{model.liquidity.map((p) => { const links = positionActionLinks('liquidity', p.id); return (
+                  <DenseRow key={p.id} data-testid="portfolio-liquidity-row">
+                    <div><Row><MelegaTokenAvatar symbol={p.token0Symbol} size={22} /><MelegaTokenAvatar symbol={p.token1Symbol} size={22} /><strong>{p.pairLabel}</strong></Row></div>
+                    <div><div>Value</div><strong>{p.estimatedValue || '—'}</strong></div><div><div>Share</div><strong>{p.sharePrimary}</strong></div>
+                    <div><Btn href={links.manageHref} $ghost>Manage</Btn></div><div><Btn href={links.removeHref || links.manageHref} $ghost>Remove</Btn></div>
+                  </DenseRow>) })}</DenseTable>
+              </Band>
+            ) : null}
 
-          {tab === 'pools' ? (
-            model.pools.length === 0 ? (
-              <Muted>
-                {wallet.connected
-                  ? 'No pool positions for this wallet.'
-                  : 'Connect a wallet to load pool positions.'}
-              </Muted>
-            ) : (
-              <DenseTable data-position-domain="pools">
-                {model.pools.map((pos) => {
-                  const links = positionActionLinks('pools')
-                  const contract = explorerAddressUrl(pos.poolContract, pos.chainId)
-                  return (
-                    <DenseRow key={pos.positionId} data-testid="portfolio-pool-row">
-                      <div>
-                        <Row>
-                          {pos.chainId != null ? <MelegaExploreChainBadge chainId={pos.chainId} /> : null}
-                          <strong>{pos.stakeToken.symbol}</strong>
-                        </Row>
-                        <div style={{ color: px.mute2 }}>
-                          Reward {pos.rewardToken.symbol} · {pos.statusLabel}
-                        </div>
-                      </div>
-                      <div>
-                        <div>Principal</div>
-                        <div>{pos.stakedFormatted}</div>
-                      </div>
-                      <div>
-                        <div>Claimable</div>
-                        <div>{pos.claimableFormatted}</div>
-                      </div>
-                      <div>
-                        <Btn href={links.claimHref || links.manageHref} $primary>
-                          Claim
-                        </Btn>
-                      </div>
-                      <div>
-                        <Row>
-                          <Btn href={links.manageHref} $ghost>
-                            Manage
-                          </Btn>
-                          {contract ? (
-                            <ExtLink href={contract} target="_blank" rel="noreferrer">
-                              Explorer
-                            </ExtLink>
-                          ) : null}
-                        </Row>
-                      </div>
-                    </DenseRow>
-                  )
-                })}
-              </DenseTable>
-            )
-          ) : null}
+            {model.claimables.length > 0 ? (
+              <Band data-portfolio-section="rewards" data-testid="portfolio-section-rewards">
+                <BandHead><BandTitle>Earn</BandTitle><BandMeta>{model.claimables.length} claimable</BandMeta></BandHead>
+                <DenseTable>{model.claimables.map((reward) => (
+                  <DenseRow key={reward.id} data-testid="portfolio-claimable-row">
+                    <div><strong>{reward.source}</strong><div>{reward.token}</div></div><div><strong>{reward.amount}</strong></div><div><strong>{reward.estimatedUsd || '—'}</strong></div>
+                    <div><Btn href={reward.actionHref} $primary>{reward.actionLabel}</Btn></div><div>{reward.contractHref ? <ExtLink href={reward.contractHref} target="_blank" rel="noreferrer">Contract</ExtLink> : null}</div>
+                  </DenseRow>
+                ))}</DenseTable>
+              </Band>
+            ) : null}
 
-          {(model.surfaceState === 'LOADING' || model.summary.some((m) => m.status === 'loading')) &&
-          model.liquidity.length + model.farms.length + model.pools.length === 0 ? (
-            <div style={{ marginTop: 8 }} data-testid="portfolio-positions-skeleton">
-              <Skeleton />
-            </div>
-          ) : null}
-        </Band>
-
-        {/* REWARDS */}
-        <Band data-portfolio-section="rewards" data-testid="portfolio-section-rewards">
-          <BandHead>
-            <BandTitle>Rewards</BandTitle>
-            <BandMeta>
-              {model.claimables.length === 0 ? 'None' : `${model.claimables.length} claimable`}
-            </BandMeta>
-          </BandHead>
-          {model.claimables.length === 0 ? (
-            <Muted>No non-zero claimable rewards for this wallet.</Muted>
-          ) : (
-            <DenseTable>
-              {(['Farms', 'Pools', 'Other'] as const).map((group) => {
-                const rows = model.claimables.filter((r) => r.group === group)
-                if (!rows.length) return null
-                return (
-                  <React.Fragment key={group}>
-                    <BandMeta style={{ margin: '8px 0 4px' }}>{group}</BandMeta>
-                    {rows.map((row) => (
-                      <DenseRow key={row.id} data-testid="portfolio-claimable-row">
-                        <div>
-                          <strong>{row.source}</strong>
-                          <div style={{ color: px.mute2 }}>{row.token}</div>
-                        </div>
-                        <div>{row.amount}</div>
-                        <div>{row.estimatedUsd || '—'}</div>
-                        <div>
-                          <Btn href={row.actionHref} $ghost>
-                            {row.actionLabel}
-                          </Btn>
-                        </div>
-                        <div>
-                          {row.contractHref ? (
-                            <ExtLink href={row.contractHref} target="_blank" rel="noreferrer">
-                              Contract
-                            </ExtLink>
-                          ) : (
-                            '—'
-                          )}
-                        </div>
-                      </DenseRow>
-                    ))}
-                  </React.Fragment>
-                )
-              })}
-            </DenseTable>
-          )}
-        </Band>
-
-        {/* RECENT ACTIVITY */}
-        <Band data-portfolio-section="activity" data-testid="portfolio-section-activity">
-          <BandHead>
-            <BandTitle>Recent Activity</BandTitle>
-            <BandMeta>Indexed when available</BandMeta>
-          </BandHead>
-          <Muted data-testid="portfolio-activity-empty">{model.activityNote}</Muted>
-        </Band>
-
-        {/* ANALYTICS — collapsed by default */}
-        <AnalyticsDetails data-portfolio-section="analytics" data-testid="portfolio-section-analytics">
-          <AnalyticsSummary>
-            <span>Analytics</span>
-            <BandMeta>Collapsed · expand for breakdown</BandMeta>
-          </AnalyticsSummary>
-          <AnalyticsBody>
-            <Grid $cols={5}>
-              {model.summary.map((m) => (
-                <Metric
-                  key={`analytics-${m.id}`}
-                  label={m.label}
-                  value={m.value || '—'}
-                  source={m.source}
-                  tone={m.partial || m.status === 'partial' ? 'gold' : m.status === 'zero' ? 'mute' : undefined}
-                  testId={`portfolio-analytics-${m.id}`}
-                />
-              ))}
-            </Grid>
-            <Muted style={{ marginTop: 8 }}>
-              Portfolio value is priced positions only. Unpriced holdings show —.
-            </Muted>
-          </AnalyticsBody>
-        </AnalyticsDetails>
+            {terminatedFarms.length + terminatedPools.length > 0 ? (
+              <Band data-portfolio-section="terminated" data-testid="portfolio-section-terminated">
+                <BandHead><BandTitle>Finished</BandTitle><BandMeta>Exit only</BandMeta></BandHead>
+                <DenseTable>
+                  {terminatedFarms.map((p) => { const links = positionActionLinks('farms'); const contract = explorerAddressUrl(p.masterChef, p.chainId); return (
+                    <DenseRow key={p.positionId} data-testid="portfolio-terminated-farm-row">
+                      <div><Row><MelegaExploreChainBadge chainId={p.chainId} /><strong>{p.token0.symbol}/{p.token1.symbol}</strong></Row></div><div><div>Staked</div><strong>{p.stakedFormatted}</strong></div><div><div>Rewards</div><strong>{p.pendingFormatted}</strong></div>
+                      <div><Btn href={links.manageHref} $primary>Exit options</Btn></div><div>{contract ? <ExtLink href={contract} target="_blank" rel="noreferrer">Contract</ExtLink> : null}</div>
+                    </DenseRow>) })}
+                  {terminatedPools.map((p) => { const links = positionActionLinks('pools'); const contract = explorerAddressUrl(p.poolContract, p.chainId); return (
+                    <DenseRow key={p.positionId} data-testid="portfolio-terminated-pool-row">
+                      <div><Row><MelegaExploreChainBadge chainId={p.chainId} /><strong>{p.stakeToken.symbol}</strong></Row></div><div><div>Staked</div><strong>{p.stakedFormatted}</strong></div><div><div>Rewards</div><strong>{p.claimableFormatted}</strong></div>
+                      <div><Btn href={links.manageHref} $primary>Exit options</Btn></div><div>{contract ? <ExtLink href={contract} target="_blank" rel="noreferrer">Contract</ExtLink> : null}</div>
+                    </DenseRow>) })}
+                </DenseTable>
+              </Band>
+            ) : null}
+          </>
+        )}
       </Stack>
     </Page>
   )

@@ -10,6 +10,7 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { useERC20 } from 'hooks/useContract'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isNativeYieldOperationAllowed } from 'config/nativeYieldPolicy'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
 import { usePriceCakeBusd } from 'state/farms/hooks'
@@ -196,7 +197,7 @@ export const FarmsActionHost: React.FC = () => {
   }, [earnings, cakePrice])
 
   const depositNode =
-    farm && action === 'stake' ? (
+    farm && action === 'stake' && isNativeYieldOperationAllowed(chainId, 'stake') ? (
       <FarmUI.DepositModal
         account={account}
         pid={pid}

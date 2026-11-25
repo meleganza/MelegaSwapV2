@@ -57,11 +57,13 @@ test('tools index lists commercial placeholders and no farm or pool factory', ()
   assert.match(html, /Not operational/)
 })
 
-test('the shell does not mint a login or a leave control', () => {
+test('the shell exposes the canonical wallet control without a beta login or leave control', () => {
   const html = renderToStaticMarkup(React.createElement(ProductPage, { section: SECTIONS[0] }))
   assert.equal(html.includes('/api/access'), false)
   assert.equal(html.includes('/api/leave'), false)
   assert.equal(html.includes('type="password"'), false)
+  const shell = readFileSync(path.join(process.cwd(), 'components/BetaShell.tsx'), 'utf8')
+  assert.match(shell, /WalletControl/)
 })
 
 test('idle home does not mount the trend boost feed', () => {

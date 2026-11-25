@@ -23,22 +23,19 @@ const Toolbar = styled.div`
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  min-height: 56px;
-  max-height: 72px;
+  min-height: 52px;
   min-width: 0;
   box-sizing: border-box;
 
   @media (max-width: 767px) {
-    max-height: none;
-    flex-direction: column;
-    align-items: stretch;
+    padding: 0 16px;
   }
 `
 
 const Search = styled.input`
   flex: 1 1 220px;
   min-width: 0;
-  height: 40px;
+  height: 46px;
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid ${projectsStudioColors.cardBorder};
@@ -66,7 +63,7 @@ const Search = styled.input`
 
 const Select = styled.select`
   appearance: none;
-  height: 40px;
+  height: 44px;
   min-width: 112px;
   padding: 0 30px 0 12px;
   border-radius: 10px;
@@ -88,7 +85,7 @@ const Select = styled.select`
 `
 
 const ResetBtn = styled.button`
-  height: 40px;
+  height: 44px;
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid ${projectsStudioColors.cardBorder};
@@ -107,7 +104,7 @@ const ResetBtn = styled.button`
 
 const MobileFiltersBtn = styled.button`
   display: none;
-  height: 40px;
+  height: 46px;
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid ${projectsStudioColors.cardBorder};
@@ -169,6 +166,27 @@ const DrawerTitle = styled.p`
   color: ${projectsStudioColors.text};
 `
 
+const DiscoveryTabs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  border-radius: 12px;
+  background: ${projectsStudioColors.card};
+`
+
+const DiscoveryTab = styled.button<{ $active?: boolean }>`
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: ${({ $active }) => ($active ? '#fff2bd' : 'transparent')};
+  color: ${projectsStudioColors.text};
+  font: 700 12px ${PR_FONT_BODY};
+  cursor: pointer;
+`
+
 function isStatus(v: string): v is DirectoryStatus {
   return (DIRECTORY_STATUS as readonly string[]).includes(v)
 }
@@ -210,13 +228,13 @@ export const ProjectsFilterRow: React.FC = () => {
     if (!isSort(value)) return
     setSort(value)
     if (value === 'Trending') {
-      void router.replace({ pathname: '/projects', query: { ...router.query, sort: 'trending' } }, undefined, {
+      router.replace({ pathname: '/projects', query: { ...router.query, sort: 'trending' } }, undefined, {
         shallow: true,
       })
     } else if (router.query.sort === 'trending') {
       const next = { ...router.query }
       delete next.sort
-      void router.replace({ pathname: '/projects', query: next }, undefined, { shallow: true })
+      router.replace({ pathname: '/projects', query: next }, undefined, { shallow: true })
     }
   }
 
@@ -282,10 +300,15 @@ export const ProjectsFilterRow: React.FC = () => {
         type="search"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search projects..."
+        placeholder="Search projects or tokens"
         aria-label="Search projects"
         data-testid="projects-directory-search"
       />
+      <DiscoveryTabs role="tablist" aria-label="Explore views">
+        <DiscoveryTab type="button" role="tab" $active={sort !== 'Trending'} onClick={() => resetFilters()}>Featured</DiscoveryTab>
+        <DiscoveryTab type="button" role="tab" $active={sort === 'Trending'} onClick={() => onSortChange('Trending')}>Trending</DiscoveryTab>
+        <DiscoveryTab type="button" role="tab" onClick={() => resetFilters()}>All</DiscoveryTab>
+      </DiscoveryTabs>
       <DesktopFilters data-projects-filters-desktop>{filterSelects}</DesktopFilters>
       <MobileFiltersBtn
         type="button"

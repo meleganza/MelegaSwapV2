@@ -163,12 +163,17 @@ export function formatFeaturedMarketCap(row?: FeaturedMarketRow): string {
   return '—'
 }
 
+/**
+ * Data truth (R035B): a zero is shown only when the index confirms it (LIVE or NO_RECENT_TRADES).
+ * LOADING / STALE / UNAVAILABLE or a missing row render "—" — never "$0.00" for an unknown value.
+ */
 export function formatFeaturedVolume(row?: FeaturedMarketRow): string {
+  const zeroConfirmed = row?.status === 'LIVE' || row?.status === 'NO_RECENT_TRADES'
   if (row?.volume24hUsd != null) {
-    if (row.volume24hUsd === 0) return '$0.00'
+    if (row.volume24hUsd === 0) return zeroConfirmed ? '$0.00' : '—'
     return formatUsdCompact(row.volume24hUsd)
   }
-  if (row?.tradeCount24h === 0 || row?.status === 'NO_RECENT_TRADES') return '$0.00'
+  if (row?.status === 'NO_RECENT_TRADES' || (row?.status === 'LIVE' && row?.tradeCount24h === 0)) return '$0.00'
   return '—'
 }
 

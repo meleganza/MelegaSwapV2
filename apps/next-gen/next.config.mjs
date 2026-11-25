@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    transpilePackages: ['@melega/smartswap-v2-prepare'],
+    transpilePackages: ['@melega/smartswap-v2-prepare', '@pancakeswap/wagmi'],
   },
   swcMinify: true,
   poweredByHeader: false,

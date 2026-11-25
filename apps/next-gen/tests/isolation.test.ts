@@ -36,6 +36,9 @@ function filesIn(dir: string): string[] {
 }
 
 const QUOTE_EXCEPTIONS = new Set([
+  path.join(root, 'pages/_app.tsx'),
+  path.join(root, 'components/WalletControl.tsx'),
+  path.join(root, 'components/TokenMark.tsx'),
   path.join(root, 'lib/bscQuoteRpc.ts'),
   path.join(root, 'modules/trade/BnbQuotePreview.tsx'),
   path.join(root, 'lib/portfolioRpc.ts'),
@@ -55,6 +58,14 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/earn/RetiredPositionLookup.tsx'),
 ])
 
+const WALLET_EXCEPTIONS = new Set([
+  path.join(root, 'pages/_app.tsx'),
+  path.join(root, 'components/WalletControl.tsx'),
+  path.join(root, 'components/TokenMark.tsx'),
+  path.join(root, 'modules/trade/BnbQuotePreview.tsx'),
+  path.join(root, 'next.config.mjs'),
+])
+
 test('beta source does not import the live DEX stack or open a network client', () => {
   const files = [
     ...SOURCE_DIRS.flatMap((dir) => filesIn(dir)),
@@ -63,15 +74,18 @@ test('beta source does not import the live DEX stack or open a network client', 
   ]
   files.forEach((file) => {
     const source = readFileSync(file, 'utf8')
-    const patterns = QUOTE_EXCEPTIONS.has(file)
+    let patterns = QUOTE_EXCEPTIONS.has(file)
       ? FORBIDDEN.filter((pattern) => pattern.source !== '\\bfetch\\s*\\(' && pattern.source !== 'eth_call' && pattern.source !== 'eth_chainId')
       : FORBIDDEN
+    if (WALLET_EXCEPTIONS.has(file)) {
+      patterns = patterns.filter((pattern) => pattern.source !== '@pancakeswap' && pattern.source !== '\\bwagmi\\b' && pattern.source !== '\\bethers\\b')
+    }
     patterns.forEach((pattern) => {
       assert.equal(pattern.test(source), false, `${path.relative(root, file)} matched ${pattern}`)
     })
   })
   const preview = readFileSync(path.join(root, 'modules/trade/BnbQuotePreview.tsx'), 'utf8')
-  assert.match(preview, /fetch\('\/api\/quote'/)
+  assert.match(preview, /fetch\('\/api\/sealed-prepare'/)
   const rpc = readFileSync(path.join(root, 'lib/bscQuoteRpc.ts'), 'utf8')
   assert.equal(rpc.includes('eth_getLogs'), false)
   assert.equal(rpc.includes('eth_sendRawTransaction'), false)
@@ -102,8 +116,8 @@ test('beta source does not import the live DEX stack or open a network client', 
     const source = readFileSync(file, 'utf8')
     assert.equal(source.includes('certification/BnbWalletPrepare'), false, `${path.relative(root, file)} imports the wallet sender`)
     assert.equal(source.includes('eth_sendTransaction'), false, `${path.relative(root, file)} can send`)
-    assert.equal(source.includes('window.ethereum'), false, `${path.relative(root, file)} reads a wallet`)
-    assert.equal(source.includes('eth_requestAccounts'), false, `${path.relative(root, file)} connects a wallet`)
+    assert.equal(source.includes('window.ethereum'), false, `${path.relative(root, file)} bypasses the canonical wallet client`)
+    assert.equal(source.includes('eth_requestAccounts'), false, `${path.relative(root, file)} bypasses the canonical connector`)
   })
   const home = readFileSync(path.join(root, 'pages/index.tsx'), 'utf8')
   assert.equal(home.includes('modules/tools'), false)

@@ -25,12 +25,11 @@ import {
 
 const MyMelegaDrawer = dynamic(preloadMyMelegaDrawer, { ssr: false, loading: () => null })
 
-const MOBILE_HEADER_H = '56px'
-const MOBILE_BOTTOM_NAV_H = '64px'
+const MOBILE_HEADER_H = '88px'
+const MOBILE_BOTTOM_NAV_H = '76px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
-  /* Mobile sticky stack: mobile header + trending bar */
   padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${MELEGA_TRENDING_BAR_MOBILE_HEIGHT}) 16px
     calc(${MOBILE_BOTTOM_NAV_H} + env(safe-area-inset-bottom, 0px));
   background: ${uxRebuildColors.pageBg};
@@ -41,7 +40,6 @@ const DesktopMain = styled.main`
 
   @media (min-width: 1024px) {
     margin-left: 0;
-    /* Desktop sticky stack: 72 header + 44 trending — content begins below stack */
     padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${MELEGA_TRENDING_BAR_DESKTOP_HEIGHT}) ${ds001Layout.pagePaddingX}
       ${ds001Layout.pagePaddingBottom};
   }
@@ -71,12 +69,11 @@ const Content = styled.div`
 `
 
 const FooterSlot = styled.div`
-  margin-top: 20px;
   width: 100%;
   min-width: 0;
-  box-sizing: border-box;
-  /* Clear mobile bottom nav */
+  margin-top: 20px;
   padding-bottom: 8px;
+  box-sizing: border-box;
 
   @media (max-width: 1023px) {
     padding-bottom: calc(${MOBILE_BOTTOM_NAV_H} + 8px + env(safe-area-inset-bottom, 0px));
@@ -87,13 +84,13 @@ const MobileHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 10px 0;
+  padding: env(safe-area-inset-top, 0px) 12px 0;
   background: ${uxRebuildColors.pageBg};
   border-bottom: 1px solid ${uxRebuildColors.divider};
   z-index: 95;
@@ -104,8 +101,16 @@ const MobileHeader = styled.div`
   }
 `
 
+const MobileBrand = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+`
+
 const MobileNetwork = styled.div`
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -120,22 +125,24 @@ const MobileNetwork = styled.div`
     justify-content: center;
     cursor: pointer;
   }
+
+  @media (max-width: 430px) {
+    display: none;
+  }
 `
 
 const MobileMyMelegaTrigger = styled.button`
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
   border-radius: 999px;
   border: 1px solid rgba(244, 196, 48, 0.35);
-  background: linear-gradient(160deg, rgba(244, 196, 48, 0.16) 0%, rgba(20, 20, 20, 0.9) 100%);
+  background: rgba(244, 196, 48, 0.1);
   color: ${uxRebuildColors.gold};
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  flex-shrink: 0;
   padding: 0;
 
   &:focus-visible {
@@ -143,8 +150,8 @@ const MobileMyMelegaTrigger = styled.button`
     outline-offset: 2px;
   }
 
-  &[aria-expanded='true'] {
-    border-color: rgba(244, 196, 48, 0.7);
+  @media (max-width: 430px) {
+    display: none;
   }
 `
 
@@ -201,11 +208,18 @@ const MelegaAppShellInner: React.FC<MelegaAppShellProps> = ({ children }) => {
       <GlobalTrendingBar />
 
       <MobileHeader data-melega-mobile-header>
-        <MelegaBrandLockup size="mobile" iconOnly />
+        <MobileBrand>
+          <MelegaBrandLockup size="mobile" />
+        </MobileBrand>
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>
-        <MarcoConnect size="icon" activation="mobile" />
+        <MarcoConnect
+          size="navbar"
+          activation="mobile"
+          appearance="wallet"
+          className="melega-shell-wallet-pill"
+        />
         <MobileMyMelegaButton />
       </MobileHeader>
 

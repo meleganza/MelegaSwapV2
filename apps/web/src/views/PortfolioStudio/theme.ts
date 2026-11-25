@@ -9,9 +9,9 @@ export const px = {
   goldDim: 'rgba(221, 185, 47, 0.14)',
   goldLine: 'rgba(221, 185, 47, 0.32)',
   bg: uxRebuildColors.pageBg,
-  panel: 'rgba(14, 14, 14, 0.96)',
-  panel2: 'rgba(18, 18, 18, 0.98)',
-  line: 'rgba(255, 255, 255, 0.08)',
+  panel: '#FFFFFF',
+  panel2: '#FFFFFF',
+  line: '#E5E2D9',
   text: uxRebuildColors.text,
   mute: uxRebuildColors.secondary,
   mute2: uxRebuildColors.muted,
@@ -33,9 +33,7 @@ export const Page = styled.main`
   margin: 0 auto;
   padding: 12px 14px 48px;
   color: ${px.text};
-  background:
-    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(221, 185, 47, 0.08), transparent 55%),
-    linear-gradient(180deg, #0a0a0a 0%, ${px.bg} 28%, #050505 100%);
+  background: ${px.bg};
   min-height: 100vh;
   font-family: ${uxRebuildFont};
   overflow-x: hidden;
@@ -51,7 +49,7 @@ export const Page = styled.main`
   }
 
   @media (max-width: 767px) {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0px));
   }
 `
 
@@ -60,36 +58,15 @@ export const Stack = styled.div`
   flex-direction: column;
   gap: 10px;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    [data-portfolio-section='hero'] {
-      order: 1;
-    }
-    [data-portfolio-section='assets'] {
-      order: 2;
-    }
-    [data-portfolio-section='rewards'] {
-      order: 3;
-    }
-    [data-portfolio-section='positions'] {
-      order: 4;
-    }
-    [data-portfolio-section='activity'] {
-      order: 5;
-    }
-    [data-portfolio-section='analytics'] {
-      order: 6;
-    }
-  }
 `
 
 export const Band = styled.section`
   animation: ${rise} 0.35s ease both;
   margin: 0;
   padding: 12px 12px 10px;
-  border-radius: ${px.radius};
+  border-radius: 18px;
   border: 1px solid ${px.line};
-  background: linear-gradient(165deg, ${px.panel2} 0%, ${px.panel} 100%);
+  background: ${px.panel};
   min-width: 0;
 
   @media (min-width: 768px) {
@@ -135,7 +112,7 @@ export const Grid = styled.div<{ $cols?: number }>`
 export const MetricCell = styled.div`
   min-width: 0;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid ${px.line};
 `
 
 export const MetricLabel = styled.div`
@@ -184,7 +161,7 @@ export const Btn = styled.a<{ $primary?: boolean; $ghost?: boolean; $disabled?: 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   border-radius: 9px;
   font-size: 13px;
@@ -198,10 +175,10 @@ export const Btn = styled.a<{ $primary?: boolean; $ghost?: boolean; $disabled?: 
     ${({ $primary, $ghost }) => ($primary ? px.goldLine : $ghost ? px.line : 'rgba(255,255,255,0.14)')};
   background: ${({ $primary, $ghost }) =>
     $primary
-      ? 'linear-gradient(180deg, #F2C84C 0%, #D4A017 100%)'
+      ? '#F3C928'
       : $ghost
         ? 'transparent'
-        : 'rgba(255,255,255,0.04)'};
+      : '#F7F6F2'};
   color: ${({ $primary }) => ($primary ? '#111' : px.text)};
 
   &:hover {
@@ -270,7 +247,7 @@ export const TabRow = styled.div`
 `
 
 export const TabBtn = styled.button<{ $active?: boolean }>`
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 12px;
   border-radius: 8px;
   font-size: 12px;
@@ -303,8 +280,10 @@ export const DenseRow = styled.div`
   align-items: center;
 
   @media (max-width: 767px) {
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px 0;
+    > :first-child { grid-column: 1 / -1; }
   }
 `
 
