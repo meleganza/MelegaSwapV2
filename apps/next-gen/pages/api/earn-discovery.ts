@@ -127,7 +127,11 @@ async function native(kind: 'farms' | 'pools'): Promise<Feed> {
   const data = liveRows ? live : await read(MELEGA + '/registry/onchain/bsc-mainnet.json')
   if (!liveRows && (data?.schema !== 'melega.onchain-registry.v1' || data.chainId !== 56 || !Array.isArray(data.smartChef?.pools))) throw new Error('Invalid pool inventory')
   if (!liveRows) {
-    const verified = await verifyKnownPools(rows(data.smartChef.pools)).catch(() => null)
+    const inventory = await read(MELEGA + '/registry/pools-canonical-inventory.json').catch(() => null)
+    const candidates = rows(inventory?.results)
+      .filter((pool) => pool.chain === 56 && typeof pool.contract === 'string' && pool.contract.toLowerCase() !== EARN_MASTER_CHEF.toLowerCase())
+      .map((pool) => ({ contractAddress: pool.contract }))
+    const verified = await verifyKnownPools([...rows(data.smartChef.pools), ...candidates]).catch(() => null)
     if (verified?.rows.length) return verified
   }
   return {
