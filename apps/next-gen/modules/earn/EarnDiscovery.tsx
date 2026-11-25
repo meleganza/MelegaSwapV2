@@ -3,7 +3,7 @@ import { formatReportedTvl } from '../../lib/earnCatalog'
 
 type DiscoveryKind = 'farms' | 'pools' | 'index'
 type Opportunity = { id: string; name: string; venue: string; apy: number | null; tvl: number | null; href: string }
-type Result = { rows: Opportunity[]; count: number; unavailable?: boolean; asOf?: string }
+type Result = { rows: Opportunity[]; count: number; unavailable?: boolean; asOf?: string; partial?: boolean }
 
 export default function EarnDiscovery({ kind, chain }: { kind: DiscoveryKind; chain: number }) {
   const [input, setInput] = React.useState('')
@@ -40,6 +40,7 @@ export default function EarnDiscovery({ kind, chain }: { kind: DiscoveryKind; ch
       </form>
       {kind === 'index' ? <p className="footnote">Market data from DefiLlama. Open the source to verify pool details.</p> : null}
       {kind !== 'index' && result?.asOf ? <p className="footnote">Melega source date: {result.asOf.slice(0, 10)}. Check availability on Melega before depositing.</p> : null}
+      {result?.partial ? <p className="footnote">Partial inventory. New pools may appear first on Melega.</p> : null}
       <p className="footnote" role="status">{!result ? 'Loading opportunities…' : result.unavailable ? 'Source unavailable. Try again shortly.' : result.count ? `${result.count} opportunities` : 'No matching opportunities.'}</p>
       <div className="earn-catalog">
         {result?.rows.map((row) => (
