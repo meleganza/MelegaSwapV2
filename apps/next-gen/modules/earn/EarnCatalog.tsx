@@ -1,3 +1,4 @@
+import EarnSimulation from './EarnSimulation'
 import React from 'react'
 import { EARN_NETWORKS, formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
 import { TokenMark } from '../../components/TokenMark'
@@ -109,6 +110,7 @@ export default function EarnCatalogPanel({ positions }: { positions?: React.Reac
         <button type="button" aria-pressed={view === 'liquidity'} onClick={() => setView('liquidity')}>Add liquidity</button>
       </div>
       <div hidden={view !== 'positions'}>{positions}</div>
+      {view === 'positions' && <EarnSimulation />}
       {view === 'liquidity' ? (
         <section className="earn-card earn-liquidity" aria-label="Add liquidity">
           <h3>Add liquidity</h3>

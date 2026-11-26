@@ -58,9 +58,12 @@ const QUOTE_EXCEPTIONS = new Set([
   path.join(root, 'modules/earn/RetiredPositionLookup.tsx'),
   path.join(root, 'modules/earn/EarnDiscovery.tsx'),
   path.join(root, 'pages/api/earn-discovery.ts'),
+  path.join(root, 'pages/api/earn-simulate.ts'),
+  path.join(root, 'modules/earn/EarnSimulation.tsx'),
 ])
 
 const WALLET_EXCEPTIONS = new Set([
+  path.join(root, 'modules/earn/EarnSimulation.tsx'),
   path.join(root, 'pages/_app.tsx'),
   path.join(root, 'components/WalletControl.tsx'),
   path.join(root, 'components/TokenMark.tsx'),
