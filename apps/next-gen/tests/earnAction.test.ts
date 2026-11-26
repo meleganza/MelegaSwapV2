@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { test } from 'node:test'
 import { simulateEarnAction } from '../lib/earnAction'
+import { earnSandboxUrl, submitSandbox } from '../lib/earnSandbox'
 import { EARN_EXPECTED_LP, EARN_MASTER_CHEF } from '../lib/earnRead'
 
 const account = '0x0000000000000000000000000000000000000011'
@@ -33,4 +34,24 @@ test('simulates the canonical MARCO deposit only with sufficient allowance', asy
     })
     assert.equal(code, allowance ? 'SIMULATED' : 'APPROVAL_REQUIRED')
   }
+})
+
+test('the sandbox configuration is limited to preview and localhost', () => {
+  const rpc = 'https://sandbox.example.org/'
+  assert.equal(earnSandboxUrl({ VERCEL_ENV: 'production', EVO_EARN_SANDBOX_RPC_URL: rpc }), null)
+  assert.equal(earnSandboxUrl({ VERCEL_ENV: 'preview', EVO_EARN_SANDBOX_RPC_URL: rpc }), rpc)
+  assert.equal(earnSandboxUrl({ VERCEL_ENV: 'preview', EVO_EARN_SANDBOX_RPC_URL: rpc + '?key=secret' }), null)
+  assert.equal(earnSandboxUrl({ EVO_EARN_SANDBOX_RPC_URL: rpc }), null)
+  assert.equal(earnSandboxUrl({ EVO_EARN_SANDBOX_RPC_URL: 'http://127.0.0.1:8545' }), 'http://127.0.0.1:8545/')
+})
+
+test('submitting is blocked on BNB mainnet before any contract or signing request', async () => {
+  const calls: string[] = []
+  await assert.rejects(submitSandbox({
+    async request({ method }) {
+      calls.push(method)
+      return '0x38'
+    },
+  }, { from: account, to: EARN_MASTER_CHEF, data: '0x41441d3b', value: '0x0' }, deposit), /Switch your wallet/)
+  assert.deepEqual(calls, ['eth_chainId'])
 })

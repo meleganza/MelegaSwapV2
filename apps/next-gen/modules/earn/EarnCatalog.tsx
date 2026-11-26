@@ -68,11 +68,12 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
   )
 }
 
-export default function EarnCatalogPanel({ positions }: { positions?: React.ReactNode }) {
+export default function EarnCatalogPanel({ positions, sandboxUrl }: { positions?: React.ReactNode; sandboxUrl?: string | null }) {
   const [catalog, setCatalog] = React.useState<EarnCatalog | null>(null)
   const [asset, setAsset] = React.useState('')
   const [chain, setChain] = React.useState(56)
   const [source, setSource] = React.useState<'vaults' | 'farms' | 'pools' | 'index'>('vaults')
+  const [openedPositions, setOpenedPositions] = React.useState(false)
   const [view, setView] = React.useState<'discover' | 'positions' | 'liquidity'>('discover')
   const [sort, setSort] = React.useState<'tvl' | 'apy'>('tvl')
   const assets = [...new Set([...(chain === 56 ? ['BNB', 'WBNB', 'MARCO'] : []), ...(catalog?.ok ? catalog.opportunities.flatMap((row) => row.assets) : [])])].sort()
@@ -106,11 +107,11 @@ export default function EarnCatalogPanel({ positions }: { positions?: React.Reac
     <section className="earn-browser" aria-label="Earn workspace">
       <div className="earn-navigation" role="group" aria-label="Earn views">
         <button type="button" aria-pressed={view === 'discover'} onClick={() => setView('discover')}>Discover</button>
-        <button type="button" aria-pressed={view === 'positions'} onClick={() => setView('positions')}>Positions</button>
+        <button type="button" aria-pressed={view === 'positions'} onClick={() => { setOpenedPositions(true); setView('positions') }}>Positions</button>
         <button type="button" aria-pressed={view === 'liquidity'} onClick={() => setView('liquidity')}>Add liquidity</button>
       </div>
       <div hidden={view !== 'positions'}>{positions}</div>
-      {view === 'positions' && <EarnSimulation />}
+      <div hidden={view !== 'positions'}>{openedPositions && <EarnSimulation sandboxUrl={sandboxUrl} />}</div>
       {view === 'liquidity' ? (
         <section className="earn-card earn-liquidity" aria-label="Add liquidity">
           <h3>Add liquidity</h3>
