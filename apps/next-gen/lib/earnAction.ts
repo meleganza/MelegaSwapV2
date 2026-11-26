@@ -4,7 +4,7 @@ import { decodePoolInfo, EARN_EXPECTED_LP, EARN_MASTER_CHEF, encodePoolInfo } fr
 
 const erc20 = new Interface(['function balanceOf(address) view returns (uint256)', 'function allowance(address,address) view returns (uint256)', 'function decimals() view returns (uint8)'])
 const vault = new Interface(['function want() view returns (address)', 'function deposit(uint256)', 'function withdraw(uint256)'])
-const chef = new Interface(['function deposit(uint256,uint256)', 'function withdraw(uint256,uint256)', 'function userInfo(uint256,address) view returns (uint256,uint256)'])
+const chef = new Interface(['function enterStaking(uint256)', 'function leaveStaking(uint256)', 'function userInfo(uint256,address) view returns (uint256,uint256)'])
 const VAULT = '0x015E2d1b7aC621370A24B7dd426EF1ef4DA99B86'
 const VAULT_ASSET = '0xcE033c748aBd4B5e9aE16efFdb0b0c91fB0c99F1'
 const addressPattern = /^0x[0-9a-f]{40}$/i
@@ -48,7 +48,7 @@ export async function simulateEarnAction(input: EarnSimulationInput, call: Call)
       const [allowance] = erc20.decodeFunctionResult('allowance', await call(asset, erc20.encodeFunctionData('allowance', [owner, target])))
       if (allowance.lt(raw)) return 'APPROVAL_REQUIRED'
     }
-    await call(target, isFarm ? chef.encodeFunctionData(action, [0, raw]) : vault.encodeFunctionData(action, [raw]), owner)
+    await call(target, isFarm ? chef.encodeFunctionData(action === 'deposit' ? 'enterStaking' : 'leaveStaking', [raw]) : vault.encodeFunctionData(action, [raw]), owner)
     return 'SIMULATED'
   } catch {
     return 'SIMULATION_UNAVAILABLE'

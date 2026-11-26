@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict'
+import assert from 'assert'
 import { test } from 'node:test'
 import { simulateEarnAction } from '../lib/earnAction'
 import { EARN_EXPECTED_LP, EARN_MASTER_CHEF } from '../lib/earnRead'
@@ -23,10 +23,10 @@ test('simulates the canonical MARCO deposit only with sufficient allowance', asy
         case '0x313ce567': return '0x' + word(18n)
         case '0x70a08231': return '0x' + word(amount)
         case '0xdd62ed3e': return '0x' + word(allowance)
-        case '0xe2bbb158':
+        case '0x41441d3b':
           assert.equal(to, EARN_MASTER_CHEF)
           assert.equal(from, account)
-          assert.equal(data.slice(10), word(0n) + word(amount))
+          assert.equal(data.slice(10), word(amount))
           return '0x'
         default: throw new Error('Unexpected call')
       }
