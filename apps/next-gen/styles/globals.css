@@ -527,4 +527,10 @@ h3 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -0.02em; }
 .earn-more{margin:12px auto}
 .earn-liquidity{max-width:430px;margin:0 auto}
 .earn-browser .earn-card:nth-child(n+3),.earn-browser .earn-card .advanced-details{display:block}
+.earn-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#1d1c18;color:#fff;padding:14px 16px;border-radius:14px;margin:10px 0 14px}
+.earn-summary small{display:block;color:#f0deaa;font-size:.72rem}.earn-summary strong{font-size:clamp(1.2rem,5vw,2rem);letter-spacing:-.025em}.earn-summary p{grid-column:1/-1;margin:0;font-size:.7rem;color:#e4dfd3}
+.earn-search{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}.earn-search .card-action{margin:0;width:auto;min-height:44px;box-shadow:none}
+.earn-browser .earn-card .advanced-details{margin-top:12px}.earn-browser .earn-card .card-action{color:var(--on-accent,#fff);background:#1d1c18}.earn-provenance{font-size:.8rem;font-weight:700}
+.earn-browser .pair-art .token-mark:where(span){background:#5a584e}
+@media(max-width:640px){.earn-browser .earn-navigation[aria-label="Opportunity types"]{gap:2px}.earn-browser .earn-navigation[aria-label="Opportunity types"] button{padding-inline:6px;font-size:.72rem}.earn-browser .earn-navigation[aria-label="Opportunity types"] button:last-child{margin-left:0}}
 @media(max-width:640px){.trade-home-grid{display:block}.trade-home-grid,.trade-layout,.trade-surface,.compact-swap{width:100%;min-width:0;max-width:100%}.trade-surface .surface-head{gap:8px}.trade-surface .network-chip{max-width:112px;overflow:hidden;white-space:nowrap}.compact-swap .asset-field{grid-template-columns:minmax(0,1fr) 112px}.compact-swap .token-select{width:112px}.compact-swap .token-select select{width:100%}.compact-swap .asset-amount{max-width:100%}.swap-summary{min-width:0}.swap-summary strong{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}

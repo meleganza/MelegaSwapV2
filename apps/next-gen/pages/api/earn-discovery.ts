@@ -18,7 +18,7 @@ tokenLabels.set('0x963556de0eb8138e97a85f0a86ee0acd159d210b', 'MARCO')
 const networkNames: Record<number, string> = { 56: 'BSC', 1: 'Ethereum', 8453: 'Base', 137: 'Polygon', 42161: 'Arbitrum', 43114: 'Avalanche' }
 
 type RecordData = Record<string, unknown>
-type Opportunity = { id: string; name: string; venue: string; apy: number | null; tvl: number | null; href: string }
+type Opportunity = { id: string; name: string; venue: string; apy: number | null; tvl: number | null; href: string; chain?: string; assets?: Array<{ symbol: string; address: string }> }
 type Feed = { rows: Opportunity[]; asOf?: string; unavailable?: boolean; partial?: boolean }
 const cache = new Map<string, { expires: number; result: Promise<Feed> }>()
 
@@ -37,7 +37,15 @@ function metric(value: unknown) {
 }
 
 function farmOpportunity(pid: number, token: string): Opportunity {
-  return { id: String(pid), name: nativeLabels.get(token.toLowerCase()) ?? `Farm #${pid}`, venue: 'Melega Farm', apy: null, tvl: null, href: MELEGA + '/farms?view=explore' }
+  const pair = farmList.find((farm) => farm.lpAddress.toLowerCase() === token.toLowerCase())
+  const symbol = tokenLabels.get(token.toLowerCase())
+  const assets = symbol ? [{ symbol, address: token }] : pair ? [pair.token, pair.quoteToken] : []
+  return { id: String(pid), name: nativeLabels.get(token.toLowerCase()) ?? `Farm #${pid}`, venue: 'Melega Farm', apy: null, tvl: null, href: MELEGA + '/farms?view=explore', assets }
+}
+
+function poolAssets(staked: unknown): Opportunity['assets'] {
+  if (typeof staked !== 'string' || !ADDRESS.test(staked)) return []
+  return [{ address: staked, symbol: tokenLabels.get(staked.toLowerCase()) ?? 'Token' }]
 }
 
 async function bscReader(url = process.env.BETA_BSC_READONLY_RPC ?? DEFAULT_BSC_READONLY_RPC) {
@@ -102,7 +110,7 @@ async function verifyKnownPools(candidates: RecordData[]): Promise<Feed> {
       const [reward, start, end, asset] = values
       if (!reward || !start || !end || BigInt(reward) === 0n || BigInt(start) > height || (BigInt(end) > 0n && BigInt(end) <= height)) return []
       const symbol = asset ? tokenLabels.get('0x' + asset.slice(-40).toLowerCase()) : undefined
-      return [{ id: address, name: symbol ? `${symbol} staking` : `Staking pool ${address.slice(0, 8)}`, venue: 'Melega Pool', apy: null, tvl: null, href: MELEGA + '/pools?view=explore' }]
+      return [{ id: address, name: symbol ? `${symbol} staking` : `Staking pool ${address.slice(0, 8)}`, venue: 'Melega Pool', apy: null, tvl: null, href: MELEGA + '/pools?view=explore', assets: poolAssets(asset ? '0x' + asset.slice(-40) : null) }]
     })
   }))
   return { rows: results.flat(), partial: true }
@@ -142,7 +150,7 @@ async function native(kind: 'farms' | 'pools'): Promise<Feed> {
       if (pool.active !== true || (liveRows && pool.callable !== true) || pool.ended === true || pool.invalid === true || typeof address !== 'string' || !ADDRESS.test(address)) return []
       const staked = typeof pool.stakedToken === 'string' ? tokenLabels.get(pool.stakedToken.toLowerCase()) : undefined
       const name = staked ? `${staked} staking` : typeof pool.poolName === 'string' ? pool.poolName : `Staking pool ${address.slice(0, 8)}`
-      return [{ id: address.toLowerCase(), name, venue: 'Melega Pool', apy: null, tvl: null, href: MELEGA + '/pools?view=explore' }]
+      return [{ id: address.toLowerCase(), name, venue: 'Melega Pool', apy: null, tvl: null, href: MELEGA + '/pools?view=explore', assets: poolAssets(pool.stakedToken) }]
     }),
   }
 }
@@ -152,11 +160,11 @@ async function indexed(chain: number): Promise<Feed> {
   if (payload?.status !== 'success' || !Array.isArray(payload.data)) throw new Error('Invalid yield index')
   return {
     rows: rows(payload.data).flatMap((pool) => {
-      if (pool.chain !== networkNames[chain] || pool.exposure === 'unknown' || typeof pool.pool !== 'string' || !UUID.test(pool.pool) || typeof pool.symbol !== 'string' || typeof pool.project !== 'string') return []
+      if (typeof pool.chain !== 'string' || !Object.values(networkNames).includes(pool.chain) || (chain !== 0 && pool.chain !== networkNames[chain]) || pool.exposure === 'unknown' || typeof pool.pool !== 'string' || !UUID.test(pool.pool) || typeof pool.symbol !== 'string' || typeof pool.project !== 'string') return []
       const apy = metric(pool.apy)
       const tvl = metric(pool.tvlUsd)
       if (apy === null || tvl === null || tvl <= 0) return []
-      return [{ id: pool.pool, name: pool.symbol, venue: pool.project, apy, tvl, href: `https://defillama.com/yields/pool/${pool.pool}` }]
+      return [{ id: pool.pool, name: pool.symbol, venue: pool.project, chain: pool.chain, apy, tvl, href: `https://defillama.com/yields/pool/${pool.pool}` }]
     }),
   }
 }
@@ -167,9 +175,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Allow', 'GET')
     return res.status(405).end()
   }
-  const { kind, chainId, query, offset } = req.query
+  const { kind, chainId, query, offset, sort } = req.query
   const chain = Number(chainId ?? 56)
-  if (!EARN_NETWORKS.some(({ id }) => id === chain) || (kind !== 'farms' && kind !== 'pools' && kind !== 'index') || (kind !== 'index' && chain !== 56)) return res.status(422).json({ rows: [], unavailable: true })
+  const supported = EARN_NETWORKS.some(({ id }) => id === chain) || (kind === 'index' && chain === 0)
+  if (!supported || (kind !== 'farms' && kind !== 'pools' && kind !== 'index') || (kind !== 'index' && chain !== 56)) return res.status(422).json({ rows: [], unavailable: true })
   const key = `${kind}:${chain}`
   let entry = cache.get(key)
   if (!entry || entry.expires <= Date.now()) {
@@ -182,9 +191,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const feed = await entry.result
   const term = typeof query === 'string' ? query.trim().toLowerCase().slice(0, 80) : ''
-  const filtered = feed.rows.filter(({ name, venue, id }) => `${name} ${venue} ${id}`.toLowerCase().includes(term))
-  if (kind === 'index') filtered.sort((a, b) => (b.tvl ?? 0) - (a.tvl ?? 0))
+  const unique = [...new Map(feed.rows.map((row) => [row.id, row])).values()]
+  const filtered = unique.filter(({ name, venue, id }) => `${name} ${venue} ${id}`.toLowerCase().includes(term))
+  if (kind === 'index') filtered.sort((a, b) => sort === 'apy' ? (b.apy ?? -Infinity) - (a.apy ?? -Infinity) : (b.tvl ?? 0) - (a.tvl ?? 0))
   const rawOffset = Number(offset ?? 0)
   const start = Number.isSafeInteger(rawOffset) && rawOffset >= 0 ? rawOffset : 0
-  return res.status(feed.unavailable ? 503 : 200).json({ ...feed, rows: filtered.slice(start, start + 12), count: filtered.length })
+  return res.status(feed.unavailable ? 503 : 200).json({ ...feed, rows: filtered.slice(start, start + 12), count: filtered.length, monitored: unique.length,
+    reportedTvl: kind === 'index' && unique.length ? unique.reduce((total, row) => total + (row.tvl ?? 0), 0) : null })
 }

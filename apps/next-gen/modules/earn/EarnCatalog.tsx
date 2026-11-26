@@ -2,6 +2,7 @@ import React from 'react'
 import { EARN_NETWORKS, formatReportedApy, formatReportedTvl, type EarnCatalog, type EarnOpportunity } from '../../lib/earnCatalog'
 import { TokenMark } from '../../components/TokenMark'
 import EarnDiscovery from './EarnDiscovery'
+import EarnSummary from './EarnSummary'
 
 function matches(opportunity: EarnOpportunity, asset: string, protocol: string): boolean {
   const assetQuery = asset.trim().toLowerCase()
@@ -25,9 +26,12 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
     )
   }
   const visible = catalog.opportunities.filter((opportunity) => matches(opportunity, asset, protocol))
+  const totals = [...new Map(catalog.opportunities.map((row) => [row.id, row])).values()]
+  const rated = totals.filter((row) => row.tvlUsd !== null && row.tvlUsd >= 0 && !row.stale)
   if (sort === 'apy') visible.sort((a, b) => (b.apyDecimal ?? -Infinity) - (a.apyDecimal ?? -Infinity))
   return (
     <div data-executable="false" data-deposit="false" data-catalog="bnb">
+      <EarnSummary count={totals.length} tvl={rated.length ? rated.reduce((sum, row) => sum + (row.tvlUsd ?? 0), 0) : null} scope={`Vaults · Selected network · TVL from ${rated.length} vaults`} />
       <label className="earn-estimate">Compare estimated annual rewards (USD)
         <input type="number" min="0" inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="Enter an amount" />
       </label>
@@ -43,12 +47,9 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
             ) : null}
             <details className="advanced-details">
               <summary>View vault</summary>
+              <p className="earn-provenance">Beefy vault · {opportunity.protocol}</p>
               <ul className="facts">
-                <li>Vault manager: Beefy</li>
-                <li>Underlying protocol: {opportunity.protocol}</li>
-                <li>Source: {opportunity.source}</li>
-                <li>APY updated: {opportunity.updatedAt ?? 'not provided by the source'}</li>
-                <li>{opportunity.stale ? 'This fetch is older than 15 minutes.' : 'Fetched with this page view.'}</li>
+                <li>{opportunity.stale ? 'Data may be stale.' : 'APY and TVL reported by Beefy. APY can change.'}</li>
                 <li>
                   {opportunity.sourceRisk
                     ? `Beefy flags raised: ${opportunity.sourceRisk.raised.length > 0 ? opportunity.sourceRisk.raised.join(', ') : 'none'}. Risk record ${opportunity.sourceRisk.updatedAt ?? 'time not provided'}.`
@@ -66,7 +67,7 @@ export function EarnCatalogView({ catalog, asset, protocol, sort = 'tvl' }: { ca
   )
 }
 
-export default function EarnCatalogPanel({ native, positions }: { native?: React.ReactNode; positions?: React.ReactNode }) {
+export default function EarnCatalogPanel({ positions }: { positions?: React.ReactNode }) {
   const [catalog, setCatalog] = React.useState<EarnCatalog | null>(null)
   const [asset, setAsset] = React.useState('')
   const [chain, setChain] = React.useState(56)
@@ -76,6 +77,7 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
   const assets = [...new Set([...(chain === 56 ? ['BNB', 'WBNB', 'MARCO'] : []), ...(catalog?.ok ? catalog.opportunities.flatMap((row) => row.assets) : [])])].sort()
 
   React.useEffect(() => {
+    if (source !== 'vaults') return
     const controller = new AbortController()
     fetch(`/api/earn-catalog?chainId=${chain}`, { signal: controller.signal })
       .then(async (response) => (await response.json()) as EarnCatalog)
@@ -97,7 +99,7 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
         }
       })
     return () => controller.abort()
-  }, [chain])
+  }, [chain, source])
 
   return (
     <section className="earn-browser" aria-label="Earn workspace">
@@ -117,17 +119,16 @@ export default function EarnCatalogPanel({ native, positions }: { native?: React
       ) : null}
       {view === 'discover' ? <>
         <div className="earn-navigation" role="group" aria-label="Opportunity types">
-          <button type="button" aria-pressed={source === 'vaults'} onClick={() => setSource('vaults')}>Vaults</button>
+          <button type="button" aria-pressed={source === 'vaults'} onClick={() => { if (chain === 0) setChain(56); setSource('vaults') }}>Vaults</button>
           <button type="button" aria-pressed={source === 'farms'} onClick={() => { setChain(56); setSource('farms') }}>Farms</button>
           <button type="button" aria-pressed={source === 'pools'} onClick={() => { setChain(56); setSource('pools') }}>Pools</button>
-          <button type="button" aria-pressed={source === 'index'} onClick={() => setSource('index')}>Market index</button>
+          <button type="button" aria-pressed={source === 'index'} onClick={() => { setChain(0); setSource('index') }}>Market index</button>
         </div>
         <div className="earn-filter-bar">
           {source === 'vaults' ? <label><span>Asset</span><select value={asset} onChange={(event) => setAsset(event.target.value)}><option value="">All assets</option>{assets.map((item) => <option key={item}>{item}</option>)}</select></label> : null}
-          <label><span>Network</span><select value={chain} disabled={source === 'farms' || source === 'pools'} onChange={(event) => { setCatalog(null); setAsset(''); setChain(Number(event.target.value)) }}>{EARN_NETWORKS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}</select></label>
+          <label><span>Network</span><select value={chain} disabled={source === 'farms' || source === 'pools'} onChange={(event) => { setCatalog(null); setAsset(''); setChain(Number(event.target.value)) }}>{source === 'index' ? <option value={0}>All networks</option> : null}{EARN_NETWORKS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}</select></label>
           {source === 'vaults' ? <label><span>Sort vaults</span><select value={sort} onChange={(event) => setSort(event.target.value === 'apy' ? 'apy' : 'tvl')}><option value="tvl">TVL</option><option value="apy">APY</option></select></label> : null}
         </div>
-        {source === 'farms' ? native : null}
         {source !== 'vaults' ? <EarnDiscovery key={source + chain} kind={source} chain={chain} /> :
           catalog?.chainId === chain ? <EarnCatalogView key={chain} catalog={catalog} asset={asset} protocol="" sort={sort} /> : <p className="footnote" role="status">Loading opportunities…</p>}
       </> : null}
